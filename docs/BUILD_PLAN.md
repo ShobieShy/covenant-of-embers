@@ -137,97 +137,122 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Files: game/loot/{item,parts,grades,generator}.*, data/loot/parts.toml, tests/test_loot.cpp.
 - Done: same seed ⇒ identical item; 100k rolls within ±1 % of weights; affix exclusivity test.
 
-**27. Weapon stats from parts**
+**27. Patterns + part constraints**
+- Does: data-driven Patterns (ordered part categories with pick min/max, allow_repeat, weighted, optional), inheritance with replace/override/append merges flattened at load, `requires`/`forbids` by part id or tag, rolled in Pattern order (PLAN §31.1–31.2).
+- Files: game/loot/{pattern,constraints}.*, data/loot/patterns/*.toml, tests/test_patterns.cpp.
+- Done: tests: merge modes produce expected flattened lists; a forbidden combo never rolls in 10k rolls; cooker check reports reachable-build count and fails on a deliberate dead-end Pattern.
+
+**28. Weapon stats from parts**
 - Does: compute final WeaponInstance stats from rolled parts + affixes; generated names.
 - Files: game/loot/assemble.*, game/weapons/weapon.*.
 - Done: tests: higher Grade ⇒ higher damage; name built from strongest bonus + Workshop.
 
-**28. Loot drops on kill**
+**29. Ember Mark item codes**
+- Does: versioned bit-packed item code `EM1-…` (Crockford base32, CRC-16) from an append-only Part Index Table; decode with host-side validation (PLAN §31.5).
+- Files: game/loot/ember_mark.*, data/loot/part_index_v1.toml, tests/test_ember_mark.cpp.
+- Done: 100k random items round-trip `encode(decode(x)) == x`; a 1-char typo fails CRC; an illegal-constraint code is rejected by validation.
+
+**30. Balance patch loader**
+- Does: `data/patches/*.toml` typed edits (`set`, `set_if`, `append`, `remove`, `table_row`) applied in phases `boot` / `level:<id|*>` / `enemy:<id|*>`; re-flattens Patterns after boot; bad lines logged and skipped (PLAN §31.6).
+- Files: engine/data/patch.*, data/patches/0001_example.toml, tests/test_patch.cpp.
+- Done: tests: set_if skips when old value differs; level-phase patch applies only on matching level; malformed line doesn't abort load; active-patch count exposed.
+
+**31. Loot drops on kill**
 - Does: per-player drop roll on kill event (drop chance per enemy table), spawn world item with Grade-coloured light pillar.
 - Files: game/loot/drop_table.*, game/world/world_item.*, data/enemies/*.toml.
 - Done: test: 1000 Gnawer kills produce drop rate within ±2 % of table; pillar colour matches Grade.
 
-**29. Pickup + auto-collect**
+**32. Pickup + auto-collect**
 - Does: Interact to pick up weapons; Tallies/ammo auto-collect in radius; loot feed log.
 - Files: game/loot/pickup.*.
 - Done: tests: pickup moves item to inventory; Tallies auto-collect within 2 m only.
 
-**30. Inventory and equip**
+**33. Inventory and equip**
 - Does: 30-slot backpack, equip to weapon slots, drop, salvage to Scrap.
 - Files: game/inventory/inventory.*.
 - Done: tests for add/full/equip/swap/salvage.
 
-**31. XP curve and levels**
+**34. XP curve and levels**
 - Does: XP(L)=120×1.35^(L−1), cap 50, level-up +health/+Breath/+Oil, XP from kill events (§30.5).
 - Files: game/progression/xp.*, tests/test_xp.cpp.
 - Done: tests for curve values, multi-level gain and cap.
 
-**32. UI renderer (text + sprites)**
+**35. Weight model + Vigil plumbing**
+- Does: shared weight model `base × Π(modifiers)` with live attributes (player count, health %, ammo %, Vigil tier) and named tiers; Vigil tier 0–2 data path scaling enemy stats and rewards on separate curves, seeded Omen pick (one sample Omen) stored in the save (PLAN §31.4).
+- Files: game/loot/weights.*, game/progression/vigil.*, data/loot/weight_tiers.toml, data/vigil/*.toml.
+- Done: tests: contextual health drop weight rises below 40 % health; same Vigil seed ⇒ same Omens; reward curve independent of difficulty curve.
+
+**36. UI renderer (text + sprites)**
 - Does: 2D quad batcher in Vulkan, Kenney Future font (assets/kenney/ui-pack/Font) via stb_truetype, Kenney UI PNG panels.
 - Files: engine/ui/{ui_renderer,font}.*, shaders/ui.*.
 - Done: headless test renders a text string; pixel check finds non-background pixels in its rect.
 
-**33. HUD**
+**37. HUD**
 - Does: crosshair + hit markers, health/shield/Breath bars, ammo/mag counter, XP bar + level, loot feed.
 - Files: game/ui/hud.*.
 - Done: values on HUD update when shooting/reloading/levelling in a window run; headless snapshot test.
 
-**34. Inventory screen**
+**38. Inventory screen**
 - Does: Tab opens backpack grid with compare card (green/red stat deltas), equip/salvage buttons, mouse + keyboard.
 - Files: game/ui/inventory_screen.*.
 - Done: equipping from the screen changes the active weapon; compare deltas match computed stats in a test.
 
-**35. Key-bindings config**
+**39. Key-bindings config**
 - Does: load/save `config/bindings.toml` (user dir via SDL_GetPrefPath), defaults on first run, mouse sensitivity/invert-Y, simple rebind menu.
 - Files: engine/input/bindings.*, game/ui/options_screen.*.
 - Done: test: rebinding Jump writes file; reload restores it; malformed file falls back to defaults.
 
-**36. Breach room slice: layout**
-- Does: greybox Breach (entrance → 2 combat rooms → mini-boss arena → loot vault) with door triggers and arena lock.
+**40. Breach room slice: layout**
+- Does: greybox Breach (entrance → 2 combat rooms → mini-boss arena → loot vault) with door triggers and arena lock; built as a persistent level + `_combat`/`_dynamic` layers addressable by balance patches (PLAN §31.7).
 - Files: data/levels/breach_slice.toml, game/world/{doors,triggers}.*.
 - Done: walking through triggers advances room state; doors lock during combat and open on clear.
 
-**37. Mini-boss (2 phases)**
+**41. Mini-boss (2 phases)**
 - Does: "Midden Spawn" mini-boss: phase 1 sludge lob; phase 2 at 50 % adds ooze spawns and faster cadence; boss health bar.
 - Files: game/bosses/midden_spawn.*, game/ui/boss_bar.*.
 - Done: tests: phase switches at 50 %; boss bar visible; killing it opens the vault door.
 
-**38. Vault + guaranteed boss loot**
+**42. Vault + guaranteed boss loot**
 - Does: per-player guaranteed Gold+ drop from boss, vault chest, room-clear state.
 - Files: game/loot/boss_rewards.*, game/world/chest.*.
 - Done: test: boss kill always yields ≥ Gold; chest opens once.
 
-**39. Audio engine**
+**43. Consecrations**
+- Does: separate post-parts "generic" roll on Silver+ boss/vault loot with a "none" entry and Calling-aware weighting; 3 sample Consecrations hooked to verbs (dash, Release, full shield) (PLAN §31.4).
+- Files: game/loot/consecration.*, data/loot/consecrations.toml.
+- Done: tests: Calling-specific weight rises per matching party member; effects trigger on their verb; Ember Mark encodes the consecration id.
+
+**44. Audio engine**
 - Does: miniaudio via FetchContent, buses (Master/SFX/UI/Music) with volumes, 3D positional one-shots.
 - Files: engine/audio/audio.*.
 - Done: unit test loads a Kenney OGG and plays to the null device without error; volumes clamp.
 
-**40. Audio hookup with Kenney sounds**
+**45. Audio hookup with Kenney sounds**
 - Does: map events to Kenney sounds: shots/hits (impact-sounds), UI clicks/pickups/level-up (interface-sounds, ui-pack/Sounds); data-driven sound table.
 - Files: data/audio/sounds.toml, game/audio/sound_events.*.
 - Done: every sound path in sounds.toml exists and is covered by ASSETS.toml (lint); audible in window run.
 
-**41. Save format**
-- Does: character save (level, XP, Tallies, inventory items as seed+parts, equipped slots, bindings untouched) as versioned JSON/TOML in pref path.
+**46. Save format**
+- Does: character save (level, XP, Tallies, inventory items as Ember Marks, equipped slots, bindings untouched) as versioned JSON/TOML in pref path.
 - Files: game/save/save.*.
 - Done: save file written on quit/Interact at camp marker; schema version field present.
 
-**42. Save round-trip + load**
+**47. Save round-trip + load**
 - Does: load on start, version migration hook, corruption fallback.
 - Files: game/save/save.*, tests/test_save.cpp.
-- Done: test: save → load → save produces byte-identical file; regenerated items equal originals.
+- Done: test: save → load → save produces byte-identical file; regenerated items equal originals; saves containing every historic Ember Mark version load.
 
-**43. Main menu + flow**
+**48. Main menu + flow**
 - Does: title screen (Continue/New/Options/Quit), Midden → Breach transition, death/respawn flow.
 - Files: game/ui/main_menu.*, game/core/game_flow.*.
 - Done: full flow reachable by keyboard only in a window run.
 
-**44. Playtest pass 1 – automated**
+**49. Playtest pass 1 – automated**
 - Does: scripted headless bot run (`--playtest`) that spawns, kills a wave, picks loot, levels, saves, reloads; asserts no validation errors.
 - Files: game/debug/playtest.*, CMakeLists.txt (ctest).
 - Done: ctest `playtest_bot` passes.
 
-**45. Playtest pass 2 – manual + fixes**
+**50. Playtest pass 2 – manual + fixes**
 - Does: 15-minute manual run with checklist (feel, balance, readability, crashes); fix top issues; record findings.
 - Files: docs/playtests/2026-xx-xx.md, any fixes.
 - Done: checklist filled, no blocker bugs left, README "How to play" updated. **Vertical slice complete** (tag `v0.1-slice` locally).

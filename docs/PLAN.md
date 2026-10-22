@@ -348,6 +348,8 @@ Original system that consolidates sections 3–11 into buildable rules for M1–
 - **Grades**: Clay ×1.00 (w52), Bronze ×1.15 (w26), Silver ×1.35 (w13), Gold ×1.60 (w6), Crown ×1.90 (w3). Luck/Vigil modifiers shift weights upward; Relics are hand-authored overrides at Gold/Crown (≈1 % of Gold+ drops).
 - **Gifts as Seals**: a Gift slotted into the Seal becomes a modifier (essence conversion, on-hit effect, or alt-fire); its Fruit tunes it (Patience = charge shot, Self-control = −recoil, Kindness = ally-heal pass-through). Gifts are earned, never random, so they are the deterministic layer on top of random guns.
 - Deterministic generation: every item stores `seed + ilvl + grade + part ids`; the host rolls it and clients regenerate it identically (small network payload, save-friendly, testable).
+- *Refined (see §31.1–31.2):* slots are no longer hard-coded; each weapon family declares a **Pattern** (ordered list of part categories with pick-count rules), and parts carry `requires`/`forbids` tags. Grade is rolled from a weighted table before parts, and Grade gates which part tiers and how many affix picks are allowed.
+- *Refined (see §31.5):* the stored form of an item is its **Ember Mark** (versioned compact code), not a loose struct.
 
 ### 30.3 Equipment and inventory
 - 4 weapon slots (2 at start, 3rd at level 10, 4th at 25). Gear: Mantle (shield capacity/recharge), Satchel (ammo/Flask capacity), Sandals (speed, dash charges), Signet (stat ring), Lamp (Oil pool/regen), Throwable (Flask type). Consumable quick-slot: Healing Bread, Oil Flask.
@@ -381,3 +383,69 @@ Original system that consolidates sections 3–11 into buildable rules for M1–
 
 ### 30.9 Tests required (M1–M2)
 Headless tests for damage formula, Grade weight distribution (statistical), deterministic item regen from seed, affix exclusivity, essence matchups, per-player loot isolation, XP curve, and save round-trips.
+
+## 31. Loot-system architecture (original, informed by public BL3 modding research)
+
+Everything below is an **original** design. We studied how the community describes a well-known looter's systems (sources in §32) only to learn general architecture lessons. No game files, keys, names, numbers or data tables were used or copied; all names, weights and formats here are our own.
+
+### 31.1 Patterns: data-driven part categories
+- A weapon **Pattern** (one per Family × Workshop, plus one per Relic) is an ordered list of **part categories**. Categories are open-ended: a Workshop may add its own (e.g. Lampwright *Wick*, Ashfall *Bellows*, Reedcutter *Underslung*), so we are not locked to six slots. Frame/Barrel/Chamber/Grip/Sight/Seal remain the common core.
+- Each category has: `pick = {min, max}` (default exactly 1), `allow_repeat` (same part twice, for stacking trinkets), `weighted` (use part weights when picking more than one, else uniform), and `optional` (may roll empty).
+- **Inheritance with merge modes**: a Pattern may extend a parent Pattern (Family base → Workshop → Relic). Each layer declares `merge = replace | override | append` per category: replace discards the parent list, override swaps only categories it defines, append adds parts to the parent's list. Pick rules come from the top-most layer only. This keeps Relics tiny: they override one or two categories.
+- **Resolve once at load**: Patterns are flattened into a runtime table when data loads (and again after balance patches, §31.6). Gameplay only ever reads the flattened table, which removes a whole class of "edited the wrong layer" bugs.
+
+### 31.2 Part constraints: requires and forbids
+- Every part may list `requires` (all must already be on the item) and `forbids` (none may be on the item), by part id or by **tag** (e.g. `tag:scope.long`, `tag:essence.kindling`). Tags are preferred so new parts don't need every constraint edited.
+- Categories are rolled **in Pattern order**, and each category is filtered by the constraints against the parts already chosen. So accessory categories always come after the category they depend on (Sight before Sight-Mount, Barrel before Muzzle).
+- Tooling: the cooker validates every Pattern: for each reachable partial build, at least one legal part must remain in a non-optional category. It also counts how many distinct builds each Pattern can make, which shows when constraints accidentally collapse variety. CI fails on dead-ends.
+- Constraint patches can target parts from outside (an expansion file adds `requires/forbids` to existing parts), so future content packs never edit base files.
+
+### 31.3 Workshop (manufacturer) identity
+- A Workshop is a data bundle: stat bias, an always-present **signature mechanic**, its own part categories and visual kit, sound set, and naming grammar.
+  - Ashfall Foundry: heavy hitting; *overpressure*: the last round of a mag deals ×1.5 and vents heat.
+  - Lampwright & Daughters: Oil-fed; *wick*: fire with an empty mag by spending Oil at ×1.5 cost.
+  - Shepherd's Arms: precision + support; *guiding shot*: ADS shots that miss home slightly toward allies' marked targets.
+  - Reedcutter Co.: big mags, fast handling; *throw-reload*: empty mag is thrown as a small Plain grenade.
+  - Watchtower Optics: crit and scopes; *steady breath*: holding ADS still for 1 s gives +25 % crit.
+- Family × Workshop is a matrix; not every cell exists (sparse matrix gives each Workshop a personality). Grenade-like Flasks may roll from a weighted Workshop pool; guns have exactly one Workshop.
+
+### 31.4 Weights, Grades, Consecrations and Vigils
+- **One weight model everywhere**: `weight = base × Π(modifiers)`; a modifier is a constant or a **live attribute** (player count, player health %, ammo %, Vigil tier, luck). Weights are relative; probability = weight / Σweights. The same structure drives drop pools, Grade tables, Workshop pools, quantity rolls ("2 Tallies piles per player") and contextual drops (more health from crates when the party is hurt, more of the ammo type you're low on).
+- **Named weight tiers** (our own scale) keep data readable: `staple 100, common 50, uncommon 12, scarce 3, rare 0.6, precious 0.12`. Designers pick a tier; the table is one patchable file.
+- **Grades** unchanged in value (§30.2) but expressed as tiers in a Grade table so Vigil/luck modifiers can shift them.
+- **Consecrations** (our anointment analogue; endgame only): a separate *generic* roll after parts, from its own pool, with a "no consecration" entry. Each is a conditional bonus tied to a game verb, e.g. "after a dash, next magazine Kindling-infused", "after Releasing a Shade, +30 % Oil regen 8 s", "while at full shield, +15 % weak-point damage". **Calling-aware weighting**: Calling-specific Consecrations start at low weight and gain weight for each party member playing that Calling, so co-op drops skew to what the party can use. They unlock after the first Breach warden and appear only on Silver+.
+- **Vigils** (Mayhem-style scaling, our design): tiers 1–10 unlocked after the story.
+  - Each tier scales enemy health/damage and **reward** (XP, Tallies, Grade weight shift, Consecration rate) along separate curves, so difficulty and payoff are tuned independently.
+  - Each tier adds **Omens** (modifiers) drawn from Easy/Medium/Hard pools by a per-session seed: e.g. "Ember Rain", "Shades rise twice", "Wards regenerate faster". The seed is stored in the save so a run can be shared and replayed. Players can re-roll Omens at the camp Memorial Stones.
+  - Items record the **Vigil tier they dropped at**, which scales their power within the tier, so old gear is clearly weaker than new gear, without invisible rules.
+
+### 31.5 Ember Marks: item codes for saving and sharing
+- Every item serialises to a compact, versioned code: `EM1-` + base32(Crockford) of a bit-packed payload.
+- Payload: `version (6b) | pattern id (varint) | item level (7b) | grade (3b) | vigil tier (4b) | seed (32b) | per-category part indices (bit width = ceil(log2(category size)) from a versioned **Part Index Table**) | consecration id | flags | CRC-16`.
+- **Index table discipline**: part indices are **append-only per version**; old versions are kept forever, so old codes always decode. New content adds a new version.
+- Codes are **plain, not obfuscated**: it's an open-source game, and readable codes encourage sharing builds. A CRC detects typos; the host still validates (constraints, level caps) before accepting a shared item in co-op, so pasted codes can't create illegal gear online. Offline/solo can import anything ("sandbox" flag shown on the item).
+- Saves store items as Ember Marks; round-trip tests (`encode(decode(x)) == x` for 100k random items, and every historic version) are mandatory.
+
+### 31.6 Balance patches (live tuning without rebuilds)
+- **Balance patch files** (`data/patches/*.toml`) apply ordered, typed edits to the loaded data: `set` (path, value), `set_if` (path, expected old value, new value: fails safely if the base changed), `append`/`remove` (lists), and `table_row` (row in a named table, e.g. Vigil curves).
+- **Apply phases**, mirroring when data is alive: `boot` (global data at the main menu), `level:<id|*>` (when a region loads), `enemy:<id|*>` (when an enemy archetype first spawns), `save` (one-off save fixes, versioned and idempotent). Pattern flattening (§31.1) re-runs after `boot` patches.
+- Sources: built-in patches shipped with each release, optional signed patches fetched from the project's own repo, and local mod patches. Order: built-in → online → mods. The HUD/menu shows "N balance patches active"; co-op clients get the host's patch set hash and must match (or receive it from the host).
+- Every patch line is validated (path exists, type matches); bad lines are logged and skipped, never fatal. CI runs all shipped patches against the base data.
+
+### 31.7 Levels and streaming
+- Each region = a **persistent level** (terrain, lighting, Watchfires, navmesh) plus named **layers** streamed in and out: `_geo` chunks by distance, `_combat` (spawners, encounters), `_dynamic` (chests, vendors, interactables), `_story` (quest-state dependent), `_audio`.
+- Layers are content-addressed by stable ids so balance patches and quest scripts can target `level:reedlands/_combat` without touching geometry. Objects added by patches spawn at an explicit transform stored in the patch (never at origin).
+- Breaches are separate persistent levels with shuffled room layers (§14), loaded behind the Breach door with an async preload.
+- Fast travel = unload region layers, load target persistent + nearest layers; the camp is always a tiny resident level.
+
+## 32. What we learned (public sources)
+
+- **Part sets are lists of categories with pick rules, and part lists merge in layers.** A balance/part-set structure resolves into one runtime part list, with complete/selective/additive merge modes and multi-pick ranges. *Our take:* Patterns with replace/override/append merges, flattened at load (§31.1). Source: https://github.com/BLCM/BLCMods/wiki/Borderlands-3-Item-and-Weapon-Parts
+- **Dependencies and excluders on parts, applied in category order**, explain why accessory variety is narrower than the raw counts suggest. *Our take:* requires/forbids tags + a cooker that counts reachable builds (§31.2). Same source.
+- **Manufacturers are a weighted pool on the item, usually a single entry**, and anointments are a separate "generic part" roll with a "none" option and character-aware weighting. *Our take:* Workshops with signature mechanics (§31.3); Consecrations with Calling-aware weights (§31.4). Same source.
+- **Weights are layered values**: a constant × scale, or a live attribute (player count, health below a threshold) that overrides the constant; named weight tiers make data readable. *Our take:* one weight model with live modifiers and our own tier scale (§31.4). Source: https://github.com/BLCM/BLCMods/wiki/Understanding-Borderlands-Weight-and-Probability-Values
+- **Hotfixes are typed, ordered data edits applied at specific moments** (global, on level load, early level load, on character load, save fixes), with an optional "expected old value" check. *Our take:* balance patches with apply phases and `set_if` (§31.6). Source: https://github.com/BLCM/BLCMods/wiki/Borderlands-3-Hotfixes
+- **Levels are a persistent level plus streamed sub-levels** (e.g. combat and dynamic layers), and objects added late can be hard to place. *Our take:* named, patch-addressable layers with explicit transforms (§31.7). Source: Hotfixes page above.
+- **Item serials pack part choices into indices from a versioned database, along with item level and difficulty level**, which is why save editors need that database and serial versions change with patches. *Our take:* plain, append-only Ember Marks with CRC and host validation (§31.5). Sources: https://github.com/apocalyptech/bl3data (README), https://github.com/apocalyptech/bl3-cli-saveedit (README), https://github-wiki-see.page/m/BLCM/BLCMods/wiki/Accessing-Borderlands-3-Data
+- **Difficulty modes scale rewards and enemies with tiered, randomly picked modifiers stored in the save.** *Our take:* Vigils with separate difficulty and reward curves and seeded Omens (§31.4). Sources: bl3-cli-saveedit README (Mayhem level, Mayhem seed, item Mayhem level); overview at https://github.com/BLCM/BLCMods/wiki/Borderlands-3-Modding-Info
+- **Not used:** the data-access page describes unpacking encrypted game archives with keys found online. We deliberately did **not** do that; this design uses only the prose descriptions above.
