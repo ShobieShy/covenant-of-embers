@@ -2,15 +2,16 @@
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M0",
-  "next_step": 5,
+  "next_step": 6,
   "total_steps": 50,
   "steps_done": [
     1,
     2,
     3,
-    4
+    4,
+    5
   ],
-  "last_commit": "05275cd",
+  "last_commit": "5aca0bc",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -55,6 +56,13 @@
       "time": "2026-10-22T11:18-05:00",
       "type": "plan-change",
       "summary": "Added PLAN.md \u00a731 (original loot architecture: Patterns with merge modes, requires/forbids constraints, Workshop signatures, weight model, Consecrations, Vigils/Omens, Ember Mark item codes, balance patches, level layers) and \u00a732 What we learned (public BLCM/apocalyptech docs only; no game files or keys). Refined \u00a730.2. BUILD_PLAN: inserted 5 steps (27 Patterns + constraints, 29 Ember Mark codes, 30 Balance patch loader, 35 Weight model + Vigil plumbing, 43 Consecrations); old steps 27-45 renumbered to 28-50; steps 40/46/47 text refined. Plan now has 50 steps; total_steps field left unchanged per instruction. next_step unchanged (5)."
+    },
+    {
+      "time": "2026-10-22T12:30-05:00",
+      "step": 5,
+      "type": "build",
+      "summary": "Asset license lint: tools/check_assets.py (stdlib tomllib) registered as ctests asset_license_lint (repo check) and asset_license_lint_selftest (13 temp-fixture cases); Python3>=3.11 found via find_package. 'Top-level folder' = each dir directly under assets/, with vendor grouping folders holding only sub-folders (assets/kenney/) expanded so each pack is a unit; loose files must be covered; entries need name/path/license/source, path inside assets/, existing, unique, and a CREDITS.md row (manifest/credits can't drift). Done check: temp dirs assets/zz-untracked-tmp and assets/kenney/zz-untracked-tmp each failed the lint, then removed; full ctest (incl. window) green, build warning-free. Bug fix: smoke tests write triangle.ppm to the cwd, leaving a stray untracked file at repo root when run from there; removed it and added *.ppm to .gitignore. ASSETS.toml header documents the rule. Plan: step 45 now extends check_assets.py with a --paths-from sounds.toml mode. Magewar: ~/game credits third-party assets (Kenney, Quaternius) in a credit list and ships upstream License.txt/LICENSE files beside addons/textures; our approach matches its spirit with a machine-checked manifest + CREDITS.md, and all 4 Kenney packs keep their upstream License.txt. No mismatch with PLAN.md references.",
+      "commit": "5aca0bc"
     }
   ]
 }

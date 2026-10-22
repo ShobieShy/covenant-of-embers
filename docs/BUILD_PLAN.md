@@ -23,10 +23,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 
 **4. CI workflow file** ✅ `05275cd`. Does: GitHub Actions workflow (ubuntu-24.04, clang, Ninja, lavapipe forced via VK_DRIVER_FILES, validation layers installed) that builds and runs `ctest -LE window`; SDL3 falls back to FetchContent (pinned release-3.4.18, `-DCOE_FETCH_SDL3=ON`) because Ubuntu 24.04 has no SDL3 package. File only; not pushed. Files: .github/workflows/ci.yml, CMakeLists.txt. Done: YAML parses; `ctest -LE window` passes locally (system SDL3 and CI-emulated fetched SDL3 + clang + lavapipe).
 
-**5. Asset license lint**
-- Does: script that fails if any top-level folder under assets/ is missing from ASSETS.toml, or an entry lacks license/source. Registered as a ctest.
-- Files: tools/check_assets.py, CMakeLists.txt.
-- Done: ctest `asset_license_lint` passes (no `window` label, so CI runs it automatically); temporarily adding an untracked folder makes it fail. Use only the Python stdlib (`tomllib`, Python ≥ 3.11) so CI needs no pip install.
+**5. Asset license lint** ✅ `5aca0bc`. Does: tools/check_assets.py (stdlib `tomllib`, Python ≥ 3.11) fails if any asset unit under assets/ is missing from ASSETS.toml or an entry lacks name/path/license/source, has a bad/missing/duplicate path, or has no CREDITS.md row. Asset unit = each dir directly under assets/, except vendor grouping folders that only hold sub-folders (assets/kenney/) whose children (each pack) are the units instead; loose files must be covered too; dotfiles ignored. Files: tools/check_assets.py, CMakeLists.txt. Done: ctests `asset_license_lint` + `asset_license_lint_selftest` (13 fixture cases) pass, no `window` label; temp untracked folders at assets/ and assets/kenney/ both made it fail (removed).
 
 **6. Asset cooker stub**
 - Does: `tools/asset_cooker` CLI that copies/validates the glTF/PNG/OGG files it is given into build/cooked/ with a manifest (real conversion comes later).
