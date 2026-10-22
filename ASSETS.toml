@@ -1,0 +1,45 @@
+# Third-party asset manifest. Every file under assets/ must be covered here (CI license lint, plan §25).
+
+[[asset]]
+name = "Blaster Kit 2.1"
+path = "assets/kenney/blaster-kit"
+author = "Kenney (www.kenney.nl)"
+source = "https://kenney.nl/assets/blaster-kit"
+download = "https://kenney.nl/media/pages/assets/blaster-kit/261d80a716-1753959510/kenney_blaster-kit_2.1.zip"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-10-22"
+use = "Placeholder weapon models"
+
+[[asset]]
+name = "UI Pack"
+path = "assets/kenney/ui-pack"
+author = "Kenney (www.kenney.nl)"
+source = "https://kenney.nl/assets/ui-pack"
+download = "https://kenney.nl/media/pages/assets/ui-pack/f651646eab-1718203990/kenney_ui-pack.zip"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-10-22"
+use = "Placeholder menus and HUD"
+
+[[asset]]
+name = "Impact Sounds"
+path = "assets/kenney/impact-sounds"
+author = "Kenney (www.kenney.nl)"
+source = "https://kenney.nl/assets/impact-sounds"
+download = "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-10-22"
+use = "Hit and footstep SFX"
+
+[[asset]]
+name = "Interface Sounds"
+path = "assets/kenney/interface-sounds"
+author = "Kenney (www.kenney.nl)"
+source = "https://kenney.nl/assets/interface-sounds"
+download = "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-10-22"
+use = "UI clicks and loot pickup stingers"
