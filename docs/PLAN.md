@@ -4,7 +4,7 @@ Working title. Plan only, with no code yet. A brand-new co-op Vulkan action RPG 
 
 ## 1. Magewar material found on Luna (read-only review)
 
-- **~/game**: The main Godot 4.7 project (git, MIT license, GitHub CI, docs, Cogito FPS addon). Its last commit adds a host-authoritative co-op foundation. The GDScript covers the player, quest tracker, prologue driver, kill rewards, instanced loot and network sync, plus headless logic tests.
+- **~/game**: The main Godot 4.7 project (git, MIT license, .github issue templates but no CI workflows, docs, Cogito FPS addon). Its last commit adds a host-authoritative co-op foundation. The GDScript covers the player, quest tracker, prologue driver, kill rewards, instanced loot and network sync, plus headless logic tests.
 - **~/magewar-mmo**: A Godot 4.6 fork from June that goes in an MMO direction. It has autoloads, assets, docs, README_PROTOTYPE.md and a Steam app id.
 - **~/magewar3/magewar-prototype**: An earlier prototype. The Grok /implement notes in ~/.grok/implement-memory/magewar3-*.md record GDScript typing and .tscn issues, and a weapon/save system without automated tests.
 - **~/magewarweb**: A single-page web version or site: index.html, about 92 KB, plus a README.

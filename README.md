@@ -10,7 +10,10 @@ cmake --preset debug
 cmake --build --preset debug
 ./build/debug/covenant
 ```
-Requires CMake ≥ 3.25, Ninja, a C++20 compiler (GCC 13+/Clang 17+), and the Vulkan SDK pieces (headers, loader, glslc; validation layers recommended).
+Requires CMake ≥ 3.25, Ninja, a C++20 compiler (GCC 13+/Clang 17+), and the Vulkan SDK pieces (headers, loader, glslc; validation layers recommended). SDL3 is used from the system when installed; otherwise CMake fetches and builds a pinned release (force with `-DCOE_FETCH_SDL3=ON`).
+
+## CI
+`.github/workflows/ci.yml` builds with clang + Ninja on Ubuntu 24.04 and runs `ctest -LE window` on Mesa lavapipe (software Vulkan) with validation layers installed, so any validation error fails CI. Tests labelled `window` need a display and run only locally.
 
 ## Licenses
 - Code: Apache-2.0 (see `LICENSE`).

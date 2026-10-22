@@ -21,15 +21,12 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 
 **3. Window + Vulkan triangle** ✅ `1c436e7`. Does: SDL3 window, Vulkan 1.3 device/swapchain, dynamic rendering, optional validation, headless test. Files: src/main.cpp, src/render/vk_renderer.*, shaders/. Done: both ctest smoke tests pass.
 
-**4. CI workflow file**
-- Does: GitHub Actions workflow (Ubuntu, clang, Ninja, lavapipe) that builds and runs `ctest -LE window`. File only; not pushed.
-- Files: .github/workflows/ci.yml.
-- Done: YAML parses (`python -c "import yaml..."`); `ctest -LE window` passes locally.
+**4. CI workflow file** ✅. Does: GitHub Actions workflow (ubuntu-24.04, clang, Ninja, lavapipe forced via VK_DRIVER_FILES, validation layers installed) that builds and runs `ctest -LE window`; SDL3 falls back to FetchContent (pinned release-3.4.18, `-DCOE_FETCH_SDL3=ON`) because Ubuntu 24.04 has no SDL3 package. File only; not pushed. Files: .github/workflows/ci.yml, CMakeLists.txt. Done: YAML parses; `ctest -LE window` passes locally (system SDL3 and CI-emulated fetched SDL3 + clang + lavapipe).
 
 **5. Asset license lint**
 - Does: script that fails if any top-level folder under assets/ is missing from ASSETS.toml, or an entry lacks license/source. Registered as a ctest.
 - Files: tools/check_assets.py, CMakeLists.txt.
-- Done: ctest `asset_license_lint` passes; temporarily adding an untracked folder makes it fail.
+- Done: ctest `asset_license_lint` passes (no `window` label, so CI runs it automatically); temporarily adding an untracked folder makes it fail. Use only the Python stdlib (`tomllib`, Python ≥ 3.11) so CI needs no pip install.
 
 **6. Asset cooker stub**
 - Does: `tools/asset_cooker` CLI that copies/validates the glTF/PNG/OGG files it is given into build/cooked/ with a manifest (real conversion comes later).
@@ -37,9 +34,9 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: running it on assets/kenney/blaster-kit writes build/cooked/manifest.json listing the files.
 
 **7. ADR-0001 language choice**
-- Does: records C++20 (vs Rust) decision and library choices.
-- Files: docs/adr/0001-language-and-libraries.md.
-- Done: ADR has Context/Decision/Consequences; README links it. **M0 complete.**
+- Does: records C++20 (vs Rust) decision and library choices (incl. SDL3 system-or-FetchContent policy from step 4). Also add an `asan` CMake preset (ASan+UBSan) and a second CI job running `ctest -LE window` under it (PLAN §25). Windows/MSVC, clang-tidy and clang-format CI jobs are deferred until after the vertical slice.
+- Files: docs/adr/0001-language-and-libraries.md, CMakePresets.json, .github/workflows/ci.yml.
+- Done: ADR has Context/Decision/Consequences; README links it; `cmake --preset asan && ctest --test-dir build/asan -LE window` passes locally. **M0 complete.**
 
 ## M1 – Gunplay prototype
 

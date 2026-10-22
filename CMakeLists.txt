@@ -7,7 +7,26 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Vulkan REQUIRED COMPONENTS glslc)
-find_package(SDL3 REQUIRED CONFIG)
+# SDL3: use the system package when present, else fetch a pinned release
+# (Ubuntu 24.04 CI images ship no SDL3). -DCOE_FETCH_SDL3=ON forces the fetch.
+option(COE_FETCH_SDL3 "Always build SDL3 from source via FetchContent" OFF)
+if(NOT COE_FETCH_SDL3)
+  find_package(SDL3 CONFIG QUIET)
+endif()
+if(NOT SDL3_FOUND)
+  message(STATUS "SDL3: fetching release-3.4.18 via FetchContent")
+  include(FetchContent)
+  set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+  set(SDL_STATIC ON CACHE BOOL "" FORCE)
+  set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
+  set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
+  FetchContent_Declare(SDL3
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+    GIT_TAG release-3.4.18
+    GIT_SHALLOW TRUE
+    SYSTEM)
+  FetchContent_MakeAvailable(SDL3)
+endif()
 
 # --- shaders -> SPIR-V (build/shaders) ---
 set(SHADER_SRC ${CMAKE_SOURCE_DIR}/shaders/triangle.vert ${CMAKE_SOURCE_DIR}/shaders/triangle.frag)

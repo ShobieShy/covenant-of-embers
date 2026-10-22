@@ -1,0 +1,63 @@
+# Covenant of Embers CI: Linux / clang / Ninja, Vulkan on Mesa lavapipe (CPU).
+# Runs every ctest except the `window` label (no display on the runner).
+# Mirrors the local check: cmake --preset debug && ctest -LE window.
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-clang:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CC: clang
+      CXX: clang++
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Install toolchain + Vulkan (lavapipe)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang ninja-build cmake \
+            libvulkan-dev glslc vulkan-tools vulkan-validationlayers \
+            mesa-vulkan-drivers
+
+      - name: Select lavapipe ICD
+        # Force the software ICD so results never depend on runner GPUs.
+        run: |
+          icd=$(ls /usr/share/vulkan/icd.d/lvp_icd*.json | head -n1)
+          test -n "$icd"
+          echo "VK_DRIVER_FILES=$icd" >> "$GITHUB_ENV"
+
+      - name: Vulkan device info
+        run: vulkaninfo --summary
+
+      - name: Cache SDL3 FetchContent sources
+        uses: actions/cache@v4
+        with:
+          path: build/debug/_deps
+          key: deps-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+
+      - name: Configure
+        # Ubuntu 24.04 has no SDL3 package: fetch it; console build = no X11/Wayland deps.
+        run: cmake --preset debug -DCOE_FETCH_SDL3=ON -DSDL_UNIX_CONSOLE_BUILD=ON
+
+      - name: Build
+        run: cmake --build --preset debug
+
+      - name: Test (headless, no window label)
+        run: ctest --test-dir build/debug -LE window --output-on-failure --timeout 120
