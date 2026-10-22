@@ -1,18 +1,19 @@
 {
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
-  "current_milestone": "M0",
-  "next_step": 7,
-  "total_steps": 50,
+  "current_milestone": "M1",
+  "next_step": 8,
+  "total_steps": 51,
   "steps_done": [
     1,
     2,
     3,
     4,
     5,
-    6
+    6,
+    7
   ],
-  "last_commit": "68d1c88",
+  "last_commit": "63dc078",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -71,6 +72,13 @@
       "type": "build",
       "summary": "Asset cooker stub: tools/asset_cooker CLI ([--root] [--out build/cooked] PATH..., dirs walked) validates .gltf/.glb/.png/.ogg containers (PNG sig/IHDR/IEND, OggS, GLB magic/v2/length/JSON chunk, glTF JSON object with asset), follows glTF external URIs (missing/out-of-root = error, referenced files cooked too), copies verbatim and writes a deterministic manifest.json (source, cooked, type, bytes, FNV-1a 64 hash, deps); any error = exit 1 and no manifest; refuses to cook into assets/. 'cook' CMake target cooks all assets/ (1192 files, all valid). Done check: `build/debug/asset_cooker assets/kenney/blaster-kit` from repo root wrote build/cooked/manifest.json with 86 files (40 glb + 46 png; glb deps -> Textures/colormap.png); identical on re-run; new ctests asset_cooker_selftest (15 fixture cases), asset_cooker_blaster_kit + asset_cooker_manifest_check (tools/asset_cooker/check_manifest.py: every source file listed, cooked bytes/hash match; verified it fails when an entry is removed). Full ctest 7/7 green, build warning-free (GCC), clang -Wall -Wextra -Wpedantic -Werror clean. Bug fix: README said ctest 'runs both smoke tests' (stale since step 5); updated and added cooker section. Plan: step 11 runtime loads via cooked/manifest.json and cooker swaps URI scan for fastgltf; step 27 Pattern check lives in the cooker. Magewar: ~/game relies on Godot's import step (.import files with source_file, dest_files, deps, hashed dest names in .godot/imported); our cooker reinterprets this as a central manifest with source/cooked/deps/hash. No mismatch with PLAN.md \u00a723/\u00a724 references.",
       "commit": "68d1c88"
+    },
+    {
+      "time": "2026-10-22T14:40-05:00",
+      "step": 7,
+      "type": "build",
+      "summary": "ADR-0001 docs/adr/0001-language-and-libraries.md (Context/Decision/Consequences): C++20 over Rust (M0 code exists, native Vulkan/Jolt/ImGui ecosystem; safety via ASan/UBSan CI + validation + tests), FetchContent-only pinned SYSTEM deps (replaces PLAN \u00a723 'vcpkg or CPM'), SDL3 system-or-FetchContent policy (release-3.4.18, COE_FETCH_SDL3, CI console build), per-step library table (GLM, VMA, fastgltf+simdjson, toml++, Jolt, doctest, ImGui, stb_truetype, miniaudio; EnTT/RmlUi/Lua/net deferred). README links it. asan configure/build/test presets: COE_SANITIZE=ON adds -fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer to all targets; CMakeLists sets ctest env ASAN_OPTIONS (leaks, stack-use-after-return, init-order), UBSAN_OPTIONS halt_on_error, LSAN_OPTIONS suppressions=tools/sanitizers/lsan.supp (documented, empty) and VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1. Sanitizer noise: smoke_headless first failed with 2-3 x 128 B LSan leaks in '<unknown module>' frames (Mesa pthread_once allocs, RADV and lavapipe) because the Vulkan loader dlclose()s ICDs/layers at vkDestroyInstance; fixed with the loader's own leak-tool switch instead of suppressions, so leak checks stay fully on. CI: single job became a debug/asan matrix (two jobs, fail-fast off, per-preset _deps cache, ctest timeout 300, vm.mmap_rnd_bits=28 for clang-18 ASan on the asan job); YAML parses (PyYAML), presets JSON valid. Done check: `cmake --preset asan && ctest --test-dir build/asan -LE window` 6/6 passed (GCC 16, RADV), also `ctest --preset asan`; CI emulation (clang 23, COE_SANITIZE + fetched static SDL3 console build, lavapipe) 6/6 passed, only warnings in SDL _deps; verified UBSan is fatal (signed overflow probe exits 1 on GCC and clang). Debug clean rebuild 0 warnings, full ctest 7/7 incl. window. No ASan/UBSan bugs in existing code (renderer, asset_cooker selftests clean). Bug fix: BUILD_PLAN step 6 was missing its commit hash (68d1c88). Plan: standing rule now includes asan ctest from step 8; step 8 adds coe_add_test() helper so tests in engine/game/tests subdirs get the sanitizer env (CMake 3.25 can only set test props in the defining dir); step 11 reads manifest.json with simdjson; step 12 uses toml++; new step 51 (post-slice) for clang-format/clang-tidy/Windows MSVC CI; PLAN \u00a723 language/build rows and \u00a725 unit tests (doctest)/builds updated; total_steps 51. Magewar: ~/game keeps no decision records (decisions only in the Bible/commit messages) and its docs/ is the COGITO template's Sphinx manual (PLAN \u00a71 corrected); its headless runner fails on any runtime ERROR line before the pass banner, which our fatal UBSan + LSan + validation-error-fails policy reinterprets; no CI there to mirror.",
+      "commit": "63dc078"
     }
   ]
 }
