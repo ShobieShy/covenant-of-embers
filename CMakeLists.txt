@@ -63,3 +63,21 @@ add_test(NAME asset_license_lint
   COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/check_assets.py --root ${CMAKE_SOURCE_DIR})
 add_test(NAME asset_license_lint_selftest
   COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/check_assets.py --self-test)
+
+# Asset cooker stub (BUILD_PLAN step 6): validates + copies glTF/GLB/PNG/OGG
+# into a cooked dir with manifest.json. `cmake --build --preset debug --target cook`
+# cooks assets/ into build/<preset>/cooked.
+add_executable(asset_cooker tools/asset_cooker/main.cpp)
+target_compile_options(asset_cooker PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>)
+add_custom_target(cook
+  COMMAND asset_cooker --root ${CMAKE_SOURCE_DIR} --out ${CMAKE_BINARY_DIR}/cooked ${CMAKE_SOURCE_DIR}/assets
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMENT "Cooking assets/ -> ${CMAKE_BINARY_DIR}/cooked" VERBATIM)
+add_test(NAME asset_cooker_selftest COMMAND asset_cooker --self-test)
+add_test(NAME asset_cooker_blaster_kit
+  COMMAND asset_cooker --root ${CMAKE_SOURCE_DIR} --out ${CMAKE_BINARY_DIR}/cooked_test
+          ${CMAKE_SOURCE_DIR}/assets/kenney/blaster-kit)
+add_test(NAME asset_cooker_manifest_check
+  COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/asset_cooker/check_manifest.py
+          --root ${CMAKE_SOURCE_DIR} --cooked ${CMAKE_BINARY_DIR}/cooked_test --source assets/kenney/blaster-kit)
+set_tests_properties(asset_cooker_blaster_kit PROPERTIES FIXTURES_SETUP cooked_blaster)
+set_tests_properties(asset_cooker_manifest_check PROPERTIES FIXTURES_REQUIRED cooked_blaster)

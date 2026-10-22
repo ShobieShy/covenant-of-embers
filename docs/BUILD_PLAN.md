@@ -25,10 +25,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 
 **5. Asset license lint** ✅ `5aca0bc`. Does: tools/check_assets.py (stdlib `tomllib`, Python ≥ 3.11) fails if any asset unit under assets/ is missing from ASSETS.toml or an entry lacks name/path/license/source, has a bad/missing/duplicate path, or has no CREDITS.md row. Asset unit = each dir directly under assets/, except vendor grouping folders that only hold sub-folders (assets/kenney/) whose children (each pack) are the units instead; loose files must be covered too; dotfiles ignored. Files: tools/check_assets.py, CMakeLists.txt. Done: ctests `asset_license_lint` + `asset_license_lint_selftest` (13 fixture cases) pass, no `window` label; temp untracked folders at assets/ and assets/kenney/ both made it fail (removed).
 
-**6. Asset cooker stub**
-- Does: `tools/asset_cooker` CLI that copies/validates the glTF/PNG/OGG files it is given into build/cooked/ with a manifest (real conversion comes later).
-- Files: tools/asset_cooker/main.cpp, CMakeLists.txt.
-- Done: running it on assets/kenney/blaster-kit writes build/cooked/manifest.json listing the files.
+**6. Asset cooker stub** ✅. Does: `tools/asset_cooker` CLI (`[--root R] [--out build/cooked] PATH...`, dirs walked) validates `.gltf/.glb/.png/.ogg` containers (PNG signature/IHDR/IEND, Ogg capture pattern, GLB magic/v2/length/JSON chunk, glTF JSON object with `asset`), follows glTF/GLB external URIs (missing or out-of-root ⇒ error; referenced files cooked too), copies verbatim mirroring the source layout, and writes a deterministic `manifest.json` (source, cooked, type, bytes, FNV-1a 64 hash, deps). Any error ⇒ exit 1, no manifest. Refuses to cook into assets/. `cook` CMake target cooks all of assets/. Files: tools/asset_cooker/{main.cpp,check_manifest.py}, CMakeLists.txt, README.md. Done: running it on assets/kenney/blaster-kit writes build/cooked/manifest.json (86 files: 40 glb + 46 png); ctests `asset_cooker_selftest` (15 fixture cases), `asset_cooker_blaster_kit` + `asset_cooker_manifest_check` (every source file listed, cooked bytes/hash match).
 
 **7. ADR-0001 language choice**
 - Does: records C++20 (vs Rust) decision and library choices (incl. SDL3 system-or-FetchContent policy from step 4). Also add an `asan` CMake preset (ASan+UBSan) and a second CI job running `ctest -LE window` under it (PLAN §25). Windows/MSVC, clang-tidy and clang-format CI jobs are deferred until after the vertical slice.
@@ -53,7 +50,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: headless test checks a cube pixel is lit and depth image exists; no validation errors.
 
 **11. Mesh pipeline + glTF loading**
-- Does: fastgltf via FetchContent, GPU vertex/index buffers (VMA via FetchContent), draw a Kenney blaster model.
+- Does: fastgltf via FetchContent, GPU vertex/index buffers (VMA via FetchContent), draw a Kenney blaster model. The runtime loads from the cooked dir, resolving paths through `cooked/manifest.json` (`covenant` depends on the `cook` target); the cooker swaps its minimal `"uri"` scan for a fastgltf parse so it validates accessors/buffers too.
 - Files: engine/render/mesh.*, engine/assets/gltf_loader.*.
 - Done: loads `blaster-kit` model with N>0 triangles; headless pixel check shows non-clear centre.
 
@@ -136,7 +133,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 
 **27. Patterns + part constraints**
 - Does: data-driven Patterns (ordered part categories with pick min/max, allow_repeat, weighted, optional), inheritance with replace/override/append merges flattened at load, `requires`/`forbids` by part id or tag, rolled in Pattern order (PLAN §31.1–31.2).
-- Files: game/loot/{pattern,constraints}.*, data/loot/patterns/*.toml, tests/test_patterns.cpp.
+- Files: game/loot/{pattern,constraints}.*, data/loot/patterns/*.toml, tests/test_patterns.cpp, tools/asset_cooker/ (Pattern check pass, sharing the loot loader as a library).
 - Done: tests: merge modes produce expected flattened lists; a forbidden combo never rolls in 10k rolls; cooker check reports reachable-build count and fails on a deliberate dead-end Pattern.
 
 **28. Weapon stats from parts**

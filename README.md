@@ -25,6 +25,13 @@ Requires CMake ≥ 3.25, Ninja, a C++20 compiler (GCC 13+/Clang 17+), and the Vu
 ./build/debug/covenant                 # window, Esc to quit
 ./build/debug/covenant --seconds 3     # auto-quits after 3 s
 ./build/debug/covenant --headless      # offscreen render + pixel check (writes triangle.ppm)
-ctest --test-dir build/debug           # runs both smoke tests
+ctest --test-dir build/debug           # smoke tests, asset lint, cooker tests
 ```
 The Khronos validation layer is enabled automatically when installed (`vulkan-validation-layers`); otherwise the app warns and runs without it. Any validation error fails the run.
+
+## Asset cooker (stub)
+```sh
+./build/debug/asset_cooker assets/kenney/blaster-kit   # -> build/cooked/ + manifest.json
+cmake --build --preset debug --target cook             # all of assets/ -> build/debug/cooked/
+```
+For now it validates `.gltf/.glb/.png/.ogg` containers (pulling in files a glTF references) and copies them verbatim; `manifest.json` lists source, cooked path, type, size, FNV-1a hash and deps, sorted and timestamp-free. Real conversion (KTX2, meshoptimizer) comes later.
