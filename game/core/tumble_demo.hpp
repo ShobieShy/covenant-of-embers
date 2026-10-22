@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-// Placeholder game state for M1 step 10 (replaces step 8's SpinDemo): a unit cube
-// tumbles on the 60 Hz fixed tick and is rendered interpolated between the last
-// two ticks (lerp by alpha, wrapped after blending). Replaced by the greybox
-// level (step 12) and real gameplay state from step 14 on.
+// Placeholder game state for M1 (step 10's CubeDemo, renamed in step 11 when the cube
+// became a loaded glTF model): the model tumbles on the 60 Hz fixed tick and is
+// rendered interpolated between the last two ticks (lerp by alpha, wrapped after
+// blending). Replaced by the greybox level (step 12) and real gameplay state from
+// step 14 on.
 #pragma once
 #include <cmath>
 #include <glm/glm.hpp>
@@ -10,12 +11,12 @@
 
 namespace coe::game {
 
-struct CubeDemo {
+struct TumbleDemo {
     static constexpr double kYawRadPerSecond = 0.75;
     static constexpr double kPitchRadPerSecond = 0.45;
-    // Start tilted so three faces (three different light angles) face the camera.
+    // Start tilted so several surfaces (different light angles) face the camera.
     static constexpr double kStartYaw = 0.6, kStartPitch = 0.45;
-    static constexpr float kDistance = 2.2f;   // cube centre, metres in front of the start camera
+    static constexpr float kDistance = 2.2f;   // model centre, metres in front of the start camera
 
     double prevYaw = kStartYaw, currYaw = kStartYaw;         // unwrapped radians at the last two ticks
     double prevPitch = kStartPitch, currPitch = kStartPitch;

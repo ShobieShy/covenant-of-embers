@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 // M1 renderer: Vulkan 1.3 instance/device/swapchain, dynamic rendering + synchronization2,
-// a reverse-Z depth buffer and one generated cube drawn with {viewProj, model} push constants
-// (FrameParams). Validation layer is used only when installed.
+// a reverse-Z depth buffer, VMA-backed images/buffers, and indexed meshes (uploadMesh)
+// drawn with {viewProj, model} push constants per FrameParams::draws entry.
+// Validation layer is used only when installed.
 #include "engine/render/vk_renderer.hpp"
 
 #include <SDL3/SDL_vulkan.h>
+#include <vk_mem_alloc.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -68,7 +70,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VkRenderer::debugCallback(VkDebugUtilsMessageSeve
 
 bool VkRenderer::init(const RendererConfig& cfg) {
     cfg_ = cfg;
-    if (!createInstance() || !pickDevice() || !pickDepthFormat() || !createDevice()) return false;
+    if (!createInstance() || !pickDevice() || !pickDepthFormat() || !createDevice() || !createAllocator()) return false;
     if (cfg_.window) {
         if (!createSwapchain()) return false;
         if (!createPipeline(swapFormat_)) return false;
@@ -195,12 +197,11 @@ bool VkRenderer::createImage(VkExtent2D extent, VkFormat format, VkImageUsageFla
     ic.imageType = VK_IMAGE_TYPE_2D; ic.format = format; ic.extent = {extent.width, extent.height, 1};
     ic.mipLevels = 1; ic.arrayLayers = 1; ic.samples = VK_SAMPLE_COUNT_1_BIT; ic.tiling = VK_IMAGE_TILING_OPTIMAL;
     ic.usage = usage;
-    VK_CHECK(vkCreateImage(device_, &ic, nullptr, &out.image));
-    VkMemoryRequirements mr; vkGetImageMemoryRequirements(device_, out.image, &mr);
-    VkMemoryAllocateInfo ma{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
-    ma.allocationSize = mr.size; ma.memoryTypeIndex = findMemoryType(mr.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    VK_CHECK(vkAllocateMemory(device_, &ma, nullptr, &out.memory));
-    VK_CHECK(vkBindImageMemory(device_, out.image, out.memory, 0));
+    // Render targets get their own allocation (drivers like dedicated memory for attachments).
+    VmaAllocationCreateInfo ac{};
+    ac.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+    ac.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+    VK_CHECK(vmaCreateImage(allocator_, &ic, &ac, &out.image, &out.allocation, nullptr));
     VkImageViewCreateInfo vi{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
     vi.image = out.image; vi.viewType = VK_IMAGE_VIEW_TYPE_2D; vi.format = format;
     vi.subresourceRange = {aspect, 0, 1, 0, 1};
@@ -210,9 +211,109 @@ bool VkRenderer::createImage(VkExtent2D extent, VkFormat format, VkImageUsageFla
 
 void VkRenderer::destroyImage(GpuImage& img) {
     if (img.view) vkDestroyImageView(device_, img.view, nullptr);
-    if (img.image) vkDestroyImage(device_, img.image, nullptr);
-    if (img.memory) vkFreeMemory(device_, img.memory, nullptr);
+    if (img.image) vmaDestroyImage(allocator_, img.image, img.allocation);
     img = {};
+}
+
+bool VkRenderer::createAllocator() {
+    VmaAllocatorCreateInfo ci{};
+    ci.vulkanApiVersion = VK_API_VERSION_1_3;
+    ci.physicalDevice = phys_; ci.device = device_; ci.instance = instance_;
+    VK_CHECK(vmaCreateAllocator(&ci, &allocator_));
+    return true;
+}
+
+bool VkRenderer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, uint32_t hostAccess, GpuBuffer& out) {
+    VkBufferCreateInfo bci{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+    bci.size = size; bci.usage = usage; bci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    VmaAllocationCreateInfo ac{};
+    ac.usage = VMA_MEMORY_USAGE_AUTO;
+    if (hostAccess) ac.flags = hostAccess | VMA_ALLOCATION_CREATE_MAPPED_BIT;
+    VmaAllocationInfo info{};
+    VK_CHECK(vmaCreateBuffer(allocator_, &bci, &ac, &out.buffer, &out.allocation, &info));
+    out.size = size;
+    out.mapped = hostAccess ? info.pMappedData : nullptr;
+    if (hostAccess && !out.mapped) { std::fprintf(stderr, "[vk] buffer not host-mapped\n"); return false; }
+    return true;
+}
+
+void VkRenderer::destroyBuffer(GpuBuffer& b) {
+    if (b.buffer) vmaDestroyBuffer(allocator_, b.buffer, b.allocation);
+    b = {};
+}
+
+MeshId VkRenderer::uploadMesh(const assets::MeshData& mesh) {
+    GpuMesh g;
+    if (!device_ || !uploadMeshImpl(mesh, g)) {
+        destroyBuffer(g.vertices); destroyBuffer(g.indices);
+        std::fprintf(stderr, "[vk] mesh upload failed\n");
+        return kInvalidMesh;
+    }
+    meshes_.push_back(std::move(g));
+    return static_cast<MeshId>(meshes_.size() - 1);
+}
+
+bool VkRenderer::uploadMeshImpl(const assets::MeshData& mesh, GpuMesh& out) {
+    if (mesh.vertices.empty() || mesh.indices.empty() || mesh.submeshes.empty()) return false;
+    for (const auto& sm : mesh.submeshes)
+        if (uint64_t(sm.firstIndex) + sm.indexCount > mesh.indices.size()) return false;
+    for (uint32_t i : mesh.indices)
+        if (i >= mesh.vertices.size()) return false;           // never hand the GPU an out-of-range index
+    const VkDeviceSize vbytes = mesh.vertices.size() * sizeof(assets::Vertex);
+    const VkDeviceSize ibytes = mesh.indices.size() * sizeof(uint32_t);
+    if (!createBuffer(vbytes, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, 0, out.vertices) ||
+        !createBuffer(ibytes, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, 0, out.indices))
+        return false;
+    out.submeshes = mesh.submeshes;
+    out.vertexCount = static_cast<uint32_t>(mesh.vertices.size());
+    out.indexCount = static_cast<uint32_t>(mesh.indices.size());
+
+    GpuBuffer staging;
+    VkCommandBuffer cmd = VK_NULL_HANDLE;
+    VkFence fence = VK_NULL_HANDLE;
+    auto cleanup = [&] {
+        if (fence) vkDestroyFence(device_, fence, nullptr);
+        if (cmd) vkFreeCommandBuffers(device_, pool_, 1, &cmd);
+        destroyBuffer(staging);
+    };
+    auto run = [&]() -> bool {
+        if (!createBuffer(vbytes + ibytes, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                          VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, staging)) return false;
+        std::memcpy(staging.mapped, mesh.vertices.data(), vbytes);
+        std::memcpy(static_cast<char*>(staging.mapped) + vbytes, mesh.indices.data(), ibytes);
+        VK_CHECK(vmaFlushAllocation(allocator_, staging.allocation, 0, VK_WHOLE_SIZE));
+
+        VkCommandBufferAllocateInfo ai{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
+        ai.commandPool = pool_; ai.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY; ai.commandBufferCount = 1;
+        VK_CHECK(vkAllocateCommandBuffers(device_, &ai, &cmd));
+        VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
+        bi.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+        VK_CHECK(vkBeginCommandBuffer(cmd, &bi));
+        VkBufferCopy vc{0, 0, vbytes}, ic{vbytes, 0, ibytes};
+        vkCmdCopyBuffer(cmd, staging.buffer, out.vertices.buffer, 1, &vc);
+        vkCmdCopyBuffer(cmd, staging.buffer, out.indices.buffer, 1, &ic);
+        // Make the copies visible to vertex/index fetch of later submissions.
+        VkMemoryBarrier2 mb{VK_STRUCTURE_TYPE_MEMORY_BARRIER_2};
+        mb.srcStageMask = VK_PIPELINE_STAGE_2_COPY_BIT; mb.srcAccessMask = VK_ACCESS_2_TRANSFER_WRITE_BIT;
+        mb.dstStageMask = VK_PIPELINE_STAGE_2_VERTEX_INPUT_BIT;
+        mb.dstAccessMask = VK_ACCESS_2_VERTEX_ATTRIBUTE_READ_BIT | VK_ACCESS_2_INDEX_READ_BIT;
+        VkDependencyInfo dep{VK_STRUCTURE_TYPE_DEPENDENCY_INFO};
+        dep.memoryBarrierCount = 1; dep.pMemoryBarriers = &mb;
+        vkCmdPipelineBarrier2(cmd, &dep);
+        VK_CHECK(vkEndCommandBuffer(cmd));
+
+        VkFenceCreateInfo fi{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
+        VK_CHECK(vkCreateFence(device_, &fi, nullptr, &fence));
+        VkCommandBufferSubmitInfo cbi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO}; cbi.commandBuffer = cmd;
+        VkSubmitInfo2 si{VK_STRUCTURE_TYPE_SUBMIT_INFO_2};
+        si.commandBufferInfoCount = 1; si.pCommandBufferInfos = &cbi;
+        VK_CHECK(vkQueueSubmit2(queue_, 1, &si, fence));
+        VK_CHECK(vkWaitForFences(device_, 1, &fence, VK_TRUE, UINT64_MAX));
+        return true;
+    };
+    const bool ok = run();
+    cleanup();
+    return ok;
 }
 
 bool VkRenderer::createDevice() {
@@ -315,15 +416,20 @@ bool VkRenderer::createPipeline(VkFormat colorFormat) {
     li.pushConstantRangeCount = 1; li.pPushConstantRanges = &pcr;
     VK_CHECK(vkCreatePipelineLayout(device_, &li, nullptr, &pipelineLayout_));
 
+    const VertexLayout layout = vertexLayout();
     VkPipelineVertexInputStateCreateInfo vin{VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
+    vin.vertexBindingDescriptionCount = 1; vin.pVertexBindingDescriptions = &layout.binding;
+    vin.vertexAttributeDescriptionCount = static_cast<uint32_t>(layout.attributes.size());
+    vin.pVertexAttributeDescriptions = layout.attributes.data();
     VkPipelineInputAssemblyStateCreateInfo ia{VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO};
     ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     VkPipelineViewportStateCreateInfo vp{VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO};
     vp.viewportCount = 1; vp.scissorCount = 1;
     VkPipelineRasterizationStateCreateInfo rs{VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO};
     rs.polygonMode = VK_POLYGON_MODE_FILL; rs.lineWidth = 1.0f;
-    // Geometry is counter-clockwise seen from outside; the projection's Y flip keeps
-    // that counter-clockwise on screen, so Vulkan's default convention applies.
+    // Geometry is counter-clockwise seen from outside (glTF convention; the loader fixes
+    // mirrored nodes); the projection's Y flip keeps that counter-clockwise on screen, so
+    // Vulkan's default convention applies. pipelines_[1] (doubleSided) disables culling.
     rs.cullMode = VK_CULL_MODE_BACK_BIT; rs.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     VkPipelineMultisampleStateCreateInfo ms{VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO};
     ms.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
@@ -346,7 +452,11 @@ bool VkRenderer::createPipeline(VkFormat colorFormat) {
     pi.pVertexInputState = &vin; pi.pInputAssemblyState = &ia; pi.pViewportState = &vp;
     pi.pRasterizationState = &rs; pi.pMultisampleState = &ms; pi.pDepthStencilState = &dss; pi.pColorBlendState = &cb;
     pi.pDynamicState = &ds; pi.layout = pipelineLayout_;
-    VkResult r = vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pi, nullptr, &pipeline_);
+    VkResult r = vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pi, nullptr, &pipelines_[0]);
+    if (r == VK_SUCCESS) {
+        rs.cullMode = VK_CULL_MODE_NONE;
+        r = vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pi, nullptr, &pipelines_[1]);
+    }
     for (auto m : mods) vkDestroyShaderModule(device_, m, nullptr);
     VK_CHECK(r);
     pipelineFormat_ = colorFormat;
@@ -395,13 +505,25 @@ void VkRenderer::recordScene(VkCommandBuffer cmd, VkImage image, VkImageView vie
     ri.colorAttachmentCount = 1; ri.pColorAttachments = &ca;
     ri.pDepthAttachment = &da;
     vkCmdBeginRendering(cmd, &ri);
-    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_);
     VkViewport v{0, 0, float(extent.width), float(extent.height), 0, 1};
     VkRect2D s{{0, 0}, extent};
+    const glm::mat4 viewProj = p.camera.viewProjection(float(extent.width) / float(extent.height));
     vkCmdSetViewport(cmd, 0, 1, &v); vkCmdSetScissor(cmd, 0, 1, &s);
-    const PushConstants pc{p.camera.viewProjection(float(extent.width) / float(extent.height)), p.model};
-    vkCmdPushConstants(cmd, pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(pc), &pc);
-    vkCmdDraw(cmd, 36, 1, 0, 0);                       // 6 faces x 2 triangles, generated in basic.vert
+    int bound = -1;                                  // both pipelines share one layout + dynamic state
+    for (const DrawItem& d : p.draws) {
+        if (d.mesh >= meshes_.size()) continue;      // kInvalidMesh / stale id: nothing to draw
+        const GpuMesh& m = meshes_[d.mesh];
+        const VkDeviceSize zero = 0;
+        vkCmdBindVertexBuffers(cmd, 0, 1, &m.vertices.buffer, &zero);
+        vkCmdBindIndexBuffer(cmd, m.indices.buffer, 0, VK_INDEX_TYPE_UINT32);
+        const PushConstants pc{viewProj, d.model};
+        vkCmdPushConstants(cmd, pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(pc), &pc);
+        for (const assets::Submesh& sm : m.submeshes) {
+            const int want = sm.doubleSided ? 1 : 0;
+            if (want != bound) { vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines_[want]); bound = want; }
+            vkCmdDrawIndexed(cmd, sm.indexCount, 1, sm.firstIndex, 0, 0);
+        }
+    }
     vkCmdEndRendering(cmd);
     bool present = finalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     imageBarrier(cmd, image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, finalLayout,
@@ -459,17 +581,10 @@ bool VkRenderer::drawFrame(const FrameParams& p) {
     return true;
 }
 
-uint32_t VkRenderer::findMemoryType(uint32_t bits, VkMemoryPropertyFlags props) const {
-    VkPhysicalDeviceMemoryProperties mp; vkGetPhysicalDeviceMemoryProperties(phys_, &mp);
-    for (uint32_t i = 0; i < mp.memoryTypeCount; ++i)
-        if ((bits & (1u << i)) && (mp.memoryTypes[i].propertyFlags & props) == props) return i;
-    return UINT32_MAX;
-}
-
 bool VkRenderer::renderHeadlessAndVerify(const FrameParams& p) {
     const uint32_t W = cfg_.headlessWidth, H = cfg_.headlessHeight;
     GpuImage color, depth;
-    VkBuffer buf; VkDeviceMemory bufMem;
+    GpuBuffer buf;
     if (!createImage({W, H}, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
                      VK_IMAGE_ASPECT_COLOR_BIT, color)) return false;
     if (!createImage({W, H}, depthFormat_, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
@@ -477,15 +592,8 @@ bool VkRenderer::renderHeadlessAndVerify(const FrameParams& p) {
 
     // One readback buffer: RGBA8 colour, then 32-bit float depth (both 4 bytes per pixel).
     const VkDeviceSize planeBytes = VkDeviceSize(W) * H * 4;
-    VkBufferCreateInfo bci{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
-    bci.size = planeBytes * 2; bci.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-    VK_CHECK(vkCreateBuffer(device_, &bci, nullptr, &buf));
-    VkMemoryRequirements mr; vkGetBufferMemoryRequirements(device_, buf, &mr);
-    VkMemoryAllocateInfo ma{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
-    ma.allocationSize = mr.size;
-    ma.memoryTypeIndex = findMemoryType(mr.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    VK_CHECK(vkAllocateMemory(device_, &ma, nullptr, &bufMem));
-    VK_CHECK(vkBindBufferMemory(device_, buf, bufMem, 0));
+    if (!createBuffer(planeBytes * 2, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT, buf))
+        return false;
 
     VkCommandBuffer cmd = cmds_[0];
     VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
@@ -496,10 +604,10 @@ bool VkRenderer::renderHeadlessAndVerify(const FrameParams& p) {
     VkBufferImageCopy region{};
     region.imageSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
     region.imageExtent = {W, H, 1};
-    vkCmdCopyImageToBuffer(cmd, color.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buf, 1, &region);
+    vkCmdCopyImageToBuffer(cmd, color.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buf.buffer, 1, &region);
     region.bufferOffset = planeBytes;
     region.imageSubresource = {VK_IMAGE_ASPECT_DEPTH_BIT, 0, 0, 1};
-    vkCmdCopyImageToBuffer(cmd, depth.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buf, 1, &region);
+    vkCmdCopyImageToBuffer(cmd, depth.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buf.buffer, 1, &region);
     VK_CHECK(vkEndCommandBuffer(cmd));
     VkCommandBufferSubmitInfo cbi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO}; cbi.commandBuffer = cmd;
     VkSubmitInfo2 si{VK_STRUCTURE_TYPE_SUBMIT_INFO_2};
@@ -507,9 +615,8 @@ bool VkRenderer::renderHeadlessAndVerify(const FrameParams& p) {
     VK_CHECK(vkQueueSubmit2(queue_, 1, &si, inFlight_[0]));
     VK_CHECK(vkWaitForFences(device_, 1, &inFlight_[0], VK_TRUE, UINT64_MAX));
 
-    void* mapped = nullptr;
-    VK_CHECK(vkMapMemory(device_, bufMem, 0, VK_WHOLE_SIZE, 0, &mapped));
-    const auto* rgba = static_cast<const uint8_t*>(mapped);
+    VK_CHECK(vmaInvalidateAllocation(allocator_, buf.allocation, 0, VK_WHOLE_SIZE));
+    const auto* rgba = static_cast<const uint8_t*>(buf.mapped);
     auto px = [&](uint32_t x, uint32_t y) { return rgba + (size_t(y) * W + x) * 4; };
     auto depthAt = [&](uint32_t x, uint32_t y) {
         float d; std::memcpy(&d, rgba + planeBytes + (size_t(y) * W + x) * 4, sizeof d); return d; };
@@ -517,33 +624,42 @@ bool VkRenderer::renderHeadlessAndVerify(const FrameParams& p) {
     const uint8_t* corner = px(2, 2);
     const uint8_t* centre = px(W / 2, H / 2);
     const float cornerDepth = depthAt(2, 2), centreDepth = depthAt(W / 2, H / 2);
-    // Depth of the cube's centre: the visible (front) face must be nearer, i.e.
-    // larger in reverse-Z. A back face winning (wrong culling/compare) would be smaller.
-    const glm::vec4 originClip = p.camera.viewProjection(float(W) / float(H)) * p.model[3];
+    // Depth of draws[0]'s origin (the game centres the model on it): the surface seen
+    // at the centre pixel must be nearer, i.e. larger in reverse-Z. A back face winning
+    // (wrong culling/winding/compare) would land behind it.
+    const glm::mat4 model0 = p.draws.empty() ? glm::mat4(1.0f) : p.draws.front().model;
+    const glm::vec4 originClip = p.camera.viewProjection(float(W) / float(H)) * model0[3];
     const float originDepth = originClip.z / originClip.w;
 
-    // Shading must vary across the cube (more than one face, lit at different angles).
-    int minR = 255, maxR = 0, cubeSamples = 0;
-    for (uint32_t y = H / 8; y < H; y += H / 16)
-        for (uint32_t x = W / 8; x < W; x += W / 16)
-            if (depthAt(x, y) > 0.0f) { ++cubeSamples; minR = std::min<int>(minR, px(x, y)[0]); maxR = std::max<int>(maxR, px(x, y)[0]); }
+    // Shading must vary across the model (surfaces lit at different angles).
+    int minL = 255, maxL = 0, samples = 0;
+    for (uint32_t y = H / 16; y < H; y += H / 32)
+        for (uint32_t x = W / 16; x < W; x += W / 32)
+            if (depthAt(x, y) > 0.0f) {
+                const uint8_t* c = px(x, y);
+                const int l = (c[0] * 2 + c[1] * 5 + c[2]) / 8;   // rough luma
+                ++samples; minL = std::min(minL, l); maxL = std::max(maxL, l);
+            }
 
-    bool cornerIsClear = corner[0] < 15 && corner[1] < 15 && corner[2] < 25 && cornerDepth == kClearDepth;
-    // Lit = clearly above the ambient-only level (0.2 * 255 = 51) and ember-warm.
-    bool centreIsLit = centre[0] > 90 && centre[0] > centre[2] + 40 && centreDepth > originDepth && centreDepth <= 1.0f;
-    bool shaded = cubeSamples >= 4 && maxR - minR > 20;
-    std::printf("[headless] corner rgb(%u,%u,%u) depth %.5f | centre rgb(%u,%u,%u) depth %.5f (cube origin %.5f) | "
-                "%d cube samples, red %d..%d | depth format %d\n",
+    const auto closeTo = [](uint8_t v, float ref) { return std::abs(int(v) - int(ref * 255.0f + 0.5f)) <= 3; };
+    const bool cornerIsClear = closeTo(corner[0], kClear.float32[0]) && closeTo(corner[1], kClear.float32[1]) &&
+                               closeTo(corner[2], kClear.float32[2]) && cornerDepth == kClearDepth;
+    const int centreDiff = std::abs(int(centre[0]) - int(corner[0])) + std::abs(int(centre[1]) - int(corner[1])) +
+                           std::abs(int(centre[2]) - int(corner[2]));
+    // Non-clear and lit: clearly above the ambient-only level of a white surface (0.2 * 255).
+    const bool centreIsLit = centreDiff > 60 && centreDepth > originDepth && centreDepth <= 1.0f;
+    const bool shaded = samples >= 8 && maxL - minL > 20;
+    std::printf("[headless] corner rgb(%u,%u,%u) depth %.5f | centre rgb(%u,%u,%u) depth %.5f (model origin %.5f) | "
+                "%d model samples, luma %d..%d | depth format %d\n",
                 corner[0], corner[1], corner[2], double(cornerDepth), centre[0], centre[1], centre[2],
-                double(centreDepth), double(originDepth), cubeSamples, minR, maxR, int(depthFormat_));
-    // Optional artefact for humans: build/<preset>/cube.ppm
-    if (FILE* f = std::fopen("cube.ppm", "wb")) {
+                double(centreDepth), double(originDepth), samples, minL, maxL, int(depthFormat_));
+    // Optional artefact for humans: build/<preset>/mesh.ppm
+    if (FILE* f = std::fopen("mesh.ppm", "wb")) {
         std::fprintf(f, "P6\n%u %u\n255\n", W, H);
         for (uint32_t i = 0; i < W * H; ++i) std::fwrite(rgba + size_t(i) * 4, 1, 3, f);
         std::fclose(f);
     }
-    vkUnmapMemory(device_, bufMem);
-    vkDestroyBuffer(device_, buf, nullptr); vkFreeMemory(device_, bufMem, nullptr);
+    destroyBuffer(buf);
     destroyImage(depth); destroyImage(color);
     return cornerIsClear && centreIsLit && shaded;
 }
@@ -556,9 +672,14 @@ void VkRenderer::shutdown() {
             if (inFlight_[i]) vkDestroyFence(device_, inFlight_[i], nullptr);
         }
         if (pool_) vkDestroyCommandPool(device_, pool_, nullptr);
-        if (pipeline_) vkDestroyPipeline(device_, pipeline_, nullptr);
+        for (auto& pl : pipelines_) if (pl) vkDestroyPipeline(device_, pl, nullptr);
         if (pipelineLayout_) vkDestroyPipelineLayout(device_, pipelineLayout_, nullptr);
         destroySwapchain();
+        if (allocator_) {
+            for (auto& m : meshes_) { destroyBuffer(m.vertices); destroyBuffer(m.indices); }
+            meshes_.clear();
+            vmaDestroyAllocator(allocator_);
+        }
         vkDestroyDevice(device_, nullptr);
     }
     if (surface_) SDL_Vulkan_DestroySurface(instance_, surface_, nullptr);
@@ -568,6 +689,7 @@ void VkRenderer::shutdown() {
         if (destroy) destroy(instance_, messenger_, nullptr);
     }
     if (instance_) vkDestroyInstance(instance_, nullptr);
+    allocator_ = nullptr; pool_ = VK_NULL_HANDLE; pipelineLayout_ = VK_NULL_HANDLE; pipelines_[0] = pipelines_[1] = VK_NULL_HANDLE;
     device_ = VK_NULL_HANDLE; instance_ = VK_NULL_HANDLE; surface_ = VK_NULL_HANDLE; messenger_ = VK_NULL_HANDLE;
 }
 

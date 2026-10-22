@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+# coe_assets: CPU-side asset code (glTF loading via fastgltf, cooked manifest via
+# simdjson); no Vulkan/SDL, so tools/asset_cooker links it too.
 # coe_engine: reusable runtime (core loop utilities, Vulkan renderer). No gameplay.
 
 # --- shaders -> SPIR-V (build/<preset>/shaders) ---
@@ -16,11 +18,20 @@ foreach(src ${SHADER_SRC})
 endforeach()
 add_custom_target(shaders ALL DEPENDS ${SPV_OUT})
 
+add_library(coe_assets STATIC
+  assets/gltf_loader.cpp
+  assets/manifest.cpp)
+target_include_directories(coe_assets PUBLIC ${PROJECT_SOURCE_DIR})
+target_compile_definitions(coe_assets PUBLIC GLM_FORCE_RADIANS GLM_FORCE_DEPTH_ZERO_TO_ONE)
+target_link_libraries(coe_assets PUBLIC glm::glm PRIVATE fastgltf::fastgltf simdjson::simdjson coe_warnings)
+
 add_library(coe_engine STATIC
   core/fixed_timestep.cpp
   input/input.cpp
   render/camera.cpp
-  render/vk_renderer.cpp)
+  render/mesh.cpp
+  render/vk_renderer.cpp
+  render/vma_impl.cpp)
 add_dependencies(coe_engine shaders)
 # Includes are rooted at the repo: #include "engine/core/fixed_timestep.hpp".
 target_include_directories(coe_engine PUBLIC ${PROJECT_SOURCE_DIR})
@@ -29,4 +40,6 @@ target_compile_definitions(coe_engine PRIVATE COE_SHADER_DIR="${SPV_DIR}")
 # Vulkan's [0,1] clip depth for any glm::perspective* helper (Camera builds its own
 # reverse-Z matrix, but stray helpers must not silently assume OpenGL's [-1,1]).
 target_compile_definitions(coe_engine PUBLIC GLM_FORCE_RADIANS GLM_FORCE_DEPTH_ZERO_TO_ONE)
-target_link_libraries(coe_engine PUBLIC Vulkan::Vulkan SDL3::SDL3 glm::glm PRIVATE coe_warnings)
+target_link_libraries(coe_engine PUBLIC coe_assets Vulkan::Vulkan SDL3::SDL3 glm::glm
+  PRIVATE GPUOpen::VulkanMemoryAllocator coe_warnings)
+target_compile_definitions(coe_engine PRIVATE VMA_STATIC_VULKAN_FUNCTIONS=1 VMA_DYNAMIC_VULKAN_FUNCTIONS=0)

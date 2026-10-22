@@ -1,8 +1,11 @@
-// Covenant of Embers - game entry point: window + Vulkan cube (camera + depth) on a fixed-timestep loop.
+// Covenant of Embers - game entry point: window + Vulkan glTF model (camera + depth) on a fixed-timestep loop.
 // SPDX-License-Identifier: Apache-2.0
 //   covenant                 run until the window is closed
 //   covenant --seconds N     auto-quit after N seconds (smoke test; checks the tick count)
 //   covenant --headless      render offscreen once, verify colour + depth, exit
+//   covenant --model SOURCE  model to show, by source path in the cooked manifest
+//                            (default: the Kenney blaster-a GLB)
+//   covenant --cooked DIR    cooked asset dir (default: build/<preset>/cooked, made by `cook`)
 //   covenant --no-validation skip the Khronos validation layer
 //   covenant --input-debug   print action press/release edges per fixed tick + mouse look
 //   covenant --input-script  push a scripted sequence of synthetic SDL input events and
@@ -12,11 +15,15 @@
 // rendering runs once per displayed frame with state interpolated by alpha.
 // Input (engine/input): SDL events are sampled per render frame; actions are
 // consumed per fixed tick (latched edges), mouse look is applied per frame.
+// Assets (step 11): the model is resolved through the cooker's manifest (size + hash
+// checked), loaded with fastgltf (engine/assets) and uploaded once (VMA buffers).
 #include "engine/core/clock.hpp"
 #include "engine/core/fixed_timestep.hpp"
 #include "engine/input/input.hpp"
 #include "engine/render/vk_renderer.hpp"
-#include "game/core/cube_demo.hpp"
+#include "engine/assets/gltf_loader.hpp"
+#include "engine/assets/manifest.hpp"
+#include "game/core/tumble_demo.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
@@ -27,13 +34,46 @@
 #include <cmath>
 #include <iterator>
 #include <cstring>
+#include <filesystem>
 #include <string>
+
+#include <glm/gtc/matrix_transform.hpp>
+
+#ifndef COE_COOKED_DIR
+#define COE_COOKED_DIR "cooked"
+#endif
 
 namespace {
 constexpr uint32_t kTickHz = 60;
 // Mouse look: 0.25 degrees per mouse count, Magewar's default MOUSE_SENS (cogito_player.gd).
 // Sensitivity/invert-Y become settings in step 39.
 constexpr double kLookRadPerCount = 0.25 * 3.141592653589793 / 180.0;
+constexpr const char* kDefaultModel = "assets/kenney/blaster-kit/Models/GLB format/blaster-a.glb";
+
+// Demo framing: centre the model on its bounds, scale its longest side to 1 m (the
+// step-10 cube's size) and turn it side-on (glTF +Z forward -> profile to the camera).
+// The in-hand viewmodel transform is step 21's job.
+glm::mat4 fitModel(const coe::assets::MeshData& m) {
+    const glm::vec3 e = m.extent();
+    const float longest = std::max({e.x, e.y, e.z, 1e-6f});
+    glm::mat4 t = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0, 1, 0));
+    t = glm::scale(t, glm::vec3(1.0f / longest));
+    return glm::translate(t, -m.center());
+}
+
+bool loadModel(const std::string& cookedDir, const std::string& source, coe::assets::MeshData& mesh) {
+    coe::assets::CookedManifest manifest;
+    std::string err = manifest.load(cookedDir);
+    std::filesystem::path path;
+    if (err.empty()) err = manifest.resolve(source, path);
+    if (err.empty()) err = coe::assets::loadGltfMesh(path, mesh);
+    if (!err.empty()) { std::fprintf(stderr, "[assets] %s\n", err.c_str()); return false; }
+    const glm::vec3 e = mesh.extent();
+    std::printf("[mesh] %s: %zu triangles, %zu vertices, %zu submesh(es), size %.3f x %.3f x %.3f m\n",
+                source.c_str(), mesh.triangleCount(), mesh.vertices.size(), mesh.submeshes.size(),
+                double(e.x), double(e.y), double(e.z));
+    return true;
+}
 
 // --input-script: synthetic events pushed through SDL's real queue at given render
 // frames. Taps land inside one frame (down+up), so whether that frame runs 0, 1 or
@@ -96,12 +136,15 @@ void printTick(uint64_t tick, const coe::input::TickInput& t) {
 int main(int argc, char** argv) {
     bool headless = false, validation = true, inputDebug = false, inputScript = false;
     double seconds = 0.0;
+    std::string model = kDefaultModel, cookedDir = COE_COOKED_DIR;
     for (int i = 1; i < argc; ++i) {
         if (!std::strcmp(argv[i], "--headless")) headless = true;
         else if (!std::strcmp(argv[i], "--no-validation")) validation = false;
         else if (!std::strcmp(argv[i], "--input-debug")) inputDebug = true;
         else if (!std::strcmp(argv[i], "--input-script")) inputScript = true;
         else if (!std::strcmp(argv[i], "--seconds") && i + 1 < argc) seconds = std::atof(argv[++i]);
+        else if (!std::strcmp(argv[i], "--model") && i + 1 < argc) model = argv[++i];
+        else if (!std::strcmp(argv[i], "--cooked") && i + 1 < argc) cookedDir = argv[++i];
     }
     std::puts("Covenant of Embers v0.0.2");
 
@@ -115,20 +158,25 @@ int main(int argc, char** argv) {
         cfg.window = window;
     }
 
+    coe::assets::MeshData mesh;
+    bool ok = loadModel(cookedDir, model, mesh);
     coe::VkRenderer renderer;
-    bool ok = renderer.init(cfg);
+    ok = ok && renderer.init(cfg);
     if (ok) std::printf("GPU: %s | validation: %s\n", renderer.deviceName().c_str(),
                         renderer.validationEnabled() ? "on" : "off (layer not installed or disabled)");
+    coe::MeshId meshId = coe::kInvalidMesh;
+    if (ok) ok = (meshId = renderer.uploadMesh(mesh)) != coe::kInvalidMesh;
+    const glm::mat4 fit = ok ? fitModel(mesh) : glm::mat4(1.0f);
 
     bool ticksOk = true, inputOk = true;
     if (ok && headless) {
         // The tick-0 pose of the live demo, seen from the default camera.
         coe::FrameParams fp;
-        fp.model = coe::game::CubeDemo{}.renderModel(0.0);
+        fp.draws.push_back({meshId, coe::game::TumbleDemo{}.renderModel(0.0) * fit});
         ok = renderer.renderHeadlessAndVerify(fp);
     } else if (ok) {
         coe::FixedTimestep step(kTickHz);
-        coe::game::CubeDemo sim;
+        coe::game::TumbleDemo sim;
         coe::input::InputState input;
         uint64_t presses[coe::input::kActionCount] = {};
         double lookYaw = 0.0, lookPitch = 0.0, lookCounts = 0.0;   // per-frame mouse look
@@ -174,7 +222,7 @@ int main(int argc, char** argv) {
             coe::FrameParams fp;
             fp.camera.yaw = float(lookYaw);       // mouse right -> negative yaw -> turn right
             fp.camera.pitch = float(lookPitch);
-            fp.model = sim.renderModel(step.alpha());
+            fp.draws.push_back({meshId, sim.renderModel(step.alpha()) * fit});
             ok = renderer.drawFrame(fp);
             ++frames;
         }

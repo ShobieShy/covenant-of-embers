@@ -1,8 +1,11 @@
-// asset_cooker – M0 stub (BUILD_PLAN step 6).
+// asset_cooker (BUILD_PLAN steps 6 + 11).
 //
 // Copies the glTF/GLB/PNG/OGG files it is given (files or directories,
-// recursively) into an output folder, validating each one's container format,
-// and writes <out>/manifest.json listing every cooked file. Real conversion
+// recursively) into an output folder, validating each one, and writes
+// <out>/manifest.json listing every cooked file. PNG/OGG get container checks;
+// glTF/GLB are parsed + validated with fastgltf (engine/assets/gltf_loader:
+// accessors/bufferViews/buffers in range, attribute types, index ranges for
+// embedded data, external .bin at least byteLength). Real conversion
 // (KTX2/BasisU, meshoptimizer, navmesh bake, Pattern checks) comes later.
 //
 // Like an engine import step it records, per file, its source, cooked path,
@@ -15,6 +18,9 @@
 //        asset_cooker --self-test
 // Exit:  0 ok, 1 validation/IO error (nothing written to manifest), 2 usage.
 
+#include "engine/assets/gltf_loader.hpp"
+#include "engine/assets/hash.hpp"
+
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
@@ -26,6 +32,7 @@
 #include <map>
 #include <optional>
 #include <random>
+#include <span>
 #include <set>
 #include <sstream>
 #include <string>
@@ -67,17 +74,9 @@ bool read_file(const fs::path& p, std::string& out) {
   return static_cast<bool>(f) || f.eof();
 }
 
-// FNV-1a 64: change detection only, not a security hash.
-std::string fnv1a64(std::string_view data) {
-  std::uint64_t h = 0xcbf29ce484222325ull;
-  for (unsigned char c : data) {
-    h ^= c;
-    h *= 0x100000001b3ull;
-  }
-  char buf[17];
-  std::snprintf(buf, sizeof buf, "%016llx", static_cast<unsigned long long>(h));
-  return buf;
-}
+// FNV-1a 64 (engine/assets/hash.hpp, shared with the runtime manifest reader):
+// change detection only, not a security hash.
+std::string fnv1a64(std::string_view data) { return coe::assets::fnv1a64Hex(data.data(), data.size()); }
 
 std::uint32_t le32(std::string_view d, std::size_t off) {
   return static_cast<std::uint32_t>(static_cast<unsigned char>(d[off])) |
@@ -86,46 +85,18 @@ std::uint32_t le32(std::string_view d, std::size_t off) {
          static_cast<std::uint32_t>(static_cast<unsigned char>(d[off + 3])) << 24;
 }
 
-// Minimal scan for "uri":"..." values in glTF JSON (no full parser yet;
-// fastgltf arrives in step 11). data: URIs are embedded and ignored.
-std::vector<std::string> gltf_uris(std::string_view json) {
-  std::vector<std::string> uris;
-  std::size_t pos = 0;
-  while ((pos = json.find("\"uri\"", pos)) != std::string_view::npos) {
-    pos += 5;
-    while (pos < json.size() && (json[pos] == ' ' || json[pos] == '\t' || json[pos] == '\r' || json[pos] == '\n')) ++pos;
-    if (pos >= json.size() || json[pos] != ':') continue;
-    ++pos;
-    while (pos < json.size() && (json[pos] == ' ' || json[pos] == '\t' || json[pos] == '\r' || json[pos] == '\n')) ++pos;
-    if (pos >= json.size() || json[pos] != '"') continue;
-    std::size_t end = json.find('"', pos + 1);
-    if (end == std::string_view::npos) break;
-    std::string uri(json.substr(pos + 1, end - pos - 1));
-    pos = end + 1;
-    if (uri.rfind("data:", 0) == 0) continue;
-    uris.push_back(uri);
-  }
-  return uris;
+// Full glTF parse + validation (fastgltf); collects external URIs, percent-decoded.
+std::string inspect_gltf(std::string_view d, std::vector<coe::assets::GltfExternal>& uris) {
+  coe::assets::GltfSummary summary;
+  std::string why = coe::assets::inspectGltf(
+      std::span(reinterpret_cast<const std::byte*>(d.data()), d.size()), summary);
+  if (why.empty()) uris = std::move(summary.externals);
+  return why;
 }
 
-// Percent-decode a relative glTF URI ("my%20tex.png").
-std::string uri_decode(const std::string& s) {
-  std::string out;
-  for (std::size_t i = 0; i < s.size(); ++i) {
-    if (s[i] == '%' && i + 2 < s.size() && std::isxdigit(static_cast<unsigned char>(s[i + 1])) &&
-        std::isxdigit(static_cast<unsigned char>(s[i + 2]))) {
-      out.push_back(static_cast<char>(std::stoi(s.substr(i + 1, 2), nullptr, 16)));
-      i += 2;
-    } else {
-      out.push_back(s[i]);
-    }
-  }
-  return out;
-}
-
-// Validates the container and returns external URIs (glTF/GLB) via `uris`.
+// Validates the file and returns external URIs (glTF/GLB) via `uris`.
 // Returns an empty string on success, else the reason.
-std::string validate(Kind k, std::string_view d, std::vector<std::string>& uris) {
+std::string validate(Kind k, std::string_view d, std::vector<coe::assets::GltfExternal>& uris) {
   switch (k) {
     case Kind::Png: {
       static const char sig[8] = {'\x89', 'P', 'N', 'G', '\r', '\n', '\x1a', '\n'};
@@ -148,8 +119,7 @@ std::string validate(Kind k, std::string_view d, std::vector<std::string>& uris)
       if (20ull + json_len > d.size()) return "GLB JSON chunk overruns file";
       std::string_view json = d.substr(20, json_len);
       if (json.find("\"asset\"") == std::string_view::npos) return "glTF JSON has no \"asset\" object";
-      uris = gltf_uris(json);
-      return {};
+      return inspect_gltf(d, uris);
     }
     case Kind::Gltf: {
       std::size_t i = 0;
@@ -157,8 +127,7 @@ std::string validate(Kind k, std::string_view d, std::vector<std::string>& uris)
       while (i < d.size() && std::isspace(static_cast<unsigned char>(d[i]))) ++i;
       if (i >= d.size() || d[i] != '{') return "glTF is not a JSON object";
       if (d.find("\"asset\"") == std::string_view::npos) return "glTF JSON has no \"asset\" object";
-      uris = gltf_uris(d);
-      return {};
+      return inspect_gltf(d, uris);
     }
   }
   return "unknown kind";
@@ -265,7 +234,7 @@ int cook(const Options& opt, std::ostream& log) {
       ++errors;
       continue;
     }
-    std::vector<std::string> uris;
+    std::vector<coe::assets::GltfExternal> uris;
     std::string why = validate(k, data, uris);
     if (!why.empty()) {
       log << "asset_cooker: invalid " << kind_name(k) << " " << rel << ": " << why << "\n";
@@ -273,8 +242,9 @@ int cook(const Options& opt, std::ostream& log) {
       continue;
     }
     Entry e{rel, k, data.size(), fnv1a64(data), {}};
-    for (const std::string& u : uris) {
-      std::string dec = uri_decode(u);
+    for (const coe::assets::GltfExternal& ext : uris) {
+      const std::string& u = ext.path;  // already percent-decoded by fastgltf
+      const std::string& dec = u;
       fs::path dep = (p.parent_path() / fs::path(dec)).lexically_normal();
       if (dec.find("://") != std::string::npos || fs::path(dec).is_absolute() || !is_within(dep, root)) {
         log << "asset_cooker: " << rel << " references a non-relative or out-of-root URI: " << u << "\n";
@@ -283,6 +253,12 @@ int cook(const Options& opt, std::ostream& log) {
       }
       if (!fs::is_regular_file(dep)) {
         log << "asset_cooker: " << rel << " references missing file: " << u << "\n";
+        ++errors;
+        continue;
+      }
+      if (ext.minBytes && fs::file_size(dep, ec) < ext.minBytes) {
+        log << "asset_cooker: " << rel << " buffer " << u << " is shorter than its byteLength " << ext.minBytes
+            << "\n";
         ++errors;
         continue;
       }
@@ -427,14 +403,70 @@ int self_test() {
   expect("GLB length mismatch rejected", {"assets/bad3"}, 1);
   put("assets/bad4/x.glb", glb(R"({"asset":{"version":"1.0"}})", 1));
   expect("GLB v1 rejected", {"assets/bad4"}, 1);
-  put("assets/bad5/x.glb", glb(R"({"asset":{},"images":[{"uri":"missing.png"}]})"));
+  put("assets/bad5/x.glb", glb(R"({"asset":{"version":"2.0"},"images":[{"uri":"missing.png"}]})"));
   expect("GLB missing dependency rejected", {"assets/bad5"}, 1);
   put("assets/bad6/x.ogg", "RIFF....WAVEfmt this is not ogg data");
   expect("bad Ogg rejected", {"assets/bad6"}, 1);
   put("assets/bad7/x.gltf", "[1,2,3]");
   expect("glTF that is not an object rejected", {"assets/bad7"}, 1);
-  put("assets/bad8/x.glb", glb(R"({"asset":{},"images":[{"uri":"../../../etc/passwd"}]})"));
+  put("assets/bad8/x.glb", glb(R"({"asset":{"version":"2.0"},"images":[{"uri":"../../../etc/passwd"}]})"));
   expect("out-of-root URI rejected", {"assets/bad8"}, 1);
+
+  // fastgltf-backed checks (step 11): one triangle, positions + uint16 indices.
+  auto tri_buffer = [](std::uint16_t last_index) {
+    std::string b;
+    const float pos[9] = {0, 0, 0, 1, 0, 0, 0, 1, 0};
+    b.append(reinterpret_cast<const char*>(pos), sizeof pos);
+    const std::uint16_t idx[3] = {0, 1, last_index};
+    b.append(reinterpret_cast<const char*>(idx), sizeof idx);
+    return b;  // 42 bytes
+  };
+  auto base64 = [](const std::string& in) {
+    static const char* t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string o;
+    for (std::size_t i = 0; i < in.size(); i += 3) {
+      std::uint32_t n = static_cast<unsigned char>(in[i]) << 16;
+      if (i + 1 < in.size()) n |= static_cast<unsigned char>(in[i + 1]) << 8;
+      if (i + 2 < in.size()) n |= static_cast<unsigned char>(in[i + 2]);
+      o.push_back(t[(n >> 18) & 63]);
+      o.push_back(t[(n >> 12) & 63]);
+      o.push_back(i + 1 < in.size() ? t[(n >> 6) & 63] : '=');
+      o.push_back(i + 2 < in.size() ? t[n & 63] : '=');
+    }
+    return o;
+  };
+  auto tri_gltf = [](const std::string& uri, int pos_count = 3, int idx_view_len = 6,
+                     const char* attr = "POSITION") {
+    return std::string(R"({"asset":{"version":"2.0"},"buffers":[{"uri":")") + uri +
+           R"(","byteLength":42}],"bufferViews":[{"buffer":0,"byteLength":36},{"buffer":0,"byteOffset":36,"byteLength":)" +
+           std::to_string(idx_view_len) + R"(}],"accessors":[{"bufferView":0,"componentType":5126,"count":)" +
+           std::to_string(pos_count) +
+           R"(,"type":"VEC3","min":[0,0,0],"max":[1,1,0]},{"bufferView":1,"componentType":5123,"count":3,"type":"SCALAR"}],)"
+           R"("meshes":[{"primitives":[{"attributes":{")" + attr +
+           R"(":0},"indices":1}]}],"nodes":[{"mesh":0}],"scenes":[{"nodes":[0]}],"scene":0})";
+  };
+  const std::string data_uri = "data:application/octet-stream;base64," + base64(tri_buffer(2));
+  put("assets/tri/ok.gltf", tri_gltf(data_uri));
+  expect("valid triangle glTF (data: URI) cooks", {"assets/tri/ok.gltf"}, 0, 1);
+  put("assets/tri_ext/t.gltf", tri_gltf("t.bin"));
+  put("assets/tri_ext/t.bin", tri_buffer(2));
+  expect("valid triangle glTF with external .bin cooks", {"assets/tri_ext/t.gltf"}, 0, 2);
+  put("assets/bad9/x.gltf", "{\"asset\": {\"version\": \"2.0\"}, ");
+  expect("malformed glTF JSON rejected", {"assets/bad9"}, 1);
+  put("assets/bad10/x.gltf", tri_gltf(data_uri, 4));
+  expect("accessor overrunning its bufferView rejected", {"assets/bad10"}, 1);
+  put("assets/bad11/x.gltf", tri_gltf(data_uri, 3, 10));
+  expect("bufferView overrunning its buffer rejected", {"assets/bad11"}, 1);
+  put("assets/bad12/x.gltf", tri_gltf("x.bin"));
+  put("assets/bad12/x.bin", tri_buffer(2).substr(0, 20));
+  expect("external .bin shorter than byteLength rejected", {"assets/bad12/x.gltf"}, 1);
+  put("assets/bad13/x.gltf", tri_gltf("data:application/octet-stream;base64," + base64(tri_buffer(7))));
+  expect("index value out of range rejected", {"assets/bad13"}, 1);
+  put("assets/bad14/x.gltf", tri_gltf(data_uri, 3, 6, "NORMAL"));
+  expect("primitive without POSITION rejected", {"assets/bad14"}, 1);
+  put("assets/bad15/x.gltf", tri_gltf("https://example.com/x.bin"));
+  expect("remote buffer URI rejected", {"assets/bad15"}, 1);
+
   put("assets/empty/notes.txt", "x");
   expect("no cookable files is an error", {"assets/empty"}, 1);
   expect("unsupported single file rejected", {"assets/pack/readme.txt"}, 1);

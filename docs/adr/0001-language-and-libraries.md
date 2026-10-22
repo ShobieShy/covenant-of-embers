@@ -66,9 +66,12 @@ glslc; everything must build offline-reproducibly from pinned sources.
 
 ### Libraries
 
-Policy: third-party code comes in via **CMake FetchContent**, pinned to a release tag (or
-commit), `GIT_SHALLOW`, declared `SYSTEM` so its headers don't trip our warnings, and only
-when a step needs it. No vcpkg/CPM/Conan (PLAN §23's "vcpkg or CPM" is replaced by this).
+Policy: third-party code comes in via **CMake FetchContent**, pinned to a release tarball
+`URL` + `URL_HASH SHA256=…` (from step 10 on; a tag alone can be moved), declared `SYSTEM`
+so its headers don't trip our warnings, and only when a step needs it. If a library would
+download a further dependency itself without a hash, we provide that target first (see
+simdjson below). SDL3's optional fallback fetch predates this and still uses
+`GIT_TAG release-3.4.18` + `GIT_SHALLOW`; it moves to a hashed tarball with its next bump. No vcpkg/CPM/Conan (PLAN §23's "vcpkg or CPM" is replaced by this).
 Only the Vulkan SDK pieces (loader, headers, glslc, optional validation layer) and
 Python ≥ 3.11 (stdlib only, for tools) come from the system.
 
@@ -77,10 +80,10 @@ Python ≥ 3.11 (stdlib only, for tools) come from the system.
 | Window, input, gamepad | **SDL3** | Zlib | step 3 | **System-or-FetchContent**: `find_package(SDL3 CONFIG)` first; if absent (Ubuntu 24.04 has no package) or `-DCOE_FETCH_SDL3=ON`, fetch pinned `release-3.4.18` as a static lib. CI forces the fetch with `SDL_UNIX_CONSOLE_BUILD=ON` (no X11/Wayland dev packages). Bumping the pin is a one-line change that must keep both paths green. |
 | GPU API | **Vulkan 1.3** (dynamic rendering, sync2), linked to the system loader | Apache-2.0 | step 3 | volk deferred until per-device dispatch or startup cost matters. |
 | Shaders | **GLSL → SPIR-V with glslc** at build time (`-Werror`) | Apache-2.0 | step 3 | Slang re-evaluated when the material system lands (post-slice ADR). |
-| GPU memory | **VMA** | MIT | step 11 | |
+| GPU memory | **VMA** | MIT | step 11 | v3.4.0 tarball (URL_HASH, SYSTEM, `GPUOpen::VulkanMemoryAllocator`); `VMA_IMPLEMENTATION` in engine/render/vma_impl.cpp, static Vulkan functions (`VMA_STATIC_VULKAN_FUNCTIONS=1`, private to `coe_engine`); public headers only forward-declare `VmaAllocator`/`VmaAllocation`. |
 | Math | **GLM** | MIT | step 10 | 1.0.3 release tarball via FetchContent (URL_HASH SHA256, SYSTEM), header-only (`GLM_BUILD_LIBRARY OFF`); `GLM_FORCE_RADIANS` + `GLM_FORCE_DEPTH_ZERO_TO_ONE` are PUBLIC on `coe_engine` |
-| glTF | **fastgltf** (pulls simdjson) | MIT / Apache-2.0 | step 11 | Also used by the cooker. |
-| JSON reads | **simdjson** (via fastgltf) | Apache-2.0 | step 11 | e.g. `cooked/manifest.json`; JSON we *write* stays hand-rolled, sorted and timestamp-free for determinism. |
+| glTF | **fastgltf** | MIT | step 11 | v0.9.1 tarball (URL_HASH, SYSTEM, `FASTGLTF_COMPILE_AS_CPP20`). In `coe_assets` (CPU-only lib shared by the cooker and the engine). |
+| JSON reads | **simdjson** | Apache-2.0 | step 11 | v4.6.11 tarball (URL_HASH); we build its single-header amalgamation as `coe_simdjson` and alias it `simdjson::simdjson` *before* fastgltf, so fastgltf's own unhashed download is skipped. Reads `cooked/manifest.json`; JSON we *write* stays hand-rolled, sorted and timestamp-free for determinism. |
 | TOML (data files) | **toml++** | MIT | step 12 | Levels, weapons, loot, patches, bindings; tools keep Python `tomllib`. |
 | Physics | **Jolt Physics** | MIT | step 13 | |
 | Unit tests | **doctest** | MIT | step 20 | Until then each tool has a `--self-test` ctest. |

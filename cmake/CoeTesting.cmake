@@ -12,6 +12,8 @@
 # loop at the end of the root CMakeLists.txt misses tests in subdirectories.
 # coe_verify_tests() (called last in the root) fails configure if any test was
 # added with plain add_test() and so would run without the sanitizer env.
+# Every test gets TIMEOUT ${COE_TEST_TIMEOUT} s unless PROPERTIES sets its own, so a
+# hung test (GPU, window, deadlock) fails instead of blocking ctest forever.
 include_guard(GLOBAL)
 
 # Sanitizer runtime options (see COE_SANITIZE, ADR-0001). Leak checking stays ON.
@@ -27,6 +29,8 @@ set(COE_SANITIZER_TEST_ENV
   "UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1"
   "VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1"
   "LSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tools/sanitizers/lsan.supp:print_suppressions=1")
+
+set(COE_TEST_TIMEOUT 120 CACHE STRING "Default per-test timeout (s) applied by coe_add_test()")
 
 function(coe_add_test)
   cmake_parse_arguments(PARSE_ARGV 0 T "" "NAME;WORKING_DIRECTORY" "COMMAND;LABELS;PROPERTIES")
@@ -46,6 +50,9 @@ function(coe_add_test)
   endif()
   if(T_PROPERTIES)
     set_tests_properties(${T_NAME} PROPERTIES ${T_PROPERTIES})
+  endif()
+  if(NOT "TIMEOUT" IN_LIST T_PROPERTIES)
+    set_tests_properties(${T_NAME} PROPERTIES TIMEOUT ${COE_TEST_TIMEOUT})
   endif()
   if(COE_SANITIZE)
     set_property(TEST ${T_NAME} APPEND PROPERTY ENVIRONMENT ${COE_SANITIZER_TEST_ENV})

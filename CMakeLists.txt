@@ -57,6 +57,44 @@ FetchContent_Declare(glm
   SYSTEM)
 FetchContent_MakeAvailable(glm)
 
+# simdjson (ADR-0001 step 11): JSON DOM parser behind fastgltf and for reading
+# cooked/manifest.json. Pinned to 4.6.11, the version fastgltf 0.9.1 targets. We
+# build its amalgamated singleheader/simdjson.cpp ourselves and expose it as
+# simdjson::simdjson *before* fastgltf is added, so fastgltf links it instead of
+# downloading an unhashed copy into its source dir (cmake/dependencies.cmake there).
+# SOURCE_SUBDIR points at a directory without a CMakeLists.txt: populate only.
+FetchContent_Declare(simdjson
+  URL https://github.com/simdjson/simdjson/archive/refs/tags/v4.6.11.tar.gz
+  URL_HASH SHA256=61d948fc24f0d793829ad658058e7597d064988a89b4607ea02e401a82df98ff
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  SOURCE_SUBDIR coe-populate-only
+  SYSTEM)
+FetchContent_MakeAvailable(simdjson)
+add_library(coe_simdjson STATIC ${simdjson_SOURCE_DIR}/singleheader/simdjson.cpp)
+target_include_directories(coe_simdjson SYSTEM PUBLIC ${simdjson_SOURCE_DIR}/singleheader)
+add_library(simdjson::simdjson ALIAS coe_simdjson)
+
+# fastgltf (ADR-0001 step 11): glTF 2.0 / GLB parser for the runtime loader and the
+# cooker. Install rules off (they cannot export our simdjson target).
+set(FASTGLTF_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+set(FASTGLTF_COMPILE_AS_CPP20 ON CACHE BOOL "" FORCE)
+FetchContent_Declare(fastgltf
+  URL https://github.com/spnda/fastgltf/archive/refs/tags/v0.9.1.tar.gz
+  URL_HASH SHA256=d8705a496deb2831775baeef5009be36d24bf3d10f8d29ab016e977d0119c872
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  SYSTEM)
+FetchContent_MakeAvailable(fastgltf)
+
+# Vulkan Memory Allocator (ADR-0001 step 11): header-only; the implementation is
+# compiled once in engine/render/vma_impl.cpp.
+set(VMA_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(VulkanMemoryAllocator
+  URL https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/refs/tags/v3.4.0.tar.gz
+  URL_HASH SHA256=822aa850c6ce77346ae96a8a1d351d52e77e85929f35363849a0a4e638e0a2a1
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  SYSTEM)
+FetchContent_MakeAvailable(VulkanMemoryAllocator)
+
 # Binaries land in build/<preset>/ (not per-subdir) so paths stay
 # ./build/debug/covenant and ./build/debug/asset_cooker.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -82,14 +120,21 @@ coe_add_test(NAME asset_license_lint
 coe_add_test(NAME asset_license_lint_selftest
   COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/check_assets.py --self-test)
 
-# Asset cooker stub (BUILD_PLAN step 6): validates + copies glTF/GLB/PNG/OGG
-# into a cooked dir with manifest.json. `cmake --build --preset debug --target cook`
-# cooks assets/ into build/<preset>/cooked.
+# Asset cooker (BUILD_PLAN steps 6 + 11): validates (glTF/GLB via fastgltf, incl.
+# accessors/buffers) + copies glTF/GLB/PNG/OGG into a cooked dir with manifest.json.
+# `cmake --build --preset debug --target cook` cooks assets/ into build/<preset>/cooked;
+# `covenant` depends on it (the runtime loads models through the manifest). The cook
+# re-runs only when the cooker or a file under assets/ changes (CONFIGURE_DEPENDS
+# re-globs on every build, so added/removed assets are noticed too).
 add_executable(asset_cooker tools/asset_cooker/main.cpp)
-target_link_libraries(asset_cooker PRIVATE coe_warnings)
-add_custom_target(cook
+target_link_libraries(asset_cooker PRIVATE coe_assets coe_warnings)
+file(GLOB_RECURSE COE_ASSET_FILES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/assets/*)
+set(COE_COOKED_MANIFEST ${CMAKE_BINARY_DIR}/cooked/manifest.json)
+add_custom_command(OUTPUT ${COE_COOKED_MANIFEST}
   COMMAND asset_cooker --root ${CMAKE_SOURCE_DIR} --out ${CMAKE_BINARY_DIR}/cooked ${CMAKE_SOURCE_DIR}/assets
+  DEPENDS asset_cooker ${COE_ASSET_FILES}
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMENT "Cooking assets/ -> ${CMAKE_BINARY_DIR}/cooked" VERBATIM)
+add_custom_target(cook DEPENDS ${COE_COOKED_MANIFEST})
 coe_add_test(NAME asset_cooker_selftest COMMAND asset_cooker --self-test)
 coe_add_test(NAME asset_cooker_blaster_kit
   COMMAND asset_cooker --root ${CMAKE_SOURCE_DIR} --out ${CMAKE_BINARY_DIR}/cooked_test
