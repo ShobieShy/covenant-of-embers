@@ -4,3 +4,7 @@ add_executable(test_fixed_timestep test_fixed_timestep.cpp)
 target_link_libraries(test_fixed_timestep PRIVATE coe_engine coe_warnings)
 target_include_directories(test_fixed_timestep PRIVATE ${PROJECT_SOURCE_DIR})
 coe_add_test(NAME fixed_timestep COMMAND test_fixed_timestep)
+
+add_executable(test_input test_input.cpp)
+target_link_libraries(test_input PRIVATE coe_engine coe_warnings)
+coe_add_test(NAME input COMMAND test_input)

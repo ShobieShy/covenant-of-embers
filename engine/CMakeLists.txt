@@ -18,6 +18,7 @@ add_custom_target(shaders ALL DEPENDS ${SPV_OUT})
 
 add_library(coe_engine STATIC
   core/fixed_timestep.cpp
+  input/input.cpp
   render/vk_renderer.cpp)
 add_dependencies(coe_engine shaders)
 # Includes are rooted at the repo: #include "engine/core/fixed_timestep.hpp".

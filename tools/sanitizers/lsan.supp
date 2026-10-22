@@ -7,7 +7,14 @@
 # hit it, on which driver, and why it is not our bug. Never suppress our own
 # code (src/, tools/, engine/, game/).
 #
-# Currently empty: the only noise seen so far (2-3 x 128 B one-time Mesa
+# Earlier noise: the seen so far (2-3 x 128 B one-time Mesa
 # allocations reported via "<unknown module>" frames, RADV and lavapipe) came
 # from the loader dlclose()ing drivers, and is fixed at the source by
 # VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1 in the test environment.
+
+# smoke_window / input_script_window under asan (window label, so not in the
+# standing `ctest -LE window` run; seen on Wayland/KDE, RADV, system SDL3 3.4.18,
+# libwayland-client 1.26, step 9): 2 x 96 B calloc'd inside libwayland-client's
+# wl_display_read_events during SDL_Init(VIDEO)'s wl_display_roundtrip, i.e.
+# wayland event/proxy state owned by the system library, never by our code.
+leak:wl_display_read_events
