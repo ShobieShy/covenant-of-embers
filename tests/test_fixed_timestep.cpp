@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-// Unit tests for engine/core/fixed_timestep + the interpolated SpinDemo state
+// Unit tests for engine/core/fixed_timestep + the interpolated CubeDemo state
 // (BUILD_PLAN step 8). Plain checks; moves to doctest in step 20.
 #include "engine/core/fixed_timestep.hpp"
-#include "game/core/spin_demo.hpp"
+#include "game/core/cube_demo.hpp"
 
 #include <cmath>
 #include <cstdint>
@@ -84,21 +84,28 @@ void otherRates() {
     CHECK(std::fabs(step.dtSeconds() - 1.0 / 120.0) < 1e-12);
 }
 
-void spinInterpolates() {
-    coe::game::SpinDemo s;
+void cubeInterpolates() {
+    using coe::game::CubeDemo;
+    CubeDemo s;
     const double dt = 1.0 / 60.0;
     s.tick(dt);
     s.tick(dt);
-    const double a = coe::game::SpinDemo::kRadPerSecond * dt;
-    CHECK(std::fabs(s.renderAngle(0.0) - a) < 1e-6);
-    CHECK(std::fabs(s.renderAngle(0.5) - 1.5 * a) < 1e-6);
-    CHECK(std::fabs(s.renderAngle(1.0) - 2.0 * a) < 1e-6);
+    const double a = CubeDemo::kYawRadPerSecond * dt, b = CubeDemo::kPitchRadPerSecond * dt;
+    CHECK(std::fabs(s.renderYaw(0.0) - (CubeDemo::kStartYaw + a)) < 1e-6);
+    CHECK(std::fabs(s.renderYaw(0.5) - (CubeDemo::kStartYaw + 1.5 * a)) < 1e-6);
+    CHECK(std::fabs(s.renderYaw(1.0) - (CubeDemo::kStartYaw + 2.0 * a)) < 1e-6);
+    CHECK(std::fabs(s.renderPitch(0.5) - (CubeDemo::kStartPitch + 1.5 * b)) < 1e-6);
     // Across the 2pi wrap the blended angle still moves forward (wrapped after lerp).
-    coe::game::SpinDemo w;
-    w.prev = 6.28; w.curr = 6.29;
-    CHECK(w.renderAngle(0.0) > 6.27f);
-    CHECK(w.renderAngle(1.0) < 0.01f);
-    CHECK(w.renderAngle(1.0) >= 0.0f);
+    CubeDemo w;
+    w.prevYaw = 6.28; w.currYaw = 6.29;
+    CHECK(w.renderYaw(0.0) > 6.27f);
+    CHECK(w.renderYaw(1.0) < 0.01f);
+    CHECK(w.renderYaw(1.0) >= 0.0f);
+    // The model matrix carries the interpolated pose: translation stays put, rotation is rigid.
+    const glm::mat4 m = s.renderModel(0.5);
+    CHECK(std::fabs(m[3][2] + CubeDemo::kDistance) < 1e-6f);
+    CHECK(std::fabs(glm::length(glm::vec3(m[0])) - 1.0f) < 1e-5f);
+    CHECK(std::fabs(glm::dot(glm::vec3(m[0]), glm::vec3(m[1]))) < 1e-5f);
 }
 } // namespace
 
@@ -107,7 +114,7 @@ int main() {
     alphaIsFractionOfTick();
     hitchIsClamped();
     otherRates();
-    spinInterpolates();
+    cubeInterpolates();
     std::printf("fixed_timestep tests: %s (%d failures)\n", g_failures ? "FAIL" : "PASS", g_failures);
     return g_failures ? 1 : 0;
 }

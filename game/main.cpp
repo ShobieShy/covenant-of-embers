@@ -1,8 +1,8 @@
-// Covenant of Embers - game entry point: window + Vulkan triangle on a fixed-timestep loop.
+// Covenant of Embers - game entry point: window + Vulkan cube (camera + depth) on a fixed-timestep loop.
 // SPDX-License-Identifier: Apache-2.0
 //   covenant                 run until the window is closed
 //   covenant --seconds N     auto-quit after N seconds (smoke test; checks the tick count)
-//   covenant --headless      render offscreen once, verify pixels, exit
+//   covenant --headless      render offscreen once, verify colour + depth, exit
 //   covenant --no-validation skip the Khronos validation layer
 //   covenant --input-debug   print action press/release edges per fixed tick + mouse look
 //   covenant --input-script  push a scripted sequence of synthetic SDL input events and
@@ -16,7 +16,7 @@
 #include "engine/core/fixed_timestep.hpp"
 #include "engine/input/input.hpp"
 #include "engine/render/vk_renderer.hpp"
-#include "game/core/spin_demo.hpp"
+#include "game/core/cube_demo.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
@@ -122,10 +122,13 @@ int main(int argc, char** argv) {
 
     bool ticksOk = true, inputOk = true;
     if (ok && headless) {
-        ok = renderer.renderHeadlessAndVerify();
+        // The tick-0 pose of the live demo, seen from the default camera.
+        coe::FrameParams fp;
+        fp.model = coe::game::CubeDemo{}.renderModel(0.0);
+        ok = renderer.renderHeadlessAndVerify(fp);
     } else if (ok) {
         coe::FixedTimestep step(kTickHz);
-        coe::game::SpinDemo sim;
+        coe::game::CubeDemo sim;
         coe::input::InputState input;
         uint64_t presses[coe::input::kActionCount] = {};
         double lookYaw = 0.0, lookPitch = 0.0, lookCounts = 0.0;   // per-frame mouse look
@@ -156,18 +159,23 @@ int main(int argc, char** argv) {
                 sim.tick(step.dtSeconds());
             }
             last = now;
-            // Mouse look per render frame (not per tick) for minimum latency. Until the
-            // camera lands (step 10) yaw just adds to the triangle's rotation.
+            // Mouse look per render frame (not per tick) for minimum latency; it turns
+            // the camera in place (step 14's FPS controller adds movement + eye height).
             const coe::input::LookDelta look = input.takeLook();
             lookCounts += look.dx;
             lookYaw = std::remainder(lookYaw - look.dx * kLookRadPerCount, 2.0 * 3.141592653589793);
-            lookPitch = std::clamp(lookPitch - look.dy * kLookRadPerCount, -1.553343, 1.553343);   // +-89 deg
+            lookPitch = std::clamp(lookPitch - look.dy * kLookRadPerCount,
+                                   -double(coe::Camera::kMaxPitch), double(coe::Camera::kMaxPitch));   // +-89 deg
             if (inputDebug && (look.dx != 0.0f || look.dy != 0.0f))
                 std::printf("[input] frame %llu: look dx %.1f dy %.1f -> yaw %.3f pitch %.3f rad\n",
                             (unsigned long long)frames, double(look.dx), double(look.dy), lookYaw, lookPitch);
             if (limitNs && now - start >= limitNs) running = false;
             if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED) { SDL_Delay(16); continue; }
-            ok = renderer.drawFrame({sim.renderAngle(step.alpha()) + float(lookYaw)});
+            coe::FrameParams fp;
+            fp.camera.yaw = float(lookYaw);       // mouse right -> negative yaw -> turn right
+            fp.camera.pitch = float(lookPitch);
+            fp.model = sim.renderModel(step.alpha());
+            ok = renderer.drawFrame(fp);
             ++frames;
         }
         // Edges still latched when the loop stopped never reached a tick.

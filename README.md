@@ -2,7 +2,7 @@
 
 An original, open-source co-op (1–4 players) Borderlands-style loot FPS built on a small custom C++20 / Vulkan engine. Inspired by the spirit of Magewar and by biblical themes; not a copy of either.
 
-Status: **M1 – gunplay prototype in progress**. M0 foundations (SDL3 window + Vulkan 1.3 triangle, CI, asset lint, cooker stub) are done; the engine/game split, the 60 Hz fixed-timestep loop and the input layer (actions per tick, mouse look per frame) are in. See [docs/PLAN.md](docs/PLAN.md) for the full design and [ADR-0001](docs/adr/0001-language-and-libraries.md) for the language (C++20) and library choices.
+Status: **M1 – gunplay prototype in progress**. M0 foundations (SDL3 window + Vulkan 1.3 triangle, CI, asset lint, cooker stub) are done; the engine/game split, the 60 Hz fixed-timestep loop, the input layer (actions per tick, mouse look per frame) and a first-person camera with a reverse-Z depth buffer (a lit, tumbling cube; mouse looks around) are in. See [docs/PLAN.md](docs/PLAN.md) for the full design and [ADR-0001](docs/adr/0001-language-and-libraries.md) for the language (C++20) and library choices.
 
 ## Build (Linux)
 ```sh
@@ -10,7 +10,7 @@ cmake --preset debug
 cmake --build --preset debug
 ./build/debug/covenant
 ```
-Requires CMake ≥ 3.25, Ninja, a C++20 compiler (GCC 13+/Clang 17+), and the Vulkan SDK pieces (headers, loader, glslc; validation layers recommended). SDL3 is used from the system when installed; otherwise CMake fetches and builds a pinned release (force with `-DCOE_FETCH_SDL3=ON`).
+Requires CMake ≥ 3.25, Ninja, a C++20 compiler (GCC 13+/Clang 17+), and the Vulkan SDK pieces (headers, loader, glslc; validation layers recommended). SDL3 is used from the system when installed; otherwise CMake fetches and builds a pinned release (force with `-DCOE_FETCH_SDL3=ON`). GLM (header-only math) is always fetched at a pinned, hash-checked release.
 
 ### Sanitizers (ASan + UBSan)
 ```sh
@@ -29,7 +29,7 @@ UBSan is fatal and leak checking is on; ctest sets the sanitizer and Vulkan-load
 - Third-party assets keep their own licenses; every one is listed in `ASSETS.toml` and `CREDITS.md`.
 
 ## Layout
-- `engine/` – reusable runtime (`coe_engine` library): `core/` (fixed-timestep loop, clock), `input/` (SDL3 action map, per-tick edges, per-frame mouse look), `render/` (Vulkan renderer).
+- `engine/` – reusable runtime (`coe_engine` library): `core/` (fixed-timestep loop, clock), `input/` (SDL3 action map, per-tick edges, per-frame mouse look), `render/` (Vulkan renderer; `camera.*`: right-handed +Y-up view, reverse-Z infinite-far Vulkan projection, 75° vertical FOV, 5 cm near plane).
 - `game/` – the `covenant` executable: main loop and gameplay state.
 - `tests/` – unit tests. `tools/` – asset lint and cooker. `cmake/` – build helpers.
 
@@ -41,7 +41,7 @@ Register every test with `coe_add_test(NAME … COMMAND … [WORKING_DIRECTORY �
 ```sh
 ./build/debug/covenant                 # window, Esc to quit
 ./build/debug/covenant --seconds 3     # auto-quits after 3 s, logs ~180 fixed ticks
-./build/debug/covenant --headless      # offscreen render + pixel check (writes triangle.ppm)
+./build/debug/covenant --headless      # offscreen render + colour/depth check (writes cube.ppm)
 ./build/debug/covenant --input-debug   # prints actions per fixed tick + mouse look (Esc quits; mouse is captured)
 ctest --test-dir build/debug           # smoke tests, unit tests, asset lint, cooker tests
 ```

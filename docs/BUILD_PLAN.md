@@ -46,7 +46,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: loads `blaster-kit` model with N>0 triangles; headless pixel check shows non-clear centre.
 
 **12. Greybox Midden arena**
-- Does: data-defined boxes (TOML, parsed with toml++ via FetchContent per ADR-0001) forming ground, walls, ramps, crates; simple directional lighting.
+- Does: data-defined boxes (TOML, parsed with toml++ via FetchContent per ADR-0001) forming ground, walls, ramps, crates; simple directional lighting. The step-10 push constants are full (128 B = viewProj + model), so move per-frame data (viewProj, camera position, light direction/colour, ambient; today hard-coded in shaders/basic.frag) into a per-frame-in-flight UBO and keep only the model matrix in push constants. Add 2× MSAA colour + depth with resolve to the swapchain (Magewar runs `msaa_3d = 2×`; query `framebufferColorSampleCounts & framebufferDepthSampleCounts`); the headless check reads the resolved image.
 - Files: data/levels/midden_greybox.toml, game/world/level.*.
 - Done: level loads ≥10 boxes; screenshot (headless .ppm) shows floor and walls.
 
@@ -56,7 +56,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: test drops a dynamic box onto the floor and it comes to rest at the expected height (±0.05 m).
 
 **14. FPS controller: walk, jump, crouch, look**
-- Does: Jolt CharacterVirtual driven by `coe::input::TickInput` each tick (`moveForward()/moveRight()` axes, Jump on the `wasPressed` edge, Crouch hold), mouse look from `InputState::takeLook()` applied per render frame (yaw/pitch, 0.25°/count default, pitch clamp ±89° to avoid the gimbal flip at Magewar's ±90°); each tick reads the latest yaw for the move direction. Replaces the step-9 placeholder (look yaw added to the triangle angle in game/main.cpp).
+- Does: Jolt CharacterVirtual driven by `coe::input::TickInput` each tick (`moveForward()/moveRight()` axes, Jump on the `wasPressed` edge, Crouch hold), mouse look from `InputState::takeLook()` applied per render frame (yaw/pitch, 0.25°/count default, pitch clamp ±89° to avoid the gimbal flip at Magewar's ±90°); each tick reads the latest yaw for the move direction. Builds on step 10: game/main.cpp already maps look to `coe::Camera` yaw/pitch (mouse right → negative yaw = turn right, clamp `Camera::kMaxPitch`); the controller takes over yaw/pitch ownership and sets `camera.position` = body + eye height, reinterpreting Magewar's cogito_player (Neck node +0.7 m above the body origin, crouch lowers the head by 0.9 m `CROUCHING_DEPTH`) for our capsule. The cube demo (game/core/cube_demo.hpp) is replaced by the greybox from step 12.
 - Files: game/player/player_controller.*.
 - Done: playable in window; test: 1 s forward input moves ≈ walk speed × 1 s.
 
@@ -81,7 +81,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: unit tests for tactical/empty timings and cancel behaviour.
 
 **19. ADS, spread and bloom**
-- Does: ADS FOV tween, spread cone with stance multipliers and per-shot bloom/decay (§30.1).
+- Does: ADS FOV tween, spread cone with stance multipliers and per-shot bloom/decay (§30.1). FOV is vertical (`Camera::fovYDeg`): hip 75° (`Camera::kDefaultFovYDeg`, Magewar/Godot default) → per-family ADS FOV in WeaponDef (Magewar: staff 55°, Cogito pistols 65°) tweened over 0.2 s like Magewar's wieldable_staff; scale mouse look by tan(ads/2)/tan(hip/2) while aimed; the first-person viewmodel keeps its own fixed 75° FOV (Magewar's `viewmodel_fov` shader global) so zooming doesn't distort the gun.
 - Files: game/weapons/accuracy.*, engine/render/camera.*.
 - Done: tests: ADS spread = 0.35× hip; bloom decays to base within configured time.
 

@@ -78,7 +78,7 @@ Python ≥ 3.11 (stdlib only, for tools) come from the system.
 | GPU API | **Vulkan 1.3** (dynamic rendering, sync2), linked to the system loader | Apache-2.0 | step 3 | volk deferred until per-device dispatch or startup cost matters. |
 | Shaders | **GLSL → SPIR-V with glslc** at build time (`-Werror`) | Apache-2.0 | step 3 | Slang re-evaluated when the material system lands (post-slice ADR). |
 | GPU memory | **VMA** | MIT | step 11 | |
-| Math | **GLM** | MIT | step 10 | |
+| Math | **GLM** | MIT | step 10 | 1.0.3 release tarball via FetchContent (URL_HASH SHA256, SYSTEM), header-only (`GLM_BUILD_LIBRARY OFF`); `GLM_FORCE_RADIANS` + `GLM_FORCE_DEPTH_ZERO_TO_ONE` are PUBLIC on `coe_engine` |
 | glTF | **fastgltf** (pulls simdjson) | MIT / Apache-2.0 | step 11 | Also used by the cooker. |
 | JSON reads | **simdjson** (via fastgltf) | Apache-2.0 | step 11 | e.g. `cooked/manifest.json`; JSON we *write* stays hand-rolled, sorted and timestamp-free for determinism. |
 | TOML (data files) | **toml++** | MIT | step 12 | Levels, weapons, loot, patches, bindings; tools keep Python `tomllib`. |
