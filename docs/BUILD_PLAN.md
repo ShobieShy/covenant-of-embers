@@ -230,7 +230,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 **45. Audio hookup with Kenney sounds**
 - Does: map events to Kenney sounds: shots/hits (impact-sounds), UI clicks/pickups/level-up (interface-sounds, ui-pack/Sounds); data-driven sound table.
 - Files: data/audio/sounds.toml, game/audio/sound_events.*.
-- Done: every sound path in sounds.toml exists and is covered by ASSETS.toml (lint); audible in window run.
+- Done: every sound path in sounds.toml exists and is covered by ASSETS.toml (extend tools/check_assets.py with a `--paths-from data/audio/sounds.toml` mode reusing its coverage rule, as a ctest); audible in window run.
 
 **46. Save format**
 - Does: character save (level, XP, Tallies, inventory items as Ember Marks, equipped slots, bindings untouched) as versioned JSON/TOML in pref path.

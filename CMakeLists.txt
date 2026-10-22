@@ -7,6 +7,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Vulkan REQUIRED COMPONENTS glslc)
+# Python 3.11+ (stdlib tomllib) for tools/check_assets.py
+find_package(Python3 3.11 REQUIRED COMPONENTS Interpreter)
 # SDL3: use the system package when present, else fetch a pinned release
 # (Ubuntu 24.04 CI images ship no SDL3). -DCOE_FETCH_SDL3=ON forces the fetch.
 option(COE_FETCH_SDL3 "Always build SDL3 from source via FetchContent" OFF)
@@ -54,3 +56,10 @@ enable_testing()
 add_test(NAME smoke_headless COMMAND covenant --headless)
 add_test(NAME smoke_window COMMAND covenant --seconds 3)
 set_tests_properties(smoke_window PROPERTIES LABELS window)
+
+# Asset license lint (PLAN §25): every folder under assets/ must be in ASSETS.toml
+# with license + source. No `window` label, so CI runs it.
+add_test(NAME asset_license_lint
+  COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/check_assets.py --root ${CMAKE_SOURCE_DIR})
+add_test(NAME asset_license_lint_selftest
+  COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/check_assets.py --self-test)

@@ -1,4 +1,7 @@
 # Third-party asset manifest. Every file under assets/ must be covered here (CI license lint, plan §25).
+# Each [[asset]] needs name, path (inside assets/), license, source, and a row in CREDITS.md.
+# Vendor grouping folders that only hold sub-folders (assets/kenney/) are not listed themselves;
+# each pack folder under them is. Checked by tools/check_assets.py (ctest asset_license_lint).
 
 [[asset]]
 name = "Blaster Kit 2.1"
