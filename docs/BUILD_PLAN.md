@@ -7,7 +7,7 @@
 4. Log any such changes in the history in `docs/build_state.json`.
 
 Design source of truth: [PLAN.md](PLAN.md) (§26 milestones, §30 loot-shooter spec). Progress: [build_state.json](build_state.json) (`next_step`).
-Each step is sized at ~1 hour. Every step must keep `cmake --build --preset debug` warning-free and `ctest --test-dir build/debug` green (from step 8 on, also `ctest --test-dir build/asan -LE window`), and ends with a local commit (never push). Third-party libraries come in via CMake FetchContent, pinned + `SYSTEM` (no system installs; library list in [ADR-0001](adr/0001-language-and-libraries.md)); every new asset goes into ASSETS.toml + CREDITS.md.
+Each step is sized at ~1 hour. Every step must keep `cmake --build --preset debug` warning-free and `ctest --test-dir build/debug` green (from step 8 on, also `ctest --test-dir build/asan -LE window`), and ends with a local commit (never push). Register every test with `coe_add_test()` (cmake/CoeTesting.cmake); configure fails on a plain `add_test()`. Third-party libraries come in via CMake FetchContent, pinned + `SYSTEM` (no system installs; library list in [ADR-0001](adr/0001-language-and-libraries.md)); every new asset goes into ASSETS.toml + CREDITS.md.
 
 Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, fights Gnawers and Heaps with procedurally rolled Sidearms/Repeaters, picks up loot, levels up, clears a Breach room slice with a mini-boss, hears Kenney audio, and saves/loads.
 
@@ -31,18 +31,15 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 
 ## M1 – Gunplay prototype
 
-**8. Engine/game split + fixed-timestep loop**
-- Does: move renderer into engine/, add game/ target, 60 Hz fixed update + variable render with interpolation alpha. Add a `coe_add_test()` CMake helper (cmake/CoeTesting.cmake) that registers a test and applies the `COE_SANITIZE` test env (CMake 3.25 can only set test properties in the defining directory), and use it for every test, including ones in engine/, game/, tests/.
-- Files: engine/{core,render}/, game/, src/main.cpp → game/main.cpp, CMakeLists.txt.
-- Done: triangle still renders; `--seconds 3` logs ~180 fixed ticks; `ctest --test-dir build/asan -N --show-only=json-v1` shows the sanitizer env on every test.
+**8. Engine/game split + fixed-timestep loop** ✅. Does: renderer moved to engine/render (`coe_engine` static lib, includes rooted at the repo: `engine/...`, `game/...`; shader build lives in engine/CMakeLists.txt); game/ builds `covenant` (binaries still land in build/<preset>/); shared `coe_warnings` interface target. `coe::FixedTimestep` (engine/core) accumulates in exact integer ns×hz units (N s of frames ⇒ exactly N×hz ticks, no float drift), 60 Hz, `alpha()` in [0,1), 0.25 s hitch clamp with dropped-time counter; `monotonicNs()` clock. Placeholder `game::SpinDemo` spins the triangle on the tick and renders `lerp(prev, curr, alpha)` via a vertex push constant (wrap after blend). `--seconds N` logs frames + fixed ticks and fails on a tick-count mismatch. `coe_add_test(NAME COMMAND [WORKING_DIRECTORY] [LABELS] [PROPERTIES])` in cmake/CoeTesting.cmake applies `COE_SANITIZER_TEST_ENV` in the defining dir; `coe_verify_tests()` fails configure if any test in our tree bypasses it. Files: engine/{CMakeLists.txt,core/{fixed_timestep,clock}.*,render/vk_renderer.*}, game/{CMakeLists.txt,main.cpp,core/spin_demo.hpp}, tests/{CMakeLists.txt,test_fixed_timestep.cpp}, cmake/CoeTesting.cmake, shaders/triangle.vert, CMakeLists.txt, README.md, ci.yml. Done: headless + window smoke pass (validation on, 0 messages); `--seconds 3` logs 180 fixed ticks at ~127 fps; `ctest --test-dir build/asan -N --show-only=json-v1` shows ASAN/UBSAN/LSAN_OPTIONS + loader env on all 8 tests (root, game/, tests/); ctest `fixed_timestep` (180 ticks at 30/60/144/240 fps and jitter, alpha, clamp, 120 Hz, spin interpolation/wrap).
 
 **9. Input layer**
-- Does: action map (MoveForward, Jump, Fire, Aim, Reload, Sprint, Dash, Crouch, Interact, Weapon1–4) on SDL3 keyboard/mouse, relative mouse mode.
-- Files: engine/input/input.{hpp,cpp}.
-- Done: unit test maps synthetic key events to actions; actions print in a debug run.
+- Does: action map (MoveForward, Jump, Fire, Aim, Reload, Sprint, Dash, Crouch, Interact, Weapon1–4) on SDL3 keyboard/mouse, relative mouse mode. Events are sampled per render frame but consumed per fixed tick (step 8): held state is read by each tick, press/release edges are latched until the next tick runs so a frame with 0 ticks can't drop a press and a frame with 2+ ticks can't double it; mouse-look delta is applied per render frame (latency), not per tick.
+- Files: engine/input/input.{hpp,cpp}, tests/test_input.cpp (via `coe_add_test`).
+- Done: unit test maps synthetic key events to actions, incl. a press consumed exactly once across frames with 0 and 2 ticks; actions print in a debug run.
 
 **10. Math, camera and depth buffer**
-- Does: GLM via FetchContent, per-frame camera UBO/push constants, depth attachment, rotating cube.
+- Does: GLM via FetchContent, per-frame camera UBO/push constants (extend `FrameParams` from step 8), depth attachment, rotating cube driven by the fixed tick + alpha (replaces `game::SpinDemo`).
 - Files: engine/render/{camera,vk_renderer}.*, shaders/basic.*.
 - Done: headless test checks a cube pixel is lit and depth image exists; no validation errors.
 
@@ -92,7 +89,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: tests: ADS spread = 0.35× hip; bloom decays to base within configured time.
 
 **20. Damage formula + test framework**
-- Does: doctest via FetchContent; implement §30.1 formula (Base×1.13^(ilvl−1), Grade, parts, essence match, resist cap 60 %, crit, falloff).
+- Does: doctest via FetchContent (one `coe_tests` doctest runner via `coe_add_test`; port tests/test_fixed_timestep.cpp from plain CHECKs); implement §30.1 formula (Base×1.13^(ilvl−1), Grade, parts, essence match, resist cap 60 %, crit, falloff).
 - Files: game/combat/damage.*, tests/test_damage.cpp.
 - Done: ≥8 doctest cases incl. resist cap and weak-point crit pass.
 
@@ -189,7 +186,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: equipping from the screen changes the active weapon; compare deltas match computed stats in a test.
 
 **39. Key-bindings config**
-- Does: load/save `config/bindings.toml` (user dir via SDL_GetPrefPath), defaults on first run, mouse sensitivity/invert-Y, simple rebind menu.
+- Does: load/save `config/bindings.toml` (user dir via SDL_GetPrefPath), defaults on first run, mouse sensitivity/invert-Y, simple rebind menu, plus a frame-rate cap / vsync (present mode) option (Magewar caps at 120 fps via `run/max_fps`; the sim stays 60 Hz either way).
 - Files: engine/input/bindings.*, game/ui/options_screen.*.
 - Done: test: rebinding Jump writes file; reload restores it; malformed file falls back to defaults.
 

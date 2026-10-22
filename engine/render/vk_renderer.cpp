@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // M0 renderer: Vulkan 1.3 instance/device/swapchain, dynamic rendering + synchronization2,
-// one hard-coded triangle. Validation layer is used only when installed.
-#include "render/vk_renderer.hpp"
+// one hard-coded triangle rotated by a push constant (FrameParams::spin). Validation layer is used only when installed.
+#include "engine/render/vk_renderer.hpp"
 
 #include <SDL3/SDL_vulkan.h>
 #include <algorithm>
@@ -257,7 +257,9 @@ bool VkRenderer::createPipeline(VkFormat colorFormat) {
         stages[i].stage = i ? VK_SHADER_STAGE_FRAGMENT_BIT : VK_SHADER_STAGE_VERTEX_BIT;
         stages[i].module = mods[i]; stages[i].pName = "main";
     }
+    VkPushConstantRange pcr{VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float)};
     VkPipelineLayoutCreateInfo li{VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
+    li.pushConstantRangeCount = 1; li.pPushConstantRanges = &pcr;
     VK_CHECK(vkCreatePipelineLayout(device_, &li, nullptr, &pipelineLayout_));
 
     VkPipelineVertexInputStateCreateInfo vin{VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
@@ -308,7 +310,7 @@ bool VkRenderer::createFrames() {
 }
 
 void VkRenderer::recordTriangle(VkCommandBuffer cmd, VkImage image, VkImageView view, VkExtent2D extent,
-                                VkImageLayout finalLayout) {
+                                VkImageLayout finalLayout, const FrameParams& p) {
     imageBarrier(cmd, image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                  VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, 0,
                  VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT);
@@ -324,6 +326,7 @@ void VkRenderer::recordTriangle(VkCommandBuffer cmd, VkImage image, VkImageView 
     VkViewport v{0, 0, float(extent.width), float(extent.height), 0, 1};
     VkRect2D s{{0, 0}, extent};
     vkCmdSetViewport(cmd, 0, 1, &v); vkCmdSetScissor(cmd, 0, 1, &s);
+    vkCmdPushConstants(cmd, pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float), &p.spin);
     vkCmdDraw(cmd, 3, 1, 0, 0);
     vkCmdEndRendering(cmd);
     bool present = finalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -333,7 +336,7 @@ void VkRenderer::recordTriangle(VkCommandBuffer cmd, VkImage image, VkImageView 
                  present ? VK_ACCESS_2_NONE : VK_ACCESS_2_TRANSFER_READ_BIT);
 }
 
-bool VkRenderer::drawFrame() {
+bool VkRenderer::drawFrame(const FrameParams& p) {
     if (resized_ || !swapchain_) {
         vkDeviceWaitIdle(device_);
         destroySwapchain();
@@ -354,7 +357,7 @@ bool VkRenderer::drawFrame() {
     VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
     bi.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     VK_CHECK(vkBeginCommandBuffer(cmd, &bi));
-    recordTriangle(cmd, swapImages_[idx], swapViews_[idx], swapExtent_, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+    recordTriangle(cmd, swapImages_[idx], swapViews_[idx], swapExtent_, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, p);
     VK_CHECK(vkEndCommandBuffer(cmd));
 
     VkSemaphoreSubmitInfo wait{VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO};
@@ -385,7 +388,7 @@ uint32_t VkRenderer::findMemoryType(uint32_t bits, VkMemoryPropertyFlags props) 
     return UINT32_MAX;
 }
 
-bool VkRenderer::renderHeadlessAndVerify() {
+bool VkRenderer::renderHeadlessAndVerify(const FrameParams& p) {
     const uint32_t W = cfg_.headlessWidth, H = cfg_.headlessHeight;
     VkImage img; VkDeviceMemory imgMem; VkImageView view; VkBuffer buf; VkDeviceMemory bufMem;
 
@@ -418,7 +421,7 @@ bool VkRenderer::renderHeadlessAndVerify() {
     bi.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     VK_CHECK(vkResetFences(device_, 1, &inFlight_[0]));
     VK_CHECK(vkBeginCommandBuffer(cmd, &bi));
-    recordTriangle(cmd, img, view, {W, H}, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    recordTriangle(cmd, img, view, {W, H}, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, p);
     VkBufferImageCopy region{};
     region.imageSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
     region.imageExtent = {W, H, 1};

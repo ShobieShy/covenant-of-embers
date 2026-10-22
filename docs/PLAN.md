@@ -251,6 +251,7 @@ All five copies of each design doc are byte-identical. Gaps were found by readin
 |---|---|---|
 | Language | C++20 (decided in [ADR-0001](adr/0001-language-and-libraries.md)) | It has the most mature Vulkan ecosystem (VMA, volk, ImGui, Jolt) and is easy to find contributors for. Rust (ash, gpu-allocator) was the alternative; memory safety comes from ASan/UBSan CI, validation layers and tests instead. |
 | Engine | Small custom engine | The brief says to build from scratch on Vulkan. Pull in proven libraries instead of rewriting them. |
+| Main loop | Fixed 60 Hz simulation tick, variable-rate render interpolated by alpha | Deterministic gameplay/physics (and later host-authoritative net ticks) independent of frame rate; matches Godot's default 60 physics ticks used by ~/game. Hitches clamp to 0.25 s. |
 | Window and input | SDL3 | Windowing, gamepad, input and audio device in one library, cross-platform. |
 | Renderer | Vulkan 1.3, volk, VMA | Uses dynamic rendering and synchronization2. A frame graph handles barriers. Clustered forward+ PBR, cascaded shadows, bloom and tonemap. |
 | Shaders | Slang (or GLSL) to SPIR-V | Compiled at build time, reflected with SPIRV-Reflect, and hot-reloaded in dev builds. |

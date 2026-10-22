@@ -17,12 +17,17 @@ struct RendererConfig {
 
 struct ValidationStats { uint32_t warnings = 0, errors = 0; };
 
+// Per-frame inputs from the game (already interpolated by the caller).
+struct FrameParams {
+    float spin = 0.0f;              // triangle rotation in radians (push constant)
+};
+
 class VkRenderer {
 public:
     bool init(const RendererConfig& cfg);
     void shutdown();
-    bool drawFrame();                         // window mode
-    bool renderHeadlessAndVerify();           // headless: render once, read back, check pixels
+    bool drawFrame(const FrameParams& p = {});      // window mode
+    bool renderHeadlessAndVerify(const FrameParams& p = {}); // headless: render once, read back, check pixels
     void onResize() { resized_ = true; }
     bool validationEnabled() const { return validation_; }
     const ValidationStats& stats() const { return stats_; }
@@ -37,7 +42,7 @@ private:
     bool createPipeline(VkFormat colorFormat);
     bool createFrames();
     void recordTriangle(VkCommandBuffer cmd, VkImage image, VkImageView view, VkExtent2D extent,
-                        VkImageLayout finalLayout);
+                        VkImageLayout finalLayout, const FrameParams& p);
     uint32_t findMemoryType(uint32_t bits, VkMemoryPropertyFlags props) const;
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT,
