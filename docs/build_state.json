@@ -2,7 +2,7 @@
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 8,
+  "next_step": 9,
   "total_steps": 51,
   "steps_done": [
     1,
@@ -11,9 +11,10 @@
     4,
     5,
     6,
-    7
+    7,
+    8
   ],
-  "last_commit": "63dc078",
+  "last_commit": "36a0509",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -79,6 +80,13 @@
       "type": "build",
       "summary": "ADR-0001 docs/adr/0001-language-and-libraries.md (Context/Decision/Consequences): C++20 over Rust (M0 code exists, native Vulkan/Jolt/ImGui ecosystem; safety via ASan/UBSan CI + validation + tests), FetchContent-only pinned SYSTEM deps (replaces PLAN \u00a723 'vcpkg or CPM'), SDL3 system-or-FetchContent policy (release-3.4.18, COE_FETCH_SDL3, CI console build), per-step library table (GLM, VMA, fastgltf+simdjson, toml++, Jolt, doctest, ImGui, stb_truetype, miniaudio; EnTT/RmlUi/Lua/net deferred). README links it. asan configure/build/test presets: COE_SANITIZE=ON adds -fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer to all targets; CMakeLists sets ctest env ASAN_OPTIONS (leaks, stack-use-after-return, init-order), UBSAN_OPTIONS halt_on_error, LSAN_OPTIONS suppressions=tools/sanitizers/lsan.supp (documented, empty) and VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1. Sanitizer noise: smoke_headless first failed with 2-3 x 128 B LSan leaks in '<unknown module>' frames (Mesa pthread_once allocs, RADV and lavapipe) because the Vulkan loader dlclose()s ICDs/layers at vkDestroyInstance; fixed with the loader's own leak-tool switch instead of suppressions, so leak checks stay fully on. CI: single job became a debug/asan matrix (two jobs, fail-fast off, per-preset _deps cache, ctest timeout 300, vm.mmap_rnd_bits=28 for clang-18 ASan on the asan job); YAML parses (PyYAML), presets JSON valid. Done check: `cmake --preset asan && ctest --test-dir build/asan -LE window` 6/6 passed (GCC 16, RADV), also `ctest --preset asan`; CI emulation (clang 23, COE_SANITIZE + fetched static SDL3 console build, lavapipe) 6/6 passed, only warnings in SDL _deps; verified UBSan is fatal (signed overflow probe exits 1 on GCC and clang). Debug clean rebuild 0 warnings, full ctest 7/7 incl. window. No ASan/UBSan bugs in existing code (renderer, asset_cooker selftests clean). Bug fix: BUILD_PLAN step 6 was missing its commit hash (68d1c88). Plan: standing rule now includes asan ctest from step 8; step 8 adds coe_add_test() helper so tests in engine/game/tests subdirs get the sanitizer env (CMake 3.25 can only set test props in the defining dir); step 11 reads manifest.json with simdjson; step 12 uses toml++; new step 51 (post-slice) for clang-format/clang-tidy/Windows MSVC CI; PLAN \u00a723 language/build rows and \u00a725 unit tests (doctest)/builds updated; total_steps 51. Magewar: ~/game keeps no decision records (decisions only in the Bible/commit messages) and its docs/ is the COGITO template's Sphinx manual (PLAN \u00a71 corrected); its headless runner fails on any runtime ERROR line before the pass banner, which our fatal UBSan + LSan + validation-error-fails policy reinterprets; no CI there to mirror.",
       "commit": "63dc078"
+    },
+    {
+      "time": "2026-10-22T15:17-05:00",
+      "step": 8,
+      "type": "build",
+      "summary": "Engine/game split + fixed-timestep loop. Renderer moved (git mv) to engine/render as static lib coe_engine (includes rooted at repo: engine/..., game/...; shader SPIR-V build moved to engine/CMakeLists.txt); game/ builds covenant from game/main.cpp; CMAKE_RUNTIME_OUTPUT_DIRECTORY keeps ./build/<preset>/covenant and asset_cooker paths; shared coe_warnings INTERFACE target. coe::FixedTimestep (engine/core) accumulates in exact integer ns*hz units so N s of frame time always gives exactly N*hz ticks (no float drift), 60 Hz, alpha() in [0,1), 0.25 s hitch clamp with droppedNs(); monotonicNs() steady clock. Placeholder game::SpinDemo rotates the triangle per tick and renders lerp(prev,curr,alpha) through a 4-byte vertex push constant (FrameParams::spin; wrapped after blending). --seconds N prints frames + fixed ticks and fails on tick mismatch vs (elapsed-dropped)*60. coe_add_test(NAME COMMAND [WORKING_DIRECTORY] [LABELS] [PROPERTIES]) in cmake/CoeTesting.cmake applies COE_SANITIZER_TEST_ENV (ASAN/UBSAN/LSAN_OPTIONS + VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING) in the defining dir; all tests use it (root tools tests, game/ smoke tests with WORKING_DIRECTORY build/<preset>, tests/fixed_timestep); coe_verify_tests() walks our source dirs (skipping the build tree/_deps) and fails configure on any plain add_test (verified: an injected add_test(NAME bypass) failed configure). Done check: full debug ctest 8/8 incl. smoke_window (validation on, 0 errors/warnings, RADV RX 6950 XT); `covenant --seconds 3` logged 'frames: 381 in 3.00s (127 fps)' and 'fixed ticks: 180 @ 60 Hz (expected 180, 0.000s dropped)'; `ctest --test-dir build/asan -N --show-only=json-v1` shows all 4 sanitizer/loader vars on all 8 tests incl. game/ and tests/ dirs; asan build + `ctest --test-dir build/asan -LE window` 7/7 passed; debug clean rebuild 0 warnings (GCC 16), clang 23 -Werror build clean + ctest -LE window 7/7; new ctest fixed_timestep (180 ticks at 30/60/144/240 fps and 3 jitter seeds, alpha fraction/monotonic, hitch clamp 15 ticks, 120 Hz, spin lerp + wrap). No game processes left running. Bug fix: CI _deps cache key hashed only the root CMakeLists.txt; now '**/CMakeLists.txt' + 'cmake/**'. Plan: standing rule requires coe_add_test for every test; step 9 latches input edges per fixed tick (no dropped/doubled presses), mouse look per render frame; step 10 extends FrameParams and replaces SpinDemo; step 20 adds a single doctest runner via coe_add_test and ports test_fixed_timestep; step 39 adds a frame-cap/vsync option; PLAN \u00a723 gains a Main loop row; README gains Layout + coe_add_test notes. Magewar: ~/game uses Godot defaults (no physics_ticks_per_second override, so 60 physics ticks/s, Jolt) with movement in _physics_process (cogito_player.gd) and run/max_fps=120; no physics interpolation enabled. Our 60 Hz tick matches; render interpolation is our reinterpretation; its fps cap is scheduled as an option in step 39 (sim rate unaffected). Its MultiplayerSynchronizer replicates position/rotation/velocity, which the fixed tick will carry for future host-authoritative net. No other mismatch.",
+      "commit": "36a0509"
     }
   ]
 }
