@@ -7,7 +7,7 @@
 4. Log any such changes in the history in `docs/build_state.json`.
 
 Design source of truth: [PLAN.md](PLAN.md) (§26 milestones, §30 loot-shooter spec). Progress: [build_state.json](build_state.json) (`next_step`).
-Each step is sized at ~1 hour. Every step must keep `cmake --build --preset debug` warning-free and `ctest --test-dir build/debug` green, and ends with a local commit (never push). Third-party libraries come in via CMake FetchContent (no system installs); every new asset goes into ASSETS.toml + CREDITS.md.
+Each step is sized at ~1 hour. Every step must keep `cmake --build --preset debug` warning-free and `ctest --test-dir build/debug` green (from step 8 on, also `ctest --test-dir build/asan -LE window`), and ends with a local commit (never push). Third-party libraries come in via CMake FetchContent, pinned + `SYSTEM` (no system installs; library list in [ADR-0001](adr/0001-language-and-libraries.md)); every new asset goes into ASSETS.toml + CREDITS.md.
 
 Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, fights Gnawers and Heaps with procedurally rolled Sidearms/Repeaters, picks up loot, levels up, clears a Breach room slice with a mini-boss, hears Kenney audio, and saves/loads.
 
@@ -25,19 +25,16 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 
 **5. Asset license lint** ✅ `5aca0bc`. Does: tools/check_assets.py (stdlib `tomllib`, Python ≥ 3.11) fails if any asset unit under assets/ is missing from ASSETS.toml or an entry lacks name/path/license/source, has a bad/missing/duplicate path, or has no CREDITS.md row. Asset unit = each dir directly under assets/, except vendor grouping folders that only hold sub-folders (assets/kenney/) whose children (each pack) are the units instead; loose files must be covered too; dotfiles ignored. Files: tools/check_assets.py, CMakeLists.txt. Done: ctests `asset_license_lint` + `asset_license_lint_selftest` (13 fixture cases) pass, no `window` label; temp untracked folders at assets/ and assets/kenney/ both made it fail (removed).
 
-**6. Asset cooker stub** ✅. Does: `tools/asset_cooker` CLI (`[--root R] [--out build/cooked] PATH...`, dirs walked) validates `.gltf/.glb/.png/.ogg` containers (PNG signature/IHDR/IEND, Ogg capture pattern, GLB magic/v2/length/JSON chunk, glTF JSON object with `asset`), follows glTF/GLB external URIs (missing or out-of-root ⇒ error; referenced files cooked too), copies verbatim mirroring the source layout, and writes a deterministic `manifest.json` (source, cooked, type, bytes, FNV-1a 64 hash, deps). Any error ⇒ exit 1, no manifest. Refuses to cook into assets/. `cook` CMake target cooks all of assets/. Files: tools/asset_cooker/{main.cpp,check_manifest.py}, CMakeLists.txt, README.md. Done: running it on assets/kenney/blaster-kit writes build/cooked/manifest.json (86 files: 40 glb + 46 png); ctests `asset_cooker_selftest` (15 fixture cases), `asset_cooker_blaster_kit` + `asset_cooker_manifest_check` (every source file listed, cooked bytes/hash match).
+**6. Asset cooker stub** ✅ `68d1c88`. Does: `tools/asset_cooker` CLI (`[--root R] [--out build/cooked] PATH...`, dirs walked) validates `.gltf/.glb/.png/.ogg` containers (PNG signature/IHDR/IEND, Ogg capture pattern, GLB magic/v2/length/JSON chunk, glTF JSON object with `asset`), follows glTF/GLB external URIs (missing or out-of-root ⇒ error; referenced files cooked too), copies verbatim mirroring the source layout, and writes a deterministic `manifest.json` (source, cooked, type, bytes, FNV-1a 64 hash, deps). Any error ⇒ exit 1, no manifest. Refuses to cook into assets/. `cook` CMake target cooks all of assets/. Files: tools/asset_cooker/{main.cpp,check_manifest.py}, CMakeLists.txt, README.md. Done: running it on assets/kenney/blaster-kit writes build/cooked/manifest.json (86 files: 40 glb + 46 png); ctests `asset_cooker_selftest` (15 fixture cases), `asset_cooker_blaster_kit` + `asset_cooker_manifest_check` (every source file listed, cooked bytes/hash match).
 
-**7. ADR-0001 language choice**
-- Does: records C++20 (vs Rust) decision and library choices (incl. SDL3 system-or-FetchContent policy from step 4). Also add an `asan` CMake preset (ASan+UBSan) and a second CI job running `ctest -LE window` under it (PLAN §25). Windows/MSVC, clang-tidy and clang-format CI jobs are deferred until after the vertical slice.
-- Files: docs/adr/0001-language-and-libraries.md, CMakePresets.json, .github/workflows/ci.yml.
-- Done: ADR has Context/Decision/Consequences; README links it; `cmake --preset asan && ctest --test-dir build/asan -LE window` passes locally. **M0 complete.**
+**7. ADR-0001 language choice** ✅. Does: [docs/adr/0001-language-and-libraries.md](adr/0001-language-and-libraries.md) (Context/Decision/Consequences) records C++20 over Rust, FetchContent-only pinned deps (no vcpkg/CPM), SDL3 system-or-FetchContent policy, and the per-step library table (GLM, VMA, fastgltf+simdjson, toml++, Jolt, doctest, ImGui, stb_truetype, miniaudio). `asan` configure/build/test presets: `COE_SANITIZE=ON` adds `-fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer`; ctest env (ASAN/UBSAN/LSAN_OPTIONS + `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1` so dlclose'd Mesa ICDs don't show up as `<unknown module>` leaks) set in CMakeLists.txt; documented, empty `tools/sanitizers/lsan.supp`. CI is a `debug`/`asan` matrix (two jobs). Windows/MSVC, clang-tidy, clang-format deferred to step 51. Files: docs/adr/0001-language-and-libraries.md, CMakePresets.json, CMakeLists.txt, .github/workflows/ci.yml, tools/sanitizers/lsan.supp, README.md. Done: ADR has Context/Decision/Consequences; README links it; `cmake --preset asan && ctest --test-dir build/asan -LE window` passes (GCC + RADV, and clang + fetched SDL3 + lavapipe CI emulation). **M0 complete.**
 
 ## M1 – Gunplay prototype
 
 **8. Engine/game split + fixed-timestep loop**
-- Does: move renderer into engine/, add game/ target, 60 Hz fixed update + variable render with interpolation alpha.
+- Does: move renderer into engine/, add game/ target, 60 Hz fixed update + variable render with interpolation alpha. Add a `coe_add_test()` CMake helper (cmake/CoeTesting.cmake) that registers a test and applies the `COE_SANITIZE` test env (CMake 3.25 can only set test properties in the defining directory), and use it for every test, including ones in engine/, game/, tests/.
 - Files: engine/{core,render}/, game/, src/main.cpp → game/main.cpp, CMakeLists.txt.
-- Done: triangle still renders; `--seconds 3` logs ~180 fixed ticks.
+- Done: triangle still renders; `--seconds 3` logs ~180 fixed ticks; `ctest --test-dir build/asan -N --show-only=json-v1` shows the sanitizer env on every test.
 
 **9. Input layer**
 - Does: action map (MoveForward, Jump, Fire, Aim, Reload, Sprint, Dash, Crouch, Interact, Weapon1–4) on SDL3 keyboard/mouse, relative mouse mode.
@@ -50,12 +47,12 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: headless test checks a cube pixel is lit and depth image exists; no validation errors.
 
 **11. Mesh pipeline + glTF loading**
-- Does: fastgltf via FetchContent, GPU vertex/index buffers (VMA via FetchContent), draw a Kenney blaster model. The runtime loads from the cooked dir, resolving paths through `cooked/manifest.json` (`covenant` depends on the `cook` target); the cooker swaps its minimal `"uri"` scan for a fastgltf parse so it validates accessors/buffers too.
+- Does: fastgltf via FetchContent, GPU vertex/index buffers (VMA via FetchContent), draw a Kenney blaster model. The runtime loads from the cooked dir, resolving paths through `cooked/manifest.json` (read with simdjson, which fastgltf already pulls in) (`covenant` depends on the `cook` target); the cooker swaps its minimal `"uri"` scan for a fastgltf parse so it validates accessors/buffers too.
 - Files: engine/render/mesh.*, engine/assets/gltf_loader.*.
 - Done: loads `blaster-kit` model with N>0 triangles; headless pixel check shows non-clear centre.
 
 **12. Greybox Midden arena**
-- Does: data-defined boxes (TOML) forming ground, walls, ramps, crates; simple directional lighting.
+- Does: data-defined boxes (TOML, parsed with toml++ via FetchContent per ADR-0001) forming ground, walls, ramps, crates; simple directional lighting.
 - Files: data/levels/midden_greybox.toml, game/world/level.*.
 - Done: level loads ≥10 boxes; screenshot (headless .ppm) shows floor and walls.
 
@@ -250,3 +247,10 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Does: 15-minute manual run with checklist (feel, balance, readability, crashes); fix top issues; record findings.
 - Files: docs/playtests/2026-xx-xx.md, any fixes.
 - Done: checklist filled, no blocker bugs left, README "How to play" updated. **Vertical slice complete** (tag `v0.1-slice` locally).
+
+## After the slice
+
+**51. CI breadth (deferred from step 7)**
+- Does: `.clang-format` + `.clang-tidy` baselines and CI jobs (format check, tidy on changed files); Windows/MSVC job (`windows` preset, MSVC `/W4 /WX`, `/fsanitize=address` only since MSVC has no UBSan); ADR-0002 if Windows forces a package manager.
+- Files: .clang-format, .clang-tidy, CMakePresets.json, .github/workflows/ci.yml.
+- Done: all jobs green on a branch push; local `clang-format --dry-run -Werror` clean.

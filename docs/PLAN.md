@@ -4,7 +4,7 @@ Working title. Plan only, with no code yet. A brand-new co-op Vulkan action RPG 
 
 ## 1. Magewar material found on Luna (read-only review)
 
-- **~/game**: The main Godot 4.7 project (git, MIT license, .github issue templates but no CI workflows, docs, Cogito FPS addon). Its last commit adds a host-authoritative co-op foundation. The GDScript covers the player, quest tracker, prologue driver, kill rewards, instanced loot and network sync, plus headless logic tests.
+- **~/game**: The main Godot 4.7 project (git, MIT license, .github issue templates but no CI workflows, docs/ = the COGITO template's Sphinx manual rather than Magewar design docs, Cogito FPS addon, no decision records). Its last commit adds a host-authoritative co-op foundation. The GDScript covers the player, quest tracker, prologue driver, kill rewards, instanced loot and network sync, plus headless logic tests.
 - **~/magewar-mmo**: A Godot 4.6 fork from June that goes in an MMO direction. It has autoloads, assets, docs, README_PROTOTYPE.md and a Steam app id.
 - **~/magewar3/magewar-prototype**: An earlier prototype. The Grok /implement notes in ~/.grok/implement-memory/magewar3-*.md record GDScript typing and .tscn issues, and a weapon/save system without automated tests.
 - **~/magewarweb**: A single-page web version or site: index.html, about 92 KB, plus a README.
@@ -249,7 +249,7 @@ All five copies of each design doc are byte-identical. Gaps were found by readin
 
 | Area | Choice | Why |
 |---|---|---|
-| Language | C++20 (Rust is the alternative) | It has the most mature Vulkan ecosystem (VMA, volk, ImGui, Jolt) and is easy to find contributors for. Rust with ash and gpu-allocator is the pick if memory safety is the top priority. Decide at M0 with an ADR. |
+| Language | C++20 (decided in [ADR-0001](adr/0001-language-and-libraries.md)) | It has the most mature Vulkan ecosystem (VMA, volk, ImGui, Jolt) and is easy to find contributors for. Rust (ash, gpu-allocator) was the alternative; memory safety comes from ASan/UBSan CI, validation layers and tests instead. |
 | Engine | Small custom engine | The brief says to build from scratch on Vulkan. Pull in proven libraries instead of rewriting them. |
 | Window and input | SDL3 | Windowing, gamepad, input and audio device in one library, cross-platform. |
 | Renderer | Vulkan 1.3, volk, VMA | Uses dynamic rendering and synchronization2. A frame graph handles barriers. Clustered forward+ PBR, cascaded shadows, bloom and tonemap. |
@@ -261,7 +261,7 @@ All five copies of each design doc are byte-identical. Gaps were found by readin
 | Networking | Host-authoritative, GameNetworkingSockets or ENet | This is the lesson ~/game already learned. |
 | Assets | glTF 2.0 via fastgltf, KTX2/BasisU, meshoptimizer | An offline cooker converts assets to runtime formats. |
 | Data and scripting | TOML/JSON plus Lua (sol2) | Gifts and quests are defined in data files. |
-| Build | CMake presets plus vcpkg or CPM | Linux (Luna runs Garuda) and Windows. |
+| Build | CMake presets plus FetchContent (pinned, per ADR-0001; no vcpkg/CPM) | Linux (Luna runs Garuda) and Windows. Data files in TOML via toml++; JSON reads via simdjson. |
 
 ## 24. Repo structure
 
@@ -274,9 +274,9 @@ All five copies of each design doc are byte-identical. Gaps were found by readin
 
 ## 25. CI and testing
 
-- **Builds**: GitHub Actions on Linux (clang) and Windows (MSVC), with ASan/UBSan, clang-tidy and clang-format.
+- **Builds**: GitHub Actions on Linux (clang) and Windows (MSVC), with ASan/UBSan, clang-tidy and clang-format. Since M0 (ADR-0001): Linux clang `debug` + `asan` jobs; Windows/MSVC, clang-tidy and clang-format follow after the vertical slice.
 - **Gameplay tests**: Headless tests for the damage formula, loot rolls and Grade weights, part assembly, essence matchups, save/load round-trips and quest flags.
-- **Unit tests**: Catch2 or doctest. Every new system and save path ships with automated tests, a lesson from Magewar's /implement notes.
+- **Unit tests**: doctest (ADR-0001). Every new system and save path ships with automated tests, a lesson from Magewar's /implement notes.
 - **GPU tests**: Headless and golden-image render tests on lavapipe. Any Vulkan validation error fails CI.
 - **License lint**: Any asset not listed in ASSETS.toml fails the build.
 

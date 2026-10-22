@@ -6,6 +6,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Sanitizers (PLAN §25, ADR-0001): the `asan` preset sets COE_SANITIZE=ON for
+# ASan + UBSan on every target in this tree (incl. a fetched SDL3). UBSan is fatal
+# (-fno-sanitize-recover=all) so any report fails the test; frame pointers kept
+# for usable stacks. Runtime options for ctest are set at the bottom of this file.
+option(COE_SANITIZE "Build with AddressSanitizer + UndefinedBehaviorSanitizer (GCC/Clang)" OFF)
+if(COE_SANITIZE)
+  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    message(FATAL_ERROR "COE_SANITIZE needs GCC or Clang")
+  endif()
+  add_compile_options(-fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer)
+  add_link_options(-fsanitize=address,undefined)
+endif()
+
 find_package(Vulkan REQUIRED COMPONENTS glslc)
 # Python 3.11+ (stdlib tomllib) for tools/check_assets.py
 find_package(Python3 3.11 REQUIRED COMPONENTS Interpreter)
@@ -81,3 +94,20 @@ add_test(NAME asset_cooker_manifest_check
           --root ${CMAKE_SOURCE_DIR} --cooked ${CMAKE_BINARY_DIR}/cooked_test --source assets/kenney/blaster-kit)
 set_tests_properties(asset_cooker_blaster_kit PROPERTIES FIXTURES_SETUP cooked_blaster)
 set_tests_properties(asset_cooker_manifest_check PROPERTIES FIXTURES_REQUIRED cooked_blaster)
+
+# Sanitizer runtime options for every ctest (see COE_SANITIZE above, ADR-0001).
+# Leak checking stays ON. VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1 is the
+# Vulkan loader's own switch for leak tools: without it the loader dlclose()s
+# the ICD/layer .so files in vkDestroyInstance, which unmaps their globals that
+# still point at one-time driver allocations (Mesa pthread_once state), so LSan
+# reports them as leaks with "<unknown module>" frames that no suppression can
+# match. tools/sanitizers/lsan.supp holds targeted suppressions for system-lib
+# noise if any ever appears (currently empty; each entry must be documented).
+if(COE_SANITIZE)
+  get_property(coe_all_tests DIRECTORY PROPERTY TESTS)
+  set_property(TEST ${coe_all_tests} APPEND PROPERTY ENVIRONMENT
+    "ASAN_OPTIONS=detect_leaks=1:abort_on_error=0:halt_on_error=1:strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1"
+    "UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1"
+    "VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1"
+    "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/tools/sanitizers/lsan.supp:print_suppressions=1")
+endif()

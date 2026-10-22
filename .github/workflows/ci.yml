@@ -1,6 +1,11 @@
 # Covenant of Embers CI: Linux / clang / Ninja, Vulkan on Mesa lavapipe (CPU).
+# Two jobs from one matrix (PLAN §25, ADR-0001):
+#   linux-clang (debug) - cmake --preset debug && ctest -LE window
+#   linux-clang (asan)  - cmake --preset asan  && ctest -LE window
+#                          (ASan + fatal UBSan; sanitizer/loader env comes from
+#                          CMakeLists.txt test properties, same as locally)
 # Runs every ctest except the `window` label (no display on the runner).
-# Mirrors the local check: cmake --preset debug && ctest -LE window.
+# Deferred until after the vertical slice: Windows/MSVC, clang-tidy, clang-format.
 name: ci
 
 on:
@@ -18,8 +23,13 @@ concurrency:
 
 jobs:
   linux-clang:
+    name: linux-clang (${{ matrix.preset }})
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [debug, asan]
     env:
       CC: clang
       CXX: clang++
@@ -36,6 +46,11 @@ jobs:
             libvulkan-dev glslc vulkan-tools vulkan-validationlayers \
             mesa-vulkan-drivers
 
+      - name: Limit mmap ASLR entropy for ASan
+        # clang 18's ASan crashes at startup on kernels with vm.mmap_rnd_bits=32.
+        if: matrix.preset == 'asan'
+        run: sudo sysctl -w vm.mmap_rnd_bits=28
+
       - name: Select lavapipe ICD
         # Force the software ICD so results never depend on runner GPUs.
         run: |
@@ -49,15 +64,15 @@ jobs:
       - name: Cache SDL3 FetchContent sources
         uses: actions/cache@v4
         with:
-          path: build/debug/_deps
-          key: deps-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          path: build/${{ matrix.preset }}/_deps
+          key: deps-${{ runner.os }}-${{ matrix.preset }}-${{ hashFiles('CMakeLists.txt') }}
 
       - name: Configure
         # Ubuntu 24.04 has no SDL3 package: fetch it; console build = no X11/Wayland deps.
-        run: cmake --preset debug -DCOE_FETCH_SDL3=ON -DSDL_UNIX_CONSOLE_BUILD=ON
+        run: cmake --preset ${{ matrix.preset }} -DCOE_FETCH_SDL3=ON -DSDL_UNIX_CONSOLE_BUILD=ON
 
       - name: Build
-        run: cmake --build --preset debug
+        run: cmake --build --preset ${{ matrix.preset }}
 
       - name: Test (headless, no window label)
-        run: ctest --test-dir build/debug -LE window --output-on-failure --timeout 120
+        run: ctest --test-dir build/${{ matrix.preset }} -LE window --output-on-failure --timeout 300

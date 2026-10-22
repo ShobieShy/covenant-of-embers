@@ -2,7 +2,7 @@
 
 An original, open-source co-op (1–4 players) Borderlands-style loot FPS built on a small custom C++20 / Vulkan engine. Inspired by the spirit of Magewar and by biblical themes; not a copy of either.
 
-Status: **M0 – foundations**: SDL3 window + Vulkan 1.3 (dynamic rendering, sync2) triangle. See [docs/PLAN.md](docs/PLAN.md) for the full design.
+Status: **M0 – foundations complete**: SDL3 window + Vulkan 1.3 (dynamic rendering, sync2) triangle, CI, asset lint, cooker stub. See [docs/PLAN.md](docs/PLAN.md) for the full design and [ADR-0001](docs/adr/0001-language-and-libraries.md) for the language (C++20) and library choices.
 
 ## Build (Linux)
 ```sh
@@ -12,8 +12,16 @@ cmake --build --preset debug
 ```
 Requires CMake ≥ 3.25, Ninja, a C++20 compiler (GCC 13+/Clang 17+), and the Vulkan SDK pieces (headers, loader, glslc; validation layers recommended). SDL3 is used from the system when installed; otherwise CMake fetches and builds a pinned release (force with `-DCOE_FETCH_SDL3=ON`).
 
+### Sanitizers (ASan + UBSan)
+```sh
+cmake --preset asan
+cmake --build --preset asan
+ctest --test-dir build/asan -LE window     # or: ctest --preset asan
+```
+UBSan is fatal and leak checking is on; ctest sets the sanitizer and Vulkan-loader environment (see [ADR-0001](docs/adr/0001-language-and-libraries.md)). To run a sanitized binary by hand, export `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1` first.
+
 ## CI
-`.github/workflows/ci.yml` builds with clang + Ninja on Ubuntu 24.04 and runs `ctest -LE window` on Mesa lavapipe (software Vulkan) with validation layers installed, so any validation error fails CI. Tests labelled `window` need a display and run only locally.
+`.github/workflows/ci.yml` builds with clang + Ninja on Ubuntu 24.04 in two jobs (`debug` and `asan` presets) and runs `ctest -LE window` in each on Mesa lavapipe (software Vulkan) with validation layers installed, so any validation error fails CI. Tests labelled `window` need a display and run only locally. Windows/MSVC, clang-tidy and clang-format jobs are deferred until after the vertical slice.
 
 ## Licenses
 - Code: Apache-2.0 (see `LICENSE`).

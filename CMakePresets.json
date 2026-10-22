@@ -4,10 +4,21 @@
     { "name": "debug", "generator": "Ninja", "binaryDir": "build/debug",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" } },
     { "name": "release", "generator": "Ninja", "binaryDir": "build/release",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" } }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" } },
+    { "name": "asan", "displayName": "ASan + UBSan (Debug)",
+      "description": "Debug build with -fsanitize=address,undefined, fatal UBSan, frame pointers (GCC/Clang). Test with: ctest --test-dir build/asan -LE window",
+      "generator": "Ninja", "binaryDir": "build/asan",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "COE_SANITIZE": "ON" } }
   ],
   "buildPresets": [
     { "name": "debug", "configurePreset": "debug" },
-    { "name": "release", "configurePreset": "release" }
+    { "name": "release", "configurePreset": "release" },
+    { "name": "asan", "configurePreset": "asan" }
+  ],
+  "testPresets": [
+    { "name": "asan", "configurePreset": "asan",
+      "filter": { "exclude": { "label": "window" } },
+      "output": { "outputOnFailure": true },
+      "execution": { "timeout": 300 } }
   ]
 }
