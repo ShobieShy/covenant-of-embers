@@ -21,15 +21,20 @@
 // Assets (step 11): the model is resolved through the cooker's manifest (size + hash
 // checked), loaded with fastgltf (engine/assets) and uploaded once (VMA buffers).
 // Level (step 12): boxes from TOML (game/world/level), one shared unit cube, one draw each.
+// Physics (step 13): every level box is a static Jolt collider (game/world/level_physics);
+// the world steps once per fixed tick. A tumbling demo crate (dynamic box) is dropped
+// in front of the start camera and drawn interpolated, until real props arrive.
 #include "engine/core/clock.hpp"
 #include "engine/core/fixed_timestep.hpp"
 #include "engine/input/input.hpp"
 #include "engine/render/vk_renderer.hpp"
 #include "engine/assets/gltf_loader.hpp"
 #include "engine/assets/manifest.hpp"
+#include "engine/physics/physics.hpp"
 #include "game/core/tumble_demo.hpp"
 #include "game/world/headless_checks.hpp"
 #include "game/world/level.hpp"
+#include "game/world/level_physics.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
@@ -44,6 +49,7 @@
 #include <string>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #ifndef COE_COOKED_DIR
 #define COE_COOKED_DIR "cooked"
@@ -96,6 +102,17 @@ bool loadLevelFile(const std::string& path, coe::game::Level& level) {
             kinds += std::string(kinds.empty() ? "" : ", ") + std::to_string(n) + " " + coe::game::boxKindName(coe::game::BoxKind(k));
     std::printf("[level] %s '%s': %zu boxes (%s)\n", level.id.c_str(), level.name.c_str(), level.boxes.size(), kinds.c_str());
     return true;
+}
+
+// Demo crate (step 13): 0.6 m, dropped tilted 3 m up, 4.5 m in front of the start camera.
+constexpr float kDemoCrateEdge = 0.6f;
+constexpr glm::vec4 kDemoCrateTint{0.85f, 0.35f, 0.1f, 1.0f};   // ember orange
+coe::physics::BoxDesc demoCrate(const coe::game::Level& level) {
+    coe::physics::BoxDesc d;
+    d.center = level.camera.position + glm::vec3(0.8f, 1.3f, -4.5f);
+    d.halfExtents = glm::vec3(kDemoCrateEdge * 0.5f);
+    d.rotation = glm::angleAxis(0.6f, glm::normalize(glm::vec3(1.0f, 0.3f, 0.7f)));
+    return d;
 }
 
 bool loadModel(const std::string& cookedDir, const std::string& source, coe::assets::MeshData& mesh) {
@@ -214,6 +231,13 @@ int main(int argc, char** argv) {
     const glm::mat4 fit = ok && modelView ? fitModel(mesh) : glm::mat4(1.0f);
     // Level mode: every box is a draw of the one cube; the frame only changes by camera.
     const coe::FrameParams levelBase = ok && !modelView ? levelFrame(level, meshId) : coe::FrameParams{};
+    // Physics (level mode): static colliders from the same boxes the renderer draws.
+    coe::physics::PhysicsWorld physics;
+    if (ok && !modelView) {
+        const coe::game::LevelPhysics lp = coe::game::buildLevelPhysics(level, physics);
+        std::printf("[physics] Jolt world: %zu static box colliders, gravity %.1f m/s^2, %u Hz fixed step\n",
+                    lp.bodies.size(), double(-coe::physics::WorldSettings{}.gravity.y), kTickHz);
+    }
 
     bool ticksOk = true, inputOk = true;
     if (ok && headless) {
@@ -245,6 +269,13 @@ int main(int argc, char** argv) {
         // compositor refuses (e.g. window not focused yet).
         if (!SDL_SetWindowRelativeMouseMode(window, true))
             std::fprintf(stderr, "[input] relative mouse mode unavailable: %s\n", SDL_GetError());
+        coe::physics::BodyHandle crate;
+        coe::physics::BodyState cratePrev, crateCur;   // poses at the last two ticks, for interpolation
+        if (!modelView) {
+            crate = physics.addDynamicBox(demoCrate(level));
+            cratePrev = crateCur = physics.state(crate);
+        }
+        bool physicsOk = true;
         uint64_t frames = 0, loops = 0;   // loops also counts minimized iterations
         const uint64_t start = coe::monotonicNs();
         const uint64_t limitNs = seconds > 0 ? uint64_t(seconds * 1e9) : 0;
@@ -266,6 +297,11 @@ int main(int argc, char** argv) {
                 for (size_t a = 0; a < coe::input::kActionCount; ++a) presses[a] += in.pressCount[a];
                 if (inputDebug) printTick(step.totalTicks() - n + 1, in);
                 sim.tick(step.dtSeconds());
+                if (!modelView) {
+                    physicsOk = physics.step(float(step.dtSeconds())) && physicsOk;
+                    cratePrev = crateCur;
+                    crateCur = physics.state(crate);
+                }
             }
             last = now;
             // Mouse look per render frame (not per tick) for minimum latency; it turns
@@ -284,6 +320,12 @@ int main(int argc, char** argv) {
             fp.camera.yaw = float(lookYaw);       // mouse right -> negative yaw -> turn right
             fp.camera.pitch = float(lookPitch);
             if (modelView) fp.draws.push_back({meshId, sim.renderModel(step.alpha()) * fit});
+            else {
+                const float a = float(step.alpha());
+                glm::mat4 m = glm::translate(glm::mat4(1.0f), glm::mix(cratePrev.position, crateCur.position, a));
+                m = m * glm::mat4_cast(glm::slerp(cratePrev.rotation, crateCur.rotation, a));
+                fp.draws.push_back({meshId, glm::scale(m, glm::vec3(kDemoCrateEdge)), kDemoCrateTint});
+            }
             ok = renderer.drawFrame(fp);
             ++frames;
         }
@@ -309,6 +351,15 @@ int main(int argc, char** argv) {
         // Every ns of frame time was fed to the accumulator, so the tick count is exact.
         const uint64_t expected = (last - start - step.droppedNs()) * kTickHz / coe::FixedTimestep::kNsPerSecond;
         ticksOk = step.totalTicks() == expected;
+        if (!modelView) {
+            // One physics step per fixed tick, no Jolt errors.
+            const bool stepsMatch = physics.steps() == step.totalTicks();
+            ticksOk = ticksOk && stepsMatch && physicsOk;
+            std::printf("[physics] %llu steps (one per tick%s), demo crate at (%.2f, %.2f, %.2f) %s%s\n",
+                        (unsigned long long)physics.steps(), stepsMatch ? "" : " MISMATCH",
+                        double(crateCur.position.x), double(crateCur.position.y), double(crateCur.position.z),
+                        crateCur.active ? "moving" : "asleep", physicsOk ? "" : ", update ERRORS");
+        }
         std::printf("frames: %llu in %.2fs (%.0f fps)\n", (unsigned long long)frames, elapsed,
                     elapsed > 0 ? double(frames) / elapsed : 0.0);
         std::printf("fixed ticks: %llu @ %u Hz (expected %llu, %.3fs dropped by hitch clamp)%s\n",

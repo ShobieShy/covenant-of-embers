@@ -106,6 +106,31 @@ FetchContent_Declare(tomlplusplus
   SYSTEM)
 FetchContent_MakeAvailable(tomlplusplus)
 
+# Jolt Physics (ADR-0001 step 13): rigid bodies + collision for the greybox (static
+# level boxes now, CharacterVirtual in step 14, raycasts for hitscan in step 17).
+# Pinned release tarball + hash, SYSTEM. Only the core library: GPU compute
+# back-ends (Vulkan/DX12/Metal/CPU), debug renderer, profiler, ObjectStream, install
+# rules, LTO and Jolt's own -Werror are switched off; Jolt keeps its default x86-64
+# SIMD level (SSE4.2/AVX2/F16C/FMA/LZCNT/TZCNT/BMI, PUBLIC compile options). Single
+# precision. Asserts follow the build type (Jolt defines JPH_DEBUG when !NDEBUG).
+# Its CMakeLists only touches CMAKE_CXX_FLAGS inside its own directory scope.
+foreach(opt TARGET_UNIT_TESTS TARGET_HELLO_WORLD TARGET_PERFORMANCE_TEST TARGET_SAMPLES TARGET_VIEWER
+            ENABLE_INSTALL ENABLE_ALL_WARNINGS INTERPROCEDURAL_OPTIMIZATION OVERRIDE_CXX_FLAGS
+            DEBUG_RENDERER_IN_DEBUG_AND_RELEASE PROFILER_IN_DEBUG_AND_RELEASE ENABLE_OBJECT_STREAM
+            JPH_USE_DX12 JPH_USE_VK JPH_USE_MTL JPH_USE_CPU_COMPUTE DOUBLE_PRECISION)
+  set(${opt} OFF CACHE BOOL "" FORCE)
+endforeach()
+# RTTI on (Jolt defaults to -fno-rtti): the rest of the tree has RTTI, and UBSan's vptr
+# check (asan preset) needs typeinfo for Jolt's polymorphic classes. Exceptions stay off.
+set(CPP_RTTI_ENABLED ON CACHE BOOL "" FORCE)
+FetchContent_Declare(JoltPhysics
+  URL https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.6.0.tar.gz
+  URL_HASH SHA256=6e069ee0172478cc78182047aac87e5310ba14a67a53348ae14cc37801fd3f8e
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  SOURCE_SUBDIR Build
+  SYSTEM)
+FetchContent_MakeAvailable(JoltPhysics)
+
 # Binaries land in build/<preset>/ (not per-subdir) so paths stay
 # ./build/debug/covenant and ./build/debug/asset_cooker.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

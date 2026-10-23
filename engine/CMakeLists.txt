@@ -2,6 +2,8 @@
 # coe_assets: CPU-side asset code (glTF loading via fastgltf, cooked manifest via
 # simdjson); no Vulkan/SDL, so tools/asset_cooker links it too.
 # coe_engine: reusable runtime (core loop utilities, Vulkan renderer). No gameplay.
+# coe_physics: Jolt-backed rigid-body world (step 13); Jolt is PRIVATE (pimpl), so
+# consumers see glm types only and never compile Jolt headers.
 
 # --- shaders -> SPIR-V (build/<preset>/shaders) ---
 set(SHADER_SRC ${PROJECT_SOURCE_DIR}/shaders/basic.vert ${PROJECT_SOURCE_DIR}/shaders/basic.frag)
@@ -45,3 +47,9 @@ target_compile_definitions(coe_engine PUBLIC GLM_FORCE_RADIANS GLM_FORCE_DEPTH_Z
 target_link_libraries(coe_engine PUBLIC coe_assets Vulkan::Vulkan SDL3::SDL3 glm::glm
   PRIVATE GPUOpen::VulkanMemoryAllocator coe_warnings)
 target_compile_definitions(coe_engine PRIVATE VMA_STATIC_VULKAN_FUNCTIONS=1 VMA_DYNAMIC_VULKAN_FUNCTIONS=0)
+
+add_library(coe_physics STATIC
+  physics/physics.cpp)
+target_include_directories(coe_physics PUBLIC ${PROJECT_SOURCE_DIR})
+target_compile_definitions(coe_physics PUBLIC GLM_FORCE_RADIANS GLM_FORCE_DEPTH_ZERO_TO_ONE)
+target_link_libraries(coe_physics PUBLIC glm::glm PRIVATE Jolt coe_warnings)

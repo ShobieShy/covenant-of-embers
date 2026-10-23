@@ -2,7 +2,7 @@
 
 An original, open-source co-op (1–4 players) Borderlands-style loot FPS built on a small custom C++20 / Vulkan engine. Inspired by the spirit of Magewar and by biblical themes; not a copy of either.
 
-Status: **M1 – gunplay prototype in progress**. M0 foundations (SDL3 window + Vulkan 1.3 triangle, CI, asset lint, cooker stub) are done; the engine/game split, the 60 Hz fixed-timestep loop, the input layer (actions per tick, mouse look per frame) and a first-person camera with a reverse-Z depth buffer and the mesh pipeline (fastgltf + VMA: a lit, tumbling Kenney blaster loaded from the cooked assets; mouse looks around) are in. See [docs/PLAN.md](docs/PLAN.md) for the full design and [ADR-0001](docs/adr/0001-language-and-libraries.md) for the language (C++20) and library choices.
+Status: **M1 – gunplay prototype in progress**. M0 foundations (SDL3 window + Vulkan 1.3 triangle, CI, asset lint, cooker stub) are done; the engine/game split, the 60 Hz fixed-timestep loop, the input layer (actions per tick, mouse look per frame) and a first-person camera with a reverse-Z depth buffer the mesh pipeline (fastgltf + VMA: a lit Kenney blaster loaded from the cooked assets), the data-defined Midden greybox arena (TOML, 2× MSAA, fog) and a Jolt physics world built from its boxes (a demo crate tumbles onto the floor; mouse looks around) are in. See [docs/PLAN.md](docs/PLAN.md) for the full design and [ADR-0001](docs/adr/0001-language-and-libraries.md) for the language (C++20) and library choices.
 
 ## Build (Linux)
 ```sh
@@ -29,8 +29,8 @@ UBSan is fatal and leak checking is on; ctest sets the sanitizer and Vulkan-load
 - Third-party assets keep their own licenses; every one is listed in `ASSETS.toml` and `CREDITS.md`.
 
 ## Layout
-- `engine/` – reusable runtime (`coe_engine` library): `core/` (fixed-timestep loop, clock), `input/` (SDL3 action map, per-tick edges, per-frame mouse look), `render/` (Vulkan renderer; `camera.*`: right-handed +Y-up view, reverse-Z infinite-far Vulkan projection, 75° vertical FOV, 5 cm near plane).
-- `game/` – the `covenant` executable (main loop) on top of `coe_game` (gameplay code shared with tests): `world/level.*` loads data-defined greybox levels (toml++), `world/headless_checks.*` verifies headless frames.
+- `engine/` – reusable runtime (`coe_engine` library): `core/` (fixed-timestep loop, clock), `input/` (SDL3 action map, per-tick edges, per-frame mouse look), `render/` (Vulkan renderer; `camera.*`: right-handed +Y-up view, reverse-Z infinite-far Vulkan projection, 75° vertical FOV, 5 cm near plane). `physics/` is the separate `coe_physics` library: a Jolt Physics world behind a pimpl (static/dynamic boxes, fixed-tick stepping, raycasts), so nothing else includes Jolt.
+- `game/` – the `covenant` executable (main loop) on top of `coe_game` (gameplay code shared with tests): `world/level.*` loads data-defined greybox levels (toml++), `world/level_physics.*` turns their boxes into static Jolt colliders, `world/headless_checks.*` verifies headless frames.
 - `data/` – hand-authored game data read at runtime (TOML). `data/levels/midden_greybox.toml`: the M1 greybox arena as boxes (`kind` ground/wall/ramp/crate/heap/platform, `center`/`size` in metres, `rotation` in degrees applied Y·X·Z like Godot, `color` tint).
 - `tests/` – unit tests. `tools/` – asset lint and cooker. `cmake/` – build helpers.
 

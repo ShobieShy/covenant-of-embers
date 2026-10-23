@@ -26,3 +26,10 @@ add_executable(test_level test_level.cpp)
 target_link_libraries(test_level PRIVATE coe_game coe_warnings)
 target_compile_definitions(test_level PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
 coe_add_test(NAME level COMMAND test_level)
+
+# Jolt physics world + greybox colliders (step 13): boxes dropped on the Midden ground
+# and ramp_west, collider poses == render boxes, raycasts land on box surfaces.
+add_executable(test_physics test_physics.cpp)
+target_link_libraries(test_physics PRIVATE coe_game coe_physics coe_warnings)
+target_compile_definitions(test_physics PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
+coe_add_test(NAME physics COMMAND test_physics)

@@ -26,7 +26,7 @@ to_light = [0.354, 0.707, 0.612]    # Magewar SicklyLight basis Z: high, slightl
 color = [0.85, 0.78, 0.57]          # Magewar light_color (0.6, 0.55, 0.4) hue
 
 [camera]                            # start view until step 14's controller spawns the player
-position = [0.0, 1.7, 12.5]         # eye height ~1.7 m (Magewar body origin 1 m + Neck 0.7 m)
+position = [0.0, 1.5, 12.5]         # eye height 1.5 m (Magewar: body origin 0.8 m above the feet + Neck 0.7 m)
 yaw_deg = 0.0
 pitch_deg = -8.0
 
