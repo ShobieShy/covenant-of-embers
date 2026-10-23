@@ -2,7 +2,7 @@
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 21,
+  "next_step": 22,
   "total_steps": 56,
   "steps_done": [
     1,
@@ -24,9 +24,10 @@
     17,
     18,
     19,
-    20
+    20,
+    21
   ],
-  "last_commit": "0328108",
+  "last_commit": "c811ed8",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -204,6 +205,16 @@
       "magewar": "Followed: magic_element.gd chart (Fire>Earth>Air>Water>Fire, Light<->Dark, x1.5/x0.5, same/Arcane x1.0), ELEMENT_NAMES and element colours, item_rarity.gd multipliers, damage = base x rarity + part damage_bonus. Mismatches kept/noted: Magewar clamps resistance to 0.9 and only for gear matching the element (we cap 60 % per element per PLAN 30.4; decide in step 30); Magewar has no crits/weak points (x2 is plan design); its chart is hardcoded (ours is data with code-enforced same/Arcane rules); its 'Super Effective!'/'Not Very Effective...' text becomes DamageResult::strong()/weak() for steps 22/41.",
       "plan_changes": "Step 20 text = shipped design. Notes added: step 22 (ProjectileHit carries damage + element, enemy DamageTarget + resolveHit, numbers coloured from ElementTable), 24 (seam sets weakPoint; player hits via resolveHit with Resistances), 26 (feed wieldableDamage's multiplier from rarities.toml), 28 (fill WieldablePart::damageBonus), 30 (gear resist -> Resistances, 60 vs 90 % decision), 32 (elements.toml patchable), 41 (effectiveness hit text, element icon colour). PLAN 30.1 damage line notes the resist/crit mismatches; ADR-0001 doctest row describes the runner; README lists --elements and running one doctest file. Remaining plain-check tests port to doctest as they are next touched.",
       "bug_fixes": "Step 17's pending plan item done (test_casting ported to doctest; Element/elementColor moved to game/combat, tracer colours from data). Latent test bug fixed: test_casting's withLine helper only CHECKed the find() result, so a typo'd fixture would throw std::out_of_range from replace() and abort the run; now REQUIRE. No other earlier-step code bugs found."
+    },
+    {
+      "time": "2026-10-23T04:30-05:00",
+      "step": 21,
+      "type": "build",
+      "commit": "c811ed8",
+      "summary": "Staff + wand slots and viewmodel: game/magic/loadout.* (Staff/Wand slots, one Caster per slot so cooldowns are per weapon and run while holstered, typed equip, select with 0.4 s equip time, Fire refused and Focus gated until the swap ends, instant select for spawning); game/render/viewmodel.* (Magewar default_position poses, greybox shaft + element-tinted gem head, focus slide toward the centre, swap lower/raise, CastPoint, viewmodelToWorld across FOVs, head-colour check); renderer glTF base-colour textures via stb_image (per-material samplers, KHR_texture_transform/texCoord baked), viewmodel pass on the second Frame UBO slot (75 deg, depth cleared), swapchain capture with sRGB flag; tracer starts at the CastPoint and converges onto the eye ray (hits unchanged). covenant --staff/--wand, Weapon1/2 = slots, headless vmframe.ppm check, window frame-4 capture check, input script swap at frame 52 = 24 ticks. test_loadout 4 cases/65, test_viewmodel 7/183, test_gltf_loader texture cases. Window run: head cos 0.999 to Fire colour on the sRGB capture, swap 24/24 ticks, focus + cast with the staff, 0 validation messages. Debug 31/31 incl. window, asan 28/28, warning-free.",
+      "magewar": "Followed: one staff + one wand equip slot, unequip-then-equip swap blocking attack input, staff/wand default_position viewmodel offsets, bolts tied to a CastPoint, element colours on the weapon. Mismatches (fixed by design, logged): _fire_timer resets when a wieldable is re-instanced on equip (swap-cancel skips cooldown) -> per-slot cooldowns; staff models point +Z and wands -Y -> all poses -Z; camera stayed zoomed when a swap interrupted ADS -> Focus gated on Loadout::ready(); animated ADS pose -> slide toward centre by Focus::amount(); viewmodel-shader FOV -> separate 75 deg pass with depth clear; Magewar spawns the bolt at the CastPoint -> we keep the eye ray for hits and only start the tracer at the CastPoint.",
+      "plan_changes": "Step 21 text = shipped design (adds window swapchain capture, sRGB-aware head check, tracer visualOffset). Weapon3/4 unbound in covenant (two slots); input-script Weapon2 press moved to frame 52. Notes added: step 22 (casts come from Loadout::tick, impacts stay on the eye ray), step 44 (hold-to-cast toggle -> Loadout::setHoldToRepeat, Weapon3/4 for quick-slots or drop, viewmodel FOV option, Aim gated by ready()). README controls/flags updated. test_gltf_loader extended but not ported to doctest (its --cooked fixture mode needs a runner option; port with its next real change).",
+      "bug_fixes": "Viewmodel shaft side triangles were wound inward (back-face culled, inner wall visible) - found by test_viewmodel's winding check and fixed. smoke_headless_model centre-pixel threshold 60 -> 24 now that the blaster is textured (darker colormap; image verified). Caster no longer shared across weapons (step 17's shared-cooldown note resolved: per-slot casters). KHR_texture_transform rotation convention checked against the spec example (lower-left quadrant) and documented."
     }
   ]
 }
