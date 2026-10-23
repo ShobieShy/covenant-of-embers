@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 12,
+  "next_step": 13,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -16,9 +16,10 @@
     8,
     9,
     10,
-    11
+    11,
+    12
   ],
-  "last_commit": "f1e100f",
+  "last_commit": "f180fa8",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -107,6 +108,14 @@
       "summary": "Enemy entity, training dummies, damage numbers: LevelToml inline tables; EnemyDef/EnemyTable + resources/enemies/training_dummies.tres (compared with data/enemies/training_dummies.toml; gnawer.toml parses with its ai table); Enemy (CharacterBody3D on new physics layer 3 'enemy', body + head shapes, weak point from Hit.shape, health clamped at 0, damage_taken without overkill, hit flash, died once, dead enemies hidden and passed through by bolts, spawned at the Midden's EnemySpawns markers); SpellBolts Hit.shape/grazed, damage_target_for, dead pass-through, 0.1 m graze sphere that never goes through walls; DamageNumbers (Label3D, element colour, C++ rise/fade/scale/cap/format + Magewar 'Super Effective!'/'Not Very Effective...' callouts); player mask world+enemy; main spawns 2 dummies. 104 tests green (8 new test_enemy): Fire staff via Player = 15 x4 -> exactly 0 HP, 5th bolt through to the wall; Fire vs Water 5; Air 10 vs Water 11.25; Swift Wind vs Water 8.4375; head x2 = 30; 1000 Arcane overkill -> 0 (60 taken).",
       "plan_changes": "Step 11 marked done with Result/Fixed/Magewar check. Fixed the step 11 plan note: the head is a second body shape identified by Hit.shape, not an Area (bolt rays ignore Areas). test_player layer check updated for the deliberate player mask change (world + enemy). Effectiveness callouts done in-world now instead of deferred. Step notes added: 12 (Gnawer extends Enemy, gnawer.tres + EnemyTable.DEFAULT_PATHS, spawn subclass by id so gnawer_3 spawns, knockback from damaged with amount > 10 + hit.direction since Magewar's take_elemental_damage is never called), 13 (Player damage_target + take_hit, Heap reuses Enemy), 14 (enemy_killed from Enemy.died, free dead enemies, dummy respawn via Enemy.reset, reuse spawn_at_markers), 29 (hit/crit/kill markers; HUD doesn't duplicate damage numbers), 37 (hit/death sounds from Enemy.damaged/died). Magewar check: affinity/get_element/'enemies' group/damage_received name kept; not copied: landfill enemies have no health attribute (never die), dead knockback code, 3-arg emit on a 1-arg signal, effectiveness-only damage, hint-only effectiveness text; level/xp/gold scheduled for steps 19-20.",
       "commit": "f1e100f"
+    },
+    {
+      "time": "2026-10-23T18:19-05:00",
+      "step": 12,
+      "type": "build",
+      "summary": "Gnawer AI (port of old 23): RusherDef (C++ ai validation, Magewar defaults), Gnawer extends Enemy with the C++ state machine (Idle/Detect/Chase/Attack/Knockback/Dead), bites via attacked signal with i-frame dodge, knockback from damaged > 10, NavigationAgent3D chase over a LevelNavigation navmesh baked at load (toml_to_scene emits it; Midden 244 polygons), move_and_slide + step-up, Enemy.BRAINS spawns Gnawers at markers. Runner awaits tests, run_tests.sh --fixed-fps 60. 115 tests green (11 new test_gnawer): Detect@1 7 m, Chase@21 6 m, Attack@76 0.96 m, bites 48 ticks apart, stops 0.90 m, travelled 6.100 m; around a wall on the navmesh; 0.2 m step; Fire bolt 15 -> 30 ticks 2.5 m knockback; dodge; Midden Gnawer bites 4x in 3 s without shoving the player.",
+      "plan_changes": "Step 12 marked done with Result/Fixed/Magewar check. Fixed: runner could not await physics frames (navmesh syncs async, ~35 frames for the Midden) -> awaited tests + --fixed-fps 60; Enemy.create only made base Enemies; test_enemy now expects 3 spawned/0 skipped and compares ai; double-precision 31st knockback tick snapped. Notes added: step 13 (apply non-dodged bites from Gnawer.attacked, Heap via ai kind + Enemy.BRAINS, tests bake LevelNavigation and await map_ready), step 14 (Gnawer separation/avoidance, spawner sets target, navmesh sync delay). Magewar check: rat numbers match; Magewar enemy_base has no AI/attack/sight code (behaviour from the C++ port), landfill NavigationRegion3D unbaked -> ours baked sibling, dead knockback code -> driven by damaged; Dark corrupt_into_summon flagged for review.",
+      "commit": "f180fa8"
     }
   ]
 }
