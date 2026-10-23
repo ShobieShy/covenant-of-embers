@@ -2,7 +2,7 @@
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 13,
+  "next_step": 14,
   "total_steps": 51,
   "steps_done": [
     1,
@@ -16,9 +16,10 @@
     9,
     10,
     11,
-    12
+    12,
+    13
   ],
-  "last_commit": "a532c06",
+  "last_commit": "a575603",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -119,6 +120,13 @@
       "type": "build",
       "summary": "Greybox Midden arena. toml++ v3.4.0 via FetchContent tarball (URL_HASH SHA256, SYSTEM), private to new coe_game static lib (TOML_EXCEPTIONS 0, parse_result). data/levels/midden_greybox.toml: 17 boxes (ground, 5 walls with a 4 m south entrance, scrap ledge + two 20.6 deg ramps, 3 rotated heaps, 5 crates) plus environment (sky/ambient/fog), sun and start camera. game/world/level.*: strict validation with file:line errors, Y-X-Z Euler (Godot), model = T*R*S, boxAtSurface; makeUnitCube (24 verts, per-face normals) uploaded once, one DrawItem per box. Renderer: per-frame-in-flight Frame UBO (viewProj, camera pos, light dir/colour, ambient, fog; std140 144 B), push constants {model, tint} 80 B, inverse-transpose normal matrix, exp fog; 2x MSAA colour+depth (sample counts and format support queried, 1x fallback) with AVERAGE colour resolve for swapchain and headless. renderHeadless returns resolved RGBA + SAMPLE_ZERO depth + viewProj; checks moved to game/world/headless_checks (checkLevelView unprojects a 32x32 depth grid onto level boxes; checkModelView = step 11 test kept for --model). covenant shows the level by default (--level FILE), --model [SRC] keeps the blaster view. Done check: `covenant --headless` (validation on, 0 messages): 17 boxes, MSAA 2x, 1024 samples: ground 530 (mean y 189/256), walls 71, other boxes 73, sky 350 (0 off-colour), unexplained 0, 218 resolved edge pixels -> RESULT: PASS; midden.ppm inspected (floor, north/side walls, ramps, heaps, crates visible). `--headless --model` passes step 11's check under MSAA. ctest debug 19/19 incl. window tests, asan 16/16 -LE window, warning-free; new tests level, smoke_headless_model, smoke_window_model, smoke_headless_missing_level. Bug fixes: plan contradiction (per-box tint in Vertex.color vs one shared cube) resolved with a per-draw tint push constant; glslc now DEPENDS on included frame.glsl; smoke_headless_bad_cooked_dir now passes --model (level mode ignores cooked assets); in-step fixes: first MSAA edge detector only looked at depth-empty pixels but with standard 2x positions sample 0 is lower-right so top silhouettes resolve into geometry pixels (now counts both sides), and fog 0.012 + light walls made the far north wall nearly sky-coloured (fog 0.006, cool slate walls). Plan changes: step 13 colliders straight from LevelBox (BoxShape size/2, same rotation matrix) + ramp-slide test; step 14 spawns from the level [camera] (-> [spawn]), drops TumbleDemo from the default path, keeps --model until 21; step 17 TOML parsing follows level.cpp and extracts shared helpers to game/data/toml_read.*; step 21 viewmodel projection via a second Frame UBO slot (push constants have 48 B left), tint becomes a material param; step 25 [[spawn]] tables validated against boxAtSurface. Magewar notes: palette/sun/ambient/fog reinterpreted from the Ashen Midden scene (not copied), msaa_3d=2x matched, Godot Y-X-Z Euler order matched; Magewar's filmic tonemap and volumetric fog not yet reproduced (linear UNORM output, simple exp fog) - revisit with a post pass after the slice. Commit a532c06.",
       "commit": "a532c06"
+    },
+    {
+      "time": "2026-10-22T20:13-05:00",
+      "step": 13,
+      "type": "build",
+      "summary": "Jolt physics world. Jolt Physics v5.6.0 (latest release) via FetchContent tarball (URL_HASH SHA256 6e069ee0...3f8e, SOURCE_SUBDIR Build, SYSTEM): core library only (GPU compute VK/DX12/MTL/CPU, debug renderer, profiler, ObjectStream, install, IPO, Jolt's -Werror and CMAKE_CXX_FLAGS override off), CPP_RTTI_ENABLED on (asan link failed on missing typeinfo for UBSan vptr without it), exceptions off, single precision, default AVX2/FMA/F16C/BMI/LZCNT/POPCNT SIMD (PUBLIC flags, noted in ADR-0001). New coe_physics static lib (engine/physics, Jolt PRIVATE, pimpl so only physics.cpp includes Jolt): PhysicsWorld with ref-counted Jolt globals + Trace/AssertFailed hooks, 8 MB TempAllocatorImpl, JobSystemSingleThreaded (or thread pool via WorldSettings.workerThreads), layers Static/Moving with two broad-phase trees (static-vs-static never tested), gravity 9.8 (Godot default kept by Magewar), BoxDesc, addStaticBox/addDynamicBox/removeBody/optimizeBroadPhase, step(dt) returning false on update errors, state/layer/halfExtents/setLinearVelocity, castRay with hit normal. game/world/level_physics.*: buildLevelPhysics adds one static BoxShape(size/2) per LevelBox at center with quat_cast(LevelBox::rotation()) (renderer's Ry*Rx*Rz), objectLayerFor(BoxKind) all Static, frictionFor(BoxKind) = Jolt 0.2. covenant (level mode) builds the world, steps it once per fixed 60 Hz tick, drops a tumbling 0.6 m demo crate drawn interpolated; window run fails unless physics steps == ticks with no errors (3 s run: 180 steps, crate asleep on the floor). Bug found while writing: BoxShapeSettings on the stack is freed by the body's RefConst (free(): invalid size) -> heap Ref. Done-check (ctest physics): 0.5 m box dropped on ground rests at y 0.230 (Jolt 2 cm penetration slop; within +-0.05) and sleeps after 66 ticks; tilted drop rests at 0.2499; reruns and 3-worker runs bit-identical; box dropped over ramp_west slides +Z (2.73 m/s) and rests on the ground at z -3.18, y 0.2499; 17 colliders match LevelBox centre/half size/rotation; 5776 down-rays hit box surfaces (+-1 cm, boxAtSurface), ramp plane at 20.56 deg, wall face ray. debug 20/20 incl. window tests, asan 17/17 -LE window (asan window run of covenant only shows the pre-existing driver <unknown module> leaks, same with --model), clang -Werror 17/17, warning-free clean rebuild. Magewar review (read-only): project uses Jolt Physics in Godot (3d/physics_engine), layers Environment/Interactables -> our Static/Moving; no gravity override (9.8); no PhysicsMaterial anywhere (Godot friction 1.0) vs our Jolt 0.2 -> kept 0.2 (box must slide off the 20.6 deg ramp), revisit with per-kind friction at step 31. Mismatch fixed: cogito_player body origin is 0.8 m above the feet (not 1 m), Neck +0.7 -> eye 1.5 m; midden_greybox [camera] y 1.7 -> 1.5 and comment corrected (smoke_headless still passes). Plan changes: step 14 gets Magewar's player numbers (0.6x1.7x0.6 collider, eye 1.5, crouch 0.7 / eye ~0.6, step 0.35, walk 4, sprint 7, jump 4.5, crouch-jump 3.0, gravity 9.8), CharacterVirtual wrapped in engine/physics/character.* (no Jolt outside engine/physics) on a Character layer, demo crate dropped once the player walks, extra done-checks (eye height, ramp climb, 0.35 m step); step 17 hitscan uses PhysicsWorld::castRay with a self-filter; step 31 world items are dynamic bodies on an interactables layer (Magewar layer 2) with per-kind friction. ADR-0001 Jolt row filled, README updated.",
+      "commit": "a575603"
     }
   ]
 }
