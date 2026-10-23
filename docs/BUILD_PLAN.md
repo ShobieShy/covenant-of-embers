@@ -51,13 +51,17 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Fixed from step 4: nothing broken found; all 35 earlier tests pass unchanged. Not done: step-down smoothing; the capsule's round bottom rolls off a 0.35 m ledge and falls (already smooth), so there is no snap to ease.
 - Magewar check (Cogito cogito_player.gd; Magewar's player sets no overrides): Magewar/Cogito have **no dash**, it's our verb (PLAN §30.8). Bob uses Cogito's WIGGLE intensities/rates; Cogito's sway adds a +0.5 bias on x (head sits off to one side); we centre it. Cogito HEADBOBBLE (Minimal 0.1 / Average 0.7 / Full 1) scales walk/sprint only and is declared `int` (0.1/0.7 probably end up 0 = no bob); our `bob_scale` is a float that scales all gaits → step 32. Cogito's landing is an animation at ≤ −5 m/s plus a head drop + roll at ≤ −7.5 m/s; we use one positional dip from 2 m/s (C++ design), no roll. Cogito landing sound volume/pitch over −2..−8 m/s → step 37 (`landings`, `last_landing_speed`). step_height_camera_lerp 2.5 matches.
 
-**6. Elements + damage formula (port of old 20)**
+**6. Elements + damage formula (port of old 20)** ✅ `COMMIT6`
 - Does: resources/magic/elements.tres (Magewar names/colours, chart Fire>Earth>Air>Water>Fire, Light⇄Dark, ×1.5/×0.5, same/Arcane ×1.0), scripts/combat/damage.gd: base × rarity mult + Σ part bonus, × effectiveness × (1 − resist, cap **0.6**) × weak point 2.
 - Done: test_damage.gd: full 7×7 chart = Magewar get_effectiveness, resist 0.8→0.6, worked example 12×1.5×0.7×2 = 25.2.
+- Result: scripts/combat/element_table.gd = `ElementTable` (Resource): `Element` enum in Magewar's order (ARCANE = Magewar NONE, shown "Arcane"), `IDS`, `parse()/id_of()`, `strong` 1.5 / `weak` 0.5, `elements: Array[ElementDef]` (scripts/combat/element_def.gd: id, display_name, color, strong_against, weak_against), `effectiveness(a, d)` (same or Arcane = ×1.0 in code, else a cached 7×7 chart from the data; `rebuild()` after a patch), `display_name()/color()/def()`, `validate()` (the C++ loader's checks: multipliers in range, unknown/duplicate/missing ids, no self/Arcane/both-lists/duplicates, Arcane lists empty, colour 0..1, names set), `load_default()` (shared, validated once). resources/magic/elements.tres holds Magewar's names/colours and the chart (Fire > Earth > Air > Water > Fire, Light ⇄ Dark). scripts/combat/damage.gd = `Damage`: `RESIST_CAP` 0.6, `WEAK_POINT_MULTIPLIER` 2, `wieldable_damage(base, rarity mult, part bonuses)`, `clamp_resist()`, `Target` (affinity, per-element uncapped resist, weak_point), `Result` (amount, effectiveness, resist, crit, strong()/weak()), `resolve_hit(dmg, element, target, table = default)` (negative damage → 0). 61 unit tests green (11 damage): 49/49 cells = an independent transcription of Magewar get_effectiveness (6 strong, 4 weak), same/Arcane/empty table ×1.0, names/colours = Magewar ELEMENT_NAMES/COLORS and PLAN §30.4 hex (±0.5/255), .tres = data/magic/elements.toml (C++ data, read with LevelToml), 14 bad tables rejected, patched chart rebuilds without touching the shared one, ×1.0…×3.0 and part bonuses after rarity (14 × 1.25 + 8 = 25.5; bases 10/17.5/7/7.5), resist 0.25 → 75, 0.8 and 0.9 → 0.6 (40), negative → 0, per element only, weak point 12 → 24, Fire vs Earth 15 / Air vs Earth 5, worked example 25.2000 and capped/body 7.2.
+- Fixed from step 5: nothing broken found; all 50 earlier tests pass unchanged. data/magic/elements.toml (C++ engine data) kept as the cross-check source for the .tres (test_tres_matches_cpp_elements_toml) instead of being dropped.
+- Magewar check (magic_element.gd, spell_projectile.gd, enemy_base.gd, networked_combat_bridge.gd, staff_wieldable_item.gd, magewar_player.gd): chart, ×1.5/×0.5, enum order, names and colours match; `get_final_damage` (base × rarity + flat part bonuses) matches. Mismatches: Magewar `get_elemental_resistance` (equipment with matching `element_affinity`, clamp 0.9) is **never called**, so its resistances do nothing → ours apply via `Damage.resolve_hit` (step 13 player hits, step 19 equipment sum, cap 0.6 kept decision); Magewar enemies have only an affinity, no resistances (our per-element enemy resist and weak-point ×2 are plan additions, step 11); Magewar's Light heal / Dark corruption on hit (MagicSpecialEffects) is reinterpreted as Redemption (PLAN §30.4), outside the slice; "Super Effective!" / "Not Very Effective..." text → step 11 damage numbers.
 
 **7. Wieldable data + Arcane bolt casting (port of old 17)**
 - Does: Resource classes WieldableDef/WieldablePart/WieldableInstance, resources/wieldables/*.tres for the 4 Magewar bases (10/5/0.40/30/50, 14/6/0.55/22/45, 7/3/0.25/40/35, 6/2.5/0.18/55/40), caster.gd semi-auto on Fire press with cooldown ≥ 0.1 s, bolt = per-tick raycast from the eye (`player.eye_position()`, the un-bobbed eye, not `camera_position()`; PhysicsRayQuery, exclude self), fizzle at range, element-coloured tracer.
-- Done: test_casting.gd: 20 m wall hit at 20.000 m in D/v s ±1 tick for all 4 bases, Swift Wind never casts twice within 0.18 s, self never hit.
+- Does (step 6 notes): WieldableDef.element is an `ElementTable.Element` (ids parsed with `ElementTable.parse`), `WieldableInstance.damage()` = `Damage.wieldable_damage(base, rarity mult, part bonuses)` (until step 15 a basic 1.0 / uncommon 1.25 lookup that step 15 replaces with the Rarity resource), the tracer tint = `ElementTable.load_default().color(element)`; a bolt hit calls `Damage.resolve_hit(instance.damage(), element, target)`.
+- Done: test_casting.gd: 20 m wall hit at 20.000 m in D/v s ±1 tick for all 4 bases, Swift Wind never casts twice within 0.18 s, self never hit; final damage 10 / 17.5 / 7 / 7.5 for the 4 bases (data/magic/wieldables.toml rarities).
 
 **8. Mana pool (port of old 18)**
 - Does: scripts/player/mana.gd: 100, regen 3/s after 1.5 s since last successful spend, refusal doesn't reset delay, regen/max bonus hooks; caster spends mana; no ammo/reload.
@@ -74,7 +78,8 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **11. Enemy entity, training dummies, damage numbers (port of old 22)**
 - Does: scripts/enemies/enemy.gd (health, affinity, resistances, weak-point head Area), resources/enemies/training_dummies.tres, Label3D floating damage numbers in element colour, death at 0 HP, dummies spawned at the Midden's EnemySpawns markers (generated from the TOML `[[enemy]]` entries; meta `enemy` = id).
-- Done: test_enemy.gd: Fire staff vs Earth dummy = 15 per hit, Water dummy 5, head ×2, dies at 0.
+- Does (step 6 notes): each enemy owns a `Damage.Target` (affinity, per-element resist, `weak_point` set when the head Area is hit) and takes `Damage.resolve_hit()`; the damage number shows Magewar's "Super Effective!" / "Not Very Effective..." from `Result.strong()/weak()`. data/enemies/training_dummies.toml uses inline tables (`resist = { air = 0.25 }`, `weak_point = {...}`) that LevelToml can't read yet: extend LevelToml with single-line inline tables (+ a parse test) so test_enemy compares the .tres with the TOML like test_damage does for elements.
+- Done: test_enemy.gd: Fire staff vs Earth dummy = 15 per hit, Water dummy 5, head ×2, dies at 0, Swift Wind vs the Water dummy (air resist 0.25) = 7.5 × 1.5 × 0.75 = 8.4375.
 
 **12. Gnawer AI (port of old 23)**
 - Does: gnawer.gd state machine Idle/Detect/Chase/Attack/Knockback/Dead (Magewar enemy_base + mutant rat: detect 8, aggro 6, walk 3, sprint 5.5, bite 3 Earth / 0.8 s, knockback > 10 dmg), NavigationAgent3D chase around walls (baked NavMesh: toml_to_scene.py emits a NavigationRegion3D around Boxes like Magewar's landfill, baked from the StaticBodies at load), i-frame dodge.
@@ -83,7 +88,8 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 **13. Heap AI (tank) + player health/shield**
 - Does: Heap tank (slow, high HP, slam), player health + shield (shield first, regen delay), resolveHit for enemy hits, i-frames from dash, player death/respawn.
 - Does (step 5 notes): enemy hits on the player are ignored while `player.invulnerable()` (first 0.1 s of a dash = 6 ticks at 60 Hz).
-- Done: test_heap.gd + test_player_health.gd: damage order shield→health, regen timing, dash i-frames ignore a bite, death at 0.
+- Does (step 6 notes): enemy hits on the player go through `Damage.resolve_hit(dmg, element, player.damage_target)` (Gnawer bite = Earth; player affinity Arcane, so only resist applies). Magewar computes `get_elemental_resistance` but never calls it, so Magewar player resistances do nothing; ours apply (flagged fix).
+- Done: test_heap.gd + test_player_health.gd: damage order shield→health, regen timing, dash i-frames ignore a bite, death at 0, 0.3 Earth resist turns a 3 bite into 2.1.
 
 **14. Enemy spawner + kill events**
 - Does: Spawn points/waves from level data (EnemySpawns markers; waves as a new TOML table, extend toml_to_scene.py + LevelToml), EventBus autoload (enemy_killed, player_damaged), Gnawer separation.
@@ -93,6 +99,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **15. Rarity tiers + part model (Magewar)**
 - Does: Rarity resource (Basic #B3B3B3 ×1.0 w50, Uncommon #33CC33 ×1.25 w25, Rare #3366FF ×1.5, Mythic #991AE6 ×2.0, Primordial #FF9900 ×2.75, Unique #FFD900 ×3.0), Part types Head/Exterior/Interior/Handle/Charm, imported from assets/magewar part .tres values.
+- Does (step 6 notes): `Damage.wieldable_damage()` takes `Rarity.multiplier`; drop step 7's temporary basic/uncommon lookup.
 - Done: test_rarity.gd: colours/multipliers/weights match PLAN §30.2 and the Magewar part resources.
 
 **16. Part stat rolls, gems, names**
@@ -110,7 +117,8 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 **19. Equipment items**
 - Does: Hat/Clothes/Belt/Shoes/Grimoire/Potion with Magewar bonuses (mana, regen, stamina, speed, resist ≤ 60 %).
 - Does (step 4 notes): `stamina_bonus` (Belt 15, Shoes 5) → `player.breath.set_max_bonus(Σ equipped + level bonus)` (Magewar declares it but never applies it: fixed here, flagged); `speed_modifier` product (Shoes ×1.15) → `player.set_speed_multiplier()` (walk/sprint/crouch, like Magewar).
-- Done: test_equipment.gd: bonuses applied/removed exactly, resist cap 0.6, Belt → Breath max 115 without refill, Shoes → walk 4.6 m/s.
+- Does (step 6 notes): resist like Magewar's `get_elemental_resistance`: sum `elemental_resistance` of the equipped Hat/Clothes/Belt/Shoes/Grimoire whose `element_affinity` matches, stored uncapped in `player.damage_target.resist[element]` (the UI can show over-cap), capped at 0.6 only inside `Damage.resolve_hit` (Magewar clamps 0.9).
+- Done: test_equipment.gd: bonuses applied/removed exactly, resist cap 0.6 (two 0.4 Fire robes → 0.8 stored, 0.6 applied), Belt → Breath max 115 without refill, Shoes → walk 4.6 m/s.
 - Does (step 5 notes): Magewar equipment has no dash stat; PLAN's Sandals 3rd dash charge waits for step 36 (Consecration) via `player.dash.set_bonus_charges()`.
 
 **20. Ember Mark item codes**
@@ -119,6 +127,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **21. Balance patch loader**
 - Does: Hotfix-style JSON data patches over resources (§31).
+- Does (step 6 notes): patches may tune `ElementTable` (`strong`, `weak`, `elements[i].strong_against/weak_against`) then call `rebuild()` and must pass `validate()` (else the patch is rejected and the table left as it was).
 - Done: test_patches.gd: patch applies, invalid keys rejected.
 
 **22. Loot drops on kill**

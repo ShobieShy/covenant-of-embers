@@ -1,0 +1,66 @@
+[gd_resource type="Resource" script_class="ElementTable" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/element_table.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/combat/element_def.gd" id="2"]
+
+[sub_resource type="Resource" id="arcane"]
+script = ExtResource("2")
+id = "arcane"
+display_name = "Arcane"
+color = Color(0.7, 0.7, 0.7, 1)
+strong_against = PackedStringArray()
+weak_against = PackedStringArray()
+
+[sub_resource type="Resource" id="fire"]
+script = ExtResource("2")
+id = "fire"
+display_name = "Fire"
+color = Color(1, 0.3, 0.1, 1)
+strong_against = PackedStringArray("earth")
+weak_against = PackedStringArray("water")
+
+[sub_resource type="Resource" id="water"]
+script = ExtResource("2")
+id = "water"
+display_name = "Water"
+color = Color(0.1, 0.4, 1, 1)
+strong_against = PackedStringArray("fire")
+weak_against = PackedStringArray("air")
+
+[sub_resource type="Resource" id="earth"]
+script = ExtResource("2")
+id = "earth"
+display_name = "Earth"
+color = Color(0.5, 0.35, 0.1, 1)
+strong_against = PackedStringArray("air")
+weak_against = PackedStringArray("fire")
+
+[sub_resource type="Resource" id="air"]
+script = ExtResource("2")
+id = "air"
+display_name = "Air"
+color = Color(0.8, 0.95, 1, 1)
+strong_against = PackedStringArray("water")
+weak_against = PackedStringArray("earth")
+
+[sub_resource type="Resource" id="light"]
+script = ExtResource("2")
+id = "light"
+display_name = "Light"
+color = Color(1, 0.95, 0.7, 1)
+strong_against = PackedStringArray("dark")
+weak_against = PackedStringArray()
+
+[sub_resource type="Resource" id="dark"]
+script = ExtResource("2")
+id = "dark"
+display_name = "Dark"
+color = Color(0.3, 0, 0.5, 1)
+strong_against = PackedStringArray("light")
+weak_against = PackedStringArray()
+
+[resource]
+script = ExtResource("1")
+strong = 1.5
+weak = 0.5
+elements = Array[ExtResource("2")]([SubResource("arcane"), SubResource("fire"), SubResource("water"), SubResource("earth"), SubResource("air"), SubResource("light"), SubResource("dark")])
