@@ -61,11 +61,20 @@ struct WieldableDef {
     float range = 50.0f;               // m the bolt flies before it fizzles
 };
 
-// A part attached to an instance (Head / Exterior / Interior / Handle / Charm). Empty
-// placeholder until steps 26-28 give parts their rolls and assembly rules.
+// A part attached to an instance (Magewar StaffPartItem.PartType). Only the type and the
+// accuracy bonus exist so far (step 19's accuracy); steps 26-28 add the other rolls
+// (damage, fire-rate modifier, handling, element, gem slots) and the assembly rules.
+enum class PartType { Head, Exterior, Interior, Handle, Charm };
+
 struct WieldablePart {
     std::string id;
+    PartType type = PartType::Head;
+    float accuracyBonus = 0.0f;        // Magewar accuracy_bonus (percentage points)
 };
+
+// Magewar get_final_accuracy: base 50 %, + Head + Handle + Charm accuracy bonuses (an
+// Exterior/Interior accuracy_bonus is ignored, as in Magewar), clamped to 0..100.
+inline constexpr float kBaseAccuracy = 50.0f;
 
 struct WieldableInstance {
     const WieldableDef* def = nullptr;   // must outlive the instance (owned by the loaded table)
@@ -79,6 +88,7 @@ struct WieldableInstance {
     float manaCost() const { return def->manaCost; }
     float projectileSpeed() const { return def->projectileSpeed; }
     float range() const { return def->range; }
+    float accuracy() const;            // 0..100 %, see kBaseAccuracy
 };
 
 struct WieldableTable {

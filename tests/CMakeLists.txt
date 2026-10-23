@@ -68,3 +68,10 @@ add_executable(test_mana test_mana.cpp)
 target_link_libraries(test_mana PRIVATE coe_game coe_physics coe_warnings)
 target_compile_definitions(test_mana PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
 coe_add_test(NAME mana COMMAND test_mana)
+
+# Step 19: focus (ADS) FOV tween 75 -> 55 deg in 0.2 s, Magewar accuracy, spread cone
+# (100 % = none, focused = 0.35x hip, stance), bloom recovery, spread bolts on a wall.
+add_executable(test_accuracy test_accuracy.cpp)
+target_link_libraries(test_accuracy PRIVATE coe_game coe_physics coe_warnings)
+target_compile_definitions(test_accuracy PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
+coe_add_test(NAME accuracy COMMAND test_accuracy)

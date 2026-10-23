@@ -3,6 +3,7 @@
 
 #include "game/data/toml_read.hpp"
 
+#include <algorithm>
 #include <array>
 
 namespace coe::game {
@@ -104,6 +105,14 @@ std::string loadWieldables(const std::filesystem::path& path, WieldableTable& ou
     std::string text;
     if (std::string err = data::readTextFile(path, "wieldables file", text); !err.empty()) return err;
     return parseWieldables(text, path.filename().string(), out);
+}
+
+float WieldableInstance::accuracy() const {
+    float acc = kBaseAccuracy;
+    for (const WieldablePart& p : parts)
+        if (p.type == PartType::Head || p.type == PartType::Handle || p.type == PartType::Charm)
+            acc += p.accuracyBonus;
+    return std::clamp(acc, 0.0f, 100.0f);
 }
 
 } // namespace coe::game

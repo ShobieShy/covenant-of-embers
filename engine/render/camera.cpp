@@ -28,4 +28,8 @@ glm::mat4 Camera::projection(float aspect) const {
     return p;
 }
 
+float Camera::lookScaleForFov(float fovYDeg, float hipFovYDeg) {
+    return std::tan(glm::radians(fovYDeg) * 0.5f) / std::tan(glm::radians(hipFovYDeg) * 0.5f);
+}
+
 } // namespace coe

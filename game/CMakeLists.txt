@@ -11,6 +11,7 @@
 # player/dash.*, player/camera_feel.*: dash charges/i-frames and head bob/landing dip (step 16).
 # magic/wieldable.*, magic/projectile.*, magic/casting.*: Magewar staffs/wands from
 # data/magic/wieldables.toml, ray-swept spell bolts, cooldown-gated casting (step 17).
+# magic/accuracy.*: Magewar focus (ADS) FOV tween, accuracy -> spread cone + bloom (step 19).
 add_library(coe_game STATIC
   data/toml_read.cpp
   world/level.cpp
@@ -23,7 +24,8 @@ add_library(coe_game STATIC
   player/camera_feel.cpp
   magic/wieldable.cpp
   magic/projectile.cpp
-  magic/casting.cpp)
+  magic/casting.cpp
+  magic/accuracy.cpp)
 target_link_libraries(coe_game PUBLIC coe_engine coe_physics PRIVATE tomlplusplus::tomlplusplus coe_warnings)
 
 # covenant: the game executable (gameplay state + main loop) on top of coe_engine.

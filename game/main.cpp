@@ -51,6 +51,7 @@
 #include "engine/assets/manifest.hpp"
 #include "engine/physics/physics.hpp"
 #include "game/core/tumble_demo.hpp"
+#include "game/magic/accuracy.hpp"
 #include "game/magic/casting.hpp"
 #include "game/magic/projectile.hpp"
 #include "game/magic/wieldable.hpp"
@@ -207,12 +208,15 @@ constexpr ScriptedEvent kInputScript[] = {
     {20, SDL_EVENT_MOUSE_BUTTON_UP, SDL_BUTTON_LEFT, 0},
     {21, SDL_EVENT_KEY_DOWN, SDL_SCANCODE_SPACE, 0}, {22, SDL_EVENT_KEY_UP, SDL_SCANCODE_SPACE, 0},
     {30, SDL_EVENT_KEY_UP, SDL_SCANCODE_W, 0},
+    {24, SDL_EVENT_MOUSE_BUTTON_DOWN, SDL_BUTTON_RIGHT, 0},   // focus (ADS) with Weapon2
     {40, SDL_EVENT_KEY_DOWN, SDL_SCANCODE_Q, 0}, {41, SDL_EVENT_KEY_UP, SDL_SCANCODE_Q, 0},   // dash
+    {50, SDL_EVENT_MOUSE_BUTTON_UP, SDL_BUTTON_RIGHT, 0},
 };
 constexpr struct { coe::input::Action action; uint64_t presses; } kScriptExpect[] = {
     {coe::input::Action::Jump, 2}, {coe::input::Action::MoveForward, 1},
     {coe::input::Action::Fire, 1}, {coe::input::Action::Weapon2, 1},
     {coe::input::Action::Reload, 1}, {coe::input::Action::Dash, 1},   // Reload: seen, does nothing (step 18)
+    {coe::input::Action::Aim, 1},
 };
 
 void pushScripted(uint64_t frame, SDL_Window* window) {
@@ -360,6 +364,11 @@ int main(int argc, char** argv) {
         coe::game::Caster caster;
         if (!hands.empty()) caster.equip(&hands.front());
         coe::game::ProjectileSystem bolts;
+        // Focus (ADS) and spread (step 19): Aim tweens the FOV to the wieldable's focus FOV;
+        // casts leave along a cone from its accuracy, stance and bloom.
+        coe::game::Focus focus;
+        coe::game::Spread spread;
+        float minFov = focus.fov();   // narrowest FOV any tick reached
         std::vector<coe::game::ProjectileHit> boltHits;
         std::vector<coe::game::DebugLine> debugLines;
         if (!modelView) {
@@ -403,15 +412,23 @@ int main(int argc, char** argv) {
                     // Cast from where the player is after this tick, then sweep the bolts
                     // against the world as just stepped.
                     const size_t fire = size_t(coe::input::Action::Fire);
-                    if (caster.tick(in.pressed[fire], in.held[fire], float(step.dtSeconds()),
-                                    coe::game::playerAim(*player), bolts)) {
+                    focus.tick(in.held[size_t(coe::input::Action::Aim)], caster.wieldable(), float(step.dtSeconds()));
+                    minFov = std::min(minFov, focus.fov());
+                    spread.tick(float(step.dtSeconds()));
+                    const float accuracy = caster.wieldable() ? caster.wieldable()->accuracy() : coe::game::kBaseAccuracy;
+                    const coe::game::CastAim aim =
+                        spread.apply(coe::game::playerAim(*player), accuracy, coe::game::stanceOf(*player, focus));
+                    if (caster.tick(in.pressed[fire], in.held[fire], float(step.dtSeconds()), aim, bolts)) {
+                        spread.onCast();
                         castCost = caster.wieldable()->manaCost();
                         minMana = caster.casts() == 1 ? player->mana().value() : std::min(minMana, player->mana().value());
-                        std::printf("[cast] %s (%s): bolt %.0f m/s, %.0f m range, %.1f dmg, -%.1f mana -> %.1f/%.0f\n",
+                        std::printf("[cast] %s (%s): bolt %.0f m/s, %.0f m range, %.1f dmg, -%.1f mana -> %.1f/%.0f, "
+                                    "accuracy %.0f%%, spread %.2f deg%s\n",
                                     caster.wieldable()->def->name.c_str(), coe::game::elementName(caster.wieldable()->element()),
                                     double(caster.wieldable()->projectileSpeed()), double(caster.wieldable()->range()),
                                     double(caster.wieldable()->damage()), double(castCost),
-                                    double(player->mana().value()), double(player->mana().max()));
+                                    double(player->mana().value()), double(player->mana().max()), double(accuracy),
+                                    double(spread.lastConeDeg()), focus.focused() ? ", focused" : "");
                     }
                     boltHits.clear();
                     bolts.tick(physics, float(step.dtSeconds()), boltHits);
@@ -437,7 +454,10 @@ int main(int argc, char** argv) {
             const coe::input::LookDelta look = input.takeLook();
             lookCounts += look.dx;
             if (player) {
-                player->addLook(look.dx, look.dy);
+                // Focused: scale by tan(fov/2)/tan(hip/2) so a count moves the view by the
+                // same screen fraction at any FOV.
+                const float s = focus.lookScale(float(step.alpha()));
+                player->addLook(look.dx * s, look.dy * s);
                 lookYaw = player->yaw();
                 lookPitch = player->pitch();
             } else {
@@ -453,6 +473,7 @@ int main(int argc, char** argv) {
             coe::FrameParams fp = levelBase;
             if (player) {
                 fp.camera = player->camera(float(step.alpha()));   // eye, interpolated between ticks
+                fp.camera.fovYDeg = focus.fov(float(step.alpha()));   // focus tween (viewmodel stays 75: step 21)
             } else {
                 fp.camera.yaw = float(lookYaw);       // mouse right -> negative yaw -> turn right
                 fp.camera.pitch = float(lookPitch);
@@ -504,7 +525,14 @@ int main(int argc, char** argv) {
                 const bool paid = mana.spends() == 1 && mana.refusals() == 0 && castCost > 0.0f &&
                                   minMana == mana.tuning().max - castCost && mana.value() >= minMana &&
                                   mana.value() <= mana.max();
-                inputOk = inputOk && moved && cast && paid;
+                // RMB (frames 24-50) with the Earthward Battlestaff from Weapon2 narrowed the FOV toward 55 deg,
+                // and the release tweened it back to exactly 75.
+                const bool focused = minFov < focus.tuning().hipFovDeg && focus.fov() == focus.tuning().hipFovDeg &&
+                                     !focus.focused();
+                inputOk = inputOk && moved && cast && paid && focused;
+                std::printf("[focus] script: narrowest FOV %.1f deg (target %.0f), back to %.1f%s\n", double(minFov),
+                            double(caster.wieldable() ? coe::game::focusFovFor(caster.wieldable()->type(), focus.tuning()) : focus.tuning().hipFovDeg),
+                            double(focus.fov()), focused ? "" : " MISMATCH (need < 75 while held, 75 after release)");
                 std::printf("[mana] script: %llu spend(s), %llu refusal(s), lowest %.2f (expect %.2f), now %.2f/%.0f%s\n",
                             (unsigned long long)mana.spends(), (unsigned long long)mana.refusals(), double(minMana),
                             double(mana.tuning().max - castCost), double(mana.value()), double(mana.max()),
@@ -550,6 +578,8 @@ int main(int argc, char** argv) {
                         (unsigned long long)(caster.blocked() - caster.manaRefused()), (unsigned long long)caster.manaRefused(),
                         (unsigned long long)bolts.hits(), (unsigned long long)bolts.fizzled(), bolts.live().size(),
                         caster.wieldable() ? caster.wieldable()->def->name.c_str() : "nothing");
+            std::printf("[focus] FOV %.1f deg%s, narrowest %.1f; spread bloom %.2f deg\n", double(focus.fov()),
+                        focus.focused() ? " (focused)" : "", double(minFov), double(spread.bloomDeg()));
             caster.setManaSpender(nullptr);   // it refers to the player
             player.reset();   // before the world it lives in
         }
