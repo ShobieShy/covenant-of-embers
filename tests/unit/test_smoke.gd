@@ -22,3 +22,10 @@ func test_kenney_blaster_imports() -> void:
 		var n := scene.instantiate()
 		check(n.find_children("*", "MeshInstance3D", true, false).size() > 0, "blaster has meshes")
 		n.free()
+
+func test_main_scene_loads_midden() -> void:
+	var root: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
+	var level := root.get_node_or_null("Level")
+	check(level != null and level.get_meta("level_id", "") == "midden_greybox", "main instances the Midden")
+	check(level != null and level.get_node("Boxes").get_child_count() == 17, "17 boxes in main")
+	root.free()

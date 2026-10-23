@@ -1,14 +1,41 @@
+# Covenant of Embers CI (BUILD_PLAN step 2): Godot 4.7.2 headless import + tools/run_tests.sh.
+# Not pushed yet; mirrors what tools/run_tests.sh does locally.
 name: ci
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+env:
+  GODOT_VERSION: "4.7.2"
 jobs:
   godot-headless:
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Install Godot 4.7.2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"   # tomllib (stdlib) for toml_to_scene.py + check_assets.py
+      - name: Cache Godot
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}-linux-x86_64
+      - name: Download Godot ${{ env.GODOT_VERSION }}
+        if: steps.cache-godot.outputs.cache-hit != 'true'
         run: |
-          wget -q https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
-          unzip -q Godot_v4.7.2-stable_linux.x86_64.zip
-          sudo mv Godot_v4.7.2-stable_linux.x86_64 /usr/local/bin/godot
-      - name: Tests
+          mkdir -p ~/godot && cd ~/godot
+          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q "Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot
+          rm "Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+      - name: Put Godot on PATH
+        run: |
+          chmod +x ~/godot/godot
+          echo "$HOME/godot" >> "$GITHUB_PATH"
+          ~/godot/godot --version
+      - name: Headless import
+        run: timeout 300 godot --headless --path . --import
+      - name: Tests (levels in sync, unit tests, 2 s smoke run, asset lint)
         run: ./tools/run_tests.sh

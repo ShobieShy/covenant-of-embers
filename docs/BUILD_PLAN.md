@@ -19,14 +19,17 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does: Godot 4.7.2 (pacman `godot`), project.godot (Forward+, Jolt Physics, 60 Hz, MSAA 2×), scenes/main.tscn, scripts/core/main.gd (`-- --seconds N`), tests/run_tests.gd + tests/test_case.gd (addon-free runner; GUT optional later), tools/run_tests.sh, Kenney packs kept, Magewar resources copied to assets/magewar (.gdignore'd reference), C++ engine archived, ADR-0002.
 - Done: `tools/run_tests.sh` green: 4 unit tests (Godot 4, Forward+/60 Hz, main scene, Kenney blaster-a.glb imports), 2 s headless run logs 120 physics ticks, asset lint OK.
 
-**2. Midden greybox + CI workflow**
+**2. Midden greybox + CI workflow** ✅
 - Does: Port data/levels/midden_greybox.toml to scenes/levels/midden.tscn (17 boxes as StaticBody3D/CSG, same sizes/rotations Y-X-Z, palette/fog, PlayerStart marker at (0,0,12.5) facing north, eye 1.5 m). tools/toml_to_scene.py or a GDScript importer so data stays the source. New .github/workflows/ci.yml (Godot 4.7.2 headless, import + run_tests.sh), not pushed.
 - Done: test_level.gd: 17 boxes with kinds/counts as the TOML, ramp tops meet ledge, 400 down-raycasts hit up-facing surfaces; ci.yml parses (`python3 -c yaml.safe_load`).
+- Result: tools/toml_to_scene.py (stdlib tomllib; same validation as the C++ loader, `--check` + `--self-test` run first in run_tests.sh) generates scenes/levels/midden.tscn: Boxes/<name> StaticBody3D (meta `kind`) + BoxMesh/BoxShape3D (size in the shape, no node scale for Jolt), Y-X-Z Euler, linear TOML colours written as sRGB, exp fog 0.006, Sun +Z = to_light, PlayerStart/Eye (1.5 m), EnemySpawns markers from `[[enemy]]`. scripts/world/level_toml.gd = GDScript TOML-subset reader so tests compare against the TOML itself. main.tscn instances the Midden; camera sits at PlayerStart/Eye. 14 unit tests green (9 level, 5 smoke); 400/400 rays (ground 338, platform 32, heap 20, ramp 8, crate 2).
+- Fixed from step 1: tests/run_tests.gd ran inside `_initialize` (root not yet in its World3D → no physics queries); tests now run on the first physics frame. run_tests.sh Godot calls got timeouts. ci.yml extended (setup-python 3.12, cached Godot, timeout, separate import step).
+- Magewar check: landfill_tutorial authors its palette as sRGB Colors; our TOML (from the C++ engine) treats the same numbers as linear, so the Midden is lighter/less saturated than Magewar's landfill. Kept (matches the validated C++ look); revisit in step 41's playtest. Magewar wraps level geometry in a NavigationRegion3D → folded into step 12.
 
 ## M1 – Spellcasting prototype (ports first)
 
 **3. FPS controller: walk, jump, crouch, look (port of old 14)**
-- Does: scripts/player/player.gd on CharacterBody3D + PlayerTuning Resource: walk 4, crouch 3 m/s, LERP 10/AIR 6, jump 4.5/3.0 m/s on press edge, gravity 9.8, capsule 0.3×1.7/0.7, eye 1.5/0.6, step 0.35 m, floor_max_angle 45°, 0.25°/count look, pitch ±89°, InputMap actions (WASD/Space/LMB/RMB/LShift/Q/C+LCtrl/F/1–4).
+- Does: player spawns at the Midden's PlayerStart (eye = PlayerStart/Eye, replacing main.gd's placeholder camera); scripts/player/player.gd on CharacterBody3D + PlayerTuning Resource: walk 4, crouch 3 m/s, LERP 10/AIR 6, jump 4.5/3.0 m/s on press edge, gravity 9.8, capsule 0.3×1.7/0.7, eye 1.5/0.6, step 0.35 m, floor_max_angle 45°, 0.25°/count look, pitch ±89°, InputMap actions (WASD/Space/LMB/RMB/LShift/Q/C+LCtrl/F/1–4).
 - Done: test_player.gd (simulated physics frames): 1 s W ≈ 3.67 m ±0.5, apex 1.07/0.48 m ±0.06, crouch eye 0.6 and can't stand under a 1 m slab, 0.35 m step climbed / 0.5 m blocked, ramp → ledge y 1.5.
 
 **4. Sprint, Breath and slide (port of old 15)**
@@ -58,11 +61,11 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_loadout.gd: swap 24 ticks no cast during, Earthward cooldown survives swap; headless render check of gem colour (cos ≥ 0.97) via viewport texture.
 
 **11. Enemy entity, training dummies, damage numbers (port of old 22)**
-- Does: scripts/enemies/enemy.gd (health, affinity, resistances, weak-point head Area), resources/enemies/training_dummies.tres, Label3D floating damage numbers in element colour, death at 0 HP, dummies placed in Midden.
+- Does: scripts/enemies/enemy.gd (health, affinity, resistances, weak-point head Area), resources/enemies/training_dummies.tres, Label3D floating damage numbers in element colour, death at 0 HP, dummies spawned at the Midden's EnemySpawns markers (generated from the TOML `[[enemy]]` entries; meta `enemy` = id).
 - Done: test_enemy.gd: Fire staff vs Earth dummy = 15 per hit, Water dummy 5, head ×2, dies at 0.
 
 **12. Gnawer AI (port of old 23)**
-- Does: gnawer.gd state machine Idle/Detect/Chase/Attack/Knockback/Dead (Magewar enemy_base + mutant rat: detect 8, aggro 6, walk 3, sprint 5.5, bite 3 Earth / 0.8 s, knockback > 10 dmg), NavigationAgent3D chase around walls (baked NavMesh), i-frame dodge.
+- Does: gnawer.gd state machine Idle/Detect/Chase/Attack/Knockback/Dead (Magewar enemy_base + mutant rat: detect 8, aggro 6, walk 3, sprint 5.5, bite 3 Earth / 0.8 s, knockback > 10 dmg), NavigationAgent3D chase around walls (baked NavMesh: toml_to_scene.py emits a NavigationRegion3D around Boxes like Magewar's landfill, baked from the StaticBodies at load), i-frame dodge.
 - Done: test_gnawer.gd: transitions at 8/6/1 m, bites 48 ticks apart, chases around a wall to the player.
 
 **13. Heap AI (tank) + player health/shield**
@@ -70,7 +73,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_heap.gd + test_player_health.gd: damage order shield→health, regen timing, dash i-frames ignore a bite, death at 0.
 
 **14. Enemy spawner + kill events**
-- Does: Spawn points/waves from level data, EventBus autoload (enemy_killed, player_damaged), Gnawer separation.
+- Does: Spawn points/waves from level data (EnemySpawns markers; waves as a new TOML table, extend toml_to_scene.py + LevelToml), EventBus autoload (enemy_killed, player_damaged), Gnawer separation.
 - Done: test_spawner.gd: wave counts, kill events fire once per death.
 
 ## M2 – Loot, crafting, progression
@@ -182,7 +185,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: playtest.gd completes the slice in headless mode, no errors.
 
 **41. Playtest pass 2 – manual + fixes**
-- Does: ShobieShy plays; fix reported issues.
+- Does: ShobieShy plays; fix reported issues. Also judge the Midden palette vs Magewar's landfill (step 2 note: TOML colours are linear, Magewar's sRGB).
 - Done: Issues list closed or deferred in plan.
 
 ## After the slice

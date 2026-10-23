@@ -1,4 +1,6 @@
-# The Ashen Midden - greybox arena (BUILD_PLAN step 12). Loaded by game/world/level.cpp.
+# The Ashen Midden - greybox arena (old C++ BUILD_PLAN step 12; Godot BUILD_PLAN step 2).
+# Source of truth for scenes/levels/midden.tscn: edit here, then run tools/toml_to_scene.py
+# (tools/run_tests.sh fails while the scene is stale). Also read by scripts/world/level_toml.gd.
 #
 # Units: metres, degrees, linear RGB in [0, 1]. World: right-handed, +Y up, -Z north
 # (the player starts facing north). Every [[box]] is the engine's unit cube scaled to

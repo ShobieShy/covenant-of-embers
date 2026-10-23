@@ -3,11 +3,20 @@ extends SceneTree
 ## godot --headless --path . -s res://tests/run_tests.gd
 ## Runs every tests/unit/test_*.gd: each `test_*` method of a RefCounted script.
 ## A test fails if it calls `fail(msg)` / a failed `check()`. Exit code = failures.
+## Tests run on the first physics frame (not in _initialize) so the root viewport is
+## inside its World3D and PhysicsDirectSpaceState3D queries work on added scenes.
 
 var failures := 0
 var passed := 0
+var _ran := false
 
-func _initialize() -> void:
+func _physics_process(_delta: float) -> bool:
+	if not _ran:
+		_ran = true
+		_run_all()
+	return false
+
+func _run_all() -> void:
 	var dir := DirAccess.open("res://tests/unit")
 	var files: Array[String] = []
 	for f in dir.get_files():
