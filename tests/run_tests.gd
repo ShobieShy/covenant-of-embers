@@ -4,15 +4,17 @@ extends SceneTree
 ## Runs every tests/unit/test_*.gd: each `test_*` method of a RefCounted script.
 ## A test fails if it calls `fail(msg)` / a failed `check()`. Exit code = failures.
 ## Tests run on the first physics frame (not in _initialize) so the root viewport is
-## inside its World3D and PhysicsDirectSpaceState3D queries work on added scenes.
+## inside its World3D and PhysicsDirectSpaceState3D queries work on added scenes, and on
+## the *second* one: during the first, Node.get_physics_process_delta_time() is still 0, so
+## CharacterBody3D.move_and_slide() (which uses it) would not move (step 3).
 
 var failures := 0
 var passed := 0
-var _ran := false
+var _frames := 0
 
 func _physics_process(_delta: float) -> bool:
-	if not _ran:
-		_ran = true
+	_frames += 1
+	if _frames == 2:
 		_run_all()
 	return false
 

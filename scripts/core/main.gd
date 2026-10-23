@@ -15,13 +15,15 @@ func _ready() -> void:
 	print("[main] Covenant of Embers on Godot %s, renderer %s" % [
 		Engine.get_version_info().string,
 		ProjectSettings.get_setting("rendering/renderer/rendering_method")])
-	# Until the player exists (step 3) the camera sits at the level's PlayerStart eye.
-	var eye := get_node_or_null("Level/PlayerStart/Eye") as Node3D
-	var cam := get_node_or_null("Camera3D") as Camera3D
-	if eye and cam:
-		cam.global_transform = eye.global_transform
-		print("[main] level %s, %d boxes, eye at %s" % [
-			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(), cam.global_position])
+	# The player spawns at the level's PlayerStart (feet), facing its yaw; its Head sits
+	# at PlayerStart/Eye (1.5 m).
+	var start := get_node_or_null("Level/PlayerStart") as Node3D
+	var player := get_node_or_null("Player") as Player
+	if start and player:
+		player.spawn(start.global_position, deg_to_rad(float(start.get_meta("yaw_deg", 0.0))))
+		print("[main] level %s, %d boxes, player at %s, eye %s" % [
+			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
+			player.global_position, player.camera.global_position])
 
 func _process(delta: float) -> void:
 	_frames += 1

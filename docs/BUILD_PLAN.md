@@ -31,13 +31,17 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 **3. FPS controller: walk, jump, crouch, look (port of old 14)**
 - Does: player spawns at the Midden's PlayerStart (eye = PlayerStart/Eye, replacing main.gd's placeholder camera); scripts/player/player.gd on CharacterBody3D + PlayerTuning Resource: walk 4, crouch 3 m/s, LERP 10/AIR 6, jump 4.5/3.0 m/s on press edge, gravity 9.8, capsule 0.3×1.7/0.7, eye 1.5/0.6, step 0.35 m, floor_max_angle 45°, 0.25°/count look, pitch ±89°, InputMap actions (WASD/Space/LMB/RMB/LShift/Q/C+LCtrl/F/1–4).
 - Done: test_player.gd (simulated physics frames): 1 s W ≈ 3.67 m ±0.5, apex 1.07/0.48 m ±0.06, crouch eye 0.6 and can't stand under a 1 m slab, 0.35 m step climbed / 0.5 m blocked, ramp → ledge y 1.5.
+- Result: scenes/player/player.tscn = Player (CharacterBody3D, origin at the feet, layer 2 "character", mask 1) + CollisionShape3D (own CapsuleShape3D, resized for crouch) + Head (eye) + Camera3D (75°, near 0.05). scripts/player/player.gd ports the C++ tick (direction/speed lerps, ground-only jump on press edge with a rising guard, held crouch, crouch-jump stays crouched, stand-up shape query for head room, eye easing) on move_and_slide (floor_max_angle 45°, snap 0.5 m); step climbing = Cogito-style probe up 0.37 / forward past the edge / down onto a walkable top ≤ 0.35 m. PlayerTuning Resource (resources/player/player_tuning.tres), PlayerInput (held/pressed per tick; from_input() in game, hold() in tests). InputMap in project.godot with Magewar's action names (forward/back/left/right/jump/crouch/sprint/interact/action_primary/action_secondary) + dash, slot_1–4. main.tscn: placeholder Camera3D replaced by the Player, spawned at PlayerStart (camera = PlayerStart/Eye). 24 unit tests green (10 player): walk 3.667 m, apex 1.072/0.485 m, crouch eye 0.600 under the slab, 0.35 step → y 0.351, 0.5 step blocked at z −2.70, ramp_west → (−4.5, 1.500, −11.11).
+- Fixed from step 2: during the runner's first physics frame Node.get_physics_process_delta_time() is 0, so move_and_slide() didn't move; tests now run on the second physics frame. test_smoke checks the player camera instead of the removed placeholder.
+- Magewar check: action names match Magewar's project.godot; crouch adds LCtrl (C++ design); MOUSE_SENS 0.25 kept, pitch ±89° vs Magewar ±90° (kept: avoids the look-straight-up flip). Not yet mapped: Magewar `menu` (Esc) → step 39, `inventory` (Tab) → step 30, `quickslot_prev/next_wieldable` (mouse wheel) → step 10, `free_look` (Alt) left out of the slice; Cogito's head smoothing over steps (step_height_camera_lerp 2.5) → step 5.
 
 **4. Sprint, Breath and slide (port of old 15)**
-- Does: scripts/player/breath.gd (max 100, drain 20/s, regen 30/s after 1 s, resume at 20, max bonus), sprint 7 m/s, slide (5 m/s × (t/1.5 + 0.5), 1.5 s, slide jump ×1.3), speed multiplier hook.
+- Does: (hooks into Player.tick: speed base selection, crouch handling) scripts/player/breath.gd (max 100, drain 20/s, regen 30/s after 1 s, resume at 20, max bonus), sprint 7 m/s, slide (5 m/s × (t/1.5 + 0.5), 1.5 s, slide jump ×1.3), speed multiplier hook.
 - Done: test_breath.gd: empty after 300 ticks, resume after 100, full after 260; test_player slide 90 ticks ≈ 7.5 m, no slide from walk/exhausted.
 
 **5. Dash + camera feel (port of old 16)**
 - Does: scripts/player/dash.gd (6 m in 0.15 s, 2 charges, 1.5 s recharge each, 25 Breath, 0.1 s i-frames, 1 air dash), camera_feel.gd (head bob walk/sprint/crouch, landing dip 0.12 m, reduced-motion setting).
+- Does (step 3 notes): also ease the Head over a climbed step (Cogito step_height_camera_lerp 2.5; Player.steps_climbed / the lift height tell camera_feel).
 - Done: test_dash.gd: 6.000 m ±0.05 in 9 ticks, 3rd refused, recharge 90/180 ticks, wall stop; test_camera_feel: bob amplitudes, dip 0 below 2 m/s, max 0.12 m, reduced motion = 0.
 
 **6. Elements + damage formula (port of old 20)**
@@ -57,7 +61,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_accuracy.gd: 55° exactly at tick 12, 100 % accuracy = zero spread, 50 % hip 2.0°/focused 0.7°, bloom clears in 30 ticks.
 
 **10. Staff + wand slots and viewmodel (port of old 21)**
-- Does: loadout.gd: Staff/Wand slots, per-slot cooldown, 0.4 s swap (1/2), viewmodel SubViewport/layer at 75° FOV with Magewar default_position poses, greybox shaft + element-coloured gem, focus slide, cast point tracer.
+- Does: loadout.gd: Staff/Wand slots, per-slot cooldown, 0.4 s swap (slot_1/slot_2 + mouse wheel as Magewar's quickslot_prev/next_wieldable actions), viewmodel SubViewport/layer at 75° FOV with Magewar default_position poses, greybox shaft + element-coloured gem, focus slide, cast point tracer.
 - Done: test_loadout.gd: swap 24 ticks no cast during, Earthward cooldown survives swap; headless render check of gem colour (cos ≥ 0.97) via viewport texture.
 
 **11. Enemy entity, training dummies, damage numbers (port of old 22)**
@@ -141,7 +145,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_hud.gd: bars track values; headless screenshot non-empty.
 
 **30. Inventory + equipment screen**
-- Does: Inventory UI with rarity colours and compare cards.
+- Does: Inventory UI with rarity colours and compare cards, opened by an `inventory` action on Tab (Magewar's name/key).
 - Done: test_inventory_ui.gd: open/close, equip via UI.
 
 **31. Assembly Station UI**
@@ -149,7 +153,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_station_ui.gd: assemble via UI produces the item.
 
 **32. Key-bindings config**
-- Does: Rebind UI + user://keybinds.cfg, invert-Y, hip FOV, focus hold/toggle, Reload unbound.
+- Does: Rebind UI over the project.godot InputMap actions (PlayerInput.ACTIONS) + user://keybinds.cfg, invert-Y, hip FOV, focus hold/toggle, Reload unbound.
 - Done: test_keybinds.gd: save/load round-trip, rebind applies.
 
 **33. Breach room slice: layout**
@@ -177,7 +181,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_save.gd: save→load round-trip equal, old version rejected cleanly.
 
 **39. Main menu + flow**
-- Does: Main menu → Midden → Breach → back, pause menu, settings.
+- Does: Main menu → Midden → Breach → back, pause menu on a `menu` action (Esc, Magewar's name; Player releases the mouse), settings.
 - Done: test_flow.gd: scene transitions headless.
 
 **40. Playtest pass 1 – automated**

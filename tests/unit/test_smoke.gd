@@ -11,8 +11,8 @@ func test_main_scene_instantiates() -> void:
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	check(packed != null, "main.tscn loads")
 	var root := packed.instantiate()
-	check(root.get_node_or_null("Camera3D") is Camera3D, "camera present")
-	check_near(root.get_node("Camera3D").fov, 75.0, 0.001, "hip FOV")
+	check(root.get_node_or_null("Player/Head/Camera3D") is Camera3D, "player camera present")
+	check_near(root.get_node("Player/Head/Camera3D").fov, 75.0, 0.001, "hip FOV")
 	root.free()
 
 func test_kenney_blaster_imports() -> void:
