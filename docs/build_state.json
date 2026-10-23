@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 11,
+  "next_step": 12,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -15,9 +15,10 @@
     7,
     8,
     9,
-    10
+    10,
+    11
   ],
-  "last_commit": "0ec3890",
+  "last_commit": "f1e100f",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -98,6 +99,14 @@
       "summary": "Staff + wand slots and viewmodel: Loadout (staff/wand slots, one Caster each with its cooldown kept and counting while holstered, 0.4 s draw on slot_1/slot_2/mouse wheel in which presses don't cast or cue, one shared mana pool/focus/spread, own accuracy per slot), Viewmodel (code-built greybox shaft + unshaded element-coloured gem on layer 20 under the Head at Magewar's poses, focus slide to x = 0, draw drop, recoil; 75 deg SubViewport overlay in game), tracer drawn from the cast point while the ray stays at the eye, CameraFeel recoil + screen shake zeroed by reduced motion, wheel prev/next actions. 96 tests green (9 new): swap 24 ticks with no cast, Earthward 2nd cast at tick 33 despite a swap-cancel, 10 Fire staff + 20 Swift Wind = 100 mana, gem colour cos >= 0.97 (headless fallback: unshaded material + frustum + layer masks, since the dummy renderer can't read viewport images), reduced-motion recoil/shake test.",
       "plan_changes": "Step 10 marked done with Result/headless render note/Fixed/Magewar check. Step notes added: 24 (equip through Player.equip, equipping into the slot in hand starts a draw), 29 (slot icons + draw progress, HUD above the viewmodel CanvasLayer), 32 (slot/wheel actions rebindable), 37 (swap/cast sounds, element-coloured cast flash), 41 (first real look at the viewmodel overlay, tune drop/recoil/shake). Magewar bugs not copied: swap-cancel cooldown reset, both wheel actions on wheel down. No earlier-step bugs found.",
       "commit": "0ec3890"
+    },
+    {
+      "time": "2026-10-23T17:11-05:00",
+      "step": 11,
+      "type": "build",
+      "summary": "Enemy entity, training dummies, damage numbers: LevelToml inline tables; EnemyDef/EnemyTable + resources/enemies/training_dummies.tres (compared with data/enemies/training_dummies.toml; gnawer.toml parses with its ai table); Enemy (CharacterBody3D on new physics layer 3 'enemy', body + head shapes, weak point from Hit.shape, health clamped at 0, damage_taken without overkill, hit flash, died once, dead enemies hidden and passed through by bolts, spawned at the Midden's EnemySpawns markers); SpellBolts Hit.shape/grazed, damage_target_for, dead pass-through, 0.1 m graze sphere that never goes through walls; DamageNumbers (Label3D, element colour, C++ rise/fade/scale/cap/format + Magewar 'Super Effective!'/'Not Very Effective...' callouts); player mask world+enemy; main spawns 2 dummies. 104 tests green (8 new test_enemy): Fire staff via Player = 15 x4 -> exactly 0 HP, 5th bolt through to the wall; Fire vs Water 5; Air 10 vs Water 11.25; Swift Wind vs Water 8.4375; head x2 = 30; 1000 Arcane overkill -> 0 (60 taken).",
+      "plan_changes": "Step 11 marked done with Result/Fixed/Magewar check. Fixed the step 11 plan note: the head is a second body shape identified by Hit.shape, not an Area (bolt rays ignore Areas). test_player layer check updated for the deliberate player mask change (world + enemy). Effectiveness callouts done in-world now instead of deferred. Step notes added: 12 (Gnawer extends Enemy, gnawer.tres + EnemyTable.DEFAULT_PATHS, spawn subclass by id so gnawer_3 spawns, knockback from damaged with amount > 10 + hit.direction since Magewar's take_elemental_damage is never called), 13 (Player damage_target + take_hit, Heap reuses Enemy), 14 (enemy_killed from Enemy.died, free dead enemies, dummy respawn via Enemy.reset, reuse spawn_at_markers), 29 (hit/crit/kill markers; HUD doesn't duplicate damage numbers), 37 (hit/death sounds from Enemy.damaged/died). Magewar check: affinity/get_element/'enemies' group/damage_received name kept; not copied: landfill enemies have no health attribute (never die), dead knockback code, 3-arg emit on a 1-arg signal, effectiveness-only damage, hint-only effectiveness text; level/xp/gold scheduled for steps 19-20.",
+      "commit": "f1e100f"
     }
   ]
 }
