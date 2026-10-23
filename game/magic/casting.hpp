@@ -12,8 +12,9 @@
 // Mana (step 18, game/player/mana.hpp; Magewar: spent after the cooldown check, no mana =
 // no cast and no cooldown) comes in through setManaSpender with the wieldable's manaCost().
 // The bolt starts at the eye along the view so it goes where the crosshair points
-// (Magewar spawns at the staff's CastPoint aimed at the camera ray's hit; the visible
-// CastPoint arrives with the viewmodel in step 21).
+// (Magewar spawns at the staff's CastPoint aimed at the camera ray's hit). Step 21: the
+// viewmodel's CastPoint comes in as CastAim::visualOffset, so only the tracer starts
+// there; per-slot casters and swaps live in game/magic/loadout.hpp.
 #pragma once
 #include "engine/physics/physics.hpp"
 #include "game/magic/projectile.hpp"
@@ -30,6 +31,7 @@ struct CastAim {
     glm::vec3 origin{0.0f};
     glm::vec3 direction{0.0f, 0.0f, -1.0f};
     physics::BodyHandle ignore;   // the caster's body (Character::innerBody())
+    glm::vec3 visualOffset{0.0f}; // step 21: viewmodel CastPoint - origin (tracer only, see ProjectileSpawn)
 };
 
 // The player's aim after its last tick: from the eye (no head bob, so the shot doesn't

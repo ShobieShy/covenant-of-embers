@@ -24,10 +24,11 @@ add_custom_target(shaders ALL DEPENDS ${SPV_OUT})
 
 add_library(coe_assets STATIC
   assets/gltf_loader.cpp
+  assets/image.cpp
   assets/manifest.cpp)
 target_include_directories(coe_assets PUBLIC ${PROJECT_SOURCE_DIR})
 target_compile_definitions(coe_assets PUBLIC GLM_FORCE_RADIANS GLM_FORCE_DEPTH_ZERO_TO_ONE)
-target_link_libraries(coe_assets PUBLIC glm::glm PRIVATE fastgltf::fastgltf simdjson::simdjson coe_warnings)
+target_link_libraries(coe_assets PUBLIC glm::glm PRIVATE fastgltf::fastgltf simdjson::simdjson coe_stb_image coe_warnings)
 
 add_library(coe_engine STATIC
   core/fixed_timestep.cpp

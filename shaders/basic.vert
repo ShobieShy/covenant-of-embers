@@ -10,10 +10,12 @@ layout(push_constant) uniform Push {
 } pc;
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inNormal;
-layout(location = 2) in vec4 inColor;   // material baseColorFactor (textures: step 21)
+layout(location = 2) in vec4 inColor;   // material baseColorFactor
+layout(location = 3) in vec2 inUv;      // base-colour texture UV (KHR_texture_transform baked in)
 layout(location = 0) out vec3 vNormal;
 layout(location = 1) out vec4 vColor;
 layout(location = 2) out vec3 vWorldPos;
+layout(location = 3) out vec2 vUv;
 
 void main() {
     vec4 world = pc.model * vec4(inPosition, 1.0);
@@ -24,4 +26,5 @@ void main() {
     vNormal = transpose(inverse(mat3(pc.model))) * inNormal;
     vColor = inColor * pc.tint;
     vWorldPos = world.xyz;
+    vUv = inUv;
 }

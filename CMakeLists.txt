@@ -85,6 +85,20 @@ FetchContent_Declare(fastgltf
   SYSTEM)
 FetchContent_MakeAvailable(fastgltf)
 
+# stb_image (BUILD_PLAN step 21): PNG/JPEG decoding for glTF base-colour textures.
+# Header-only and untagged upstream, so a pinned master commit tarball + hash; only
+# populated (no CMake project). The implementation is compiled once in
+# engine/assets/image.cpp; the include dir is SYSTEM so its warnings stay out of ours.
+FetchContent_Declare(stb
+  URL https://github.com/nothings/stb/archive/003501f6d7a8668ce8b6d875e34dd97ad0d5d5b5.tar.gz
+  URL_HASH SHA256=a6c31950b3bdf05eb92258768ba2a11bd44449490574b1aac67028452288c40d
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  SOURCE_SUBDIR coe-populate-only
+  SYSTEM)
+FetchContent_MakeAvailable(stb)
+add_library(coe_stb_image INTERFACE)
+target_include_directories(coe_stb_image SYSTEM INTERFACE ${stb_SOURCE_DIR})
+
 # Vulkan Memory Allocator (ADR-0001 step 11): header-only; the implementation is
 # compiled once in engine/render/vma_impl.cpp.
 set(VMA_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)

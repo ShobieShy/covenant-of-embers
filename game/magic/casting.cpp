@@ -33,6 +33,7 @@ bool Caster::tick(bool firePressed, bool fireHeld, float dt, const CastAim& aim,
     s.element = wieldable_->element();
     s.damage = wieldable_->damage();
     s.ignore = aim.ignore;
+    s.visualOffset = aim.visualOffset;
     out.spawn(s);
     ++casts_;
     return true;

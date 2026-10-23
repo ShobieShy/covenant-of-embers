@@ -6,11 +6,16 @@
 
 namespace coe::game {
 // Tracer from max(kSkipNear, d - kTail) to d metres along the bolt's ray.
+// With a visualOffset (step 21) it starts at the cast point and the offset fades
+// linearly to 0 over kConverge m, so the line meets the eye ray where the bolt can hit.
 bool ProjectileSystem::tracer(const ProjectileSpawn& s, float d, DebugLine& out) const {
-    const float from = std::max(kSkipNear, d - kTail);
+    const bool offset = glm::dot(s.visualOffset, s.visualOffset) > 1e-8f;
+    const float from = std::max(offset ? 0.0f : kSkipNear, d - kTail);
     if (d <= from) return false;
-    out = {s.origin + s.direction * from, s.origin + s.direction * d,
-           elements_ ? elements_->color(s.element) : glm::vec3(1.0f)};
+    const auto at = [&](float t) {
+        return s.origin + s.direction * t + s.visualOffset * std::max(0.0f, 1.0f - t / kConverge);
+    };
+    out = {at(from), at(d), elements_ ? elements_->color(s.element) : glm::vec3(1.0f)};
     return true;
 }
 

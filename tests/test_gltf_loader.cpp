@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-// glTF loading + cooked manifest tests (BUILD_PLAN step 11). Plain checks until
-// doctest arrives in step 20.
+// glTF loading + cooked manifest tests (BUILD_PLAN step 11; textures + KHR_texture_transform
+// step 21). Plain checks, not yet ported to doctest (step 20 notes).
 //   test_gltf_loader                 synthetic glTF files written to a temp dir
 //   test_gltf_loader --cooked DIR    the cooked Kenney blaster kit (ctest fixture
 //                                    cooked_blaster) through the manifest
@@ -126,6 +126,83 @@ void syntheticTests(const fs::path& tmp) {
     CHECK(!loadGltfMesh(tmp / "nope.glb", out).empty());
 }
 
+// Step 21: a textured triangle. 2x1 RGBA PNG (red, half-transparent blue), NEAREST
+// without mips, clamp / mirrored wrap, and KHR_texture_transform from the extension's
+// own example (offset [0,1], rotation pi/2, scale 0.5: the lower-left quadrant).
+const std::string kPng2x1(
+    "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a\x00\x00\x00\x0d\x49\x48\x44\x52\x00\x00\x00\x02\x00\x00\x00\x01"
+    "\x08\x06\x00\x00\x00\xf4\x22\x7f\x8a\x00\x00\x00\x0e\x49\x44\x41\x54\x78\x9c\x63\xf8\xcf\xc0\x00"
+    "\x42\x0d\x00\x0f\x7a\x03\x7e\x77\xe9\x7f\x97\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82", 71);
+
+std::string texturedBuffer() {
+    std::string b = triBuffer().substr(0, 36);   // positions
+    const float uv[6] = {0, 0, 1, 0, 0, 1};
+    b.append(reinterpret_cast<const char*>(uv), sizeof uv);   // 36..60
+    return b;
+}
+
+std::string texturedGltf(const std::string& imageUri, const std::string& transform) {
+    return std::string(R"({"asset":{"version":"2.0"},"extensionsUsed":["KHR_texture_transform"],)") +
+           R"("buffers":[{"uri":"tex.bin","byteLength":60}],)"
+           R"("bufferViews":[{"buffer":0,"byteLength":36},{"buffer":0,"byteOffset":36,"byteLength":24}],)"
+           R"("accessors":[{"bufferView":0,"componentType":5126,"count":3,"type":"VEC3","min":[0,0,0],"max":[1,1,0]},)"
+           R"({"bufferView":1,"componentType":5126,"count":3,"type":"VEC2"}],)"
+           R"("images":[{"uri":")" + imageUri + R"("}],)"
+           R"("samplers":[{"magFilter":9728,"minFilter":9728,"wrapS":33071,"wrapT":33648}],)"
+           R"("textures":[{"sampler":0,"source":0}],)"
+           R"("materials":[{"name":"tex","pbrMetallicRoughness":{"baseColorTexture":{"index":0)" + transform + R"(}}}],)"
+           R"("meshes":[{"primitives":[{"attributes":{"POSITION":0,"TEXCOORD_0":1},"material":0}]}],)"
+           R"("nodes":[{"mesh":0}],"scenes":[{"nodes":[0]}],"scene":0})";
+}
+
+void textureTests(const fs::path& tmp) {
+    const std::string xf =
+        R"(,"extensions":{"KHR_texture_transform":{"offset":[0,1],"rotation":1.5707963268,"scale":[0.5,0.5]}})";
+    put(tmp / "tex/tex.bin", texturedBuffer());
+    put(tmp / "tex/px.png", kPng2x1);
+    put(tmp / "tex/scene.gltf", texturedGltf("px.png", xf));
+    MeshData m;
+    std::string err = loadGltfMesh(tmp / "tex/scene.gltf", m);
+    CHECK(err.empty());
+    if (!err.empty()) std::printf("  %s\n", err.c_str());
+    CHECK(m.images.size() == 1 && m.materials.size() == 1 && m.submeshes.size() == 1);
+    if (m.images.size() == 1) {
+        const ImageData& im = m.images[0];
+        CHECK(im.width == 2 && im.height == 1 && im.rgba.size() == 8);
+        const uint8_t want[8] = {255, 0, 0, 255, 0, 0, 255, 128};
+        CHECK(im.rgba.size() == 8 && std::memcmp(im.rgba.data(), want, 8) == 0);
+    }
+    if (m.materials.size() == 1) {
+        const MaterialData& mat = m.materials[0];
+        CHECK(mat.name == "tex" && mat.baseColorImage == 0);
+        CHECK(mat.sampler.mag == Filter::Nearest && mat.sampler.min == Filter::Nearest && !mat.sampler.mipmaps);
+        CHECK(mat.sampler.wrapU == Wrap::ClampToEdge && mat.sampler.wrapV == Wrap::MirroredRepeat);
+    }
+    if (m.vertices.size() == 3) {   // lower-left quadrant: (0,0)->(0,1), (1,0)->(0,0.5), (0,1)->(0.5,1)
+        CHECK(near(m.vertices[0].uv.x, 0.0f, 1e-5f) && near(m.vertices[0].uv.y, 1.0f, 1e-5f));
+        CHECK(near(m.vertices[1].uv.x, 0.0f, 1e-5f) && near(m.vertices[1].uv.y, 0.5f, 1e-5f));
+        CHECK(near(m.vertices[2].uv.x, 0.5f, 1e-5f) && near(m.vertices[2].uv.y, 1.0f, 1e-5f));
+    } else CHECK(m.vertices.size() == 3);
+
+    // No transform: the UVs pass through.
+    put(tmp / "tex/plain.gltf", texturedGltf("px.png", ""));
+    MeshData plain;
+    CHECK(loadGltfMesh(tmp / "tex/plain.gltf", plain).empty());
+    CHECK(plain.vertices.size() == 3 && near(plain.vertices[1].uv.x, 1.0f) && near(plain.vertices[2].uv.y, 1.0f));
+
+    // A corrupt image or a missing one is an error naming the image, not a silent white texture.
+    put(tmp / "tex/bad.png", kPng2x1.substr(0, 40));
+    put(tmp / "tex/bad.gltf", texturedGltf("bad.png", ""));
+    put(tmp / "tex/missing.gltf", texturedGltf("nope.png", ""));
+    for (const char* f : {"bad.gltf", "missing.gltf"}) {
+        MeshData out;
+        err = loadGltfMesh(tmp / "tex" / f, out);
+        std::printf("%s %s -> %s\n", err.empty() ? "FAIL" : "ok  ", f, err.c_str());
+        CHECK(!err.empty() && err.find(".png") != std::string::npos);
+        CHECK(out.vertices.empty() && out.images.empty());
+    }
+}
+
 // Manifest error handling on a temp cooked dir.
 void manifestTests(const fs::path& tmp) {
     const fs::path dir = tmp / "cooked";
@@ -190,7 +267,7 @@ int cookedTests(const fs::path& cooked) {
     CHECK(a.boundsMin.y < -0.27f);
     for (const auto& v : a.vertices) CHECK(near(glm::length(v.normal), 1.0f, 1e-3f));
 
-    size_t models = 0, tris = 0;
+    size_t models = 0, tris = 0, texturedModels = 0;
     for (const auto& e : m.entries()) {
         if (e.type != "glb" && e.type != "gltf") continue;
         MeshData md;
@@ -204,9 +281,15 @@ int cookedTests(const fs::path& cooked) {
             if (i >= md.vertices.size()) { ++failures; break; }
         ++models;
         tris += md.triangleCount();
+        // Step 21: every kit model samples the shared colormap.png atlas.
+        bool textured = !md.images.empty() && md.images[0].width > 0;
+        for (const MaterialData& mat : md.materials) textured = textured && mat.baseColorImage >= 0;
+        if (textured) ++texturedModels;
+        else std::printf("untextured: %s (%zu images, %zu materials)\n", e.source.c_str(), md.images.size(), md.materials.size());
     }
-    std::printf("cooked models: %zu loaded, %zu triangles total\n", models, tris);
+    std::printf("cooked models: %zu loaded, %zu triangles total, %zu textured\n", models, tris, texturedModels);
     CHECK(models >= 40);
+    CHECK(texturedModels == models);
     return failures;
 }
 } // namespace
@@ -218,6 +301,7 @@ int main(int argc, char** argv) {
         const fs::path tmp = fs::temp_directory_path() / ("coe_gltf_test_" + std::to_string(std::random_device{}()));
         fs::remove_all(tmp);
         syntheticTests(tmp);
+        textureTests(tmp);
         manifestTests(tmp);
         fs::remove_all(tmp);
     }

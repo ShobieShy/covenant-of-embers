@@ -27,6 +27,10 @@ struct GpuBuffer {
 struct GpuMesh {
     GpuBuffer vertices, indices;
     std::vector<assets::Submesh> submeshes;
+    // Step 21: one material descriptor set (set 1: base-colour texture + sampler) per
+    // submesh, from this mesh's own pool; textures are owned by the renderer.
+    std::vector<VkDescriptorSet> submeshSets;
+    VkDescriptorPool materialPool = VK_NULL_HANDLE;
     uint32_t vertexCount = 0, indexCount = 0;
 };
 
@@ -34,10 +38,10 @@ using MeshId = uint32_t;
 inline constexpr MeshId kInvalidMesh = UINT32_MAX;
 
 // Vertex input matching assets::Vertex and shaders/basic.vert:
-// location 0 position, 1 normal, 2 colour. (uv stays in the stride for step 21.)
+// location 0 position, 1 normal, 2 colour, 3 uv (step 21).
 struct VertexLayout {
     VkVertexInputBindingDescription binding{};
-    std::array<VkVertexInputAttributeDescription, 3> attributes{};
+    std::array<VkVertexInputAttributeDescription, 4> attributes{};
 };
 VertexLayout vertexLayout();
 

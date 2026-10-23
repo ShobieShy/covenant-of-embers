@@ -40,14 +40,15 @@ Register every test with `coe_add_test(NAME … COMMAND … [WORKING_DIRECTORY �
 
 ## Run / smoke tests
 ```sh
-./build/debug/covenant                 # window (Midden greybox: WASD walk, LShift sprint, Space jump, LCtrl/C crouch / slide from sprint, Q dash, LMB cast, 1-4 pick staff/wand, mouse look), Esc to quit
+./build/debug/covenant                 # window (Midden greybox: WASD walk, LShift sprint, Space jump, LCtrl/C crouch / slide from sprint, Q dash, LMB cast, RMB focus, 1 staff slot / 2 wand slot (0.4 s swap), mouse look), Esc to quit
 ./build/debug/covenant --seconds 3     # auto-quits after 3 s, logs ~180 fixed ticks
-./build/debug/covenant --headless      # offscreen level render, checks floor/walls/sky on the resolved 2x MSAA image (writes midden.ppm)
+./build/debug/covenant --headless      # offscreen level render, checks floor/walls/sky on the resolved 2x MSAA image (writes midden.ppm), then the staff viewmodel head colour (vmframe.ppm)
 ./build/debug/covenant --level FILE    # another level TOML (errors are reported as file:line)
 ./build/debug/covenant --reduced-motion # no head bob / landing dip
 ./build/debug/covenant --crate         # also drop step 13's demo crate in front of the player (walk into it to push it)
 ./build/debug/covenant --wieldables FILE  # staff/wand bases (default data/magic/wieldables.toml)
 ./build/debug/covenant --elements FILE    # element names/colours/chart (default data/magic/elements.toml)
+./build/debug/covenant --staff ID --wand ID  # loadout by wieldables.toml id (default: first staff + first wand)
 ./build/debug/covenant --model [SRC]   # step 11's tumbling model view instead (default: Kenney blaster-a); --headless writes mesh.ppm
 ./build/debug/covenant --input-debug   # prints actions per fixed tick + mouse look (Esc quits; mouse is captured)
 ctest --test-dir build/debug           # smoke tests, unit tests, asset lint, cooker tests

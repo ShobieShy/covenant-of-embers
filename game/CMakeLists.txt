@@ -14,6 +14,8 @@
 # magic/accuracy.*: Magewar focus (ADS) FOV tween, accuracy -> spread cone + bloom (step 19).
 # combat/element.*, combat/damage.*: Magewar elements + effectiveness chart from
 # data/magic/elements.toml, the damage formula (rarity, parts, resist cap, weak point) (step 20).
+# magic/loadout.*: Staff + Wand slots, equip-time swaps, per-slot cooldowns (step 21).
+# render/viewmodel.*: greybox staff/wand viewmodel poses, meshes, cast point, head check (step 21).
 add_library(coe_game STATIC
   data/toml_read.cpp
   world/level.cpp
@@ -28,6 +30,8 @@ add_library(coe_game STATIC
   magic/projectile.cpp
   magic/casting.cpp
   magic/accuracy.cpp
+  magic/loadout.cpp
+  render/viewmodel.cpp
   combat/element.cpp
   combat/damage.cpp)
 target_link_libraries(coe_game PUBLIC coe_engine coe_physics PRIVATE tomlplusplus::tomlplusplus coe_warnings)

@@ -31,6 +31,10 @@ struct ProjectileSpawn {
     Element element = Element::Arcane;
     float damage = 0.0f;             // wieldable damage, carried to the hit (resolveHit, step 22 applies it)
     physics::BodyHandle ignore;      // never hit (the caster); invalid = none
+    // Step 21: where the tracer appears to start relative to `origin` (the viewmodel's
+    // CastPoint - eye, world space). Visual only: the hit test stays on the eye ray; the
+    // drawn tracer converges from origin + visualOffset onto the ray over kConverge m.
+    glm::vec3 visualOffset{0.0f};
 };
 
 struct Projectile {
@@ -81,6 +85,8 @@ public:
     void debugLines(float alpha, std::vector<DebugLine>& out) const;
     static constexpr float kTail = 2.5f;          // m of tracer behind the head
     static constexpr float kSkipNear = 0.6f;      // m in front of the eye not drawn (would fill the view)
+                                                  // (without a visualOffset; with one it starts at the cast point)
+    static constexpr float kConverge = 8.0f;      // m along the ray over which visualOffset fades to 0
     static constexpr float kImpactLinger = 0.2f;  // s
 
 private:

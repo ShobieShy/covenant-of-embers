@@ -131,8 +131,11 @@ bool checkModelView(const HeadlessFrame& f, const glm::mat4& model0, const glm::
     const bool cornerIsClear = isClear(corner, clearColor) && cornerDepth == 0.0f;
     const int centreDiff = std::abs(int(centre[0]) - int(corner[0])) + std::abs(int(centre[1]) - int(corner[1])) +
                            std::abs(int(centre[2]) - int(corner[2]));
-    // Non-clear and lit: clearly above the ambient-only level of a white surface (0.2 * 255).
-    const bool centreIsLit = centreDiff > 60 && centreDepth > originDepth && centreDepth <= 1.0f;
+    // Drawn and not the clear colour. Since step 21 the model is textured (the Kenney
+    // colormap: dark purples and greys, written linear to the UNORM target), so the old
+    // "brighter than ambient white" bar (diff > 60) no longer applies; shading is still
+    // required below via the luma spread.
+    const bool centreIsLit = centreDiff > 24 && centreDepth > originDepth && centreDepth <= 1.0f;
     const bool shaded = samples >= 8 && maxL - minL > 20;
     char buf[384];
     std::snprintf(buf, sizeof buf,

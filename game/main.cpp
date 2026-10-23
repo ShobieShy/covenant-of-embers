@@ -19,6 +19,8 @@
 //   covenant --crate         level mode: also drop step 13's tumbling demo crate (a push target)
 //   covenant --reduced-motion  level mode: no head bob / landing dip (accessibility)
 //   covenant --wieldables FILE  staff/wand bases (default: data/magic/wieldables.toml)
+//   covenant --staff ID / --wand ID  what the Staff / Wand slot holds (default: the first
+//                            staff / wand in wieldables.toml)
 //
 // Loop (PLAN §23): simulation advances in fixed 60 Hz ticks (engine/core/fixed_timestep),
 // rendering runs once per displayed frame with state interpolated by alpha.
@@ -35,10 +37,15 @@
 // Breath and slides, (step 16) dashes, from the TickInput (before the world steps), mouse
 // look turns it per frame, the camera sits at its eye (+ head bob / landing dip).
 // Casting (step 17): Magewar staffs/wands from data/magic/wieldables.toml (game/magic);
-// Weapon1-4 pick one of the bases (debug until step 21's loadout), Fire casts a bolt
-// from the eye along the view (after the world steps) on the wieldable's cooldown; bolts
-// are ray-swept per tick skipping the player's own capsule and drawn as element-coloured
-// debug lines.
+// Fire casts a bolt from the eye along the view (after the world steps) on the
+// wieldable's cooldown; bolts are ray-swept per tick skipping the player's own capsule
+// and drawn as element-coloured debug lines.
+// Loadout + viewmodel (step 21, game/magic/loadout, game/render/viewmodel): a Staff slot
+// (Weapon1) and a Wand slot (Weapon2); a swap takes 0.4 s and blocks Fire/Aim; each slot
+// keeps its own cooldown. The held one is drawn as a greybox staff/wand in the
+// renderer's viewmodel pass, its head tinted by the element colour; tracers start at its
+// CastPoint. Window runs read back frame 4 and check the head is there in that colour;
+// --headless checks it on a second render.
 // Mana (step 18): game/player/mana on the PlayerController (Magewar ManaAttribute: 100,
 // 3/s after 1.5 s); each cast spends the wieldable's mana cost through
 // Caster::setManaSpender, a refused cast costs no cooldown. No ammo, no reload: the Reload
@@ -54,9 +61,11 @@
 #include "game/core/tumble_demo.hpp"
 #include "game/magic/accuracy.hpp"
 #include "game/magic/casting.hpp"
+#include "game/magic/loadout.hpp"
 #include "game/magic/projectile.hpp"
 #include "game/magic/wieldable.hpp"
 #include "game/player/player_controller.hpp"
+#include "game/render/viewmodel.hpp"
 #include "game/world/headless_checks.hpp"
 #include "game/world/level.hpp"
 #include "game/world/level_physics.hpp"
@@ -179,6 +188,42 @@ bool loadWieldablesFile(const std::string& path, coe::game::WieldableTable& tabl
     return true;
 }
 
+// Step 21: one instance per base (no parts until step 28); the Staff slot gets `staffId`
+// (default: the first staff), the Wand slot `wandId` (default: the first wand). `hands`
+// must not grow afterwards (the loadout points into it).
+bool buildLoadout(const coe::game::WieldableTable& table, const std::string& staffId, const std::string& wandId,
+                  std::vector<coe::game::WieldableInstance>& hands, coe::game::Loadout& loadout) {
+    hands.clear();
+    for (const coe::game::WieldableDef& d : table.defs) hands.emplace_back(d);
+    const auto pick = [&](coe::game::Slot slot, const std::string& id) {
+        for (const coe::game::WieldableInstance& w : hands)
+            if (coe::game::slotFor(w.type()) == slot && (id.empty() || w.def->id == id)) return &w;
+        return static_cast<const coe::game::WieldableInstance*>(nullptr);
+    };
+    bool ok = true;
+    for (const auto& [slot, id] : {std::pair{coe::game::Slot::Staff, staffId}, std::pair{coe::game::Slot::Wand, wandId}}) {
+        const coe::game::WieldableInstance* w = pick(slot, id);
+        if (!w && !id.empty()) {
+            std::fprintf(stderr, "[loadout] no %s with id '%s' in the wieldables\n", coe::game::slotName(slot), id.c_str());
+            ok = false;
+        }
+        loadout.equip(slot, w);
+    }
+    if (!loadout.wieldable()) loadout.select(coe::game::Slot::Wand, /*instant=*/true);   // spawn holding something
+    return ok;
+}
+
+// Viewmodel draws for what the loadout shows (focus 0..1 = Focus::amount()); returns the
+// head's view-space position (z = 0 if nothing is shown).
+glm::vec3 addViewmodel(const coe::game::Loadout& loadout, const coe::game::ViewmodelMeshes& meshes,
+                       const coe::game::ElementTable& elements, float focus, std::vector<coe::DrawItem>& out) {
+    const coe::game::ViewmodelShown shown = coe::game::viewmodelShown(loadout);
+    if (!shown.wieldable || meshes.shaft == coe::kInvalidMesh) return glm::vec3(0.0f);
+    const glm::mat4 t = coe::game::viewmodelTransform(shown.wieldable->type(), focus, shown.lowered);
+    coe::game::appendViewmodelDraws(meshes, shown.wieldable->type(), t, elements.color(shown.wieldable->element()), out);
+    return coe::game::viewmodelCastPoint(shown.wieldable->type(), t);
+}
+
 // A debug line as the shared unit cube stretched along a -> b (step 17 bolt tracers).
 constexpr float kDebugLineWidth = 0.04f;
 glm::mat4 lineModel(const glm::vec3& a, const glm::vec3& b) {
@@ -214,14 +259,16 @@ constexpr ScriptedEvent kInputScript[] = {
     {8,  SDL_EVENT_KEY_DOWN, SDL_SCANCODE_W, 0},
     {10, SDL_EVENT_MOUSE_MOTION, 0, 40.0f},
     {12, SDL_EVENT_MOUSE_BUTTON_DOWN, SDL_BUTTON_LEFT, 0},
-    {14, SDL_EVENT_KEY_DOWN, SDL_SCANCODE_2, 0}, {14, SDL_EVENT_KEY_UP, SDL_SCANCODE_2, 0},
     {14, SDL_EVENT_KEY_DOWN, SDL_SCANCODE_R, 0}, {14, SDL_EVENT_KEY_UP, SDL_SCANCODE_R, 0},
     {20, SDL_EVENT_MOUSE_BUTTON_UP, SDL_BUTTON_LEFT, 0},
     {21, SDL_EVENT_KEY_DOWN, SDL_SCANCODE_SPACE, 0}, {22, SDL_EVENT_KEY_UP, SDL_SCANCODE_SPACE, 0},
     {30, SDL_EVENT_KEY_UP, SDL_SCANCODE_W, 0},
-    {24, SDL_EVENT_MOUSE_BUTTON_DOWN, SDL_BUTTON_RIGHT, 0},   // focus (ADS) with Weapon2
+    {24, SDL_EVENT_MOUSE_BUTTON_DOWN, SDL_BUTTON_RIGHT, 0},   // focus (ADS) with the staff slot
     {40, SDL_EVENT_KEY_DOWN, SDL_SCANCODE_Q, 0}, {41, SDL_EVENT_KEY_UP, SDL_SCANCODE_Q, 0},   // dash
     {50, SDL_EVENT_MOUSE_BUTTON_UP, SDL_BUTTON_RIGHT, 0},
+    // Step 21: swap to the wand slot after the focus, so the 0.4 s swap (which blocks
+    // Aim) can't eat the RMB hold on a fast display; it must finish within the run.
+    {52, SDL_EVENT_KEY_DOWN, SDL_SCANCODE_2, 0}, {52, SDL_EVENT_KEY_UP, SDL_SCANCODE_2, 0},
 };
 constexpr struct { coe::input::Action action; uint64_t presses; } kScriptExpect[] = {
     {coe::input::Action::Jump, 2}, {coe::input::Action::MoveForward, 1},
@@ -279,6 +326,7 @@ int main(int argc, char** argv) {
     std::string levelPath = std::string(COE_DATA_DIR) + "/levels/midden_greybox.toml";
     std::string wieldablesPath = std::string(COE_DATA_DIR) + "/magic/wieldables.toml";
     std::string elementsPath = std::string(COE_DATA_DIR) + "/magic/elements.toml";
+    std::string staffId, wandId;   // step 21: empty = the first staff / wand
     for (int i = 1; i < argc; ++i) {
         if (!std::strcmp(argv[i], "--headless")) headless = true;
         else if (!std::strcmp(argv[i], "--no-validation")) validation = false;
@@ -294,6 +342,8 @@ int main(int argc, char** argv) {
         else if (!std::strcmp(argv[i], "--level") && i + 1 < argc) levelPath = argv[++i];
         else if (!std::strcmp(argv[i], "--wieldables") && i + 1 < argc) wieldablesPath = argv[++i];
         else if (!std::strcmp(argv[i], "--elements") && i + 1 < argc) elementsPath = argv[++i];
+        else if (!std::strcmp(argv[i], "--staff") && i + 1 < argc) staffId = argv[++i];
+        else if (!std::strcmp(argv[i], "--wand") && i + 1 < argc) wandId = argv[++i];
         else if (!std::strcmp(argv[i], "--cooked") && i + 1 < argc) cookedDir = argv[++i];
     }
     std::puts("Covenant of Embers v0.0.2");
@@ -316,12 +366,22 @@ int main(int argc, char** argv) {
                         : loadLevelFile(levelPath, level) && loadElementsFile(elementsPath, elements) &&
                               loadWieldablesFile(wieldablesPath, wieldables);
     if (ok && !modelView) mesh = coe::game::makeUnitCube();   // uploaded once, drawn per box
+    // Step 21: the Staff + Wand slots (level mode).
+    std::vector<coe::game::WieldableInstance> hands;
+    coe::game::Loadout loadout;
+    if (ok && !modelView) ok = buildLoadout(wieldables, staffId, wandId, hands, loadout);
     coe::VkRenderer renderer;
     ok = ok && renderer.init(cfg);
     if (ok) std::printf("GPU: %s | validation: %s\n", renderer.deviceName().c_str(),
                         renderer.validationEnabled() ? "on" : "off (layer not installed or disabled)");
     coe::MeshId meshId = coe::kInvalidMesh;
     if (ok) ok = (meshId = renderer.uploadMesh(mesh)) != coe::kInvalidMesh;
+    coe::game::ViewmodelMeshes vmMeshes;   // step 21 greybox staff/wand (level mode)
+    if (ok && !modelView) {
+        vmMeshes.shaft = renderer.uploadMesh(coe::game::makeViewmodelShaft());
+        vmMeshes.head = renderer.uploadMesh(coe::game::makeViewmodelHead());
+        ok = vmMeshes.shaft != coe::kInvalidMesh && vmMeshes.head != coe::kInvalidMesh;
+    }
     const glm::mat4 fit = ok && modelView ? fitModel(mesh) : glm::mat4(1.0f);
     // Level mode: every box is a draw of the one cube; the frame only changes by camera.
     const coe::FrameParams levelBase = ok && !modelView ? levelFrame(level, meshId) : coe::FrameParams{};
@@ -333,7 +393,7 @@ int main(int argc, char** argv) {
                     lp.bodies.size(), double(-coe::physics::WorldSettings{}.gravity.y), kTickHz);
     }
 
-    bool ticksOk = true, inputOk = true;
+    bool ticksOk = true, inputOk = true, viewmodelOk = true;
     if (ok && headless) {
         coe::FrameParams fp = levelBase;
         if (modelView)   // the tick-0 pose of the live demo, seen from the default camera
@@ -352,6 +412,23 @@ int main(int argc, char** argv) {
             // Artefact for humans: build/<preset>/midden.ppm or mesh.ppm
             const char* ppm = modelView ? "mesh.ppm" : "midden.ppm";
             if (!coe::game::writePpm(ppm, frame)) std::fprintf(stderr, "[headless] could not write %s\n", ppm);
+        }
+        if (ok && !modelView && loadout.wieldable()) {
+            // Step 21: the same view with the held staff in the viewmodel pass; its head
+            // must show up where projected, in the element's colour (vmframe.ppm).
+            coe::FrameParams vp = fp;
+            const glm::vec3 head = addViewmodel(loadout, vmMeshes, elements, 0.0f, vp.viewmodelDraws);
+            coe::HeadlessFrame vmFrame;
+            ok = renderer.renderHeadless(vp, vmFrame);
+            glm::vec2 px{-1.0f};
+            if (ok) {
+                coe::game::viewmodelPixel(head, vmFrame.width, vmFrame.height, px, vp.viewmodelFovYDeg, vp.viewmodelNear);
+                std::string report;
+                ok = coe::game::checkViewmodelHead(vmFrame, &frame, px,
+                                                   elements.color(loadout.wieldable()->element()), report);
+                std::printf("%s [%s]\n", report.c_str(), loadout.wieldable()->def->name.c_str());
+                if (!coe::game::writePpm("vmframe.ppm", vmFrame)) std::fprintf(stderr, "[headless] could not write vmframe.ppm\n");
+            }
         }
     } else if (ok) {
         coe::FixedTimestep step(kTickHz);
@@ -373,11 +450,7 @@ int main(int argc, char** argv) {
         glm::vec3 spawnFeet{0.0f}, spawnForward{0.0f};
         float apex = 0.0f;   // highest feet above the spawn
         float minMana = 0.0f, castCost = 0.0f;   // lowest mana seen after a cast; the last cast's cost
-        // Casting (step 17): one instance per base (no parts until step 28), Weapon1-4 pick.
-        std::vector<coe::game::WieldableInstance> hands;
-        for (const coe::game::WieldableDef& d : wieldables.defs) hands.emplace_back(d);
-        coe::game::Caster caster;
-        if (!hands.empty()) caster.equip(&hands.front());
+        // Casting (step 17) through the loadout's slots (step 21, built above).
         coe::game::ProjectileSystem bolts;
         bolts.setElements(&elements);   // tracer colours from elements.toml (step 20)
         // Focus (ADS) and spread (step 19): Aim tweens the FOV to the wieldable's focus FOV;
@@ -385,13 +458,27 @@ int main(int argc, char** argv) {
         coe::game::Focus focus;
         coe::game::Spread spread;
         float minFov = focus.fov();   // narrowest FOV any tick reached
+        // Step 21 script checks: what was held when focusing / for the first cast; the
+        // first swap's start tick (the press) and the tick it ended on.
+        const coe::game::WieldableInstance *focusWith = nullptr, *firstCastWith = nullptr;
+        uint64_t swapStartTick = 0, swapEndTick = 0;
+        // Step 21 done-check in the window: frame kCaptureFrame is read back and the
+        // viewmodel head must be at its projected pixel in the element colour.
+        constexpr uint64_t kCaptureFrame = 4;
+        glm::vec3 captureHead{0.0f}, captureColor{0.0f};
+        std::string captureName;
+        bool vmChecked = false, vmOk = false;
         std::vector<coe::game::ProjectileHit> boltHits;
         std::vector<coe::game::DebugLine> debugLines;
         if (!modelView) {
             const float yaw = glm::radians(level.playerStart.yawDeg);
             player = std::make_unique<coe::game::PlayerController>(physics, level.playerStart.position, yaw);
             player->setReducedMotion(reducedMotion);
-            caster.setManaSpender([&p = *player](float cost) { return p.mana().spend(cost); });
+            loadout.setManaSpender([&p = *player](float cost) { return p.mana().spend(cost); });
+            std::printf("[loadout] staff slot: %s | wand slot: %s | holding the %s\n",
+                        loadout.inSlot(coe::game::Slot::Staff) ? loadout.inSlot(coe::game::Slot::Staff)->def->name.c_str() : "empty",
+                        loadout.inSlot(coe::game::Slot::Wand) ? loadout.inSlot(coe::game::Slot::Wand)->def->name.c_str() : "empty",
+                        coe::game::slotName(loadout.active()));
             spawnFeet = player->feet();
             spawnForward = coe::game::PlayerController::forwardFor(yaw);
             std::printf("[player] spawned at (%.2f, %.2f, %.2f) facing %.0f deg, %s, eye %.2f m\n", double(spawnFeet.x),
@@ -428,16 +515,32 @@ int main(int argc, char** argv) {
                     // Cast from where the player is after this tick, then sweep the bolts
                     // against the world as just stepped.
                     const size_t fire = size_t(coe::input::Action::Fire);
-                    focus.tick(in.held[size_t(coe::input::Action::Aim)], caster.wieldable(), float(step.dtSeconds()));
+                    // Step 21: no focus while swapping (Aim held through a swap focuses after it).
+                    focus.tick(in.held[size_t(coe::input::Action::Aim)] && loadout.ready(), loadout.wieldable(),
+                               float(step.dtSeconds()));
                     minFov = std::min(minFov, focus.fov());
+                    if (focus.focused()) focusWith = loadout.wieldable();
                     spread.tick(float(step.dtSeconds()));
-                    const float accuracy = caster.wieldable() ? caster.wieldable()->accuracy() : coe::game::kBaseAccuracy;
-                    const coe::game::CastAim aim =
-                        spread.apply(coe::game::playerAim(*player), accuracy, coe::game::stanceOf(*player, focus));
-                    if (caster.tick(in.pressed[fire], in.held[fire], float(step.dtSeconds()), aim, bolts)) {
+                    const coe::game::WieldableInstance* held = loadout.wieldable();
+                    const float accuracy = held ? held->accuracy() : coe::game::kBaseAccuracy;
+                    const coe::game::CastAim eyeAim = coe::game::playerAim(*player);
+                    coe::game::CastAim aim = spread.apply(eyeAim, accuracy, coe::game::stanceOf(*player, focus));
+                    if (held) {   // tracer from the viewmodel's CastPoint (the bolt still flies the eye ray)
+                        coe::Camera c;
+                        c.position = eyeAim.origin;
+                        c.yaw = player->yaw();
+                        c.pitch = player->pitch();
+                        c.fovYDeg = focus.fov();
+                        const glm::vec3 tip = coe::game::viewmodelCastPoint(
+                            held->type(), coe::game::viewmodelTransform(held->type(), focus.amount(), 0.0f));
+                        aim.visualOffset = coe::game::viewmodelToWorld(tip, c) - eyeAim.origin;
+                    }
+                    if (loadout.tick(in.pressed[fire], in.held[fire], float(step.dtSeconds()), aim, bolts)) {
+                        const coe::game::Caster& caster = loadout.caster();
                         spread.onCast();
                         castCost = caster.wieldable()->manaCost();
-                        minMana = caster.casts() == 1 ? player->mana().value() : std::min(minMana, player->mana().value());
+                        if (firstCastWith == nullptr) firstCastWith = caster.wieldable();
+                        minMana = loadout.casts() == 1 ? player->mana().value() : std::min(minMana, player->mana().value());
                         std::printf("[cast] %s (%s): bolt %.0f m/s, %.0f m range, %.1f dmg, -%.1f mana -> %.1f/%.0f, "
                                     "accuracy %.0f%%, spread %.2f deg%s\n",
                                     caster.wieldable()->def->name.c_str(), coe::game::elementName(caster.wieldable()->element()),
@@ -454,12 +557,16 @@ int main(int argc, char** argv) {
                                     coe::physics::layerName(physics.layer(h.body)), h.body.id, double(h.distance),
                                     double(h.time), h.tick, double(h.point.x), double(h.point.y), double(h.point.z),
                                     double(h.damage), elements.name(h.element).c_str());
-                    // Weapon1-4 after the cast, so a same-tick Fire + switch casts the old one.
-                    for (size_t k = 0; k < 4 && k < hands.size(); ++k)
-                        if (in.pressed[size_t(coe::input::Action::Weapon1) + k]) {
-                            caster.equip(&hands[k]);
-                            std::printf("[cast] equipped %s\n", hands[k].def->name.c_str());
-                        }
+                    // Weapon1 = Staff slot, Weapon2 = Wand slot (Weapon3/4: unbound until step
+                    // 44's options), after the cast so a same-tick Fire + switch casts the old one.
+                    for (size_t k = 0; k < coe::game::kSlotCount; ++k)
+                        if (in.pressed[size_t(coe::input::Action::Weapon1) + k] &&
+                            loadout.select(static_cast<coe::game::Slot>(k)))
+                            std::printf("[loadout] tick %llu: swapping to the %s slot (%s), %.2f s\n",
+                                        (unsigned long long)(step.totalTicks() - n + 1), coe::game::slotName(loadout.active()),
+                                        loadout.wieldable()->def->name.c_str(), double(loadout.tuning().equipTime));
+                    if (swapStartTick == 0 && loadout.swapping()) swapStartTick = step.totalTicks() - n + 1;
+                    if (swapStartTick && !swapEndTick && !loadout.swapping()) swapEndTick = step.totalTicks() - n + 1;
                     if (crate.valid()) {
                         cratePrev = crateCur;
                         crateCur = physics.state(crate);
@@ -504,12 +611,28 @@ int main(int argc, char** argv) {
                 fp.draws.push_back({meshId, glm::scale(m, glm::vec3(kDemoCrateEdge)), kDemoCrateTint});
             }
             if (!modelView) {
+                const glm::vec3 head = addViewmodel(loadout, vmMeshes, elements, focus.amount(), fp.viewmodelDraws);
+                if (frames == kCaptureFrame && renderer.captureSupported() && loadout.wieldable() && head.z < 0.0f) {
+                    renderer.requestCapture();
+                    captureHead = head;
+                    captureColor = elements.color(loadout.wieldable()->element());
+                    captureName = loadout.wieldable()->def->name;
+                }
                 debugLines.clear();
                 bolts.debugLines(float(step.alpha()), debugLines);
                 for (const coe::game::DebugLine& l : debugLines)
                     fp.draws.push_back({meshId, lineModel(l.a, l.b), glm::vec4(l.color, 1.0f)});
             }
             ok = renderer.drawFrame(fp);
+            if (coe::HeadlessFrame cap; ok && renderer.takeCapture(cap)) {
+                glm::vec2 px{-1.0f};
+                coe::game::viewmodelPixel(captureHead, cap.width, cap.height, px, fp.viewmodelFovYDeg, fp.viewmodelNear);
+                std::string report;
+                vmOk = coe::game::checkViewmodelHead(cap, nullptr, px, captureColor, report);
+                vmChecked = true;
+                std::printf("%s [window frame %llu, %ux%u, %s]\n", report.c_str(), (unsigned long long)frames, cap.width,
+                            cap.height, captureName.c_str());
+            }
             ++frames;
         }
         // Edges still latched when the loop stopped never reached a tick.
@@ -536,27 +659,40 @@ int main(int argc, char** argv) {
                                    player->dash().dashes() == 1;
                 // Fire (LMB, frame 12) casts one Apprentice Fire Staff bolt at the north
                 // wall (well inside its 50 m range: it hits, or is still flying at exit).
-                const bool cast = caster.casts() == 1 && bolts.fizzled() == 0;
+                const bool cast = loadout.casts() == 1 && bolts.fizzled() == 0;
                 // Its mana cost (5) was paid exactly once: 100 -> 95, then it regenerates
                 // (3/s after 1.5 s) but never past 100.
                 const coe::game::Mana& mana = player->mana();
                 const bool paid = mana.spends() == 1 && mana.refusals() == 0 && castCost > 0.0f &&
                                   minMana == mana.tuning().max - castCost && mana.value() >= minMana &&
                                   mana.value() <= mana.max();
-                // RMB (frames 24-50) with the Earthward Battlestaff from Weapon2 narrowed the FOV toward 55 deg,
-                // and the release tweened it back to exactly 75.
+                // RMB (frames 24-50) with the default staff slot (Apprentice Fire Staff)
+                // narrowed the FOV toward 55 deg, and the release tweened it back to exactly 75.
+                const coe::game::WieldableInstance* staff = loadout.inSlot(coe::game::Slot::Staff);
                 const bool focused = minFov < focus.tuning().hipFovDeg && focus.fov() == focus.tuning().hipFovDeg &&
-                                     !focus.focused();
-                inputOk = inputOk && moved && cast && paid && focused;
-                std::printf("[focus] script: narrowest FOV %.1f deg (target %.0f), back to %.1f%s\n", double(minFov),
-                            double(caster.wieldable() ? coe::game::focusFovFor(caster.wieldable()->type(), focus.tuning()) : focus.tuning().hipFovDeg),
-                            double(focus.fov()), focused ? "" : " MISMATCH (need < 75 while held, 75 after release)");
+                                     !focus.focused() && focusWith == staff && firstCastWith == staff;
+                // Step 21: Weapon2 (frame 52) swapped to the wand slot; the swap took the
+                // equip time (0.4 s = 24 ticks) and ended within the run.
+                const uint64_t swapTicks = swapEndTick > swapStartTick ? swapEndTick - swapStartTick : 0;
+                const uint64_t wantTicks = uint64_t(std::lround(loadout.tuning().equipTime * float(kTickHz)));
+                const bool swapped = loadout.swaps() == 1 && loadout.active() == coe::game::Slot::Wand &&
+                                     !loadout.swapping() && swapTicks == wantTicks;
+                inputOk = inputOk && moved && cast && paid && focused && swapped;
+                std::printf("[focus] script: narrowest FOV %.1f deg (target %.0f) with %s, back to %.1f%s\n", double(minFov),
+                            double(staff ? coe::game::focusFovFor(staff->type(), focus.tuning()) : focus.tuning().hipFovDeg),
+                            focusWith ? focusWith->def->name.c_str() : "nothing", double(focus.fov()),
+                            focused ? "" : " MISMATCH (need < 75 while held with the staff slot, 75 after release)");
+                std::printf("[loadout] script: %llu swap(s), now the %s slot (%s), swap took %llu ticks (expect %llu)%s\n",
+                            (unsigned long long)loadout.swaps(), coe::game::slotName(loadout.active()),
+                            loadout.wieldable() ? loadout.wieldable()->def->name.c_str() : "nothing",
+                            (unsigned long long)swapTicks, (unsigned long long)wantTicks,
+                            swapped ? "" : " MISMATCH (need 1 finished swap to the wand slot taking the equip time)");
                 std::printf("[mana] script: %llu spend(s), %llu refusal(s), lowest %.2f (expect %.2f), now %.2f/%.0f%s\n",
                             (unsigned long long)mana.spends(), (unsigned long long)mana.refusals(), double(minMana),
                             double(mana.tuning().max - castCost), double(mana.value()), double(mana.max()),
                             paid ? "" : " MISMATCH (need 1 spend of the cast's cost)");
                 std::printf("[cast] script: %llu cast(s), %llu hit(s), %llu fizzled%s\n",
-                            (unsigned long long)caster.casts(), (unsigned long long)bolts.hits(),
+                            (unsigned long long)loadout.casts(), (unsigned long long)bolts.hits(),
                             (unsigned long long)bolts.fizzled(), cast ? "" : " MISMATCH (need 1 cast, 0 fizzled)");
                 std::printf("[player] script: moved %.2f m forward, %llu jump(s), apex %.2f m, %llu dash(es)%s\n",
                             double(forward), (unsigned long long)player->jumps(), double(apex),
@@ -591,14 +727,25 @@ int main(int argc, char** argv) {
                         (unsigned long long)player->mana().spends(), (unsigned long long)player->mana().refusals(),
                         double(player->mana().regenRate()), double(player->mana().tuning().regenDelay),
                         player->mana().regenerating() ? ", regenerating" : "");
-            std::printf("[cast] %llu cast(s), %llu refused (%llu cooldown, %llu mana), %llu hit(s), %llu fizzled, "
-                        "%zu in flight, holding %s\n", (unsigned long long)caster.casts(), (unsigned long long)caster.blocked(),
-                        (unsigned long long)(caster.blocked() - caster.manaRefused()), (unsigned long long)caster.manaRefused(),
+            uint64_t blocked = 0, manaRefused = 0;
+            for (size_t k = 0; k < coe::game::kSlotCount; ++k) {
+                blocked += loadout.caster(static_cast<coe::game::Slot>(k)).blocked();
+                manaRefused += loadout.caster(static_cast<coe::game::Slot>(k)).manaRefused();
+            }
+            std::printf("[cast] %llu cast(s), %llu refused (%llu cooldown, %llu mana, %llu mid-swap), %llu hit(s), "
+                        "%llu fizzled, %zu in flight, holding %s\n", (unsigned long long)loadout.casts(),
+                        (unsigned long long)(blocked + loadout.swapBlocked()), (unsigned long long)(blocked - manaRefused),
+                        (unsigned long long)manaRefused, (unsigned long long)loadout.swapBlocked(),
                         (unsigned long long)bolts.hits(), (unsigned long long)bolts.fizzled(), bolts.live().size(),
-                        caster.wieldable() ? caster.wieldable()->def->name.c_str() : "nothing");
+                        loadout.wieldable() ? loadout.wieldable()->def->name.c_str() : "nothing");
+            // Step 21: the window viewmodel check must have run and passed (when the
+            // swapchain can be read back at all).
+            if (!renderer.captureSupported()) std::puts("[viewmodel] window check skipped: swapchain has no TRANSFER_SRC");
+            else if (!vmChecked) std::puts("[viewmodel] window check never ran MISMATCH (run ended before frame 4?)");
+            viewmodelOk = !renderer.captureSupported() || (vmChecked && vmOk);
             std::printf("[focus] FOV %.1f deg%s, narrowest %.1f; spread bloom %.2f deg\n", double(focus.fov()),
                         focus.focused() ? " (focused)" : "", double(minFov), double(spread.bloomDeg()));
-            caster.setManaSpender(nullptr);   // it refers to the player
+            loadout.setManaSpender(nullptr);   // it refers to the player
             player.reset();   // before the world it lives in
         }
         std::printf("frames: %llu in %.2fs (%.0f fps)\n", (unsigned long long)frames, elapsed,
@@ -612,7 +759,7 @@ int main(int argc, char** argv) {
     std::printf("validation messages: %u errors, %u warnings\n", s.errors, s.warnings);
     if (window) SDL_DestroyWindow(window);
     SDL_Quit();
-    bool pass = ok && ticksOk && inputOk && s.errors == 0;
+    bool pass = ok && ticksOk && inputOk && viewmodelOk && s.errors == 0;
     std::puts(pass ? "RESULT: PASS" : "RESULT: FAIL");
     return pass ? 0 : 1;
 }

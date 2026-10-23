@@ -6,12 +6,14 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 namespace coe::assets {
 
-// Interleaved vertex. `uv` is carried for the texturing step (BUILD_PLAN step 21)
-// but not yet bound by the pipeline; `color` is the material's baseColorFactor.
+// Interleaved vertex. `uv` samples the submesh's base-colour texture (step 21), with
+// KHR_texture_transform already baked in; `color` is the material's baseColorFactor
+// (times any tint), multiplied with the texture in the fragment shader.
 struct Vertex {
     glm::vec3 position{0.0f};
     glm::vec3 normal{0.0f, 1.0f, 0.0f};
@@ -20,11 +22,35 @@ struct Vertex {
 };
 static_assert(sizeof(Vertex) == 48, "Vertex layout is mirrored by engine/render/mesh.cpp");
 
+// Decoded image, tightly packed RGBA8 (sRGB-encoded colour, as glTF base colour is).
+struct ImageData {
+    std::uint32_t width = 0, height = 0;
+    std::vector<std::uint8_t> rgba;   // width * height * 4 bytes, row 0 = top
+    std::string name;                 // URI or glTF image name, for messages
+};
+
+// glTF sampler state, reduced to what the renderer maps to a VkSampler.
+enum class Filter : std::uint8_t { Nearest, Linear };
+enum class Wrap : std::uint8_t { Repeat, ClampToEdge, MirroredRepeat };
+struct SamplerDesc {
+    Filter mag = Filter::Linear, min = Filter::Linear, mip = Filter::Linear;
+    bool mipmaps = true;              // false for glTF minFilter NEAREST / LINEAR (no mip)
+    Wrap wrapU = Wrap::Repeat, wrapV = Wrap::Repeat;
+    bool operator==(const SamplerDesc&) const = default;
+};
+
+// A glTF material's base-colour texture (the factor lives in Vertex::color).
+struct MaterialData {
+    std::string name;
+    std::int32_t baseColorImage = -1;  // index into MeshData::images, -1 = untextured
+    SamplerDesc sampler;
+};
+
 // One glTF primitive after flattening: a range of `MeshData::indices`.
 struct Submesh {
     std::uint32_t firstIndex = 0;
     std::uint32_t indexCount = 0;
-    std::int32_t material = -1;  // glTF material index, -1 = default material
+    std::int32_t material = -1;  // glTF material index = MeshData::materials index, -1 = default
     bool doubleSided = false;    // glTF material.doubleSided -> drawn without culling
 };
 
@@ -33,6 +59,8 @@ struct MeshData {
     std::vector<Vertex> vertices;
     std::vector<std::uint32_t> indices;
     std::vector<Submesh> submeshes;
+    std::vector<MaterialData> materials;  // one per glTF material (step 21)
+    std::vector<ImageData> images;        // decoded base-colour images they reference
     glm::vec3 boundsMin{0.0f};
     glm::vec3 boundsMax{0.0f};
 

@@ -1,4 +1,5 @@
 #include "engine/assets/gltf_loader.hpp"
+#include "engine/assets/image.hpp"
 
 #include <fastgltf/core.hpp>
 #include <fastgltf/tools.hpp>
@@ -8,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <cmath>
+#include <fstream>
 #include <functional>
 #include <limits>
 #include <optional>
@@ -145,18 +147,29 @@ glm::mat4 toGlm(const fg::math::fmat4x4& m) { return glm::make_mat4(m.data()); }
 void appendPrimitive(const fg::Asset& asset, const fg::Primitive& p, const glm::mat4& world, MeshData& out) {
     const auto& pos = *attribute(asset, p, "POSITION");
     const auto* nrm = attribute(asset, p, "NORMAL");
-    const auto* uv = attribute(asset, p, "TEXCOORD_0");
 
     Submesh sub;
     sub.firstIndex = static_cast<std::uint32_t>(out.indices.size());
     glm::vec4 color{1.0f};
+    // The base-colour texture picks the UV set; KHR_texture_transform (offset,
+    // rotation, scale, texCoord override) is baked into the UVs here so the shader
+    // samples them as-is.
+    std::size_t uvSet = 0;
+    const fg::TextureTransform* xf = nullptr;
     if (p.materialIndex && *p.materialIndex < asset.materials.size()) {
         const auto& mat = asset.materials[*p.materialIndex];
         sub.material = static_cast<std::int32_t>(*p.materialIndex);
         sub.doubleSided = mat.doubleSided;
         const auto& f = mat.pbrData.baseColorFactor;
         color = glm::vec4(f[0], f[1], f[2], f[3]);
+        if (mat.pbrData.baseColorTexture.has_value()) {
+            const fg::TextureInfo& ti = *mat.pbrData.baseColorTexture;
+            xf = ti.transform.get();
+            uvSet = xf && xf->texCoordIndex.has_value() ? *xf->texCoordIndex : ti.texCoordIndex;
+        }
     }
+    const auto* uv = attribute(asset, p, "TEXCOORD_" + std::to_string(uvSet));
+    if (uv && uv->type != fg::AccessorType::Vec2) uv = nullptr;
 
     const auto base = static_cast<std::uint32_t>(out.vertices.size());
     out.vertices.resize(out.vertices.size() + pos.count);
@@ -176,6 +189,18 @@ void appendPrimitive(const fg::Asset& asset, const fg::Primitive& p, const glm::
         fg::iterateAccessorWithIndex<fg::math::fvec2>(asset, *uv, [&](fg::math::fvec2 t, std::size_t i) {
             v[i].uv = glm::vec2(t[0], t[1]);
         });
+    if (uv && xf) {
+        // glTF KHR_texture_transform: uv' = T * R * S * uv with R = [c s; -s c] (row-major),
+        // the convention that maps the spec's example (offset [0,1], rotation pi/2, scale
+        // 0.5) onto the lower-left quadrant, as three.js / Babylon do (test_gltf_loader).
+        const float c = std::cos(float(xf->rotation)), s = std::sin(float(xf->rotation));
+        const glm::vec2 sc(float(xf->uvScale[0]), float(xf->uvScale[1]));
+        const glm::vec2 off(float(xf->uvOffset[0]), float(xf->uvOffset[1]));
+        for (std::size_t i = 0; i < pos.count; ++i) {
+            const glm::vec2 t = v[i].uv * sc;
+            v[i].uv = glm::vec2(c * t.x + s * t.y, -s * t.x + c * t.y) + off;
+        }
+    }
 
     if (p.indicesAccessor)
         fg::iterateAccessor<std::uint32_t>(asset, asset.accessors[*p.indicesAccessor],
@@ -209,6 +234,106 @@ void appendPrimitive(const fg::Asset& asset, const fg::Primitive& p, const glm::
 
     sub.indexCount = static_cast<std::uint32_t>(n);
     if (sub.indexCount) out.submeshes.push_back(sub);
+}
+
+// The raw bytes behind a glTF image: an external file (read here, relative to the
+// model), a buffer view into a loaded buffer (GLB-embedded), or a data: URI.
+std::string imageBytes(const fg::Asset& asset, const fg::Image& img, const std::filesystem::path& dir,
+                       std::vector<std::byte>& storage, std::span<const std::byte>& bytes) {
+    auto bufferBytes = [](const fg::DataSource& d) -> std::span<const std::byte> {
+        if (const auto* a = std::get_if<fg::sources::Array>(&d)) return {a->bytes.data(), a->bytes.size()};
+        if (const auto* v = std::get_if<fg::sources::Vector>(&d)) return {v->bytes.data(), v->bytes.size()};
+        if (const auto* b = std::get_if<fg::sources::ByteView>(&d)) return {b->bytes.data(), b->bytes.size()};
+        return {};
+    };
+    if (const auto* u = std::get_if<fg::sources::URI>(&img.data)) {
+        if (!u->uri.isLocalPath()) return "non-local image URI " + std::string(u->uri.string());
+        const std::filesystem::path file = dir / u->uri.fspath();
+        std::ifstream in(file, std::ios::binary | std::ios::ate);
+        if (!in) return "cannot read image " + file.string();
+        const std::streamoff size = in.tellg();
+        constexpr std::streamoff kMaxFile = 64ll << 20;
+        if (size <= 0 || size > kMaxFile || std::streamoff(u->fileByteOffset) >= size)
+            return "bad image file size: " + file.string();
+        storage.resize(std::size_t(size - std::streamoff(u->fileByteOffset)));
+        in.seekg(std::streamoff(u->fileByteOffset));
+        in.read(reinterpret_cast<char*>(storage.data()), std::streamsize(storage.size()));
+        if (!in) return "cannot read image " + file.string();
+        bytes = storage;
+        return {};
+    }
+    if (const auto* bv = std::get_if<fg::sources::BufferView>(&img.data)) {
+        if (bv->bufferViewIndex >= asset.bufferViews.size()) return "image buffer view out of range";
+        const auto& view = asset.bufferViews[bv->bufferViewIndex];
+        if (view.bufferIndex >= asset.buffers.size()) return "image buffer out of range";
+        const auto all = bufferBytes(asset.buffers[view.bufferIndex].data);
+        if (view.byteOffset > all.size() || view.byteLength > all.size() - view.byteOffset)
+            return "image buffer view outside its buffer";
+        bytes = all.subspan(view.byteOffset, view.byteLength);
+        return {};
+    }
+    bytes = bufferBytes(img.data);
+    if (bytes.empty()) return "unsupported image source";
+    return {};
+}
+
+SamplerDesc toSampler(const fg::Sampler& s) {
+    SamplerDesc d;
+    auto wrap = [](fg::Wrap w) {
+        return w == fg::Wrap::ClampToEdge ? Wrap::ClampToEdge
+             : w == fg::Wrap::MirroredRepeat ? Wrap::MirroredRepeat : Wrap::Repeat;
+    };
+    d.wrapU = wrap(s.wrapS);
+    d.wrapV = wrap(s.wrapT);
+    if (s.magFilter.has_value()) d.mag = *s.magFilter == fg::Filter::Nearest ? Filter::Nearest : Filter::Linear;
+    if (s.minFilter.has_value()) {
+        switch (*s.minFilter) {
+        case fg::Filter::Nearest: d.min = Filter::Nearest; d.mipmaps = false; break;
+        case fg::Filter::Linear: d.min = Filter::Linear; d.mipmaps = false; break;
+        case fg::Filter::NearestMipMapNearest: d.min = Filter::Nearest; d.mip = Filter::Nearest; break;
+        case fg::Filter::LinearMipMapNearest: d.min = Filter::Linear; d.mip = Filter::Nearest; break;
+        case fg::Filter::NearestMipMapLinear: d.min = Filter::Nearest; d.mip = Filter::Linear; break;
+        case fg::Filter::LinearMipMapLinear: d.min = Filter::Linear; d.mip = Filter::Linear; break;
+        }
+    }
+    return d;
+}
+
+// MeshData::materials (one per glTF material) and the images their base-colour
+// textures use, each decoded once. A texture that cannot be decoded is an error.
+std::string loadMaterials(const fg::Asset& asset, const std::filesystem::path& dir, MeshData& out) {
+    std::vector<std::int32_t> slot(asset.images.size(), -1);
+    for (const auto& m : asset.materials) {
+        MaterialData md;
+        md.name = std::string(m.name);
+        if (m.pbrData.baseColorTexture.has_value()) {
+            const std::size_t t = m.pbrData.baseColorTexture->textureIndex;
+            if (t >= asset.textures.size()) return "material " + md.name + ": texture index out of range";
+            const auto& tex = asset.textures[t];
+            if (tex.samplerIndex.has_value() && *tex.samplerIndex < asset.samplers.size())
+                md.sampler = toSampler(asset.samplers[*tex.samplerIndex]);
+            if (tex.imageIndex.has_value()) {
+                const std::size_t i = *tex.imageIndex;
+                if (i >= asset.images.size()) return "material " + md.name + ": image index out of range";
+                if (slot[i] < 0) {
+                    std::vector<std::byte> storage;
+                    std::span<const std::byte> bytes;
+                    const auto& img = asset.images[i];
+                    std::string name = img.name.empty() ? "#" + std::to_string(i) : std::string(img.name);
+                    if (const auto* u = std::get_if<fg::sources::URI>(&img.data)) name = std::string(u->uri.path());
+                    if (auto why = imageBytes(asset, img, dir, storage, bytes); !why.empty())
+                        return "image " + name + ": " + why;
+                    ImageData decoded;
+                    if (auto why = decodeImage(bytes, name, decoded); !why.empty()) return why;
+                    slot[i] = static_cast<std::int32_t>(out.images.size());
+                    out.images.push_back(std::move(decoded));
+                }
+                md.baseColorImage = slot[i];
+            }
+        }
+        out.materials.push_back(std::move(md));
+    }
+    return {};
 }
 
 }  // namespace
@@ -288,6 +413,10 @@ std::string loadGltfMesh(const std::filesystem::path& path, MeshData& out) {
     if (!err.empty()) { out = {}; return path.filename().string() + ": " + err; }
 
     if (out.indices.empty()) { out = {}; return path.filename().string() + ": no triangles in the default scene"; }
+    if (auto why = loadMaterials(asset, path.parent_path(), out); !why.empty()) {
+        out = {};
+        return path.filename().string() + ": " + why;
+    }
     if (out.indices.size() > std::numeric_limits<std::uint32_t>::max()) { out = {}; return "model too large"; }
     out.boundsMin = glm::vec3(std::numeric_limits<float>::max());
     out.boundsMax = glm::vec3(std::numeric_limits<float>::lowest());

@@ -5,7 +5,8 @@
 # summary's "test cases: 0" line), so a renamed file can't pass silently. The other
 # test_*.cpp files still use plain checks in their own executables until they are ported
 # (as each is next touched; see BUILD_PLAN step 20 notes).
-set(COE_DOCTEST_FILES test_fixed_timestep.cpp test_casting.cpp test_damage.cpp)
+set(COE_DOCTEST_FILES test_fixed_timestep.cpp test_casting.cpp test_damage.cpp
+  test_loadout.cpp test_viewmodel.cpp)
 add_executable(coe_tests doctest_main.cpp ${COE_DOCTEST_FILES})
 target_link_libraries(coe_tests PRIVATE coe_game coe_engine coe_physics doctest::doctest coe_warnings)
 target_include_directories(coe_tests PRIVATE ${PROJECT_SOURCE_DIR})
