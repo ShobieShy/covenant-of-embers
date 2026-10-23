@@ -2,7 +2,7 @@
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 15,
+  "next_step": 16,
   "total_steps": 56,
   "steps_done": [
     1,
@@ -18,9 +18,10 @@
     11,
     12,
     13,
-    14
+    14,
+    15
   ],
-  "last_commit": "90b2923",
+  "last_commit": "f12b861",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -141,6 +142,13 @@
       "step": null,
       "type": "plan",
       "summary": "User request: weapon system follows the Magewar bible. Steps 17-50 rewritten/renumbered to 17-55 (staffs/wands, mana, Magewar elements, 6 rarities with colours, 5 part types, equipment, Magic Assembly Station crafting + gems/salvage/upgrade, assembly UI); CI breadth moved 51->56 (step 7's 'step 51' reference now means 56). PLAN.md \u00a730.1-30.4 and \u00a731 updated. total_steps 51->56."
+    },
+    {
+      "time": "2026-10-22T22:08-05:00",
+      "step": 15,
+      "type": "build",
+      "summary": "Sprint, Breath and slide. New game/player/stats.* game::Breath (PLAN 30.8: 100 max, -20/s sprinting, +30/s after 1 s since the last drain/spend; sub-tick-exact regen start, double time accumulator; spend() for step 16's dash; setMaxBonus()/refill() hooks for gear and level-ups; exhausted latch until 20 Breath is back). PlayerController: sprint 7 m/s (Sprint held, ground start, move key needed, not crouched/exhausted, continues in the air, eased at LERP_SPEED), Magewar slide (Crouch on the ground while sprinting + move key: 1.5 s SlidingTimer, (timeLeft/1.5+0.5)x5 m/s = 7.5->2.5 m/s along the entry direction, look doesn't steer, ends on timeout/Crouch or Sprint release/leaving ground, no drain), slide jump 4.5x1.3 m/s that stands up and keeps slide speed until landing, setSpeedMultiplier() hook (walk/sprint/crouch, not slide). covenant prints Breath + slides on exit; README updated. Evidence: new ctest `breath` (1 s sprint -> 80.000, empty at exactly 300 ticks; regen 0 on tick 60, +0.5 on tick 61, +30 at 2 s at 60 Hz (89.9997) and 144 Hz (90.0012); empty -> sprint again 100 ticks, full 260 ticks; delay restart on drain/spend; max bonus 115 no refill). ctest `player` extended: sprint 7.000 m/s with Breath 60.00 after 2 s; dry at 300 ticks then walk 4 m/s, sprinting again 101 ticks later; crouch+sprint 3 m/s no drain; x1.1 multiplier 4.4/7.7 m/s; slide 90 ticks, 7.583 m (analytic 7.5), entry 7.500 m/s, 0.000 m sideways after a 90 deg look turn, then crouch 3.000 m/s; no slide from walk+Crouch, crouch-then-Sprint, standing Sprint+Crouch, or exhausted; Sprint release ends it; slide-jump apex 1.795 m (1.746 analytic + tick discretisation), constant air speed 6.944 m/s. cmake --build --preset debug warning-free, ctest build/debug 22/22 (incl. window: input_script walked 2.32 m, 1 jump), ctest build/asan -LE window 19/19, pgrep -a covenant empty. Magewar notes (read-only ~/game): cogito_player.tscn overrides SPRINTING_SPEED 7, SLIDE_JUMP_MOD 1.3; script SLIDING_SPEED 5, SlidingTimer 1.5 s, slide ends on sprint release/standing, slide-jump not crouch-locked, speed kept in air; equipment stamina_bonus Belt 5-15 / Shoes 3-10, Shoes speed_modifier scales walk/sprint/crouch only; _level_up +5 stamina/+5 mana max with refill. Reinterpreted (deliberate, documented): Breath 100/20/30/1 s instead of Magewar stamina 30/3/2/2 s; exhausted latch (resumeAt 20) instead of Magewar's sprint-at->0 stutter; no jump stamina cost and no slope-dependent drain. No mismatches with earlier steps found. Bug fixes: none needed in earlier steps (own test bug fixed before commit: regen expectation exceeded max). Plan changes: step 15 rewritten with evidence; step 16 dash uses Breath::spend(25) (restarts delay, refused when short) and ends an active slide; step 30 Belt health 3-8/Breath max +5-15, Shoes Breath max +3-10, hooks named (setMaxBonus, setSpeedMultiplier, slide unscaled); step 38 level-up +5 Breath max/+5 mana max with refill (Magewar _level_up). Commit f12b861.",
+      "commit": "f12b861"
     }
   ]
 }
