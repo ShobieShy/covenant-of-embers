@@ -35,12 +35,16 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Fixed from step 2: during the runner's first physics frame Node.get_physics_process_delta_time() is 0, so move_and_slide() didn't move; tests now run on the second physics frame. test_smoke checks the player camera instead of the removed placeholder.
 - Magewar check: action names match Magewar's project.godot; crouch adds LCtrl (C++ design); MOUSE_SENS 0.25 kept, pitch ±89° vs Magewar ±90° (kept: avoids the look-straight-up flip). Not yet mapped: Magewar `menu` (Esc) → step 39, `inventory` (Tab) → step 30, `quickslot_prev/next_wieldable` (mouse wheel) → step 10, `free_look` (Alt) left out of the slice; Cogito's head smoothing over steps (step_height_camera_lerp 2.5) → step 5.
 
-**4. Sprint, Breath and slide (port of old 15)**
+**4. Sprint, Breath and slide (port of old 15)** ✅ `7f16c9c`
 - Does: (hooks into Player.tick: speed base selection, crouch handling) scripts/player/breath.gd (max 100, drain 20/s, regen 30/s after 1 s, resume at 20, max bonus), sprint 7 m/s, slide (5 m/s × (t/1.5 + 0.5), 1.5 s, slide jump ×1.3), speed multiplier hook.
 - Done: test_breath.gd: empty after 300 ticks, resume after 100, full after 260; test_player slide 90 ticks ≈ 7.5 m, no slide from walk/exhausted.
+- Result: scripts/player/breath.gd = `Breath` (RefCounted, `from_tuning()`): `tick(draining, dt)` drains 20/s (floored, float drift snapped so 300 ticks hit exactly 0) or regenerates 30/s for only the part of a tick past the 1 s delay (exact at 60 and 144 Hz), `spend()` (step 5 dash; a refusal leaves the delay alone), `exhausted` from empty until 20 is back (`resume_at` 0 = Magewar), `set_max_bonus()` (no refill), `refill()`, `fraction()/regenerating()`. PlayerTuning gains sprint 7, slide 5 / 1.5 s / jump ×1.3 and the Breath numbers (PLAN §30.8). Player.tick: slide check (Crouch on the ground while sprinting last tick + move key; ends on timeout or on releasing Crouch/Sprint or leaving the ground), crouch, sprint (`sprinting`: Sprint held + move key, not crouched/exhausted, ground start, kept in the air), `breath.tick()`, slide speed along the entry direction (look doesn't steer), base speed crouch/sprint/walk × `speed_multiplier`, slide jump 4.5 × 1.3 (stands up in the air, speed kept until landing); counters `slides/slide_jumps`. main.gd prints a `[player]` exit line (Breath, jumps, slides). 35 unit tests green (6 breath, 15 player): empty at tick 300, regen +30.000 after 1 s delay + 1 s at 60/144 Hz, resume after 100, full after 260; sprint 7.000 m/s, Breath 60.00 after 2 s, dry at 300, sprinting again 101 ticks later; ×1.1 → 4.400/7.700/3.300 m/s; slide 89 ticks (timer ends within the 90th tick), 7.542 m north, entry 7.500 m/s, 0.000 m sideways after a 90° look, then crouch 3.000 m/s, Breath 80 → 95 (no drain); no slide from walk + Crouch, crouch-then-Sprint, standing Sprint + Crouch or exhausted; releasing Sprint ends it; slide jump apex 1.795 m (same as the C++ engine), air speed 6.944 m/s constant, landing with Crouch held doesn't re-slide.
+- Fixed from step 3: nothing broken found; step 3's tests still pass unchanged (walk 3.667 m, apex 1.072/0.485 m).
+- Magewar check (Cogito cogito_player + magewar_player.gd): sprint 7 m/s (tscn override), SLIDING_SPEED 5, SlidingTimer 1.5 s, SLIDE_JUMP_MOD 1.3 and the slide formula match. Kept decisions over Magewar: Breath 100 / −20/s / +30/s after 1 s (Cogito stamina 30 / 3/s / 2/s after 2 s), no jump cost (Cogito jump_exhaustion 5), resume at 20 (Magewar re-allows at > 0, which stutters). Magewar's Shoes `speed_modifier` scales walk, sprint **and** crouch (magewar_player `_update_movement_speed`); we do the same (the C++ port did too), not the slide. Not ported: Cogito CAN_BUNNYHOP (sprint-jump acceleration; a looter-shooter doesn't need it). Mismatches scheduled: Magewar declares `stamina_bonus` (Leather Belt 15, Traveler Shoes 5) but `_apply_equipment_bonuses` never applies it → step 19 applies it via `Breath.set_max_bonus`; Magewar `_level_up` gives +5 stamina max **and refills** → step 27; Cogito's TOGGLE_CROUCH option → step 32.
 
 **5. Dash + camera feel (port of old 16)**
 - Does: scripts/player/dash.gd (6 m in 0.15 s, 2 charges, 1.5 s recharge each, 25 Breath, 0.1 s i-frames, 1 air dash), camera_feel.gd (head bob walk/sprint/crouch, landing dip 0.12 m, reduced-motion setting).
+- Does (step 4 notes): the dash costs `player.breath.spend(25)` (refused when short/exhausted; restarts the 1 s delay), ends an active slide (`slide_left = 0`, crouch rules unchanged), no slide starts while dashing; head bob skips sliding.
 - Does (step 3 notes): also ease the Head over a climbed step (Cogito step_height_camera_lerp 2.5; Player.steps_climbed / the lift height tell camera_feel).
 - Done: test_dash.gd: 6.000 m ±0.05 in 9 ticks, 3rd refused, recharge 90/180 ticks, wall stop; test_camera_feel: bob amplitudes, dip 0 below 2 m/s, max 0.12 m, reduced motion = 0.
 
@@ -100,7 +104,8 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **19. Equipment items**
 - Does: Hat/Clothes/Belt/Shoes/Grimoire/Potion with Magewar bonuses (mana, regen, stamina, speed, resist ≤ 60 %).
-- Done: test_equipment.gd: bonuses applied/removed exactly, resist cap 0.6.
+- Does (step 4 notes): `stamina_bonus` (Belt 15, Shoes 5) → `player.breath.set_max_bonus(Σ equipped + level bonus)` (Magewar declares it but never applies it: fixed here, flagged); `speed_modifier` product (Shoes ×1.15) → `player.set_speed_multiplier()` (walk/sprint/crouch, like Magewar).
+- Done: test_equipment.gd: bonuses applied/removed exactly, resist cap 0.6, Belt → Breath max 115 without refill, Shoes → walk 4.6 m/s.
 
 **20. Ember Mark item codes**
 - Does: EM1-… encode/decode of any item.
@@ -132,7 +137,8 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **27. XP curve and levels**
 - Does: XP from kills, level-ups (+5 max mana/Breath + refill).
-- Done: test_xp.gd: curve values, level-up hooks.
+- Does (step 4 notes): level-up Breath = +5 to the level part of `Breath.set_max_bonus` (kept separate from equipment so unequipping doesn't eat it) then `refill()` (Magewar `_level_up`).
+- Done: test_xp.gd: curve values, level-up hooks (Breath 105/105 after a level).
 
 **28. Weight model + Vigil plumbing**
 - Does: Vigil tiers 1–10 with Omens shifting rarity weights (§31).
@@ -141,7 +147,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 ## M3 – UI, dungeon, audio, saves, playtests
 
 **29. HUD**
-- Does: Control-based HUD: health/shield/mana/Breath bars, crosshair (hidden while focused, spread-sized), slot icons with rarity colours, Kenney UI Pack.
+- Does: Control-based HUD: health/shield/mana/Breath bars (Breath = `player.breath.fraction()`, tinted while `exhausted`), crosshair (hidden while focused, spread-sized), slot icons with rarity colours, Kenney UI Pack.
 - Done: test_hud.gd: bars track values; headless screenshot non-empty.
 
 **30. Inventory + equipment screen**
@@ -153,7 +159,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_station_ui.gd: assemble via UI produces the item.
 
 **32. Key-bindings config**
-- Does: Rebind UI over the project.godot InputMap actions (PlayerInput.ACTIONS) + user://keybinds.cfg, invert-Y, hip FOV, focus hold/toggle, Reload unbound.
+- Does: Rebind UI over the project.godot InputMap actions (PlayerInput.ACTIONS) + user://keybinds.cfg, invert-Y, hip FOV, focus hold/toggle, crouch hold/toggle (Cogito TOGGLE_CROUCH; the slide needs Crouch held, so toggle mode keeps it "held" until pressed again), Reload unbound.
 - Done: test_keybinds.gd: save/load round-trip, rebind applies.
 
 **33. Breach room slice: layout**

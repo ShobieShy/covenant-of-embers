@@ -3,14 +3,15 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 4,
+  "next_step": 5,
   "total_steps": 42,
   "steps_done": [
     1,
     2,
-    3
+    3,
+    4
   ],
-  "last_commit": "b7a2d40",
+  "last_commit": "7f16c9c",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -35,6 +36,14 @@
       "summary": "FPS controller ported: Player CharacterBody3D (scenes/player/player.tscn, scripts/player/player.gd; feet origin, layer 'character') with PlayerTuning resource and PlayerInput: walk 4 / crouch 3 m/s, LERP 10 / AIR 6, jump 4.5/3.0 on press edge, gravity 9.8, capsule 0.3x1.7/0.7, eye 1.5/0.6, Cogito-style 0.35 m step climbing, floor_max_angle 45, snap 0.5, 0.25 deg/count look, pitch +-89. InputMap in project.godot (Magewar action names + dash, slot_1-4; crouch C+LCtrl). main.tscn spawns the player at PlayerStart (camera = PlayerStart/Eye), placeholder camera removed. run_tests.sh green: 24 unit tests (10 new in test_player.gd: walk 3.667 m, apex 1.072/0.485 m, crouch eye 0.6 under 1 m slab, 0.35 step climbed / 0.5 blocked, ramp_west -> ledge y 1.500), 2 s smoke 120 ticks, asset lint OK.",
       "plan_changes": "Bug fix from step 2: test runner now runs on the 2nd physics frame (get_physics_process_delta_time() is 0 on the 1st, so move_and_slide didn't move). Magewar check: action names aligned with Magewar; pitch +-89 kept vs Magewar +-90. Refined steps 4 (Player.tick hooks), 5 (head smoothing over steps, Cogito step_height_camera_lerp), 10 (mouse wheel = Magewar quickslot_prev/next_wieldable), 30 (inventory action on Tab), 32 (rebind over project.godot InputMap), 39 (menu action on Esc).",
       "commit": "b7a2d40"
+    },
+    {
+      "time": "2026-10-23T10:35-05:00",
+      "step": 4,
+      "type": "build",
+      "summary": "Sprint, Breath and slide ported: scripts/player/breath.gd (Breath RefCounted: 100 max, drain 20/s, regen 30/s after 1 s with sub-tick timing, exhausted until 20, spend/set_max_bonus/refill), PlayerTuning sprint 7 / slide 5 m/s, 1.5 s, slide jump x1.3 + Breath numbers (PLAN 30.8), Player.tick sprint (ground start, move key, not crouched/exhausted, kept in air, drains), Magewar slide from sprint+Crouch along the entry direction at (t/1.5+0.5) x 5 m/s, slide jump keeps its speed, set_speed_multiplier (walk/sprint/crouch). main.gd prints a [player] exit line. run_tests.sh green: 35 unit tests (6 new test_breath: empty 300, resume 100, full 260, 60/144 Hz; 5 new test_player: sprint 7.000 m/s, dry 300 / resume 101, x1.1 4.4/7.7/3.3, slide 89 ticks 7.542 m, no slide from walk/standing/exhausted, slide jump apex 1.795 m), 2 s smoke 120 ticks, asset lint OK.",
+      "plan_changes": "Magewar check: sprint/slide numbers match Cogito's tscn overrides; Breath numbers kept from PLAN 30.8 over Cogito stamina (30/3/2 after 2 s, jump cost 5); resume_at 20 deviation kept; speed_modifier scales crouch too like Magewar; CAN_BUNNYHOP not ported. Mismatch scheduled: Magewar never applies EquipmentItem.stamina_bonus -> step 19 applies it via Breath.set_max_bonus. Refined steps 5 (dash spends Breath 25, ends slide), 19 (stamina_bonus + speed_modifier hooks and tests), 27 (level-up +5 Breath max + refill, separate from equipment bonus), 29 (Breath bar source, exhausted tint), 32 (crouch hold/toggle option). No bugs found in steps 1-3.",
+      "commit": "7f16c9c"
     }
   ]
 }
