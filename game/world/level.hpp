@@ -53,11 +53,22 @@ struct LevelPlayerStart {
     float yawDeg = 0.0f;
 };
 
+// [[enemy]] (step 22): a hand-placed enemy (training dummies now; set pieces later).
+// `enemy` is an id from data/enemies/*.toml (checked by the game when it spawns, since
+// the level file doesn't know the enemy table); feet must lie on a box surface. Step
+// 25's wave spawner uses its own [[spawn]] points.
+struct LevelEnemy {
+    std::string enemy;
+    glm::vec3 position{0.0f};   // feet
+    float yawDeg = 0.0f;
+};
+
 struct Level {
     std::string id, name;
     LevelEnvironment environment;
     LevelPlayerStart playerStart;
     std::vector<LevelBox> boxes;
+    std::vector<LevelEnemy> enemies;   // optional [[enemy]] placements
 
     std::size_t count(BoxKind k) const;
     // Index of the box whose surface is nearest to p, if within `tolerance` metres; -1 otherwise.

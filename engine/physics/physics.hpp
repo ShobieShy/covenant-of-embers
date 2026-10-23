@@ -15,8 +15,10 @@
 // "Environment", layer_2 "Interactables"): Static = the level (never moves, never
 // collides with itself), Moving = everything simulated. Character (step 14) holds the
 // kinematic inner bodies of CharacterVirtual players (character.hpp) so rays and moving
-// bodies see them; it collides with Static + Moving (+ other characters). More layers
-// (enemies, pickups/interactables, projectiles) arrive with the steps that need them.
+// bodies see them; it collides with Static + Moving (+ other characters). Enemy (step 22)
+// holds enemy hitboxes (kinematic body + weak-point boxes, game/enemies/enemy.hpp): in
+// the moving broad phase, hit by rays and castSphere, solid to characters. More layers
+// (pickups/interactables, projectiles) arrive with the steps that need them.
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -33,7 +35,10 @@ namespace Layers {
 inline constexpr ObjectLayer Static = 0;   // level geometry (Magewar "Environment")
 inline constexpr ObjectLayer Moving = 1;   // dynamic bodies (props, debris; later actors)
 inline constexpr ObjectLayer Character = 2;   // player characters' inner bodies (step 14)
-inline constexpr ObjectLayer Count = 3;
+inline constexpr ObjectLayer Enemy = 3;       // enemy hitboxes: body + weak points (step 22)
+inline constexpr ObjectLayer Count = 4;
+inline constexpr std::uint32_t bit(ObjectLayer layer) { return 1u << layer; }   // for layer masks
+inline constexpr std::uint32_t All = 0xffffffffu;
 } // namespace Layers
 const char* layerName(ObjectLayer layer);
 
@@ -89,6 +94,13 @@ public:
     // Static boxes are the level; call optimizeBroadPhase() once after adding them.
     BodyHandle addStaticBox(const BoxDesc& desc);
     BodyHandle addDynamicBox(const BoxDesc& desc);   // layer forced to Moving
+    // Kinematic: moved only by moveKinematic (infinite mass, pushes dynamics, never
+    // pushed). Keeps desc.layer (e.g. Layers::Enemy; Static is turned into Moving).
+    // Starts asleep until moved.
+    BodyHandle addKinematicBox(const BoxDesc& desc);
+    // Kinematic body: reach this pose at the end of the next step(dt) (velocity-driven,
+    // so contacts are correct). Step 23's walking enemies.
+    void moveKinematic(BodyHandle body, const glm::vec3& position, const glm::quat& rotation, float dt);
     void removeBody(BodyHandle body);
     void optimizeBroadPhase();
 
@@ -111,6 +123,13 @@ public:
     // the caster's own Layers::Character inner body; other characters are still hit).
     // An invalid handle ignores nothing.
     std::optional<RayHit> castRay(const glm::vec3& origin, const glm::vec3& delta, BodyHandle ignore) const;
+    // Step 22: sweeps a sphere of `radius` from origin to origin + delta; the closest body
+    // on a layer in `layerMask` (Layers::bit(...) ORed) other than `ignore`. `point` is the
+    // contact point on the body, `normal` points from the body toward the sphere,
+    // `fraction` is how far the centre got. A sphere that starts overlapping hits at 0.
+    // Spell bolts sweep their 0.1 m radius against Layers::Enemy so grazing shots count.
+    std::optional<RayHit> castSphere(const glm::vec3& origin, const glm::vec3& delta, float radius, BodyHandle ignore,
+                                     std::uint32_t layerMask = Layers::All) const;
 
 private:
     friend class Character;   // character.cpp drives Jolt's CharacterVirtual on this world

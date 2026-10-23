@@ -854,6 +854,26 @@ void VkRenderer::recordScene(VkCommandBuffer cmd, const SceneTarget& t, uint32_t
         drawItems(cmd, p.viewmodelDraws);
     }
     vkCmdEndRendering(cmd);
+    if (p.overlay) {
+        // Step 22 overlay pass: on the resolved single-sample target, after the scene's
+        // (resolve) writes; keeps its contents and draws on top, no depth.
+        imageBarrier(cmd, t.target, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                     VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+                     VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+                     VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT);
+        VkRenderingAttachmentInfo oa{VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO};
+        oa.imageView = t.targetView;
+        oa.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        oa.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+        oa.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        VkRenderingInfo ori{VK_STRUCTURE_TYPE_RENDERING_INFO};
+        ori.renderArea = {{0, 0}, t.extent}; ori.layerCount = 1;
+        ori.colorAttachmentCount = 1; ori.pColorAttachments = &oa;
+        vkCmdBeginRendering(cmd, &ori);
+        vkCmdSetViewport(cmd, 0, 1, &v); vkCmdSetScissor(cmd, 0, 1, &s);
+        p.overlay(cmd);
+        vkCmdEndRendering(cmd);
+    }
     const bool present = t.finalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     imageBarrier(cmd, t.target, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, t.finalLayout,
                  VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
@@ -1049,6 +1069,23 @@ bool VkRenderer::renderHeadless(const FrameParams& p, HeadlessFrame& out) {
     const bool ok = run();
     cleanup();
     return ok;
+}
+
+OverlayInfo VkRenderer::overlayInfo() const {
+    OverlayInfo o;
+    o.instance = instance_; o.phys = phys_; o.device = device_;
+    o.queueFamily = queueFamily_; o.queue = queue_;
+    o.colorFormat = pipelineFormat_;   // the swapchain format in window mode, R8G8B8A8_UNORM headless
+    o.apiVersion = VK_API_VERSION_1_3;
+    return o;
+}
+
+VkExtent2D VkRenderer::targetExtent() const {
+    return cfg_.window ? swapExtent_ : VkExtent2D{cfg_.headlessWidth, cfg_.headlessHeight};
+}
+
+void VkRenderer::waitIdle() {
+    if (device_) vkDeviceWaitIdle(device_);
 }
 
 void VkRenderer::shutdown() {

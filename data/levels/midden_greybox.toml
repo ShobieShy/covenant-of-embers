@@ -162,3 +162,16 @@ center = [10.0, 0.6, -6.0]
 size = [1.2, 1.2, 1.2]
 rotation_deg = [0.0, 10.0, 0.0]
 color = [0.62, 0.43, 0.22]
+
+# Training dummies (step 22): [[enemy]] = an enemy id from data/enemies/*.toml, its feet
+# `position` (must lie on a box surface) and optional `yaw_deg`. Placed off the south
+# lane so the walk-and-cast smoke test still reaches the north wall.
+[[enemy]]
+enemy = "earth_training_dummy"
+position = [-3.0, 0.0, 6.0]
+yaw_deg = 20.0
+
+[[enemy]]
+enemy = "water_training_dummy"
+position = [4.0, 0.0, 4.0]
+yaw_deg = -20.0

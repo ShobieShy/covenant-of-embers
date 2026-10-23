@@ -159,6 +159,27 @@ FetchContent_Declare(doctest
   SYSTEM)
 FetchContent_MakeAvailable(doctest)
 
+# Dear ImGui (ADR-0001 step 22): debug text/overlays (damage numbers now, debug panels
+# later). Pinned release tarball + hash, SYSTEM includes. ImGui ships no CMakeLists, so
+# coe_imgui below compiles the core + the Vulkan backend only (no platform backend: the
+# engine feeds display size/time itself; SDL input is wired when a panel needs it).
+FetchContent_Declare(imgui
+  URL https://github.com/ocornut/imgui/archive/refs/tags/v1.92.9b.tar.gz
+  URL_HASH SHA256=21d8a0a565e85dce943e375db00812c2f3f0ab21f3f0f7964e364a63422d7f99
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  SYSTEM)
+FetchContent_MakeAvailable(imgui)
+add_library(coe_imgui STATIC
+  ${imgui_SOURCE_DIR}/imgui.cpp
+  ${imgui_SOURCE_DIR}/imgui_draw.cpp
+  ${imgui_SOURCE_DIR}/imgui_tables.cpp
+  ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+  ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp)
+target_include_directories(coe_imgui SYSTEM PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
+# No demo window, no obsolete API; the Vulkan backend links the loader directly.
+target_compile_definitions(coe_imgui PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS IMGUI_DISABLE_DEMO_WINDOWS)
+target_link_libraries(coe_imgui PUBLIC Vulkan::Vulkan)
+
 # Binaries land in build/<preset>/ (not per-subdir) so paths stay
 # ./build/debug/covenant and ./build/debug/asset_cooker.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

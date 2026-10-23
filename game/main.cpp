@@ -21,6 +21,8 @@
 //   covenant --wieldables FILE  staff/wand bases (default: data/magic/wieldables.toml)
 //   covenant --staff ID / --wand ID  what the Staff / Wand slot holds (default: the first
 //                            staff / wand in wieldables.toml)
+//   covenant --enemies FILE  enemy types for the level's [[enemy]] placements
+//                            (default: data/enemies/training_dummies.toml)
 //
 // Loop (PLAN §23): simulation advances in fixed 60 Hz ticks (engine/core/fixed_timestep),
 // rendering runs once per displayed frame with state interpolated by alpha.
@@ -50,6 +52,13 @@
 // 3/s after 1.5 s); each cast spends the wieldable's mana cost through
 // Caster::setManaSpender, a refused cast costs no cooldown. No ammo, no reload: the Reload
 // action (R) is still mapped but drives nothing.
+// Enemies + damage numbers (step 22, game/enemies/enemy, game/ui/damage_numbers): the
+// level's [[enemy]] placements (training dummies) spawn as kinematic hitboxes on the
+// Enemy physics layer; bolt hits on them run the step-20 damage formula, lower health,
+// kill at 0 and float an element-coloured number drawn by the ImGui overlay
+// (engine/ui/imgui_layer, coe_ui). --headless casts the held staff at the first dummy
+// until it dies: the first hit must deal the formula value and show its number in the
+// element colour (dmgframe.ppm), the dummy must die at exactly 0.
 #include "engine/core/clock.hpp"
 #include "engine/core/fixed_timestep.hpp"
 #include "engine/input/input.hpp"
@@ -57,7 +66,9 @@
 #include "engine/assets/gltf_loader.hpp"
 #include "engine/assets/manifest.hpp"
 #include "engine/physics/physics.hpp"
+#include "engine/ui/imgui_layer.hpp"
 #include "game/combat/element.hpp"
+#include "game/enemies/enemy.hpp"
 #include "game/core/tumble_demo.hpp"
 #include "game/magic/accuracy.hpp"
 #include "game/magic/casting.hpp"
@@ -66,6 +77,7 @@
 #include "game/magic/wieldable.hpp"
 #include "game/player/player_controller.hpp"
 #include "game/render/viewmodel.hpp"
+#include "game/ui/damage_numbers.hpp"
 #include "game/world/headless_checks.hpp"
 #include "game/world/level.hpp"
 #include "game/world/level_physics.hpp"
@@ -224,6 +236,143 @@ glm::vec3 addViewmodel(const coe::game::Loadout& loadout, const coe::game::Viewm
     return coe::game::viewmodelCastPoint(shown.wieldable->type(), t);
 }
 
+bool loadEnemiesFile(const std::string& path, coe::game::EnemyTable& table) {
+    const std::string err = coe::game::loadEnemies(path, table);
+    if (!err.empty()) { std::fprintf(stderr, "[enemy] %s\n", err.c_str()); return false; }
+    std::string names;
+    for (const coe::game::EnemyDef& d : table.defs)
+        names += std::string(names.empty() ? "" : ", ") + d.name + " (" + coe::game::elementName(d.affinity) + ", " +
+                 std::to_string(int(d.maxHealth)) + " HP" + (d.weakPoint ? ", weak point" : "") + ")";
+    std::printf("[enemy] %zu enemy types: %s\n", table.defs.size(), names.c_str());
+    return true;
+}
+
+// Spawns the level's [[enemy]] placements; an id missing from the table is an error.
+bool spawnLevelEnemies(const coe::game::Level& level, const coe::game::EnemyTable& table, coe::game::EnemySystem& out) {
+    bool ok = true;
+    for (size_t i = 0; i < level.enemies.size(); ++i) {
+        const coe::game::LevelEnemy& le = level.enemies[i];
+        const coe::game::EnemyDef* def = table.find(le.enemy);
+        if (!def) {
+            std::fprintf(stderr, "[enemy] level '%s' enemy #%zu: unknown enemy '%s'\n", level.id.c_str(), i + 1,
+                         le.enemy.c_str());
+            ok = false;
+            continue;
+        }
+        out.spawn(*def, le.position, le.yawDeg);
+        std::printf("[enemy] spawned %s at (%.2f, %.2f, %.2f), %.0f HP, %s\n", def->name.c_str(), double(le.position.x),
+                    double(le.position.y), double(le.position.z), double(def->maxHealth), coe::game::elementName(def->affinity));
+    }
+    return ok;
+}
+
+void printEnemyHit(const coe::game::EnemySystem& enemies, const coe::game::EnemyHit& h, const coe::game::ProjectileHit& bolt,
+                   const coe::game::ElementTable& elements) {
+    const coe::game::Enemy* e = enemies.find(h.enemy);
+    const coe::game::DamageResult& r = h.result;
+    std::printf("[enemy] %s hit %s (%s)%s%s: %.1f %s x%.2f%s%s = %.1f dmg, health %.1f -> %.1f%s\n",
+                elements.name(h.element).c_str(), e ? e->def->name.c_str() : "?",
+                e ? coe::game::elementName(e->def->affinity) : "?", h.weakPoint ? " in the weak point" : "",
+                bolt.grazed ? " (grazed)" : "", double(bolt.damage), coe::game::elementName(h.element), double(r.effectiveness),
+                r.resist > 0.0f ? (" -" + std::to_string(int(std::lround(r.resist * 100.0f))) + "% resist").c_str() : "",
+                r.crit > 1.0f ? " x2 crit" : "", double(r.amount), double(h.healthBefore), double(h.healthAfter),
+                h.killed ? ", KILLED" : "");
+}
+
+// Damage numbers -> ImGui text, centred on each label's pixel. Font size 22 px x scale.
+void drawDamageLabels(coe::ImGuiLayer& ui, const coe::game::DamageNumbers& numbers, const glm::mat4& viewProj,
+                      glm::vec2 viewport, std::vector<coe::game::DamageLabel>& scratch) {
+    scratch.clear();
+    numbers.labels(viewProj, viewport, scratch);
+    for (const coe::game::DamageLabel& l : scratch) {
+        const float size = 22.0f * l.scale;
+        const glm::vec2 ext = ui.textSize(l.text, size);
+        ui.drawText(l.screen - ext * 0.5f, l.text, l.color, l.alpha, size);
+    }
+}
+
+// Step 22 headless done-check (see the header comment). Turns the start view toward the
+// first dummy, casts the held wieldable at its chest until it dies, renders the first
+// hit's number over the dummy and compares against the same frame without the overlay.
+bool headlessDummyCheck(coe::VkRenderer& renderer, coe::ImGuiLayer& ui, const coe::FrameParams& base, coe::MeshId cube,
+                        coe::physics::PhysicsWorld& physics, coe::game::EnemySystem& enemies,
+                        const coe::game::ElementTable& elements, coe::game::Loadout& loadout) {
+    const coe::game::Enemy* target = nullptr;
+    for (const coe::game::Enemy& e : enemies.enemies())
+        if (!e.dead) { target = &e; break; }
+    const coe::game::WieldableInstance* held = loadout.wieldable();
+    if (!target || !held) { std::puts("[enemy] headless check skipped: no enemy placed or nothing held"); return true; }
+    const std::uint32_t id = target->id;
+    const coe::game::EnemyDef& def = *target->def;
+    const glm::vec3 eye = base.camera.position;
+    const glm::vec3 chest = target->feet + glm::vec3(0.0f, def.size.y * 0.5f, 0.0f);
+    const glm::vec3 dir = glm::normalize(chest - eye);
+    const float expected = coe::game::resolveHit(held->damage(), held->element(), {def.affinity, def.resist, false}, elements).amount;
+    const int hitsToKill = int(std::ceil(def.maxHealth / expected - 1e-4f));
+
+    coe::FrameParams fp = base;
+    fp.camera.yaw = std::atan2(-dir.x, -dir.z);
+    fp.camera.pitch = std::asin(std::clamp(dir.y, -1.0f, 1.0f));
+    coe::game::ProjectileSystem bolts;
+    bolts.setElements(&elements);
+    coe::game::DamageNumbers numbers;
+    std::vector<coe::game::ProjectileHit> hits;
+    std::vector<coe::game::DamageLabel> scratch;
+    const float dt = 1.0f / float(kTickHz);
+    const coe::game::CastAim aim{eye, dir, {}, {}};
+    bool firstOk = false, labelOk = false, rendered = false, strayHit = false;
+    int enemyHits = 0;
+    float firstDealt = -1.0f;
+    for (int tick = 0; tick < 20 * int(kTickHz) && !rendered; ++tick) {
+        const bool alive = !enemies.find(id)->dead;
+        if (alive) loadout.tick(true, true, dt, aim, bolts);
+        hits.clear();
+        bolts.tick(physics, dt, hits);
+        for (const coe::game::ProjectileHit& h : hits) {
+            const std::optional<coe::game::EnemyHit> eh = enemies.applyHit(h);
+            if (!eh) { strayHit = strayHit || alive; continue; }   // after the kill bolts fly through to the wall
+            printEnemyHit(enemies, *eh, h, elements);
+            ++enemyHits;
+            numbers.add(h.point, eh->result, h.element, elements);
+            if (enemyHits != 1) continue;
+            firstDealt = eh->healthBefore - eh->healthAfter;
+            firstOk = eh->result.amount == expected && firstDealt == expected && !eh->weakPoint;
+            // The number over the dummy: the scene with the overlay vs. without.
+            coe::FrameParams sp = fp;
+            enemies.draws(cube, sp.draws);
+            const VkExtent2D ext = renderer.targetExtent();
+            const glm::vec2 size{float(ext.width), float(ext.height)};
+            ui.beginFrame(size, dt);
+            drawDamageLabels(ui, numbers, sp.camera.viewProjection(size.x / size.y), size, scratch);
+            ui.endFrame();
+            coe::HeadlessFrame plain, withUi;
+            if (!renderer.renderHeadless(sp, plain)) return false;
+            sp.overlay = ui.recorder();
+            if (!renderer.renderHeadless(sp, withUi)) return false;
+            std::string report;
+            labelOk = !scratch.empty() &&
+                      coe::game::checkLabelPixels(withUi, plain, scratch.front().screen, 28.0f,
+                                                  elements.color(h.element), 12, report);
+            std::printf("%s, text \"%s\"%s\n", report.empty() ? "[damage] no label on screen MISMATCH" : report.c_str(),
+                        scratch.empty() ? "" : scratch.front().text.c_str(), ui.framesRendered() ? "" : " (overlay never recorded)");
+            if (!coe::game::writePpm("dmgframe.ppm", withUi)) std::fprintf(stderr, "[headless] could not write dmgframe.ppm\n");
+        }
+        numbers.tick(dt);
+        enemies.tick(dt);
+        // Done once dead and every bolt in flight has landed.
+        if (enemies.find(id)->dead && bolts.live().empty()) rendered = true;
+    }
+    const coe::game::Enemy& e = *enemies.find(id);
+    const std::vector<coe::game::EnemyDeath> deaths = enemies.takeDeaths();
+    const bool died = e.dead && e.health == 0.0f && enemyHits == hitsToKill && deaths.size() == 1 &&
+                      deaths.front().enemy == id && !e.body.valid() && !enemies.byBody(e.body);
+    std::printf("[enemy] %s: %.1f %s vs %s = %.1f per hit (expect %.1f), %d hit(s) to kill (expect %d), health %.1f, %s%s\n",
+                held->def->name.c_str(), double(held->damage()), coe::game::elementName(held->element()),
+                coe::game::elementName(def.affinity), double(firstDealt), double(expected), enemyHits, hitsToKill,
+                double(e.health), died ? "dead" : "ALIVE", firstOk && died && labelOk && !strayHit ? "" : " MISMATCH");
+    return firstOk && labelOk && died && !strayHit;
+}
+
 // A debug line as the shared unit cube stretched along a -> b (step 17 bolt tracers).
 constexpr float kDebugLineWidth = 0.04f;
 glm::mat4 lineModel(const glm::vec3& a, const glm::vec3& b) {
@@ -326,6 +475,7 @@ int main(int argc, char** argv) {
     std::string levelPath = std::string(COE_DATA_DIR) + "/levels/midden_greybox.toml";
     std::string wieldablesPath = std::string(COE_DATA_DIR) + "/magic/wieldables.toml";
     std::string elementsPath = std::string(COE_DATA_DIR) + "/magic/elements.toml";
+    std::string enemiesPath = std::string(COE_DATA_DIR) + "/enemies/training_dummies.toml";
     std::string staffId, wandId;   // step 21: empty = the first staff / wand
     for (int i = 1; i < argc; ++i) {
         if (!std::strcmp(argv[i], "--headless")) headless = true;
@@ -342,6 +492,7 @@ int main(int argc, char** argv) {
         else if (!std::strcmp(argv[i], "--level") && i + 1 < argc) levelPath = argv[++i];
         else if (!std::strcmp(argv[i], "--wieldables") && i + 1 < argc) wieldablesPath = argv[++i];
         else if (!std::strcmp(argv[i], "--elements") && i + 1 < argc) elementsPath = argv[++i];
+        else if (!std::strcmp(argv[i], "--enemies") && i + 1 < argc) enemiesPath = argv[++i];
         else if (!std::strcmp(argv[i], "--staff") && i + 1 < argc) staffId = argv[++i];
         else if (!std::strcmp(argv[i], "--wand") && i + 1 < argc) wandId = argv[++i];
         else if (!std::strcmp(argv[i], "--cooked") && i + 1 < argc) cookedDir = argv[++i];
@@ -362,9 +513,10 @@ int main(int argc, char** argv) {
     coe::game::Level level;
     coe::game::WieldableTable wieldables;
     coe::game::ElementTable elements;
+    coe::game::EnemyTable enemyTypes;
     bool ok = modelView ? loadModel(cookedDir, model, mesh)
                         : loadLevelFile(levelPath, level) && loadElementsFile(elementsPath, elements) &&
-                              loadWieldablesFile(wieldablesPath, wieldables);
+                              loadWieldablesFile(wieldablesPath, wieldables) && loadEnemiesFile(enemiesPath, enemyTypes);
     if (ok && !modelView) mesh = coe::game::makeUnitCube();   // uploaded once, drawn per box
     // Step 21: the Staff + Wand slots (level mode).
     std::vector<coe::game::WieldableInstance> hands;
@@ -374,6 +526,8 @@ int main(int argc, char** argv) {
     ok = ok && renderer.init(cfg);
     if (ok) std::printf("GPU: %s | validation: %s\n", renderer.deviceName().c_str(),
                         renderer.validationEnabled() ? "on" : "off (layer not installed or disabled)");
+    coe::ImGuiLayer ui;   // step 22 overlay (damage numbers), level mode
+    if (ok && !modelView) ok = ui.init(renderer);
     coe::MeshId meshId = coe::kInvalidMesh;
     if (ok) ok = (meshId = renderer.uploadMesh(mesh)) != coe::kInvalidMesh;
     coe::game::ViewmodelMeshes vmMeshes;   // step 21 greybox staff/wand (level mode)
@@ -392,6 +546,11 @@ int main(int argc, char** argv) {
         std::printf("[physics] Jolt world: %zu static box colliders, gravity %.1f m/s^2, %u Hz fixed step\n",
                     lp.bodies.size(), double(-coe::physics::WorldSettings{}.gravity.y), kTickHz);
     }
+    // Step 22: the level's enemies (after the level colliders; destroyed before `physics`).
+    coe::game::EnemySystem enemies(physics, elements);
+    if (ok && !modelView) ok = spawnLevelEnemies(level, enemyTypes, enemies);
+    coe::game::DamageNumbers damageNumbers;
+    std::vector<coe::game::DamageLabel> labelScratch;
 
     bool ticksOk = true, inputOk = true, viewmodelOk = true;
     if (ok && headless) {
@@ -430,6 +589,7 @@ int main(int argc, char** argv) {
                 if (!coe::game::writePpm("vmframe.ppm", vmFrame)) std::fprintf(stderr, "[headless] could not write vmframe.ppm\n");
             }
         }
+        if (ok && !modelView) ok = headlessDummyCheck(renderer, ui, levelBase, meshId, physics, enemies, elements, loadout);
     } else if (ok) {
         coe::FixedTimestep step(kTickHz);
         coe::game::TumbleDemo sim;   // --model only
@@ -551,12 +711,24 @@ int main(int argc, char** argv) {
                     }
                     boltHits.clear();
                     bolts.tick(physics, float(step.dtSeconds()), boltHits);
-                    for (const coe::game::ProjectileHit& h : boltHits)
+                    for (const coe::game::ProjectileHit& h : boltHits) {
+                        // Step 22: hits on enemies run the damage formula and float a number.
+                        if (const std::optional<coe::game::EnemyHit> eh = enemies.applyHit(h)) {
+                            printEnemyHit(enemies, *eh, h, elements);
+                            damageNumbers.add(h.point, eh->result, h.element, elements);
+                            continue;
+                        }
                         std::printf("[cast] hit %s body %u at %.2f m after %.3f s (tick %d) at (%.2f, %.2f, %.2f), "
                                     "%.1f %s dmg\n",
                                     coe::physics::layerName(physics.layer(h.body)), h.body.id, double(h.distance),
                                     double(h.time), h.tick, double(h.point.x), double(h.point.y), double(h.point.z),
                                     double(h.damage), elements.name(h.element).c_str());
+                    }
+                    for (const coe::game::EnemyDeath& d : enemies.takeDeaths())
+                        std::printf("[enemy] %s died (%s), %zu left\n", d.def->name.c_str(),
+                                    coe::game::elementName(d.killingElement), enemies.alive());
+                    enemies.tick(float(step.dtSeconds()));
+                    damageNumbers.tick(float(step.dtSeconds()));
                     // Weapon1 = Staff slot, Weapon2 = Wand slot (Weapon3/4: unbound until step
                     // 44's options), after the cast so a same-tick Fire + switch casts the old one.
                     for (size_t k = 0; k < coe::game::kSlotCount; ++k)
@@ -622,6 +794,14 @@ int main(int argc, char** argv) {
                 bolts.debugLines(float(step.alpha()), debugLines);
                 for (const coe::game::DebugLine& l : debugLines)
                     fp.draws.push_back({meshId, lineModel(l.a, l.b), glm::vec4(l.color, 1.0f)});
+                enemies.draws(meshId, fp.draws);
+                const VkExtent2D ext = renderer.targetExtent();
+                const glm::vec2 size{float(ext.width), float(ext.height)};
+                ui.beginFrame(size, float(step.dtSeconds()));
+                if (size.x > 0.0f && size.y > 0.0f)
+                    drawDamageLabels(ui, damageNumbers, fp.camera.viewProjection(size.x / size.y), size, labelScratch);
+                ui.endFrame();
+                fp.overlay = ui.recorder();
             }
             ok = renderer.drawFrame(fp);
             if (coe::HeadlessFrame cap; ok && renderer.takeCapture(cap)) {
@@ -754,6 +934,7 @@ int main(int argc, char** argv) {
                     (unsigned long long)step.totalTicks(), kTickHz, (unsigned long long)expected,
                     double(step.droppedNs()) / 1e9, ticksOk ? "" : " MISMATCH");
     }
+    ui.shutdown();   // before the device goes
     renderer.shutdown();
     auto s = renderer.stats();
     std::printf("validation messages: %u errors, %u warnings\n", s.errors, s.warnings);

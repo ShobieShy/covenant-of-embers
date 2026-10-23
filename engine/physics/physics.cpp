@@ -60,6 +60,7 @@ const char* layerName(ObjectLayer layer) {
     case Layers::Static: return "static";
     case Layers::Moving: return "moving";
     case Layers::Character: return "character";
+    case Layers::Enemy: return "enemy";
     default: return "?";
     }
 }
@@ -73,6 +74,19 @@ BodyHandle PhysicsWorld::addStaticBox(const BoxDesc& desc) {
 
 BodyHandle PhysicsWorld::addDynamicBox(const BoxDesc& desc) {
     return impl_->addBox(desc, JPH::EMotionType::Dynamic, Layers::Moving);
+}
+
+BodyHandle PhysicsWorld::addKinematicBox(const BoxDesc& desc) {
+    const ObjectLayer layer = desc.layer == Layers::Static ? Layers::Moving : desc.layer;
+    const BodyHandle h = impl_->addBox(desc, JPH::EMotionType::Kinematic, layer);
+    if (h.valid()) impl_->system->GetBodyInterface().DeactivateBody(toJ(h));   // asleep until moved
+    return h;
+}
+
+void PhysicsWorld::moveKinematic(BodyHandle body, const glm::vec3& position, const glm::quat& rotation, float dt) {
+    if (!body.valid() || dt <= 0.0f) return;
+    impl_->system->GetBodyInterface().MoveKinematic(toJ(body), JPH::RVec3(position.x, position.y, position.z),
+                                                    toJ(rotation), dt);
 }
 
 void PhysicsWorld::removeBody(BodyHandle body) {
@@ -147,6 +161,43 @@ std::optional<RayHit> PhysicsWorld::castRay(const glm::vec3& origin, const glm::
     out.point = glm::vec3(float(p.GetX()), float(p.GetY()), float(p.GetZ()));
     JPH::BodyLockRead lock(impl_->system->GetBodyLockInterface(), hit.mBodyID);
     if (lock.Succeeded()) out.normal = toG(lock.GetBody().GetWorldSpaceSurfaceNormal(hit.mSubShapeID2, p));
+    return out;
+}
+
+namespace {
+// Accepts the object layers whose bit is set in a mask (castSphere).
+class MaskLayerFilter final : public JPH::ObjectLayerFilter {
+public:
+    explicit MaskLayerFilter(std::uint32_t mask) : mask_(mask) {}
+    bool ShouldCollide(JPH::ObjectLayer layer) const override { return layer < 32 && ((mask_ >> layer) & 1u) != 0; }
+private:
+    std::uint32_t mask_;
+};
+} // namespace
+
+std::optional<RayHit> PhysicsWorld::castSphere(const glm::vec3& origin, const glm::vec3& delta, float radius,
+                                               BodyHandle ignore, std::uint32_t layerMask) const {
+    if (!(radius > 0.0f)) return std::nullopt;
+    JPH::SphereShape sphere(radius);
+    sphere.SetEmbedded();   // on the stack: never ref-counted away
+    const JPH::RShapeCast cast = JPH::RShapeCast::sFromWorldTransform(
+        &sphere, JPH::Vec3::sOne(), JPH::RMat44::sTranslation(JPH::RVec3(origin.x, origin.y, origin.z)), toJ(delta));
+    JPH::ShapeCastSettings settings;   // back faces ignored, closest hit only
+    JPH::ClosestHitCollisionCollector<JPH::CastShapeCollector> collector;
+    const MaskLayerFilter layers(layerMask);
+    const JPH::IgnoreSingleBodyFilter skip(ignore.valid() ? toJ(ignore) : JPH::BodyID());
+    impl_->system->GetNarrowPhaseQuery().CastShape(cast, settings, JPH::RVec3::sZero(), collector, {}, layers, skip);
+    if (!collector.HadHit()) return std::nullopt;
+    const JPH::ShapeCastResult& h = collector.mHit;
+    RayHit out;
+    out.body = toH(h.mBodyID2);
+    out.fraction = std::clamp(h.mFraction, 0.0f, 1.0f);
+    out.point = toG(h.mContactPointOn2);   // base offset is zero: world space
+    const JPH::Vec3 axis = h.mPenetrationAxis;
+    const float dl = glm::length(delta);
+    out.normal = axis.LengthSq() > 1e-12f ? toG(-axis.Normalized())
+                 : dl > 1e-6f           ? -delta / dl
+                                        : glm::vec3(0.0f, 1.0f, 0.0f);   // zero sweep, no axis: any unit vector
     return out;
 }
 

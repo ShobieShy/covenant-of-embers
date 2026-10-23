@@ -89,7 +89,7 @@ std::string parseLevel(std::string_view text, std::string_view sourceName, Level
     Ctx c{sourceName, {}};
     toml::table root;
     if (!data::parseToml(c, text, root)) return c.err;
-    if (!onlyKeys(c, root, {"level", "environment", "sun", "player_start", "box"}, "top level")) return c.err;
+    if (!onlyKeys(c, root, {"level", "environment", "sun", "player_start", "box", "enemy"}, "top level")) return c.err;
 
     const toml::table* level = needTable(c, root, "level");
     if (!level || !onlyKeys(c, *level, {"id", "name"}, "[level]") ||
@@ -134,6 +134,25 @@ std::string parseLevel(std::string_view text, std::string_view sourceName, Level
     if (out.boxAtSurface(out.playerStart.position, 0.05f) < 0) {
         c.fail(start->get("position"), "player_start position (feet) must lie on a box surface (within 5 cm)");
         return c.err;
+    }
+    if (root.get("enemy")) {
+        const toml::array* enemies = data::needTableArray(c, root, "enemy");
+        if (!enemies) return c.err;
+        for (size_t i = 0; i < enemies->size(); ++i) {
+            const toml::table& t = *enemies->get(i)->as_table();
+            const std::string where = "enemy #" + std::to_string(i + 1);
+            LevelEnemy en;
+            if (!onlyKeys(c, t, {"enemy", "position", "yaw_deg"}, where) ||
+                !readString(c, t.get("enemy"), where + " enemy", en.enemy) ||
+                !readVec3(c, t.get("position"), where + " position", en.position))
+                return c.err;
+            if (t.get("yaw_deg") && !readFloat(c, t.get("yaw_deg"), where + " yaw_deg", en.yawDeg)) return c.err;
+            if (out.boxAtSurface(en.position, 0.05f) < 0) {
+                c.fail(t.get("position"), where + " position (feet) must lie on a box surface (within 5 cm)");
+                return c.err;
+            }
+            out.enemies.push_back(std::move(en));
+        }
     }
     return {};
 }

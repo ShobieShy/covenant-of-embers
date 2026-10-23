@@ -16,6 +16,10 @@
 # data/magic/elements.toml, the damage formula (rarity, parts, resist cap, weak point) (step 20).
 # magic/loadout.*: Staff + Wand slots, equip-time swaps, per-slot cooldowns (step 21).
 # render/viewmodel.*: greybox staff/wand viewmodel poses, meshes, cast point, head check (step 21).
+# enemies/enemy.*: enemy types (data/enemies/*.toml), health, affinity/resist, weak-point
+# hitboxes on the Enemy physics layer, bolt hits -> resolveHit, death (step 22).
+# ui/damage_numbers.*: floating element-coloured damage numbers (pure logic; drawn by
+# covenant through coe_ui's ImGui overlay) (step 22).
 add_library(coe_game STATIC
   data/toml_read.cpp
   world/level.cpp
@@ -33,12 +37,14 @@ add_library(coe_game STATIC
   magic/loadout.cpp
   render/viewmodel.cpp
   combat/element.cpp
-  combat/damage.cpp)
+  combat/damage.cpp
+  enemies/enemy.cpp
+  ui/damage_numbers.cpp)
 target_link_libraries(coe_game PUBLIC coe_engine coe_physics PRIVATE tomlplusplus::tomlplusplus coe_warnings)
 
 # covenant: the game executable (gameplay state + main loop) on top of coe_engine.
 add_executable(covenant main.cpp)
-target_link_libraries(covenant PRIVATE coe_game coe_engine coe_warnings)
+target_link_libraries(covenant PRIVATE coe_game coe_engine coe_ui coe_warnings)
 # The game loads models through build/<preset>/cooked/manifest.json (root CMakeLists `cook`)
 # and level data straight from the source tree's data/ (cooking data/ comes later).
 target_compile_definitions(covenant PRIVATE COE_COOKED_DIR="${CMAKE_BINARY_DIR}/cooked"
@@ -77,4 +83,10 @@ coe_add_test(NAME smoke_headless_missing_elements
   COMMAND covenant --headless --elements ${CMAKE_BINARY_DIR}/no-such-elements.toml
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   PROPERTIES PASS_REGULAR_EXPRESSION "\\[magic\\] .*cannot open"
+             FAIL_REGULAR_EXPRESSION "Sanitizer|runtime error|RESULT: PASS")
+# Step 22: so does a missing enemy table.
+coe_add_test(NAME smoke_headless_missing_enemies
+  COMMAND covenant --headless --enemies ${CMAKE_BINARY_DIR}/no-such-enemies.toml
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  PROPERTIES PASS_REGULAR_EXPRESSION "\\[enemy\\] .*cannot open"
              FAIL_REGULAR_EXPRESSION "Sanitizer|runtime error|RESULT: PASS")

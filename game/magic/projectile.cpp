@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 
 namespace coe::game {
 // Tracer from max(kSkipNear, d - kTail) to d metres along the bolt's ray.
@@ -42,8 +43,20 @@ void ProjectileSystem::tick(const physics::PhysicsWorld& world, float dt, std::v
         if (seg <= 0.0f) { ++fizzled_; p.ticks = -1; continue; }   // (range 0; not reached normally)
         const glm::vec3 from = s.origin + s.direction * p.travelled;
         const glm::vec3 delta = s.direction * seg;
-        if (const auto h = world.castRay(from, delta, s.ignore)) {
+        std::optional<physics::RayHit> h = world.castRay(from, delta, s.ignore);
+        bool grazed = false;
+        if (s.radius > 0.0f) {
+            // Enemies only: a sphere touching one no later than the ray's own hit wins.
+            // When the ray itself hits that body, its exact on-ray point is kept.
+            const auto e = world.castSphere(from, delta, s.radius, s.ignore, physics::Layers::bit(physics::Layers::Enemy));
+            if (e && (!h || (e->body != h->body && e->fraction <= h->fraction))) {
+                grazed = true;
+                h = e;
+            }
+        }
+        if (h) {
             ProjectileHit out;
+            out.grazed = grazed;
             out.projectile = p.id;
             out.body = h->body;
             out.point = h->point;

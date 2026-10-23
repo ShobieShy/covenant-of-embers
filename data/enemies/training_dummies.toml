@@ -1,0 +1,37 @@
+# Enemy types (BUILD_PLAN step 22, PLAN §30.4): training dummies for the damage formula.
+# Loaded by game/enemies/enemy.*; placed in a level with [[enemy]] (data/levels/*.toml).
+# Magewar has no enemy health values (scripts/enemies/enemy_base.gd only wires a
+# CogitoHealthAttribute), so the numbers here are plan design: 60 HP = exactly four
+# Apprentice Fire Staff bolts (10 x 1.5) on the Earth dummy.
+#
+# [[enemy]] -- all keys required unless marked optional:
+#   id          lower_snake_case, unique
+#   name        display name
+#   affinity    defender element for the effectiveness chart (data/magic/elements.toml):
+#               arcane | fire | water | earth | air | light | dark
+#   max_health  starting health, 1..100000
+#   size        [x, y, z] body hitbox full extents in metres; the box stands on the feet
+#   color       [r, g, b] greybox tint in 0..1 (the weak point draws brighter)
+#   resist      optional { <element> = 0..1, ... } incoming-element resistance
+#               (damage x (1 - resist); applied capped at 60 %)
+#   weak_point  optional { offset = [x, y, z] centre from the feet, size = [x, y, z] }
+#               a separate hitbox taking x2 damage (the step-24 Heap seam uses the same)
+
+[[enemy]]
+id = "earth_training_dummy"
+name = "Earthen Training Dummy"
+affinity = "earth"
+max_health = 60
+size = [0.7, 1.6, 0.7]
+color = [0.5, 0.35, 0.1]      # Earth's element colour
+weak_point = { offset = [0.0, 1.78, 0.0], size = [0.36, 0.36, 0.36] }
+
+[[enemy]]
+id = "water_training_dummy"
+name = "Tidal Training Dummy"
+affinity = "water"
+max_health = 60
+size = [0.7, 1.6, 0.7]
+color = [0.1, 0.4, 1.0]       # Water's element colour
+resist = { air = 0.25 }
+weak_point = { offset = [0.0, 1.78, 0.0], size = [0.36, 0.36, 0.36] }

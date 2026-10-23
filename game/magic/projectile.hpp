@@ -8,10 +8,16 @@
 // travel time (ticks flown before + fraction of this tick), so hits land at the right
 // distance however fast the bolt is (no tunnelling, unlike a per-tick position test).
 //
+// Step 22: the same segment is also swept as a sphere of the bolt's radius (0.1 m,
+// Magewar's) against Layers::Enemy only, so a shot that grazes an enemy within 0.1 m of
+// the crosshair ray counts; it wins when it touches no later than the ray's own hit.
+// World geometry stays a pure ray (impacts remain on the eye ray: a bolt never catches
+// on a wall edge it visibly missed).
+//
 // Magewar reference (spell_projectile.tscn, read-only): a 0.1 m RigidBody3D sphere with
 // continuous CD and gravity, 8 s lifespan, destroyed on impact. Reinterpreted: a straight
 // ray (no drop, no radius) that fizzles at the wieldable's range (Magewar's wieldable_range
-// was unused by the projectile). A sphere cast for the 0.1 m radius can come with step 22.
+// was unused by the projectile); the 0.1 m radius applies to enemies (step 22).
 #pragma once
 #include "engine/physics/physics.hpp"
 #include "game/magic/wieldable.hpp"
@@ -31,6 +37,7 @@ struct ProjectileSpawn {
     Element element = Element::Arcane;
     float damage = 0.0f;             // wieldable damage, carried to the hit (resolveHit, step 22 applies it)
     physics::BodyHandle ignore;      // never hit (the caster); invalid = none
+    float radius = 0.1f;             // step 22: enemy sphere sweep (Magewar SphereShape3D 0.1 m); 0 = ray only
     // Step 21: where the tracer appears to start relative to `origin` (the viewmodel's
     // CastPoint - eye, world space). Visual only: the hit test stays on the eye ray; the
     // drawn tracer converges from origin + visualOffset onto the ray over kConverge m.
@@ -56,6 +63,7 @@ struct ProjectileHit {
     int tick = 0;                    // 1-based tick of flight in which it hit
     Element element = Element::Arcane;
     float damage = 0.0f;
+    bool grazed = false;             // step 22: found by the enemy sphere sweep, not the ray itself
 };
 
 // An element-coloured debug segment (drawn as a thin stretched cube by the game).

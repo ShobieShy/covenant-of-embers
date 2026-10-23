@@ -59,6 +59,23 @@ struct FrameParams {
     std::vector<DrawItem> viewmodelDraws;
     float viewmodelFovYDeg = Camera::kViewmodelFovYDeg;
     float viewmodelNear = 0.01f;
+    // Step 22 overlay pass (2D debug text, engine/ui/imgui_layer): called after the scene
+    // and viewmodel inside a second dynamic-rendering pass on the single-sample target
+    // (load + store, no depth, viewport/scissor = the full target, colour format =
+    // OverlayInfo::colorFormat). Empty = no pass.
+    std::function<void(VkCommandBuffer)> overlay;
+};
+
+// Step 22: the device handles an overlay backend (Dear ImGui's Vulkan backend) builds
+// its own pipeline and buffers with. Valid between init() and shutdown().
+struct OverlayInfo {
+    VkInstance instance = VK_NULL_HANDLE;
+    VkPhysicalDevice phys = VK_NULL_HANDLE;
+    VkDevice device = VK_NULL_HANDLE;
+    uint32_t queueFamily = 0;
+    VkQueue queue = VK_NULL_HANDLE;
+    VkFormat colorFormat = VK_FORMAT_UNDEFINED;   // the overlay pass's target (sRGB swapchain or UNORM headless)
+    uint32_t apiVersion = 0;
 };
 
 // Headless readback of one resolved frame (game-side checks, e.g. game/world/level_view).
@@ -97,6 +114,10 @@ public:
     const ValidationStats& stats() const { return stats_; }
     std::string deviceName() const { return deviceName_; }
     uint32_t msaaSamples() const { return uint32_t(samples_); }
+    OverlayInfo overlayInfo() const;
+    // Size of the image the next frame renders to (swapchain, or the headless target).
+    VkExtent2D targetExtent() const;
+    void waitIdle();   // e.g. before an overlay backend destroys buffers a frame may still read
 
 private:
     bool createInstance();

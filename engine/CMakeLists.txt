@@ -4,6 +4,7 @@
 # coe_engine: reusable runtime (core loop utilities, Vulkan renderer). No gameplay.
 # coe_physics: Jolt-backed rigid-body world (step 13); Jolt is PRIVATE (pimpl), so
 # consumers see glm types only and never compile Jolt headers.
+# coe_ui: Dear ImGui debug overlay (step 22), drawn in VkRenderer's overlay pass.
 
 # --- shaders -> SPIR-V (build/<preset>/shaders) ---
 set(SHADER_SRC ${PROJECT_SOURCE_DIR}/shaders/basic.vert ${PROJECT_SOURCE_DIR}/shaders/basic.frag)
@@ -55,3 +56,9 @@ add_library(coe_physics STATIC
 target_include_directories(coe_physics PUBLIC ${PROJECT_SOURCE_DIR})
 target_compile_definitions(coe_physics PUBLIC GLM_FORCE_RADIANS GLM_FORCE_DEPTH_ZERO_TO_ONE)
 target_link_libraries(coe_physics PUBLIC glm::glm PRIVATE Jolt coe_warnings)
+
+# coe_ui (step 22): Dear ImGui debug overlay on VkRenderer's overlay pass. Separate from
+# coe_engine so only the executable (not coe_game / the unit tests) compiles ImGui.
+add_library(coe_ui STATIC ui/imgui_layer.cpp)
+target_include_directories(coe_ui PUBLIC ${PROJECT_SOURCE_DIR})
+target_link_libraries(coe_ui PUBLIC coe_engine PRIVATE coe_imgui coe_warnings)
