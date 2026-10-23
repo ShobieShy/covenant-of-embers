@@ -61,3 +61,10 @@ add_executable(test_casting test_casting.cpp)
 target_link_libraries(test_casting PRIVATE coe_game coe_physics coe_warnings)
 target_compile_definitions(test_casting PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
 coe_add_test(NAME casting COMMAND test_casting)
+
+# Step 18: Magewar mana pool (100, 3/s after 1.5 s, regen bonus hook), 20 fire-staff casts
+# through Caster::setManaSpender, regen timing at 30/60/144 Hz.
+add_executable(test_mana test_mana.cpp)
+target_link_libraries(test_mana PRIVATE coe_game coe_physics coe_warnings)
+target_compile_definitions(test_mana PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
+coe_add_test(NAME mana COMMAND test_mana)

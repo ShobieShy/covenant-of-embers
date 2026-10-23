@@ -38,6 +38,8 @@
 //     (slide timer cleared; Crouch held on the ground keeps the crouch as usual) and a
 //     slide can't start while dashing. The smoothed walk direction/speed keep easing
 //     underneath, so the dash ends into normal movement, not a carry-over.
+//   * Mana (step 18, game/player/mana.hpp): regenerates once per tick() (before the
+//     cast that follows it in the game loop), spent through Caster::setManaSpender.
 //   * Camera feel (step 16, game/player/camera_feel.hpp): head bob and landing dip
 //     offset camera()'s eye (x along the view's right, y up), interpolated like the eye;
 //     setReducedMotion() turns both off.
@@ -48,6 +50,7 @@
 #include "engine/render/camera.hpp"
 #include "game/player/camera_feel.hpp"
 #include "game/player/dash.hpp"
+#include "game/player/mana.hpp"
 #include "game/player/stats.hpp"
 
 #include <glm/glm.hpp>
@@ -79,7 +82,7 @@ public:
     PlayerController(physics::PhysicsWorld& world, const glm::vec3& feet, float yawRad,
                      const PlayerTuning& tuning = {}, const physics::CharacterSettings& body = {},
                      const BreathTuning& breath = {}, const DashTuning& dash = {},
-                     const CameraFeelTuning& feel = {});
+                     const CameraFeelTuning& feel = {}, const ManaTuning& mana = {});
 
     // Per render frame: relative mouse motion in counts (dx right, dy down).
     void addLook(float dxCounts, float dyCounts);
@@ -111,6 +114,9 @@ public:
     float currentSpeed() const { return speed_; }          // Magewar current_speed (eased target)
     const Breath& breath() const { return breath_; }
     Breath& breath() { return breath_; }
+    // Mana (step 18): ticked (regen) in tick(); the Caster spends it after the player ticks.
+    const Mana& mana() const { return mana_; }
+    Mana& mana() { return mana_; }
     const Dash& dash() const { return dash_; }
     Dash& dash() { return dash_; }
     bool dashing() const { return dash_.active(); }
@@ -141,6 +147,7 @@ private:
     glm::vec3 feet_, prevFeet_;
     std::uint64_t jumps_ = 0;
     Breath breath_;
+    Mana mana_;
     float speedMul_ = 1.0f;
     bool sprinting_ = false;
     float slideLeft_ = 0.0f;        // Magewar sliding_timer.time_left (0 = not sliding)

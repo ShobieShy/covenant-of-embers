@@ -7,6 +7,7 @@
 # world/level_physics.*: level boxes -> static Jolt colliders via coe_physics (step 13).
 # player/player_controller.*: FPS walk/jump/crouch/look on physics::Character (step 14).
 # player/stats.*: Breath pool (sprint/dash resource, step 15).
+# player/mana.*: Magewar mana pool, spent per cast, regen after a delay (step 18).
 # player/dash.*, player/camera_feel.*: dash charges/i-frames and head bob/landing dip (step 16).
 # magic/wieldable.*, magic/projectile.*, magic/casting.*: Magewar staffs/wands from
 # data/magic/wieldables.toml, ray-swept spell bolts, cooldown-gated casting (step 17).
@@ -17,6 +18,7 @@ add_library(coe_game STATIC
   world/headless_checks.cpp
   player/player_controller.cpp
   player/stats.cpp
+  player/mana.cpp
   player/dash.cpp
   player/camera_feel.cpp
   magic/wieldable.cpp

@@ -11,10 +11,10 @@ using input::Action;
 PlayerController::PlayerController(physics::PhysicsWorld& world, const glm::vec3& feet, float yawRad,
                                    const PlayerTuning& tuning, const physics::CharacterSettings& body,
                                    const BreathTuning& breath, const DashTuning& dash,
-                                   const CameraFeelTuning& feel)
+                                   const CameraFeelTuning& feel, const ManaTuning& mana)
     : tuning_(tuning), character_(world, body, feet), yaw_(yawRad), speed_(tuning.walkSpeed),
       eye_(tuning.standingEye), prevEye_(tuning.standingEye), feet_(character_.position()), prevFeet_(feet_),
-      breath_(breath), dash_(dash), feel_(feel) {}
+      breath_(breath), mana_(mana), dash_(dash), feel_(feel) {}
 
 glm::vec3 PlayerController::forwardFor(float yawRad) { return {-std::sin(yawRad), 0.0f, -std::cos(yawRad)}; }
 glm::vec3 PlayerController::rightFor(float yawRad) { return {std::cos(yawRad), 0.0f, -std::sin(yawRad)}; }
@@ -85,6 +85,7 @@ void PlayerController::tick(const input::TickInput& in, float dt) {
     // crouched or with Breath exhausted; needs a move key (standing still doesn't drain).
     sprinting_ = in.down(Action::Sprint) && !crouched && moving && breath_.canSprint() && (grounded || sprinting_);
     breath_.tick(sprinting_, dt);
+    mana_.tick(dt);
 
     // Horizontal: smoothed direction x eased speed (Magewar's direction/current_speed lerps).
     const float lerpSpeed = tuning_.lerpSpeed;

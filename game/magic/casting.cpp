@@ -20,7 +20,10 @@ bool Caster::tick(bool firePressed, bool fireHeld, float dt, const CastAim& aim,
     const bool want = firePressed || (holdToRepeat_ && fireHeld);
     if (!want || !wieldable_) return false;
     if (cooldown_ > 1e-9) { if (firePressed) ++blocked_; return false; }
-    if (spendMana_ && !spendMana_(wieldable_->manaCost())) { if (firePressed) ++blocked_; return false; }
+    if (spendMana_ && !spendMana_(wieldable_->manaCost())) {
+        if (firePressed) { ++blocked_; ++manaRefused_; }
+        return false;
+    }
     cooldown_ = double(wieldable_->cooldown());
     ProjectileSpawn s;
     s.origin = aim.origin;

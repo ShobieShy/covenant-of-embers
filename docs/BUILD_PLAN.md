@@ -114,7 +114,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: tests: every pool resolves; a deliberately empty pool fails the cooker check; base rarity rolls follow step 26 weights.
 
 **30. Equipment items**
-- Does: Magewar equipables: Hat (mana, spell dmg, mana regen), Clothes/Robes (health, mana, Rare+ elemental resist 5–15 %), Belt (health 3–8, Breath max +5–15), Shoes (speed ×1.02–1.10, Breath max +3–10; Magewar loot_generator ranges kept as flat points on our 100-pt pool), Grimoire (spell dmg 2–8, mana 10–25, regen 0.5–2), all × rarity multiplier; Potion quick-slot (health/mana potions, not rolled). Equipping applies bonuses to health/mana/Breath/regen/speed (step 18 regen hook; step 15 hooks `Breath::setMaxBonus()` (no free refill) and `PlayerController::setSpeedMultiplier()`, which like Magewar scales walk/sprint/crouch but not the slide).
+- Does: Magewar equipables: Hat (mana, spell dmg, mana regen), Clothes/Robes (health, mana, Rare+ elemental resist 5–15 %), Belt (health 3–8, Breath max +5–15), Shoes (speed ×1.02–1.10, Breath max +3–10; Magewar loot_generator ranges kept as flat points on our 100-pt pool), Grimoire (spell dmg 2–8, mana 10–25, regen 0.5–2), all × rarity multiplier; Potion quick-slot (health/mana potions, not rolled). Equipping applies bonuses to health/mana/Breath/regen/speed (step 18 hooks `Mana::setRegenBonus()` (sum of gear regen) and `Mana::setMaxBonus()` (sum of gear mana; like Magewar's equip a raise also adds to current mana, removal clamps); step 15 hooks `Breath::setMaxBonus()` (no free refill) and `PlayerController::setSpeedMultiplier()`, which like Magewar scales walk/sprint/crouch but not the slide).
 - Files: game/loot/equipment.*, game/player/stats.*, data/loot/equipment.toml, tests/test_equipment.cpp.
 - Done: tests: rolls within range × multiplier per slot; equipping a Grimoire raises spell damage and mana regen; resist capped at 60 %.
 
@@ -154,7 +154,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: tests: can't exceed the Head's gem slots; upgrade Rare→Mythic scales stats by 2.0/1.5; Unique never produced by upgrade; Dust totals match table.
 
 **38. XP curve and levels**
-- Does: XP(L)=120×1.35^(L−1), cap 50, level-up +health, +5 Breath max and +5 mana max with both refilled (Magewar magewar_player `_level_up`; `Breath::setMaxBonus` + `refill()`), XP from kill events (§30.5).
+- Does: XP(L)=120×1.35^(L−1), cap 50, level-up +health, +5 Breath max and +5 mana max with both refilled (Magewar magewar_player `_level_up`; `Breath::setMaxBonus` / `Mana::setMaxBonus` + `refill()` — keep level and gear max bonuses as separate sums fed into one setMaxBonus), XP from kill events (§30.5).
 - Files: game/progression/xp.*, tests/test_xp.cpp.
 - Done: tests for curve values, multi-level gain and cap.
 
@@ -169,7 +169,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: headless test renders a text string; pixel check finds non-background pixels in its rect.
 
 **41. HUD**
-- Does: crosshair + hit markers, health/shield/Breath bars, mana bar (Magewar mana_bar_ui), active staff/wand with element icon + cooldown, XP bar + level, loot feed in rarity colours.
+- Does: crosshair + hit markers, health/shield/Breath bars, mana bar (Magewar mana_bar_ui; `PlayerController::mana()` value/max/fraction, `regenerating()`), active staff/wand with element icon + cooldown, XP bar + level, loot feed in rarity colours.
 - Files: game/ui/hud.*.
 - Done: values on HUD update when casting/regenerating/levelling in a window run; headless snapshot test.
 
@@ -185,7 +185,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 
 **44. Key-bindings config**
 - Does: load/save `config/bindings.toml` (SDL_GetPrefPath) serialising the step-9 `coe::input::ActionMap` (scancode names, `Mouse N`; unknown names keep defaults), mouse sensitivity (0.25°/count), invert-Y (default off), hold-vs-toggle for Crouch and Aim, simple rebind menu, gamepad noted post-slice, frame-rate cap / vsync option (sim stays 60 Hz), accessibility: reduced motion (step 16 `PlayerController::setReducedMotion`, today the `--reduced-motion` flag; later also screen shake) and head-bob strength (`CameraFeel::setBobScale`); Dash default Q.
-- Files: engine/input/bindings.*, game/ui/options_screen.*. (Step 17: add a hold-to-cast toggle for Fire → `Caster::setHoldToRepeat`, default off = Magewar semi-auto; parse with game/data/toml_read.* helpers.)
+- Files: engine/input/bindings.*, game/ui/options_screen.*. (Step 18: Reload no longer drives anything — keep it in the action list but ship it unbound so R is free; covenant's input-script still presses it as an input-layer check. Step 17: add a hold-to-cast toggle for Fire → `Caster::setHoldToRepeat`, default off = Magewar semi-auto; parse with game/data/toml_read.* helpers.)
 - Done: test: rebinding Jump writes file; reload restores it; malformed file falls back to defaults.
 
 **45. Breach room slice: layout**

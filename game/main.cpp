@@ -14,7 +14,8 @@
 //   covenant --input-script  push a scripted sequence of synthetic SDL input events and
 //                            fail unless every scripted press reached exactly one tick
 //                            (level mode: and the player walked forward, jumped, dashed
-//                            and cast exactly one bolt that did not fizzle)
+//                            and cast exactly one bolt that did not fizzle, paying its
+//                            mana cost exactly once)
 //   covenant --crate         level mode: also drop step 13's tumbling demo crate (a push target)
 //   covenant --reduced-motion  level mode: no head bob / landing dip (accessibility)
 //   covenant --wieldables FILE  staff/wand bases (default: data/magic/wieldables.toml)
@@ -38,6 +39,10 @@
 // from the eye along the view (after the world steps) on the wieldable's cooldown; bolts
 // are ray-swept per tick skipping the player's own capsule and drawn as element-coloured
 // debug lines.
+// Mana (step 18): game/player/mana on the PlayerController (Magewar ManaAttribute: 100,
+// 3/s after 1.5 s); each cast spends the wieldable's mana cost through
+// Caster::setManaSpender, a refused cast costs no cooldown. No ammo, no reload: the Reload
+// action (R) is still mapped but drives nothing.
 #include "engine/core/clock.hpp"
 #include "engine/core/fixed_timestep.hpp"
 #include "engine/input/input.hpp"
@@ -207,7 +212,7 @@ constexpr ScriptedEvent kInputScript[] = {
 constexpr struct { coe::input::Action action; uint64_t presses; } kScriptExpect[] = {
     {coe::input::Action::Jump, 2}, {coe::input::Action::MoveForward, 1},
     {coe::input::Action::Fire, 1}, {coe::input::Action::Weapon2, 1},
-    {coe::input::Action::Reload, 1}, {coe::input::Action::Dash, 1},
+    {coe::input::Action::Reload, 1}, {coe::input::Action::Dash, 1},   // Reload: seen, does nothing (step 18)
 };
 
 void pushScripted(uint64_t frame, SDL_Window* window) {
@@ -348,6 +353,7 @@ int main(int argc, char** argv) {
         std::unique_ptr<coe::game::PlayerController> player;
         glm::vec3 spawnFeet{0.0f}, spawnForward{0.0f};
         float apex = 0.0f;   // highest feet above the spawn
+        float minMana = 0.0f, castCost = 0.0f;   // lowest mana seen after a cast; the last cast's cost
         // Casting (step 17): one instance per base (no parts until step 28), Weapon1-4 pick.
         std::vector<coe::game::WieldableInstance> hands;
         for (const coe::game::WieldableDef& d : wieldables.defs) hands.emplace_back(d);
@@ -360,6 +366,7 @@ int main(int argc, char** argv) {
             const float yaw = glm::radians(level.playerStart.yawDeg);
             player = std::make_unique<coe::game::PlayerController>(physics, level.playerStart.position, yaw);
             player->setReducedMotion(reducedMotion);
+            caster.setManaSpender([&p = *player](float cost) { return p.mana().spend(cost); });
             spawnFeet = player->feet();
             spawnForward = coe::game::PlayerController::forwardFor(yaw);
             std::printf("[player] spawned at (%.2f, %.2f, %.2f) facing %.0f deg, %s, eye %.2f m\n", double(spawnFeet.x),
@@ -397,11 +404,15 @@ int main(int argc, char** argv) {
                     // against the world as just stepped.
                     const size_t fire = size_t(coe::input::Action::Fire);
                     if (caster.tick(in.pressed[fire], in.held[fire], float(step.dtSeconds()),
-                                    coe::game::playerAim(*player), bolts))
-                        std::printf("[cast] %s (%s): bolt %.0f m/s, %.0f m range, %.1f dmg\n",
+                                    coe::game::playerAim(*player), bolts)) {
+                        castCost = caster.wieldable()->manaCost();
+                        minMana = caster.casts() == 1 ? player->mana().value() : std::min(minMana, player->mana().value());
+                        std::printf("[cast] %s (%s): bolt %.0f m/s, %.0f m range, %.1f dmg, -%.1f mana -> %.1f/%.0f\n",
                                     caster.wieldable()->def->name.c_str(), coe::game::elementName(caster.wieldable()->element()),
                                     double(caster.wieldable()->projectileSpeed()), double(caster.wieldable()->range()),
-                                    double(caster.wieldable()->damage()));
+                                    double(caster.wieldable()->damage()), double(castCost),
+                                    double(player->mana().value()), double(player->mana().max()));
+                    }
                     boltHits.clear();
                     bolts.tick(physics, float(step.dtSeconds()), boltHits);
                     for (const coe::game::ProjectileHit& h : boltHits)
@@ -487,7 +498,17 @@ int main(int argc, char** argv) {
                 // Fire (LMB, frame 12) casts one Apprentice Fire Staff bolt at the north
                 // wall (well inside its 50 m range: it hits, or is still flying at exit).
                 const bool cast = caster.casts() == 1 && bolts.fizzled() == 0;
-                inputOk = inputOk && moved && cast;
+                // Its mana cost (5) was paid exactly once: 100 -> 95, then it regenerates
+                // (3/s after 1.5 s) but never past 100.
+                const coe::game::Mana& mana = player->mana();
+                const bool paid = mana.spends() == 1 && mana.refusals() == 0 && castCost > 0.0f &&
+                                  minMana == mana.tuning().max - castCost && mana.value() >= minMana &&
+                                  mana.value() <= mana.max();
+                inputOk = inputOk && moved && cast && paid;
+                std::printf("[mana] script: %llu spend(s), %llu refusal(s), lowest %.2f (expect %.2f), now %.2f/%.0f%s\n",
+                            (unsigned long long)mana.spends(), (unsigned long long)mana.refusals(), double(minMana),
+                            double(mana.tuning().max - castCost), double(mana.value()), double(mana.max()),
+                            paid ? "" : " MISMATCH (need 1 spend of the cast's cost)");
                 std::printf("[cast] script: %llu cast(s), %llu hit(s), %llu fizzled%s\n",
                             (unsigned long long)caster.casts(), (unsigned long long)bolts.hits(),
                             (unsigned long long)bolts.fizzled(), cast ? "" : " MISMATCH (need 1 cast, 0 fizzled)");
@@ -519,10 +540,17 @@ int main(int argc, char** argv) {
                         double(player->breath().value()), double(player->breath().max()),
                         (unsigned long long)player->slides(), (unsigned long long)player->dash().dashes(),
                         (unsigned long long)player->landings(), reducedMotion ? ", reduced motion" : "");
-            std::printf("[cast] %llu cast(s), %llu refused by cooldown, %llu hit(s), %llu fizzled, %zu in flight, "
-                        "holding %s\n", (unsigned long long)caster.casts(), (unsigned long long)caster.blocked(),
+            std::printf("[mana] %.2f/%.0f, %llu spend(s), %llu refusal(s), regen %.1f/s after %.1f s%s\n",
+                        double(player->mana().value()), double(player->mana().max()),
+                        (unsigned long long)player->mana().spends(), (unsigned long long)player->mana().refusals(),
+                        double(player->mana().regenRate()), double(player->mana().tuning().regenDelay),
+                        player->mana().regenerating() ? ", regenerating" : "");
+            std::printf("[cast] %llu cast(s), %llu refused (%llu cooldown, %llu mana), %llu hit(s), %llu fizzled, "
+                        "%zu in flight, holding %s\n", (unsigned long long)caster.casts(), (unsigned long long)caster.blocked(),
+                        (unsigned long long)(caster.blocked() - caster.manaRefused()), (unsigned long long)caster.manaRefused(),
                         (unsigned long long)bolts.hits(), (unsigned long long)bolts.fizzled(), bolts.live().size(),
                         caster.wieldable() ? caster.wieldable()->def->name.c_str() : "nothing");
+            caster.setManaSpender(nullptr);   // it refers to the player
             player.reset();   // before the world it lives in
         }
         std::printf("frames: %llu in %.2fs (%.0f fps)\n", (unsigned long long)frames, elapsed,

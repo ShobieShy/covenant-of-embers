@@ -9,8 +9,8 @@
 // checked, so at 60 Hz the Swift Wind Wand (0.18 s) casts at most every 11 ticks
 // (0.183 s) and the Apprentice Fire Staff (0.4 s) every 24 ticks. holdToRepeat (off by
 // default, an options toggle in step 44) re-casts while Fire is held.
-// Mana (Magewar: spent after the cooldown check; no mana = no cast, no cooldown) comes in
-// step 18 through the spend hook.
+// Mana (step 18, game/player/mana.hpp; Magewar: spent after the cooldown check, no mana =
+// no cast and no cooldown) comes in through setManaSpender with the wieldable's manaCost().
 // The bolt starts at the eye along the view so it goes where the crosshair points
 // (Magewar spawns at the staff's CastPoint aimed at the camera ray's hit; the visible
 // CastPoint arrives with the viewmodel in step 21).
@@ -47,7 +47,8 @@ public:
     const WieldableInstance* wieldable() const { return wieldable_; }
 
     void setHoldToRepeat(bool on) { holdToRepeat_ = on; }
-    // Step 18: called with the mana cost after the cooldown check; false = no cast.
+    // Step 18: called with the mana cost after the cooldown check; false = no cast and no
+    // cooldown (covenant: [&](float c) { return player.mana().spend(c); }).
     void setManaSpender(std::function<bool(float)> spend) { spendMana_ = std::move(spend); }
 
     // One fixed tick. Returns true when a bolt was spawned into `out`.
@@ -55,14 +56,15 @@ public:
 
     float cooldownRemaining() const { return float(cooldown_); }
     std::uint64_t casts() const { return casts_; }
-    std::uint64_t blocked() const { return blocked_; }   // presses refused by the cooldown (or mana)
+    std::uint64_t blocked() const { return blocked_; }   // presses refused by the cooldown or mana
+    std::uint64_t manaRefused() const { return manaRefused_; }   // of those, refused for mana
 
 private:
     const WieldableInstance* wieldable_ = nullptr;
     std::function<bool(float)> spendMana_;
     double cooldown_ = 0.0;      // seconds left; double so 60 Hz ticks don't drift
     bool holdToRepeat_ = false;
-    std::uint64_t casts_ = 0, blocked_ = 0;
+    std::uint64_t casts_ = 0, blocked_ = 0, manaRefused_ = 0;
 };
 
 } // namespace coe::game
