@@ -26,19 +26,27 @@ func _ready() -> void:
 		player.bolts = get_node_or_null("Bolts") as SpellBolts
 		player.equip(WieldableInstance.load_base("apprentice_fire_staff"))
 		player.equip(WieldableInstance.load_base("swift_wind_wand"))
-		# Step 11: the level's training dummies at its EnemySpawns markers (the Gnawer
-		# waits for step 12's AI) and floating damage numbers on every resolved hit.
+		# Step 11: the level's training dummies at its EnemySpawns markers and floating
+		# damage numbers on every resolved hit. Step 12: the Gnawer spawns there too and
+		# hunts the player over the level's baked navmesh (its bites reach the player's
+		# health in step 13; here they are only counted).
 		var enemies := Node3D.new()
 		enemies.name = "Enemies"
 		add_child(enemies)
 		var skipped: Array = []
 		var spawned := Enemy.spawn_at_markers($Level, enemies, EnemyTable.load_default(), skipped)
+		for e in spawned:
+			if e is Gnawer:
+				(e as Gnawer).target = player
 		var numbers := DamageNumbers.new()
 		numbers.name = "DamageNumbers"
 		add_child(numbers)
 		numbers.connect_bolts(player.bolts)
 		print("[enemies] %d spawned (%s), %d skipped (%s)" % [spawned.size(),
 			", ".join(spawned.map(func(e: Enemy) -> String: return e.def.id)), skipped.size(), ", ".join(skipped)])
+		var nav := $Level.get_node_or_null("Navigation") as LevelNavigation
+		print("[nav] %s navmesh: %d polygon(s), %d bake(s)" % [$Level.name,
+			nav.navigation_mesh.get_polygon_count() if nav and nav.navigation_mesh else 0, nav.bakes if nav else 0])
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])
@@ -66,6 +74,12 @@ func _process(delta: float) -> void:
 				alive += 1
 			var dn := get_node_or_null("DamageNumbers") as DamageNumbers
 			print("[enemies] %d alive, %d damage number(s) shown" % [alive, dn.spawned if dn else 0])
+			for g in get_tree().get_nodes_in_group(Enemy.GROUP):
+				if g is Gnawer:
+					var gn := g as Gnawer
+					print("[gnawer] %s %s at %.1f m, %d bite(s), %d dodged, %d transition(s), travelled %.1f m" % [
+						gn.name, Gnawer.state_name(gn.state), gn.distance, gn.bites, gn.dodged,
+						gn.transitions.size(), gn.travelled])
 			var lo := player.loadout
 			print("[loadout] in hand %s, staff %s, wand %s, %d swap(s), viewmodel %s at %s, overlay %s" % [
 				"wand" if lo.active == Loadout.Slot.WAND else "staff",

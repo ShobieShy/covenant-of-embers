@@ -19,7 +19,7 @@ extends Resource
 @export var has_weak_point := false
 @export var weak_point_offset := Vector3.ZERO                  ## box centre from the feet (yaw-rotated)
 @export var weak_point_size := Vector3(0.3, 0.3, 0.3)          ## full extents
-@export var ai: Dictionary = {}                                ## step 12: raw `ai` table (empty = a dummy)
+@export var ai: Dictionary = {}                                ## step 12: raw `ai` table (empty = a dummy; see RusherDef)
 
 const MAX_HEALTH_LIMIT := 100000.0
 
@@ -60,14 +60,24 @@ func validate() -> PackedStringArray:
 			errs.append("'%s': resist.%s must be in 0..1" % [id, k])
 	if has_weak_point and not (weak_point_size.x > 0.0 and weak_point_size.y > 0.0 and weak_point_size.z > 0.0):
 		errs.append("'%s': weak_point size must be > 0" % id)
+	if not ai.is_empty():
+		var r := RusherDef.parse(ai, size)
+		if r.has("error"):
+			errs.append("'%s': %s" % [id, r["error"]])
 	return errs
+
+## The brain's tuning (null for a brainless dummy or a bad `ai` table).
+func rusher() -> RusherDef:
+	if ai.is_empty():
+		return null
+	return RusherDef.parse(ai, size).get("def") as RusherDef
 
 const KEYS: PackedStringArray = ["id", "name", "affinity", "max_health", "size", "color", "resist", "weak_point", "ai"]
 const REQUIRED: PackedStringArray = ["id", "name", "affinity", "max_health", "size", "color"]
 
 ## From one data/enemies/*.toml [[enemy]] row (LevelToml). Returns {"def": EnemyDef} or
 ## {"error": "..."} with the C++ loader's checks (required keys, unknown keys, ranges).
-## `ai` (step 12's brain) is accepted and kept raw in `ai` for the Gnawer.
+## `ai` (step 12's brain) is kept raw in `ai` and checked by RusherDef.parse.
 static func from_toml(row: Dictionary) -> Dictionary:
 	for k in row:
 		if not KEYS.has(String(k)):
@@ -115,7 +125,9 @@ static func from_toml(row: Dictionary) -> Dictionary:
 		d.weak_point_size = ws
 	if row.has("ai"):
 		if not (row["ai"] is Dictionary):
-			return {"error": "'%s': ai must be an inline table" % d.id}
+			return {"error": "'%s': ai must be a table { kind = \"rusher\", ... }" % d.id}
+		if (row["ai"] as Dictionary).is_empty():
+			return {"error": "'%s': ai: missing key 'kind'" % d.id}
 		d.ai = row["ai"]
 	var errs := d.validate()
 	if not errs.is_empty():

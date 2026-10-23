@@ -19,7 +19,8 @@ run_clean() {
 		echo "[run_tests] errors logged by: $*"; exit 1
 	fi
 }
-run_clean timeout 120 "$GODOT" --headless --path . -s res://tests/run_tests.gd
+# --fixed-fps 60: tests that await physics frames (step 12) step exactly 1/60 s each, fast.
+run_clean timeout 120 "$GODOT" --headless --fixed-fps 60 --path . -s res://tests/run_tests.gd
 run_clean timeout 60 "$GODOT" --headless --path . -- --seconds 2
 python3 tools/check_assets.py
 echo "[run_tests] all green"

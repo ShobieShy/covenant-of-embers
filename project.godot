@@ -110,6 +110,11 @@ quickslot_next_wieldable={
 3d_physics/layer_2="character"
 3d_physics/layer_3="enemy"
 
+[navigation]
+
+3d/default_cell_size=0.1
+3d/default_cell_height=0.05
+
 [physics]
 
 common/physics_ticks_per_second=60

@@ -9,6 +9,10 @@ extends SceneTree
 ## CharacterBody3D.move_and_slide() (which uses it) would not move (step 3).
 ## A test file that fails to parse counts as a failure (step 8); runtime SCRIPT ERRORs
 ## inside a test don't stop it, so tools/run_tests.sh also fails on any such log line.
+## A test may `await runner_tree.physics_frame` (step 12: the NavigationServer syncs a
+## freshly baked navmesh only on later physics frames); the runner awaits each test, and
+## tools/run_tests.sh runs it with --fixed-fps 60 so every frame is exactly one 1/60 s
+## physics tick, run as fast as the CPU allows.
 
 var failures := 0
 var passed := 0
@@ -41,7 +45,7 @@ func _run_all() -> void:
 			var t = script.new()
 			t.set_meta("errors", [])
 			t.runner_tree = self
-			t.call(name)
+			await t.call(name)
 			var errs: Array = t.get_meta("errors")
 			if errs.is_empty():
 				passed += 1

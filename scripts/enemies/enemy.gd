@@ -2,7 +2,8 @@ class_name Enemy
 extends CharacterBody3D
 ## A live enemy (BUILD_PLAN step 11, port of the archived C++ game/enemies/enemy.*, old
 ## step 22): health, element affinity + per-element resistance, a weak-point hitbox and
-## death. Training dummies are Enemies without a brain; step 12's Gnawer extends this.
+## death. Training dummies are Enemies without a brain; step 12's Gnawer extends this and
+## `create` picks it by the type's `ai.kind` (BRAINS).
 ##
 ## Body: a CharacterBody3D on physics layer "enemy" (3) with two CollisionShape3Ds, the
 ## body box (standing on the feet) and, if the type has one, the weak-point box ("Head").
@@ -18,7 +19,7 @@ extends CharacterBody3D
 ## health lives here (Magewar's landfill enemies have no health attribute, so they never
 ## die), hits go through Damage.resolve_hit (resist cap 60 %, weak point x2; Magewar:
 ## effectiveness only), and the Magewar group "enemies" + signal name damage_received
-## are kept so later systems read the same way. Knockback (> 10 damage) is step 12's.
+## are kept so later systems read the same way. Knockback (> 10 damage) is the Gnawer's.
 
 signal damage_received(amount: float, direction: Vector3, point: Vector3)  ## Magewar's name
 signal damaged(enemy: Enemy, hit: SpellBolts.Hit)    ## after health changed (hit.result set)
@@ -28,6 +29,8 @@ const ENEMY_LAYER := 3                ## physics layer "enemy" (bit 3)
 const FLASH_TIME := 0.12              ## s of hit flash (C++ kFlashTime)
 const WEAK_POINT_BRIGHTEN := 0.35     ## weak point tint = body colour lightened by this
 const GROUP := &"enemies"             ## Magewar's group
+## ai.kind -> the Enemy subclass that runs it (loaded by path: no class cycle).
+const BRAINS := {"rusher": "res://scripts/enemies/gnawer.gd"}
 
 var def: EnemyDef
 var damage_target: Damage.Target
@@ -50,8 +53,14 @@ var _head_mat: StandardMaterial3D
 ## A new enemy of type `d`, posed by `xform` (feet, yaw) in its future parent's space.
 ## Place it before add_child: Jolt ray queries see a body teleported after it entered the
 ## tree only after the next physics step (step 7 note).
+## A type with an `ai` table gets its brain's subclass (rusher -> Gnawer).
 static func create(d: EnemyDef, xform := Transform3D.IDENTITY) -> Enemy:
-	var e := Enemy.new()
+	var e: Enemy = null
+	var kind := String(d.ai.get("kind", ""))
+	if BRAINS.has(kind):
+		e = (load(BRAINS[kind]) as GDScript).new() as Enemy
+	if e == null:
+		e = Enemy.new()
 	e.setup(d)
 	e.transform = xform
 	return e
@@ -188,7 +197,7 @@ func tick(dt: float) -> void:
 
 ## Spawns one Enemy per EnemySpawns marker of `level` whose `enemy` meta is in `table`,
 ## under `parent` (posed before entering the tree). Unknown ids are skipped and returned
-## in `skipped` (the Gnawer until step 12).
+## in `skipped`. Types with a brain spawn as its subclass (the Gnawer, step 12).
 static func spawn_at_markers(level: Node, parent: Node3D, table: EnemyTable, skipped: Array = []) -> Array[Enemy]:
 	var out: Array[Enemy] = []
 	var spawns := level.get_node_or_null("EnemySpawns")

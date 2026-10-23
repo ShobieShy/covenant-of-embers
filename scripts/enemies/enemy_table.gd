@@ -1,10 +1,11 @@
 class_name EnemyTable
 extends Resource
 ## Enemy types by id (BUILD_PLAN step 11). The shipped table is
-## resources/enemies/training_dummies.tres (step 12 adds the Gnawer); `from_toml_files`
+## resources/enemies/training_dummies.tres + gnawer.tres (step 12); `from_toml_files`
 ## builds one from data/enemies/*.toml for the tests' .tres-vs-TOML comparison.
 
-const DEFAULT_PATHS: PackedStringArray = ["res://resources/enemies/training_dummies.tres"]
+const DEFAULT_PATHS: PackedStringArray = ["res://resources/enemies/training_dummies.tres",
+	"res://resources/enemies/gnawer.tres"]
 
 @export var defs: Array[EnemyDef] = []
 
