@@ -23,6 +23,14 @@ class Aim:
 	var origin := Vector3.ZERO
 	var direction := Vector3.FORWARD
 	var exclude: Array[RID] = []
+	var has_visual_origin := false   ## step 10: tracer starts at the viewmodel cast point
+	var visual_origin := Vector3.ZERO
+
+	## Same aim with the tracer drawn from `p` (the ray itself stays at `origin`).
+	func with_visual_origin(p: Vector3) -> Aim:
+		has_visual_origin = true
+		visual_origin = p
+		return self
 
 	static func make(p_origin: Vector3, p_direction: Vector3, p_exclude: Array[RID] = []) -> Aim:
 		var a := Aim.new()
@@ -43,6 +51,11 @@ var mana_refused := 0
 
 func _init(w: WieldableInstance = null) -> void:
 	wieldable = w
+
+## Counts the cooldown down without casting (a holstered slot, or the slot being drawn
+## during a swap: step 10's per-slot cooldown keeps running).
+func cool(dt: float) -> void:
+	cooldown_left = maxf(0.0, cooldown_left - dt)
 
 ## Swaps the wieldable (null = empty hands); the running cooldown is kept.
 func equip(w: WieldableInstance) -> void:
@@ -74,6 +87,8 @@ func tick(pressed: bool, held: bool, dt: float, aim: Aim, bolts: SpellBolts) -> 
 		s.element = wieldable.element()
 		s.damage = wieldable.damage()
 		s.exclude = aim.exclude
+		s.has_visual_origin = aim.has_visual_origin
+		s.visual_origin = aim.visual_origin
 		bolts.spawn(s)
 	casts += 1
 	return true

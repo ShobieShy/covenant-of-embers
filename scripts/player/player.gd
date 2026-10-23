@@ -48,6 +48,16 @@ extends CharacterBody3D
 ##    press that wants to cast gets aim() perturbed inside the spread cone (accuracy x
 ##    stance x bloom, spread_stance()); only a cast that happened (Caster.tick true) adds
 ##    bloom. `spread_seed` makes the shots reproducible.
+##  * Loadout + viewmodel (step 10, scripts/player/loadout.gd + viewmodel.gd): a staff slot
+##    and a wand slot, each with its own Caster (own cooldown, kept while holstered);
+##    `caster` is the slot in hand. slot_1 / slot_2 (Magewar quickslot_1/2) draw the staff /
+##    wand, the mouse wheel (quickslot_prev/next_wieldable) cycles; a draw takes 0.4 s
+##    (24 ticks) in which presses don't cast (no mana check, cue, spread draw or bloom).
+##    Both slots spend the one mana pool and share focus + spread. The Viewmodel (child of
+##    the Head: bobs with it) shows the slot in hand at Magewar's pose, slid to x = 0 by
+##    focus.amount(), raised during a draw, kicked by CameraFeel recoil; casts add recoil
+##    and screen shake (zero under reduced motion). The bolt ray stays at the eye; only the
+##    tracer starts at the viewmodel's cast point.
 ## In game _physics_process feeds PlayerInput.from_input(); tests call tick() directly.
 
 const CHARACTER_LAYER := 2   # physics layer "character" (bit 2)
@@ -79,7 +89,12 @@ var feel: CameraFeel            # step 5: bob / landing dip / step smoothing
 var landings := 0
 var last_landing_speed := 0.0   # m/s downward at the last touch-down
 var last_step_rise := 0.0       # m, the last climbed step
-var caster := Caster.new()      # step 7: equipped staff/wand + cooldown
+var loadout := Loadout.new()    # step 10: staff + wand slots, each with its Caster
+## step 7: the Caster of the slot in hand (wieldable + cooldown).
+var caster: Caster:
+	get:
+		return loadout.caster()
+var viewmodel: Viewmodel        # step 10 (built in _ready under the Head)
 var bolts: SpellBolts           # where casts go (main.gd sets it; null = no bolts spawned)
 var mana: Mana                  # step 8: casting pool (caster.mana_spender)
 var not_enough_mana_cues := 0
@@ -87,6 +102,7 @@ var focus: Focus                # step 9: ADS FOV tween
 var spread: Spread              # step 9: accuracy cone + bloom (seeded)
 var last_hint := ""
 
+var _wheel := 0                 # queued mouse-wheel cycles (+ next / - prev)
 var _crouched_jump := false
 var _jumped_from_slide := false
 var _rising := false
@@ -106,7 +122,8 @@ func _init() -> void:
 	set_mana(Mana.from_tuning(tuning))
 	focus = Focus.from_tuning(tuning)
 	spread = Spread.from_tuning(tuning)
-	caster.out_of_mana.connect(_on_out_of_mana)
+	for c in loadout.casters:
+		c.out_of_mana.connect(_on_out_of_mana)
 
 func _ready() -> void:
 	if tuning == null:
@@ -130,16 +147,30 @@ func _ready() -> void:
 	focus = Focus.from_tuning(tuning)
 	spread = Spread.from_tuning(tuning)
 	camera.fov = focus.fov
+	loadout.swap_seconds = tuning.swap_seconds
+	viewmodel = Viewmodel.new()
+	viewmodel.fov = tuning.viewmodel_fov
+	head.add_child(viewmodel)
+	if input_enabled and DisplayServer.get_name() != "headless":
+		viewmodel.enable_render(camera)
 	eye_height = tuning.standing_eye
 	head.position = Vector3(0.0, eye_height, 0.0)
 	set_look(rotation.y, 0.0)
 	if input_enabled and DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
-## Uses `m` as the mana pool and plugs it into the caster.
+## Uses `m` as the mana pool and plugs it into every slot's caster (one shared pool).
 func set_mana(m: Mana) -> void:
 	mana = m
-	caster.mana_spender = mana.spend
+	for c in loadout.casters:
+		c.mana_spender = mana.spend
+
+## Puts a staff/wand into its slot (Loadout.equip); with empty hands it is drawn at once.
+func equip(w: WieldableInstance) -> int:
+	var slot := loadout.equip(w)
+	if viewmodel != null:
+		viewmodel.show_wieldable(caster.wieldable)
+	return slot
 
 func _on_out_of_mana(_cost: float) -> void:
 	not_enough_mana_cues += 1
@@ -152,6 +183,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	var mm := event as InputEventMouseMotion
 	if mm and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		add_look(mm.relative.x, mm.relative.y)
+	elif event.is_action_pressed(&"quickslot_next_wieldable"):
+		_wheel += 1   # wheel clicks press + release in one frame: queue them for the tick
+	elif event.is_action_pressed(&"quickslot_prev_wieldable"):
+		_wheel -= 1
 	elif event.is_action_pressed(&"ui_cancel"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	elif event is InputEventMouseButton and event.pressed:
@@ -167,7 +202,13 @@ func set_spread_seed(s: int) -> void:
 
 func _physics_process(delta: float) -> void:
 	if input_enabled:
-		tick(PlayerInput.from_input(), delta)
+		var input := PlayerInput.from_input()
+		if _wheel > 0:
+			input.pressed[&"quickslot_next_wieldable"] = true
+		elif _wheel < 0:
+			input.pressed[&"quickslot_prev_wieldable"] = true
+		_wheel = 0
+		tick(input, delta)
 
 ## Places the feet at `feet`, facing `yaw_rad` (pitch 0), at rest.
 func spawn(feet: Vector3, yaw_rad: float) -> void:
@@ -371,9 +412,22 @@ func tick(input: PlayerInput, dt: float) -> void:
 	var o := feel.offset()
 	head.position = Vector3(o.x, eye_height + o.y, 0.0)
 
+	# Loadout (step 10): slot_1 staff / slot_2 wand / wheel cycle start a 0.4 s draw;
+	# holstered slots keep cooling down.
+	var started := false
+	if input.was_pressed(&"slot_1"):
+		started = loadout.select(Loadout.Slot.STAFF)
+	elif input.was_pressed(&"slot_2"):
+		started = loadout.select(Loadout.Slot.WAND)
+	elif input.was_pressed(&"quickslot_next_wieldable"):
+		started = loadout.cycle(1)
+	elif input.was_pressed(&"quickslot_prev_wieldable"):
+		started = loadout.cycle(-1)
+	loadout.tick(dt, started)
 	# Mana regen (step 8) before the cast, so a pool back at the cost casts this tick.
 	mana.tick(dt)
-	# Focus (step 9): action_secondary held with a wieldable; costs no mana.
+	# Focus (step 9): action_secondary held with a wieldable; costs no mana. A swap while
+	# focused retargets to the drawn slot's type FOV.
 	focus.tick(input.down(&"action_secondary"), caster.wieldable, dt)
 	camera.fov = focus.fov
 	# Casting (step 7): semi-auto on the press, from where the eye is after this tick.
@@ -382,11 +436,23 @@ func tick(input: PlayerInput, dt: float) -> void:
 	spread.tick(dt)
 	var fire_pressed := input.was_pressed(&"action_primary")
 	var fire_held := input.down(&"action_primary")
-	var a := aim()
-	if caster.wieldable != null and (fire_pressed or (caster.hold_to_repeat and fire_held)):
-		a = spread.apply(a, caster.wieldable.accuracy(), spread_stance())
-	if caster.tick(fire_pressed, fire_held, dt, a, bolts):
-		spread.on_cast()
+	var w := caster.wieldable
+	if loadout.swapping():   # drawing: no cast attempt at all (Cogito is_changing_wieldables)
+		loadout.tick_swap(fire_pressed, dt)
+	else:
+		var a := aim()
+		if w != null and (fire_pressed or (caster.hold_to_repeat and fire_held)):
+			a = spread.apply(a, w.accuracy(), spread_stance())
+		if viewmodel != null and w != null and viewmodel.is_inside_tree():
+			viewmodel.update_pose(w, focus.amount(), loadout.draw_progress(), feel.recoil_offset())
+			a.with_visual_origin(viewmodel.cast_point_position())
+		if caster.tick(fire_pressed, fire_held, dt, a, bolts):
+			spread.on_cast()
+			var is_wand := w.type() == WieldableDef.Type.WAND
+			feel.add_recoil(tuning.recoil_wand if is_wand else tuning.recoil_staff)
+			feel.add_shake(tuning.shake_wand if is_wand else tuning.shake_staff)
+	if viewmodel != null:
+		viewmodel.update_pose(caster.wieldable, focus.amount(), loadout.draw_progress(), feel.recoil_offset())
 
 func _set_capsule(h: float) -> void:
 	_shape.height = h

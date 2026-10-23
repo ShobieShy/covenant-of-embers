@@ -1,7 +1,7 @@
 class_name PlayerTuning
 extends Resource
 ## Movement/look numbers for scripts/player/player.gd (BUILD_PLAN steps 3-5, mana step 8,
-## focus/spread step 9).
+## focus/spread step 9, loadout/viewmodel/recoil step 10).
 ## Port of the archived C++ PlayerTuning + CharacterSettings (old step 14), which
 ## reinterpret Magewar's cogito_player scene overrides.
 
@@ -78,3 +78,16 @@ extends Resource
 @export var bloom_per_cast_deg := 1.0
 @export var bloom_max_deg := 4.0
 @export var bloom_recovery_seconds := 0.5 ## full bloom -> 0
+@export_group("Loadout")
+@export var swap_seconds := 0.4           ## staff <-> wand swap (24 ticks at 60 Hz; PLAN §30.1)
+@export var viewmodel_fov := 75.0         ## Cogito ViewmodelSpace viewmodel_fov (fixed while focusing)
+@export_group("Recoil + shake")
+@export var recoil_kick := 0.05           ## m the viewmodel kicks back toward the eye per full kick
+@export var recoil_rise := 0.012          ## m it lifts
+@export var recoil_seconds := 0.15        ## full kick -> rest
+@export var recoil_staff := 1.0           ## kick per cast (0..1)
+@export var recoil_wand := 0.6
+@export var shake_staff := 0.2            ## screen-shake trauma per staff cast (0..1)
+@export var shake_wand := 0.0
+@export var shake_max := 0.03             ## m camera offset at trauma 1 (offset = trauma^2 x max)
+@export var shake_decay := 2.0            ## trauma per second

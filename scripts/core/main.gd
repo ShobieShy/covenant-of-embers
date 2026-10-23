@@ -22,8 +22,10 @@ func _ready() -> void:
 	if start and player:
 		player.spawn(start.global_position, deg_to_rad(float(start.get_meta("yaw_deg", 0.0))))
 		# Step 7: the Apprentice Fire Staff in hand, bolts into the scene's SpellBolts.
+		# Step 10: the Swift Wind Wand in the wand slot (slot_2 / mouse wheel).
 		player.bolts = get_node_or_null("Bolts") as SpellBolts
-		player.caster.equip(WieldableInstance.load_base("apprentice_fire_staff"))
+		player.equip(WieldableInstance.load_base("apprentice_fire_staff"))
+		player.equip(WieldableInstance.load_base("swift_wind_wand"))
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])
@@ -46,6 +48,14 @@ func _process(delta: float) -> void:
 			print("[focus] fov %.1f, accuracy %.0f %%, hip cone %.2f deg, bloom %.2f deg" % [
 				player.focus.fov, player.accuracy(),
 				player.spread.cone_deg(player.accuracy(), player.spread_stance()), player.spread.bloom])
+			var lo := player.loadout
+			print("[loadout] in hand %s, staff %s, wand %s, %d swap(s), viewmodel %s at %s, overlay %s" % [
+				"wand" if lo.active == Loadout.Slot.WAND else "staff",
+				lo.wieldable(Loadout.Slot.STAFF).display_name() if lo.wieldable(Loadout.Slot.STAFF) else "empty",
+				lo.wieldable(Loadout.Slot.WAND).display_name() if lo.wieldable(Loadout.Slot.WAND) else "empty",
+				lo.swaps, "shown" if player.viewmodel.visible else "hidden",
+				player.viewmodel.model.position,
+				"on" if player.viewmodel.render_viewport else "off (headless)"])
 		get_tree().quit(0)
 
 func _physics_process(_delta: float) -> void:

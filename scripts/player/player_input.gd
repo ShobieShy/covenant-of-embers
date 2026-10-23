@@ -7,6 +7,7 @@ extends RefCounted
 const ACTIONS: Array[StringName] = [
 	&"forward", &"back", &"left", &"right", &"jump", &"action_primary", &"action_secondary",
 	&"sprint", &"dash", &"crouch", &"interact", &"slot_1", &"slot_2", &"slot_3", &"slot_4",
+	&"quickslot_prev_wieldable", &"quickslot_next_wieldable",
 ]
 
 var held: Dictionary = {}      # StringName -> true

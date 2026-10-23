@@ -16,8 +16,11 @@ extends Node3D
 ##
 ## Tracers: a short element-coloured line (ElementTable colour) behind each live bolt,
 ## interpolated between physics ticks, plus the last stretch of each impact for 0.2 s;
-## nothing is drawn within 0.6 m of the eye (it would fill the view). Step 10 moves the
-## visible start to the viewmodel's cast point.
+## nothing is drawn within 0.6 m of the eye (it would fill the view). Step 10: a spawn
+## with a visual origin (the viewmodel's cast point) draws its tracer from there instead:
+## the drawn point at distance x along the ray is ray(x) + (visual - origin) x
+## max(0, 1 - x / CONVERGE), so the tracer leaves the staff tip and merges into the real
+## ray (which stays at the eye, where the crosshair is) by CONVERGE m. No SKIP_NEAR then.
 ##
 ## Magewar reference (spell_projectile.tscn/.gd, wieldable_staff.gd; reinterpreted, not
 ## copied): Magewar fires a 0.1 m RigidBody3D sphere with gravity and an 8 s lifespan from
@@ -30,6 +33,7 @@ signal bolt_hit(hit: Hit)
 const TAIL := 2.5            ## m of tracer behind the bolt head
 const SKIP_NEAR := 0.6       ## m in front of the eye never drawn
 const IMPACT_LINGER := 0.2   ## s an impact's tracer stays
+const CONVERGE := 8.0        ## m: a visual origin's offset fades out over this (step 10)
 
 ## What a cast launches.
 class Spawn:
@@ -42,6 +46,8 @@ class Spawn:
 	var damage := 0.0                         ## wieldable damage, resolved on impact
 	var exclude: Array[RID] = []              ## never hit (the caster)
 	var collision_mask := 0xFFFFFFFF
+	var has_visual_origin := false            ## step 10: tracer drawn from visual_origin
+	var visual_origin := Vector3.ZERO
 
 class Bolt:
 	extends RefCounted
@@ -187,14 +193,22 @@ func _color(e: ElementTable.Element) -> Color:
 	var t := elements if elements != null else ElementTable.load_default()
 	return t.color(e) if t != null else Color.WHITE
 
-## Tracer from max(SKIP_NEAR, d - TAIL) to d metres along a bolt's ray; null when empty.
+## Where the tracer of `s` is drawn at distance x along its ray (step 10 visual origin).
+static func drawn_point(s: Spawn, x: float) -> Vector3:
+	var p := s.origin + s.direction * x
+	if s.has_visual_origin:
+		p += (s.visual_origin - s.origin) * maxf(0.0, 1.0 - x / CONVERGE)
+	return p
+
+## Tracer from max(SKIP_NEAR, d - TAIL) (0 with a visual origin) to d metres along a bolt's
+## ray; null when empty.
 func _tracer(s: Spawn, d: float) -> Line:
-	var from := maxf(SKIP_NEAR, d - TAIL)
+	var from := maxf(0.0 if s.has_visual_origin else SKIP_NEAR, d - TAIL)
 	if d <= from:
 		return null
 	var l := Line.new()
-	l.a = s.origin + s.direction * from
-	l.b = s.origin + s.direction * d
+	l.a = drawn_point(s, from)
+	l.b = drawn_point(s, d)
 	l.color = _color(s.element)
 	return l
 

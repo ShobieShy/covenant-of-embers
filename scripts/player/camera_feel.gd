@@ -20,7 +20,13 @@ extends RefCounted
 ## (Cogito also snaps down steps; our capsule rolls off and falls instead, which is
 ## already smooth). Not motion but smoothing, so it stays on under
 ## reduced motion.
-## Reduced motion (PLAN accessibility; persisted by step 32's settings): no bob, no dip.
+## Recoil + screen shake (step 10): a cast kicks the viewmodel (recoil 0..1 -> back
+## recoil_kick m toward the eye and up recoil_rise m, linear back to rest in recoil_seconds)
+## and may add screen-shake trauma (0..1, decays shake_decay/s; camera offset = trauma^2 x
+## shake_max m along two fixed-rate sines, deterministic per tick). Both are offsets only:
+## aim (Player.aim(), the plain eye) never moves.
+## Reduced motion (PLAN accessibility; persisted by step 32's settings): no bob, no dip, no
+## recoil kick, no shake (add_recoil/add_shake are ignored and current values zeroed).
 
 enum Gait { WALK, SPRINT, CROUCH }
 
@@ -45,6 +51,16 @@ var dip := 0.0              ## <= 0
 var dip_depth := 0.0        ## depth of the current/last dip
 var step := 0.0             ## step smoothing offset (y)
 var landings := 0           ## dips started
+var recoil := 0.0           ## 0..1 viewmodel kick (step 10)
+var recoil_kick := 0.05
+var recoil_rise := 0.012
+var recoil_seconds := 0.15
+var shake := 0.0            ## 0..1 trauma (step 10)
+var shake_max := 0.03
+var shake_decay := 2.0
+var shake_offset := Vector2.ZERO   ## camera offset from the shake (x right, y up)
+var recoils := 0
+var _shake_time := 0.0
 var _phase := 0.0
 var _dip_time := -1.0       ## seconds since the landing, < 0 = no dip running
 
@@ -63,11 +79,33 @@ static func from_tuning(t: PlayerTuning) -> CameraFeel:
 	f.dip_down_time = t.land_dip_down_time
 	f.dip_total_time = t.land_dip_total_time
 	f.step_lerp = t.step_camera_lerp
+	f.recoil_kick = t.recoil_kick
+	f.recoil_rise = t.recoil_rise
+	f.recoil_seconds = t.recoil_seconds
+	f.shake_max = t.shake_max
+	f.shake_decay = t.shake_decay
 	return f
 
-## Eye offset after the last tick: x along the view's right, y up (bob + dip + step).
+## Eye offset after the last tick: x along the view's right, y up (bob + shake + dip + step).
 func offset() -> Vector2:
-	return bob + Vector2(0.0, dip + step)
+	return bob + shake_offset + Vector2(0.0, dip + step)
+
+## Viewmodel recoil offset in view space (x right, y up, +z back toward the eye).
+func recoil_offset() -> Vector3:
+	return Vector3(0.0, recoil_rise * recoil, recoil_kick * recoil)
+
+## A cast's kick (0..1, added, capped at 1); ignored under reduced motion.
+func add_recoil(amount: float) -> void:
+	if reduced_motion or amount <= 0.0:
+		return
+	recoil = minf(1.0, recoil + amount)
+	recoils += 1
+
+## Screen-shake trauma (0..1, added, capped at 1); ignored under reduced motion.
+func add_shake(trauma: float) -> void:
+	if reduced_motion or trauma <= 0.0:
+		return
+	shake = minf(1.0, shake + trauma)
 
 func set_reduced_motion(on: bool) -> void:
 	reduced_motion = on
@@ -75,6 +113,9 @@ func set_reduced_motion(on: bool) -> void:
 		bob = Vector2.ZERO
 		dip = 0.0
 		_dip_time = -1.0
+		recoil = 0.0
+		shake = 0.0
+		shake_offset = Vector2.ZERO
 
 func set_bob_scale(s: float) -> void:
 	bob_scale = maxf(0.0, s)
@@ -94,7 +135,17 @@ func tick(bobbing: bool, gait: Gait, landed: bool, landing_speed: float, dt: flo
 		bob = Vector2.ZERO
 		dip = 0.0
 		_dip_time = -1.0
+		recoil = 0.0
+		shake = 0.0
+		shake_offset = Vector2.ZERO
 		return
+	recoil = move_toward(recoil, 0.0, dt / recoil_seconds) if recoil_seconds > 0.0 else 0.0
+	if recoil < 1e-9:
+		recoil = 0.0
+	shake = move_toward(shake, 0.0, dt * shake_decay)
+	_shake_time += dt
+	var amp := shake * shake * shake_max
+	shake_offset = Vector2(sin(_shake_time * 41.0), sin(_shake_time * 53.0 + 1.3)) * amp
 
 	var target := Vector2.ZERO
 	if bobbing and bob_scale > 0.0:
