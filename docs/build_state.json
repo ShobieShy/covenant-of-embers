@@ -2,7 +2,7 @@
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 17,
+  "next_step": 18,
   "total_steps": 56,
   "steps_done": [
     1,
@@ -20,9 +20,10 @@
     13,
     14,
     15,
-    16
+    16,
+    17
   ],
-  "last_commit": "296c662",
+  "last_commit": "b21234c",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -160,6 +161,16 @@
       "magewar": "No dash exists in ~/game/magewar or cogito (new design). Head bob follows cogito_player.gd wiggle numbers (0.03/12, 0.05/16, 0.08/8, lerp 10) but the side sway is centred (dropped +0.5 bias) and bobScale scales every gait; landing uses landing_threshold 2..8 and player_eyes.tres 0/0.1/0.3 s timing as a positional dip instead of 3° pitch/-2° roll; the <= -7.5 crouch-roll is dropped.",
       "plan_changes": "PLAN §30.8: charges recharge 1.5 s each, one at a time. BUILD_PLAN 24: player damage ignored while PlayerController::invulnerable(). 44: persist reduced motion + head-bob strength, Dash default Q. 48: dash verb = Dash::dashes()/dashing(), Sandals 3rd charge = Dash::setBonusCharges().",
       "bug_fixes": "Landing detection uses the tick-start ground state (the post-update state missed every landing); i-frames counted per whole tick so 0.1 s = 6 ticks at 60 Hz."
+    },
+    {
+      "time": "2026-10-23T00:13-05:00",
+      "step": 17,
+      "type": "build",
+      "commit": "b21234c",
+      "summary": "Spell data model: staffs, wands + Arcane bolt. game/magic/wieldable: WieldableDef/WieldableInstance (damage = base x rarity mult: Earthward 17.5, Swift Wind 7.5; cooldown floored 0.1 s), Element (magic_element.gd colours) and Rarity (x1/1.25/1.5/2/2.75/3) enums; data/magic/wieldables.toml with Magewar's 4 bases (Fire staff 10/5/0.40 s/30 m/s/50 m, Earthward 14/6/0.55/22/45, Arcane wand 7/3/0.25/40/35, Swift Wind 6/2.5/0.18/55/40), strict parser (13 bad files rejected with file:line). game/data/toml_read: strict TOML readers moved out of level.cpp. PhysicsWorld::castRay(origin, delta, ignore) via JPH::IgnoreSingleBodyFilter. game/magic/projectile: bolts ray-swept per tick (speed*dt, clipped to range), hit distance/time/tick, fizzle at range, element-coloured tracers. game/magic/casting: Caster semi-auto on press, cooldown then mana hook, playerAim from the eye ignoring the caster's innerBody. covenant: --wieldables, Weapon1-4 pick a base, [cast] logs. Evidence (test_casting): target 20 m from the eye hit at 20.000 m for all 4 bases in 0.6667/0.9091/0.5000/0.3636 s, ticks 40/55/31/22 vs 40/55/30/22 (+-1); 500 m/s bolt stops on a 5 cm wall at 37.300 m; Arcane bolt fizzles after 53 ticks; Swift Wind spam at 30/60/144 Hz never casts twice within 0.18 s (60 Hz: 17 casts in 3 s, min gap 11 ticks = 0.1833 s); unfiltered eye ray hits own capsule at fraction 0, filtered casts in 26 directions + 11 crouch/strafe casts give 0 self-hits while another player 6 m ahead is hit at 5.711 m. --input-script: 1 Fire staff cast hit the north wall at 26.87 m after 0.896 s (tick 54), PASS. Debug ctest 25/25 incl. window, asan 22/22 -LE window, warning-free; pgrep covenant empty.",
+      "magewar": "Followed directly (2026-10-22 approval): bases, stats, speeds and ranges from resources/items/staffs/starter_fire_staff.tres etc. and wands/*.tres; rarity multipliers from item_rarity.gd; element colours from magic_element.gd; 0.1 s fire-rate floor; semi-auto cast on press with the cooldown checked before mana is spent. Reinterpreted: the 0.1 m RigidBody sphere with gravity and 8 s lifespan becomes a straight ray-swept bolt that fizzles at the wieldable's range (Magewar's wieldable_range was unused); origin is the eye along the view (Magewar spawns at the CastPoint aimed at the camera hit -> step 21); cooldown counted per fixed tick instead of per frame; one shared cooldown across swaps (Magewar is per node; revisit at step 21).",
+      "plan_changes": "PLAN §30.1: bolt note (ray, range fizzle, semi-auto + hold option later). BUILD_PLAN 18: mana via Caster::setManaSpender. 19: spread on CastAim::direction. 20: move Element names/colours to game/combat/element + elements.toml, damage() becomes the formula, port test_casting to doctest. 21: loadout replaces Weapon1-4 debug pick, CastPoint tracer, per-slot cooldown decision. 22: ProjectileHit -> enemy lookup, consider a 0.1 m castSphere. 26: Rarity table to rarities.toml. 29: extend wieldables.toml instead of a second table. 44: hold-to-cast toggle via Caster::setHoldToRepeat.",
+      "bug_fixes": "No earlier-step bugs found. Found and handled: an unfiltered PhysicsWorld::castRay from the eye hits the player's own inner capsule at fraction 0 (documented; new ignore-body overload). Refactor: level.cpp's TOML helpers moved to game/data/toml_read (test_level unchanged and passing)."
     }
   ]
 }
