@@ -3,16 +3,17 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 6,
+  "next_step": 7,
   "total_steps": 42,
   "steps_done": [
     1,
     2,
     3,
     4,
-    5
+    5,
+    6
   ],
-  "last_commit": "5e4514d",
+  "last_commit": "09552e4",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -53,6 +54,14 @@
       "summary": "Dash + camera feel ported: scripts/player/dash.gd (Dash RefCounted: 6 m in 0.15 s at 40 m/s, 2 charges recharging one at a time every 1.5 s, 25 Breath via breath.spend, 0.1 s i-frames, one air dash per jump, set_bonus_charges), scripts/player/camera_feel.gd (CameraFeel: Cogito wiggle bob walk 0.03/12, sprint 0.05/16, crouch 0.08/8 centred, landing dip 0.12 m x clamp((v-2)/6), step-up smoothing at 2.5/s, reduced motion zeroes bob+dip, bob scale). Player: dash on press edge along move keys or look, ends slide, blocks slides, walls stop it; landings/last_landing_speed; Head = eye + feel offset; camera_position/camera_offset/dashing/invulnerable/set_reduced_motion. PlayerTuning Dash + Camera feel groups. run_tests.sh green: 50 unit tests (9 new test_dash: 6.0000 m in 9 ticks, 3rd refused, recharge 90/180, i-frames 6/15 ticks at 60/144 Hz, wall stop at -2.700, one air dash, Breath refusal, dash out of slide; 6 new test_camera_feel: bob amplitudes, dip 0.06/0.12, reduced motion 0, step up eased <=0.015 m/tick), 2 s smoke 120 ticks, asset lint OK.",
       "plan_changes": "Magewar check: no dash in Magewar/Cogito (our verb); bob numbers = Cogito WIGGLE, +0.5 x sway bias dropped; Cogito HEADBOBBLE is int-typed (0.1/0.7 likely truncate) and scales walk/sprint only -> our float bob_scale, step 32; Cogito landing anim/roll not ported (single dip from 2 m/s); step-down smoothing not needed (capsule rolls off, <=0.038 m/tick). Refined steps 7 (casts from eye_position, not bobbed camera), 10 (viewmodel follows Head; recoil/shake via CameraFeel, zeroed by reduced motion), 13 (hits ignored while player.invulnerable()), 19 (no Magewar dash stat), 29 (dash charge pips), 32 (reduced motion + head bob strength settings), 36 (Sandals +1 dash charge via set_bonus_charges), 37 (landing sound from landings/last_landing_speed, dash sound). No bugs found in steps 1-4.",
       "commit": "5e4514d"
+    },
+    {
+      "time": "2026-10-23T12:25-05:00",
+      "step": 6,
+      "type": "build",
+      "summary": "Elements + damage formula ported: scripts/combat/element_table.gd (ElementTable Resource: Element enum in Magewar order, ARCANE = Magewar NONE; strong 1.5 / weak 0.5; Array[ElementDef] rows; effectiveness() with same/Arcane x1.0 in code and a cached 7x7 chart from the data; rebuild(); validate() with the C++ loader's checks; load_default()), scripts/combat/element_def.gd, resources/magic/elements.tres (Magewar names/colours, Fire>Earth>Air>Water>Fire, Light<->Dark), scripts/combat/damage.gd (Damage: wieldable_damage = base x rarity + sum part bonuses; resolve_hit x effectiveness x (1 - resist capped 0.6) x weak point 2; Target/Result with strong()/weak()). run_tests.sh green: 61 unit tests (11 new test_damage: 49/49 = Magewar get_effectiveness, 6 strong / 4 weak, names/colours = Magewar + PLAN hex, .tres = data/magic/elements.toml, 14 bad tables rejected, patch rebuild, rarity x1.0-x3.0 + part bonuses, resist 0.8/0.9 -> 0.6, weak point x2, Fire vs Earth 15, worked example 25.2000 and 7.2), 2 s smoke 120 ticks, asset lint OK.",
+      "plan_changes": "Magewar check: chart, multipliers, enum order, names, colours and get_final_damage match. Mismatches: Magewar get_elemental_resistance (clamp 0.9) is never called, so its resistances do nothing -> ours apply (steps 13, 19; cap 0.6 kept); Magewar enemies have no resistances or weak points (our additions, step 11); Light heal / Dark corrupt on hit reinterpreted as Redemption (outside slice). Refined steps 7 (Element enum, Damage.wieldable_damage, tracer colour, final damage 10/17.5/7/7.5 test, temporary rarity lookup), 11 (Damage.Target per enemy, Super Effective text, LevelToml inline tables for training_dummies.toml, Swift Wind vs Water dummy 8.4375), 13 (player hits through resolve_hit, 0.3 Earth resist test), 15 (Rarity.multiplier replaces step 7 lookup), 19 (Magewar-style resist sum stored uncapped, capped in Damage), 21 (ElementTable patches + rebuild/validate). data/magic/elements.toml kept as cross-check source. No bugs found in steps 1-5.",
+      "commit": "09552e4"
     }
   ]
 }
