@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WieldableDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "earthward_battlestaff"
+display_name = "Earthward Battlestaff"
+type = 0
+base_rarity = "uncommon"
+element = 3
+damage = 14.0
+mana_cost = 6.0
+cooldown = 0.55
+projectile_speed = 22.0
+range_m = 45.0

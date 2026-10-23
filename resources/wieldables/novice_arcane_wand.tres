@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WieldableDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "novice_arcane_wand"
+display_name = "Novice Arcane Wand"
+type = 1
+base_rarity = "basic"
+element = 0
+damage = 7.0
+mana_cost = 3.0
+cooldown = 0.25
+projectile_speed = 40.0
+range_m = 35.0

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WieldableDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "swift_wind_wand"
+display_name = "Swift Wind Wand"
+type = 1
+base_rarity = "uncommon"
+element = 4
+damage = 6.0
+mana_cost = 2.5
+cooldown = 0.18
+projectile_speed = 55.0
+range_m = 40.0

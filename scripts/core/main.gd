@@ -21,6 +21,9 @@ func _ready() -> void:
 	var player := get_node_or_null("Player") as Player
 	if start and player:
 		player.spawn(start.global_position, deg_to_rad(float(start.get_meta("yaw_deg", 0.0))))
+		# Step 7: the Apprentice Fire Staff in hand, bolts into the scene's SpellBolts.
+		player.bolts = get_node_or_null("Bolts") as SpellBolts
+		player.caster.equip(WieldableInstance.load_base("apprentice_fire_staff"))
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])
@@ -35,6 +38,10 @@ func _process(delta: float) -> void:
 			print("[player] feet %s, Breath %.1f/%.0f, %d jump(s), %d slide(s), %d dash(es)" % [
 				player.global_position, player.breath.value, player.breath.max_value(),
 				player.jumps, player.slides, player.dash.dashes])
+			var bolts := player.bolts
+			print("[cast] %s, %d cast(s), %d bolt(s) hit, %d fizzled" % [
+				player.caster.wieldable.display_name() if player.caster.wieldable else "empty hands",
+				player.caster.casts, bolts.hits if bolts else 0, bolts.fizzled if bolts else 0])
 		get_tree().quit(0)
 
 func _physics_process(_delta: float) -> void:

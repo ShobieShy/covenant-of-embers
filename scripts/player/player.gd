@@ -35,6 +35,9 @@ extends CharacterBody3D
 ##    step_height_camera_lerp 2.5 after a climbed step);
 ##    set_reduced_motion() turns bob and dip off. eye_position() stays the plain eye
 ##    (casts aim from it), camera_position() is where the camera is.
+##  * Casting (step 7, scripts/magic/caster.gd): after the move, an action_primary press
+##    casts the equipped wieldable (caster.wieldable) into `bolts` (SpellBolts) from
+##    aim(): the plain eye along yaw/pitch, excluding this body.
 ## In game _physics_process feeds PlayerInput.from_input(); tests call tick() directly.
 
 const CHARACTER_LAYER := 2   # physics layer "character" (bit 2)
@@ -62,6 +65,8 @@ var feel: CameraFeel            # step 5: bob / landing dip / step smoothing
 var landings := 0
 var last_landing_speed := 0.0   # m/s downward at the last touch-down
 var last_step_rise := 0.0       # m, the last climbed step
+var caster := Caster.new()      # step 7: equipped staff/wand + cooldown
+var bolts: SpellBolts           # where casts go (main.gd sets it; null = no bolts spawned)
 
 var _crouched_jump := false
 var _jumped_from_slide := false
@@ -159,6 +164,15 @@ func camera_position() -> Vector3:
 ## Camera feel offset of the Head from the plain eye (x right, y up).
 func camera_offset() -> Vector2:
 	return feel.offset()
+
+## Look direction (yaw, pitch): Head basis forward.
+func look_direction() -> Vector3:
+	return Basis.from_euler(Vector3(pitch, yaw, 0.0)) * Vector3.FORWARD
+
+## Cast aim: the plain eye (not the bobbed camera) along the look, skipping this body.
+func aim() -> Caster.Aim:
+	var ex: Array[RID] = [get_rid()]
+	return Caster.Aim.make(eye_position(), look_direction(), ex)
 
 func dashing() -> bool:
 	return dash.active()
@@ -301,6 +315,9 @@ func tick(input: PlayerInput, dt: float) -> void:
 	feel.tick(grounded and moving and not sliding() and dash_cover <= 0.0, gait, landed, last_landing_speed, dt)
 	var o := feel.offset()
 	head.position = Vector3(o.x, eye_height + o.y, 0.0)
+
+	# Casting (step 7): semi-auto on the press, from where the eye is after this tick.
+	caster.tick(input.was_pressed(&"action_primary"), input.down(&"action_primary"), dt, aim(), bolts)
 
 func _set_capsule(h: float) -> void:
 	_shape.height = h
