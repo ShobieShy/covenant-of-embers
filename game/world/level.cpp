@@ -1,79 +1,26 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "game/world/level.hpp"
 
-#define TOML_EXCEPTIONS 0
-#include <toml++/toml.hpp>
+#include "game/data/toml_read.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <algorithm>
 #include <array>
 #include <cmath>
-#include <fstream>
 #include <limits>
-#include <sstream>
 
 namespace coe::game {
 namespace {
 constexpr std::array<const char*, kBoxKindCount> kKindNames = {"ground", "wall", "ramp", "crate", "heap", "platform"};
 
-struct Ctx {
-    std::string_view source;
-    std::string err;
-    bool fail(const toml::node* at, const std::string& msg) {
-        if (!err.empty()) return false;
-        std::ostringstream o;
-        o << source;
-        if (at && at->source().begin) o << ':' << at->source().begin.line;
-        o << ": " << msg;
-        err = o.str();
-        return false;
-    }
-};
-
-bool readFloat(Ctx& c, const toml::node* n, const std::string& what, float& out) {
-    if (!n || !(n->is_floating_point() || n->is_integer())) return c.fail(n, what + " must be a number");
-    const double v = n->is_integer() ? double(n->as_integer()->get()) : n->as_floating_point()->get();
-    if (!std::isfinite(v)) return c.fail(n, what + " must be finite");
-    out = float(v);
-    return true;
-}
-
-bool readVec3(Ctx& c, const toml::node* n, const std::string& what, glm::vec3& out) {
-    const toml::array* a = n ? n->as_array() : nullptr;
-    if (!a || a->size() != 3) return c.fail(n, what + " must be an array of 3 numbers");
-    for (int i = 0; i < 3; ++i)
-        if (!readFloat(c, a->get(size_t(i)), what, out[i])) return false;
-    return true;
-}
-
-bool readColor(Ctx& c, const toml::node* n, const std::string& what, glm::vec3& out) {
-    if (!readVec3(c, n, what, out)) return false;
-    for (int i = 0; i < 3; ++i)
-        if (out[i] < 0.0f || out[i] > 1.0f) return c.fail(n, what + " components must be in [0, 1]");
-    return true;
-}
-
-bool readString(Ctx& c, const toml::node* n, const std::string& what, std::string& out) {
-    if (!n || !n->is_string()) return c.fail(n, what + " must be a string");
-    out = n->as_string()->get();
-    if (out.empty()) return c.fail(n, what + " must not be empty");
-    return true;
-}
-
-// Rejects keys outside `allowed` so typos ("colour") fail instead of being ignored.
-bool onlyKeys(Ctx& c, const toml::table& t, std::initializer_list<std::string_view> allowed, const std::string& where) {
-    for (auto&& [k, v] : t)
-        if (std::find(allowed.begin(), allowed.end(), k.str()) == allowed.end())
-            return c.fail(&v, where + ": unknown key '" + std::string(k.str()) + "'");
-    return true;
-}
-
-const toml::table* needTable(Ctx& c, const toml::table& root, std::string_view key) {
-    const toml::node* n = root.get(key);
-    if (!n || !n->is_table()) { c.fail(n ? n : &root, "missing [" + std::string(key) + "] table"); return nullptr; }
-    return n->as_table();
-}
+using data::Ctx;
+using data::needTable;
+using data::onlyKeys;
+using data::readColor;
+using data::readFloat;
+using data::readString;
+using data::readVec3;
 
 bool parseBox(Ctx& c, const toml::table& t, size_t index, LevelBox& b) {
     const std::string where = "box #" + std::to_string(index + 1);
@@ -140,13 +87,8 @@ int Level::boxAtSurface(const glm::vec3& p, float tolerance) const {
 std::string parseLevel(std::string_view text, std::string_view sourceName, Level& out) {
     out = {};
     Ctx c{sourceName, {}};
-    toml::parse_result parsed = toml::parse(text, sourceName);
-    if (!parsed) {
-        std::ostringstream o;
-        o << sourceName << ':' << parsed.error().source().begin.line << ": TOML: " << parsed.error().description();
-        return o.str();
-    }
-    const toml::table& root = parsed.table();
+    toml::table root;
+    if (!data::parseToml(c, text, root)) return c.err;
     if (!onlyKeys(c, root, {"level", "environment", "sun", "player_start", "box"}, "top level")) return c.err;
 
     const toml::table* level = needTable(c, root, "level");
@@ -179,12 +121,8 @@ std::string parseLevel(std::string_view text, std::string_view sourceName, Level
         !readFloat(c, start->get("yaw_deg"), "player_start yaw_deg", out.playerStart.yawDeg))
         return c.err;
 
-    const toml::node* boxesNode = root.get("box");
-    const toml::array* boxes = boxesNode ? boxesNode->as_array() : nullptr;
-    if (!boxes || boxes->empty() || !boxes->is_array_of_tables()) {
-        c.fail(boxesNode ? boxesNode : &root, "need at least one [[box]]");
-        return c.err;
-    }
+    const toml::array* boxes = data::needTableArray(c, root, "box");
+    if (!boxes) return c.err;
     for (size_t i = 0; i < boxes->size(); ++i) {
         LevelBox b;
         if (!parseBox(c, *boxes->get(i)->as_table(), i, b)) return c.err;
@@ -201,11 +139,9 @@ std::string parseLevel(std::string_view text, std::string_view sourceName, Level
 }
 
 std::string loadLevel(const std::filesystem::path& path, Level& out) {
-    std::ifstream f(path, std::ios::binary);
-    if (!f) return path.string() + ": cannot open level file";
-    std::ostringstream ss;
-    ss << f.rdbuf();
-    return parseLevel(ss.str(), path.filename().string(), out);
+    std::string text;
+    if (std::string err = data::readTextFile(path, "level file", text); !err.empty()) return err;
+    return parseLevel(text, path.filename().string(), out);
 }
 
 assets::MeshData makeUnitCube() {

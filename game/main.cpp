@@ -13,9 +13,11 @@
 //   covenant --input-debug   print action press/release edges per fixed tick + mouse look
 //   covenant --input-script  push a scripted sequence of synthetic SDL input events and
 //                            fail unless every scripted press reached exactly one tick
-//                            (level mode: and the player walked forward and jumped)
+//                            (level mode: and the player walked forward, jumped, dashed
+//                            and cast exactly one bolt that did not fizzle)
 //   covenant --crate         level mode: also drop step 13's tumbling demo crate (a push target)
 //   covenant --reduced-motion  level mode: no head bob / landing dip (accessibility)
+//   covenant --wieldables FILE  staff/wand bases (default: data/magic/wieldables.toml)
 //
 // Loop (PLAN §23): simulation advances in fixed 60 Hz ticks (engine/core/fixed_timestep),
 // rendering runs once per displayed frame with state interpolated by alpha.
@@ -31,6 +33,11 @@
 // level's [player_start]; each tick it walks/jumps/crouches, and (step 15) sprints on
 // Breath and slides, (step 16) dashes, from the TickInput (before the world steps), mouse
 // look turns it per frame, the camera sits at its eye (+ head bob / landing dip).
+// Casting (step 17): Magewar staffs/wands from data/magic/wieldables.toml (game/magic);
+// Weapon1-4 pick one of the bases (debug until step 21's loadout), Fire casts a bolt
+// from the eye along the view (after the world steps) on the wieldable's cooldown; bolts
+// are ray-swept per tick skipping the player's own capsule and drawn as element-coloured
+// debug lines.
 #include "engine/core/clock.hpp"
 #include "engine/core/fixed_timestep.hpp"
 #include "engine/input/input.hpp"
@@ -39,6 +46,9 @@
 #include "engine/assets/manifest.hpp"
 #include "engine/physics/physics.hpp"
 #include "game/core/tumble_demo.hpp"
+#include "game/magic/casting.hpp"
+#include "game/magic/projectile.hpp"
+#include "game/magic/wieldable.hpp"
 #include "game/player/player_controller.hpp"
 #include "game/world/headless_checks.hpp"
 #include "game/world/level.hpp"
@@ -56,6 +66,7 @@
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -140,6 +151,30 @@ bool loadModel(const std::string& cookedDir, const std::string& source, coe::ass
     return true;
 }
 
+bool loadWieldablesFile(const std::string& path, coe::game::WieldableTable& table) {
+    const std::string err = coe::game::loadWieldables(path, table);
+    if (!err.empty()) { std::fprintf(stderr, "[magic] %s\n", err.c_str()); return false; }
+    std::string names;
+    for (const coe::game::WieldableDef& d : table.defs)
+        names += std::string(names.empty() ? "" : ", ") + d.name + " (" + coe::game::wieldableTypeName(d.type) + ", " +
+                 coe::game::elementName(d.element) + ")";
+    std::printf("[magic] %zu wieldables: %s\n", table.defs.size(), names.c_str());
+    return true;
+}
+
+// A debug line as the shared unit cube stretched along a -> b (step 17 bolt tracers).
+constexpr float kDebugLineWidth = 0.04f;
+glm::mat4 lineModel(const glm::vec3& a, const glm::vec3& b) {
+    const glm::vec3 d = b - a;
+    const float len = glm::length(d);
+    const glm::vec3 z = len > 1e-6f ? d / len : glm::vec3(0, 0, 1);
+    const glm::vec3 up = std::abs(z.y) < 0.99f ? glm::vec3(0, 1, 0) : glm::vec3(1, 0, 0);
+    const glm::vec3 x = glm::normalize(glm::cross(up, z));
+    const glm::vec3 y = glm::cross(z, x);
+    glm::mat4 m(glm::vec4(x, 0), glm::vec4(y, 0), glm::vec4(z, 0), glm::vec4((a + b) * 0.5f, 1));
+    return glm::scale(m, glm::vec3(kDebugLineWidth, kDebugLineWidth, len));
+}
+
 // --input-script: synthetic events pushed through SDL's real queue at given render
 // frames. Taps land inside one frame (down+up), so whether that frame runs 0, 1 or
 // 2+ ticks, each must reach exactly one tick as a press.
@@ -222,6 +257,7 @@ int main(int argc, char** argv) {
     bool modelView = false;   // --model: step 11's single-model view instead of the level
     std::string model = kDefaultModel, cookedDir = COE_COOKED_DIR;
     std::string levelPath = std::string(COE_DATA_DIR) + "/levels/midden_greybox.toml";
+    std::string wieldablesPath = std::string(COE_DATA_DIR) + "/magic/wieldables.toml";
     for (int i = 1; i < argc; ++i) {
         if (!std::strcmp(argv[i], "--headless")) headless = true;
         else if (!std::strcmp(argv[i], "--no-validation")) validation = false;
@@ -235,6 +271,7 @@ int main(int argc, char** argv) {
             if (i + 1 < argc && std::strncmp(argv[i + 1], "--", 2) != 0) model = argv[++i];
         }
         else if (!std::strcmp(argv[i], "--level") && i + 1 < argc) levelPath = argv[++i];
+        else if (!std::strcmp(argv[i], "--wieldables") && i + 1 < argc) wieldablesPath = argv[++i];
         else if (!std::strcmp(argv[i], "--cooked") && i + 1 < argc) cookedDir = argv[++i];
     }
     std::puts("Covenant of Embers v0.0.2");
@@ -251,7 +288,9 @@ int main(int argc, char** argv) {
 
     coe::assets::MeshData mesh;
     coe::game::Level level;
-    bool ok = modelView ? loadModel(cookedDir, model, mesh) : loadLevelFile(levelPath, level);
+    coe::game::WieldableTable wieldables;
+    bool ok = modelView ? loadModel(cookedDir, model, mesh)
+                        : loadLevelFile(levelPath, level) && loadWieldablesFile(wieldablesPath, wieldables);
     if (ok && !modelView) mesh = coe::game::makeUnitCube();   // uploaded once, drawn per box
     coe::VkRenderer renderer;
     ok = ok && renderer.init(cfg);
@@ -309,6 +348,14 @@ int main(int argc, char** argv) {
         std::unique_ptr<coe::game::PlayerController> player;
         glm::vec3 spawnFeet{0.0f}, spawnForward{0.0f};
         float apex = 0.0f;   // highest feet above the spawn
+        // Casting (step 17): one instance per base (no parts until step 28), Weapon1-4 pick.
+        std::vector<coe::game::WieldableInstance> hands;
+        for (const coe::game::WieldableDef& d : wieldables.defs) hands.emplace_back(d);
+        coe::game::Caster caster;
+        if (!hands.empty()) caster.equip(&hands.front());
+        coe::game::ProjectileSystem bolts;
+        std::vector<coe::game::ProjectileHit> boltHits;
+        std::vector<coe::game::DebugLine> debugLines;
         if (!modelView) {
             const float yaw = glm::radians(level.playerStart.yawDeg);
             player = std::make_unique<coe::game::PlayerController>(physics, level.playerStart.position, yaw);
@@ -346,6 +393,27 @@ int main(int argc, char** argv) {
                     player->tick(in, float(step.dtSeconds()));   // moves the character, then the world steps
                     apex = std::max(apex, player->feet().y - spawnFeet.y);
                     physicsOk = physics.step(float(step.dtSeconds())) && physicsOk;
+                    // Cast from where the player is after this tick, then sweep the bolts
+                    // against the world as just stepped.
+                    const size_t fire = size_t(coe::input::Action::Fire);
+                    if (caster.tick(in.pressed[fire], in.held[fire], float(step.dtSeconds()),
+                                    coe::game::playerAim(*player), bolts))
+                        std::printf("[cast] %s (%s): bolt %.0f m/s, %.0f m range, %.1f dmg\n",
+                                    caster.wieldable()->def->name.c_str(), coe::game::elementName(caster.wieldable()->element()),
+                                    double(caster.wieldable()->projectileSpeed()), double(caster.wieldable()->range()),
+                                    double(caster.wieldable()->damage()));
+                    boltHits.clear();
+                    bolts.tick(physics, float(step.dtSeconds()), boltHits);
+                    for (const coe::game::ProjectileHit& h : boltHits)
+                        std::printf("[cast] hit %s body %u at %.2f m after %.3f s (tick %d) at (%.2f, %.2f, %.2f)\n",
+                                    coe::physics::layerName(physics.layer(h.body)), h.body.id, double(h.distance),
+                                    double(h.time), h.tick, double(h.point.x), double(h.point.y), double(h.point.z));
+                    // Weapon1-4 after the cast, so a same-tick Fire + switch casts the old one.
+                    for (size_t k = 0; k < 4 && k < hands.size(); ++k)
+                        if (in.pressed[size_t(coe::input::Action::Weapon1) + k]) {
+                            caster.equip(&hands[k]);
+                            std::printf("[cast] equipped %s\n", hands[k].def->name.c_str());
+                        }
                     if (crate.valid()) {
                         cratePrev = crateCur;
                         crateCur = physics.state(crate);
@@ -385,6 +453,12 @@ int main(int argc, char** argv) {
                 m = m * glm::mat4_cast(glm::slerp(cratePrev.rotation, crateCur.rotation, a));
                 fp.draws.push_back({meshId, glm::scale(m, glm::vec3(kDemoCrateEdge)), kDemoCrateTint});
             }
+            if (!modelView) {
+                debugLines.clear();
+                bolts.debugLines(float(step.alpha()), debugLines);
+                for (const coe::game::DebugLine& l : debugLines)
+                    fp.draws.push_back({meshId, lineModel(l.a, l.b), glm::vec4(l.color, 1.0f)});
+            }
             ok = renderer.drawFrame(fp);
             ++frames;
         }
@@ -410,7 +484,13 @@ int main(int argc, char** argv) {
                 const float forward = glm::dot(player->feet() - spawnFeet, spawnForward);
                 const bool moved = forward > 0.2f + 5.0f && player->jumps() >= 1 && apex > 0.5f &&
                                    player->dash().dashes() == 1;
-                inputOk = inputOk && moved;
+                // Fire (LMB, frame 12) casts one Apprentice Fire Staff bolt at the north
+                // wall (well inside its 50 m range: it hits, or is still flying at exit).
+                const bool cast = caster.casts() == 1 && bolts.fizzled() == 0;
+                inputOk = inputOk && moved && cast;
+                std::printf("[cast] script: %llu cast(s), %llu hit(s), %llu fizzled%s\n",
+                            (unsigned long long)caster.casts(), (unsigned long long)bolts.hits(),
+                            (unsigned long long)bolts.fizzled(), cast ? "" : " MISMATCH (need 1 cast, 0 fizzled)");
                 std::printf("[player] script: moved %.2f m forward, %llu jump(s), apex %.2f m, %llu dash(es)%s\n",
                             double(forward), (unsigned long long)player->jumps(), double(apex),
                             (unsigned long long)player->dash().dashes(),
@@ -439,6 +519,10 @@ int main(int argc, char** argv) {
                         double(player->breath().value()), double(player->breath().max()),
                         (unsigned long long)player->slides(), (unsigned long long)player->dash().dashes(),
                         (unsigned long long)player->landings(), reducedMotion ? ", reduced motion" : "");
+            std::printf("[cast] %llu cast(s), %llu refused by cooldown, %llu hit(s), %llu fizzled, %zu in flight, "
+                        "holding %s\n", (unsigned long long)caster.casts(), (unsigned long long)caster.blocked(),
+                        (unsigned long long)bolts.hits(), (unsigned long long)bolts.fizzled(), bolts.live().size(),
+                        caster.wieldable() ? caster.wieldable()->def->name.c_str() : "nothing");
             player.reset();   // before the world it lives in
         }
         std::printf("frames: %llu in %.2fs (%.0f fps)\n", (unsigned long long)frames, elapsed,

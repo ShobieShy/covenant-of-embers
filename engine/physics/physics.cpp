@@ -131,9 +131,15 @@ void PhysicsWorld::setLinearVelocity(BodyHandle body, const glm::vec3& v) {
 }
 
 std::optional<RayHit> PhysicsWorld::castRay(const glm::vec3& origin, const glm::vec3& delta) const {
+    return castRay(origin, delta, BodyHandle{});
+}
+
+std::optional<RayHit> PhysicsWorld::castRay(const glm::vec3& origin, const glm::vec3& delta, BodyHandle ignore) const {
     const JPH::RRayCast ray(JPH::RVec3(origin.x, origin.y, origin.z), toJ(delta));
     JPH::RayCastResult hit;
-    if (!impl_->system->GetNarrowPhaseQuery().CastRay(ray, hit)) return std::nullopt;
+    // An invalid BodyID matches no body, so the filter then ignores nothing.
+    const JPH::IgnoreSingleBodyFilter skip(ignore.valid() ? toJ(ignore) : JPH::BodyID());
+    if (!impl_->system->GetNarrowPhaseQuery().CastRay(ray, hit, {}, {}, skip)) return std::nullopt;
     RayHit out;
     out.body = toH(hit.mBodyID);
     out.fraction = hit.mFraction;

@@ -54,3 +54,10 @@ coe_add_test(NAME dash COMMAND test_dash)
 add_executable(test_camera_feel test_camera_feel.cpp)
 target_link_libraries(test_camera_feel PRIVATE coe_game coe_physics coe_warnings)
 coe_add_test(NAME camera_feel COMMAND test_camera_feel)
+
+# Step 17: wieldables.toml (Magewar's four bases + rejections), ray-swept bolts hitting a
+# target at the right distance/time, Swift Wind Wand cooldown, caster's capsule never hit.
+add_executable(test_casting test_casting.cpp)
+target_link_libraries(test_casting PRIVATE coe_game coe_physics coe_warnings)
+target_compile_definitions(test_casting PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
+coe_add_test(NAME casting COMMAND test_casting)

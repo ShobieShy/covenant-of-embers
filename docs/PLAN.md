@@ -336,6 +336,7 @@ Buildable rules for M1–M2. **Weapons, loot and crafting follow the Magewar des
 - **Accuracy** 0–100 %: 50 base + Head + Handle + Charm bonuses; spread cone `s_max × (1 − acc/100) × stance` (focus 0.35, crouch 0.8, moving 1.3, airborne 1.8).
 - **Damage**: `dmg = base × RarityMult(base rarity) + Σ part damage_bonus`, then `× ElementEffectiveness × (1 − Resist ≤ 0.6) × Crit (weak point ×2)`.
 - **Cooldown** = base × Exterior modifier × Charm modifier, minimum 0.1 s. **Element** = Head element if set, else base element.
+- **Bolts** (step 17): a straight, fast bolt ray-swept per tick from the eye (lands under the crosshair), fizzling at the wieldable's range (Magewar: base `range`; its 0.1 m projectile sphere with gravity and 8 s lifespan is reinterpreted as no-drop). Casting is semi-auto on the Fire press like Magewar; a hold-to-cast option comes with the options screen.
 
 ### 30.2 Parts and rarities
 | Rarity | Colour | Multiplier | Drop weight |

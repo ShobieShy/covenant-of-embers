@@ -104,8 +104,13 @@ public:
     glm::vec3 halfExtents(BodyHandle body) const;     // of a box body, 0 otherwise
     void setLinearVelocity(BodyHandle body, const glm::vec3& v);
 
-    // Closest hit along origin -> origin + delta, any layer.
+    // Closest hit along origin -> origin + delta, any layer. A ray that starts inside a
+    // body hits it at fraction 0 (Jolt treats convex shapes as solid).
     std::optional<RayHit> castRay(const glm::vec3& origin, const glm::vec3& delta) const;
+    // Same, but never reports `ignore` (step 17: a spell cast from the eye starts inside
+    // the caster's own Layers::Character inner body; other characters are still hit).
+    // An invalid handle ignores nothing.
+    std::optional<RayHit> castRay(const glm::vec3& origin, const glm::vec3& delta, BodyHandle ignore) const;
 
 private:
     friend class Character;   // character.cpp drives Jolt's CharacterVirtual on this world

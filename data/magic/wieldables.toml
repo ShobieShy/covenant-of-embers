@@ -1,0 +1,65 @@
+# Base staffs and wands (BUILD_PLAN step 17, PLAN §30.1) -- Magewar's four bases.
+# Values from Magewar magewar/resources/items/{staffs,wands}/*.tres + staff_wieldable_item.gd
+# (read-only reference). A base staff/wand *is* the spell; parts (step 28) modify it.
+#
+# Keys (all required, unknown keys are an error):
+#   id                lower_snake_case key
+#   name              display name
+#   type              "staff" | "wand"
+#   base_rarity       basic | uncommon | rare | mythic | primordial | unique
+#                     (damage x 1.0 / 1.25 / 1.5 / 2.0 / 2.75 / 3.0)
+#   element           arcane | fire | water | earth | air | light | dark
+#                     (Magewar's NONE element is "arcane")
+#   damage            base damage per hit, before rarity and parts (0.1..1000)
+#   mana_cost         mana per cast, spent from step 18 (0..100)
+#   cooldown          seconds between casts, >= 0.1 (Magewar's fire-rate floor)
+#   projectile_speed  m/s (1..500)
+#   range             metres the bolt flies before it fizzles (1..1000)
+
+[[wieldable]]
+id = "apprentice_fire_staff"
+name = "Apprentice Fire Staff"
+type = "staff"
+base_rarity = "basic"
+element = "fire"
+damage = 10
+mana_cost = 5
+cooldown = 0.4
+projectile_speed = 30
+range = 50
+
+[[wieldable]]
+id = "earthward_battlestaff"
+name = "Earthward Battlestaff"
+type = "staff"
+base_rarity = "uncommon"
+element = "earth"
+damage = 14
+mana_cost = 6
+cooldown = 0.55
+projectile_speed = 22
+range = 45
+
+[[wieldable]]
+id = "novice_arcane_wand"
+name = "Novice Arcane Wand"
+type = "wand"
+base_rarity = "basic"
+element = "arcane"
+damage = 7
+mana_cost = 3
+cooldown = 0.25
+projectile_speed = 40
+range = 35
+
+[[wieldable]]
+id = "swift_wind_wand"
+name = "Swift Wind Wand"
+type = "wand"
+base_rarity = "uncommon"
+element = "air"
+damage = 6
+mana_cost = 2.5
+cooldown = 0.18
+projectile_speed = 55
+range = 40

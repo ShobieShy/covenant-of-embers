@@ -1,19 +1,27 @@
 # SPDX-License-Identifier: Apache-2.0
 # coe_game: gameplay code shared by the covenant executable and unit tests.
-# world/level.*: data-defined greybox levels (toml++, private: TOML_EXCEPTIONS=0 is set
-# in level.cpp before the include, so no other target sees the toml++ headers).
+# data/toml_read.*: shared strict TOML readers (step 17; toml++ is PRIVATE and
+# TOML_EXCEPTIONS=0 is set in toml_read.hpp, included only by coe_game .cpp files, so no
+# other target sees the toml++ headers).
+# world/level.*: data-defined greybox levels (step 12, data/levels/*.toml).
 # world/level_physics.*: level boxes -> static Jolt colliders via coe_physics (step 13).
 # player/player_controller.*: FPS walk/jump/crouch/look on physics::Character (step 14).
 # player/stats.*: Breath pool (sprint/dash resource, step 15).
 # player/dash.*, player/camera_feel.*: dash charges/i-frames and head bob/landing dip (step 16).
+# magic/wieldable.*, magic/projectile.*, magic/casting.*: Magewar staffs/wands from
+# data/magic/wieldables.toml, ray-swept spell bolts, cooldown-gated casting (step 17).
 add_library(coe_game STATIC
+  data/toml_read.cpp
   world/level.cpp
   world/level_physics.cpp
   world/headless_checks.cpp
   player/player_controller.cpp
   player/stats.cpp
   player/dash.cpp
-  player/camera_feel.cpp)
+  player/camera_feel.cpp
+  magic/wieldable.cpp
+  magic/projectile.cpp
+  magic/casting.cpp)
 target_link_libraries(coe_game PUBLIC coe_engine coe_physics PRIVATE tomlplusplus::tomlplusplus coe_warnings)
 
 # covenant: the game executable (gameplay state + main loop) on top of coe_engine.
