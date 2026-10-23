@@ -42,18 +42,21 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Fixed from step 3: nothing broken found; step 3's tests still pass unchanged (walk 3.667 m, apex 1.072/0.485 m).
 - Magewar check (Cogito cogito_player + magewar_player.gd): sprint 7 m/s (tscn override), SLIDING_SPEED 5, SlidingTimer 1.5 s, SLIDE_JUMP_MOD 1.3 and the slide formula match. Kept decisions over Magewar: Breath 100 / −20/s / +30/s after 1 s (Cogito stamina 30 / 3/s / 2/s after 2 s), no jump cost (Cogito jump_exhaustion 5), resume at 20 (Magewar re-allows at > 0, which stutters). Magewar's Shoes `speed_modifier` scales walk, sprint **and** crouch (magewar_player `_update_movement_speed`); we do the same (the C++ port did too), not the slide. Not ported: Cogito CAN_BUNNYHOP (sprint-jump acceleration; a looter-shooter doesn't need it). Mismatches scheduled: Magewar declares `stamina_bonus` (Leather Belt 15, Traveler Shoes 5) but `_apply_equipment_bonuses` never applies it → step 19 applies it via `Breath.set_max_bonus`; Magewar `_level_up` gives +5 stamina max **and refills** → step 27; Cogito's TOGGLE_CROUCH option → step 32.
 
-**5. Dash + camera feel (port of old 16)**
+**5. Dash + camera feel (port of old 16)** ✅ `5e4514d`
 - Does: scripts/player/dash.gd (6 m in 0.15 s, 2 charges, 1.5 s recharge each, 25 Breath, 0.1 s i-frames, 1 air dash), camera_feel.gd (head bob walk/sprint/crouch, landing dip 0.12 m, reduced-motion setting).
 - Does (step 4 notes): the dash costs `player.breath.spend(25)` (refused when short/exhausted; restarts the 1 s delay), ends an active slide (`slide_left = 0`, crouch rules unchanged), no slide starts while dashing; head bob skips sliding.
 - Does (step 3 notes): also ease the Head over a climbed step (Cogito step_height_camera_lerp 2.5; Player.steps_climbed / the lift height tell camera_feel).
 - Done: test_dash.gd: 6.000 m ±0.05 in 9 ticks, 3rd refused, recharge 90/180 ticks, wall stop; test_camera_feel: bob amplitudes, dip 0 below 2 m/s, max 0.12 m, reduced motion = 0.
+- Result: scripts/player/dash.gd = `Dash` (RefCounted, `from_tuning()`, port of the C++ dash): `try_start(dir, grounded, breath)` (needs a charge, Breath 25 via `breath.spend`, in the air only the one air dash per jump; `land()` gives it back), `advance(dt)` returns the covered fraction of the tick (40 m/s for 0.15 s, partial last tick), charges refill one at a time every 1.5 s, `invulnerable()` for the first 0.1 s, `set_bonus_charges()` hook. scripts/player/camera_feel.gd = `CameraFeel`: head bob walk 0.03/12, sprint 0.05/16, crouch 0.08/8 (Cogito wiggle numbers, centred), landing dip 0.12 m × clamp((v−2)/6) (sin down 0.1 s, cosine back by 0.3 s), step smoothing (`add_step`, eases to 0 at 2.5/s), `set_reduced_motion()` zeroes bob + dip (step smoothing stays: it removes motion), `set_bob_scale()`. PlayerTuning gains Dash + Camera feel groups. Player.tick: dash on the Dash press edge along the move keys (or look when none), ends a slide, blocks new slides, velocity blended by the covered fraction so walls stop it (move_and_slide); landings / last_landing_speed; Head = eye + `feel.offset()`; `camera_position()` (eye_position() stays the un-bobbed cast origin), `camera_offset()`, `dashing()`, `invulnerable()`, `set_reduced_motion()`. main [player] line counts dashes. 50 unit tests green (9 dash, 6 camera feel): 6.0000 m in 9 ticks (also sideways), 3rd refused, back after 90/180 ticks, i-frames 6 ticks at 60 Hz / 15 at 144 Hz, wall at z −3 stops at −2.700, one air dash per jump (Breath 75), refused under 25 Breath and while exhausted, dash out of a slide then crouch 3 m/s; bob y ±0.0101/x ±0.0263 walk, ±0.0142/0.0404 sprint, 0.0323/0.0751 crouch; dip −0.060 at 5 m/s, −0.120 at 8 and 12 m/s, back by tick 18; reduced motion 0; real landing 4.65 m/s dips 0.053 m; 0.35 m step climbed with the camera eased (−0.337 offset, ≤ 0.015 m/tick), walking back down ≤ 0.038 m/tick.
+- Fixed from step 4: nothing broken found; all 35 earlier tests pass unchanged. Not done: step-down smoothing; the capsule's round bottom rolls off a 0.35 m ledge and falls (already smooth), so there is no snap to ease.
+- Magewar check (Cogito cogito_player.gd; Magewar's player sets no overrides): Magewar/Cogito have **no dash**, it's our verb (PLAN §30.8). Bob uses Cogito's WIGGLE intensities/rates; Cogito's sway adds a +0.5 bias on x (head sits off to one side); we centre it. Cogito HEADBOBBLE (Minimal 0.1 / Average 0.7 / Full 1) scales walk/sprint only and is declared `int` (0.1/0.7 probably end up 0 = no bob); our `bob_scale` is a float that scales all gaits → step 32. Cogito's landing is an animation at ≤ −5 m/s plus a head drop + roll at ≤ −7.5 m/s; we use one positional dip from 2 m/s (C++ design), no roll. Cogito landing sound volume/pitch over −2..−8 m/s → step 37 (`landings`, `last_landing_speed`). step_height_camera_lerp 2.5 matches.
 
 **6. Elements + damage formula (port of old 20)**
 - Does: resources/magic/elements.tres (Magewar names/colours, chart Fire>Earth>Air>Water>Fire, Light⇄Dark, ×1.5/×0.5, same/Arcane ×1.0), scripts/combat/damage.gd: base × rarity mult + Σ part bonus, × effectiveness × (1 − resist, cap **0.6**) × weak point 2.
 - Done: test_damage.gd: full 7×7 chart = Magewar get_effectiveness, resist 0.8→0.6, worked example 12×1.5×0.7×2 = 25.2.
 
 **7. Wieldable data + Arcane bolt casting (port of old 17)**
-- Does: Resource classes WieldableDef/WieldablePart/WieldableInstance, resources/wieldables/*.tres for the 4 Magewar bases (10/5/0.40/30/50, 14/6/0.55/22/45, 7/3/0.25/40/35, 6/2.5/0.18/55/40), caster.gd semi-auto on Fire press with cooldown ≥ 0.1 s, bolt = per-tick raycast from the eye (PhysicsRayQuery, exclude self), fizzle at range, element-coloured tracer.
+- Does: Resource classes WieldableDef/WieldablePart/WieldableInstance, resources/wieldables/*.tres for the 4 Magewar bases (10/5/0.40/30/50, 14/6/0.55/22/45, 7/3/0.25/40/35, 6/2.5/0.18/55/40), caster.gd semi-auto on Fire press with cooldown ≥ 0.1 s, bolt = per-tick raycast from the eye (`player.eye_position()`, the un-bobbed eye, not `camera_position()`; PhysicsRayQuery, exclude self), fizzle at range, element-coloured tracer.
 - Done: test_casting.gd: 20 m wall hit at 20.000 m in D/v s ±1 tick for all 4 bases, Swift Wind never casts twice within 0.18 s, self never hit.
 
 **8. Mana pool (port of old 18)**
@@ -66,6 +69,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **10. Staff + wand slots and viewmodel (port of old 21)**
 - Does: loadout.gd: Staff/Wand slots, per-slot cooldown, 0.4 s swap (slot_1/slot_2 + mouse wheel as Magewar's quickslot_prev/next_wieldable actions), viewmodel SubViewport/layer at 75° FOV with Magewar default_position poses, greybox shaft + element-coloured gem, focus slide, cast point tracer.
+- Does (step 5 notes): the viewmodel follows the Head (so it bobs with it); recoil kick and screen shake go through CameraFeel as extra offsets that `set_reduced_motion(true)` zeroes (PLAN Feel + accessibility), with a test.
 - Done: test_loadout.gd: swap 24 ticks no cast during, Earthward cooldown survives swap; headless render check of gem colour (cos ≥ 0.97) via viewport texture.
 
 **11. Enemy entity, training dummies, damage numbers (port of old 22)**
@@ -78,6 +82,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **13. Heap AI (tank) + player health/shield**
 - Does: Heap tank (slow, high HP, slam), player health + shield (shield first, regen delay), resolveHit for enemy hits, i-frames from dash, player death/respawn.
+- Does (step 5 notes): enemy hits on the player are ignored while `player.invulnerable()` (first 0.1 s of a dash = 6 ticks at 60 Hz).
 - Done: test_heap.gd + test_player_health.gd: damage order shield→health, regen timing, dash i-frames ignore a bite, death at 0.
 
 **14. Enemy spawner + kill events**
@@ -106,6 +111,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does: Hat/Clothes/Belt/Shoes/Grimoire/Potion with Magewar bonuses (mana, regen, stamina, speed, resist ≤ 60 %).
 - Does (step 4 notes): `stamina_bonus` (Belt 15, Shoes 5) → `player.breath.set_max_bonus(Σ equipped + level bonus)` (Magewar declares it but never applies it: fixed here, flagged); `speed_modifier` product (Shoes ×1.15) → `player.set_speed_multiplier()` (walk/sprint/crouch, like Magewar).
 - Done: test_equipment.gd: bonuses applied/removed exactly, resist cap 0.6, Belt → Breath max 115 without refill, Shoes → walk 4.6 m/s.
+- Does (step 5 notes): Magewar equipment has no dash stat; PLAN's Sandals 3rd dash charge waits for step 36 (Consecration) via `player.dash.set_bonus_charges()`.
 
 **20. Ember Mark item codes**
 - Does: EM1-… encode/decode of any item.
@@ -148,6 +154,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **29. HUD**
 - Does: Control-based HUD: health/shield/mana/Breath bars (Breath = `player.breath.fraction()`, tinted while `exhausted`), crosshair (hidden while focused, spread-sized), slot icons with rarity colours, Kenney UI Pack.
+- Does (step 5 notes): dash charge pips from `player.dash.charges` / `max_charges()` with `recharge_progress()` filling the next one.
 - Done: test_hud.gd: bars track values; headless screenshot non-empty.
 
 **30. Inventory + equipment screen**
@@ -160,6 +167,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **32. Key-bindings config**
 - Does: Rebind UI over the project.godot InputMap actions (PlayerInput.ACTIONS) + user://keybinds.cfg, invert-Y, hip FOV, focus hold/toggle, crouch hold/toggle (Cogito TOGGLE_CROUCH; the slide needs Crouch held, so toggle mode keeps it "held" until pressed again), Reload unbound.
+- Does (step 5 notes): accessibility in the same settings file: reduced motion (`player.set_reduced_motion`) and head bob strength 0 / 0.1 / 0.7 / 1.0 (Cogito HEADBOBBLE presets, kept as a float: `player.feel.set_bob_scale`), applied at spawn; test the round-trip.
 - Done: test_keybinds.gd: save/load round-trip, rebind applies.
 
 **33. Breach room slice: layout**
@@ -176,10 +184,12 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **36. Consecrations (enchantments)**
 - Does: Our version of anointments on parts/equipment.
+- Does (step 5 notes): include PLAN's "Sandals: +1 dash charge" via `player.dash.set_bonus_charges(1)` (set_bonus_charges clamps charges when removed).
 - Done: test_consecrations.gd: effects trigger as specified.
 
 **37. Audio: buses + Kenney sounds**
 - Does: Audio buses (Master/SFX/UI/Music), cast/hit/footstep/UI sounds from Kenney packs, 3D AudioStreamPlayer3D.
+- Does (step 5 notes): landing sound when `player.landings` goes up, volume/pitch from `last_landing_speed` over 2..8 m/s (Cogito's min/max landing velocity); dash whoosh on `dash.dashes`.
 - Done: test_audio.gd: every referenced stream loads, buses exist.
 
 **38. Save format, round-trip + load**

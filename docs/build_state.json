@@ -3,22 +3,23 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 5,
+  "next_step": 6,
   "total_steps": 42,
   "steps_done": [
     1,
     2,
     3,
-    4
+    4,
+    5
   ],
-  "last_commit": "7f16c9c",
+  "last_commit": "5e4514d",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
       "step": 1,
       "type": "engine-switch",
       "summary": "ShobieShy approved 'Yes, switch to Godot' (via Tex). C++20/Vulkan engine archived (branch archive/cpp-vulkan-engine at d07497b; files git-mv'd to archive/cpp-engine/, old plan/state in archive/cpp-engine/docs/). Old plan had steps 1-23 done of 56. New Godot plan: step 1 = Godot 4.7.2 project setup + headless test runner; steps 3-12 port the finished gameplay.",
-      "plan_changes": "BUILD_PLAN rewritten for Godot (merged UI renderer into HUD, audio engine+hookup, save format+load; removed cooker/CMake/Vulkan steps). ADR-0002 added; PLAN \u00a723-25,27 engine parts updated.",
+      "plan_changes": "BUILD_PLAN rewritten for Godot (merged UI renderer into HUD, audio engine+hookup, save format+load; removed cooker/CMake/Vulkan steps). ADR-0002 added; PLAN §23-25,27 engine parts updated.",
       "commit": "f199578"
     },
     {
@@ -44,6 +45,14 @@
       "summary": "Sprint, Breath and slide ported: scripts/player/breath.gd (Breath RefCounted: 100 max, drain 20/s, regen 30/s after 1 s with sub-tick timing, exhausted until 20, spend/set_max_bonus/refill), PlayerTuning sprint 7 / slide 5 m/s, 1.5 s, slide jump x1.3 + Breath numbers (PLAN 30.8), Player.tick sprint (ground start, move key, not crouched/exhausted, kept in air, drains), Magewar slide from sprint+Crouch along the entry direction at (t/1.5+0.5) x 5 m/s, slide jump keeps its speed, set_speed_multiplier (walk/sprint/crouch). main.gd prints a [player] exit line. run_tests.sh green: 35 unit tests (6 new test_breath: empty 300, resume 100, full 260, 60/144 Hz; 5 new test_player: sprint 7.000 m/s, dry 300 / resume 101, x1.1 4.4/7.7/3.3, slide 89 ticks 7.542 m, no slide from walk/standing/exhausted, slide jump apex 1.795 m), 2 s smoke 120 ticks, asset lint OK.",
       "plan_changes": "Magewar check: sprint/slide numbers match Cogito's tscn overrides; Breath numbers kept from PLAN 30.8 over Cogito stamina (30/3/2 after 2 s, jump cost 5); resume_at 20 deviation kept; speed_modifier scales crouch too like Magewar; CAN_BUNNYHOP not ported. Mismatch scheduled: Magewar never applies EquipmentItem.stamina_bonus -> step 19 applies it via Breath.set_max_bonus. Refined steps 5 (dash spends Breath 25, ends slide), 19 (stamina_bonus + speed_modifier hooks and tests), 27 (level-up +5 Breath max + refill, separate from equipment bonus), 29 (Breath bar source, exhausted tint), 32 (crouch hold/toggle option). No bugs found in steps 1-3.",
       "commit": "7f16c9c"
+    },
+    {
+      "time": "2026-10-23T11:10-05:00",
+      "step": 5,
+      "type": "build",
+      "summary": "Dash + camera feel ported: scripts/player/dash.gd (Dash RefCounted: 6 m in 0.15 s at 40 m/s, 2 charges recharging one at a time every 1.5 s, 25 Breath via breath.spend, 0.1 s i-frames, one air dash per jump, set_bonus_charges), scripts/player/camera_feel.gd (CameraFeel: Cogito wiggle bob walk 0.03/12, sprint 0.05/16, crouch 0.08/8 centred, landing dip 0.12 m x clamp((v-2)/6), step-up smoothing at 2.5/s, reduced motion zeroes bob+dip, bob scale). Player: dash on press edge along move keys or look, ends slide, blocks slides, walls stop it; landings/last_landing_speed; Head = eye + feel offset; camera_position/camera_offset/dashing/invulnerable/set_reduced_motion. PlayerTuning Dash + Camera feel groups. run_tests.sh green: 50 unit tests (9 new test_dash: 6.0000 m in 9 ticks, 3rd refused, recharge 90/180, i-frames 6/15 ticks at 60/144 Hz, wall stop at -2.700, one air dash, Breath refusal, dash out of slide; 6 new test_camera_feel: bob amplitudes, dip 0.06/0.12, reduced motion 0, step up eased <=0.015 m/tick), 2 s smoke 120 ticks, asset lint OK.",
+      "plan_changes": "Magewar check: no dash in Magewar/Cogito (our verb); bob numbers = Cogito WIGGLE, +0.5 x sway bias dropped; Cogito HEADBOBBLE is int-typed (0.1/0.7 likely truncate) and scales walk/sprint only -> our float bob_scale, step 32; Cogito landing anim/roll not ported (single dip from 2 m/s); step-down smoothing not needed (capsule rolls off, <=0.038 m/tick). Refined steps 7 (casts from eye_position, not bobbed camera), 10 (viewmodel follows Head; recoil/shake via CameraFeel, zeroed by reduced motion), 13 (hits ignored while player.invulnerable()), 19 (no Magewar dash stat), 29 (dash charge pips), 32 (reduced motion + head bob strength settings), 36 (Sandals +1 dash charge via set_bonus_charges), 37 (landing sound from landings/last_landing_speed, dash sound). No bugs found in steps 1-4.",
+      "commit": "5e4514d"
     }
   ]
 }
