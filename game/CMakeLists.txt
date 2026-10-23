@@ -20,6 +20,8 @@
 # hitboxes on the Enemy physics layer, bolt hits -> resolveHit, death (step 22).
 # ui/damage_numbers.*: floating element-coloured damage numbers (pure logic; drawn by
 # covenant through coe_ui's ImGui overlay) (step 22).
+# ai/state_machine.hpp, ai/gnawer.*: enemy FSM + the Gnawer melee rusher brain (idle ->
+# detect -> chase -> attack, knockback, straight-line steering on Static geometry) (step 23).
 add_library(coe_game STATIC
   data/toml_read.cpp
   world/level.cpp
@@ -39,6 +41,7 @@ add_library(coe_game STATIC
   combat/element.cpp
   combat/damage.cpp
   enemies/enemy.cpp
+  ai/gnawer.cpp
   ui/damage_numbers.cpp)
 target_link_libraries(coe_game PUBLIC coe_engine coe_physics PRIVATE tomlplusplus::tomlplusplus coe_warnings)
 
@@ -61,6 +64,10 @@ coe_add_test(NAME smoke_window COMMAND covenant --seconds 3 WORKING_DIRECTORY ${
 coe_add_test(NAME smoke_window_model COMMAND covenant --seconds 2 --model WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   LABELS window)
 coe_add_test(NAME input_script_window COMMAND covenant --seconds 2 --input-debug --input-script
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR} LABELS window)
+# Step 23 done-check (window half): a Gnawer spawned 7 m ahead of the standing player
+# detects, chases and bites it (>= 2 bites spaced by the cooldown); RESULT: PASS/FAIL.
+coe_add_test(NAME gnawer_window COMMAND covenant --seconds 4 --gnawer-check
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR} LABELS window)
 # Asset/level errors must fail loudly (not render nothing): unknown model, missing cooked
 # dir, missing level. Matched on output instead of WILL_FAIL so a sanitizer report or

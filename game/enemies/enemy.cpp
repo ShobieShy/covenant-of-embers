@@ -28,7 +28,8 @@ bool readSize(Ctx& c, const toml::node* n, const std::string& what, glm::vec3& o
 
 bool parseDef(Ctx& c, const toml::table& t, std::size_t index, EnemyDef& d) {
     const std::string where = "enemy #" + std::to_string(index + 1);
-    if (!data::onlyKeys(c, t, {"id", "name", "affinity", "max_health", "size", "color", "resist", "weak_point"}, where))
+    if (!data::onlyKeys(c, t, {"id", "name", "affinity", "max_health", "size", "color", "resist", "weak_point", "ai"},
+                        where))
         return false;
     if (!data::readString(c, t.get("id"), where + " id", d.id)) return false;
     for (char ch : d.id)
@@ -68,6 +69,42 @@ bool parseDef(Ctx& c, const toml::table& t, std::size_t index, EnemyDef& d) {
             !readSize(c, wt->get("size"), w + " weak_point size", def.size))
             return false;
         d.weakPoint = def;
+    }
+    if (const toml::node* ai = t.get("ai")) {
+        const toml::table* at = ai->as_table();
+        if (!at) return c.fail(ai, w + " ai must be a table { kind = \"rusher\", ... }");
+        if (!data::onlyKeys(c, *at,
+                            {"kind", "detect_range", "aggro_range", "walk_speed", "sprint_speed", "attack_range",
+                             "attack_damage", "attack_cooldown", "knockback_strength", "knockback_time",
+                             "knockback_threshold", "turn_rate_deg"},
+                            w + " ai"))
+            return false;
+        std::string kind;
+        if (!data::readString(c, at->get("kind"), w + " ai kind", kind)) return false;
+        if (kind != "rusher") return c.fail(at->get("kind"), w + ": unknown ai kind '" + kind + "' (expected rusher)");
+        RusherDef r;
+        const auto opt = [&](const char* key, float lo, float hi, float& out) {
+            const toml::node* n = at->get(key);
+            return !n || data::readFloatIn(c, n, w + " ai." + key, lo, hi, out);
+        };
+        if (!opt("detect_range", 0.5f, 200.0f, r.detectRange) || !opt("aggro_range", 0.5f, 200.0f, r.aggroRange) ||
+            !opt("walk_speed", 0.1f, 30.0f, r.walkSpeed) || !opt("sprint_speed", 0.1f, 30.0f, r.sprintSpeed) ||
+            !opt("attack_range", 0.2f, 10.0f, r.attackRange) || !opt("attack_damage", 0.0f, 100000.0f, r.attackDamage) ||
+            !opt("attack_cooldown", 0.05f, 60.0f, r.attackCooldown) ||
+            !opt("knockback_strength", 0.0f, 50.0f, r.knockbackStrength) ||
+            !opt("knockback_time", 0.0f, 5.0f, r.knockbackTime) ||
+            !opt("knockback_threshold", 0.0f, 100000.0f, r.knockbackThreshold) ||
+            !opt("turn_rate_deg", 1.0f, 3600.0f, r.turnRateDeg))
+            return false;
+        if (r.aggroRange > r.detectRange)
+            return c.fail(at->get("aggro_range"), w + ": ai aggro_range must not exceed detect_range");
+        // The bite must reach past the body + a 0.3 m player capsule, or it would stop inside them.
+        const float contact = 0.5f * std::max(d.size.x, d.size.z) + 0.3f;
+        if (r.attackRange <= contact)
+            return c.fail(at->get("attack_range") ? at->get("attack_range") : ai,
+                          w + ": ai attack_range must exceed half the body + the 0.3 m player radius (" +
+                              std::to_string(contact) + " m)");
+        d.ai = r;
     }
     return true;
 }
@@ -119,6 +156,21 @@ std::string loadEnemies(const std::filesystem::path& path, EnemyTable& out) {
     std::string text;
     if (std::string err = data::readTextFile(path, "enemies file", text); !err.empty()) return err;
     return parseEnemies(text, path.filename().string(), out);
+}
+
+std::string loadEnemyFiles(const std::vector<std::filesystem::path>& paths, EnemyTable& out) {
+    out = {};
+    EnemyTable all;
+    for (const std::filesystem::path& p : paths) {
+        EnemyTable one;
+        if (std::string err = loadEnemies(p, one); !err.empty()) return err;
+        for (EnemyDef& d : one.defs) {
+            if (all.find(d.id)) return p.filename().string() + ": enemy id '" + d.id + "' is already defined by an earlier file";
+            all.defs.push_back(std::move(d));
+        }
+    }
+    out = std::move(all);
+    return {};
 }
 
 glm::mat4 Enemy::bodyModel() const {
@@ -177,6 +229,7 @@ std::optional<EnemyHit> EnemySystem::applyHit(const ProjectileHit& hit) {
     out.weakPoint = e.weakPoint.valid() && hit.body == e.weakPoint;
     out.point = hit.point;
     out.element = hit.element;
+    out.direction = hit.direction;
     out.result = resolveHit(hit.damage, hit.element, DamageTarget{e.def->affinity, e.def->resist, out.weakPoint}, elements_);
     out.healthBefore = e.health;
     e.health = std::max(0.0f, e.health - out.result.amount);
@@ -199,6 +252,20 @@ void EnemySystem::kill(Enemy& e, Element element) {
     e.body = e.weakPoint = {};
     deaths_.push_back({e.id, e.def, e.feet, element});
     ++kills_;
+}
+
+bool EnemySystem::place(std::uint32_t id, const glm::vec3& feet, float yawDeg, float dt) {
+    for (Enemy& e : enemies_) {
+        if (e.id != id) continue;
+        if (e.dead) return false;
+        e.feet = feet;
+        e.yawDeg = yawDeg;
+        const glm::quat q = glm::angleAxis(glm::radians(yawDeg), glm::vec3(0.0f, 1.0f, 0.0f));
+        world_.moveKinematic(e.body, feet + q * glm::vec3(0.0f, e.def->size.y * 0.5f, 0.0f), q, dt);
+        if (e.def->weakPoint) world_.moveKinematic(e.weakPoint, feet + q * e.def->weakPoint->offset, q, dt);
+        return true;
+    }
+    return false;
 }
 
 void EnemySystem::tick(float dt) {

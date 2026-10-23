@@ -1,0 +1,19 @@
+# Gnawer (BUILD_PLAN step 23, PLAN §7/§30.4): the swarm rusher, plated scavenger vermin
+# and the tutorial fodder. Reinterprets Magewar's mutant rat
+# (scripts/enemies/enemy_mutant_rat.gd): Earth element, contact_damage 3, attack_cooldown
+# 0.8 s, detection_range 8, aggro_range 6, walk_speed 3, sprint_speed 5.5, and
+# enemy_base.gd's knockback (strength 10 for 0.5 s on hits over 10 damage).
+# Magewar has no rat health (and its rat never moves: no AI loop exists), so the HP and
+# the body are plan design: 30 HP = two Apprentice Fire Staff bolts (10 x 1.5 on Earth);
+# the body is the rat's 0.6 m collider stretched into a low, long vermin.
+# Keys: see training_dummies.toml; `ai` is documented there too.
+
+[[enemy]]
+id = "gnawer"
+name = "Gnawer"
+affinity = "earth"
+max_health = 30
+size = [0.5, 0.45, 0.8]       # low and long; yaw 0 faces -Z (its head end)
+color = [0.42, 0.36, 0.28]    # dun plates
+weak_point = { offset = [0.0, 0.3, -0.45], size = [0.22, 0.2, 0.16] }   # the snout
+ai = { kind = "rusher", detect_range = 8.0, aggro_range = 6.0, walk_speed = 3.0, sprint_speed = 5.5, attack_range = 1.0, attack_damage = 3.0, attack_cooldown = 0.8, knockback_strength = 10.0, knockback_time = 0.5, knockback_threshold = 10.0 }

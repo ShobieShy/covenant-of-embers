@@ -272,8 +272,12 @@ TEST_CASE("physics: castSphere honours the layer mask and ignore body") {
 TEST_CASE("enemy: dummies are placed on the Midden and its TOML is strict") {
     Level lv;
     REQUIRE(loadLevel(std::string(COE_DATA_DIR) + "/levels/midden_greybox.toml", lv).empty());
-    const EnemyTable types = enemiesReal();
-    REQUIRE(lv.enemies.size() == 2);
+    EnemyTable types;   // the game's default enemy files (step 23 added the Gnawer)
+    REQUIRE(loadEnemyFiles({std::string(COE_DATA_DIR) + "/enemies/training_dummies.toml",
+                            std::string(COE_DATA_DIR) + "/enemies/gnawer.toml"},
+                           types)
+                .empty());
+    REQUIRE(lv.enemies.size() == 3);   // two dummies + the Gnawer in the north-west corner
     for (const LevelEnemy& e : lv.enemies) CHECK(types.find(e.enemy) != nullptr);
 
     EnemyTable t;
@@ -308,5 +312,5 @@ TEST_CASE("enemy: dummies are placed on the Midden and its TOML is strict") {
     CHECK(parseLevel(text + "[[enemy]]\nenemy = \"x\"\nposition = [0, 0, 10]\nhp = 3\n", "m.toml", bad).find("hp") !=
           std::string::npos);
     CHECK(parseLevel(text + "[[enemy]]\nenemy = \"x\"\nposition = [0, 0, 10]\n", "m.toml", bad).empty());
-    CHECK(bad.enemies.size() == 3);
+    CHECK(bad.enemies.size() == lv.enemies.size() + 1);
 }

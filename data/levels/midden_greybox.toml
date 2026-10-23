@@ -175,3 +175,11 @@ yaw_deg = 20.0
 enemy = "water_training_dummy"
 position = [4.0, 0.0, 4.0]
 yaw_deg = -20.0
+
+# Step 23: a Gnawer (data/enemies/gnawer.toml) idling in the north-west corner, beyond its
+# 8 m detect range from the start and the scripted walk, so the smoke tests stay as they
+# were; wander over (or shoot it) and it rushes you.
+[[enemy]]
+enemy = "gnawer"
+position = [-11.0, 0.0, -11.0]
+yaw_deg = -135.0   # facing the arena centre

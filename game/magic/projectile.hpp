@@ -64,6 +64,7 @@ struct ProjectileHit {
     Element element = Element::Arcane;
     float damage = 0.0f;
     bool grazed = false;             // step 22: found by the enemy sphere sweep, not the ray itself
+    glm::vec3 direction{0.0f, 0.0f, -1.0f};   // step 23: unit flight direction (enemy knockback)
 };
 
 // An element-coloured debug segment (drawn as a thin stretched cube by the game).

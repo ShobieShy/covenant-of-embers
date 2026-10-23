@@ -66,6 +66,7 @@ void ProjectileSystem::tick(const physics::PhysicsWorld& world, float dt, std::v
             out.tick = p.ticks + 1;
             out.element = s.element;
             out.damage = s.damage;
+            out.direction = s.direction;
             hits.push_back(out);
             ++hits_;
             DebugLine l;

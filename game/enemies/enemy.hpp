@@ -17,6 +17,10 @@
 // health on the enemy, the full step-20 formula (resist cap 60 %, weak-point crit x2:
 // Magewar has neither), no knockback yet (Magewar: > 10 damage knocks back for 0.5 s,
 // with the AI in step 23), rewards/loot on death come with steps 25+.
+//
+// Step 23: an EnemyDef may carry `ai` (RusherDef, the Gnawer's brain: game/ai/gnawer.*);
+// EnemySystem::place() moves a live enemy's hitboxes (moveKinematic) for the AI, and
+// EnemyHit carries the bolt direction for Magewar's knockback.
 #pragma once
 #include "engine/physics/physics.hpp"
 #include "engine/render/vk_renderer.hpp"
@@ -39,6 +43,24 @@ struct WeakPointDef {
     glm::vec3 size{0.3f};     // full extents, metres
 };
 
+// Step 23: melee rusher brain tuning, `ai = { kind = "rusher", ... }` in data/enemies/*.toml.
+// Defaults are Magewar enemy_base.gd's exports (detection_range 15, aggro_range 10,
+// walk_speed 2, sprint_speed 4, contact_damage 5, attack_cooldown 1.5, knockback 10 for
+// 0.5 s on hits > 10); a type overrides them the way enemy_mutant_rat.gd does.
+struct RusherDef {
+    float detectRange = 15.0f;         // notices a visible player (Magewar detection_range)
+    float aggroRange = 10.0f;          // starts the sprinting chase (aggro_range), <= detectRange
+    float walkSpeed = 2.0f;            // m/s while stalking in Detect (walk_speed)
+    float sprintSpeed = 4.0f;          // m/s while chasing (sprint_speed)
+    float attackRange = 1.0f;          // horizontal centre distance it closes to and bites from (plan)
+    float attackDamage = 5.0f;         // per bite (contact_damage)
+    float attackCooldown = 1.5f;       // s between bites (attack_cooldown)
+    float knockbackStrength = 10.0f;   // m/s initial push (knockback_strength)
+    float knockbackTime = 0.5f;        // s (knockback_duration)
+    float knockbackThreshold = 10.0f;  // a hit must deal more than this to knock back (Magewar > 10)
+    float turnRateDeg = 540.0f;        // deg/s turning toward the player (plan)
+};
+
 struct EnemyDef {
     std::string id;           // lower_snake_case
     std::string name;
@@ -48,6 +70,7 @@ struct EnemyDef {
     glm::vec3 size{0.7f, 1.6f, 0.7f};     // body hitbox full extents; stands on its feet
     std::optional<WeakPointDef> weakPoint;
     glm::vec3 color{0.6f};                // greybox tint (body; the weak point draws brighter)
+    std::optional<RusherDef> ai;          // step 23: thinking enemies (none = a dummy)
 };
 
 struct EnemyTable {
@@ -57,9 +80,16 @@ struct EnemyTable {
 
 // Strict TOML: [[enemy]] tables with id, name, affinity, max_health, size, color and
 // optional resist = { <element> = 0..1, ... } and weak_point = { offset, size }.
+// Step 23: optional ai = { kind = "rusher", detect_range, aggro_range, walk_speed,
+// sprint_speed, attack_range, attack_damage, attack_cooldown, knockback_strength,
+// knockback_time, knockback_threshold, turn_rate_deg } (kind required, the rest default
+// to RusherDef's Magewar values).
 // "" on success, else "<source>:<line>: message" (table left empty).
 std::string parseEnemies(std::string_view text, std::string_view sourceName, EnemyTable& out);
 std::string loadEnemies(const std::filesystem::path& path, EnemyTable& out);
+// Step 23: several files into one table (e.g. training_dummies.toml + gnawer.toml); an id
+// defined twice across files is an error. Table left empty on failure.
+std::string loadEnemyFiles(const std::vector<std::filesystem::path>& paths, EnemyTable& out);
 
 struct Enemy {
     std::uint32_t id = 0;
@@ -85,6 +115,7 @@ struct EnemyHit {
     bool killed = false;          // this hit took health to 0
     glm::vec3 point{0.0f};
     Element element = Element::Arcane;
+    glm::vec3 direction{0.0f, 0.0f, -1.0f};   // step 23: the bolt's flight direction (knockback)
 };
 
 struct EnemyDeath {
@@ -108,6 +139,10 @@ public:
     // what happened; std::nullopt for anything else (walls, the dead, other bodies).
     std::optional<EnemyHit> applyHit(const ProjectileHit& hit);
     void tick(float dt);   // hit flashes
+    // Step 23 (AI): moves a live enemy to `feet` facing yawDeg; its hitboxes reach the pose
+    // at the end of the next PhysicsWorld::step(dt) (moveKinematic). False for the dead /
+    // unknown ids.
+    bool place(std::uint32_t id, const glm::vec3& feet, float yawDeg, float dt);
 
     const Enemy* find(std::uint32_t id) const;
     const Enemy* byBody(physics::BodyHandle body) const;   // body or weak point of a live enemy

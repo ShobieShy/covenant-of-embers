@@ -21,8 +21,12 @@
 //   covenant --wieldables FILE  staff/wand bases (default: data/magic/wieldables.toml)
 //   covenant --staff ID / --wand ID  what the Staff / Wand slot holds (default: the first
 //                            staff / wand in wieldables.toml)
-//   covenant --enemies FILE  enemy types for the level's [[enemy]] placements
-//                            (default: data/enemies/training_dummies.toml)
+//   covenant --enemies FILE  enemy types for the level's [[enemy]] placements; repeatable,
+//                            the files merge (default: data/enemies/training_dummies.toml
+//                            + data/enemies/gnawer.toml)
+//   covenant --gnawer-check  window: also spawn a Gnawer 7 m ahead of the standing player
+//                            (real input ignored) and fail unless it detects, chases and
+//                            bites it at least twice, the cooldown apart (step 23)
 //
 // Loop (PLAN §23): simulation advances in fixed 60 Hz ticks (engine/core/fixed_timestep),
 // rendering runs once per displayed frame with state interpolated by alpha.
@@ -59,6 +63,11 @@
 // (engine/ui/imgui_layer, coe_ui). --headless casts the held staff at the first dummy
 // until it dies: the first hit must deal the formula value and show its number in the
 // element colour (dmgframe.ppm), the dummy must die at exactly 0.
+// Gnawer AI (step 23, game/ai/gnawer): enemies with an `ai` def (data/enemies/gnawer.toml)
+// think each tick after the player moves and before the world steps: idle -> detect ->
+// chase -> attack (bites on the cooldown), knocked back by bolts over 10 damage. Bites
+// are logged and totalled as damage to the player (no player health until step 24; a
+// bite during dash i-frames is dodged).
 #include "engine/core/clock.hpp"
 #include "engine/core/fixed_timestep.hpp"
 #include "engine/input/input.hpp"
@@ -67,6 +76,7 @@
 #include "engine/assets/manifest.hpp"
 #include "engine/physics/physics.hpp"
 #include "engine/ui/imgui_layer.hpp"
+#include "game/ai/gnawer.hpp"
 #include "game/combat/element.hpp"
 #include "game/enemies/enemy.hpp"
 #include "game/core/tumble_demo.hpp"
@@ -108,6 +118,7 @@
 
 namespace {
 constexpr uint32_t kTickHz = 60;
+constexpr float kGnawerCheckDistance = 7.0f;   // step 23 --gnawer-check: spawn distance ahead of the player
 // Mouse look: 0.25 degrees per mouse count, Magewar's default MOUSE_SENS (cogito_player.gd).
 // Sensitivity/invert-Y become settings in step 39. Level mode uses PlayerTuning's copy;
 // this one turns the --model view.
@@ -236,13 +247,14 @@ glm::vec3 addViewmodel(const coe::game::Loadout& loadout, const coe::game::Viewm
     return coe::game::viewmodelCastPoint(shown.wieldable->type(), t);
 }
 
-bool loadEnemiesFile(const std::string& path, coe::game::EnemyTable& table) {
-    const std::string err = coe::game::loadEnemies(path, table);
+bool loadEnemiesFiles(const std::vector<std::string>& paths, coe::game::EnemyTable& table) {
+    const std::string err = coe::game::loadEnemyFiles({paths.begin(), paths.end()}, table);
     if (!err.empty()) { std::fprintf(stderr, "[enemy] %s\n", err.c_str()); return false; }
     std::string names;
     for (const coe::game::EnemyDef& d : table.defs)
         names += std::string(names.empty() ? "" : ", ") + d.name + " (" + coe::game::elementName(d.affinity) + ", " +
-                 std::to_string(int(d.maxHealth)) + " HP" + (d.weakPoint ? ", weak point" : "") + ")";
+                 std::to_string(int(d.maxHealth)) + " HP" + (d.weakPoint ? ", weak point" : "") +
+                 (d.ai ? ", rusher AI" : "") + ")";
     std::printf("[enemy] %zu enemy types: %s\n", table.defs.size(), names.c_str());
     return true;
 }
@@ -468,14 +480,16 @@ void printTick(uint64_t tick, const coe::input::TickInput& t) {
 
 int main(int argc, char** argv) {
     bool headless = false, validation = true, inputDebug = false, inputScript = false, withCrate = false,
-         reducedMotion = false;
+         reducedMotion = false, gnawerCheck = false;
     double seconds = 0.0;
     bool modelView = false;   // --model: step 11's single-model view instead of the level
     std::string model = kDefaultModel, cookedDir = COE_COOKED_DIR;
     std::string levelPath = std::string(COE_DATA_DIR) + "/levels/midden_greybox.toml";
     std::string wieldablesPath = std::string(COE_DATA_DIR) + "/magic/wieldables.toml";
     std::string elementsPath = std::string(COE_DATA_DIR) + "/magic/elements.toml";
-    std::string enemiesPath = std::string(COE_DATA_DIR) + "/enemies/training_dummies.toml";
+    std::vector<std::string> enemiesPaths = {std::string(COE_DATA_DIR) + "/enemies/training_dummies.toml",
+                                             std::string(COE_DATA_DIR) + "/enemies/gnawer.toml"};
+    bool enemiesGiven = false;   // the first --enemies replaces the defaults
     std::string staffId, wandId;   // step 21: empty = the first staff / wand
     for (int i = 1; i < argc; ++i) {
         if (!std::strcmp(argv[i], "--headless")) headless = true;
@@ -492,7 +506,12 @@ int main(int argc, char** argv) {
         else if (!std::strcmp(argv[i], "--level") && i + 1 < argc) levelPath = argv[++i];
         else if (!std::strcmp(argv[i], "--wieldables") && i + 1 < argc) wieldablesPath = argv[++i];
         else if (!std::strcmp(argv[i], "--elements") && i + 1 < argc) elementsPath = argv[++i];
-        else if (!std::strcmp(argv[i], "--enemies") && i + 1 < argc) enemiesPath = argv[++i];
+        else if (!std::strcmp(argv[i], "--enemies") && i + 1 < argc) {
+            if (!enemiesGiven) enemiesPaths.clear();
+            enemiesGiven = true;
+            enemiesPaths.push_back(argv[++i]);
+        }
+        else if (!std::strcmp(argv[i], "--gnawer-check")) gnawerCheck = true;
         else if (!std::strcmp(argv[i], "--staff") && i + 1 < argc) staffId = argv[++i];
         else if (!std::strcmp(argv[i], "--wand") && i + 1 < argc) wandId = argv[++i];
         else if (!std::strcmp(argv[i], "--cooked") && i + 1 < argc) cookedDir = argv[++i];
@@ -516,7 +535,7 @@ int main(int argc, char** argv) {
     coe::game::EnemyTable enemyTypes;
     bool ok = modelView ? loadModel(cookedDir, model, mesh)
                         : loadLevelFile(levelPath, level) && loadElementsFile(elementsPath, elements) &&
-                              loadWieldablesFile(wieldablesPath, wieldables) && loadEnemiesFile(enemiesPath, enemyTypes);
+                              loadWieldablesFile(wieldablesPath, wieldables) && loadEnemiesFiles(enemiesPaths, enemyTypes);
     if (ok && !modelView) mesh = coe::game::makeUnitCube();   // uploaded once, drawn per box
     // Step 21: the Staff + Wand slots (level mode).
     std::vector<coe::game::WieldableInstance> hands;
@@ -551,6 +570,10 @@ int main(int argc, char** argv) {
     if (ok && !modelView) ok = spawnLevelEnemies(level, enemyTypes, enemies);
     coe::game::DamageNumbers damageNumbers;
     std::vector<coe::game::DamageLabel> labelScratch;
+    // Step 23: the brains of every enemy with an `ai` def (Gnawers).
+    coe::game::GnawerAI gnawers(physics, enemies);
+    if (ok && !modelView) gnawers.adoptAll();
+    bool gnawerOk = true;
 
     bool ticksOk = true, inputOk = true, viewmodelOk = true;
     if (ok && headless) {
@@ -607,6 +630,7 @@ int main(int argc, char** argv) {
             cratePrev = crateCur = physics.state(crate);
         }
         std::unique_ptr<coe::game::PlayerController> player;
+        std::uint32_t checkGnawer = 0;   // --gnawer-check's Gnawer (enemy ids start at 1)
         glm::vec3 spawnFeet{0.0f}, spawnForward{0.0f};
         float apex = 0.0f;   // highest feet above the spawn
         float minMana = 0.0f, castCost = 0.0f;   // lowest mana seen after a cast; the last cast's cost
@@ -644,8 +668,26 @@ int main(int argc, char** argv) {
             std::printf("[player] spawned at (%.2f, %.2f, %.2f) facing %.0f deg, %s, eye %.2f m\n", double(spawnFeet.x),
                         double(spawnFeet.y), double(spawnFeet.z), double(level.playerStart.yawDeg),
                         coe::physics::groundStateName(player->character().groundState()), double(player->eyeHeight()));
+            if (gnawerCheck) {   // step 23: a Gnawer 7 m ahead (inside detect 8, outside aggro 6), facing the player
+                const coe::game::EnemyDef* def = enemyTypes.find("gnawer");
+                if (!def || !def->ai) {
+                    std::fprintf(stderr, "[gnawer] --gnawer-check needs the 'gnawer' enemy type (data/enemies/gnawer.toml)\n");
+                    ok = false;
+                } else {
+                    const glm::vec3 at = spawnFeet + spawnForward * kGnawerCheckDistance;
+                    checkGnawer = enemies.spawn(*def, at, level.playerStart.yawDeg + 180.0f);
+                    gnawers.adoptAll();
+                    std::printf("[gnawer] check: spawned %s #%u at (%.2f, %.2f, %.2f), %.1f m ahead of the player\n",
+                                def->name.c_str(), checkGnawer, double(at.x), double(at.y), double(at.z),
+                                double(kGnawerCheckDistance));
+                }
+            }
         }
         bool physicsOk = true;
+        float playerDamage = 0.0f;   // step 23: Gnawer bites landed (no player health until step 24)
+        uint64_t bitesLanded = 0, bitesDodged = 0;
+        std::vector<uint64_t> checkBiteTicks;                      // --gnawer-check: the check Gnawer's bites
+        std::vector<coe::game::GnawerState> checkStates;            // ... and the states it went through
         uint64_t frames = 0, loops = 0;   // loops also counts minimized iterations
         const uint64_t start = coe::monotonicNs();
         const uint64_t limitNs = seconds > 0 ? uint64_t(seconds * 1e9) : 0;
@@ -657,7 +699,7 @@ int main(int argc, char** argv) {
             SDL_Event e;
             while (SDL_PollEvent(&e)) {
                 if (e.type == SDL_EVENT_QUIT || e.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) running = false;
-                if (inputScript && isRealInput(e)) continue;   // only the script drives a scripted run
+                if ((inputScript || gnawerCheck) && isRealInput(e)) continue;   // only the script drives a scripted run
                 if (e.type == SDL_EVENT_KEY_DOWN && e.key.key == SDLK_ESCAPE) running = false;
                 if (e.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) renderer.onResize();
                 input.handleEvent(e);
@@ -671,6 +713,33 @@ int main(int argc, char** argv) {
                 else {
                     player->tick(in, float(step.dtSeconds()));   // moves the character, then the world steps
                     apex = std::max(apex, player->feet().y - spawnFeet.y);
+                    // Step 23: Gnawers think on the player's new position; their hitboxes
+                    // reach the new pose in this step.
+                    const uint64_t tickNo = step.totalTicks() - n + 1;
+                    coe::game::AITarget target;
+                    target.feet = player->feet();
+                    target.eyeHeight = player->eyeHeight();
+                    target.radius = player->character().settings().radius;
+                    target.invulnerable = player->invulnerable();
+                    gnawers.tick(float(step.dtSeconds()), target);
+                    for (const coe::game::GnawerTransition& t : gnawers.takeTransitions()) {
+                        std::printf("[gnawer] tick %llu: #%u %s -> %s at %.2f m\n", (unsigned long long)tickNo, t.enemy,
+                                    coe::game::gnawerStateName(t.from), coe::game::gnawerStateName(t.to), double(t.distance));
+                        if (t.enemy == checkGnawer) checkStates.push_back(t.to);
+                    }
+                    for (const coe::game::EnemyAttack& a : gnawers.takeAttacks()) {
+                        if (a.dodged) {
+                            ++bitesDodged;
+                        } else {
+                            ++bitesLanded;
+                            playerDamage += a.damage;
+                        }
+                        if (a.enemy == checkGnawer) checkBiteTicks.push_back(tickNo);
+                        std::printf("[gnawer] tick %llu: #%u %s bites the player: %.1f %s%s (taken %.1f in total)\n",
+                                    (unsigned long long)tickNo, a.enemy, a.def->name.c_str(), double(a.damage),
+                                    coe::game::elementName(a.element), a.dodged ? " DODGED (i-frames)" : "",
+                                    double(playerDamage));
+                    }
                     physicsOk = physics.step(float(step.dtSeconds())) && physicsOk;
                     // Cast from where the player is after this tick, then sweep the bolts
                     // against the world as just stepped.
@@ -716,6 +785,7 @@ int main(int argc, char** argv) {
                         if (const std::optional<coe::game::EnemyHit> eh = enemies.applyHit(h)) {
                             printEnemyHit(enemies, *eh, h, elements);
                             damageNumbers.add(h.point, eh->result, h.element, elements);
+                            gnawers.onHit(*eh);   // step 23: provokes; > 10 damage knocks back
                             continue;
                         }
                         std::printf("[cast] hit %s body %u at %.2f m after %.3f s (tick %d) at (%.2f, %.2f, %.2f), "
@@ -925,6 +995,45 @@ int main(int argc, char** argv) {
             viewmodelOk = !renderer.captureSupported() || (vmChecked && vmOk);
             std::printf("[focus] FOV %.1f deg%s, narrowest %.1f; spread bloom %.2f deg\n", double(focus.fov()),
                         focus.focused() ? " (focused)" : "", double(minFov), double(spread.bloomDeg()));
+            // Step 23: what the Gnawers did; --gnawer-check's done-check.
+            if (!gnawers.agents().empty()) {
+                std::string states;
+                for (const coe::game::GnawerAgent& a : gnawers.agents())
+                    states += std::string(states.empty() ? "" : ", ") + "#" + std::to_string(a.enemy) + " " +
+                              coe::game::gnawerStateName(a.fsm.state());
+                std::printf("[gnawer] %zu gnawer(s) (%s): %llu bite(s) landed (%.1f dmg to the player), %llu dodged\n",
+                            gnawers.agents().size(), states.c_str(), (unsigned long long)bitesLanded, double(playerDamage),
+                            (unsigned long long)bitesDodged);
+            }
+            if (gnawerCheck) {
+                const coe::game::GnawerAgent* a = gnawers.agent(checkGnawer);
+                const coe::game::Enemy* e = enemies.find(checkGnawer);
+                // Idle -> detect -> chase -> attack, in that order, as its first transitions.
+                const std::vector<coe::game::GnawerState> want = {coe::game::GnawerState::Detect,
+                                                                  coe::game::GnawerState::Chase,
+                                                                  coe::game::GnawerState::Attack};
+                const bool path = checkStates.size() >= want.size() &&
+                                  std::equal(want.begin(), want.end(), checkStates.begin());
+                const uint64_t cooldownTicks =
+                    a && e ? uint64_t(std::lround(e->def->ai->attackCooldown * float(kTickHz))) : 0;
+                bool spaced = checkBiteTicks.size() >= 2;
+                for (size_t k = 1; k < checkBiteTicks.size(); ++k)
+                    spaced = spaced && checkBiteTicks[k] - checkBiteTicks[k - 1] == cooldownTicks;
+                const float dist = e ? glm::length(glm::vec2(e->feet.x - player->feet().x, e->feet.z - player->feet().z)) : 1e9f;
+                const bool chased = a && a->travelled >= kGnawerCheckDistance - 2.0f;
+                const bool hurt = a && a->bites == checkBiteTicks.size() && a->dodged == 0 &&
+                                  playerDamage == float(a->bites) * e->def->ai->attackDamage;
+                const bool close = e && dist <= e->def->ai->attackRange + coe::game::kGnawerAttackSlack;
+                gnawerOk = a && e && path && spaced && chased && hurt && close;
+                std::printf("[gnawer] check: %s, %zu state change(s), travelled %.2f m, now %.2f m from the player, "
+                            "%zu bite(s) %llu ticks apart (cooldown %llu), %.1f dmg to the player%s\n",
+                            a ? coe::game::gnawerStateName(a->fsm.state()) : "missing", checkStates.size(),
+                            double(a ? a->travelled : 0.0f), double(dist), checkBiteTicks.size(),
+                            (unsigned long long)(checkBiteTicks.size() >= 2 ? checkBiteTicks[1] - checkBiteTicks[0] : 0),
+                            (unsigned long long)cooldownTicks, double(playerDamage),
+                            gnawerOk ? "" : " MISMATCH (need detect -> chase -> attack, >= 2 bites the cooldown apart, "
+                                            "travelled >= 5 m, bite damage = bites x 3)");
+            }
             loadout.setManaSpender(nullptr);   // it refers to the player
             player.reset();   // before the world it lives in
         }
@@ -940,7 +1049,7 @@ int main(int argc, char** argv) {
     std::printf("validation messages: %u errors, %u warnings\n", s.errors, s.warnings);
     if (window) SDL_DestroyWindow(window);
     SDL_Quit();
-    bool pass = ok && ticksOk && inputOk && viewmodelOk && s.errors == 0;
+    bool pass = ok && ticksOk && inputOk && viewmodelOk && gnawerOk && s.errors == 0;
     std::puts(pass ? "RESULT: PASS" : "RESULT: FAIL");
     return pass ? 0 : 1;
 }
