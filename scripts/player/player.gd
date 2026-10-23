@@ -1,7 +1,7 @@
 class_name Player
 extends CharacterBody3D
-## First-person controller (BUILD_PLAN step 3, port of the archived C++ PlayerController,
-## old step 14), reinterpreting Magewar's cogito_player:
+## First-person controller (BUILD_PLAN steps 3-4, port of the archived C++ PlayerController,
+## old steps 14-15), reinterpreting Magewar's cogito_player:
 ##  * Origin = feet. Capsule r 0.3, 1.7 m standing / 0.7 m crouched; eye (Head) 1.5 / 0.6 m,
 ##    eased at LERP 10/s.
 ##  * Per physics tick (tick()): wish direction = move axes turned by the current yaw,
@@ -13,6 +13,17 @@ extends CharacterBody3D
 ##  * Steps up to 0.35 m are climbed (probe up / forward / down, like Cogito's step_check),
 ##    floor_max_angle 45 deg, floor snap 0.5 m.
 ##  * Mouse look: 0.25 deg/count, mouse right = turn right, pitch clamped to +-89 deg.
+##  * Sprint (held, step 4): 7 m/s; starts on the ground with a move key held, not while
+##    crouched or with Breath exhausted, carries on in the air while held, eases like walk;
+##    drains Breath 20/s (Breath: scripts/player/breath.gd).
+##  * Slide (Magewar): Crouch on the ground while sprinting (previous tick) + a move key
+##    slides 1.5 s along the entry wish direction (look doesn't steer it) at
+##    (time_left / 1.5 + 0.5) x 5 m/s = 7.5 -> 2.5 m/s; ends on timeout, on releasing
+##    Crouch or Sprint, or on leaving the ground; no re-trigger while held. Jump during a
+##    slide = slide jump 4.5 x 1.3 m/s, stands up in the air, keeps its speed until landing.
+##    Slides don't drain Breath.
+##  * speed_multiplier (Magewar Shoes speed_modifier, step 19) scales walk/sprint/crouch,
+##    not the slide.
 ## In game _physics_process feeds PlayerInput.from_input(); tests call tick() directly.
 
 const CHARACTER_LAYER := 2   # physics layer "character" (bit 2)
@@ -28,8 +39,16 @@ var steps_climbed := 0
 var direction := Vector3.ZERO   # smoothed move direction (Magewar `direction`)
 var speed := 4.0                # Magewar `current_speed`
 var input_enabled := true       # false in tests: no Input polling in _physics_process
+var breath: Breath              # sprint/dash pool (step 4)
+var sprinting := false
+var slide_left := 0.0           # seconds left on the slide (Magewar SlidingTimer)
+var slide_dir := Vector3.ZERO
+var slides := 0
+var slide_jumps := 0
+var speed_multiplier := 1.0     # set_speed_multiplier(): Shoes hook
 
 var _crouched_jump := false
+var _jumped_from_slide := false
 var _rising := false
 var _shape: CapsuleShape3D
 var _collider: CollisionShape3D
@@ -39,6 +58,7 @@ var _collider: CollisionShape3D
 func _init() -> void:
 	if tuning == null:
 		tuning = PlayerTuning.new()
+	breath = Breath.from_tuning(tuning)
 
 func _ready() -> void:
 	if tuning == null:
@@ -55,6 +75,7 @@ func _ready() -> void:
 	_collider.shape = _shape
 	_set_capsule(tuning.standing_height)
 	speed = tuning.walk_speed
+	breath = Breath.from_tuning(tuning)
 	eye_height = tuning.standing_eye
 	head.position = Vector3(0.0, eye_height, 0.0)
 	set_look(rotation.y, 0.0)
@@ -117,49 +138,91 @@ func on_ground() -> bool:
 func capsule_height() -> float:
 	return _shape.height
 
+func sliding() -> bool:
+	return slide_left > 0.0
+
+## Equipment speed hook (Magewar EquipmentItem.speed_modifier, Shoes x1.15): scales the
+## walk/sprint/crouch targets, not the slide.
+func set_speed_multiplier(m: float) -> void:
+	speed_multiplier = m
+
 ## One fixed tick (dt must be the physics step: move_and_slide uses the physics delta).
 func tick(input: PlayerInput, dt: float) -> void:
 	# Still rising from a jump: never let a stale floor contact cancel the jump.
 	if _rising and velocity.y <= 0.0:
 		_rising = false
 	var grounded := is_on_floor() and not _rising
-	if grounded:
+	if grounded:   # landed
 		_crouched_jump = false
+		_jumped_from_slide = false
 
 	var wish := forward_for(yaw) * input.move_forward() + right_for(yaw) * input.move_right()
 	var moving := wish.length_squared() > 1e-12
 	if moving:
 		wish = wish.normalized()   # diagonals are not faster
 
+	# Slide (Magewar): Crouch on the ground while sprinting (last tick) with a move key
+	# starts it along the current wish direction; leaving the ground or letting go of
+	# Crouch or Sprint stops it (the timeout counts down after the move).
+	var crouch_held := input.down(&"crouch")
+	if sliding() and (not grounded or not crouch_held or not input.down(&"sprint")):
+		slide_left = 0.0
+	if not sliding() and grounded and crouch_held and sprinting and moving:
+		slide_left = tuning.slide_duration
+		slide_dir = wish
+		slides += 1
+
 	# Crouch (held): starts on the ground only; a crouch-jump stays crouched in the air;
 	# standing up needs head room.
-	var want_crouch := _crouched_jump or (grounded and input.down(&"crouch"))
+	var want_crouch := _crouched_jump or (grounded and crouch_held)
 	if want_crouch:
 		_set_crouched(true)
 	elif crouched and _can_stand():
 		_set_crouched(false)
 
+	# Sprint (held): starts on the ground, carries on in the air while held; never while
+	# crouched or exhausted; needs a move key (standing still with Sprint doesn't drain).
+	sprinting = input.down(&"sprint") and not crouched and moving and breath.can_sprint() \
+		and (grounded or sprinting)
+	breath.tick(sprinting, dt)
+
 	# Horizontal: smoothed direction x eased speed (Magewar's lerps).
-	var base := tuning.crouch_speed if crouched else tuning.walk_speed
-	speed = lerpf(speed, base, minf(1.0, dt * tuning.lerp_speed))
-	if grounded:
-		direction = direction.lerp(wish, minf(1.0, dt * tuning.lerp_speed))
-	elif moving:
-		direction = direction.lerp(wish, minf(1.0, dt * tuning.air_lerp_speed))
-	if direction.length() < 1e-3:
-		direction = Vector3.ZERO
+	if sliding():
+		direction = slide_dir
+		speed = (slide_left / tuning.slide_duration + 0.5) * tuning.slide_speed
+	else:
+		if not _jumped_from_slide:   # a slide jump keeps its speed until landing
+			var base := tuning.crouch_speed if crouched else (tuning.sprint_speed if sprinting else tuning.walk_speed)
+			speed = lerpf(speed, base * speed_multiplier, minf(1.0, dt * tuning.lerp_speed))
+		if grounded:
+			direction = direction.lerp(wish, minf(1.0, dt * tuning.lerp_speed))
+		elif moving:
+			direction = direction.lerp(wish, minf(1.0, dt * tuning.air_lerp_speed))
+		if direction.length() < 1e-3:
+			direction = Vector3.ZERO
 
 	var v := direction * speed
 	v.y = 0.0 if grounded else velocity.y - tuning.gravity * dt
 	if grounded and input.was_pressed(&"jump"):
-		v.y = tuning.crouch_jump_velocity if crouched else tuning.jump_velocity
-		_crouched_jump = crouched
+		if sliding():   # slide jump: jump x SLIDE_JUMP_MOD, stand up in the air
+			v.y = tuning.jump_velocity * tuning.slide_jump_mod
+			_jumped_from_slide = true
+			_crouched_jump = false
+			slide_left = 0.0
+			slide_jumps += 1
+		else:
+			v.y = tuning.crouch_jump_velocity if crouched else tuning.jump_velocity
+			_crouched_jump = crouched
 		_rising = true
 		jumps += 1
 	velocity = v
 	# A climbed step already moved the body this tick (up, over the edge, onto the top).
 	if not (grounded and v.y <= 0.0 and _try_step_up(Vector3(v.x, 0.0, v.z) * dt)):
 		move_and_slide()
+	if sliding():   # SlidingTimer counts down
+		slide_left = maxf(0.0, slide_left - dt)
+		if slide_left < 1e-9:
+			slide_left = 0.0
 
 	# Eye height eases toward the stance's.
 	var target := tuning.crouching_eye if crouched else tuning.standing_eye

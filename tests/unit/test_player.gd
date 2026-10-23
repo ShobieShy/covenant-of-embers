@@ -1,9 +1,12 @@
 extends TestCase
-## Step 3 done check (port of the archived test_player.cpp, old step 14), driving
+## Steps 3-4 done checks (port of the archived test_player.cpp, old steps 14-15), driving
 ## Player.tick() over deterministic simulated 60 Hz physics frames:
 ##  1 s of W from the Midden PlayerStart ~ 3.67 m; jump apex 1.07 / 0.48 m (stand / crouch);
 ##  crouch eye 0.6 m and no standing up under a 1 m slab; 0.35 m step climbed, 0.5 m
 ##  blocked; ramp_west -> scrap_ledge (y 1.5). Plus look, spawn eye, InputMap, tuning.
+## Step 4: sprint 7 m/s drains Breath, runs dry at 300 ticks, resumes ~100 later; slide from
+##  sprint 90 ticks ~ 7.5 m along the entry direction; no slide from walk / crouch-first /
+##  standing / exhausted; slide jump 4.5 x 1.3 keeps its speed; speed multiplier.
 
 const DT := 1.0 / 60.0
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
@@ -29,6 +32,12 @@ func _box(parent: Node, center: Vector3, half: Vector3) -> StaticBody3D:
 func _flat() -> Node3D:
 	var w := _world()
 	_box(w, Vector3(0, -0.5, 0), Vector3(20, 0.5, 20))
+	return w
+
+## A 400 x 400 m floor (top y 0): long sprints stay on it.
+func _big_flat() -> Node3D:
+	var w := _world()
+	_box(w, Vector3(0, -0.5, 0), Vector3(200, 0.5, 200))
 	return w
 
 func _midden() -> Node3D:
@@ -162,6 +171,161 @@ func test_ramp_west_onto_scrap_ledge() -> void:
 	check(p.on_ground(), "on the ledge")
 	w.free()
 
+# --- step 4: sprint, Breath, slide -------------------------------------------------------
+
+func test_sprint_drain_run_dry_resume() -> void:
+	var w := _big_flat()
+	var p := _player(w, Vector3(0, 0, 150), 0.0)
+	_run(p, 30)
+	_run(p, 30, [&"sprint"])   # Sprint without a move key: no sprint, no drain
+	check(not p.sprinting and p.breath.value == 100.0, "standing Sprint doesn't drain")
+	var s := p.feet()
+	_run(p, 120, [&"forward", &"sprint"])
+	print("    sprint 2 s: %.3f m/s (7.0), %.2f m, Breath %.2f (60)" % [p.horizontal_speed(), s.z - p.feet().z, p.breath.value])
+	check(p.sprinting and absf(p.horizontal_speed() - 7.0) < 0.05, "sprint 7 m/s")
+	check_near(p.breath.value, 60.0, 0.01, "Breath after 2 s")
+	var dry := -1
+	for i in 240:
+		p.tick(PlayerInput.hold([&"forward", &"sprint"]), DT)
+		if p.breath.empty():
+			dry = 120 + i + 1
+			break
+	var resumed := -1
+	for i in range(1, 201):
+		p.tick(PlayerInput.hold([&"forward", &"sprint"]), DT)
+		if i == 60:
+			check(not p.sprinting and absf(p.horizontal_speed() - 4.0) < 0.05, "walks while exhausted (%.3f)" % p.horizontal_speed())
+		if resumed < 0 and p.sprinting:
+			resumed = i
+	print("    sprint: ran dry after %d ticks (300), sprinting again %d ticks later (~100)" % [dry, resumed])
+	check(absi(dry - 300) <= 1, "dry at 300")
+	check(resumed >= 99 and resumed <= 102, "resumes ~100 ticks later")
+	w.free()
+
+func test_crouch_sprint_and_speed_multiplier() -> void:
+	var w := _big_flat()
+	var c := _player(w, Vector3(0, 0, 0), 0.0)
+	_run(c, 30)
+	_run(c, 120, [&"forward", &"sprint", &"crouch"])
+	check(not c.sprinting and not c.sliding() and c.slides == 0 and c.crouched, "crouch + Sprint: no sprint/slide")
+	check(absf(c.horizontal_speed() - 3.0) < 0.05 and c.breath.value == 100.0, "crouch speed, no drain")
+	c.free()
+	var m := _player(w, Vector3(5, 0, 0), 0.0)
+	m.set_speed_multiplier(1.1)   # step 19 Shoes hook
+	_run(m, 30)
+	_run(m, 90, [&"forward"])
+	var walk := m.horizontal_speed()
+	_run(m, 90, [&"forward", &"sprint"])
+	var sprint := m.horizontal_speed()
+	_run(m, 90, [&"forward", &"crouch"])
+	var crouch := m.horizontal_speed()
+	print("    speed x1.1: walk %.3f (4.4), sprint %.3f (7.7), crouch %.3f (3.3)" % [walk, sprint, crouch])
+	check_near(walk, 4.4, 0.05, "walk x1.1")
+	check_near(sprint, 7.7, 0.05, "sprint x1.1")
+	check_near(crouch, 3.3, 0.05, "crouch x1.1 (Magewar scales CROUCHING_SPEED too)")
+	w.free()
+
+func test_slide_from_sprint_90_ticks_7_5_m() -> void:
+	var w := _big_flat()
+	var p := _player(w, Vector3.ZERO, 0.0)
+	_run(p, 30)
+	_run(p, 60, [&"forward", &"sprint"])
+	check(p.sprinting, "sprinting before the slide")
+	var start := p.feet()
+	var breath_start := p.breath.value
+	var counting := true
+	var slide_ticks := 0
+	var entry := 0.0
+	var dist := 0.0
+	var side := 0.0
+	var breath_end := 0.0
+	for i in 180:
+		if i == 30:
+			p.set_look(deg_to_rad(90.0), 0.0)   # look west: the slide keeps going north
+		p.tick(PlayerInput.hold([&"forward", &"sprint", &"crouch"]), DT)
+		if i == 0:
+			entry = p.horizontal_speed()
+			check(p.sliding() and p.crouched, "sliding + crouched on the first tick")
+		if counting and p.sliding():
+			slide_ticks += 1
+		if counting and not p.sliding():
+			counting = false
+			dist = start.z - p.feet().z
+			side = absf(p.feet().x - start.x)
+			breath_end = p.breath.value
+	var after := p.horizontal_speed()
+	print("    slide: %d ticks (90), %.3f m north (~7.5), sideways %.4f, entry %.3f m/s (7.5), then %.3f m/s, Breath %.2f -> %.2f"
+		% [slide_ticks, dist, side, entry, after, breath_start, breath_end])
+	check(p.slides == 1, "one slide, no re-trigger while held")
+	check(absi(slide_ticks - 90) <= 1, "90 ticks")
+	check_near(entry, 7.5, 0.05, "entry speed")
+	check_near(dist, 7.5, 0.3, "slide distance")
+	check(side < 0.02, "look doesn't steer the slide")
+	check_near(after, 3.0, 0.05, "crouch speed once it ends")
+	check(breath_end >= breath_start - 0.01, "sliding doesn't drain")
+	check(p.crouched and not p.sprinting, "crouched afterwards")
+	w.free()
+
+func test_no_slide_from_walk_standing_or_exhausted() -> void:
+	var w := _big_flat()
+	var p := _player(w, Vector3(0, 0, 0), 0.0)
+	_run(p, 30)
+	_run(p, 60, [&"forward"])
+	_run(p, 60, [&"forward", &"crouch"])
+	check(p.slides == 0 and p.crouched and absf(p.horizontal_speed() - 3.0) < 0.05, "walk + Crouch just crouches")
+	_run(p, 60, [&"forward", &"crouch", &"sprint"])
+	check(p.slides == 0, "crouch first, then Sprint: no slide")
+	p.free()
+	var s := _player(w, Vector3(10, 0, 0), 0.0)
+	_run(s, 30, [&"sprint"])
+	_run(s, 30, [&"sprint", &"crouch"])
+	check(s.slides == 0, "standing Sprint + Crouch: no slide")
+	s.free()
+	var e := _player(w, Vector3(20, 0, 150), 0.0)
+	_run(e, 30)
+	_run(e, 310, [&"forward", &"sprint"])
+	check(not e.sprinting and e.breath.exhausted, "exhausted")
+	_run(e, 1, [&"forward", &"sprint", &"crouch"])
+	check(e.slides == 0 and not e.sliding(), "exhausted + Crouch: no slide")
+	e.free()
+	var r := _player(w, Vector3(30, 0, 0), 0.0)
+	_run(r, 30)
+	_run(r, 60, [&"forward", &"sprint"])
+	_run(r, 20, [&"forward", &"sprint", &"crouch"])
+	check(r.sliding(), "sliding")
+	_run(r, 1, [&"forward", &"crouch"])
+	check(not r.sliding() and r.crouched and r.slides == 1, "releasing Sprint ends the slide")
+	w.free()
+
+func test_slide_jump() -> void:
+	var w := _big_flat()
+	var p := _player(w, Vector3.ZERO, 0.0)
+	_run(p, 30)
+	_run(p, 60, [&"forward", &"sprint"])
+	_run(p, 10, [&"forward", &"sprint", &"crouch"])
+	check(p.sliding(), "sliding")
+	var slide_speed := p.horizontal_speed()
+	_run(p, 1, [&"forward", &"sprint", &"crouch"], [&"jump"])
+	check(not p.sliding() and p.slide_jumps == 1 and p.jumps == 1, "slide jump")
+	var apex := 0.0
+	var lo := 1e9
+	var hi := 0.0
+	var stood := false
+	for i in 120:
+		p.tick(PlayerInput.hold([&"forward", &"sprint", &"crouch"]), DT)
+		apex = maxf(apex, p.feet().y)
+		if not p.on_ground():
+			stood = stood or not p.crouched
+			lo = minf(lo, p.horizontal_speed())
+			hi = maxf(hi, p.horizontal_speed())
+	var v := 4.5 * 1.3
+	print("    slide jump: apex %.3f m (%.3f + discretisation), air speed %.3f..%.3f m/s (slide %.3f)" % [apex, v * v / 19.6, lo, hi, slide_speed])
+	check_near(apex, v * v / 19.6, 0.08, "slide jump apex")
+	check(stood, "stands up in the air")
+	check(hi - lo < 0.05 and hi > 6.0, "slide speed kept in the air")
+	check(p.on_ground() and p.slides == 1, "landing with Crouch held doesn't re-slide")
+	w.free()
+
 # --- beyond the done check --------------------------------------------------------------
 
 func test_spawns_at_player_start_eye_in_main() -> void:
@@ -238,7 +402,10 @@ func test_tuning_resource_defaults() -> void:
 	var expect := {"walk_speed": 4.0, "crouch_speed": 3.0, "lerp_speed": 10.0, "air_lerp_speed": 6.0,
 		"jump_velocity": 4.5, "crouch_jump_velocity": 3.0, "gravity": 9.8, "radius": 0.3,
 		"standing_height": 1.7, "crouching_height": 0.7, "standing_eye": 1.5, "crouching_eye": 0.6,
-		"step_height": 0.35, "max_slope_deg": 45.0, "look_deg_per_count": 0.25, "max_pitch_deg": 89.0}
+		"step_height": 0.35, "max_slope_deg": 45.0, "look_deg_per_count": 0.25, "max_pitch_deg": 89.0,
+		"sprint_speed": 7.0, "slide_speed": 5.0, "slide_duration": 1.5, "slide_jump_mod": 1.3,
+		"breath_max": 100.0, "breath_drain_per_sec": 20.0, "breath_regen_per_sec": 30.0,
+		"breath_regen_delay": 1.0, "breath_resume_at": 20.0}
 	for k in expect:
 		check_near(float(t.get(k)), expect[k], 1e-6, k)
 	var w := _flat()

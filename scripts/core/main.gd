@@ -30,6 +30,11 @@ func _process(delta: float) -> void:
 	_elapsed += delta
 	if _seconds > 0.0 and _elapsed >= _seconds:
 		print("[main] %d frames, %d physics ticks in %.2f s" % [_frames, _ticks, _elapsed])
+		var player := get_node_or_null("Player") as Player
+		if player:
+			print("[player] feet %s, Breath %.1f/%.0f, %d jump(s), %d slide(s)" % [
+				player.global_position, player.breath.value, player.breath.max_value(),
+				player.jumps, player.slides])
 		get_tree().quit(0)
 
 func _physics_process(_delta: float) -> void:
