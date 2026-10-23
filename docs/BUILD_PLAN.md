@@ -45,12 +45,12 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: level loads ≥10 boxes; screenshot (headless .ppm) shows floor and walls.
 
 **13. Jolt physics world**
-- Does: Jolt via FetchContent, static colliders from the greybox, physics step on fixed tick.
-- Files: engine/physics/physics.*.
-- Done: test drops a dynamic box onto the floor and it comes to rest at the expected height (±0.05 m).
+- Does: Jolt via FetchContent (pinned tarball, URL_HASH, SYSTEM), static colliders from the greybox, physics step on fixed tick. Colliders come straight from step 12's `game::Level`: one static `BoxShape(size / 2)` per `LevelBox` at `center` with `quat(LevelBox::rotation())` (same Y·X·Z matrix the renderer uses, so visuals and collision can't drift), object layer by `BoxKind` (ground/wall/ramp/platform/heap = static world, crates static for now; dynamic crates later). The physics lib stays in engine/ with no TOML dependency; game/world builds the bodies.
+- Files: engine/physics/physics.*, game/world/level_physics.*.
+- Done: test drops a dynamic box onto the Midden `ground` (top at y = 0) and it comes to rest at the expected height (±0.05 m); a second box dropped over `ramp_west` slides off it (ramps collide at their 20.6° slope).
 
 **14. FPS controller: walk, jump, crouch, look**
-- Does: Jolt CharacterVirtual driven by `coe::input::TickInput` each tick (`moveForward()/moveRight()` axes, Jump on the `wasPressed` edge, Crouch hold), mouse look from `InputState::takeLook()` applied per render frame (yaw/pitch, 0.25°/count default, pitch clamp ±89° to avoid the gimbal flip at Magewar's ±90°); each tick reads the latest yaw for the move direction. Builds on step 10: game/main.cpp already maps look to `coe::Camera` yaw/pitch (mouse right → negative yaw = turn right, clamp `Camera::kMaxPitch`); the controller takes over yaw/pitch ownership and sets `camera.position` = body + eye height, reinterpreting Magewar's cogito_player (Neck node +0.7 m above the body origin, crouch lowers the head by 0.9 m `CROUCHING_DEPTH`) for our capsule. The tumbling-model demo (game/core/tumble_demo.hpp, step 11's `TumbleDemo` with the fitted blaster) is replaced by the greybox from step 12.
+- Does: Jolt CharacterVirtual driven by `coe::input::TickInput` each tick (`moveForward()/moveRight()` axes, Jump on the `wasPressed` edge, Crouch hold), mouse look from `InputState::takeLook()` applied per render frame (yaw/pitch, 0.25°/count default, pitch clamp ±89° to avoid the gimbal flip at Magewar's ±90°); each tick reads the latest yaw for the move direction. Builds on step 10: game/main.cpp already maps look to `coe::Camera` yaw/pitch (mouse right → negative yaw = turn right, clamp `Camera::kMaxPitch`); the controller takes over yaw/pitch ownership and sets `camera.position` = body + eye height, reinterpreting Magewar's cogito_player (Neck node +0.7 m above the body origin, crouch lowers the head by 0.9 m `CROUCHING_DEPTH`) for our capsule. Step 12 already made the Midden greybox the default view (window and headless, start camera from the level's `[camera]` table, mouse look on top of its yaw/pitch); this step spawns the player body at `[camera].position − eye height` (rename the table to `[spawn]` then: position = feet, yaw only) and drops the tumbling-model demo (game/core/tumble_demo.hpp) from the default path. Keep `covenant --model` as a model viewer until step 21's viewmodel replaces it; the `smoke_headless_model` test goes with it.
 - Files: game/player/player_controller.*.
 - Done: playable in window; test: 1 s forward input moves ≈ walk speed × 1 s.
 
@@ -66,6 +66,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 
 **17. Weapon data model + Sidearm hitscan**
 - Does: WeaponDef/WeaponInstance (family, fire mode, mag, rate), hitscan raycast via Jolt, muzzle flash debug line.
+Parse families.toml the way step 12's level.cpp does (toml++ with `TOML_EXCEPTIONS 0` inside coe_game, unknown keys and out-of-range values rejected with file:line); with a second parser, move the shared helpers (`vec3`/colour/number readers, unknown-key check, error formatting) from game/world/level.cpp into game/data/toml_read.*.
 - Files: game/weapons/{weapon,firing}.*, data/weapons/families.toml.
 - Done: test fires at a target box and registers a hit at the right distance; fire rate respected.
 
@@ -86,6 +87,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 
 **21. Repeater, weapon slots and viewmodel**
 - Does: auto-fire Repeater, 2 unlocked slots with 1/2 swap and equip time, viewmodel draws the Kenney blaster mesh (loaded via step 11's manifest + `loadGltfMesh`). Reinterpret Magewar's Cogito wieldable scenes: the blaster model is rotated 180° about Y (glTF +Z barrel → camera −Z) and scaled 0.8 under the camera, drawn after the world with its own near-range projection/depth so it never clips walls. Add colormap texturing here: stb_image (FetchContent, URL_HASH) decodes the GLB's embedded PNG, one sampled image + sampler per material (descriptor set), UVs already in `assets::Vertex`, honour `KHR_texture_transform` (Kenney's colormap uses it) by baking offset/scale into the UVs at load time.
+Renderer notes from step 12: per-frame data (viewProj, camera position, light, ambient, fog) lives in the set-0 `Frame` UBO (shaders/frame.glsl) and push constants are `{model, tint}` = 80 of 128 B, so the viewmodel's own projection is a second `Frame` UBO slot (or a `viewProj` override in the remaining 48 B) and the draws after the world clear depth first. Textured materials make tint a material parameter; the 2× MSAA targets already apply to the viewmodel.
 - Files: game/weapons/loadout.*, game/render/viewmodel.*.
 - Done: swap test respects equip time; viewmodel visible in window run.
 
@@ -105,7 +107,7 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Done: tests: weak-point hit doubles damage; shield regen starts after delay.
 
 **25. Enemy spawner + kill events**
-- Does: spawn points in level data, wave of Gnawers/Heaps, kill event carrying XP and Tally values. **M1 gunplay complete.**
+- Does: spawn points in level data (`[[spawn]]` tables in data/levels/midden_greybox.toml: `kind`, `position`, `yaw_deg`, parsed and validated by game/world/level.cpp alongside `[[box]]`; a spawn must stand on a ground/platform/ramp box via `Level::boxAtSurface`), wave of Gnawers/Heaps, kill event carrying XP and Tally values. **M1 gunplay complete.**
 - Files: game/world/spawner.*, game/core/events.*.
 - Done: clearing the wave emits N kill events; ctest passes.
 

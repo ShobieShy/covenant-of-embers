@@ -5,6 +5,8 @@
 
 # --- shaders -> SPIR-V (build/<preset>/shaders) ---
 set(SHADER_SRC ${PROJECT_SOURCE_DIR}/shaders/basic.vert ${PROJECT_SOURCE_DIR}/shaders/basic.frag)
+# Shared include (per-frame UBO block); every shader rebuilds when it changes.
+set(SHADER_INCLUDES ${PROJECT_SOURCE_DIR}/shaders/frame.glsl)
 set(SPV_DIR ${CMAKE_BINARY_DIR}/shaders)
 set(SPV_OUT "")
 foreach(src ${SHADER_SRC})
@@ -13,7 +15,7 @@ foreach(src ${SHADER_SRC})
   add_custom_command(OUTPUT ${out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${SPV_DIR}
     COMMAND Vulkan::glslc --target-env=vulkan1.3 -Werror -o ${out} ${src}
-    DEPENDS ${src} COMMENT "glslc ${n}")
+    DEPENDS ${src} ${SHADER_INCLUDES} COMMENT "glslc ${n}")
   list(APPEND SPV_OUT ${out})
 endforeach()
 add_custom_target(shaders ALL DEPENDS ${SPV_OUT})

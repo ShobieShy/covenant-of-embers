@@ -84,7 +84,7 @@ Python ≥ 3.11 (stdlib only, for tools) come from the system.
 | Math | **GLM** | MIT | step 10 | 1.0.3 release tarball via FetchContent (URL_HASH SHA256, SYSTEM), header-only (`GLM_BUILD_LIBRARY OFF`); `GLM_FORCE_RADIANS` + `GLM_FORCE_DEPTH_ZERO_TO_ONE` are PUBLIC on `coe_engine` |
 | glTF | **fastgltf** | MIT | step 11 | v0.9.1 tarball (URL_HASH, SYSTEM, `FASTGLTF_COMPILE_AS_CPP20`). In `coe_assets` (CPU-only lib shared by the cooker and the engine). |
 | JSON reads | **simdjson** | Apache-2.0 | step 11 | v4.6.11 tarball (URL_HASH); we build its single-header amalgamation as `coe_simdjson` and alias it `simdjson::simdjson` *before* fastgltf, so fastgltf's own unhashed download is skipped. Reads `cooked/manifest.json`; JSON we *write* stays hand-rolled, sorted and timestamp-free for determinism. |
-| TOML (data files) | **toml++** | MIT | step 12 | Levels, weapons, loot, patches, bindings; tools keep Python `tomllib`. |
+| TOML (data files) | **toml++** | MIT | step 12 | v3.4.0 tarball (URL_HASH, SYSTEM, `tomlplusplus::tomlplusplus`, header-only). Linked PRIVATE to `coe_game`; each parser .cpp sets `TOML_EXCEPTIONS 0` before the include (`parse_result` API, errors carry file:line). Levels, weapons, loot, patches, bindings; tools keep Python `tomllib`. |
 | Physics | **Jolt Physics** | MIT | step 13 | |
 | Unit tests | **doctest** | MIT | step 20 | Until then each tool has a `--self-test` ctest. |
 | Debug UI | **Dear ImGui** | MIT | step 22 | |

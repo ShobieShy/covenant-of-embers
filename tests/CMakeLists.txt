@@ -20,3 +20,9 @@ coe_add_test(NAME gltf_loader COMMAND test_gltf_loader)
 # Every model the cooker produced for the blaster kit loads (manifest hashes checked).
 coe_add_test(NAME gltf_cooked_blaster_kit COMMAND test_gltf_loader --cooked ${CMAKE_BINARY_DIR}/cooked_test
   PROPERTIES FIXTURES_REQUIRED cooked_blaster)
+
+# Greybox level data + TOML validation + box/normal math (step 12): CPU-only (coe_game).
+add_executable(test_level test_level.cpp)
+target_link_libraries(test_level PRIVATE coe_game coe_warnings)
+target_compile_definitions(test_level PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
+coe_add_test(NAME level COMMAND test_level)

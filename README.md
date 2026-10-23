@@ -30,7 +30,8 @@ UBSan is fatal and leak checking is on; ctest sets the sanitizer and Vulkan-load
 
 ## Layout
 - `engine/` – reusable runtime (`coe_engine` library): `core/` (fixed-timestep loop, clock), `input/` (SDL3 action map, per-tick edges, per-frame mouse look), `render/` (Vulkan renderer; `camera.*`: right-handed +Y-up view, reverse-Z infinite-far Vulkan projection, 75° vertical FOV, 5 cm near plane).
-- `game/` – the `covenant` executable: main loop and gameplay state.
+- `game/` – the `covenant` executable (main loop) on top of `coe_game` (gameplay code shared with tests): `world/level.*` loads data-defined greybox levels (toml++), `world/headless_checks.*` verifies headless frames.
+- `data/` – hand-authored game data read at runtime (TOML). `data/levels/midden_greybox.toml`: the M1 greybox arena as boxes (`kind` ground/wall/ramp/crate/heap/platform, `center`/`size` in metres, `rotation` in degrees applied Y·X·Z like Godot, `color` tint).
 - `tests/` – unit tests. `tools/` – asset lint and cooker. `cmake/` – build helpers.
 
 The simulation advances in fixed 60 Hz ticks; rendering runs at the display rate and interpolates between the last two ticks (`alpha`). Long hitches are clamped to 0.25 s so the loop never spirals.
@@ -39,9 +40,11 @@ Register every test with `coe_add_test(NAME … COMMAND … [WORKING_DIRECTORY �
 
 ## Run / smoke tests
 ```sh
-./build/debug/covenant                 # window, Esc to quit
+./build/debug/covenant                 # window (Midden greybox, mouse look), Esc to quit
 ./build/debug/covenant --seconds 3     # auto-quits after 3 s, logs ~180 fixed ticks
-./build/debug/covenant --headless      # offscreen render + colour/depth check (writes mesh.ppm)
+./build/debug/covenant --headless      # offscreen level render, checks floor/walls/sky on the resolved 2x MSAA image (writes midden.ppm)
+./build/debug/covenant --level FILE    # another level TOML (errors are reported as file:line)
+./build/debug/covenant --model [SRC]   # step 11's tumbling model view instead (default: Kenney blaster-a); --headless writes mesh.ppm
 ./build/debug/covenant --input-debug   # prints actions per fixed tick + mouse look (Esc quits; mouse is captured)
 ctest --test-dir build/debug           # smoke tests, unit tests, asset lint, cooker tests
 ```

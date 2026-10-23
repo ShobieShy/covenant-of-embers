@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // M1 renderer: Vulkan 1.3 instance/device/swapchain, dynamic rendering + synchronization2,
-// a reverse-Z depth buffer, VMA-backed images/buffers, and indexed meshes (uploadMesh)
-// drawn with {viewProj, model} push constants per FrameParams::draws entry.
+// a reverse-Z depth buffer, 2x MSAA with resolve (when supported), VMA-backed
+// images/buffers, a per-frame-in-flight uniform buffer (camera + lighting) and indexed
+// meshes (uploadMesh) drawn with {model, tint} push constants per FrameParams::draws entry.
 // Validation layer is used only when installed.
 #include "engine/render/vk_renderer.hpp"
 
@@ -20,14 +21,26 @@
 namespace coe {
 namespace {
 constexpr const char* kValidationLayer = "VK_LAYER_KHRONOS_validation";
-constexpr VkClearColorValue kClear{{0.02f, 0.02f, 0.05f, 1.0f}};
 constexpr float kClearDepth = 0.0f;              // reverse-Z: 0 is infinitely far, test GREATER
 
+constexpr VkSampleCountFlagBits kWantSamples = VK_SAMPLE_COUNT_2_BIT;   // Magewar: msaa_3d = 1 (2x)
+
 struct PushConstants {
-    glm::mat4 viewProj;
     glm::mat4 model;
+    glm::vec4 tint;
 };
-static_assert(sizeof(PushConstants) == 128, "push constants must fit the guaranteed 128 bytes");
+static_assert(sizeof(PushConstants) == 80, "push constants must fit the guaranteed 128 bytes");
+
+// std140 mirror of shaders/frame.glsl (every member 16-byte aligned).
+struct FrameUniforms {
+    glm::mat4 viewProj;
+    glm::vec4 cameraPos;
+    glm::vec4 toLight;
+    glm::vec4 lightColor;
+    glm::vec4 ambient;
+    glm::vec4 fog;          // rgb colour, a density
+};
+static_assert(sizeof(FrameUniforms) == 144, "FrameUniforms must match shaders/frame.glsl (std140)");
 
 #define VK_CHECK(x) do { VkResult r_ = (x); if (r_ != VK_SUCCESS) { \
     std::fprintf(stderr, "[vk] %s failed: %d (%s:%d)\n", #x, r_, __FILE__, __LINE__); return false; } } while (0)
@@ -74,8 +87,12 @@ bool VkRenderer::init(const RendererConfig& cfg) {
     if (cfg_.window) {
         if (!createSwapchain()) return false;
         if (!createPipeline(swapFormat_)) return false;
-    } else if (!createPipeline(VK_FORMAT_R8G8B8A8_UNORM)) return false;
-    return createFrames();
+    } else {
+        pickSampleCount(VK_FORMAT_R8G8B8A8_UNORM);
+        if (!createPipeline(VK_FORMAT_R8G8B8A8_UNORM)) return false;
+    }
+    std::printf("[vk] MSAA: %ux\n", unsigned(samples_));
+    return createFrames() && createFrameUniforms();
 }
 
 bool VkRenderer::createInstance() {
@@ -191,11 +208,33 @@ bool VkRenderer::pickDepthFormat() {
     return false;
 }
 
+void VkRenderer::pickSampleCount(VkFormat colorFormat) {
+    VkPhysicalDeviceProperties props; vkGetPhysicalDeviceProperties(phys_, &props);
+    const VkSampleCountFlags counts = props.limits.framebufferColorSampleCounts & props.limits.framebufferDepthSampleCounts;
+    auto formatOk = [&](VkFormat f, VkImageUsageFlags usage) {
+        VkImageFormatProperties ifp{};
+        return vkGetPhysicalDeviceImageFormatProperties(phys_, f, VK_IMAGE_TYPE_2D, VK_IMAGE_TILING_OPTIMAL, usage, 0, &ifp) ==
+                   VK_SUCCESS && (ifp.sampleCounts & kWantSamples);
+    };
+    samples_ = VK_SAMPLE_COUNT_1_BIT;
+    if ((counts & kWantSamples) &&
+        formatOk(colorFormat, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT) &&
+        formatOk(depthFormat_, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT))
+        samples_ = kWantSamples;
+    else
+        std::fprintf(stderr, "[vk] %ux MSAA unsupported for this colour/depth format; rendering without MSAA\n",
+                     unsigned(kWantSamples));
+    // Standard sample 0 positions (Vulkan spec "Standard sample locations"); used by the
+    // headless check to unproject resolved (sample 0) depth at the right spot.
+    sample0Pos_ = glm::vec2(0.5f);
+    if (props.limits.standardSampleLocations && samples_ == VK_SAMPLE_COUNT_2_BIT) sample0Pos_ = glm::vec2(0.75f);
+}
+
 bool VkRenderer::createImage(VkExtent2D extent, VkFormat format, VkImageUsageFlags usage,
-                             VkImageAspectFlags aspect, GpuImage& out) {
+                             VkImageAspectFlags aspect, VkSampleCountFlagBits samples, GpuImage& out) {
     VkImageCreateInfo ic{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
     ic.imageType = VK_IMAGE_TYPE_2D; ic.format = format; ic.extent = {extent.width, extent.height, 1};
-    ic.mipLevels = 1; ic.arrayLayers = 1; ic.samples = VK_SAMPLE_COUNT_1_BIT; ic.tiling = VK_IMAGE_TILING_OPTIMAL;
+    ic.mipLevels = 1; ic.arrayLayers = 1; ic.samples = samples; ic.tiling = VK_IMAGE_TILING_OPTIMAL;
     ic.usage = usage;
     // Render targets get their own allocation (drivers like dedicated memory for attachments).
     VmaAllocationCreateInfo ac{};
@@ -358,13 +397,14 @@ bool VkRenderer::createSwapchain() {
     VkSwapchainCreateInfoKHR ci{VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
     ci.surface = surface_; ci.minImageCount = count;
     ci.imageFormat = fmt.format; ci.imageColorSpace = fmt.colorSpace; ci.imageExtent = ext;
-    ci.imageArrayLayers = 1; ci.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    ci.imageArrayLayers = 1; ci.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;   // also the MSAA resolve target
     ci.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
     ci.preTransform = caps.currentTransform;
     ci.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     ci.presentMode = VK_PRESENT_MODE_FIFO_KHR;      // always available, vsync
     ci.clipped = VK_TRUE;
     VK_CHECK(vkCreateSwapchainKHR(device_, &ci, nullptr, &swapchain_));
+    if (swapFormat_ == VK_FORMAT_UNDEFINED) pickSampleCount(fmt.format);   // first swapchain: fixes samples_ + pipeline format
     swapFormat_ = fmt.format; swapExtent_ = ext;
 
     uint32_t ic = 0; vkGetSwapchainImagesKHR(device_, swapchain_, &ic, nullptr);
@@ -378,11 +418,15 @@ bool VkRenderer::createSwapchain() {
         VkSemaphoreCreateInfo si{VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
         VK_CHECK(vkCreateSemaphore(device_, &si, nullptr, &renderDone_[i]));
     }
-    // Depth is only written and tested within a frame, so one image is shared by
-    // both frames in flight; recordScene's barrier orders frame N+1's clear after
-    // frame N's depth writes.
+    // Depth (and the MSAA colour, resolved before present) is only used within a frame,
+    // so one image is shared by both frames in flight; recordScene's barriers order
+    // frame N+1's clears after frame N's writes.
+    if (samples_ != VK_SAMPLE_COUNT_1_BIT &&
+        !createImage(swapExtent_, swapFormat_, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+                     VK_IMAGE_ASPECT_COLOR_BIT, samples_, msaaColor_))
+        return false;
     return createImage(swapExtent_, depthFormat_, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-                       VK_IMAGE_ASPECT_DEPTH_BIT, depth_);
+                       VK_IMAGE_ASPECT_DEPTH_BIT, samples_, depth_);
 }
 
 void VkRenderer::destroySwapchain() {
@@ -390,6 +434,7 @@ void VkRenderer::destroySwapchain() {
     for (auto v : swapViews_) vkDestroyImageView(device_, v, nullptr);
     renderDone_.clear(); swapViews_.clear(); swapImages_.clear();
     destroyImage(depth_);
+    destroyImage(msaaColor_);
     if (swapchain_) vkDestroySwapchainKHR(device_, swapchain_, nullptr);
     swapchain_ = VK_NULL_HANDLE;
 }
@@ -411,8 +456,15 @@ bool VkRenderer::createPipeline(VkFormat colorFormat) {
         stages[i].stage = i ? VK_SHADER_STAGE_FRAGMENT_BIT : VK_SHADER_STAGE_VERTEX_BIT;
         stages[i].module = mods[i]; stages[i].pName = "main";
     }
+    VkDescriptorSetLayoutBinding ub{};
+    ub.binding = 0; ub.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; ub.descriptorCount = 1;
+    ub.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    VkDescriptorSetLayoutCreateInfo dli{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
+    dli.bindingCount = 1; dli.pBindings = &ub;
+    VK_CHECK(vkCreateDescriptorSetLayout(device_, &dli, nullptr, &frameSetLayout_));
     VkPushConstantRange pcr{VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstants)};
     VkPipelineLayoutCreateInfo li{VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
+    li.setLayoutCount = 1; li.pSetLayouts = &frameSetLayout_;
     li.pushConstantRangeCount = 1; li.pPushConstantRanges = &pcr;
     VK_CHECK(vkCreatePipelineLayout(device_, &li, nullptr, &pipelineLayout_));
 
@@ -432,7 +484,7 @@ bool VkRenderer::createPipeline(VkFormat colorFormat) {
     // Vulkan's default convention applies. pipelines_[1] (doubleSided) disables culling.
     rs.cullMode = VK_CULL_MODE_BACK_BIT; rs.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     VkPipelineMultisampleStateCreateInfo ms{VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO};
-    ms.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+    ms.rasterizationSamples = samples_;
     VkPipelineDepthStencilStateCreateInfo dss{VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO};
     dss.depthTestEnable = VK_TRUE; dss.depthWriteEnable = VK_TRUE;
     dss.depthCompareOp = VK_COMPARE_OP_GREATER;     // reverse-Z
@@ -479,36 +531,100 @@ bool VkRenderer::createFrames() {
     return true;
 }
 
-void VkRenderer::recordScene(VkCommandBuffer cmd, VkImage image, VkImageView view, const GpuImage& depth,
-                             VkExtent2D extent, VkImageLayout finalLayout, bool readbackDepth, const FrameParams& p) {
+bool VkRenderer::createFrameUniforms() {
+    VkDescriptorPoolSize ps{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, kFramesInFlight};
+    VkDescriptorPoolCreateInfo pi{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
+    pi.maxSets = kFramesInFlight; pi.poolSizeCount = 1; pi.pPoolSizes = &ps;
+    VK_CHECK(vkCreateDescriptorPool(device_, &pi, nullptr, &descPool_));
+    VkDescriptorSetLayout layouts[kFramesInFlight];
+    std::fill(std::begin(layouts), std::end(layouts), frameSetLayout_);
+    VkDescriptorSetAllocateInfo ai{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
+    ai.descriptorPool = descPool_; ai.descriptorSetCount = kFramesInFlight; ai.pSetLayouts = layouts;
+    VK_CHECK(vkAllocateDescriptorSets(device_, &ai, frameSets_));
+    for (uint32_t i = 0; i < kFramesInFlight; ++i) {
+        if (!createBuffer(sizeof(FrameUniforms), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                          VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, frameUbo_[i]))
+            return false;
+        VkDescriptorBufferInfo bi{frameUbo_[i].buffer, 0, sizeof(FrameUniforms)};
+        VkWriteDescriptorSet w{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
+        w.dstSet = frameSets_[i]; w.dstBinding = 0; w.descriptorCount = 1;
+        w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w.pBufferInfo = &bi;
+        vkUpdateDescriptorSets(device_, 1, &w, 0, nullptr);
+    }
+    return true;
+}
+
+// Call only after this frame's fence has signalled (the GPU is done reading the buffer).
+void VkRenderer::writeFrameUniforms(uint32_t frame, const FrameParams& p, const glm::mat4& viewProj) {
+    const FrameLighting& l = p.lighting;
+    const FrameUniforms u{viewProj, glm::vec4(p.camera.position, 1.0f), glm::vec4(l.toLight, 0.0f),
+                          glm::vec4(l.lightColor, 0.0f), glm::vec4(l.ambient, 0.0f), glm::vec4(l.fogColor, l.fogDensity)};
+    std::memcpy(frameUbo_[frame].mapped, &u, sizeof u);
+    vmaFlushAllocation(allocator_, frameUbo_[frame].allocation, 0, VK_WHOLE_SIZE);   // no-op on coherent memory
+}
+
+void VkRenderer::recordScene(VkCommandBuffer cmd, const SceneTarget& t, uint32_t frame, const FrameParams& p) {
     const VkPipelineStageFlags2 depthStages =
         VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT;
-    imageBarrier(cmd, image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+    // Resolves run in COLOR_ATTACHMENT_OUTPUT; a depth resolve may be counted as a
+    // depth write, so its barriers cover both.
+    const VkPipelineStageFlags2 resolveStages = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT | depthStages;
+    const VkAccessFlags2 resolveDepthAccess =
+        VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    const bool msaa = t.msaaColor != nullptr;
+    // Target (swapchain image / headless colour): contents discarded; the acquire
+    // semaphore waits at COLOR_ATTACHMENT_OUTPUT, where both drawing and resolving write.
+    imageBarrier(cmd, t.target, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                  VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, 0,
                  VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT);
-    // Contents are discarded (UNDEFINED) but the previous frame's depth writes must finish first.
-    imageBarrier(cmd, depth.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+    // Shared MSAA colour + depth: discarded too, but the previous frame's writes must finish first.
+    if (msaa)
+        imageBarrier(cmd, t.msaaColor->image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                     VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+                     VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+                     VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT);
+    imageBarrier(cmd, t.depth->image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
                  depthStages, VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
                  depthStages, VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
                  VK_IMAGE_ASPECT_DEPTH_BIT);
+    if (t.depthResolve)
+        imageBarrier(cmd, t.depthResolve->image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+                     resolveStages, 0, resolveStages, resolveDepthAccess, VK_IMAGE_ASPECT_DEPTH_BIT);
+
     VkRenderingAttachmentInfo ca{VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO};
-    ca.imageView = view; ca.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    ca.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; ca.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    ca.clearValue.color = kClear;
+    ca.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    ca.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    ca.clearValue.color = {{p.clearColor.r, p.clearColor.g, p.clearColor.b, 1.0f}};
+    if (msaa) {
+        ca.imageView = t.msaaColor->view;
+        ca.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;   // only the resolved image survives
+        ca.resolveMode = VK_RESOLVE_MODE_AVERAGE_BIT;
+        ca.resolveImageView = t.targetView;
+        ca.resolveImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    } else {
+        ca.imageView = t.targetView;
+        ca.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    }
     VkRenderingAttachmentInfo da{VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO};
-    da.imageView = depth.view; da.imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+    da.imageView = t.depth->view; da.imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
     da.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    da.storeOp = readbackDepth ? VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    da.storeOp = (t.readbackDepth && !t.depthResolve) ? VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE;
     da.clearValue.depthStencil = {kClearDepth, 0};
+    if (t.depthResolve) {
+        // SAMPLE_ZERO is the one depth resolve mode every implementation supports.
+        da.resolveMode = VK_RESOLVE_MODE_SAMPLE_ZERO_BIT;
+        da.resolveImageView = t.depthResolve->view;
+        da.resolveImageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+    }
     VkRenderingInfo ri{VK_STRUCTURE_TYPE_RENDERING_INFO};
-    ri.renderArea = {{0, 0}, extent}; ri.layerCount = 1;
+    ri.renderArea = {{0, 0}, t.extent}; ri.layerCount = 1;
     ri.colorAttachmentCount = 1; ri.pColorAttachments = &ca;
     ri.pDepthAttachment = &da;
     vkCmdBeginRendering(cmd, &ri);
-    VkViewport v{0, 0, float(extent.width), float(extent.height), 0, 1};
-    VkRect2D s{{0, 0}, extent};
-    const glm::mat4 viewProj = p.camera.viewProjection(float(extent.width) / float(extent.height));
+    VkViewport v{0, 0, float(t.extent.width), float(t.extent.height), 0, 1};
+    VkRect2D s{{0, 0}, t.extent};
     vkCmdSetViewport(cmd, 0, 1, &v); vkCmdSetScissor(cmd, 0, 1, &s);
+    vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, 1, &frameSets_[frame], 0, nullptr);
     int bound = -1;                                  // both pipelines share one layout + dynamic state
     for (const DrawItem& d : p.draws) {
         if (d.mesh >= meshes_.size()) continue;      // kInvalidMesh / stale id: nothing to draw
@@ -516,7 +632,7 @@ void VkRenderer::recordScene(VkCommandBuffer cmd, VkImage image, VkImageView vie
         const VkDeviceSize zero = 0;
         vkCmdBindVertexBuffers(cmd, 0, 1, &m.vertices.buffer, &zero);
         vkCmdBindIndexBuffer(cmd, m.indices.buffer, 0, VK_INDEX_TYPE_UINT32);
-        const PushConstants pc{viewProj, d.model};
+        const PushConstants pc{d.model, d.tint};
         vkCmdPushConstants(cmd, pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(pc), &pc);
         for (const assets::Submesh& sm : m.submeshes) {
             const int want = sm.doubleSided ? 1 : 0;
@@ -525,15 +641,18 @@ void VkRenderer::recordScene(VkCommandBuffer cmd, VkImage image, VkImageView vie
         }
     }
     vkCmdEndRendering(cmd);
-    bool present = finalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-    imageBarrier(cmd, image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, finalLayout,
+    const bool present = t.finalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    imageBarrier(cmd, t.target, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, t.finalLayout,
                  VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
                  present ? VK_PIPELINE_STAGE_2_NONE : VK_PIPELINE_STAGE_2_COPY_BIT,
                  present ? VK_ACCESS_2_NONE : VK_ACCESS_2_TRANSFER_READ_BIT);
-    if (readbackDepth)
-        imageBarrier(cmd, depth.image, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                     depthStages, VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+    if (t.readbackDepth) {
+        const bool resolved = t.depthResolve != nullptr;
+        imageBarrier(cmd, resolved ? t.depthResolve->image : t.depth->image, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+                     VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, resolved ? resolveStages : depthStages,
+                     resolved ? resolveDepthAccess : VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
                      VK_PIPELINE_STAGE_2_COPY_BIT, VK_ACCESS_2_TRANSFER_READ_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
+    }
 }
 
 bool VkRenderer::drawFrame(const FrameParams& p) {
@@ -552,12 +671,17 @@ bool VkRenderer::drawFrame(const FrameParams& p) {
     if (r != VK_SUCCESS && r != VK_SUBOPTIMAL_KHR) VK_CHECK(r);
     VK_CHECK(vkResetFences(device_, 1, &inFlight_[frame_]));
 
+    writeFrameUniforms(frame_, p, p.camera.viewProjection(float(swapExtent_.width) / float(swapExtent_.height)));
     VkCommandBuffer cmd = cmds_[frame_];
     vkResetCommandBuffer(cmd, 0);
     VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
     bi.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     VK_CHECK(vkBeginCommandBuffer(cmd, &bi));
-    recordScene(cmd, swapImages_[idx], swapViews_[idx], depth_, swapExtent_, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, false, p);
+    SceneTarget t;
+    t.target = swapImages_[idx]; t.targetView = swapViews_[idx]; t.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    t.msaaColor = msaaColor_.image ? &msaaColor_ : nullptr;
+    t.depth = &depth_; t.extent = swapExtent_;
+    recordScene(cmd, t, frame_, p);
     VK_CHECK(vkEndCommandBuffer(cmd));
 
     VkSemaphoreSubmitInfo wait{VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO};
@@ -581,87 +705,86 @@ bool VkRenderer::drawFrame(const FrameParams& p) {
     return true;
 }
 
-bool VkRenderer::renderHeadlessAndVerify(const FrameParams& p) {
+bool VkRenderer::renderHeadless(const FrameParams& p, HeadlessFrame& out) {
     const uint32_t W = cfg_.headlessWidth, H = cfg_.headlessHeight;
-    GpuImage color, depth;
+    const bool msaa = samples_ != VK_SAMPLE_COUNT_1_BIT;
+    GpuImage color, depth, msaaColor, depthResolve;
     GpuBuffer buf;
-    if (!createImage({W, H}, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-                     VK_IMAGE_ASPECT_COLOR_BIT, color)) return false;
-    if (!createImage({W, H}, depthFormat_, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-                     VK_IMAGE_ASPECT_DEPTH_BIT, depth)) return false;
+    auto cleanup = [&] {
+        destroyBuffer(buf);
+        destroyImage(depthResolve); destroyImage(msaaColor); destroyImage(depth); destroyImage(color);
+    };
+    auto run = [&]() -> bool {
+        // Single-sample images that are read back: the resolve targets with MSAA, the
+        // attachments themselves without.
+        if (!createImage({W, H}, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                         VK_IMAGE_ASPECT_COLOR_BIT, VK_SAMPLE_COUNT_1_BIT, color)) return false;
+        const VkImageUsageFlags depthUse = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | (msaa ? 0 : VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
+        if (!createImage({W, H}, depthFormat_, depthUse, VK_IMAGE_ASPECT_DEPTH_BIT, samples_, depth)) return false;
+        if (msaa &&
+            (!createImage({W, H}, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+                          VK_IMAGE_ASPECT_COLOR_BIT, samples_, msaaColor) ||
+             !createImage({W, H}, depthFormat_, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                          VK_IMAGE_ASPECT_DEPTH_BIT, VK_SAMPLE_COUNT_1_BIT, depthResolve)))
+            return false;
 
-    // One readback buffer: RGBA8 colour, then 32-bit float depth (both 4 bytes per pixel).
-    const VkDeviceSize planeBytes = VkDeviceSize(W) * H * 4;
-    if (!createBuffer(planeBytes * 2, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT, buf))
-        return false;
+        // One readback buffer: RGBA8 colour, then 32-bit float depth (both 4 bytes per pixel).
+        const VkDeviceSize planeBytes = VkDeviceSize(W) * H * 4;
+        if (!createBuffer(planeBytes * 2, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT, buf))
+            return false;
 
-    VkCommandBuffer cmd = cmds_[0];
-    VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
-    bi.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-    VK_CHECK(vkResetFences(device_, 1, &inFlight_[0]));
-    VK_CHECK(vkBeginCommandBuffer(cmd, &bi));
-    recordScene(cmd, color.image, color.view, depth, {W, H}, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, true, p);
-    VkBufferImageCopy region{};
-    region.imageSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
-    region.imageExtent = {W, H, 1};
-    vkCmdCopyImageToBuffer(cmd, color.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buf.buffer, 1, &region);
-    region.bufferOffset = planeBytes;
-    region.imageSubresource = {VK_IMAGE_ASPECT_DEPTH_BIT, 0, 0, 1};
-    vkCmdCopyImageToBuffer(cmd, depth.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buf.buffer, 1, &region);
-    VK_CHECK(vkEndCommandBuffer(cmd));
-    VkCommandBufferSubmitInfo cbi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO}; cbi.commandBuffer = cmd;
-    VkSubmitInfo2 si{VK_STRUCTURE_TYPE_SUBMIT_INFO_2};
-    si.commandBufferInfoCount = 1; si.pCommandBufferInfos = &cbi;
-    VK_CHECK(vkQueueSubmit2(queue_, 1, &si, inFlight_[0]));
-    VK_CHECK(vkWaitForFences(device_, 1, &inFlight_[0], VK_TRUE, UINT64_MAX));
+        VK_CHECK(vkWaitForFences(device_, 1, &inFlight_[0], VK_TRUE, UINT64_MAX));
+        const glm::mat4 viewProj = p.camera.viewProjection(float(W) / float(H));
+        writeFrameUniforms(0, p, viewProj);
+        VkCommandBuffer cmd = cmds_[0];
+        VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
+        bi.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+        VK_CHECK(vkResetFences(device_, 1, &inFlight_[0]));
+        VK_CHECK(vkResetCommandBuffer(cmd, 0));
+        VK_CHECK(vkBeginCommandBuffer(cmd, &bi));
+        SceneTarget t;
+        t.target = color.image; t.targetView = color.view; t.finalLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        t.msaaColor = msaa ? &msaaColor : nullptr;
+        t.depth = &depth; t.depthResolve = msaa ? &depthResolve : nullptr;
+        t.readbackDepth = true; t.extent = {W, H};
+        recordScene(cmd, t, 0, p);
+        VkBufferImageCopy region{};
+        region.imageSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
+        region.imageExtent = {W, H, 1};
+        vkCmdCopyImageToBuffer(cmd, color.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buf.buffer, 1, &region);
+        region.bufferOffset = planeBytes;
+        region.imageSubresource = {VK_IMAGE_ASPECT_DEPTH_BIT, 0, 0, 1};
+        vkCmdCopyImageToBuffer(cmd, msaa ? depthResolve.image : depth.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                               buf.buffer, 1, &region);
+        // Make the copies visible to the host reads below.
+        VkMemoryBarrier2 mb{VK_STRUCTURE_TYPE_MEMORY_BARRIER_2};
+        mb.srcStageMask = VK_PIPELINE_STAGE_2_COPY_BIT; mb.srcAccessMask = VK_ACCESS_2_TRANSFER_WRITE_BIT;
+        mb.dstStageMask = VK_PIPELINE_STAGE_2_HOST_BIT; mb.dstAccessMask = VK_ACCESS_2_HOST_READ_BIT;
+        VkDependencyInfo dep{VK_STRUCTURE_TYPE_DEPENDENCY_INFO};
+        dep.memoryBarrierCount = 1; dep.pMemoryBarriers = &mb;
+        vkCmdPipelineBarrier2(cmd, &dep);
+        VK_CHECK(vkEndCommandBuffer(cmd));
+        VkCommandBufferSubmitInfo cbi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO}; cbi.commandBuffer = cmd;
+        VkSubmitInfo2 si{VK_STRUCTURE_TYPE_SUBMIT_INFO_2};
+        si.commandBufferInfoCount = 1; si.pCommandBufferInfos = &cbi;
+        VK_CHECK(vkQueueSubmit2(queue_, 1, &si, inFlight_[0]));
+        VK_CHECK(vkWaitForFences(device_, 1, &inFlight_[0], VK_TRUE, UINT64_MAX));
 
-    VK_CHECK(vmaInvalidateAllocation(allocator_, buf.allocation, 0, VK_WHOLE_SIZE));
-    const auto* rgba = static_cast<const uint8_t*>(buf.mapped);
-    auto px = [&](uint32_t x, uint32_t y) { return rgba + (size_t(y) * W + x) * 4; };
-    auto depthAt = [&](uint32_t x, uint32_t y) {
-        float d; std::memcpy(&d, rgba + planeBytes + (size_t(y) * W + x) * 4, sizeof d); return d; };
-
-    const uint8_t* corner = px(2, 2);
-    const uint8_t* centre = px(W / 2, H / 2);
-    const float cornerDepth = depthAt(2, 2), centreDepth = depthAt(W / 2, H / 2);
-    // Depth of draws[0]'s origin (the game centres the model on it): the surface seen
-    // at the centre pixel must be nearer, i.e. larger in reverse-Z. A back face winning
-    // (wrong culling/winding/compare) would land behind it.
-    const glm::mat4 model0 = p.draws.empty() ? glm::mat4(1.0f) : p.draws.front().model;
-    const glm::vec4 originClip = p.camera.viewProjection(float(W) / float(H)) * model0[3];
-    const float originDepth = originClip.z / originClip.w;
-
-    // Shading must vary across the model (surfaces lit at different angles).
-    int minL = 255, maxL = 0, samples = 0;
-    for (uint32_t y = H / 16; y < H; y += H / 32)
-        for (uint32_t x = W / 16; x < W; x += W / 32)
-            if (depthAt(x, y) > 0.0f) {
-                const uint8_t* c = px(x, y);
-                const int l = (c[0] * 2 + c[1] * 5 + c[2]) / 8;   // rough luma
-                ++samples; minL = std::min(minL, l); maxL = std::max(maxL, l);
-            }
-
-    const auto closeTo = [](uint8_t v, float ref) { return std::abs(int(v) - int(ref * 255.0f + 0.5f)) <= 3; };
-    const bool cornerIsClear = closeTo(corner[0], kClear.float32[0]) && closeTo(corner[1], kClear.float32[1]) &&
-                               closeTo(corner[2], kClear.float32[2]) && cornerDepth == kClearDepth;
-    const int centreDiff = std::abs(int(centre[0]) - int(corner[0])) + std::abs(int(centre[1]) - int(corner[1])) +
-                           std::abs(int(centre[2]) - int(corner[2]));
-    // Non-clear and lit: clearly above the ambient-only level of a white surface (0.2 * 255).
-    const bool centreIsLit = centreDiff > 60 && centreDepth > originDepth && centreDepth <= 1.0f;
-    const bool shaded = samples >= 8 && maxL - minL > 20;
-    std::printf("[headless] corner rgb(%u,%u,%u) depth %.5f | centre rgb(%u,%u,%u) depth %.5f (model origin %.5f) | "
-                "%d model samples, luma %d..%d | depth format %d\n",
-                corner[0], corner[1], corner[2], double(cornerDepth), centre[0], centre[1], centre[2],
-                double(centreDepth), double(originDepth), samples, minL, maxL, int(depthFormat_));
-    // Optional artefact for humans: build/<preset>/mesh.ppm
-    if (FILE* f = std::fopen("mesh.ppm", "wb")) {
-        std::fprintf(f, "P6\n%u %u\n255\n", W, H);
-        for (uint32_t i = 0; i < W * H; ++i) std::fwrite(rgba + size_t(i) * 4, 1, 3, f);
-        std::fclose(f);
-    }
-    destroyBuffer(buf);
-    destroyImage(depth); destroyImage(color);
-    return cornerIsClear && centreIsLit && shaded;
+        VK_CHECK(vmaInvalidateAllocation(allocator_, buf.allocation, 0, VK_WHOLE_SIZE));
+        const auto* bytes = static_cast<const uint8_t*>(buf.mapped);
+        out.width = W; out.height = H;
+        out.samples = uint32_t(samples_);
+        out.depthSamplePos = sample0Pos_;
+        out.viewProj = viewProj;
+        out.rgba.assign(bytes, bytes + planeBytes);
+        out.depth.resize(size_t(W) * H);
+        std::memcpy(out.depth.data(), bytes + planeBytes, planeBytes);
+        std::printf("[headless] %ux%u, %ux MSAA (resolved), depth format %d\n", W, H, unsigned(samples_), int(depthFormat_));
+        return true;
+    };
+    const bool ok = run();
+    cleanup();
+    return ok;
 }
 
 void VkRenderer::shutdown() {
@@ -672,11 +795,14 @@ void VkRenderer::shutdown() {
             if (inFlight_[i]) vkDestroyFence(device_, inFlight_[i], nullptr);
         }
         if (pool_) vkDestroyCommandPool(device_, pool_, nullptr);
+        if (descPool_) vkDestroyDescriptorPool(device_, descPool_, nullptr);   // frees frameSets_
+        if (frameSetLayout_) vkDestroyDescriptorSetLayout(device_, frameSetLayout_, nullptr);
         for (auto& pl : pipelines_) if (pl) vkDestroyPipeline(device_, pl, nullptr);
         if (pipelineLayout_) vkDestroyPipelineLayout(device_, pipelineLayout_, nullptr);
         destroySwapchain();
         if (allocator_) {
             for (auto& m : meshes_) { destroyBuffer(m.vertices); destroyBuffer(m.indices); }
+            for (auto& u : frameUbo_) destroyBuffer(u);
             meshes_.clear();
             vmaDestroyAllocator(allocator_);
         }
@@ -689,6 +815,8 @@ void VkRenderer::shutdown() {
         if (destroy) destroy(instance_, messenger_, nullptr);
     }
     if (instance_) vkDestroyInstance(instance_, nullptr);
+    descPool_ = VK_NULL_HANDLE; frameSetLayout_ = VK_NULL_HANDLE;
+    for (auto& set : frameSets_) set = VK_NULL_HANDLE;
     allocator_ = nullptr; pool_ = VK_NULL_HANDLE; pipelineLayout_ = VK_NULL_HANDLE; pipelines_[0] = pipelines_[1] = VK_NULL_HANDLE;
     device_ = VK_NULL_HANDLE; instance_ = VK_NULL_HANDLE; surface_ = VK_NULL_HANDLE; messenger_ = VK_NULL_HANDLE;
 }

@@ -1,0 +1,165 @@
+# The Ashen Midden - greybox arena (BUILD_PLAN step 12). Loaded by game/world/level.cpp.
+#
+# Units: metres, degrees, linear RGB in [0, 1]. World: right-handed, +Y up, -Z north
+# (the start camera looks north). Every [[box]] is the engine's unit cube scaled to
+# `size`, rotated by `rotation_deg` = [x, y, z] Euler angles applied in Y, X, Z order
+# (Godot's default, so Magewar transforms read the same), then moved to `center`.
+# kind: ground | wall | ramp | crate | heap | platform. Unknown keys are errors.
+#
+# Layout reinterprets Magewar's landfill_tutorial (read-only reference): a dump floor
+# with rotated trash piles, a 4 m high walled boss arena entered through a 4 m wide
+# gap from the south, and a sickly, warm, foggy light. Ours is a 28 x 28 m square
+# arena (Magewar: 26 m ring) with a scrap ledge + two ramps along the north wall,
+# crate clusters for cover and the Midden's mound in the middle.
+
+[level]
+id = "midden_greybox"
+name = "The Ashen Midden (greybox)"
+
+[environment]
+sky_color = [0.40, 0.35, 0.25]      # Magewar sky_horizon_color; also the clear colour
+ambient_color = [0.28, 0.24, 0.16]  # Magewar ambient (0.35, 0.3, 0.2) hue, brighter (no GI/sky light here)
+fog_density = 0.006                 # exp(-density * distance) toward sky_color (Magewar volumetric 0.02; lighter so the far wall still reads)
+
+[sun]
+to_light = [0.354, 0.707, 0.612]    # Magewar SicklyLight basis Z: high, slightly east, behind the start camera
+color = [0.85, 0.78, 0.57]          # Magewar light_color (0.6, 0.55, 0.4) hue
+
+[camera]                            # start view until step 14's controller spawns the player
+position = [0.0, 1.7, 12.5]         # eye height ~1.7 m (Magewar body origin 1 m + Neck 0.7 m)
+yaw_deg = 0.0
+pitch_deg = -8.0
+
+# --- ground + arena walls (4 m high like Magewar's ArenaWall_Ring) ---
+[[box]]
+name = "ground"
+kind = "ground"
+center = [0.0, -0.1, 0.0]
+size = [40.0, 0.2, 40.0]
+color = [0.36, 0.30, 0.22]
+
+[[box]]
+name = "wall_north"
+kind = "wall"
+center = [0.0, 2.0, -14.5]
+size = [30.0, 4.0, 1.0]
+color = [0.34, 0.34, 0.37]          # cool slate: reads against the warm sky
+
+[[box]]
+name = "wall_east"
+kind = "wall"
+center = [14.5, 2.0, 0.0]
+size = [1.0, 4.0, 28.0]
+color = [0.34, 0.34, 0.37]
+
+[[box]]
+name = "wall_west"
+kind = "wall"
+center = [-14.5, 2.0, 0.0]
+size = [1.0, 4.0, 28.0]
+color = [0.34, 0.34, 0.37]
+
+# South wall split around a 4 m entrance (Magewar ArenaEntrance is 4 m wide).
+[[box]]
+name = "wall_south_west"
+kind = "wall"
+center = [-8.5, 2.0, 14.5]
+size = [13.0, 4.0, 1.0]
+color = [0.34, 0.34, 0.37]
+
+[[box]]
+name = "wall_south_east"
+kind = "wall"
+center = [8.5, 2.0, 14.5]
+size = [13.0, 4.0, 1.0]
+color = [0.34, 0.34, 0.37]
+
+# --- scrap ledge along the north wall, 1.5 m up, two ramps from the south ---
+[[box]]
+name = "scrap_ledge"
+kind = "platform"
+center = [0.0, 0.75, -11.5]
+size = [12.0, 1.5, 5.0]
+color = [0.45, 0.40, 0.33]
+
+# Ramps rise 1.5 m over 4 m of run (20.56 deg): top surface from (z -5, y 0) to (z -9, y 1.5).
+[[box]]
+name = "ramp_west"
+kind = "ramp"
+center = [-4.5, 0.61, -7.05]
+size = [3.0, 0.3, 4.272]
+rotation_deg = [20.556, 0.0, 0.0]
+color = [0.58, 0.52, 0.36]
+
+[[box]]
+name = "ramp_east"
+kind = "ramp"
+center = [4.5, 0.61, -7.05]
+size = [3.0, 0.3, 4.272]
+rotation_deg = [20.556, 0.0, 0.0]
+color = [0.58, 0.52, 0.36]
+
+# --- the Midden's mound (boss spot) and trash heaps (Magewar TrashPiles, rotated about Y) ---
+[[box]]
+name = "midden_mound"
+kind = "heap"
+center = [0.0, 0.6, -1.5]
+size = [3.0, 1.2, 3.0]
+rotation_deg = [0.0, 45.0, 0.0]
+color = [0.30, 0.33, 0.20]
+
+[[box]]
+name = "heap_west"
+kind = "heap"
+center = [-9.0, 0.9, -3.0]
+size = [4.0, 1.8, 3.0]
+rotation_deg = [0.0, 18.0, 0.0]
+color = [0.30, 0.33, 0.20]
+
+[[box]]
+name = "heap_east"
+kind = "heap"
+center = [9.0, 1.2, 3.0]
+size = [5.0, 2.4, 4.0]
+rotation_deg = [0.0, -30.0, 0.0]
+color = [0.30, 0.33, 0.20]
+
+# --- crates (cover), Kenney crate proportions ---
+[[box]]
+name = "crate_w1"
+kind = "crate"
+center = [-7.0, 0.5, 5.0]
+size = [1.0, 1.0, 1.0]
+color = [0.62, 0.43, 0.22]
+
+[[box]]
+name = "crate_w2"
+kind = "crate"
+center = [-5.9, 0.5, 5.3]
+size = [1.0, 1.0, 1.0]
+rotation_deg = [0.0, 15.0, 0.0]
+color = [0.62, 0.43, 0.22]
+
+[[box]]
+name = "crate_w3_stacked"
+kind = "crate"
+center = [-6.5, 1.5, 5.1]
+size = [1.0, 1.0, 1.0]
+rotation_deg = [0.0, 30.0, 0.0]
+color = [0.66, 0.47, 0.25]
+
+[[box]]
+name = "crate_e_wide"
+kind = "crate"
+center = [5.5, 0.4, 7.0]
+size = [2.0, 0.8, 1.0]
+rotation_deg = [0.0, -20.0, 0.0]
+color = [0.62, 0.43, 0.22]
+
+[[box]]
+name = "crate_ne"
+kind = "crate"
+center = [10.0, 0.6, -6.0]
+size = [1.2, 1.2, 1.2]
+rotation_deg = [0.0, 10.0, 0.0]
+color = [0.62, 0.43, 0.22]
