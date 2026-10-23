@@ -15,7 +15,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 ## M0 – Foundations
 
-**1. Godot 4 project setup** ✅
+**1. Godot 4 project setup** ✅ `f199578`
 - Does: Godot 4.7.2 (pacman `godot`), project.godot (Forward+, Jolt Physics, 60 Hz, MSAA 2×), scenes/main.tscn, scripts/core/main.gd (`-- --seconds N`), tests/run_tests.gd + tests/test_case.gd (addon-free runner; GUT optional later), tools/run_tests.sh, Kenney packs kept, Magewar resources copied to assets/magewar (.gdignore'd reference), C++ engine archived, ADR-0002.
 - Done: `tools/run_tests.sh` green: 4 unit tests (Godot 4, Forward+/60 Hz, main scene, Kenney blaster-a.glb imports), 2 s headless run logs 120 physics ticks, asset lint OK.
 

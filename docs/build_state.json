@@ -8,14 +8,15 @@
   "steps_done": [
     1
   ],
-  "last_commit": null,
+  "last_commit": "f199578",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
       "step": 1,
       "type": "engine-switch",
       "summary": "ShobieShy approved 'Yes, switch to Godot' (via Tex). C++20/Vulkan engine archived (branch archive/cpp-vulkan-engine at d07497b; files git-mv'd to archive/cpp-engine/, old plan/state in archive/cpp-engine/docs/). Old plan had steps 1-23 done of 56. New Godot plan: step 1 = Godot 4.7.2 project setup + headless test runner; steps 3-12 port the finished gameplay.",
-      "plan_changes": "BUILD_PLAN rewritten for Godot (merged UI renderer into HUD, audio engine+hookup, save format+load; removed cooker/CMake/Vulkan steps). ADR-0002 added; PLAN \u00a723-25,27 engine parts updated."
+      "plan_changes": "BUILD_PLAN rewritten for Godot (merged UI renderer into HUD, audio engine+hookup, save format+load; removed cooker/CMake/Vulkan steps). ADR-0002 added; PLAN \u00a723-25,27 engine parts updated.",
+      "commit": "f199578"
     }
   ]
 }
