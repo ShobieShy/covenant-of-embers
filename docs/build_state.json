@@ -2,7 +2,7 @@
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 23,
+  "next_step": 24,
   "total_steps": 56,
   "steps_done": [
     1,
@@ -26,9 +26,10 @@
     19,
     20,
     21,
-    22
+    22,
+    23
   ],
-  "last_commit": "9cdb666",
+  "last_commit": "0e0ba4c",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -226,6 +227,16 @@
       "magewar": "Reviewed Magewar enemy damage (take_elemental_damage, get_effectiveness, CogitoHealthAttribute, knockback). Followed: elemental effectiveness on hit, 0.1 m bolt sphere (SphereShape3D) for hits. Mismatches (noted): Magewar has no damage numbers, crits or weak points (plan design); take_elemental_damage applies effectiveness only, no resistance (ours: per-element resist, 60% cap kept vs Magewar 90%); knockback on hits > 10 damage for 0.5 s not ported -> scheduled step 23; XP/gold/loot on death deferred to step 25 (takeDeaths); Magewar health is a CogitoHealthAttribute, ours a plain field; Magewar defines no dummy HP, 60 HP is plan design.",
       "plan_changes": "Step 22 text = shipped design. Notes added: step 23 (Gnawer = EnemyDef row via EnemySystem, moveKinematic, Magewar knockback >10 dmg 0.5 s, dead enemies stop thinking), step 24 (Heap seam = EnemyDef::weakPoint box, EnemyHit::weakPoint), step 25 ([[enemy]] already places fixed enemies; [[spawn]] for waves; kill events from EnemySystem::takeDeaths, xp/tally keys on EnemyDef, alive() for wave cleared), step 41 (hit markers from EnemyHit incl. weak point/killed, HUD text via ImGuiLayer until stb_truetype, strong/weak text under the number). ADR-0001 Dear ImGui row filled; README status/layout/flags updated.",
       "bug_fixes": "castSphere fallback normal was NaN for a zero-length sweep with no penetration axis (-normalize(0)); now falls back to +Y."
+    },
+    {
+      "time": "2026-10-23T06:15-05:00",
+      "step": 23,
+      "type": "build",
+      "commit": "0e0ba4c",
+      "summary": "Gnawer AI (rusher): game/ai/state_machine.hpp (StateMachine<State>) and game/ai/gnawer.* (pure nextGnawerState over Idle/Detect/Chase/Attack/Knockback/Dead with line of sight, provoke + 5 s hunt, attack slack 0.3 m; GnawerAI adopts EnemyDef::ai enemies, turns 540 deg/s, walks/sprints straight at the player, Static sphere-swept slide + head-on wall detour, ground snap/gravity, moveKinematic every tick via new EnemySystem::place, bites with cooldown and i-frame dodge, knockback from hits > 10 dmg = 2.5 m linear decay over 0.5 s). EnemyDef gains optional RusherDef ai table (strict TOML, Magewar enemy_base defaults), loadEnemyFiles merges files, EnemyHit/ProjectileHit::direction. data/enemies/gnawer.toml (Magewar mutant rat numbers, 30 HP), one Gnawer in the Midden NW corner. covenant: repeatable --enemies, [gnawer] lines, --gnawer-check + window test gnawer_window. Done check: test_gnawer 13 cases/1685 assertions (transitions at ranges 8/6/1 m; from 7 m detect tick 1, chase tick 21 at 6 m, attack tick 76, bites 48 ticks apart); window: 4 bites = 12.0 Earth damage, travelled 6.11 m, 0 validation messages. Debug 36/36 incl. 4 window tests, asan 32/32 -LE window, warning-free.",
+      "magewar": "Reviewed Magewar enemy_base (states, detection/aggro ranges, speeds, attack cooldown, knockback) and enemy_mutant_rat. Followed: state set, enemy_base defaults for RusherDef, the rat's numbers for the Gnawer (Earth, detect 8, aggro 6, walk 3, sprint 5.5, contact damage 3, cooldown 0.8), knockback on hits > 10 dmg for 0.5 s at strength 10. Mismatches (noted): Magewar has no AI loop at all (the rat never moves or attacks) so state logic, steering, wall detour and line of sight are a reinterpretation; Magewar knockback is a constant force (5 m, never triggered) vs our linear decay totalling 2.5 m; rat HP absent in Magewar, 30 HP is plan design; plan's 15/10 m were the enemy_base defaults, the rat's 8/6 m used instead.",
+      "plan_changes": "Step 23 text = shipped design (rat ranges 8/6 m instead of the plan's 15/10 defaults; provoke/hunt, wall detour, i-frame dodge added). Step 24 note: consume GnawerAI::takeAttacks via resolveHit into shield/health, generalise GnawerAI into a rusher AI for the Heap, extend --gnawer-check to assert health. Step 25 note: adopt AI after wave spawns, add Gnawer-Gnawer separation and enemy render interpolation. README status/layout/flags updated (--enemies repeatable, --gnawer-check).",
+      "bug_fixes": "Kinematic enemy bodies kept drifting on their last moveKinematic velocity when not re-posed (latent since step 22's moveKinematic; EnemySystem::place is now called every tick). Bite cooldown float drift (0.8 - 48/60 != 0) fixed with 1e-4 s slack. test_enemy Midden enemy count updated for the new Gnawer and made relative in the malformed-level check."
     }
   ]
 }
