@@ -2,7 +2,7 @@
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 18,
+  "next_step": 19,
   "total_steps": 56,
   "steps_done": [
     1,
@@ -21,9 +21,10 @@
     14,
     15,
     16,
-    17
+    17,
+    18
   ],
-  "last_commit": "b21234c",
+  "last_commit": "d26673b",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -171,6 +172,16 @@
       "magewar": "Followed directly (2026-10-22 approval): bases, stats, speeds and ranges from resources/items/staffs/starter_fire_staff.tres etc. and wands/*.tres; rarity multipliers from item_rarity.gd; element colours from magic_element.gd; 0.1 s fire-rate floor; semi-auto cast on press with the cooldown checked before mana is spent. Reinterpreted: the 0.1 m RigidBody sphere with gravity and 8 s lifespan becomes a straight ray-swept bolt that fizzles at the wieldable's range (Magewar's wieldable_range was unused); origin is the eye along the view (Magewar spawns at the CastPoint aimed at the camera hit -> step 21); cooldown counted per fixed tick instead of per frame; one shared cooldown across swaps (Magewar is per node; revisit at step 21).",
       "plan_changes": "PLAN §30.1: bolt note (ray, range fizzle, semi-auto + hold option later). BUILD_PLAN 18: mana via Caster::setManaSpender. 19: spread on CastAim::direction. 20: move Element names/colours to game/combat/element + elements.toml, damage() becomes the formula, port test_casting to doctest. 21: loadout replaces Weapon1-4 debug pick, CastPoint tracer, per-slot cooldown decision. 22: ProjectileHit -> enemy lookup, consider a 0.1 m castSphere. 26: Rarity table to rarities.toml. 29: extend wieldables.toml instead of a second table. 44: hold-to-cast toggle via Caster::setHoldToRepeat.",
       "bug_fixes": "No earlier-step bugs found. Found and handled: an unfiltered PhysicsWorld::castRay from the eye hits the player's own inner capsule at fraction 0 (documented; new ignore-body overload). Refactor: level.cpp's TOML helpers moved to game/data/toml_read (test_level unchanged and passing)."
+    },
+    {
+      "time": "2026-10-23T01:09-05:00",
+      "step": 18,
+      "type": "build",
+      "commit": "d26673b",
+      "summary": "Magewar mana pool (game/player/mana.*): 100 max, cast spends the wieldable's mana cost via Caster::setManaSpender, refused when short (no cooldown, no delay reset), regen 3/s exactly 1.5 s after the last cast at any tick rate, regen and max bonus hooks; PlayerController owns/ticks it; covenant prints mana on [cast]/[mana] lines and the input script checks the spend. test_mana: 20 fire-staff casts empty 100, 21st refused, recasts at tick 646; regen timing at 30/60/144 Hz; bonus hooks. Debug 26/26, asan 23/23 -LE window, warning-free.",
+      "magewar": "Followed mana_attribute.gd/magewar_player numbers: value_max 100, regen 3/s, delay 1.5 s, spend refuses when value < cost without resetting the timer, equipment_regen_bonus adds, equip mana_bonus raises max and current (unequip clamps), level-up +5 max + refill (step 38 note); wieldable_staff order cooldown check -> spend -> refusal costs no cooldown; reload() is a no-op there, so no reload here. Reinterpretation: regen is sub-tick exact from the 1.5 s mark (Magewar adds whole frames once its timer is <= 0) so timing is identical at 30/60/144 Hz.",
+      "plan_changes": "Step 30: Mana::setRegenBonus/setMaxBonus are the gear hooks (max raise adds to current like Magewar). Step 38: level-up via Mana::setMaxBonus + refill, keep level and gear bonus sums separate. Step 41: mana bar reads PlayerController::mana(). Step 44: ship Reload unbound. README layout/status mention the mana pool.",
+      "bug_fixes": "covenant: the mana spender lambda captures the player, so it is cleared before player.reset() (would dangle otherwise). Caster::blocked() kept as cooldown+mana refusals with a new manaRefused() counter so step-17 tests stay valid."
     }
   ]
 }
