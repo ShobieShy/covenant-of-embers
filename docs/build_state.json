@@ -3,13 +3,14 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 3,
+  "next_step": 4,
   "total_steps": 42,
   "steps_done": [
     1,
-    2
+    2,
+    3
   ],
-  "last_commit": "5179adc",
+  "last_commit": "b7a2d40",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -26,6 +27,14 @@
       "summary": "Midden greybox ported: tools/toml_to_scene.py (stdlib tomllib, C++ loader's validation, --check/--self-test in run_tests.sh) generates scenes/levels/midden.tscn from data/levels/midden_greybox.toml: 17 StaticBody3D boxes (1 ground, 5 wall, 1 platform, 2 ramp, 3 heap, 5 crate) with BoxMesh/BoxShape3D sizes, Y-X-Z rotations, linear->sRGB palette, exp fog 0.006, sun, PlayerStart (0,0,12.5) facing north + Eye 1.5 m, EnemySpawns. scripts/world/level_toml.gd reads the TOML in GDScript; test_level.gd 9 tests (400/400 down-rays up-facing). main.tscn instances the Midden. ci.yml extended (setup-python, cached Godot 4.7.2, import, run_tests.sh); not pushed. run_tests.sh green: 14 unit tests, 2 s smoke 120 ticks, asset lint OK.",
       "plan_changes": "Bug fixes from step 1: test runner moved from _initialize to first physics frame (physics queries need the root in its World3D); timeouts on every Godot call in run_tests.sh; main.tscn placeholder ground replaced by the Midden. Refined steps 3 (spawn at PlayerStart/Eye), 11 (dummies from EnemySpawns), 12 (NavigationRegion3D emitted by generator, like Magewar landfill), 14 (waves as TOML table), 41 (judge palette: TOML linear vs Magewar sRGB).",
       "commit": "5179adc"
+    },
+    {
+      "time": "2026-10-23T09:20-05:00",
+      "step": 3,
+      "type": "build",
+      "summary": "FPS controller ported: Player CharacterBody3D (scenes/player/player.tscn, scripts/player/player.gd; feet origin, layer 'character') with PlayerTuning resource and PlayerInput: walk 4 / crouch 3 m/s, LERP 10 / AIR 6, jump 4.5/3.0 on press edge, gravity 9.8, capsule 0.3x1.7/0.7, eye 1.5/0.6, Cogito-style 0.35 m step climbing, floor_max_angle 45, snap 0.5, 0.25 deg/count look, pitch +-89. InputMap in project.godot (Magewar action names + dash, slot_1-4; crouch C+LCtrl). main.tscn spawns the player at PlayerStart (camera = PlayerStart/Eye), placeholder camera removed. run_tests.sh green: 24 unit tests (10 new in test_player.gd: walk 3.667 m, apex 1.072/0.485 m, crouch eye 0.6 under 1 m slab, 0.35 step climbed / 0.5 blocked, ramp_west -> ledge y 1.500), 2 s smoke 120 ticks, asset lint OK.",
+      "plan_changes": "Bug fix from step 2: test runner now runs on the 2nd physics frame (get_physics_process_delta_time() is 0 on the 1st, so move_and_slide didn't move). Magewar check: action names aligned with Magewar; pitch +-89 kept vs Magewar +-90. Refined steps 4 (Player.tick hooks), 5 (head smoothing over steps, Cogito step_height_camera_lerp), 10 (mouse wheel = Magewar quickslot_prev/next_wieldable), 30 (inventory action on Tab), 32 (rebind over project.godot InputMap), 39 (menu action on Esc).",
+      "commit": "b7a2d40"
     }
   ]
 }
