@@ -9,9 +9,11 @@ namespace coe::game {
 using input::Action;
 
 PlayerController::PlayerController(physics::PhysicsWorld& world, const glm::vec3& feet, float yawRad,
-                                   const PlayerTuning& tuning, const physics::CharacterSettings& body)
+                                   const PlayerTuning& tuning, const physics::CharacterSettings& body,
+                                   const BreathTuning& breath)
     : tuning_(tuning), character_(world, body, feet), yaw_(yawRad), speed_(tuning.walkSpeed),
-      eye_(tuning.standingEye), prevEye_(tuning.standingEye), feet_(character_.position()), prevFeet_(feet_) {}
+      eye_(tuning.standingEye), prevEye_(tuning.standingEye), feet_(character_.position()), prevFeet_(feet_),
+      breath_(breath) {}
 
 glm::vec3 PlayerController::forwardFor(float yawRad) { return {-std::sin(yawRad), 0.0f, -std::cos(yawRad)}; }
 glm::vec3 PlayerController::rightFor(float yawRad) { return {std::cos(yawRad), 0.0f, -std::sin(yawRad)}; }
@@ -37,34 +39,70 @@ void PlayerController::tick(const input::TickInput& in, float dt) {
     // OnGround for a tick or two after take-off, which must not cancel the jump.
     if (rising_ && character_.velocity().y <= 0.0f) rising_ = false;
     const bool grounded = character_.onGround() && !rising_;
-    if (grounded) crouchedJump_ = false;   // landed
+    if (grounded) {   // landed
+        crouchedJump_ = false;
+        jumpedFromSlide_ = false;
+    }
+
+    glm::vec3 wish = forwardFor(yaw_) * in.moveForward() + rightFor(yaw_) * in.moveRight();
+    const float wishLen = glm::length(wish);
+    const bool moving = wishLen > 1e-6f;
+    if (moving) wish /= wishLen;   // diagonals are not faster
+
+    // Slide (Magewar): Crouch on the ground while sprinting with a move key held starts
+    // the 1.5 s slide along the current wish direction; leaving the ground, letting go of
+    // Crouch or Sprint stops it (the timeout is handled after the move below).
+    const bool crouchHeld = in.down(Action::Crouch);
+    if (sliding() && (!grounded || !crouchHeld || !in.down(Action::Sprint))) slideLeft_ = 0.0f;
+    if (!sliding() && grounded && crouchHeld && sprinting_ && moving) {
+        slideLeft_ = tuning_.slideDuration;
+        slideDir_ = wish;
+        ++slides_;
+    }
 
     // Crouch (held): only starts on the ground; a crouch-jump stays crouched in the air;
     // standing up needs head room (setCrouched(false) fails under a low ceiling).
-    const bool wantCrouch = crouchedJump_ || (grounded && in.down(Action::Crouch));
+    const bool wantCrouch = crouchedJump_ || (grounded && crouchHeld);
     if (wantCrouch) character_.setCrouched(true);
     else if (character_.crouched()) character_.setCrouched(false);
     const bool crouched = character_.crouched();
 
+    // Sprint (held): starts on the ground, carries on in the air while held; never while
+    // crouched or with Breath exhausted; needs a move key (standing still doesn't drain).
+    sprinting_ = in.down(Action::Sprint) && !crouched && moving && breath_.canSprint() && (grounded || sprinting_);
+    breath_.tick(sprinting_, dt);
+
     // Horizontal: smoothed direction x eased speed (Magewar's direction/current_speed lerps).
     const float lerpSpeed = tuning_.lerpSpeed;
-    const float targetSpeed = crouched ? tuning_.crouchSpeed : tuning_.walkSpeed;
-    speed_ = std::lerp(speed_, targetSpeed, std::min(1.0f, dt * lerpSpeed));
-    glm::vec3 wish = forwardFor(yaw_) * in.moveForward() + rightFor(yaw_) * in.moveRight();
-    const float wishLen = glm::length(wish);
-    if (wishLen > 1e-6f) wish /= wishLen;   // diagonals are not faster
-    if (grounded)
-        direction_ = glm::mix(direction_, wish, std::min(1.0f, dt * lerpSpeed));
-    else if (wishLen > 1e-6f)
-        direction_ = glm::mix(direction_, wish, std::min(1.0f, dt * tuning_.airLerpSpeed));
-    if (glm::length(direction_) < 1e-3f) direction_ = glm::vec3(0.0f);
+    if (sliding()) {
+        direction_ = slideDir_;
+        speed_ = (slideLeft_ / tuning_.slideDuration + 0.5f) * tuning_.slideSpeed;
+    } else {
+        if (!jumpedFromSlide_) {   // a slide jump keeps its speed until landing
+            const float base = crouched ? tuning_.crouchSpeed : sprinting_ ? tuning_.sprintSpeed : tuning_.walkSpeed;
+            speed_ = std::lerp(speed_, base * speedMul_, std::min(1.0f, dt * lerpSpeed));
+        }
+        if (grounded)
+            direction_ = glm::mix(direction_, wish, std::min(1.0f, dt * lerpSpeed));
+        else if (moving)
+            direction_ = glm::mix(direction_, wish, std::min(1.0f, dt * tuning_.airLerpSpeed));
+        if (glm::length(direction_) < 1e-3f) direction_ = glm::vec3(0.0f);
+    }
 
     // Vertical: rest on the ground, fall otherwise; jump on the press edge from the ground.
     glm::vec3 v = direction_ * speed_;
     v.y = grounded ? 0.0f : character_.velocity().y - tuning_.gravity * dt;
     if (grounded && in.wasPressed(Action::Jump)) {
-        v.y = crouched ? tuning_.crouchJumpVelocity : tuning_.jumpVelocity;
-        crouchedJump_ = crouched;
+        if (sliding()) {   // slide jump: standard jump x SLIDE_JUMP_MOD, stand up in the air
+            v.y = tuning_.jumpVelocity * tuning_.slideJumpMod;
+            jumpedFromSlide_ = true;
+            crouchedJump_ = false;
+            slideLeft_ = 0.0f;
+            ++slideJumps_;
+        } else {
+            v.y = crouched ? tuning_.crouchJumpVelocity : tuning_.jumpVelocity;
+            crouchedJump_ = crouched;
+        }
         rising_ = true;
         ++jumps_;
     }
@@ -72,6 +110,7 @@ void PlayerController::tick(const input::TickInput& in, float dt) {
     character_.setVelocity(v);
     character_.update(dt);
     feet_ = character_.position();
+    if (sliding()) slideLeft_ = std::max(0.0f, slideLeft_ - dt);   // SlidingTimer counts down
 
     // Eye height eases toward the stance's (Magewar lerps the head the same way).
     const float targetEye = character_.crouched() ? tuning_.crouchingEye : tuning_.standingEye;

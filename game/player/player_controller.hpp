@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-// First-person player controller (BUILD_PLAN step 14): walk, jump, crouch, look.
+// First-person player controller (BUILD_PLAN steps 14-15): walk, jump, crouch, look,
+// sprint, Breath and slide.
 //
 // Reinterprets Magewar's cogito_player (CharacterBody3D, read-only reference) on our
 // physics::Character (Jolt CharacterVirtual capsule, feet at its position):
@@ -16,12 +17,26 @@
 //     0.6 m crouched (Neck - CROUCHING_DEPTH 0.9), eased at 10/s like Magewar's head.
 //   * Mouse look (addLook()) is applied per render frame: 0.25 deg/count, mouse right
 //     = negative yaw (turn right), pitch clamped to +-89 deg (Camera::kMaxPitch).
-// Sprint/slide (step 15), dash and head bob (step 16) build on this.
+//   * Sprint (step 15, held): 7 m/s (Magewar SPRINTING_SPEED scene override), eased at
+//     LERP_SPEED like walk/crouch; starts on the ground only with a move key held, not
+//     while crouched and not while Breath (game/player/stats.hpp) is exhausted; drains
+//     Breath 20/s while active, keeps going in the air while held.
+//   * Slide (Magewar SlidingTimer 1.5 s, SLIDING_SPEED 5): pressing/holding Crouch on the
+//     ground while sprinting (sprinting on the previous tick, move key held) crouches into
+//     a slide along the entry direction (mouse look does not steer it: Magewar free-looks
+//     while sliding) at (timeLeft / 1.5 + 0.5) x 5 m/s, i.e. 7.5 -> 2.5 m/s, ~7.5 m in
+//     total. It ends on timeout, on releasing Crouch or Sprint, or on leaving the ground.
+//     Jump during a slide = slide jump: 4.5 x SLIDE_JUMP_MOD 1.3 (scene override) m/s
+//     upward, stands up and keeps the slide speed until landing. A slide doesn't drain.
+//   * setSpeedMultiplier(): equipment hook (Magewar Shoes speed_modifier, step 30) that
+//     scales walk/sprint/crouch speed but not the slide (Magewar leaves SLIDING_SPEED).
+// Dash and head bob (step 16) build on this.
 #pragma once
 #include "engine/input/input.hpp"
 #include "engine/physics/character.hpp"
 #include "engine/physics/physics.hpp"
 #include "engine/render/camera.hpp"
+#include "game/player/stats.hpp"
 
 #include <glm/glm.hpp>
 
@@ -32,6 +47,10 @@ namespace coe::game {
 struct PlayerTuning {
     float walkSpeed = 4.0f;            // Magewar WALKING_SPEED (player scene override)
     float crouchSpeed = 3.0f;          // CROUCHING_SPEED
+    float sprintSpeed = 7.0f;          // SPRINTING_SPEED (scene override; script default 8)
+    float slideSpeed = 5.0f;           // SLIDING_SPEED: slide runs (timeLeft/duration + 0.5) x this
+    float slideDuration = 1.5f;        // SlidingTimer wait_time
+    float slideJumpMod = 1.3f;         // SLIDE_JUMP_MOD (scene override; script default 1.5)
     float jumpVelocity = 4.5f;         // JUMP_VELOCITY
     float crouchJumpVelocity = 3.0f;   // CROUCH_JUMP_VELOCITY
     float gravity = 9.8f;              // project default gravity
@@ -46,7 +65,8 @@ class PlayerController {
 public:
     // Spawns the character with its feet at `feet`, facing `yawRad` (pitch 0).
     PlayerController(physics::PhysicsWorld& world, const glm::vec3& feet, float yawRad,
-                     const PlayerTuning& tuning = {}, const physics::CharacterSettings& body = {});
+                     const PlayerTuning& tuning = {}, const physics::CharacterSettings& body = {},
+                     const BreathTuning& breath = {});
 
     // Per render frame: relative mouse motion in counts (dx right, dy down).
     void addLook(float dxCounts, float dyCounts);
@@ -68,6 +88,17 @@ public:
     float yaw() const { return yaw_; }
     float pitch() const { return pitch_; }
     std::uint64_t jumps() const { return jumps_; }
+    bool sprinting() const { return sprinting_; }          // sprint was active on the last tick
+    bool sliding() const { return slideLeft_ > 0.0f; }
+    float slideTimeLeft() const { return slideLeft_; }
+    glm::vec3 slideDirection() const { return slideDir_; }
+    std::uint64_t slides() const { return slides_; }
+    std::uint64_t slideJumps() const { return slideJumps_; }
+    float currentSpeed() const { return speed_; }          // Magewar current_speed (eased target)
+    const Breath& breath() const { return breath_; }
+    Breath& breath() { return breath_; }
+    void setSpeedMultiplier(float m) { speedMul_ = m; }
+    float speedMultiplier() const { return speedMul_; }
     const physics::Character& character() const { return character_; }
     const PlayerTuning& tuning() const { return tuning_; }
 
@@ -86,6 +117,13 @@ private:
     float eye_, prevEye_;
     glm::vec3 feet_, prevFeet_;
     std::uint64_t jumps_ = 0;
+    Breath breath_;
+    float speedMul_ = 1.0f;
+    bool sprinting_ = false;
+    float slideLeft_ = 0.0f;        // Magewar sliding_timer.time_left (0 = not sliding)
+    glm::vec3 slideDir_{0.0f};      // world direction captured when the slide started
+    bool jumpedFromSlide_ = false;  // slide-jumped: keep the slide speed until landing
+    std::uint64_t slides_ = 0, slideJumps_ = 0;
 };
 
 } // namespace coe::game

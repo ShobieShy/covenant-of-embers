@@ -39,3 +39,8 @@ add_executable(test_player test_player.cpp)
 target_link_libraries(test_player PRIVATE coe_game coe_physics coe_warnings)
 target_compile_definitions(test_player PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
 coe_add_test(NAME player COMMAND test_player)
+
+# Step 15: Breath pool drain/regen timings (CPU-only); sprint/slide live in test_player.
+add_executable(test_breath test_breath.cpp)
+target_link_libraries(test_breath PRIVATE coe_game coe_warnings)
+coe_add_test(NAME breath COMMAND test_breath)

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-// Unit tests for engine/physics/character + game/player/player_controller (BUILD_PLAN step 14).
+// Unit tests for engine/physics/character + game/player/player_controller (BUILD_PLAN
+// steps 14-15).
 // Done-check:
 //  - 1 s of forward input from the Midden player start moves ~ walk speed x 1 s (4 m;
 //    Magewar's direction easing at 10/s costs ~0.4 m of it) and ends at walk speed;
@@ -9,6 +10,14 @@
 // Also: jump apex v^2/2g for 4.5 / 3.0 m/s (stand / crouch), crouch eye 0.6 m and
 // speed 3 m/s, no standing up under a low ceiling, look clamp/wrap, and the inner body
 // on Layers::Character is what a ray through the player hits.
+// Step 15 (sprint/slide; the Breath pool's own timings are in test_breath.cpp):
+//  - sprint reaches 7 m/s and drains Breath 20/s, needs a move key, never while crouched;
+//    an empty pool drops back to walk until 20 Breath is back;
+//  - a slide triggers only from sprint (walk + Crouch, crouch-then-sprint, standing
+//    sprint + Crouch all don't), runs 1.5 s along the entry direction (look doesn't
+//    steer it) at 7.5 -> 2.5 m/s (~7.5 m), ends on releasing Sprint, then crouch speed;
+//  - a slide jump goes 4.5 x 1.3 m/s up, stands up in the air and keeps its speed;
+//  - setSpeedMultiplier scales walk and sprint.
 // Plain checks; doctest in step 20.
 #include "engine/physics/character.hpp"
 #include "engine/physics/physics.hpp"
@@ -262,6 +271,192 @@ void innerBody() {
     CHECK(hit && hit->body == body && near(hit->point.z, 0.3f, 0.02f));
     CHECK(std::string(ph::layerName(ph::Layers::Character)) == "character");
 }
+
+// --- step 15: sprint, Breath, slide ---------------------------------------------------
+
+// A 400 m floor: long sprints stay on it.
+struct BigFlat {
+    ph::PhysicsWorld w;
+    BigFlat() {
+        ph::BoxDesc floor;
+        floor.center = {0, -0.5f, 0};
+        floor.halfExtents = {200, 0.5f, 200};
+        w.addStaticBox(floor);
+    }
+};
+
+void sprinting() {
+    BigFlat f;
+    PlayerController p(f.w, {0, 0, 150}, 0.0f);
+    settle(p, f.w);
+    // Sprint held, no move key: no sprint, no drain.
+    for (int i = 0; i < 30; ++i) tick(p, f.w, hold({Action::Sprint}));
+    CHECK(!p.sprinting() && p.breath().value() == 100.0f);
+    const glm::vec3 start = p.feet();
+    for (int i = 0; i < 120; ++i) tick(p, f.w, hold({Action::MoveForward, Action::Sprint}));
+    std::printf("sprint 2 s: speed %.3f m/s (7.0), %.2f m, Breath %.2f (100 - 40 = 60)\n", double(p.horizontalSpeed()),
+                double(start.z - p.feet().z), double(p.breath().value()));
+    CHECK(p.sprinting() && near(p.horizontalSpeed(), p.tuning().sprintSpeed, 0.05f));
+    CHECK(near(p.breath().value(), 60.0f, 0.01f));
+    // Run dry: Breath hits 0 after 5 s of sprint, speed eases back to walk.
+    int dryTick = -1;
+    for (int i = 0; i < 240 && dryTick < 0; ++i) {
+        tick(p, f.w, hold({Action::MoveForward, Action::Sprint}));
+        if (p.breath().empty()) dryTick = 120 + i + 1;
+    }
+    CHECK(std::abs(dryTick - 300) <= 1);
+    // Still holding Sprint: walk until 20 Breath is back (1 s + 20/30 s = 100 ticks).
+    int resumed = -1;
+    for (int i = 1; i <= 200 && resumed < 0; ++i) {
+        tick(p, f.w, hold({Action::MoveForward, Action::Sprint}));
+        if (i == 60) CHECK(!p.sprinting() && near(p.horizontalSpeed(), p.tuning().walkSpeed, 0.05f));
+        if (p.sprinting()) resumed = i;
+    }
+    std::printf("sprint: ran dry after %d ticks (300), sprinting again %d ticks later (~100)\n", dryTick, resumed);
+    CHECK(resumed >= 99 && resumed <= 102);
+    // Crouched: no sprint, crouch speed, no drain.
+    BigFlat g;
+    PlayerController c(g.w, {0, 0, 0}, 0.0f);
+    settle(c, g.w);
+    for (int i = 0; i < 120; ++i) tick(c, g.w, hold({Action::MoveForward, Action::Sprint, Action::Crouch}));
+    CHECK(!c.sprinting() && !c.sliding() && c.slides() == 0 && c.crouched());
+    CHECK(near(c.horizontalSpeed(), c.tuning().crouchSpeed, 0.05f) && c.breath().value() == 100.0f);
+    // Speed multiplier (step 30 Shoes hook) scales walk and sprint.
+    BigFlat h;
+    PlayerController m(h.w, {0, 0, 0}, 0.0f);
+    m.setSpeedMultiplier(1.1f);
+    settle(m, h.w);
+    for (int i = 0; i < 90; ++i) tick(m, h.w, hold({Action::MoveForward}));
+    CHECK(near(m.horizontalSpeed(), 4.4f, 0.05f));
+    for (int i = 0; i < 90; ++i) tick(m, h.w, hold({Action::MoveForward, Action::Sprint}));
+    CHECK(near(m.horizontalSpeed(), 7.7f, 0.05f));
+}
+
+struct SlideRun {
+    int slideTicks = 0;
+    float distance = 0.0f, entrySpeed = 0.0f, endSpeedAfter = 0.0f, sideways = 0.0f;
+    float breathStart = 0.0f, breathEnd = 0.0f;
+    std::uint64_t slides = 0;
+};
+
+// Sprint north 1 s, then add Crouch for 3 s; turns the view 90 deg mid-slide.
+SlideRun slideFromSprint() {
+    BigFlat f;
+    PlayerController p(f.w, {0, 0, 0}, 0.0f);
+    settle(p, f.w);
+    for (int i = 0; i < 60; ++i) tick(p, f.w, hold({Action::MoveForward, Action::Sprint}));
+    CHECK(p.sprinting());
+    SlideRun r;
+    const glm::vec3 start = p.feet();
+    r.breathStart = p.breath().value();
+    bool counting = true;
+    for (int i = 0; i < 180; ++i) {
+        if (i == 30) p.setLook(glm::radians(90.0f), 0.0f);   // look west: the slide keeps going north
+        tick(p, f.w, hold({Action::MoveForward, Action::Sprint, Action::Crouch}));
+        if (i == 0) {
+            r.entrySpeed = p.horizontalSpeed();
+            CHECK(p.sliding() && p.crouched());
+        }
+        if (counting && p.sliding()) ++r.slideTicks;
+        if (counting && !p.sliding()) {
+            counting = false;
+            r.distance = start.z - p.feet().z;
+            r.sideways = std::fabs(p.feet().x - start.x);
+            r.breathEnd = p.breath().value();
+        }
+    }
+    r.endSpeedAfter = p.horizontalSpeed();
+    r.slides = p.slides();
+    CHECK(p.crouched() && !p.sprinting());
+    return r;
+}
+
+void sliding() {
+    const SlideRun r = slideFromSprint();
+    std::printf("slide: %d ticks (90 = 1.5 s), %.3f m north (~7.5), sideways %.3f m, entry %.3f m/s (7.5), "
+                "then crouch %.3f m/s, Breath %.2f -> %.2f\n", r.slideTicks, double(r.distance), double(r.sideways),
+                double(r.entrySpeed), double(r.endSpeedAfter), double(r.breathStart), double(r.breathEnd));
+    CHECK(r.slides == 1);   // one slide, no re-trigger while Sprint + Crouch stay held
+    CHECK(std::abs(r.slideTicks - 90) <= 1);
+    CHECK(near(r.entrySpeed, 7.5f, 0.05f));
+    CHECK(near(r.distance, 7.5f, 0.3f));
+    CHECK(r.sideways < 0.02f);                      // look turned west, slide kept north
+    CHECK(near(r.endSpeedAfter, 3.0f, 0.05f));      // crouch speed once it ends
+    CHECK(r.breathEnd >= r.breathStart - 0.01f);    // sliding doesn't drain
+
+    // Only from sprint: walking + Crouch just crouches.
+    {
+        BigFlat f;
+        PlayerController p(f.w, {0, 0, 0}, 0.0f);
+        settle(p, f.w);
+        for (int i = 0; i < 60; ++i) tick(p, f.w, hold({Action::MoveForward}));
+        for (int i = 0; i < 60; ++i) tick(p, f.w, hold({Action::MoveForward, Action::Crouch}));
+        CHECK(p.slides() == 0 && p.crouched() && near(p.horizontalSpeed(), 3.0f, 0.05f));
+        // Crouched first, then Sprint: still no slide.
+        for (int i = 0; i < 60; ++i) tick(p, f.w, hold({Action::MoveForward, Action::Crouch, Action::Sprint}));
+        CHECK(p.slides() == 0);
+    }
+    // Sprint held while standing still + Crouch: no slide.
+    {
+        BigFlat f;
+        PlayerController p(f.w, {0, 0, 0}, 0.0f);
+        settle(p, f.w);
+        for (int i = 0; i < 30; ++i) tick(p, f.w, hold({Action::Sprint}));
+        for (int i = 0; i < 30; ++i) tick(p, f.w, hold({Action::Sprint, Action::Crouch}));
+        CHECK(p.slides() == 0);
+    }
+    // Exhausted (no sprint) + Crouch: no slide.
+    {
+        BigFlat f;
+        PlayerController p(f.w, {0, 0, 150}, 0.0f);
+        settle(p, f.w);
+        for (int i = 0; i < 310; ++i) tick(p, f.w, hold({Action::MoveForward, Action::Sprint}));
+        CHECK(!p.sprinting() && p.breath().exhausted());
+        tick(p, f.w, hold({Action::MoveForward, Action::Sprint, Action::Crouch}));
+        CHECK(p.slides() == 0 && !p.sliding());
+    }
+    // Releasing Sprint ends the slide early.
+    {
+        BigFlat f;
+        PlayerController p(f.w, {0, 0, 0}, 0.0f);
+        settle(p, f.w);
+        for (int i = 0; i < 60; ++i) tick(p, f.w, hold({Action::MoveForward, Action::Sprint}));
+        for (int i = 0; i < 20; ++i) tick(p, f.w, hold({Action::MoveForward, Action::Sprint, Action::Crouch}));
+        CHECK(p.sliding());
+        tick(p, f.w, hold({Action::MoveForward, Action::Crouch}));
+        CHECK(!p.sliding() && p.crouched() && p.slides() == 1);
+    }
+}
+
+void slideJump() {
+    BigFlat f;
+    PlayerController p(f.w, {0, 0, 0}, 0.0f);
+    settle(p, f.w);
+    for (int i = 0; i < 60; ++i) tick(p, f.w, hold({Action::MoveForward, Action::Sprint}));
+    for (int i = 0; i < 10; ++i) tick(p, f.w, hold({Action::MoveForward, Action::Sprint, Action::Crouch}));
+    CHECK(p.sliding());
+    const float slideSpeed = p.horizontalSpeed();
+    tick(p, f.w, hold({Action::MoveForward, Action::Sprint, Action::Crouch}, {Action::Jump}));
+    CHECK(!p.sliding() && p.slideJumps() == 1 && p.jumps() == 1);
+    float apex = 0.0f, minAirSpeed = 1e9f, maxAirSpeed = 0.0f;
+    bool stoodUp = false;
+    for (int i = 0; i < 120; ++i) {
+        tick(p, f.w, hold({Action::MoveForward, Action::Sprint, Action::Crouch}));
+        apex = std::max(apex, p.feet().y);
+        if (!p.onGround()) {
+            stoodUp = stoodUp || !p.crouched();
+            minAirSpeed = std::min(minAirSpeed, p.horizontalSpeed());
+            maxAirSpeed = std::max(maxAirSpeed, p.horizontalSpeed());
+        }
+    }
+    const float v = 4.5f * 1.3f;
+    std::printf("slide jump: apex %.3f m ((4.5x1.3)^2/19.6 = %.3f), air speed %.3f..%.3f m/s (slide %.3f)\n",
+                double(apex), double(v * v / 19.6f), double(minAirSpeed), double(maxAirSpeed), double(slideSpeed));
+    CHECK(near(apex, v * v / 19.6f, 0.06f));
+    CHECK(stoodUp);
+    CHECK(maxAirSpeed - minAirSpeed < 0.05f && maxAirSpeed > 6.0f);   // slide speed kept in the air
+    CHECK(p.onGround() && p.slides() == 1);   // landing with Crouch held doesn't start a new slide
+}
 } // namespace
 
 int main() {
@@ -274,6 +469,9 @@ int main() {
     crouching();
     look();
     innerBody();
+    sprinting();
+    sliding();
+    slideJump();
     if (g_failures) { std::fprintf(stderr, "test_player: %d failure(s)\n", g_failures); return 1; }
     std::puts("test_player: all checks passed");
     return 0;

@@ -4,11 +4,13 @@
 # in level.cpp before the include, so no other target sees the toml++ headers).
 # world/level_physics.*: level boxes -> static Jolt colliders via coe_physics (step 13).
 # player/player_controller.*: FPS walk/jump/crouch/look on physics::Character (step 14).
+# player/stats.*: Breath pool (sprint/dash resource, step 15).
 add_library(coe_game STATIC
   world/level.cpp
   world/level_physics.cpp
   world/headless_checks.cpp
-  player/player_controller.cpp)
+  player/player_controller.cpp
+  player/stats.cpp)
 target_link_libraries(coe_game PUBLIC coe_engine coe_physics PRIVATE tomlplusplus::tomlplusplus coe_warnings)
 
 # covenant: the game executable (gameplay state + main loop) on top of coe_engine.

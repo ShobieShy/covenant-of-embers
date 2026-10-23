@@ -27,8 +27,9 @@
 // the world steps once per fixed tick. With --crate a tumbling demo crate (dynamic box)
 // is dropped in front of the player and drawn interpolated.
 // Player (step 14): game/player/player_controller spawns a Jolt CharacterVirtual at the
-// level's [player_start]; each tick it walks/jumps/crouches from the TickInput (before
-// the world steps), mouse look turns it per frame, the camera sits at its eye.
+// level's [player_start]; each tick it walks/jumps/crouches, and (step 15) sprints on
+// Breath and slides, from the TickInput (before the world steps), mouse look turns it
+// per frame, the camera sits at its eye.
 #include "engine/core/clock.hpp"
 #include "engine/core/fixed_timestep.hpp"
 #include "engine/input/input.hpp"
@@ -422,9 +423,12 @@ int main(int argc, char** argv) {
                 std::printf("[physics] demo crate at (%.2f, %.2f, %.2f) %s\n", double(crateCur.position.x),
                             double(crateCur.position.y), double(crateCur.position.z), crateCur.active ? "moving" : "asleep");
             const glm::vec3 f = player->feet();
-            std::printf("[player] feet at (%.2f, %.2f, %.2f), %s, eye %.2f m, %llu jump(s), apex %.2f m\n", double(f.x),
+            std::printf("[player] feet at (%.2f, %.2f, %.2f), %s, eye %.2f m, %llu jump(s), apex %.2f m, "
+                        "Breath %.0f/%.0f, %llu slide(s)\n", double(f.x),
                         double(f.y), double(f.z), coe::physics::groundStateName(player->character().groundState()),
-                        double(player->eyeHeight()), (unsigned long long)player->jumps(), double(apex));
+                        double(player->eyeHeight()), (unsigned long long)player->jumps(), double(apex),
+                        double(player->breath().value()), double(player->breath().max()),
+                        (unsigned long long)player->slides());
             player.reset();   // before the world it lives in
         }
         std::printf("frames: %llu in %.2fs (%.0f fps)\n", (unsigned long long)frames, elapsed,
