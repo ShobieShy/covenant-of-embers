@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "game/magic/wieldable.hpp"
 
+#include "game/combat/damage.hpp"
 #include "game/data/toml_read.hpp"
 
 #include <algorithm>
@@ -9,11 +10,6 @@
 namespace coe::game {
 namespace {
 constexpr std::array<const char*, 2> kTypeNames = {"staff", "wand"};
-constexpr std::array<const char*, kElementCount> kElementNames = {"arcane", "fire", "water", "earth", "air", "light", "dark"};
-// Magewar magic_element.gd ELEMENT_COLORS (NONE/Arcane is the grey 0.7).
-constexpr std::array<glm::vec3, kElementCount> kElementColors = {
-    glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 0.3f, 0.1f), glm::vec3(0.1f, 0.4f, 1.0f), glm::vec3(0.5f, 0.35f, 0.1f),
-    glm::vec3(0.8f, 0.95f, 1.0f), glm::vec3(1.0f, 0.95f, 0.7f), glm::vec3(0.3f, 0.0f, 0.5f)};
 constexpr std::array<const char*, kRarityCount> kRarityNames = {"basic", "uncommon", "rare", "mythic", "primordial", "unique"};
 constexpr std::array<float, kRarityCount> kRarityMult = {1.0f, 1.25f, 1.5f, 2.0f, 2.75f, 3.0f};   // item_rarity.gd
 
@@ -44,6 +40,19 @@ bool readEnum(Ctx& c, const toml::table& t, const char* key, const std::string& 
     return true;
 }
 
+bool readElement(Ctx& c, const toml::table& t, const std::string& w, Element& out) {
+    std::string s;
+    if (!data::readString(c, t.get("element"), w + " element", s)) return false;
+    const auto v = parseElement(s);
+    if (!v) {
+        std::array<const char*, kElementCount> names{};
+        for (std::size_t i = 0; i < kElementCount; ++i) names[i] = elementName(Element(i));
+        return c.fail(t.get("element"), w + ": unknown element '" + s + "' (expected " + choices(names) + ")");
+    }
+    out = *v;
+    return true;
+}
+
 bool parseDef(Ctx& c, const toml::table& t, std::size_t index, WieldableDef& d) {
     const std::string where = "wieldable #" + std::to_string(index + 1);
     if (!data::onlyKeys(c, t, {"id", "name", "type", "base_rarity", "element", "damage", "mana_cost", "cooldown",
@@ -59,7 +68,7 @@ bool parseDef(Ctx& c, const toml::table& t, std::size_t index, WieldableDef& d) 
     return data::readString(c, t.get("name"), w + " name", d.name) &&
            readEnum(c, t, "type", w, kTypeNames, d.type) &&
            readEnum(c, t, "base_rarity", w, kRarityNames, d.baseRarity) &&
-           readEnum(c, t, "element", w, kElementNames, d.element) &&
+           readElement(c, t, w, d.element) &&
            data::readFloatIn(c, t.get("damage"), w + " damage", 0.1f, 1000.0f, d.damage) &&
            data::readFloatIn(c, t.get("mana_cost"), w + " mana_cost", 0.0f, 100.0f, d.manaCost) &&
            data::readFloatIn(c, t.get("cooldown"), w + " cooldown", kMinCooldown, 10.0f, d.cooldown) &&
@@ -70,9 +79,6 @@ bool parseDef(Ctx& c, const toml::table& t, std::size_t index, WieldableDef& d) 
 
 const char* wieldableTypeName(WieldableType t) { return kTypeNames[std::size_t(t)]; }
 std::optional<WieldableType> parseWieldableType(std::string_view s) { return parseName<WieldableType>(kTypeNames, s); }
-const char* elementName(Element e) { return kElementNames[std::size_t(e)]; }
-std::optional<Element> parseElement(std::string_view s) { return parseName<Element>(kElementNames, s); }
-glm::vec3 elementColor(Element e) { return kElementColors[std::size_t(e)]; }
 const char* rarityName(Rarity r) { return kRarityNames[std::size_t(r)]; }
 std::optional<Rarity> parseRarity(std::string_view s) { return parseName<Rarity>(kRarityNames, s); }
 float rarityMultiplier(Rarity r) { return kRarityMult[std::size_t(r)]; }
@@ -105,6 +111,12 @@ std::string loadWieldables(const std::filesystem::path& path, WieldableTable& ou
     std::string text;
     if (std::string err = data::readTextFile(path, "wieldables file", text); !err.empty()) return err;
     return parseWieldables(text, path.filename().string(), out);
+}
+
+float WieldableInstance::damage() const {
+    float bonus = 0.0f;
+    for (const WieldablePart& p : parts) bonus += p.damageBonus;
+    return wieldableDamage(def->damage, rarityMultiplier(def->baseRarity), bonus);
 }
 
 float WieldableInstance::accuracy() const {

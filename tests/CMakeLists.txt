@@ -1,9 +1,20 @@
 # SPDX-License-Identifier: Apache-2.0
-# Unit tests (plain asserts until doctest arrives in step 20, ADR-0001).
-add_executable(test_fixed_timestep test_fixed_timestep.cpp)
-target_link_libraries(test_fixed_timestep PRIVATE coe_engine coe_warnings)
-target_include_directories(test_fixed_timestep PRIVATE ${PROJECT_SOURCE_DIR})
-coe_add_test(NAME fixed_timestep COMMAND test_fixed_timestep)
+# Unit tests. doctest (step 20, ADR-0001): one coe_tests runner holds every doctest test
+# file; ctest runs it once per file (-sf = source-file filter) so each file stays its own
+# ctest entry with coe_add_test's timeout. A filter that matches no test case fails (the
+# summary's "test cases: 0" line), so a renamed file can't pass silently. The other
+# test_*.cpp files still use plain checks in their own executables until they are ported
+# (as each is next touched; see BUILD_PLAN step 20 notes).
+set(COE_DOCTEST_FILES test_fixed_timestep.cpp test_casting.cpp test_damage.cpp)
+add_executable(coe_tests doctest_main.cpp ${COE_DOCTEST_FILES})
+target_link_libraries(coe_tests PRIVATE coe_game coe_engine coe_physics doctest::doctest coe_warnings)
+target_include_directories(coe_tests PRIVATE ${PROJECT_SOURCE_DIR})
+target_compile_definitions(coe_tests PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
+foreach(file ${COE_DOCTEST_FILES})
+  string(REGEX REPLACE "^test_(.*)\\.cpp$" "\\1" name ${file})
+  coe_add_test(NAME ${name} COMMAND coe_tests --source-file=*${file} --no-version
+    PROPERTIES FAIL_REGULAR_EXPRESSION "test cases: +0 [|]")
+endforeach()
 
 add_executable(test_input test_input.cpp)
 target_link_libraries(test_input PRIVATE coe_engine coe_warnings)
@@ -55,12 +66,8 @@ add_executable(test_camera_feel test_camera_feel.cpp)
 target_link_libraries(test_camera_feel PRIVATE coe_game coe_physics coe_warnings)
 coe_add_test(NAME camera_feel COMMAND test_camera_feel)
 
-# Step 17: wieldables.toml (Magewar's four bases + rejections), ray-swept bolts hitting a
-# target at the right distance/time, Swift Wind Wand cooldown, caster's capsule never hit.
-add_executable(test_casting test_casting.cpp)
-target_link_libraries(test_casting PRIVATE coe_game coe_physics coe_warnings)
-target_compile_definitions(test_casting PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
-coe_add_test(NAME casting COMMAND test_casting)
+# Step 17's casting tests (wieldables.toml, bolt hits, cooldown, own capsule) and step 20's
+# damage tests (7x7 chart, rarity, parts, resist cap, weak point) are doctest files above.
 
 # Step 18: Magewar mana pool (100, 3/s after 1.5 s, regen bonus hook), 20 fire-staff casts
 # through Caster::setManaSpender, regen timing at 30/60/144 Hz.

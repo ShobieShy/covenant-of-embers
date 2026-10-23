@@ -5,15 +5,14 @@
 #include <cmath>
 
 namespace coe::game {
-namespace {
 // Tracer from max(kSkipNear, d - kTail) to d metres along the bolt's ray.
-bool tracer(const ProjectileSpawn& s, float d, DebugLine& out) {
-    const float from = std::max(ProjectileSystem::kSkipNear, d - ProjectileSystem::kTail);
+bool ProjectileSystem::tracer(const ProjectileSpawn& s, float d, DebugLine& out) const {
+    const float from = std::max(kSkipNear, d - kTail);
     if (d <= from) return false;
-    out = {s.origin + s.direction * from, s.origin + s.direction * d, elementColor(s.element)};
+    out = {s.origin + s.direction * from, s.origin + s.direction * d,
+           elements_ ? elements_->color(s.element) : glm::vec3(1.0f)};
     return true;
 }
-} // namespace
 
 std::uint32_t ProjectileSystem::spawn(const ProjectileSpawn& s) {
     Projectile p;

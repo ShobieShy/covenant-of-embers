@@ -12,6 +12,8 @@
 # magic/wieldable.*, magic/projectile.*, magic/casting.*: Magewar staffs/wands from
 # data/magic/wieldables.toml, ray-swept spell bolts, cooldown-gated casting (step 17).
 # magic/accuracy.*: Magewar focus (ADS) FOV tween, accuracy -> spread cone + bloom (step 19).
+# combat/element.*, combat/damage.*: Magewar elements + effectiveness chart from
+# data/magic/elements.toml, the damage formula (rarity, parts, resist cap, weak point) (step 20).
 add_library(coe_game STATIC
   data/toml_read.cpp
   world/level.cpp
@@ -25,7 +27,9 @@ add_library(coe_game STATIC
   magic/wieldable.cpp
   magic/projectile.cpp
   magic/casting.cpp
-  magic/accuracy.cpp)
+  magic/accuracy.cpp
+  combat/element.cpp
+  combat/damage.cpp)
 target_link_libraries(coe_game PUBLIC coe_engine coe_physics PRIVATE tomlplusplus::tomlplusplus coe_warnings)
 
 # covenant: the game executable (gameplay state + main loop) on top of coe_engine.
@@ -63,4 +67,10 @@ coe_add_test(NAME smoke_headless_missing_level
   COMMAND covenant --headless --level ${CMAKE_BINARY_DIR}/no-such-level.toml
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   PROPERTIES PASS_REGULAR_EXPRESSION "\\[level\\] .*cannot open"
+             FAIL_REGULAR_EXPRESSION "Sanitizer|runtime error|RESULT: PASS")
+# Step 20: a missing elements.toml fails loudly too.
+coe_add_test(NAME smoke_headless_missing_elements
+  COMMAND covenant --headless --elements ${CMAKE_BINARY_DIR}/no-such-elements.toml
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  PROPERTIES PASS_REGULAR_EXPRESSION "\\[magic\\] .*cannot open"
              FAIL_REGULAR_EXPRESSION "Sanitizer|runtime error|RESULT: PASS")

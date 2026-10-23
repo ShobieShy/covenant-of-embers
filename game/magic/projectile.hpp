@@ -29,7 +29,7 @@ struct ProjectileSpawn {
     float speed = 30.0f;             // m/s
     float range = 50.0f;             // m
     Element element = Element::Arcane;
-    float damage = 0.0f;             // carried to the hit (step 20/22 apply it)
+    float damage = 0.0f;             // wieldable damage, carried to the hit (resolveHit, step 22 applies it)
     physics::BodyHandle ignore;      // never hit (the caster); invalid = none
 };
 
@@ -62,6 +62,10 @@ struct DebugLine {
 
 class ProjectileSystem {
 public:
+    // Tracer colours come from the element table (data/magic/elements.toml, step 20);
+    // `t` must outlive the system. Without one, tracers are white.
+    void setElements(const ElementTable* t) { elements_ = t; }
+
     std::uint32_t spawn(const ProjectileSpawn& s);
     // One fixed tick: sweeps every live bolt, appends hits (closest first per bolt),
     // drops bolts that hit or ran out of range. Bolts spawned before this call move in it.
@@ -81,6 +85,8 @@ public:
 
 private:
     struct Impact { DebugLine line; float ttl; };
+    bool tracer(const ProjectileSpawn& s, float d, DebugLine& out) const;
+    const ElementTable* elements_ = nullptr;
     std::vector<Projectile> live_;
     std::vector<Impact> impacts_;
     std::uint32_t nextId_ = 1;

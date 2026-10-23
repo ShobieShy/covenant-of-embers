@@ -334,7 +334,7 @@ Buildable rules for M1–M2. **Weapons, loot and crafting follow the Magewar des
 - The base staff/wand **is the spell** (element, projectile speed, mana cost, cooldown) and has its own rarity; parts are modifiers added at a Magic Assembly Station.
 - **Mana** is the only casting resource: 100 base, cost per cast, regen 3/s after 1.5 s without casting, equipment adds regen. No ammo or reloads.
 - **Accuracy** 0–100 %: 50 base + Head + Handle + Charm bonuses; spread cone `(s_max + bloom) × (1 − acc/100) × stance` (s_max 4°, focus 0.35, crouch 0.8, moving 1.3, airborne 1.8; bloom +1° per cast, cap 4°, clears in 0.5 s). Magewar computes accuracy but never applies it to aim; the cone is our design.
-- **Damage**: `dmg = base × RarityMult(base rarity) + Σ part damage_bonus`, then `× ElementEffectiveness × (1 − Resist ≤ 0.6) × Crit (weak point ×2)`.
+- **Damage**: `dmg = base × RarityMult(base rarity) + Σ part damage_bonus`, then `× ElementEffectiveness × (1 − Resist ≤ 0.6) × Crit (weak point ×2)` (game/combat/damage.*, step 20). Resist is per incoming element like Magewar's `get_elemental_resistance`, but capped at 60 % (Magewar clamps to 90 %); weak-point crits are our addition (Magewar has none).
 - **Cooldown** = base × Exterior modifier × Charm modifier, minimum 0.1 s. **Element** = Head element if set, else base element.
 - **Bolts** (step 17): a straight, fast bolt ray-swept per tick from the eye (lands under the crosshair), fizzling at the wieldable's range (Magewar: base `range`; its 0.1 m projectile sphere with gravity and 8 s lifespan is reinterpreted as no-drop). Casting is semi-auto on the Fire press like Magewar; a hold-to-cast option comes with the options screen.
 

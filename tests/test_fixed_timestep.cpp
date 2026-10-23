@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 // Unit tests for engine/core/fixed_timestep + the interpolated TumbleDemo state
-// (BUILD_PLAN step 8). Plain checks; moves to doctest in step 20.
+// (BUILD_PLAN step 8). doctest cases (step 20), run by coe_tests.
 #include "engine/core/fixed_timestep.hpp"
 #include "game/core/tumble_demo.hpp"
 
+#include <doctest/doctest.h>
+
 #include <cmath>
 #include <cstdint>
-#include <cstdio>
 #include <vector>
 
 namespace {
-int g_failures = 0;
-#define CHECK(cond) do { if (!(cond)) { ++g_failures; \
-    std::fprintf(stderr, "FAIL %s:%d: %s\n", __FILE__, __LINE__, #cond); } } while (0)
 
 constexpr uint64_t kSec = coe::FixedTimestep::kNsPerSecond;
 
@@ -30,7 +28,7 @@ std::vector<uint64_t> jitteredFrames(uint64_t total, uint32_t seed) {
     return out;
 }
 
-void threeSecondsIs180Ticks() {
+TEST_CASE("fixed_timestep: 3 s at any frame rate is 180 ticks") {
     // Steady 60/144/30 fps (frame times that don't divide evenly into ns) and jitter.
     for (uint64_t fps : {60ull, 144ull, 30ull, 240ull}) {
         coe::FixedTimestep step(60);
@@ -53,38 +51,38 @@ void threeSecondsIs180Ticks() {
     }
 }
 
-void alphaIsFractionOfTick() {
+TEST_CASE("fixed_timestep: alpha is the fraction of a tick") {
     coe::FixedTimestep step(60);
     const uint64_t tickNs = kSec / 60;                 // 16'666'666 ns (1/3 ns short of a tick)
     CHECK(step.advance(tickNs / 2) == 0);
     CHECK(std::fabs(step.alpha() - 0.5) < 1e-6);
     CHECK(step.advance(tickNs / 2 + 1) == 1);          // completes the tick
-    CHECK(step.alpha() >= 0.0 && step.alpha() < 1e-6);
+    CHECK((step.alpha() >= 0.0 && step.alpha() < 1e-6));
     double prev = step.alpha();
     for (int i = 0; i < 10; ++i) {                     // grows monotonically until the next tick
         step.advance(1'000'000);
-        CHECK(step.alpha() > prev && step.alpha() < 1.0);
+        CHECK((step.alpha() > prev && step.alpha() < 1.0));
         prev = step.alpha();
     }
     CHECK(step.advance(10'000'000) == 1);
     CHECK(step.alpha() < prev);
 }
 
-void hitchIsClamped() {
+TEST_CASE("fixed_timestep: a hitch is clamped") {
     coe::FixedTimestep step(60, 250'000'000ull);
     CHECK(step.advance(2 * kSec) == 15);               // 0.25 s worth, not 120 ticks
     CHECK(step.droppedNs() == 2 * kSec - 250'000'000ull);
     CHECK(step.advance(0) == 0);
 }
 
-void otherRates() {
+TEST_CASE("fixed_timestep: other tick rates") {
     coe::FixedTimestep step(120);
     for (uint64_t f : jitteredFrames(kSec, 99u)) step.advance(f);
     CHECK(step.totalTicks() == 120);
     CHECK(std::fabs(step.dtSeconds() - 1.0 / 120.0) < 1e-12);
 }
 
-void tumbleInterpolates() {
+TEST_CASE("fixed_timestep: tumble demo interpolates") {
     using coe::game::TumbleDemo;
     TumbleDemo s;
     const double dt = 1.0 / 60.0;
@@ -108,13 +106,3 @@ void tumbleInterpolates() {
     CHECK(std::fabs(glm::dot(glm::vec3(m[0]), glm::vec3(m[1]))) < 1e-5f);
 }
 } // namespace
-
-int main() {
-    threeSecondsIs180Ticks();
-    alphaIsFractionOfTick();
-    hitchIsClamped();
-    otherRates();
-    tumbleInterpolates();
-    std::printf("fixed_timestep tests: %s (%d failures)\n", g_failures ? "FAIL" : "PASS", g_failures);
-    return g_failures ? 1 : 0;
-}

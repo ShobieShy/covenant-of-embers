@@ -8,16 +8,17 @@
 //     fire cooldown, projectile speed and range (wieldable_range);
 //   * a WieldableInstance is a def + the parts attached at a Magic Assembly Station.
 //     The part list is empty until step 28 (assembly rules), so the final stats below
-//     are the def's: damage = base x RarityMult(base rarity) (+ part bonuses, step 28),
+//     are the def's: damage = base x RarityMult(base rarity) + sum of part damage
+//     bonuses (game/combat/damage.hpp wieldableDamage(), step 20),
 //     cooldown = base (x Exterior x Charm, step 28) clamped to >= 0.1 s, element =
 //     Head element if set (step 28) else the def's.
 // Bases are data (data/magic/wieldables.toml, loadWieldables()), not code.
 //
-// Element and Rarity tables live here until steps 20 (game/combat/element.*, colours in
-// data/magic/elements.toml) and 26 (data/loot/rarities.toml) make them data; the values
-// are Magewar's (magic_element.gd ELEMENT_COLORS, item_rarity.gd multipliers).
+// Element lives in game/combat/element.* (data/magic/elements.toml, step 20). The Rarity
+// table lives here until step 26 (data/loot/rarities.toml) makes it data; the values are
+// Magewar's (item_rarity.gd multipliers).
 #pragma once
-#include <glm/glm.hpp>
+#include "game/combat/element.hpp"
 
 #include <cstddef>
 #include <filesystem>
@@ -29,18 +30,12 @@
 namespace coe::game {
 
 enum class WieldableType { Staff, Wand };
-// Magewar MagicElement.Element; NONE is shown (and written in data) as "arcane".
-enum class Element { Arcane, Fire, Water, Earth, Air, Light, Dark };
-inline constexpr std::size_t kElementCount = 7;
 // Magewar ItemRarity.Rarity.
 enum class Rarity { Basic, Uncommon, Rare, Mythic, Primordial, Unique };
 inline constexpr std::size_t kRarityCount = 6;
 
 const char* wieldableTypeName(WieldableType t);             // "staff" / "wand"
 std::optional<WieldableType> parseWieldableType(std::string_view s);
-const char* elementName(Element e);                         // "arcane", "fire", ...
-std::optional<Element> parseElement(std::string_view s);
-glm::vec3 elementColor(Element e);                          // Magewar ELEMENT_COLORS (linear 0..1)
 const char* rarityName(Rarity r);                           // "basic", ...
 std::optional<Rarity> parseRarity(std::string_view s);
 float rarityMultiplier(Rarity r);                           // x1.0 ... x3.0
@@ -61,15 +56,16 @@ struct WieldableDef {
     float range = 50.0f;               // m the bolt flies before it fizzles
 };
 
-// A part attached to an instance (Magewar StaffPartItem.PartType). Only the type and the
-// accuracy bonus exist so far (step 19's accuracy); steps 26-28 add the other rolls
-// (damage, fire-rate modifier, handling, element, gem slots) and the assembly rules.
+// A part attached to an instance (Magewar StaffPartItem.PartType). Only the type, the
+// accuracy bonus (step 19) and the damage bonus (step 20) exist so far; steps 26-28 add
+// the other rolls (fire-rate modifier, handling, element, gem slots) and the assembly rules.
 enum class PartType { Head, Exterior, Interior, Handle, Charm };
 
 struct WieldablePart {
     std::string id;
     PartType type = PartType::Head;
     float accuracyBonus = 0.0f;        // Magewar accuracy_bonus (percentage points)
+    float damageBonus = 0.0f;          // Magewar damage_bonus (flat, every part type counts)
 };
 
 // Magewar get_final_accuracy: base 50 %, + Head + Handle + Charm accuracy bonuses (an
@@ -83,7 +79,7 @@ struct WieldableInstance {
     explicit WieldableInstance(const WieldableDef& d) : def(&d) {}
     WieldableType type() const { return def->type; }
     Element element() const { return def->element; }
-    float damage() const { return def->damage * rarityMultiplier(def->baseRarity); }
+    float damage() const;              // Magewar get_final_damage, see wieldableDamage()
     float cooldown() const { return def->cooldown < kMinCooldown ? kMinCooldown : def->cooldown; }
     float manaCost() const { return def->manaCost; }
     float projectileSpeed() const { return def->projectileSpeed; }

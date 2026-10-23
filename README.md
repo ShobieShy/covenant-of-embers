@@ -47,9 +47,11 @@ Register every test with `coe_add_test(NAME … COMMAND … [WORKING_DIRECTORY �
 ./build/debug/covenant --reduced-motion # no head bob / landing dip
 ./build/debug/covenant --crate         # also drop step 13's demo crate in front of the player (walk into it to push it)
 ./build/debug/covenant --wieldables FILE  # staff/wand bases (default data/magic/wieldables.toml)
+./build/debug/covenant --elements FILE    # element names/colours/chart (default data/magic/elements.toml)
 ./build/debug/covenant --model [SRC]   # step 11's tumbling model view instead (default: Kenney blaster-a); --headless writes mesh.ppm
 ./build/debug/covenant --input-debug   # prints actions per fixed tick + mouse look (Esc quits; mouse is captured)
 ctest --test-dir build/debug           # smoke tests, unit tests, asset lint, cooker tests
+./build/debug/coe_tests -sf=*test_damage.cpp  # one doctest file by hand (coe_tests --help for filters)
 ```
 The Khronos validation layer is enabled automatically when installed (`vulkan-validation-layers`); otherwise the app warns and runs without it. Any validation error fails the run.
 

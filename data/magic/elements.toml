@@ -1,0 +1,69 @@
+# Spell elements (BUILD_PLAN step 20, PLAN §30.4) -- Magewar's MagicElement.
+# Values from Magewar magewar/scripts/magic/magic_element.gd (read-only reference):
+# ELEMENT_NAMES, ELEMENT_COLORS and get_effectiveness(). Loaded by game/combat/element.*.
+#
+# [effectiveness]
+#   strong   multiplier when the defender is in the attacker's strong_against (> 1)
+#   weak     multiplier when the defender is in the attacker's weak_against ([0, 1))
+# Same element, or arcane on either side, is always x1.0 (code rule, as in Magewar).
+#
+# [[element]] -- exactly one per element, all keys required:
+#   id              arcane | fire | water | earth | air | light | dark (arcane = Magewar NONE)
+#   name            display name
+#   color           [r, g, b] in 0..1 (Magewar Color; hex in PLAN §30.4)
+#   strong_against  element ids this element deals `strong` damage to
+#   weak_against    element ids this element deals `weak` damage to
+# Cycle: Fire > Earth > Air > Water > Fire; Light and Dark are strong against each other.
+
+[effectiveness]
+strong = 1.5
+weak = 0.5
+
+[[element]]
+id = "arcane"
+name = "Arcane"
+color = [0.7, 0.7, 0.7]       # #B3B3B3
+strong_against = []
+weak_against = []
+
+[[element]]
+id = "fire"
+name = "Fire"
+color = [1.0, 0.3, 0.1]       # #FF4D1A
+strong_against = ["earth"]
+weak_against = ["water"]
+
+[[element]]
+id = "water"
+name = "Water"
+color = [0.1, 0.4, 1.0]       # #1A66FF
+strong_against = ["fire"]
+weak_against = ["air"]
+
+[[element]]
+id = "earth"
+name = "Earth"
+color = [0.5, 0.35, 0.1]      # #80591A
+strong_against = ["air"]
+weak_against = ["fire"]
+
+[[element]]
+id = "air"
+name = "Air"
+color = [0.8, 0.95, 1.0]      # #CCF2FF
+strong_against = ["water"]
+weak_against = ["earth"]
+
+[[element]]
+id = "light"
+name = "Light"
+color = [1.0, 0.95, 0.7]      # #FFF2B3
+strong_against = ["dark"]
+weak_against = []
+
+[[element]]
+id = "dark"
+name = "Dark"
+color = [0.3, 0.0, 0.5]       # #4D0080
+strong_against = ["light"]
+weak_against = []

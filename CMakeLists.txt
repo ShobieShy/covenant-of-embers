@@ -131,6 +131,20 @@ FetchContent_Declare(JoltPhysics
   SYSTEM)
 FetchContent_MakeAvailable(JoltPhysics)
 
+# doctest (ADR-0001 step 20): header-only unit-test framework for the one coe_tests
+# runner (tests/CMakeLists.txt). Pinned release tarball + hash, SYSTEM. Only the
+# INTERFACE header target: no self-tests, no prebuilt main library, no install rules.
+foreach(opt DOCTEST_WITH_TESTS DOCTEST_WITH_MAIN_IN_STATIC_LIB)
+  set(${opt} OFF CACHE BOOL "" FORCE)
+endforeach()
+set(DOCTEST_NO_INSTALL ON CACHE BOOL "" FORCE)
+FetchContent_Declare(doctest
+  URL https://github.com/doctest/doctest/archive/refs/tags/v2.5.3.tar.gz
+  URL_HASH SHA256=174ebc4e769928959614789c5b4e9c3d0a0f81a62bb608756b127bfebfb21331
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  SYSTEM)
+FetchContent_MakeAvailable(doctest)
+
 # Binaries land in build/<preset>/ (not per-subdir) so paths stay
 # ./build/debug/covenant and ./build/debug/asset_cooker.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

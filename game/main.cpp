@@ -50,6 +50,7 @@
 #include "engine/assets/gltf_loader.hpp"
 #include "engine/assets/manifest.hpp"
 #include "engine/physics/physics.hpp"
+#include "game/combat/element.hpp"
 #include "game/core/tumble_demo.hpp"
 #include "game/magic/accuracy.hpp"
 #include "game/magic/casting.hpp"
@@ -154,6 +155,16 @@ bool loadModel(const std::string& cookedDir, const std::string& source, coe::ass
     std::printf("[mesh] %s: %zu triangles, %zu vertices, %zu submesh(es), size %.3f x %.3f x %.3f m\n",
                 source.c_str(), mesh.triangleCount(), mesh.vertices.size(), mesh.submeshes.size(),
                 double(e.x), double(e.y), double(e.z));
+    return true;
+}
+
+bool loadElementsFile(const std::string& path, coe::game::ElementTable& table) {
+    const std::string err = coe::game::loadElements(path, table);
+    if (!err.empty()) { std::fprintf(stderr, "[magic] %s\n", err.c_str()); return false; }
+    std::string names;
+    for (coe::game::Element e : coe::game::kAllElements) names += std::string(names.empty() ? "" : ", ") + table.name(e);
+    std::printf("[magic] %zu elements (strong x%.2f, weak x%.2f): %s\n", coe::game::kElementCount,
+                double(table.strong), double(table.weak), names.c_str());
     return true;
 }
 
@@ -267,6 +278,7 @@ int main(int argc, char** argv) {
     std::string model = kDefaultModel, cookedDir = COE_COOKED_DIR;
     std::string levelPath = std::string(COE_DATA_DIR) + "/levels/midden_greybox.toml";
     std::string wieldablesPath = std::string(COE_DATA_DIR) + "/magic/wieldables.toml";
+    std::string elementsPath = std::string(COE_DATA_DIR) + "/magic/elements.toml";
     for (int i = 1; i < argc; ++i) {
         if (!std::strcmp(argv[i], "--headless")) headless = true;
         else if (!std::strcmp(argv[i], "--no-validation")) validation = false;
@@ -281,6 +293,7 @@ int main(int argc, char** argv) {
         }
         else if (!std::strcmp(argv[i], "--level") && i + 1 < argc) levelPath = argv[++i];
         else if (!std::strcmp(argv[i], "--wieldables") && i + 1 < argc) wieldablesPath = argv[++i];
+        else if (!std::strcmp(argv[i], "--elements") && i + 1 < argc) elementsPath = argv[++i];
         else if (!std::strcmp(argv[i], "--cooked") && i + 1 < argc) cookedDir = argv[++i];
     }
     std::puts("Covenant of Embers v0.0.2");
@@ -298,8 +311,10 @@ int main(int argc, char** argv) {
     coe::assets::MeshData mesh;
     coe::game::Level level;
     coe::game::WieldableTable wieldables;
+    coe::game::ElementTable elements;
     bool ok = modelView ? loadModel(cookedDir, model, mesh)
-                        : loadLevelFile(levelPath, level) && loadWieldablesFile(wieldablesPath, wieldables);
+                        : loadLevelFile(levelPath, level) && loadElementsFile(elementsPath, elements) &&
+                              loadWieldablesFile(wieldablesPath, wieldables);
     if (ok && !modelView) mesh = coe::game::makeUnitCube();   // uploaded once, drawn per box
     coe::VkRenderer renderer;
     ok = ok && renderer.init(cfg);
@@ -364,6 +379,7 @@ int main(int argc, char** argv) {
         coe::game::Caster caster;
         if (!hands.empty()) caster.equip(&hands.front());
         coe::game::ProjectileSystem bolts;
+        bolts.setElements(&elements);   // tracer colours from elements.toml (step 20)
         // Focus (ADS) and spread (step 19): Aim tweens the FOV to the wieldable's focus FOV;
         // casts leave along a cone from its accuracy, stance and bloom.
         coe::game::Focus focus;
@@ -433,9 +449,11 @@ int main(int argc, char** argv) {
                     boltHits.clear();
                     bolts.tick(physics, float(step.dtSeconds()), boltHits);
                     for (const coe::game::ProjectileHit& h : boltHits)
-                        std::printf("[cast] hit %s body %u at %.2f m after %.3f s (tick %d) at (%.2f, %.2f, %.2f)\n",
+                        std::printf("[cast] hit %s body %u at %.2f m after %.3f s (tick %d) at (%.2f, %.2f, %.2f), "
+                                    "%.1f %s dmg\n",
                                     coe::physics::layerName(physics.layer(h.body)), h.body.id, double(h.distance),
-                                    double(h.time), h.tick, double(h.point.x), double(h.point.y), double(h.point.z));
+                                    double(h.time), h.tick, double(h.point.x), double(h.point.y), double(h.point.z),
+                                    double(h.damage), elements.name(h.element).c_str());
                     // Weapon1-4 after the cast, so a same-tick Fire + switch casts the old one.
                     for (size_t k = 0; k < 4 && k < hands.size(); ++k)
                         if (in.pressed[size_t(coe::input::Action::Weapon1) + k]) {
