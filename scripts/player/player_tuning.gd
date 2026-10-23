@@ -1,6 +1,6 @@
 class_name PlayerTuning
 extends Resource
-## Movement/look numbers for scripts/player/player.gd (BUILD_PLAN steps 3-5).
+## Movement/look numbers for scripts/player/player.gd (BUILD_PLAN steps 3-5, mana step 8).
 ## Port of the archived C++ PlayerTuning + CharacterSettings (old step 14), which
 ## reinterpret Magewar's cogito_player scene overrides.
 
@@ -20,6 +20,11 @@ extends Resource
 @export var breath_regen_per_sec := 30.0  ## (Magewar 2/s)
 @export var breath_regen_delay := 1.0     ## s since the last drain/spend (Magewar 2 s)
 @export var breath_resume_at := 20.0      ## an emptied pool allows sprint again at 20
+@export_group("Mana")
+@export var mana_max := 100.0             ## PLAN §30.1 = Magewar ManaAttribute value_max
+@export var mana_regen_per_sec := 3.0     ## Magewar mana_regen_speed
+@export var mana_regen_delay := 1.5       ## Magewar regen_delay: s since the last cast
+@export var mana_auto_regenerate := true  ## Magewar auto_regenerate
 @export_group("Dash")
 @export var dash_distance := 6.0          ## m (PLAN §30.8; Magewar has no dash: our own verb)
 @export var dash_duration := 0.15         ## s (speed 40 m/s)

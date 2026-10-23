@@ -11,7 +11,9 @@ extends RefCounted
 ## 60 Hz the Swift Wind Wand (0.18 s) casts at most every 11 ticks (0.183 s) and the
 ## Apprentice Fire Staff (0.4 s) every 24 ticks. hold_to_repeat (off; an options toggle
 ## later) re-casts while held. Mana (step 8): mana_spender(cost) -> bool is asked after the
-## cooldown check; false = no cast and no cooldown (Magewar spends before setting the timer).
+## cooldown check; false = no cast and no cooldown (Magewar spends before setting the timer);
+## a refused *press* counts `mana_refused` and emits `out_of_mana` (Magewar's
+## "Not enough mana!" hint + cast-fail sound hook, wired by Player).
 ## The bolt starts at the plain eye (Player.eye_position(), not the bobbed camera) along
 ## the look, excluding the caster's body (Player.aim()).
 
@@ -28,6 +30,8 @@ class Aim:
 		a.direction = p_direction
 		a.exclude = p_exclude
 		return a
+
+signal out_of_mana(cost: float)   ## a press refused by mana_spender (step 8 cue)
 
 var wieldable: WieldableInstance
 var hold_to_repeat := false
@@ -58,6 +62,7 @@ func tick(pressed: bool, held: bool, dt: float, aim: Aim, bolts: SpellBolts) -> 
 		if pressed:
 			blocked += 1
 			mana_refused += 1
+			out_of_mana.emit(wieldable.mana_cost())
 		return false
 	cooldown_left = wieldable.cooldown()
 	if bolts != null and aim != null:

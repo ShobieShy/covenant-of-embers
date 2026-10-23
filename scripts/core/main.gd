@@ -39,9 +39,10 @@ func _process(delta: float) -> void:
 				player.global_position, player.breath.value, player.breath.max_value(),
 				player.jumps, player.slides, player.dash.dashes])
 			var bolts := player.bolts
-			print("[cast] %s, %d cast(s), %d bolt(s) hit, %d fizzled" % [
+			print("[cast] %s, %d cast(s), %d bolt(s) hit, %d fizzled, mana %.1f/%.0f, %d refused" % [
 				player.caster.wieldable.display_name() if player.caster.wieldable else "empty hands",
-				player.caster.casts, bolts.hits if bolts else 0, bolts.fizzled if bolts else 0])
+				player.caster.casts, bolts.hits if bolts else 0, bolts.fizzled if bolts else 0,
+				player.mana.value, player.mana.max_value(), player.caster.mana_refused])
 		get_tree().quit(0)
 
 func _physics_process(_delta: float) -> void:

@@ -38,9 +38,17 @@ extends CharacterBody3D
 ##  * Casting (step 7, scripts/magic/caster.gd): after the move, an action_primary press
 ##    casts the equipped wieldable (caster.wieldable) into `bolts` (SpellBolts) from
 ##    aim(): the plain eye along yaw/pitch, excluding this body.
+##  * Mana (step 8, scripts/player/mana.gd): ticked right before the cast; the caster
+##    spends from it (caster.mana_spender = mana.spend). A press refused for mana emits
+##    `hint("Not enough mana!")` (Magewar send_hint; the HUD shows it in step 29) and counts
+##    `not_enough_mana_cues`.
 ## In game _physics_process feeds PlayerInput.from_input(); tests call tick() directly.
 
 const CHARACTER_LAYER := 2   # physics layer "character" (bit 2)
+const HINT_NOT_ENOUGH_MANA := "Not enough mana!"   # Magewar wieldable_staff.gd
+
+## Short on-screen message (Magewar player_interaction_component.send_hint); step 29 HUD.
+signal hint(text: String)
 
 @export var tuning: PlayerTuning
 
@@ -67,6 +75,9 @@ var last_landing_speed := 0.0   # m/s downward at the last touch-down
 var last_step_rise := 0.0       # m, the last climbed step
 var caster := Caster.new()      # step 7: equipped staff/wand + cooldown
 var bolts: SpellBolts           # where casts go (main.gd sets it; null = no bolts spawned)
+var mana: Mana                  # step 8: casting pool (caster.mana_spender)
+var not_enough_mana_cues := 0
+var last_hint := ""
 
 var _crouched_jump := false
 var _jumped_from_slide := false
@@ -84,6 +95,8 @@ func _init() -> void:
 	breath = Breath.from_tuning(tuning)
 	dash = Dash.from_tuning(tuning)
 	feel = CameraFeel.from_tuning(tuning)
+	set_mana(Mana.from_tuning(tuning))
+	caster.out_of_mana.connect(_on_out_of_mana)
 
 func _ready() -> void:
 	if tuning == null:
@@ -103,11 +116,22 @@ func _ready() -> void:
 	breath = Breath.from_tuning(tuning)
 	dash = Dash.from_tuning(tuning)
 	feel = CameraFeel.from_tuning(tuning)
+	set_mana(Mana.from_tuning(tuning))
 	eye_height = tuning.standing_eye
 	head.position = Vector3(0.0, eye_height, 0.0)
 	set_look(rotation.y, 0.0)
 	if input_enabled and DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+## Uses `m` as the mana pool and plugs it into the caster.
+func set_mana(m: Mana) -> void:
+	mana = m
+	caster.mana_spender = mana.spend
+
+func _on_out_of_mana(_cost: float) -> void:
+	not_enough_mana_cues += 1
+	last_hint = HINT_NOT_ENOUGH_MANA
+	hint.emit(HINT_NOT_ENOUGH_MANA)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not input_enabled:
@@ -316,6 +340,8 @@ func tick(input: PlayerInput, dt: float) -> void:
 	var o := feel.offset()
 	head.position = Vector3(o.x, eye_height + o.y, 0.0)
 
+	# Mana regen (step 8) before the cast, so a pool back at the cost casts this tick.
+	mana.tick(dt)
 	# Casting (step 7): semi-auto on the press, from where the eye is after this tick.
 	caster.tick(input.was_pressed(&"action_primary"), input.down(&"action_primary"), dt, aim(), bolts)
 

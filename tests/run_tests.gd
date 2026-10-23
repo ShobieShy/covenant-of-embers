@@ -7,6 +7,8 @@ extends SceneTree
 ## inside its World3D and PhysicsDirectSpaceState3D queries work on added scenes, and on
 ## the *second* one: during the first, Node.get_physics_process_delta_time() is still 0, so
 ## CharacterBody3D.move_and_slide() (which uses it) would not move (step 3).
+## A test file that fails to parse counts as a failure (step 8); runtime SCRIPT ERRORs
+## inside a test don't stop it, so tools/run_tests.sh also fails on any such log line.
 
 var failures := 0
 var passed := 0
@@ -26,7 +28,12 @@ func _run_all() -> void:
 			files.append(f)
 	files.sort()
 	for f in files:
-		var script: GDScript = load("res://tests/unit/" + f)
+		var script := load("res://tests/unit/" + f) as GDScript
+		if script == null or not script.can_instantiate():
+			# A parse error used to skip the whole file silently (step 8 fix).
+			failures += 1
+			print("  FAIL %s: script failed to load/compile" % f)
+			continue
 		for m in script.get_script_method_list():
 			var name: String = m["name"]
 			if not name.begins_with("test_"):
