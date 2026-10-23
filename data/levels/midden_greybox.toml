@@ -1,7 +1,7 @@
 # The Ashen Midden - greybox arena (BUILD_PLAN step 12). Loaded by game/world/level.cpp.
 #
 # Units: metres, degrees, linear RGB in [0, 1]. World: right-handed, +Y up, -Z north
-# (the start camera looks north). Every [[box]] is the engine's unit cube scaled to
+# (the player starts facing north). Every [[box]] is the engine's unit cube scaled to
 # `size`, rotated by `rotation_deg` = [x, y, z] Euler angles applied in Y, X, Z order
 # (Godot's default, so Magewar transforms read the same), then moved to `center`.
 # kind: ground | wall | ramp | crate | heap | platform. Unknown keys are errors.
@@ -22,13 +22,12 @@ ambient_color = [0.28, 0.24, 0.16]  # Magewar ambient (0.35, 0.3, 0.2) hue, brig
 fog_density = 0.006                 # exp(-density * distance) toward sky_color (Magewar volumetric 0.02; lighter so the far wall still reads)
 
 [sun]
-to_light = [0.354, 0.707, 0.612]    # Magewar SicklyLight basis Z: high, slightly east, behind the start camera
+to_light = [0.354, 0.707, 0.612]    # Magewar SicklyLight basis Z: high, slightly east, behind the player start
 color = [0.85, 0.78, 0.57]          # Magewar light_color (0.6, 0.55, 0.4) hue
 
-[camera]                            # start view until step 14's controller spawns the player
-position = [0.0, 1.5, 12.5]         # eye height 1.5 m (Magewar: body origin 0.8 m above the feet + Neck 0.7 m)
-yaw_deg = 0.0
-pitch_deg = -8.0
+[player_start]                      # feet of the spawned player (the eye is 1.5 m above: Magewar body origin 0.8 + Neck 0.7)
+position = [0.0, 0.0, 12.5]
+yaw_deg = 0.0                       # facing north (-Z); pitch starts level
 
 # --- ground + arena walls (4 m high like Magewar's ArenaWall_Ring) ---
 [[box]]

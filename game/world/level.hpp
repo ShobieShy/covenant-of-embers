@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Data-defined greybox levels (BUILD_PLAN step 12): boxes + environment + start camera
+// Data-defined greybox levels (BUILD_PLAN step 12): boxes + environment + player start
 // parsed from TOML (toml++, data/levels/*.toml). CPU-only; the game turns boxes into
 // one DrawItem each over a shared unit cube (makeUnitCube), physics colliders come
 // from the same boxes in step 13.
@@ -45,15 +45,18 @@ struct LevelEnvironment {
     glm::vec3 sunColor{0.8f};
 };
 
-struct LevelCamera {
-    glm::vec3 position{0.0f};
-    float yawDeg = 0.0f, pitchDeg = 0.0f;
+// [player_start] (step 14; was step 12's [camera]): where the player's *feet* spawn and
+// the facing (yaw only; the eye is 1.5 m above the feet, pitch starts level). Named
+// player_start, not spawn, so step 25's [[spawn]] array of tables can share the file.
+struct LevelPlayerStart {
+    glm::vec3 position{0.0f};   // feet; must lie on a box surface (within 5 cm)
+    float yawDeg = 0.0f;
 };
 
 struct Level {
     std::string id, name;
     LevelEnvironment environment;
-    LevelCamera camera;
+    LevelPlayerStart playerStart;
     std::vector<LevelBox> boxes;
 
     std::size_t count(BoxKind k) const;

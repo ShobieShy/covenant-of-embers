@@ -33,3 +33,9 @@ add_executable(test_physics test_physics.cpp)
 target_link_libraries(test_physics PRIVATE coe_game coe_physics coe_warnings)
 target_compile_definitions(test_physics PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
 coe_add_test(NAME physics COMMAND test_physics)
+
+# Step 14: FPS controller (CharacterVirtual walk/jump/crouch/look) on the Midden greybox.
+add_executable(test_player test_player.cpp)
+target_link_libraries(test_player PRIVATE coe_game coe_physics coe_warnings)
+target_compile_definitions(test_player PRIVATE COE_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
+coe_add_test(NAME player COMMAND test_player)

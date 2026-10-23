@@ -13,6 +13,8 @@
 //   covenant --input-debug   print action press/release edges per fixed tick + mouse look
 //   covenant --input-script  push a scripted sequence of synthetic SDL input events and
 //                            fail unless every scripted press reached exactly one tick
+//                            (level mode: and the player walked forward and jumped)
+//   covenant --crate         level mode: also drop step 13's tumbling demo crate (a push target)
 //
 // Loop (PLAN §23): simulation advances in fixed 60 Hz ticks (engine/core/fixed_timestep),
 // rendering runs once per displayed frame with state interpolated by alpha.
@@ -22,8 +24,11 @@
 // checked), loaded with fastgltf (engine/assets) and uploaded once (VMA buffers).
 // Level (step 12): boxes from TOML (game/world/level), one shared unit cube, one draw each.
 // Physics (step 13): every level box is a static Jolt collider (game/world/level_physics);
-// the world steps once per fixed tick. A tumbling demo crate (dynamic box) is dropped
-// in front of the start camera and drawn interpolated, until real props arrive.
+// the world steps once per fixed tick. With --crate a tumbling demo crate (dynamic box)
+// is dropped in front of the player and drawn interpolated.
+// Player (step 14): game/player/player_controller spawns a Jolt CharacterVirtual at the
+// level's [player_start]; each tick it walks/jumps/crouches from the TickInput (before
+// the world steps), mouse look turns it per frame, the camera sits at its eye.
 #include "engine/core/clock.hpp"
 #include "engine/core/fixed_timestep.hpp"
 #include "engine/input/input.hpp"
@@ -32,6 +37,7 @@
 #include "engine/assets/manifest.hpp"
 #include "engine/physics/physics.hpp"
 #include "game/core/tumble_demo.hpp"
+#include "game/player/player_controller.hpp"
 #include "game/world/headless_checks.hpp"
 #include "game/world/level.hpp"
 #include "game/world/level_physics.hpp"
@@ -46,6 +52,7 @@
 #include <iterator>
 #include <cstring>
 #include <filesystem>
+#include <memory>
 #include <string>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -61,7 +68,8 @@
 namespace {
 constexpr uint32_t kTickHz = 60;
 // Mouse look: 0.25 degrees per mouse count, Magewar's default MOUSE_SENS (cogito_player.gd).
-// Sensitivity/invert-Y become settings in step 39.
+// Sensitivity/invert-Y become settings in step 39. Level mode uses PlayerTuning's copy;
+// this one turns the --model view.
 constexpr double kLookRadPerCount = 0.25 * 3.141592653589793 / 180.0;
 constexpr const char* kDefaultModel = "assets/kenney/blaster-kit/Models/GLB format/blaster-a.glb";
 
@@ -76,12 +84,13 @@ glm::mat4 fitModel(const coe::assets::MeshData& m) {
     return glm::translate(t, -m.center());
 }
 
-// The level as the renderer sees it: start camera, sun/ambient/fog, sky as clear colour.
+// The level as the renderer sees it: the player's start view (eye above [player_start],
+// level pitch), sun/ambient/fog, sky as clear colour.
 coe::FrameParams levelFrame(const coe::game::Level& level, coe::MeshId cube) {
     coe::FrameParams fp;
-    fp.camera.position = level.camera.position;
-    fp.camera.yaw = glm::radians(level.camera.yawDeg);
-    fp.camera.pitch = glm::radians(level.camera.pitchDeg);
+    fp.camera.position = level.playerStart.position + glm::vec3(0.0f, coe::game::PlayerTuning{}.standingEye, 0.0f);
+    fp.camera.yaw = glm::radians(level.playerStart.yawDeg);
+    fp.camera.pitch = 0.0f;
     const coe::game::LevelEnvironment& env = level.environment;
     fp.lighting.toLight = env.toLight;
     fp.lighting.lightColor = env.sunColor;
@@ -104,12 +113,12 @@ bool loadLevelFile(const std::string& path, coe::game::Level& level) {
     return true;
 }
 
-// Demo crate (step 13): 0.6 m, dropped tilted 3 m up, 4.5 m in front of the start camera.
+// Demo crate (step 13, --crate): 0.6 m, dropped tilted 2.8 m up, 4.5 m in front of the player start.
 constexpr float kDemoCrateEdge = 0.6f;
 constexpr glm::vec4 kDemoCrateTint{0.85f, 0.35f, 0.1f, 1.0f};   // ember orange
 coe::physics::BoxDesc demoCrate(const coe::game::Level& level) {
     coe::physics::BoxDesc d;
-    d.center = level.camera.position + glm::vec3(0.8f, 1.3f, -4.5f);
+    d.center = level.playerStart.position + glm::vec3(0.8f, 2.8f, -4.5f);
     d.halfExtents = glm::vec3(kDemoCrateEdge * 0.5f);
     d.rotation = glm::angleAxis(0.6f, glm::normalize(glm::vec3(1.0f, 0.3f, 0.7f)));
     return d;
@@ -132,6 +141,19 @@ bool loadModel(const std::string& cookedDir, const std::string& source, coe::ass
 // --input-script: synthetic events pushed through SDL's real queue at given render
 // frames. Taps land inside one frame (down+up), so whether that frame runs 0, 1 or
 // 2+ ticks, each must reach exactly one tick as a press.
+// Scripted events carry kScriptDevice as their device id; in script mode real
+// keyboard/mouse events are dropped so a stray key press on the desktop (the window
+// takes focus) can't change the outcome (seen once: a real S press walked it back).
+constexpr uint32_t kScriptDevice = 0x434F4553u;   // 'COES'
+bool isRealInput(const SDL_Event& e) {
+    switch (e.type) {
+    case SDL_EVENT_KEY_DOWN: case SDL_EVENT_KEY_UP: return e.key.which != kScriptDevice;
+    case SDL_EVENT_MOUSE_MOTION: return e.motion.which != kScriptDevice;
+    case SDL_EVENT_MOUSE_BUTTON_DOWN: case SDL_EVENT_MOUSE_BUTTON_UP: return e.button.which != kScriptDevice;
+    case SDL_EVENT_MOUSE_WHEEL: case SDL_EVENT_TEXT_INPUT: return true;
+    default: return false;
+    }
+}
 struct ScriptedEvent { uint64_t frame; SDL_EventType type; uint32_t code; float dx; };
 constexpr ScriptedEvent kInputScript[] = {
     {5,  SDL_EVENT_KEY_DOWN, SDL_SCANCODE_SPACE, 0}, {5, SDL_EVENT_KEY_UP, SDL_SCANCODE_SPACE, 0},
@@ -158,13 +180,16 @@ void pushScripted(uint64_t frame, SDL_Window* window) {
         e.type = s.type;
         if (s.type == SDL_EVENT_KEY_DOWN || s.type == SDL_EVENT_KEY_UP) {
             e.key.windowID = SDL_GetWindowID(window);
+            e.key.which = kScriptDevice;
             e.key.scancode = static_cast<SDL_Scancode>(s.code);
             e.key.down = s.type == SDL_EVENT_KEY_DOWN;
         } else if (s.type == SDL_EVENT_MOUSE_MOTION) {
             e.motion.windowID = SDL_GetWindowID(window);
+            e.motion.which = kScriptDevice;
             e.motion.xrel = s.dx;
         } else {
             e.button.windowID = SDL_GetWindowID(window);
+            e.button.which = kScriptDevice;
             e.button.button = static_cast<uint8_t>(s.code);
             e.button.down = s.type == SDL_EVENT_MOUSE_BUTTON_DOWN;
         }
@@ -188,7 +213,7 @@ void printTick(uint64_t tick, const coe::input::TickInput& t) {
 }
 
 int main(int argc, char** argv) {
-    bool headless = false, validation = true, inputDebug = false, inputScript = false;
+    bool headless = false, validation = true, inputDebug = false, inputScript = false, withCrate = false;
     double seconds = 0.0;
     bool modelView = false;   // --model: step 11's single-model view instead of the level
     std::string model = kDefaultModel, cookedDir = COE_COOKED_DIR;
@@ -198,6 +223,7 @@ int main(int argc, char** argv) {
         else if (!std::strcmp(argv[i], "--no-validation")) validation = false;
         else if (!std::strcmp(argv[i], "--input-debug")) inputDebug = true;
         else if (!std::strcmp(argv[i], "--input-script")) inputScript = true;
+        else if (!std::strcmp(argv[i], "--crate")) withCrate = true;
         else if (!std::strcmp(argv[i], "--seconds") && i + 1 < argc) seconds = std::atof(argv[++i]);
         else if (!std::strcmp(argv[i], "--model")) {
             modelView = true;
@@ -261,7 +287,7 @@ int main(int argc, char** argv) {
         }
     } else if (ok) {
         coe::FixedTimestep step(kTickHz);
-        coe::game::TumbleDemo sim;
+        coe::game::TumbleDemo sim;   // --model only
         coe::input::InputState input;
         uint64_t presses[coe::input::kActionCount] = {};
         double lookYaw = levelBase.camera.yaw, lookPitch = levelBase.camera.pitch, lookCounts = 0.0;   // per-frame mouse look
@@ -271,9 +297,21 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "[input] relative mouse mode unavailable: %s\n", SDL_GetError());
         coe::physics::BodyHandle crate;
         coe::physics::BodyState cratePrev, crateCur;   // poses at the last two ticks, for interpolation
-        if (!modelView) {
+        if (!modelView && withCrate) {
             crate = physics.addDynamicBox(demoCrate(level));
             cratePrev = crateCur = physics.state(crate);
+        }
+        std::unique_ptr<coe::game::PlayerController> player;
+        glm::vec3 spawnFeet{0.0f}, spawnForward{0.0f};
+        float apex = 0.0f;   // highest feet above the spawn
+        if (!modelView) {
+            const float yaw = glm::radians(level.playerStart.yawDeg);
+            player = std::make_unique<coe::game::PlayerController>(physics, level.playerStart.position, yaw);
+            spawnFeet = player->feet();
+            spawnForward = coe::game::PlayerController::forwardFor(yaw);
+            std::printf("[player] spawned at (%.2f, %.2f, %.2f) facing %.0f deg, %s, eye %.2f m\n", double(spawnFeet.x),
+                        double(spawnFeet.y), double(spawnFeet.z), double(level.playerStart.yawDeg),
+                        coe::physics::groundStateName(player->character().groundState()), double(player->eyeHeight()));
         }
         bool physicsOk = true;
         uint64_t frames = 0, loops = 0;   // loops also counts minimized iterations
@@ -287,6 +325,7 @@ int main(int argc, char** argv) {
             SDL_Event e;
             while (SDL_PollEvent(&e)) {
                 if (e.type == SDL_EVENT_QUIT || e.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) running = false;
+                if (inputScript && isRealInput(e)) continue;   // only the script drives a scripted run
                 if (e.type == SDL_EVENT_KEY_DOWN && e.key.key == SDLK_ESCAPE) running = false;
                 if (e.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) renderer.onResize();
                 input.handleEvent(e);
@@ -296,31 +335,45 @@ int main(int argc, char** argv) {
                 const coe::input::TickInput in = input.consumeTick();
                 for (size_t a = 0; a < coe::input::kActionCount; ++a) presses[a] += in.pressCount[a];
                 if (inputDebug) printTick(step.totalTicks() - n + 1, in);
-                sim.tick(step.dtSeconds());
-                if (!modelView) {
+                if (modelView) sim.tick(step.dtSeconds());
+                else {
+                    player->tick(in, float(step.dtSeconds()));   // moves the character, then the world steps
+                    apex = std::max(apex, player->feet().y - spawnFeet.y);
                     physicsOk = physics.step(float(step.dtSeconds())) && physicsOk;
-                    cratePrev = crateCur;
-                    crateCur = physics.state(crate);
+                    if (crate.valid()) {
+                        cratePrev = crateCur;
+                        crateCur = physics.state(crate);
+                    }
                 }
             }
             last = now;
-            // Mouse look per render frame (not per tick) for minimum latency; it turns
-            // the camera in place (step 14's FPS controller adds movement + eye height).
+            // Mouse look per render frame (not per tick) for minimum latency; the next
+            // ticks walk along the new yaw.
             const coe::input::LookDelta look = input.takeLook();
             lookCounts += look.dx;
-            lookYaw = std::remainder(lookYaw - look.dx * kLookRadPerCount, 2.0 * 3.141592653589793);
-            lookPitch = std::clamp(lookPitch - look.dy * kLookRadPerCount,
-                                   -double(coe::Camera::kMaxPitch), double(coe::Camera::kMaxPitch));   // +-89 deg
+            if (player) {
+                player->addLook(look.dx, look.dy);
+                lookYaw = player->yaw();
+                lookPitch = player->pitch();
+            } else {
+                lookYaw = std::remainder(lookYaw - look.dx * kLookRadPerCount, 2.0 * 3.141592653589793);
+                lookPitch = std::clamp(lookPitch - look.dy * kLookRadPerCount,
+                                       -double(coe::Camera::kMaxPitch), double(coe::Camera::kMaxPitch));   // +-89 deg
+            }
             if (inputDebug && (look.dx != 0.0f || look.dy != 0.0f))
                 std::printf("[input] frame %llu: look dx %.1f dy %.1f -> yaw %.3f pitch %.3f rad\n",
                             (unsigned long long)frames, double(look.dx), double(look.dy), lookYaw, lookPitch);
             if (limitNs && now - start >= limitNs) running = false;
             if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED) { SDL_Delay(16); continue; }
             coe::FrameParams fp = levelBase;
-            fp.camera.yaw = float(lookYaw);       // mouse right -> negative yaw -> turn right
-            fp.camera.pitch = float(lookPitch);
+            if (player) {
+                fp.camera = player->camera(float(step.alpha()));   // eye, interpolated between ticks
+            } else {
+                fp.camera.yaw = float(lookYaw);       // mouse right -> negative yaw -> turn right
+                fp.camera.pitch = float(lookPitch);
+            }
             if (modelView) fp.draws.push_back({meshId, sim.renderModel(step.alpha()) * fit});
-            else {
+            else if (crate.valid()) {
                 const float a = float(step.alpha());
                 glm::mat4 m = glm::translate(glm::mat4(1.0f), glm::mix(cratePrev.position, crateCur.position, a));
                 m = m * glm::mat4_cast(glm::slerp(cratePrev.rotation, crateCur.rotation, a));
@@ -345,6 +398,14 @@ int main(int argc, char** argv) {
                 inputOk = false;
             }
             std::printf("[input] mouse look total dx %.1f counts (scripted 40)\n", lookCounts);
+            if (player) {
+                // Scripted W + Space must reach the controller: it walks forward and jumps.
+                const float forward = glm::dot(player->feet() - spawnFeet, spawnForward);
+                const bool moved = forward > 0.2f && player->jumps() >= 1 && apex > 0.5f;
+                inputOk = inputOk && moved;
+                std::printf("[player] script: walked %.2f m forward, %llu jump(s), apex %.2f m%s\n", double(forward),
+                            (unsigned long long)player->jumps(), double(apex), moved ? "" : " MISMATCH (need > 0.2 m, >= 1 jump, apex > 0.5 m)");
+            }
         }
         SDL_SetWindowRelativeMouseMode(window, false);
         const double elapsed = double(last - start) / 1e9;
@@ -355,10 +416,16 @@ int main(int argc, char** argv) {
             // One physics step per fixed tick, no Jolt errors.
             const bool stepsMatch = physics.steps() == step.totalTicks();
             ticksOk = ticksOk && stepsMatch && physicsOk;
-            std::printf("[physics] %llu steps (one per tick%s), demo crate at (%.2f, %.2f, %.2f) %s%s\n",
-                        (unsigned long long)physics.steps(), stepsMatch ? "" : " MISMATCH",
-                        double(crateCur.position.x), double(crateCur.position.y), double(crateCur.position.z),
-                        crateCur.active ? "moving" : "asleep", physicsOk ? "" : ", update ERRORS");
+            std::printf("[physics] %llu steps (one per tick%s)%s\n", (unsigned long long)physics.steps(),
+                        stepsMatch ? "" : " MISMATCH", physicsOk ? "" : ", update ERRORS");
+            if (crate.valid())
+                std::printf("[physics] demo crate at (%.2f, %.2f, %.2f) %s\n", double(crateCur.position.x),
+                            double(crateCur.position.y), double(crateCur.position.z), crateCur.active ? "moving" : "asleep");
+            const glm::vec3 f = player->feet();
+            std::printf("[player] feet at (%.2f, %.2f, %.2f), %s, eye %.2f m, %llu jump(s), apex %.2f m\n", double(f.x),
+                        double(f.y), double(f.z), coe::physics::groundStateName(player->character().groundState()),
+                        double(player->eyeHeight()), (unsigned long long)player->jumps(), double(apex));
+            player.reset();   // before the world it lives in
         }
         std::printf("frames: %llu in %.2fs (%.0f fps)\n", (unsigned long long)frames, elapsed,
                     elapsed > 0 ? double(frames) / elapsed : 0.0);

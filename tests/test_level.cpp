@@ -60,11 +60,13 @@ void middenGreybox() {
         CHECK(near(high.z, ledge->center.z + ledge->size.z * 0.5f, 0.01f));   // meets the ledge's south edge
         CHECK(near(low.y, 0.0f, 0.01f));
     }
-    // The start camera stands on the floor inside the arena, above no box.
-    CHECK(l.camera.position.y > 1.0f && l.camera.position.y < 2.5f);
-    CHECK(l.boxAtSurface(l.camera.position, 0.5f) < 0);
-    // Surface lookup used by the headless check.
+    // The player starts with its feet on the floor, facing north; the 1.5 m eye is clear of every box.
     const auto* ground = find(l, "ground");
+    CHECK(near(l.playerStart.position.y, 0.0f, 0.01f));
+    CHECK(l.boxAtSurface(l.playerStart.position, 0.05f) == int(ground - l.boxes.data()));
+    CHECK(l.boxAtSurface(l.playerStart.position + glm::vec3(0, 1.5f, 0), 0.5f) < 0);
+    CHECK(l.playerStart.yawDeg == 0.0f);
+    // Surface lookup used by the headless check.
     CHECK(l.boxAtSurface({3.0f, 0.0f, 3.0f}, 0.01f) == int(ground - l.boxes.data()));
     const int north = l.boxAtSurface({0.0f, 3.0f, -14.0f}, 0.01f);
     CHECK(north >= 0 && l.boxes[size_t(north)].name == "wall_north");
@@ -135,10 +137,9 @@ ambient_color = [0.2, 0.2, 0.2]
 [sun]
 to_light = [0, 2, 0]
 color = [1, 1, 1]
-[camera]
-position = [0, 1.7, 0]
+[player_start]
+position = [0, 1, 0]
 yaw_deg = 0
-pitch_deg = 0
 )";
 
 std::string parse(const std::string& boxes, Level& l) { return coe::game::parseLevel(std::string(kHeader) + boxes, "t.toml", l); }
@@ -154,7 +155,7 @@ void validation() {
     std::string e = coe::game::parseLevel("[level\nid = 1", "bad.toml", l);
     CHECK(contains(e, "bad.toml:1:") && contains(e, "TOML"));
     e = parse(box + "[[box]]\nname = \"b\"\nkind = \"barrel\"\ncenter = [0, 0, 0]\nsize = [1, 1, 1]\ncolor = [1, 1, 1]\n", l);
-    CHECK(contains(e, "unknown kind 'barrel'") && contains(e, "t.toml:23:"));   // line of the kind key
+    CHECK(contains(e, "unknown kind 'barrel'") && contains(e, "t.toml:22:"));   // line of the kind key
     e = parse("[[box]]\nname = \"a\"\nkind = \"wall\"\ncenter = [0, 0, 0]\nsize = [1, 0, 1]\ncolor = [1, 1, 1]\n", l);
     CHECK(contains(e, "size must be > 0"));
     e = parse("[[box]]\nname = \"a\"\nkind = \"wall\"\ncenter = [0, 0, 0]\nsize = [1, 1, 1]\ncolour = [1, 1, 1]\n", l);
@@ -163,6 +164,10 @@ void validation() {
     CHECK(contains(e, "center must be an array of 3 numbers"));
     e = parse("[[box]]\nname = \"a\"\nkind = \"wall\"\ncenter = [0, 0, 0]\nsize = [1, 1, 1]\ncolor = [1, 2, 1]\n", l);
     CHECK(contains(e, "[0, 1]"));
+    e = parse("[[box]]\nname = \"a\"\nkind = \"crate\"\ncenter = [5, 0.5, 0]\nsize = [1, 1, 1]\ncolor = [1, 0, 0]\n", l);
+    CHECK(contains(e, "player_start position (feet) must lie on a box surface") && contains(e, "t.toml:12:"));
+    e = coe::game::parseLevel(std::string(kHeader).replace(std::string(kHeader).find("yaw_deg"), 7, "pitch_deg") + box, "t.toml", l);
+    CHECK(contains(e, "unknown key 'pitch_deg'"));
     e = parse(box + box, l);
     CHECK(contains(e, "duplicate box name 'a'"));
     e = parse("", l);
@@ -182,7 +187,7 @@ void headlessCheckRejectsEmptyFrame() {
     f.depth.assign(64 * 64, 0.0f);   // nothing drawn
     coe::game::LevelViewStats st;
     std::string report;
-    CHECK(!coe::game::checkLevelView(l, f, l.camera.position, {0, 0, 0}, st, report));
+    CHECK(!coe::game::checkLevelView(l, f, l.playerStart.position + glm::vec3(0, 1.5f, 0), {0, 0, 0}, st, report));
     CHECK(st.sky == st.samples && st.perKind[size_t(BoxKind::Ground)] == 0);
     CHECK(contains(report, "floor FAIL"));
 }

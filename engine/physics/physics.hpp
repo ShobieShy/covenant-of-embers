@@ -13,8 +13,10 @@
 //
 // Object layers reinterpret Magewar's two named 3D physics layers (layer_1
 // "Environment", layer_2 "Interactables"): Static = the level (never moves, never
-// collides with itself), Moving = everything simulated. More layers (player,
-// enemies, pickups/interactables, projectiles) arrive with the steps that need them.
+// collides with itself), Moving = everything simulated. Character (step 14) holds the
+// kinematic inner bodies of CharacterVirtual players (character.hpp) so rays and moving
+// bodies see them; it collides with Static + Moving (+ other characters). More layers
+// (enemies, pickups/interactables, projectiles) arrive with the steps that need them.
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -30,7 +32,8 @@ using ObjectLayer = std::uint16_t;
 namespace Layers {
 inline constexpr ObjectLayer Static = 0;   // level geometry (Magewar "Environment")
 inline constexpr ObjectLayer Moving = 1;   // dynamic bodies (props, debris; later actors)
-inline constexpr ObjectLayer Count = 2;
+inline constexpr ObjectLayer Character = 2;   // player characters' inner bodies (step 14)
+inline constexpr ObjectLayer Count = 3;
 } // namespace Layers
 const char* layerName(ObjectLayer layer);
 
@@ -105,6 +108,7 @@ public:
     std::optional<RayHit> castRay(const glm::vec3& origin, const glm::vec3& delta) const;
 
 private:
+    friend class Character;   // character.cpp drives Jolt's CharacterVirtual on this world
     struct Impl;
     std::unique_ptr<Impl> impl_;
 };

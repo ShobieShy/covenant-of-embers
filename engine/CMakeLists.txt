@@ -49,7 +49,8 @@ target_link_libraries(coe_engine PUBLIC coe_assets Vulkan::Vulkan SDL3::SDL3 glm
 target_compile_definitions(coe_engine PRIVATE VMA_STATIC_VULKAN_FUNCTIONS=1 VMA_DYNAMIC_VULKAN_FUNCTIONS=0)
 
 add_library(coe_physics STATIC
-  physics/physics.cpp)
+  physics/physics.cpp
+  physics/character.cpp)
 target_include_directories(coe_physics PUBLIC ${PROJECT_SOURCE_DIR})
 target_compile_definitions(coe_physics PUBLIC GLM_FORCE_RADIANS GLM_FORCE_DEPTH_ZERO_TO_ONE)
 target_link_libraries(coe_physics PUBLIC glm::glm PRIVATE Jolt coe_warnings)

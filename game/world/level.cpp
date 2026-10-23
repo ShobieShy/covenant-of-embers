@@ -147,7 +147,7 @@ std::string parseLevel(std::string_view text, std::string_view sourceName, Level
         return o.str();
     }
     const toml::table& root = parsed.table();
-    if (!onlyKeys(c, root, {"level", "environment", "sun", "camera", "box"}, "top level")) return c.err;
+    if (!onlyKeys(c, root, {"level", "environment", "sun", "player_start", "box"}, "top level")) return c.err;
 
     const toml::table* level = needTable(c, root, "level");
     if (!level || !onlyKeys(c, *level, {"id", "name"}, "[level]") ||
@@ -173,13 +173,11 @@ std::string parseLevel(std::string_view text, std::string_view sourceName, Level
     if (len < 1e-4f) { c.fail(sun->get("to_light"), "sun to_light must not be zero"); return c.err; }
     env.toLight /= len;
 
-    const toml::table* cam = needTable(c, root, "camera");
-    if (!cam || !onlyKeys(c, *cam, {"position", "yaw_deg", "pitch_deg"}, "[camera]") ||
-        !readVec3(c, cam->get("position"), "camera position", out.camera.position) ||
-        !readFloat(c, cam->get("yaw_deg"), "camera yaw_deg", out.camera.yawDeg) ||
-        !readFloat(c, cam->get("pitch_deg"), "camera pitch_deg", out.camera.pitchDeg))
+    const toml::table* start = needTable(c, root, "player_start");
+    if (!start || !onlyKeys(c, *start, {"position", "yaw_deg"}, "[player_start]") ||
+        !readVec3(c, start->get("position"), "player_start position", out.playerStart.position) ||
+        !readFloat(c, start->get("yaw_deg"), "player_start yaw_deg", out.playerStart.yawDeg))
         return c.err;
-    if (std::abs(out.camera.pitchDeg) > 89.0f) { c.fail(cam->get("pitch_deg"), "camera pitch_deg must be within +-89"); return c.err; }
 
     const toml::node* boxesNode = root.get("box");
     const toml::array* boxes = boxesNode ? boxesNode->as_array() : nullptr;
@@ -193,6 +191,11 @@ std::string parseLevel(std::string_view text, std::string_view sourceName, Level
         for (const LevelBox& o : out.boxes)
             if (o.name == b.name) { c.fail(boxes->get(i), "duplicate box name '" + b.name + "'"); return c.err; }
         out.boxes.push_back(std::move(b));
+    }
+    // The player's feet must rest on something (a typo'd start would fall forever).
+    if (out.boxAtSurface(out.playerStart.position, 0.05f) < 0) {
+        c.fail(start->get("position"), "player_start position (feet) must lie on a box surface (within 5 cm)");
+        return c.err;
     }
     return {};
 }
