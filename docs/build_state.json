@@ -3,12 +3,13 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 2,
+  "next_step": 3,
   "total_steps": 42,
   "steps_done": [
-    1
+    1,
+    2
   ],
-  "last_commit": "f199578",
+  "last_commit": "5179adc",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -17,6 +18,14 @@
       "summary": "ShobieShy approved 'Yes, switch to Godot' (via Tex). C++20/Vulkan engine archived (branch archive/cpp-vulkan-engine at d07497b; files git-mv'd to archive/cpp-engine/, old plan/state in archive/cpp-engine/docs/). Old plan had steps 1-23 done of 56. New Godot plan: step 1 = Godot 4.7.2 project setup + headless test runner; steps 3-12 port the finished gameplay.",
       "plan_changes": "BUILD_PLAN rewritten for Godot (merged UI renderer into HUD, audio engine+hookup, save format+load; removed cooker/CMake/Vulkan steps). ADR-0002 added; PLAN \u00a723-25,27 engine parts updated.",
       "commit": "f199578"
+    },
+    {
+      "time": "2026-10-23T08:15-05:00",
+      "step": 2,
+      "type": "build",
+      "summary": "Midden greybox ported: tools/toml_to_scene.py (stdlib tomllib, C++ loader's validation, --check/--self-test in run_tests.sh) generates scenes/levels/midden.tscn from data/levels/midden_greybox.toml: 17 StaticBody3D boxes (1 ground, 5 wall, 1 platform, 2 ramp, 3 heap, 5 crate) with BoxMesh/BoxShape3D sizes, Y-X-Z rotations, linear->sRGB palette, exp fog 0.006, sun, PlayerStart (0,0,12.5) facing north + Eye 1.5 m, EnemySpawns. scripts/world/level_toml.gd reads the TOML in GDScript; test_level.gd 9 tests (400/400 down-rays up-facing). main.tscn instances the Midden. ci.yml extended (setup-python, cached Godot 4.7.2, import, run_tests.sh); not pushed. run_tests.sh green: 14 unit tests, 2 s smoke 120 ticks, asset lint OK.",
+      "plan_changes": "Bug fixes from step 1: test runner moved from _initialize to first physics frame (physics queries need the root in its World3D); timeouts on every Godot call in run_tests.sh; main.tscn placeholder ground replaced by the Midden. Refined steps 3 (spawn at PlayerStart/Eye), 11 (dummies from EnemySpawns), 12 (NavigationRegion3D emitted by generator, like Magewar landfill), 14 (waves as TOML table), 41 (judge palette: TOML linear vs Magewar sRGB).",
+      "commit": "5179adc"
     }
   ]
 }
