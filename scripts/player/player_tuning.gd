@@ -1,6 +1,7 @@
 class_name PlayerTuning
 extends Resource
-## Movement/look numbers for scripts/player/player.gd (BUILD_PLAN steps 3-5, mana step 8).
+## Movement/look numbers for scripts/player/player.gd (BUILD_PLAN steps 3-5, mana step 8,
+## focus/spread step 9).
 ## Port of the archived C++ PlayerTuning + CharacterSettings (old step 14), which
 ## reinterpret Magewar's cogito_player scene overrides.
 
@@ -62,3 +63,18 @@ extends Resource
 @export_group("Look")
 @export var look_deg_per_count := 0.25    ## Magewar MOUSE_SENS
 @export var max_pitch_deg := 89.0
+@export_group("Focus")
+@export var hip_fov := 75.0               ## Camera3D fov; Magewar tweens back to 75
+@export var focus_staff_fov := 55.0       ## Magewar wieldable_staff.gd ads_fov
+@export var focus_wand_fov := 55.0        ## wieldable_wand.tscn: same script, no override
+@export var focus_tween_seconds := 0.2    ## Magewar tween_property(camera, "fov", ..., 0.2)
+@export_group("Spread")
+@export var spread_max_deg := 4.0         ## cone half-angle at 0 % accuracy (PLAN §30.1; ours)
+@export var spread_focus_mul := 0.35      ## fully focused
+@export var spread_crouch_mul := 0.8
+@export var spread_moving_mul := 1.3      ## on the ground above spread_moving_speed
+@export var spread_airborne_mul := 1.8    ## replaces crouch/moving
+@export var spread_moving_speed := 0.5    ## m/s
+@export var bloom_per_cast_deg := 1.0
+@export var bloom_max_deg := 4.0
+@export var bloom_recovery_seconds := 0.5 ## full bloom -> 0

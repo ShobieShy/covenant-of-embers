@@ -42,6 +42,12 @@ extends CharacterBody3D
 ##    spends from it (caster.mana_spender = mana.spend). A press refused for mana emits
 ##    `hint("Not enough mana!")` (Magewar send_hint; the HUD shows it in step 29) and counts
 ##    `not_enough_mana_cues`.
+##  * Focus + spread (step 9, scripts/magic/focus.gd + spread.gd): action_secondary held with
+##    a wieldable tweens the camera FOV 75 -> 55 deg in 0.2 s (Magewar ADS; no mana) and
+##    scales mouse look by tan(fov/2)/tan(37.5 deg). Each tick the bloom decays, then a
+##    press that wants to cast gets aim() perturbed inside the spread cone (accuracy x
+##    stance x bloom, spread_stance()); only a cast that happened (Caster.tick true) adds
+##    bloom. `spread_seed` makes the shots reproducible.
 ## In game _physics_process feeds PlayerInput.from_input(); tests call tick() directly.
 
 const CHARACTER_LAYER := 2   # physics layer "character" (bit 2)
@@ -77,6 +83,8 @@ var caster := Caster.new()      # step 7: equipped staff/wand + cooldown
 var bolts: SpellBolts           # where casts go (main.gd sets it; null = no bolts spawned)
 var mana: Mana                  # step 8: casting pool (caster.mana_spender)
 var not_enough_mana_cues := 0
+var focus: Focus                # step 9: ADS FOV tween
+var spread: Spread              # step 9: accuracy cone + bloom (seeded)
 var last_hint := ""
 
 var _crouched_jump := false
@@ -96,6 +104,8 @@ func _init() -> void:
 	dash = Dash.from_tuning(tuning)
 	feel = CameraFeel.from_tuning(tuning)
 	set_mana(Mana.from_tuning(tuning))
+	focus = Focus.from_tuning(tuning)
+	spread = Spread.from_tuning(tuning)
 	caster.out_of_mana.connect(_on_out_of_mana)
 
 func _ready() -> void:
@@ -117,6 +127,9 @@ func _ready() -> void:
 	dash = Dash.from_tuning(tuning)
 	feel = CameraFeel.from_tuning(tuning)
 	set_mana(Mana.from_tuning(tuning))
+	focus = Focus.from_tuning(tuning)
+	spread = Spread.from_tuning(tuning)
+	camera.fov = focus.fov
 	eye_height = tuning.standing_eye
 	head.position = Vector3(0.0, eye_height, 0.0)
 	set_look(rotation.y, 0.0)
@@ -144,6 +157,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.pressed:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
+## Render frames: the camera FOV between the last two ticks of the focus tween.
+func _process(_delta: float) -> void:
+	camera.fov = focus.fov_at(Engine.get_physics_interpolation_fraction())
+
+## Reseeds the spread RNG (tests, replays).
+func set_spread_seed(s: int) -> void:
+	spread.rng.seed = s
+
 func _physics_process(delta: float) -> void:
 	if input_enabled:
 		tick(PlayerInput.from_input(), delta)
@@ -155,9 +176,9 @@ func spawn(feet: Vector3, yaw_rad: float) -> void:
 	direction = Vector3.ZERO
 	set_look(yaw_rad, 0.0)
 
-## Relative mouse motion in counts (dx right, dy down).
+## Relative mouse motion in counts (dx right, dy down); scaled down while focused (step 9).
 func add_look(dx_counts: float, dy_counts: float) -> void:
-	var r := deg_to_rad(tuning.look_deg_per_count)
+	var r := deg_to_rad(tuning.look_deg_per_count) * focus.look_scale()
 	set_look(yaw - dx_counts * r, pitch - dy_counts * r)
 
 func set_look(yaw_rad: float, pitch_rad: float) -> void:
@@ -197,6 +218,16 @@ func look_direction() -> Vector3:
 func aim() -> Caster.Aim:
 	var ex: Array[RID] = [get_rid()]
 	return Caster.Aim.make(eye_position(), look_direction(), ex)
+
+## Spread stance right now (after this tick's move): focus amount, crouched (also while
+## sliding), moving on the ground above 0.5 m/s, airborne.
+func spread_stance() -> Spread.Stance:
+	var air := not on_ground()
+	return Spread.Stance.make(focus.amount(), crouched, not air and horizontal_speed() > spread.moving_speed, air)
+
+## Accuracy of the wieldable in hand (Magewar get_final_accuracy; 0 with empty hands).
+func accuracy() -> float:
+	return caster.wieldable.accuracy() if caster.wieldable != null else 0.0
 
 func dashing() -> bool:
 	return dash.active()
@@ -342,8 +373,20 @@ func tick(input: PlayerInput, dt: float) -> void:
 
 	# Mana regen (step 8) before the cast, so a pool back at the cost casts this tick.
 	mana.tick(dt)
+	# Focus (step 9): action_secondary held with a wieldable; costs no mana.
+	focus.tick(input.down(&"action_secondary"), caster.wieldable, dt)
+	camera.fov = focus.fov
 	# Casting (step 7): semi-auto on the press, from where the eye is after this tick.
-	caster.tick(input.was_pressed(&"action_primary"), input.down(&"action_primary"), dt, aim(), bolts)
+	# Spread (step 9): bloom decays, a press that wants to cast is spread inside the cone;
+	# bloom grows only on a real cast (not on a cooldown/mana refusal).
+	spread.tick(dt)
+	var fire_pressed := input.was_pressed(&"action_primary")
+	var fire_held := input.down(&"action_primary")
+	var a := aim()
+	if caster.wieldable != null and (fire_pressed or (caster.hold_to_repeat and fire_held)):
+		a = spread.apply(a, caster.wieldable.accuracy(), spread_stance())
+	if caster.tick(fire_pressed, fire_held, dt, a, bolts):
+		spread.on_cast()
 
 func _set_capsule(h: float) -> void:
 	_shape.height = h

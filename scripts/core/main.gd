@@ -43,6 +43,9 @@ func _process(delta: float) -> void:
 				player.caster.wieldable.display_name() if player.caster.wieldable else "empty hands",
 				player.caster.casts, bolts.hits if bolts else 0, bolts.fizzled if bolts else 0,
 				player.mana.value, player.mana.max_value(), player.caster.mana_refused])
+			print("[focus] fov %.1f, accuracy %.0f %%, hip cone %.2f deg, bloom %.2f deg" % [
+				player.focus.fov, player.accuracy(),
+				player.spread.cone_deg(player.accuracy(), player.spread_stance()), player.spread.bloom])
 		get_tree().quit(0)
 
 func _physics_process(_delta: float) -> void:
