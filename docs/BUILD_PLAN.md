@@ -66,21 +66,26 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Fixed from step 6: nothing broken found; all 61 earlier tests pass unchanged. Found: Jolt ray queries see a body teleported after entering the tree (`spawn()` after `add_child`) only after the next physics step (static bodies placed before add are seen at once) → tests place bodies before add_child; step 13 respawn / step 14 spawner must not expect a bolt to hit a just-teleported body in the same tick.
 - Magewar check (staff_wieldable_item.gd, wieldable_staff.gd, spell_projectile.gd, item_rarity.gd, the 4 base + part .tres): base numbers, rarity multipliers, get_final_damage/fire_rate/accuracy/element match; semi-auto on press, cooldown set on cast, mana spent before the cooldown (no mana = no cooldown) match. Mismatches (kept, plan design): Magewar casts a 0.1 m RigidBody sphere with gravity from the staff CastPoint toward the camera-ray hit, 8 s lifespan, `wieldable_range` unused → ours is a straight eye ray that fizzles at range (step 10 draws the tracer from the cast point); Magewar's earthward_staff.tres and swift_wind_wand.tres have no `wieldable_scene` (can't be held in Magewar) → all four are castable here; Magewar spell hits apply effectiveness only → ours go through resolve_hit (resist, weak point).
 
-**8. Mana pool (port of old 18)**
+**8. Mana pool (port of old 18)** ✅ `146ba03`
 - Does: scripts/player/mana.gd: 100, regen 3/s after 1.5 s since last successful spend, refusal doesn't reset delay, regen/max bonus hooks; caster spends mana; no ammo/reload.
 - Does (step 7 notes): set `player.caster.mana_spender = mana.spend` (Caster already checks it after the cooldown; refusal sets no cooldown and counts `mana_refused`, Magewar order); a "Not enough mana!" cue hooks `mana_refused`.
 - Done: test_mana.gd: Fire staff 20 casts to 0, 21st refused, casts again at tick 646 ±1; empty → full 34.83 s.
+- Result: scripts/player/mana.gd = `Mana` (RefCounted, `from_tuning()`, port of the C++ Mana = Magewar ManaAttribute): 100 max, `tick(dt)` regenerates (3 + regen bonus)/s (never negative) for only the part of a tick past the 1.5 s delay since the last successful spend (exact at 30/60/144 Hz, float drift snapped), `spend(cost)` = Magewar spend_mana (exactly enough is fine; a refusal changes nothing, keeps the delay running, counts `refusals` and emits `refused(cost)`), `has()`, `regenerating()`, `fraction()`, `set_regen_bonus(total)`, `set_max_bonus(total)` with Magewar's equip rule (raising adds the difference to the value, lowering clamps), `refill()` (level-up), `restore(n)` (Mana Potion 25 / pickups, delay untouched), `auto_regenerate`, `spends`. PlayerTuning gains a Mana group (100 / 3 / 1.5 / auto). Player: `mana` (`set_mana()` binds `caster.mana_spender = mana.spend`), `mana.tick(dt)` right before `caster.tick` (a pool back at the cost casts that tick), `signal hint(text)` + `HINT_NOT_ENOUGH_MANA` "Not enough mana!" (Magewar wieldable_staff text) emitted from the new `Caster.out_of_mana(cost)` signal (once per refused *press*; hold_to_repeat retries don't cue), `not_enough_mana_cues`, `last_hint`. main's `[cast]` line shows mana and refusals. No ammo/reload. 79 unit tests green (9 new test_mana): 20 casts → 0, 21st refused (signal with 5.0); 96 then 5 refused, 4 ok; Magewar bases until empty: Fire 20 / 0 left, Swift Wind 40 / 0, Earthward 16 / 4, Arcane 33 / 1; Fire staff pressed every tick via Caster: 20th cast tick 456, 21st refused at tick 480 with no cooldown, casts again at tick **646** (166 refusals, value ≈ 0 after), 144 Hz: every 58 ticks, 20th at 1102, again at 1558 (= expected); regen 53.00000 after 1.5 s + 1 s at 30/60/144 Hz, +30 after 10 s more, a cast at 1.4 s restarts the delay; a refusal at 1 s keeps the timer (4.0 at 2.5 s), refusing every tick still affords 5 after 1.5 + 5/3 s; empty → full in 1045 / 2090 / 5016 ticks = **34.8333 s** at 30/60/144 Hz, never above max; Grimoire +0.5 → 53.5, bonus 2 → 5/s, −10 → 0/s; max +5 → 105 / 85, unequip 100 / 85, full +25 → 125/125, lowered → 110, level +5 (50 → 55) then refill 115/115; potion +25 capped, negative ignored; auto off; from_tuning + player_tuning.tres; Player: `caster.mana_spender` bound to `player.mana`, 20 casts by tick 456, one "Not enough mana!" at tick 480, casts again at tick 646 after 166 cues, idle regen 90 → 93 over 150 ticks, `set_mana()` rebinds; 2 s smoke 120 ticks (`[cast] … mana 100.0/100, 0 refused`), asset lint OK.
+- Fixed from earlier steps: tests/run_tests.gd skipped a test file that failed to parse **silently** (exit 0: test_mana's first draft "passed" as 70/70); it now counts as a FAIL. A GDScript runtime error inside a test (SCRIPT ERROR, e.g. a bad format string) didn't fail the test either → tools/run_tests.sh now tees both Godot runs and fails on any `SCRIPT ERROR:`/`ERROR:` line (the current suite logs none). Steps 1–7 tests all still pass unchanged.
+- Magewar check (mana_attribute.gd, magewar_player.gd, wieldable_staff.gd, player scenes, mana_potion.tres, mana_bar_hud): 100 max/start, 3/s, 1.5 s delay, spend refuses when `value < cost` without resetting the timer, equip `mana_bonus` raises max and current (unequip clamps), `mana_regen_bonus` adds to the rate, level-up +5 and refill, mana checked after the fire timer and before setting it, "Not enough mana!" hint + `sound_cast_fail` on refusal, staffs don't reload — all match. Reinterpreted (kept): Magewar runs the timer in `_process` per rendered frame and regenerates that whole frame (frame-rate dependent) → ours per physics tick, sub-tick exact. Magewar mutates `value_max` with `+=`/`-=` per item (drift-prone, a level-up's +5 is indistinguishable from gear) → ours takes totals (`set_max_bonus`/`set_regen_bonus`), step 19 sums equipment and step 27 keeps the level part separate. Magewar starter_arcane_wand.tres `hint_on_empty` "Not enough mana to cast!" is never read (the staff script hard-codes "Not enough mana!") → we use the script's text. Noted for step 19: Breath.set_max_bonus doesn't add to the value (Magewar never applies stamina_bonus, our choice) while Mana follows Magewar's equip rule. Scheduled: mana bar colour Color(0.2, 0.4, 1.0) + hint label → step 29, cast-fail sound → step 37, Mana Potion 25 → steps 19/23.
 
 **9. Focus, accuracy and spread (port of old 19)**
 - Does: Focus tween FOV 75→55 in 0.2 s (staff and wand), look scale tan ratio 0.6784, accuracy 50 + Head/Handle/Charm clamp 0–100, spread cone (4°, focus 0.35, crouch 0.8, moving 1.3, air 1.8, bloom +1°/cast cap 4° clears in 0.5 s), seeded RNG.
 - Does (step 7 notes): `WieldableInstance.accuracy()` already exists (Magewar 50 + Head/Handle/Charm, clamp); spread perturbs `Player.aim().direction` before `Caster.tick`.
-- Done: test_accuracy.gd: 55° exactly at tick 12, 100 % accuracy = zero spread, 50 % hip 2.0°/focused 0.7°, bloom clears in 30 ticks.
+- Does (step 8 notes): bloom grows only on a cast that happened (`Caster.tick` returned true), never on a mana or cooldown refusal; focusing costs no mana (Magewar action_secondary is ADS only).
+- Done: test_accuracy.gd: 55° exactly at tick 12, 100 % accuracy = zero spread, 50 % hip 2.0°/focused 0.7°, bloom clears in 30 ticks, a refused (no mana) press adds no bloom.
 
 **10. Staff + wand slots and viewmodel (port of old 21)**
 - Does: loadout.gd: Staff/Wand slots, per-slot cooldown, 0.4 s swap (slot_1/slot_2 + mouse wheel as Magewar's quickslot_prev/next_wieldable actions), viewmodel SubViewport/layer at 75° FOV with Magewar default_position poses, greybox shaft + element-coloured gem, focus slide, cast point tracer.
 - Does (step 5 notes): the viewmodel follows the Head (so it bobs with it); recoil kick and screen shake go through CameraFeel as extra offsets that `set_reduced_motion(true)` zeroes (PLAN Feel + accessibility), with a test.
 - Does (step 7 notes): each slot owns a `Caster` (per-slot cooldown = keep its `cooldown_left`); the bolt ray stays at the eye (`Player.aim()`), only the visible tracer start moves to the viewmodel cast point (SpellBolts.SKIP_NEAR / a per-spawn visual origin).
-- Done: test_loadout.gd: swap 24 ticks no cast during, Earthward cooldown survives swap; headless render check of gem colour (cos ≥ 0.97) via viewport texture.
+- Does (step 8 notes): both slot Casters share the one pool: each gets `mana_spender = player.mana.spend` and its `out_of_mana` wired to the Player hint (`Player.set_mana()` rebinds every slot); a swap never touches mana; a press during the swap is not a mana refusal (no cue).
+- Done: test_loadout.gd: swap 24 ticks no cast during, Earthward cooldown survives swap; headless render check of gem colour (cos ≥ 0.97) via viewport texture; staff + wand casts drain the same pool (e.g. 10 Fire staff + 20 Swift Wind = 100).
 
 **11. Enemy entity, training dummies, damage numbers (port of old 22)**
 - Does: scripts/enemies/enemy.gd (health, affinity, resistances, weak-point head Area), resources/enemies/training_dummies.tres, Label3D floating damage numbers in element colour, death at 0 HP, dummies spawned at the Midden's EnemySpawns markers (generated from the TOML `[[enemy]]` entries; meta `enemy` = id).
@@ -96,6 +101,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does: Heap tank (slow, high HP, slam), player health + shield (shield first, regen delay), resolveHit for enemy hits, i-frames from dash, player death/respawn.
 - Does (step 5 notes): enemy hits on the player are ignored while `player.invulnerable()` (first 0.1 s of a dash = 6 ticks at 60 Hz).
 - Does (step 6 notes): enemy hits on the player go through `Damage.resolve_hit(dmg, element, player.damage_target)` (Gnawer bite = Earth; player affinity Arcane, so only resist applies). Magewar computes `get_elemental_resistance` but never calls it, so Magewar player resistances do nothing; ours apply (flagged fix).
+- Does (step 8 notes): respawn calls `player.mana.refill()` and `breath.refill()` (bonuses kept).
 - Done: test_heap.gd + test_player_health.gd: damage order shield→health, regen timing, dash i-frames ignore a bite, death at 0, 0.3 Earth resist turns a 3 bite into 2.1.
 
 **14. Enemy spawner + kill events**
@@ -126,7 +132,8 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does: Hat/Clothes/Belt/Shoes/Grimoire/Potion with Magewar bonuses (mana, regen, stamina, speed, resist ≤ 60 %).
 - Does (step 4 notes): `stamina_bonus` (Belt 15, Shoes 5) → `player.breath.set_max_bonus(Σ equipped + level bonus)` (Magewar declares it but never applies it: fixed here, flagged); `speed_modifier` product (Shoes ×1.15) → `player.set_speed_multiplier()` (walk/sprint/crouch, like Magewar).
 - Does (step 6 notes): resist like Magewar's `get_elemental_resistance`: sum `elemental_resistance` of the equipped Hat/Clothes/Belt/Shoes/Grimoire whose `element_affinity` matches, stored uncapped in `player.damage_target.resist[element]` (the UI can show over-cap), capped at 0.6 only inside `Damage.resolve_hit` (Magewar clamps 0.9).
-- Done: test_equipment.gd: bonuses applied/removed exactly, resist cap 0.6 (two 0.4 Fire robes → 0.8 stored, 0.6 applied), Belt → Breath max 115 without refill, Shoes → walk 4.6 m/s.
+- Does (step 8 notes): `mana_bonus` → `player.mana.set_max_bonus(Σ equipped + level part)` (Magewar equip: raising adds the difference to the current value, removing clamps; `Mana` already does this), `mana_regen_bonus` → `player.mana.set_regen_bonus(Σ equipped)`; recompute the sums on every equip/unequip instead of Magewar's per-item `+=`/`-=`. Potion slot: Mana Potion = Magewar consumable `mana_potion.tres` (+25) → `player.mana.restore(25)` (health potion waits for step 13 health).
+- Done: test_equipment.gd: bonuses applied/removed exactly, resist cap 0.6 (two 0.4 Fire robes → 0.8 stored, 0.6 applied), Belt → Breath max 115 without refill, Shoes → walk 4.6 m/s, Novice Grimoire (+5 / +0.5) on 80/100 → 85/105 and 3.5/s, removed → 85/100 and 3/s, Mana Potion 30 → 55.
 - Does (step 5 notes): Magewar equipment has no dash stat; PLAN's Sandals 3rd dash charge waits for step 36 (Consecration) via `player.dash.set_bonus_charges()`.
 
 **20. Ember Mark item codes**
@@ -144,6 +151,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 **23. Pickup + auto-collect**
 - Does: Interact pickup, auto-collect for mana/dust, compare card data.
+- Does (step 8 notes): mana orbs/potions auto-collected go through `player.mana.restore(n)` (capped, regen delay untouched); skip auto-collecting a mana orb while the pool is full.
 - Done: test_pickup.gd: walk-over collects, Interact picks item.
 
 **24. Inventory and equip**
@@ -161,7 +169,8 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 **27. XP curve and levels**
 - Does: XP from kills, level-ups (+5 max mana/Breath + refill).
 - Does (step 4 notes): level-up Breath = +5 to the level part of `Breath.set_max_bonus` (kept separate from equipment so unequipping doesn't eat it) then `refill()` (Magewar `_level_up`).
-- Done: test_xp.gd: curve values, level-up hooks (Breath 105/105 after a level).
+- Does (step 8 notes): level-up mana = +5 to the level part of `Mana.set_max_bonus` then `refill()` (Magewar `_level_up`: `value_max += 5`, full).
+- Done: test_xp.gd: curve values, level-up hooks (Breath 105/105 and Mana 105/105 after a level, from 40 mana).
 
 **28. Weight model + Vigil plumbing**
 - Does: Vigil tiers 1–10 with Omens shifting rarity weights (§31).
@@ -172,7 +181,8 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 **29. HUD**
 - Does: Control-based HUD: health/shield/mana/Breath bars (Breath = `player.breath.fraction()`, tinted while `exhausted`), crosshair (hidden while focused, spread-sized), slot icons with rarity colours, Kenney UI Pack.
 - Does (step 5 notes): dash charge pips from `player.dash.charges` / `max_charges()` with `recharge_progress()` filling the next one.
-- Done: test_hud.gd: bars track values; headless screenshot non-empty.
+- Does (step 8 notes): mana bar = `player.mana.fraction()` in Magewar's mana colour Color(0.2, 0.4, 1.0) (its mana_bar_hud), a hint label for `Player.hint` ("Not enough mana!", ~1.5 s fade; a new hint restarts it) and a short mana-bar flash on `Caster.out_of_mana`.
+- Done: test_hud.gd: bars track values; headless screenshot non-empty; a refused press shows "Not enough mana!".
 
 **30. Inventory + equipment screen**
 - Does: Inventory UI with rarity colours and compare cards, opened by an `inventory` action on Tab (Magewar's name/key).
@@ -207,10 +217,12 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 **37. Audio: buses + Kenney sounds**
 - Does: Audio buses (Master/SFX/UI/Music), cast/hit/footstep/UI sounds from Kenney packs, 3D AudioStreamPlayer3D.
 - Does (step 5 notes): landing sound when `player.landings` goes up, volume/pitch from `last_landing_speed` over 2..8 m/s (Cogito's min/max landing velocity); dash whoosh on `dash.dashes`.
+- Does (step 8 notes): cast-fail sound on `Caster.out_of_mana` (Magewar `sound_cast_fail`), once per refused press.
 - Done: test_audio.gd: every referenced stream loads, buses exist.
 
 **38. Save format, round-trip + load**
 - Does: Versioned JSON save in user:// (player, inventory, items via Ember Mark codes, progress), load from menu.
+- Does (step 8 notes): save the current mana and Breath values; bonuses are rebuilt from equipment/level on load (not saved), then the values clamped.
 - Done: test_save.gd: save→load round-trip equal, old version rejected cleanly.
 
 **39. Main menu + flow**
