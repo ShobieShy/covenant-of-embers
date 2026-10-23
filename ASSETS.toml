@@ -46,3 +46,13 @@ license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-10-22"
 use = "UI clicks and loot pickup stingers"
+
+[[asset]]
+name = "Magewar item resources"
+path = "assets/magewar"
+author = "ShobieShy (Magewar, ~/game/magewar)"
+source = "local: ~/game/magewar/resources (copied read-only 2026-10-23)"
+license = "MIT"
+license_url = "assets/magewar/LICENSE-magewar.txt"
+date_added = "2026-10-23"
+use = "Reference data for staffs, wands, parts, equipment (ported into Covenant .tres); .gdignore'd, not loaded"

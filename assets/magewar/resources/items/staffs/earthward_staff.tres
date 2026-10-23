@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="StaffWieldableItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_wieldable_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+name = "Earthward Battlestaff"
+description = "A heavy oaken staff reinforced with stone. Slow but devastating earth magic."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+hint_text_on_use = ""
+item_size = Vector2(1, 2)
+can_auto_slot = true
+slot_number = 1
+no_reload = true
+hint_on_empty = "Not enough mana to cast!"
+charge_max = 100.0
+charge_current = 100.0
+wieldable_range = 45.0
+wieldable_damage = 14.0
+staff_type = 0
+base_rarity = 1
+primary_element = 3
+mana_cost = 6.0
+projectile_speed = 22.0
+fire_cooldown = 0.55

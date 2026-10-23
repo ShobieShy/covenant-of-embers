@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="StaffWieldableItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_wieldable_item.gd" id="1"]
+[ext_resource type="PackedScene" path="res://magewar/scenes/weapons/wieldable_wand.tscn" id="2_wieldable"]
+
+[resource]
+script = ExtResource("1")
+wieldable_scene = ExtResource("2_wieldable")
+name = "Novice Arcane Wand"
+description = "A simple wand that channels raw arcane energy. Fast but weak."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+item_size = Vector2(1, 1)
+can_auto_slot = true
+slot_number = 2
+no_reload = true
+hint_on_empty = "Not enough mana to cast!"
+charge_max = 100.0
+charge_current = 100.0
+wieldable_range = 35.0
+wieldable_damage = 7.0
+staff_type = 1
+base_rarity = 0
+primary_element = 0
+mana_cost = 3.0
+projectile_speed = 40.0
+fire_cooldown = 0.25

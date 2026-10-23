@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StaffPartItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_part_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://addons/cogito/Assets/Graphics/ItemIcons/Cogito_LaserRifle_new.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+name = "Granite Mana Core"
+description = "A heavy stone core that stabilizes wild mana flows. Earth affinity."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+item_size = Vector2(1, 1)
+part_type = 2
+rarity = 0
+element = 3
+damage_bonus = 3.5
+fire_rate_modifier = 1.0
+accuracy_bonus = 4.0
+handling_bonus = 0.0
+gem_slots = 0
+icon = ExtResource("2_icon")

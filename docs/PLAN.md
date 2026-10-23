@@ -247,38 +247,35 @@ All five copies of each design doc are byte-identical. Gaps were found by readin
 
 ## 23. Technical architecture
 
+Engine switched to Godot 4 on 2026-10-23 ([ADR-0002](adr/0002-switch-to-godot.md)); the C++20/Vulkan choices of [ADR-0001](adr/0001-language-and-libraries.md) are archived in `archive/cpp-engine/`.
+
 | Area | Choice | Why |
 |---|---|---|
-| Language | C++20 (decided in [ADR-0001](adr/0001-language-and-libraries.md)) | It has the most mature Vulkan ecosystem (VMA, volk, ImGui, Jolt) and is easy to find contributors for. Rust (ash, gpu-allocator) was the alternative; memory safety comes from ASan/UBSan CI, validation layers and tests instead. |
-| Engine | Small custom engine | The brief says to build from scratch on Vulkan. Pull in proven libraries instead of rewriting them. |
-| Main loop | Fixed 60 Hz simulation tick, variable-rate render interpolated by alpha | Deterministic gameplay/physics (and later host-authoritative net ticks) independent of frame rate; matches Godot's default 60 physics ticks used by ~/game. Hitches clamp to 0.25 s. Input edges are latched per tick; mouse look is applied per render frame. |
-| Window and input | SDL3 | Windowing, gamepad, input and audio device in one library, cross-platform. |
-| Renderer | Vulkan 1.3, volk, VMA | Uses dynamic rendering and synchronization2. A frame graph handles barriers. Clustered forward+ PBR, cascaded shadows, bloom and tonemap. |
-| Shaders | Slang (or GLSL) to SPIR-V | Compiled at build time, reflected with SPIRV-Reflect, and hot-reloaded in dev builds. |
-| ECS | EnTT | Fast, header-only and widely used. |
-| Physics | Jolt | Modern, multithreaded, and MIT-licensed. |
-| Audio | miniaudio | Single file, with spatial sound support. |
-| UI | Dear ImGui (tools), RmlUi (game) | Debug tools and the editor in ImGui; the in-game UI uses HTML/CSS-like markup in RmlUi. |
-| Networking | Host-authoritative, GameNetworkingSockets or ENet | This is the lesson ~/game already learned. |
-| Assets | glTF 2.0 via fastgltf, KTX2/BasisU, meshoptimizer | An offline cooker converts assets to runtime formats. |
-| Data and scripting | TOML/JSON plus Lua (sol2) | Gifts and quests are defined in data files. |
-| Build | CMake presets plus FetchContent (pinned, per ADR-0001; no vcpkg/CPM) | Linux (Luna runs Garuda) and Windows. Data files in TOML via toml++; JSON reads via simdjson. |
+| Engine | Godot 4.7.2 stable | Same engine as Magewar (~/game); renderer, physics, UI, audio, navigation and export built in. |
+| Language | Typed GDScript | Fast iteration, matches Magewar's scripts. |
+| Main loop | Godot physics at 60 Hz (`_physics_process`), render interpolated | Deterministic gameplay ticks; input edges per tick, mouse look per frame. |
+| Renderer | Forward+ (Vulkan), MSAA 2× | Default high-end Godot renderer. |
+| Physics | Godot's Jolt Physics module | Same physics library as the archived engine. |
+| Input | InputMap actions | Rebindable, saved to user://. |
+| UI | Godot Control nodes, Kenney UI Pack | Replaces ImGui/RmlUi. |
+| Audio | Godot AudioServer buses + AudioStreamPlayer3D | Replaces miniaudio. |
+| Navigation | NavigationServer3D / NavigationAgent3D | Enemy chase around walls. |
+| Networking | Host-authoritative via Godot high-level multiplayer (ENet) | The lesson ~/game already learned. |
+| Data | Godot Resources (.tres); TOML/JSON data converted by tools | Patches stay data (§31). |
+| Build/tests | `godot --headless`; tests/run_tests.gd; tools/run_tests.sh | One headless green gate locally and in CI. |
 
 ## 24. Repo structure
 
-- **engine/**: core, platform, render (vk, framegraph), audio, physics, net, ecs
-- **game/**: weapons (parts, workshops, grades), loot, gear, essences, gifts, progression, ai, enemies, bosses, quests, dialogue, camp, world, ui, save
-- **tools/**: asset_cooker, editor
-- **shaders/ · assets/ (Git LFS) · data/ · scripture/**: Scripture holds the public-domain KJV and WEB text
-- **tests/ · docs/ (design, ADRs) · .github/workflows/**
-- **LICENSE · LICENSE-ASSETS · CREDITS.md · ASSETS.toml**: License files and the asset license manifest
+- **project.godot · scenes/ · scripts/ (core, player, magic, combat, enemies, loot, ui, save) · resources/ · assets/ (kenney/, magewar/) · data/**
+- **tests/** (run_tests.gd, test_case.gd, unit/test_*.gd) · **tools/** (run_tests.sh, check_assets.py) · **docs/** (PLAN, BUILD_PLAN, ADRs)
+- **archive/cpp-engine/**: the archived C++20/Vulkan engine (Godot-ignored)
+- **LICENSE · CREDITS.md · ASSETS.toml**
 
 ## 25. CI and testing
 
-- **Builds**: GitHub Actions on Linux (clang) and Windows (MSVC), with ASan/UBSan, clang-tidy and clang-format. Since M0 (ADR-0001): Linux clang `debug` + `asan` jobs; Windows/MSVC, clang-tidy and clang-format follow after the vertical slice.
-- **Gameplay tests**: Headless tests for the damage formula, loot rolls and Grade weights, part assembly, essence matchups, save/load round-trips and quest flags.
-- **Unit tests**: doctest (ADR-0001). Every new system and save path ships with automated tests, a lesson from Magewar's /implement notes.
-- **GPU tests**: Headless and golden-image render tests on lavapipe. Any Vulkan validation error fails CI.
+- **Builds**: GitHub Actions on Linux runs Godot 4.7.2 headless: import, unit tests, smoke run, asset lint; Windows/Linux exports and gdlint/gdformat after the slice.
+- **Gameplay tests**: Headless GDScript tests for movement, damage formula, loot rolls and weights, part assembly, element matchups, save/load round-trips and quest flags.
+- **Render checks**: Headless viewport captures where needed (e.g. viewmodel gem colour).
 - **License lint**: Any asset not listed in ASSETS.toml fails the build.
 
 ## 26. Milestones
@@ -295,7 +292,7 @@ All five copies of each design doc are byte-identical. Gaps were found by readin
 
 ## 27. Risks
 
-- **Custom engine scope creep**: Use libraries first and timebox renderer features.
+- **Engine scope creep**: Resolved by switching to Godot 4 (ADR-0002); keep custom systems to gameplay.
 - **Netcode complexity**: Design host-authoritative from M1.
 - **Sensitive religious content**: Use reviewers and a written content guide.
 - **Mixed asset styles and licenses**: Keep one art direction and enforce the manifest.

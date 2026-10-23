@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CogitoQuest" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/cogito/QuestSystem/CustomResources/cogito_quest.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+quest_name = "prologue_summoning"
+quest_title = "Welcome to Elyria"
+quest_description_active = "You've been summoned to the realm of Elyria by Crazy Joe. Find the Old Oak tree on the edge of town - your new home."
+quest_description_completed = "You found the Old Oak tree and settled into your new home in Elyria."
+quest_description_failed = ""
+quest_counter_current = 0
+quest_counter_goal = 1
+quest_completed = false
+quest_failed = false

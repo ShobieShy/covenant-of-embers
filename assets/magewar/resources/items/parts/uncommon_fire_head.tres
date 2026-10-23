@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StaffPartItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_part_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://addons/cogito/Assets/Graphics/ItemIcons/Cogito_LaserRifle_new.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+name = "Smoldering Ruby Head"
+description = "A fire-attuned ruby that pulses with contained heat. Favored by battle mages."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+item_size = Vector2(1, 1)
+part_type = 0
+rarity = 1
+element = 1
+damage_bonus = 4.5
+fire_rate_modifier = 1.0
+accuracy_bonus = 8.0
+handling_bonus = 0.0
+gem_slots = 1
+icon = ExtResource("2_icon")

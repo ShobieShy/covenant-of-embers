@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StaffPartItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_part_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+name = "Mana Core Interior"
+description = "A basic mana-conducting interior. Channels raw arcane energy."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+item_size = Vector2(1, 1)
+part_type = 2
+rarity = 0
+element = 0
+damage_bonus = 3.0
+fire_rate_modifier = 1.0
+accuracy_bonus = 0.0
+handling_bonus = 0.0
+gem_slots = 0

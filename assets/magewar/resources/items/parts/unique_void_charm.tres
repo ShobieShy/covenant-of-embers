@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StaffPartItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_part_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+name = "Unique Void Charm"
+description = "A one-of-a-kind charm whispering of the Demon Lord's lair. Augments any assembled staff."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+item_size = Vector2(1, 1)
+part_type = 4
+rarity = 5
+element = 6
+damage_bonus = 8.0
+fire_rate_modifier = 0.85
+accuracy_bonus = 12.0
+handling_bonus = 5.0
+gem_slots = 0

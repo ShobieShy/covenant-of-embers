@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="StaffWieldableItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_wieldable_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+name = "Swift Wind Wand"
+description = "A lightweight wand carved from stormwood. Fires air projectiles at blistering speed."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+item_size = Vector2(1, 1)
+can_auto_slot = true
+slot_number = 2
+no_reload = true
+hint_on_empty = "Not enough mana to cast!"
+charge_max = 100.0
+charge_current = 100.0
+wieldable_range = 40.0
+wieldable_damage = 6.0
+staff_type = 1
+base_rarity = 1
+primary_element = 4
+mana_cost = 2.5
+projectile_speed = 55.0
+fire_cooldown = 0.18

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StaffPartItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_part_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+name = "Dawnward Sigil"
+description = "A holy charm that infuses attacks with purifying Light. Rare and potent."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+item_size = Vector2(1, 1)
+part_type = 4
+rarity = 2
+element = 5
+damage_bonus = 2.5
+fire_rate_modifier = 0.9
+accuracy_bonus = 10.0
+handling_bonus = 3.0
+gem_slots = 0

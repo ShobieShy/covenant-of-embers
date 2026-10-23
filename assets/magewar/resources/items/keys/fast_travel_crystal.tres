@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="FastTravelCrystal" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/fast_travel_crystal.gd" id="1"]
+[ext_resource type="Texture2D" path="res://addons/cogito/Assets/Graphics/ItemIcons/Cogito_DiamondKey_Complete.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+name = "Fast Travel Teleportation Crystal"
+icon = ExtResource("2_icon")
+description = "A palm-sized gem crafted from Joe's discarded mana crystals. Allows instant travel between attuned locations."
+is_stackable = false
+is_droppable = false
+is_unique = true
+stack_size = 1
+hint_text_on_use = "Use to fast travel between attuned locations."
+item_size = Vector2(1, 1)
+is_activated = false
+travel_points = {}

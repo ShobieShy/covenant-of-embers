@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CogitoQuest" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/cogito/QuestSystem/CustomResources/cogito_quest.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+quest_name = "tutorial_landfill"
+quest_title = "The Landfill Investigation"
+quest_description_active = "Investigate the strange mana distortions at the Landfill outside town. Defeat The Filth and bring back Joe's discarded items to Bob."
+quest_description_completed = "You defeated The Filth and retrieved Joe's discarded items from the Landfill. Bob has crafted a Teleportation Crystal from the salvage."
+quest_description_failed = "The Landfill proved too dangerous..."
+quest_counter_current = 0
+quest_counter_goal = 3
+quest_completed = false
+quest_failed = false

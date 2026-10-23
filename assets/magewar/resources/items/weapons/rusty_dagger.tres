@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItemPD" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/cogito/InventoryPD/CustomResources/KeyItemPD.gd" id="1"]
+[ext_resource type="Texture2D" path="res://addons/cogito/Assets/Graphics/ItemIcons/CogitoKey.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+name = "Rusty Dagger"
+description = "A chipped blade enchanted to glow when danger is near. Bob's starter melee backup while you learn spellcasting."
+is_stackable = false
+is_droppable = true
+is_unique = true
+stack_size = 1
+hint_text_on_use = "The blade flickers faintly near hostile mana."
+item_size = Vector2(1, 1)
+discard_after_use = false
+icon = ExtResource("2_icon")

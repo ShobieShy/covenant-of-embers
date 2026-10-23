@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StaffPartItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_part_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+name = "Shadowbound Grip"
+description = "A handle wrapped in void-touched leather. Grants eerie stability and Dark affinity."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+item_size = Vector2(1, 1)
+part_type = 3
+rarity = 1
+element = 6
+damage_bonus = 1.0
+fire_rate_modifier = 1.0
+accuracy_bonus = 15.0
+handling_bonus = 8.0
+gem_slots = 0

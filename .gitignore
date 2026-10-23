@@ -8,3 +8,8 @@ compile_commands.json
 *.swp
 CMakeUserPresets.json
 *.ppm
+
+# Godot
+.godot/
+*.translation
+export_presets.cfg

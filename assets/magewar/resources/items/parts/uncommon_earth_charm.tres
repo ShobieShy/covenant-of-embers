@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StaffPartItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_part_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+name = "Rootward Talisman"
+description = "A charm of petrified wood that draws strength from the earth itself."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+item_size = Vector2(1, 1)
+part_type = 4
+rarity = 1
+element = 3
+damage_bonus = 3.0
+fire_rate_modifier = 1.0
+accuracy_bonus = 7.0
+handling_bonus = 4.0
+gem_slots = 0

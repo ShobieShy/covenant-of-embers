@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItemPD" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/cogito/InventoryPD/CustomResources/KeyItemPD.gd" id="1"]
+[ext_resource type="Texture2D" path="res://addons/cogito/Assets/Graphics/Trash.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2_icon")
+name = "Joe's Discarded Items"
+description = "A sack of Crazy Joe's discarded experiments: cracked mana crystals, scribbled notes on 'trash portals', and bizarre contraptions. Bob might find these useful."
+is_stackable = false
+is_droppable = false
+is_unique = true
+stack_size = 1
+hint_text_on_use = "These should be brought to Bob at the Old Oak."
+item_size = Vector2(2, 1)
+discard_after_use = false

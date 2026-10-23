@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StaffPartItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_part_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+name = "Tidal Shell Casing"
+description = "An ancient piece of leviathan shell. Massively boosts fire rate for water spells."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+item_size = Vector2(1, 1)
+part_type = 1
+rarity = 3
+element = 2
+damage_bonus = 1.5
+fire_rate_modifier = 0.55
+accuracy_bonus = 9.0
+handling_bonus = 5.0
+gem_slots = 0

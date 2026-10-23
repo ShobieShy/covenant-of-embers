@@ -1,0 +1,26 @@
+; Engine configuration file.
+; Covenant of Embers – Godot 4 project (ADR-0002).
+
+config_version=5
+
+[application]
+
+config/name="Covenant of Embers"
+config/description="Original open-source co-op loot FPS (Magewar-style staffs and wands)."
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.7", "Forward Plus")
+
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+
+[physics]
+
+common/physics_ticks_per_second=60
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+anti_aliasing/quality/msaa_3d=2

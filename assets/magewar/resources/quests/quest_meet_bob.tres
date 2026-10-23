@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CogitoQuest" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/cogito/QuestSystem/CustomResources/cogito_quest.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+quest_name = "meet_bob"
+quest_title = "The Unexpected Visitor"
+quest_description_active = "Someone is living in the Old Oak tree. Talk to Bob and learn about his research into the Dungeon Fracture."
+quest_description_completed = "You met Bob, the reclusive mage who has been secretly researching the Dungeon Fracture from within the Old Oak."
+quest_description_failed = ""
+quest_counter_current = 0
+quest_counter_goal = 1
+quest_completed = false
+quest_failed = false

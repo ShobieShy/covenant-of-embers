@@ -1,0 +1,78 @@
+# Covenant of Embers CI: Linux / clang / Ninja, Vulkan on Mesa lavapipe (CPU).
+# Two jobs from one matrix (PLAN §25, ADR-0001):
+#   linux-clang (debug) - cmake --preset debug && ctest -LE window
+#   linux-clang (asan)  - cmake --preset asan  && ctest -LE window
+#                          (ASan + fatal UBSan; sanitizer/loader env comes from
+#                          CMakeLists.txt test properties, same as locally)
+# Runs every ctest except the `window` label (no display on the runner).
+# Deferred until after the vertical slice: Windows/MSVC, clang-tidy, clang-format.
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-clang:
+    name: linux-clang (${{ matrix.preset }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [debug, asan]
+    env:
+      CC: clang
+      CXX: clang++
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Install toolchain + Vulkan (lavapipe)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang ninja-build cmake \
+            libvulkan-dev glslc vulkan-tools vulkan-validationlayers \
+            mesa-vulkan-drivers
+
+      - name: Limit mmap ASLR entropy for ASan
+        # clang 18's ASan crashes at startup on kernels with vm.mmap_rnd_bits=32.
+        if: matrix.preset == 'asan'
+        run: sudo sysctl -w vm.mmap_rnd_bits=28
+
+      - name: Select lavapipe ICD
+        # Force the software ICD so results never depend on runner GPUs.
+        run: |
+          icd=$(ls /usr/share/vulkan/icd.d/lvp_icd*.json | head -n1)
+          test -n "$icd"
+          echo "VK_DRIVER_FILES=$icd" >> "$GITHUB_ENV"
+
+      - name: Vulkan device info
+        run: vulkaninfo --summary
+
+      - name: Cache SDL3 FetchContent sources
+        uses: actions/cache@v4
+        with:
+          path: build/${{ matrix.preset }}/_deps
+          key: deps-${{ runner.os }}-${{ matrix.preset }}-${{ hashFiles('**/CMakeLists.txt', 'cmake/**') }}
+
+      - name: Configure
+        # Ubuntu 24.04 has no SDL3 package: fetch it; console build = no X11/Wayland deps.
+        run: cmake --preset ${{ matrix.preset }} -DCOE_FETCH_SDL3=ON -DSDL_UNIX_CONSOLE_BUILD=ON
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: Test (headless, no window label)
+        run: ctest --test-dir build/${{ matrix.preset }} -LE window --output-on-failure --timeout 300

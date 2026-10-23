@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItemPD" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/cogito/InventoryPD/CustomResources/KeyItemPD.gd" id="1"]
+[ext_resource type="Texture2D" path="res://addons/cogito/Assets/Graphics/ItemIcons/page_combined.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+name = "Bark-Sketched Map"
+description = "Bob's crude map scratched onto oak bark. Marks the landfill, town gates, and a warning about 'The Filth' at the dump's heart."
+is_stackable = false
+is_droppable = false
+is_unique = true
+stack_size = 1
+hint_text_on_use = "The landfill is marked beyond the barrier's edge."
+item_size = Vector2(1, 1)
+discard_after_use = false
+icon = ExtResource("2_icon")

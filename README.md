@@ -1,27 +1,15 @@
 # Covenant of Embers
 
-An original, open-source co-op (1–4 players) Borderlands-style loot FPS built on a small custom C++20 / Vulkan engine. Inspired by the spirit of Magewar and by biblical themes; not a copy of either.
+An original, open-source co-op (1–4 players) loot FPS with Magewar-style staffs and wands, built on **Godot 4.7.2** (Forward+, GDScript). Inspired by the spirit of Magewar and by biblical themes.
 
-Status: **M1 – gunplay prototype in progress**. M0 foundations (SDL3 window + Vulkan 1.3 triangle, CI, asset lint, cooker stub) are done; the engine/game split, the 60 Hz fixed-timestep loop, the input layer (actions per tick, mouse look per frame) and a first-person camera with a reverse-Z depth buffer the mesh pipeline (fastgltf + VMA: a lit Kenney blaster loaded from the cooked assets), the data-defined Midden greybox arena (TOML, 2× MSAA, fog) a Jolt physics world built from its boxes and a first-person controller (Jolt CharacterVirtual: WASD walk 4 m/s, LShift sprint 7 m/s on a Breath pool, Space jump, Ctrl/C crouch, crouch while sprinting to slide, Q dash with 2 charges, head bob and landing dip, mouse look, steps and ramps) and the Magewar spell data model (staffs and wands from data/magic/wieldables.toml; LMB casts a ray-swept, element-coloured bolt on the wieldable's cooldown, 1–4 pick one of the four bases; each cast spends the wieldable's mana from Magewar's 100-point pool, which regenerates 3/s after 1.5 s without casting; RMB focuses (FOV 75° → 55° in 0.2 s, mouse look scaled to match) and casts leave along a spread cone from the wieldable's accuracy, stance and bloom) and training-dummy enemies (data/enemies/training_dummies.toml, placed by the level's `[[enemy]]` entries: health, an element affinity read by the step-20 damage formula — Fire does ×1.5 to the Earth dummy, ×0.5 to the Water one — a ×2 weak-point head, death at 0 HP, and floating element-coloured damage numbers drawn with Dear ImGui) and the first real enemy, the Gnawer (data/enemies/gnawer.toml: a rat-sized rusher whose state machine — idle, detect, chase, attack, knockback, dead — follows Magewar's enemy_base; it sprints at the player, slides along walls, bites every 0.8 s and is knocked back by hits over 10 damage) are in. See [docs/PLAN.md](docs/PLAN.md) for the full design and [ADR-0001](docs/adr/0001-language-and-libraries.md) for the language (C++20) and library choices.
+Status: switched from a custom C++20/Vulkan engine to Godot 4 on 2026-10-23 ([ADR-0002](docs/adr/0002-switch-to-godot.md)). The old engine is archived in `archive/cpp-engine/` and on branch `archive/cpp-vulkan-engine`. See [docs/PLAN.md](docs/PLAN.md) for the design and [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) for the step plan.
 
-## Build (Linux)
+## Run
 ```sh
-cmake --preset debug
-cmake --build --preset debug
-./build/debug/covenant
+godot --path .                        # play
+godot --headless --path . -- --seconds 2   # smoke run
+./tools/run_tests.sh                  # import + unit tests + smoke + asset lint
 ```
-Requires CMake ≥ 3.25, Ninja, a C++20 compiler (GCC 13+/Clang 17+), and the Vulkan SDK pieces (headers, loader, glslc; validation layers recommended). SDL3 is used from the system when installed; otherwise CMake fetches and builds a pinned release (force with `-DCOE_FETCH_SDL3=ON`). GLM (header-only math) is always fetched at a pinned, hash-checked release.
-
-### Sanitizers (ASan + UBSan)
-```sh
-cmake --preset asan
-cmake --build --preset asan
-ctest --test-dir build/asan -LE window     # or: ctest --preset asan
-```
-UBSan is fatal and leak checking is on; ctest sets the sanitizer and Vulkan-loader environment (see [ADR-0001](docs/adr/0001-language-and-libraries.md)). To run a sanitized binary by hand, export `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1` first.
-
-## CI
-`.github/workflows/ci.yml` builds with clang + Ninja on Ubuntu 24.04 in two jobs (`debug` and `asan` presets) and runs `ctest -LE window` in each on Mesa lavapipe (software Vulkan) with validation layers installed, so any validation error fails CI. Tests labelled `window` need a display and run only locally. Windows/MSVC, clang-tidy and clang-format jobs are deferred until after the vertical slice.
 
 ## Licenses
 - Code: Apache-2.0 (see `LICENSE`).

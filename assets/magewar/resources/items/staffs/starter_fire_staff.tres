@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="StaffWieldableItem" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://magewar/scripts/items/staff_wieldable_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://addons/cogito/Assets/Graphics/ItemIcons/Cogito_LaserRifle_new.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://magewar/scenes/weapons/wieldable_staff.tscn" id="3_wieldable"]
+
+[resource]
+script = ExtResource("1")
+wieldable_scene = ExtResource("3_wieldable")
+name = "Apprentice Fire Staff"
+description = "A basic fire staff cobbled together from scavenged parts. It ain't pretty, but it shoots fire."
+is_stackable = false
+is_droppable = true
+stack_size = 1
+hint_text_on_use = ""
+item_size = Vector2(1, 2)
+can_auto_slot = true
+slot_number = 1
+no_reload = true
+hint_on_empty = "Not enough mana to cast!"
+charge_max = 100.0
+charge_current = 100.0
+wieldable_range = 50.0
+wieldable_damage = 10.0
+staff_type = 0
+base_rarity = 0
+primary_element = 1
+mana_cost = 5.0
+projectile_speed = 30.0
+fire_cooldown = 0.4
+icon = ExtResource("2_icon")

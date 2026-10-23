@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CogitoQuest" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/cogito/QuestSystem/CustomResources/cogito_quest.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+quest_name = "main_path"
+quest_title = "The Fractured Realm"
+quest_description_active = "Bob's research points toward five major dungeons scattered across Elyria. Explore, grow stronger, and uncover what caused the Dungeon Fracture. Rumors speak of a Demon Lord who awaits those who clear them all."
+quest_description_completed = "You have pieced together the trail through Elyria's dungeons. The Demon Lord's lair beckons — Crazy Joe may be waiting there first."
+quest_description_failed = ""
+quest_counter_current = 0
+quest_counter_goal = 1
+quest_completed = false
+quest_failed = false
