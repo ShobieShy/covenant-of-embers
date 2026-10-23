@@ -26,7 +26,16 @@ extends Node3D
 ## copied): Magewar fires a 0.1 m RigidBody3D sphere with gravity and an 8 s lifespan from
 ## the staff's CastPoint toward the camera ray's hit; wieldable_range is never used. Ours
 ## is a straight ray from the eye (hits go where the crosshair points) that fizzles at the
-## wieldable's range (the C++ design). The 0.1 m enemy graze sweep comes with enemies.
+## wieldable's range (the C++ design).
+##
+## Step 11 (enemies, port of old step 22): the ray result's shape index is kept in
+## Hit.shape and a collider with `damage_target_for(hit)` (Enemy: sets weak_point from the
+## struck shape) is asked for its target instead of reading `damage_target`. Colliders whose
+## `passes_bolts()` is true (dead enemies) are skipped: the ray is cast again past them
+## (up to MAX_PASS_THROUGH). Bolts also graze: when the ray hits no enemy, a GRAZE_RADIUS
+## sphere (Magewar's projectile is a 0.1 m sphere) is swept along the same segment against
+## the enemy layer only; a contact no farther than the ray's own hit is a hit (Hit.grazed)
+## at the enemy's surface. So near misses on small targets count, but walls still block.
 
 signal bolt_hit(hit: Hit)
 
@@ -34,6 +43,9 @@ const TAIL := 2.5            ## m of tracer behind the bolt head
 const SKIP_NEAR := 0.6       ## m in front of the eye never drawn
 const IMPACT_LINGER := 0.2   ## s an impact's tracer stays
 const CONVERGE := 8.0        ## m: a visual origin's offset fades out over this (step 10)
+const GRAZE_RADIUS := 0.1    ## m: enemy graze sphere (step 11; 0 in a Spawn disables)
+const ENEMY_MASK := 1 << 2   ## physics layer 3 "enemy" (Enemy.ENEMY_LAYER)
+const MAX_PASS_THROUGH := 8  ## dead colliders skipped per bolt per tick
 
 ## What a cast launches.
 class Spawn:
@@ -48,6 +60,7 @@ class Spawn:
 	var collision_mask := 0xFFFFFFFF
 	var has_visual_origin := false            ## step 10: tracer drawn from visual_origin
 	var visual_origin := Vector3.ZERO
+	var graze_radius := GRAZE_RADIUS          ## step 11: enemy graze sphere radius (0 = off)
 
 class Bolt:
 	extends RefCounted
@@ -72,6 +85,8 @@ class Hit:
 	var damage := 0.0                         ## wieldable damage carried by the bolt
 	var direction := Vector3.FORWARD
 	var result: Damage.Result                 ## set when the collider had a damage_target
+	var shape := -1                           ## step 11: shape index on the collider
+	var grazed := false                       ## step 11: the graze sphere hit, not the ray
 
 class Line:
 	extends RefCounted
@@ -144,15 +159,16 @@ func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
 			continue
 		var from := s.origin + s.direction * b.travelled
 		var to := from + s.direction * seg
-		var q := PhysicsRayQueryParameters3D.create(from, to, s.collision_mask, s.exclude)
-		var r := space.intersect_ray(q)
+		var r := _cast(space, s, from, to)
 		if not r.is_empty():
 			var h := Hit.new()
 			var p: Vector3 = r["position"]
-			var frac := clampf(from.distance_to(p) / seg, 0.0, 1.0)
+			var frac := clampf(float(r.get("along", from.distance_to(p))) / seg, 0.0, 1.0)
 			h.bolt = b.id
 			h.collider = r["collider"]
 			h.rid = r["rid"]
+			h.shape = r.get("shape", -1)
+			h.grazed = r.get("grazed", false)
 			h.point = p
 			h.normal = r["normal"]
 			h.distance = b.travelled + frac * seg
@@ -182,10 +198,76 @@ func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
 		bolt_hit.emit(h)
 	return last_hits
 
+## The closest thing the segment from -> to hits: the ray (past colliders that pass bolts)
+## or, if that isn't an enemy, the graze sphere's enemy contact when no farther. Returns the
+## intersect_ray dict (+ "grazed", "along" = metres from `from`) or {}.
+func _cast(space: PhysicsDirectSpaceState3D, s: Spawn, from: Vector3, to: Vector3) -> Dictionary:
+	var exclude: Array[RID] = s.exclude.duplicate()
+	var r := {}
+	for i in MAX_PASS_THROUGH + 1:
+		var q := PhysicsRayQueryParameters3D.create(from, to, s.collision_mask, exclude)
+		r = space.intersect_ray(q)
+		if r.is_empty() or not _passes(r["collider"]):
+			break
+		exclude.append(r["rid"])
+		r = {}
+	if not r.is_empty() and _is_enemy(r["collider"]):
+		return r
+	if s.graze_radius <= 0.0 or (s.collision_mask & ENEMY_MASK) == 0:
+		return r
+	var ray_d := from.distance_to(r["position"]) if not r.is_empty() else INF
+	var g := _graze(space, s, from, to, exclude)
+	if not g.is_empty() and float(g["along"]) <= ray_d + 1e-4:
+		return g
+	return r
+
+func _passes(o: Object) -> bool:
+	return is_instance_valid(o) and o.has_method(&"passes_bolts") and bool(o.call(&"passes_bolts"))
+
+func _is_enemy(o: Object) -> bool:
+	return o is CollisionObject3D and ((o as CollisionObject3D).collision_layer & ENEMY_MASK) != 0
+
+## Sweeps a graze sphere from -> to against the enemy layer: {} or a ray-like dict at the
+## first enemy (not passing bolts) it touches.
+func _graze(space: PhysicsDirectSpaceState3D, s: Spawn, from: Vector3, to: Vector3, exclude: Array[RID]) -> Dictionary:
+	var sphere := SphereShape3D.new()
+	sphere.radius = s.graze_radius
+	var q := PhysicsShapeQueryParameters3D.new()
+	q.shape = sphere
+	q.collision_mask = ENEMY_MASK
+	q.margin = 0.0
+	var ex: Array[RID] = exclude.duplicate()
+	var seg := to - from
+	for i in MAX_PASS_THROUGH + 1:
+		q.exclude = ex
+		q.transform = Transform3D(Basis.IDENTITY, from)
+		q.motion = seg
+		var m := space.cast_motion(q)
+		if m.size() < 2 or m[1] >= 1.0:
+			return {}
+		q.motion = Vector3.ZERO
+		q.transform = Transform3D(Basis.IDENTITY, from + seg * m[1])
+		var info := space.get_rest_info(q)
+		if info.is_empty():
+			return {}
+		var o := instance_from_id(info["collider_id"])
+		if _passes(o):
+			ex.append(info["rid"])
+			continue
+		return {
+			"collider": o, "rid": info["rid"], "shape": info["shape"], "position": info["point"],
+			"normal": info["normal"], "grazed": true, "along": seg.length() * m[1],
+		}
+	return {}
+
 func _resolve(h: Hit) -> void:
 	if not is_instance_valid(h.collider):
 		return
-	var t = h.collider.get(&"damage_target")
+	var t = null
+	if h.collider.has_method(&"damage_target_for"):
+		t = h.collider.call(&"damage_target_for", h)
+	else:
+		t = h.collider.get(&"damage_target")
 	if t is Damage.Target:
 		h.result = Damage.resolve_hit(h.damage, h.element, t)
 

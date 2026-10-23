@@ -363,7 +363,7 @@ func test_ray_hits_player_on_character_layer() -> void:
 	var w := _flat()
 	var p := _player(w, Vector3.ZERO, 0.0)
 	_run(p, 5)
-	check(p.collision_layer == 2 and p.collision_mask == 1, "player on layer 'character'")
+	check(p.collision_layer == 2 and p.collision_mask == (1 | 4), "player on layer 'character', collides with world + enemy (step 11)")
 	check(ProjectSettings.get_setting("layer_names/3d_physics/layer_2") == "character", "layer 2 named")
 	var q := PhysicsRayQueryParameters3D.create(Vector3(0, 1, 5), Vector3(0, 1, -5), 0xFFFFFFFF)
 	var hit := p.get_world_3d().direct_space_state.intersect_ray(q)

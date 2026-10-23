@@ -129,7 +129,7 @@ func _ready() -> void:
 	if tuning == null:
 		tuning = PlayerTuning.new()
 	collision_layer = 1 << (CHARACTER_LAYER - 1)
-	collision_mask = 1
+	collision_mask = 1 | (1 << 2)   # world + enemy (step 11: dummies block the player)
 	floor_max_angle = deg_to_rad(tuning.max_slope_deg)
 	floor_snap_length = tuning.floor_snap
 	floor_stop_on_slope = true

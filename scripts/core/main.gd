@@ -26,6 +26,19 @@ func _ready() -> void:
 		player.bolts = get_node_or_null("Bolts") as SpellBolts
 		player.equip(WieldableInstance.load_base("apprentice_fire_staff"))
 		player.equip(WieldableInstance.load_base("swift_wind_wand"))
+		# Step 11: the level's training dummies at its EnemySpawns markers (the Gnawer
+		# waits for step 12's AI) and floating damage numbers on every resolved hit.
+		var enemies := Node3D.new()
+		enemies.name = "Enemies"
+		add_child(enemies)
+		var skipped: Array = []
+		var spawned := Enemy.spawn_at_markers($Level, enemies, EnemyTable.load_default(), skipped)
+		var numbers := DamageNumbers.new()
+		numbers.name = "DamageNumbers"
+		add_child(numbers)
+		numbers.connect_bolts(player.bolts)
+		print("[enemies] %d spawned (%s), %d skipped (%s)" % [spawned.size(),
+			", ".join(spawned.map(func(e: Enemy) -> String: return e.def.id)), skipped.size(), ", ".join(skipped)])
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])
@@ -48,6 +61,11 @@ func _process(delta: float) -> void:
 			print("[focus] fov %.1f, accuracy %.0f %%, hip cone %.2f deg, bloom %.2f deg" % [
 				player.focus.fov, player.accuracy(),
 				player.spread.cone_deg(player.accuracy(), player.spread_stance()), player.spread.bloom])
+			var alive := 0
+			for e in get_tree().get_nodes_in_group(Enemy.GROUP):
+				alive += 1
+			var dn := get_node_or_null("DamageNumbers") as DamageNumbers
+			print("[enemies] %d alive, %d damage number(s) shown" % [alive, dn.spawned if dn else 0])
 			var lo := player.loadout
 			print("[loadout] in hand %s, staff %s, wand %s, %d swap(s), viewmodel %s at %s, overlay %s" % [
 				"wand" if lo.active == Loadout.Slot.WAND else "staff",

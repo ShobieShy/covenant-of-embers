@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="EnemyTable" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_table.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/enemies/enemy_def.gd" id="2"]
+
+[sub_resource type="Resource" id="earth_training_dummy"]
+script = ExtResource("2")
+id = "earth_training_dummy"
+display_name = "Earthen Training Dummy"
+affinity = 3
+max_health = 60.0
+size = Vector3(0.7, 1.6, 0.7)
+color = Color(0.5, 0.35, 0.1, 1)
+resist = {}
+has_weak_point = true
+weak_point_offset = Vector3(0, 1.78, 0)
+weak_point_size = Vector3(0.36, 0.36, 0.36)
+
+[sub_resource type="Resource" id="water_training_dummy"]
+script = ExtResource("2")
+id = "water_training_dummy"
+display_name = "Tidal Training Dummy"
+affinity = 2
+max_health = 60.0
+size = Vector3(0.7, 1.6, 0.7)
+color = Color(0.1, 0.4, 1, 1)
+resist = {
+"air": 0.25
+}
+has_weak_point = true
+weak_point_offset = Vector3(0, 1.78, 0)
+weak_point_size = Vector3(0.36, 0.36, 0.36)
+
+[resource]
+script = ExtResource("1")
+defs = Array[ExtResource("2")]([SubResource("earth_training_dummy"), SubResource("water_training_dummy")])
