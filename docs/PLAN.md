@@ -394,7 +394,7 @@ Buildable rules for M1–M2. **Weapons, loot and crafting follow the Magewar des
 
 ### 30.8 Movement
 - Sprint drains Breath (100 base, 20/s; regen 30/s after 1 s), sprint → slide, mantle, ground-slam.
-- Dash: 6 m in 0.15 s, 25 Breath, 2 charges (Sandals can add a 3rd or a damage trail), brief i-frames 0.1 s; usable in air once.
+- Dash: 6 m in 0.15 s, 25 Breath, 2 charges (Sandals can add a 3rd or a damage trail), brief i-frames 0.1 s; usable in air once. Charges recharge one at a time, 1.5 s each (build step 16 choice).
 
 ### 30.9 Tests required (M1–M2)
 Headless tests for damage formula, Grade weight distribution (statistical), deterministic item regen from seed, affix exclusivity, essence matchups, per-player loot isolation, XP curve, and save round-trips.

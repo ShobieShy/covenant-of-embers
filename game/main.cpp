@@ -15,6 +15,7 @@
 //                            fail unless every scripted press reached exactly one tick
 //                            (level mode: and the player walked forward and jumped)
 //   covenant --crate         level mode: also drop step 13's tumbling demo crate (a push target)
+//   covenant --reduced-motion  level mode: no head bob / landing dip (accessibility)
 //
 // Loop (PLAN §23): simulation advances in fixed 60 Hz ticks (engine/core/fixed_timestep),
 // rendering runs once per displayed frame with state interpolated by alpha.
@@ -28,8 +29,8 @@
 // is dropped in front of the player and drawn interpolated.
 // Player (step 14): game/player/player_controller spawns a Jolt CharacterVirtual at the
 // level's [player_start]; each tick it walks/jumps/crouches, and (step 15) sprints on
-// Breath and slides, from the TickInput (before the world steps), mouse look turns it
-// per frame, the camera sits at its eye.
+// Breath and slides, (step 16) dashes, from the TickInput (before the world steps), mouse
+// look turns it per frame, the camera sits at its eye (+ head bob / landing dip).
 #include "engine/core/clock.hpp"
 #include "engine/core/fixed_timestep.hpp"
 #include "engine/input/input.hpp"
@@ -166,11 +167,12 @@ constexpr ScriptedEvent kInputScript[] = {
     {20, SDL_EVENT_MOUSE_BUTTON_UP, SDL_BUTTON_LEFT, 0},
     {21, SDL_EVENT_KEY_DOWN, SDL_SCANCODE_SPACE, 0}, {22, SDL_EVENT_KEY_UP, SDL_SCANCODE_SPACE, 0},
     {30, SDL_EVENT_KEY_UP, SDL_SCANCODE_W, 0},
+    {40, SDL_EVENT_KEY_DOWN, SDL_SCANCODE_Q, 0}, {41, SDL_EVENT_KEY_UP, SDL_SCANCODE_Q, 0},   // dash
 };
 constexpr struct { coe::input::Action action; uint64_t presses; } kScriptExpect[] = {
     {coe::input::Action::Jump, 2}, {coe::input::Action::MoveForward, 1},
     {coe::input::Action::Fire, 1}, {coe::input::Action::Weapon2, 1},
-    {coe::input::Action::Reload, 1},
+    {coe::input::Action::Reload, 1}, {coe::input::Action::Dash, 1},
 };
 
 void pushScripted(uint64_t frame, SDL_Window* window) {
@@ -214,7 +216,8 @@ void printTick(uint64_t tick, const coe::input::TickInput& t) {
 }
 
 int main(int argc, char** argv) {
-    bool headless = false, validation = true, inputDebug = false, inputScript = false, withCrate = false;
+    bool headless = false, validation = true, inputDebug = false, inputScript = false, withCrate = false,
+         reducedMotion = false;
     double seconds = 0.0;
     bool modelView = false;   // --model: step 11's single-model view instead of the level
     std::string model = kDefaultModel, cookedDir = COE_COOKED_DIR;
@@ -225,6 +228,7 @@ int main(int argc, char** argv) {
         else if (!std::strcmp(argv[i], "--input-debug")) inputDebug = true;
         else if (!std::strcmp(argv[i], "--input-script")) inputScript = true;
         else if (!std::strcmp(argv[i], "--crate")) withCrate = true;
+        else if (!std::strcmp(argv[i], "--reduced-motion")) reducedMotion = true;
         else if (!std::strcmp(argv[i], "--seconds") && i + 1 < argc) seconds = std::atof(argv[++i]);
         else if (!std::strcmp(argv[i], "--model")) {
             modelView = true;
@@ -308,6 +312,7 @@ int main(int argc, char** argv) {
         if (!modelView) {
             const float yaw = glm::radians(level.playerStart.yawDeg);
             player = std::make_unique<coe::game::PlayerController>(physics, level.playerStart.position, yaw);
+            player->setReducedMotion(reducedMotion);
             spawnFeet = player->feet();
             spawnForward = coe::game::PlayerController::forwardFor(yaw);
             std::printf("[player] spawned at (%.2f, %.2f, %.2f) facing %.0f deg, %s, eye %.2f m\n", double(spawnFeet.x),
@@ -400,12 +405,16 @@ int main(int argc, char** argv) {
             }
             std::printf("[input] mouse look total dx %.1f counts (scripted 40)\n", lookCounts);
             if (player) {
-                // Scripted W + Space must reach the controller: it walks forward and jumps.
+                // Scripted W + Space + Q must reach the controller: it walks forward, jumps
+                // and dashes (forward, no move key held by then: + 6 m).
                 const float forward = glm::dot(player->feet() - spawnFeet, spawnForward);
-                const bool moved = forward > 0.2f && player->jumps() >= 1 && apex > 0.5f;
+                const bool moved = forward > 0.2f + 5.0f && player->jumps() >= 1 && apex > 0.5f &&
+                                   player->dash().dashes() == 1;
                 inputOk = inputOk && moved;
-                std::printf("[player] script: walked %.2f m forward, %llu jump(s), apex %.2f m%s\n", double(forward),
-                            (unsigned long long)player->jumps(), double(apex), moved ? "" : " MISMATCH (need > 0.2 m, >= 1 jump, apex > 0.5 m)");
+                std::printf("[player] script: moved %.2f m forward, %llu jump(s), apex %.2f m, %llu dash(es)%s\n",
+                            double(forward), (unsigned long long)player->jumps(), double(apex),
+                            (unsigned long long)player->dash().dashes(),
+                            moved ? "" : " MISMATCH (need > 5.2 m, >= 1 jump, apex > 0.5 m, 1 dash)");
             }
         }
         SDL_SetWindowRelativeMouseMode(window, false);
@@ -424,11 +433,12 @@ int main(int argc, char** argv) {
                             double(crateCur.position.y), double(crateCur.position.z), crateCur.active ? "moving" : "asleep");
             const glm::vec3 f = player->feet();
             std::printf("[player] feet at (%.2f, %.2f, %.2f), %s, eye %.2f m, %llu jump(s), apex %.2f m, "
-                        "Breath %.0f/%.0f, %llu slide(s)\n", double(f.x),
+                        "Breath %.0f/%.0f, %llu slide(s), %llu dash(es), %llu landing(s)%s\n", double(f.x),
                         double(f.y), double(f.z), coe::physics::groundStateName(player->character().groundState()),
                         double(player->eyeHeight()), (unsigned long long)player->jumps(), double(apex),
                         double(player->breath().value()), double(player->breath().max()),
-                        (unsigned long long)player->slides());
+                        (unsigned long long)player->slides(), (unsigned long long)player->dash().dashes(),
+                        (unsigned long long)player->landings(), reducedMotion ? ", reduced motion" : "");
             player.reset();   // before the world it lives in
         }
         std::printf("frames: %llu in %.2fs (%.0f fps)\n", (unsigned long long)frames, elapsed,

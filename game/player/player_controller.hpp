@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-// First-person player controller (BUILD_PLAN steps 14-15): walk, jump, crouch, look,
-// sprint, Breath and slide.
+// First-person player controller (BUILD_PLAN steps 14-16): walk, jump, crouch, look,
+// sprint, Breath, slide, dash and camera feel.
 //
 // Reinterprets Magewar's cogito_player (CharacterBody3D, read-only reference) on our
 // physics::Character (Jolt CharacterVirtual capsule, feet at its position):
@@ -30,12 +30,24 @@
 //     upward, stands up and keeps the slide speed until landing. A slide doesn't drain.
 //   * setSpeedMultiplier(): equipment hook (Magewar Shoes speed_modifier, step 30) that
 //     scales walk/sprint/crouch speed but not the slide (Magewar leaves SLIDING_SPEED).
-// Dash and head bob (step 16) build on this.
+//   * Dash (step 16, game/player/dash.hpp): on the Dash press edge, along the wish
+//     direction (move keys) or the view's forward with none held; 2 charges, 25 Breath,
+//     one air dash per jump. While it runs it replaces the horizontal velocity (40 m/s,
+//     blended on the last partial tick) and the character sweep still collides, so walls
+//     stop it; vertical motion (gravity, jumps) is unchanged. It ends an active slide
+//     (slide timer cleared; Crouch held on the ground keeps the crouch as usual) and a
+//     slide can't start while dashing. The smoothed walk direction/speed keep easing
+//     underneath, so the dash ends into normal movement, not a carry-over.
+//   * Camera feel (step 16, game/player/camera_feel.hpp): head bob and landing dip
+//     offset camera()'s eye (x along the view's right, y up), interpolated like the eye;
+//     setReducedMotion() turns both off.
 #pragma once
 #include "engine/input/input.hpp"
 #include "engine/physics/character.hpp"
 #include "engine/physics/physics.hpp"
 #include "engine/render/camera.hpp"
+#include "game/player/camera_feel.hpp"
+#include "game/player/dash.hpp"
 #include "game/player/stats.hpp"
 
 #include <glm/glm.hpp>
@@ -66,7 +78,8 @@ public:
     // Spawns the character with its feet at `feet`, facing `yawRad` (pitch 0).
     PlayerController(physics::PhysicsWorld& world, const glm::vec3& feet, float yawRad,
                      const PlayerTuning& tuning = {}, const physics::CharacterSettings& body = {},
-                     const BreathTuning& breath = {});
+                     const BreathTuning& breath = {}, const DashTuning& dash = {},
+                     const CameraFeelTuning& feel = {});
 
     // Per render frame: relative mouse motion in counts (dx right, dy down).
     void addLook(float dxCounts, float dyCounts);
@@ -75,7 +88,8 @@ public:
     // Per fixed tick, before PhysicsWorld::step(): reads the latest look yaw.
     void tick(const input::TickInput& in, float dt);
 
-    // Camera at the eye, interpolated between the last two ticks by alpha in [0, 1).
+    // Camera at the eye (+ head bob / landing dip), interpolated between the last two
+    // ticks by alpha in [0, 1).
     Camera camera(float alpha) const;
 
     glm::vec3 feet() const { return feet_; }                 // after the last tick
@@ -97,6 +111,15 @@ public:
     float currentSpeed() const { return speed_; }          // Magewar current_speed (eased target)
     const Breath& breath() const { return breath_; }
     Breath& breath() { return breath_; }
+    const Dash& dash() const { return dash_; }
+    Dash& dash() { return dash_; }
+    bool dashing() const { return dash_.active(); }
+    bool invulnerable() const { return dash_.invulnerable(); }   // dash i-frames (step 24 reads it)
+    const CameraFeel& cameraFeel() const { return feel_; }
+    CameraFeel& cameraFeel() { return feel_; }
+    void setReducedMotion(bool on) { feel_.setReducedMotion(on); }
+    std::uint64_t landings() const { return landings_; }
+    float lastLandingSpeed() const { return lastLandingSpeed_; }
     void setSpeedMultiplier(float m) { speedMul_ = m; }
     float speedMultiplier() const { return speedMul_; }
     const physics::Character& character() const { return character_; }
@@ -124,6 +147,12 @@ private:
     glm::vec3 slideDir_{0.0f};      // world direction captured when the slide started
     bool jumpedFromSlide_ = false;  // slide-jumped: keep the slide speed until landing
     std::uint64_t slides_ = 0, slideJumps_ = 0;
+    Dash dash_;
+    CameraFeel feel_;
+    bool airborne_ = false;         // last tick ended off the ground (for landing detection)
+    float airVy_ = 0.0f;            // vertical velocity requested on the last airborne tick
+    std::uint64_t landings_ = 0;
+    float lastLandingSpeed_ = 0.0f;
 };
 
 } // namespace coe::game
