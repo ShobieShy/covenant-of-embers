@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 10,
+  "next_step": 11,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -14,9 +14,10 @@
     6,
     7,
     8,
-    9
+    9,
+    10
   ],
-  "last_commit": "127884f",
+  "last_commit": "0ec3890",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -89,6 +90,14 @@
       "summary": "Focus, accuracy and spread: Focus (action_secondary FOV 75 -> 55 in 0.2 s for staff and wand, retarget from the current FOV, look scale 0.6784, no mana), Spread (cone (4 + bloom) x (1 - accuracy/100) x stance: focus 0.35 / crouch 0.8 / moving 1.3 / air 1.8; bloom +1 deg per real cast, cap 4, clears in 0.5 s; seeded uniform cap sampling), Player perturbs aim() before Caster.tick and blooms only when it cast. 87 tests green (8 new): 55 deg at tick 12, 100 % = 0 spread, 50 % hip 2.000 / focused 0.700, bloom 30 ticks at 60 Hz (72/15 at 144/30), 30 refused no-mana presses = 0 bloom. Magewar ADS/accuracy checked: numbers match; its accuracy is display-only and it doesn't scale look or kill old FOV tweens (ours: cone, tan-ratio look, single retarget).",
       "plan_changes": "Step 9 marked done with Result/Fixed/Magewar check. Step notes added: 10 (shared focus/spread across slots, focus slide = Magewar ADS pose lerped by focus.amount(), swap retargets focus, no spread draw during swap), 29 (crosshair hidden while focused, radius from spread.cone_deg), 32 (hip FOV -> focus.hip_fov, focus toggle, aim sensitivity multiplier), 37 (focus-in sound_secondary), 40 (fixed spread seed). No earlier-step bugs found.",
       "commit": "127884f"
+    },
+    {
+      "time": "2026-10-23T16:18-05:00",
+      "step": 10,
+      "type": "build",
+      "summary": "Staff + wand slots and viewmodel: Loadout (staff/wand slots, one Caster each with its cooldown kept and counting while holstered, 0.4 s draw on slot_1/slot_2/mouse wheel in which presses don't cast or cue, one shared mana pool/focus/spread, own accuracy per slot), Viewmodel (code-built greybox shaft + unshaded element-coloured gem on layer 20 under the Head at Magewar's poses, focus slide to x = 0, draw drop, recoil; 75 deg SubViewport overlay in game), tracer drawn from the cast point while the ray stays at the eye, CameraFeel recoil + screen shake zeroed by reduced motion, wheel prev/next actions. 96 tests green (9 new): swap 24 ticks with no cast, Earthward 2nd cast at tick 33 despite a swap-cancel, 10 Fire staff + 20 Swift Wind = 100 mana, gem colour cos >= 0.97 (headless fallback: unshaded material + frustum + layer masks, since the dummy renderer can't read viewport images), reduced-motion recoil/shake test.",
+      "plan_changes": "Step 10 marked done with Result/headless render note/Fixed/Magewar check. Step notes added: 24 (equip through Player.equip, equipping into the slot in hand starts a draw), 29 (slot icons + draw progress, HUD above the viewmodel CanvasLayer), 32 (slot/wheel actions rebindable), 37 (swap/cast sounds, element-coloured cast flash), 41 (first real look at the viewmodel overlay, tune drop/recoil/shake). Magewar bugs not copied: swap-cancel cooldown reset, both wheel actions on wheel down. No earlier-step bugs found.",
+      "commit": "0ec3890"
     }
   ]
 }
