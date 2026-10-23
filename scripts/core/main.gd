@@ -32,9 +32,9 @@ func _process(delta: float) -> void:
 		print("[main] %d frames, %d physics ticks in %.2f s" % [_frames, _ticks, _elapsed])
 		var player := get_node_or_null("Player") as Player
 		if player:
-			print("[player] feet %s, Breath %.1f/%.0f, %d jump(s), %d slide(s)" % [
+			print("[player] feet %s, Breath %.1f/%.0f, %d jump(s), %d slide(s), %d dash(es)" % [
 				player.global_position, player.breath.value, player.breath.max_value(),
-				player.jumps, player.slides])
+				player.jumps, player.slides, player.dash.dashes])
 		get_tree().quit(0)
 
 func _physics_process(_delta: float) -> void:

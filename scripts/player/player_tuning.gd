@@ -1,6 +1,6 @@
 class_name PlayerTuning
 extends Resource
-## Movement/look numbers for scripts/player/player.gd (BUILD_PLAN steps 3-4).
+## Movement/look numbers for scripts/player/player.gd (BUILD_PLAN steps 3-5).
 ## Port of the archived C++ PlayerTuning + CharacterSettings (old step 14), which
 ## reinterpret Magewar's cogito_player scene overrides.
 
@@ -20,6 +20,27 @@ extends Resource
 @export var breath_regen_per_sec := 30.0  ## (Magewar 2/s)
 @export var breath_regen_delay := 1.0     ## s since the last drain/spend (Magewar 2 s)
 @export var breath_resume_at := 20.0      ## an emptied pool allows sprint again at 20
+@export_group("Dash")
+@export var dash_distance := 6.0          ## m (PLAN §30.8; Magewar has no dash: our own verb)
+@export var dash_duration := 0.15         ## s (speed 40 m/s)
+@export var dash_charges := 2
+@export var dash_breath_cost := 25.0
+@export var dash_invulnerability := 0.1   ## i-frames from the dash start, s
+@export var dash_recharge := 1.5          ## per charge, one at a time (build step 16 choice)
+@export var dash_air_dashes := 1          ## per airborne stretch
+@export_group("Camera feel")
+@export var bob_walk_intensity := 0.03    ## Cogito WIGGLE_ON_WALKING_INTENSITY (m)
+@export var bob_walk_rate := 12.0         ## WIGGLE_ON_WALKING_SPEED (rad/s)
+@export var bob_sprint_intensity := 0.05  ## WIGGLE_ON_SPRINTING_*
+@export var bob_sprint_rate := 16.0
+@export var bob_crouch_intensity := 0.08  ## WIGGLE_ON_CROUCHING_*
+@export var bob_crouch_rate := 8.0
+@export var land_min_speed := 2.0         ## Cogito landing_threshold / min_landing_velocity (m/s)
+@export var land_max_speed := 8.0         ## max_landing_velocity
+@export var land_max_dip := 0.12          ## m at land_max_speed
+@export var land_dip_down_time := 0.1     ## "landing" animation keys (s)
+@export var land_dip_total_time := 0.3
+@export var step_camera_lerp := 2.5       ## Cogito step_height_camera_lerp (1/s)
 @export_group("Jump")
 @export var jump_velocity := 4.5          ## JUMP_VELOCITY
 @export var crouch_jump_velocity := 3.0   ## CROUCH_JUMP_VELOCITY

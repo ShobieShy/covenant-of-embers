@@ -1,6 +1,6 @@
 class_name Player
 extends CharacterBody3D
-## First-person controller (BUILD_PLAN steps 3-4, port of the archived C++ PlayerController,
+## First-person controller (BUILD_PLAN steps 3-5, port of the archived C++ PlayerController,
 ## old steps 14-15), reinterpreting Magewar's cogito_player:
 ##  * Origin = feet. Capsule r 0.3, 1.7 m standing / 0.7 m crouched; eye (Head) 1.5 / 0.6 m,
 ##    eased at LERP 10/s.
@@ -24,6 +24,17 @@ extends CharacterBody3D
 ##    Slides don't drain Breath.
 ##  * speed_multiplier (Magewar Shoes speed_modifier, step 19) scales walk/sprint/crouch,
 ##    not the slide.
+##  * Dash (step 5, scripts/player/dash.gd; our own verb, Magewar has none): press edge,
+##    along the wish direction or the view's forward with no move key; 6 m in 0.15 s
+##    (40 m/s blended into the horizontal velocity for the covered part of each tick),
+##    25 Breath, 2 charges, one air dash per airborne stretch, 0.1 s i-frames
+##    (invulnerable()). A dash ends an active slide (crouch rules unchanged: Crouch held
+##    on the ground keeps the crouch) and no slide starts while dashing.
+##  * Camera feel (step 5, scripts/player/camera_feel.gd): Head = eased eye height + the
+##    feel offset (Cogito wiggle head bob, landing dip, step smoothing at Cogito's
+##    step_height_camera_lerp 2.5 after a climbed step);
+##    set_reduced_motion() turns bob and dip off. eye_position() stays the plain eye
+##    (casts aim from it), camera_position() is where the camera is.
 ## In game _physics_process feeds PlayerInput.from_input(); tests call tick() directly.
 
 const CHARACTER_LAYER := 2   # physics layer "character" (bit 2)
@@ -46,10 +57,17 @@ var slide_dir := Vector3.ZERO
 var slides := 0
 var slide_jumps := 0
 var speed_multiplier := 1.0     # set_speed_multiplier(): Shoes hook
+var dash: Dash                  # step 5
+var feel: CameraFeel            # step 5: bob / landing dip / step smoothing
+var landings := 0
+var last_landing_speed := 0.0   # m/s downward at the last touch-down
+var last_step_rise := 0.0       # m, the last climbed step
 
 var _crouched_jump := false
 var _jumped_from_slide := false
 var _rising := false
+var _airborne := false
+var _air_vy := 0.0
 var _shape: CapsuleShape3D
 var _collider: CollisionShape3D
 @onready var head: Node3D = $Head
@@ -59,6 +77,8 @@ func _init() -> void:
 	if tuning == null:
 		tuning = PlayerTuning.new()
 	breath = Breath.from_tuning(tuning)
+	dash = Dash.from_tuning(tuning)
+	feel = CameraFeel.from_tuning(tuning)
 
 func _ready() -> void:
 	if tuning == null:
@@ -76,6 +96,8 @@ func _ready() -> void:
 	_set_capsule(tuning.standing_height)
 	speed = tuning.walk_speed
 	breath = Breath.from_tuning(tuning)
+	dash = Dash.from_tuning(tuning)
+	feel = CameraFeel.from_tuning(tuning)
 	eye_height = tuning.standing_eye
 	head.position = Vector3(0.0, eye_height, 0.0)
 	set_look(rotation.y, 0.0)
@@ -126,8 +148,29 @@ static func right_for(yaw_rad: float) -> Vector3:
 func feet() -> Vector3:
 	return global_position
 
+## The plain eye (no camera feel): casts and AI line of sight use this.
 func eye_position() -> Vector3:
 	return global_position + Vector3(0.0, eye_height, 0.0)
+
+## Where the camera actually is (eye + bob/dip/step offset).
+func camera_position() -> Vector3:
+	return head.global_position
+
+## Camera feel offset of the Head from the plain eye (x right, y up).
+func camera_offset() -> Vector2:
+	return feel.offset()
+
+func dashing() -> bool:
+	return dash.active()
+
+## Dash i-frames (step 13's damage check reads this after the tick).
+func invulnerable() -> bool:
+	return dash.invulnerable()
+
+## Accessibility: no head bob, no landing dip (step smoothing stays).
+func set_reduced_motion(on: bool) -> void:
+	feel.set_reduced_motion(on)
+	head.position = Vector3(0.0, eye_height + feel.offset().y, 0.0)
 
 func horizontal_speed() -> float:
 	return Vector2(velocity.x, velocity.z).length()
@@ -152,9 +195,15 @@ func tick(input: PlayerInput, dt: float) -> void:
 	if _rising and velocity.y <= 0.0:
 		_rising = false
 	var grounded := is_on_floor() and not _rising
+	# Touch-down: the tick that landed still moved with its airborne velocity (impact speed).
+	var landed := grounded and _airborne
+	if landed:
+		landings += 1
+		last_landing_speed = maxf(0.0, -_air_vy)
 	if grounded:   # landed
 		_crouched_jump = false
 		_jumped_from_slide = false
+		dash.land()
 
 	var wish := forward_for(yaw) * input.move_forward() + right_for(yaw) * input.move_right()
 	var moving := wish.length_squared() > 1e-12
@@ -167,7 +216,11 @@ func tick(input: PlayerInput, dt: float) -> void:
 	var crouch_held := input.down(&"crouch")
 	if sliding() and (not grounded or not crouch_held or not input.down(&"sprint")):
 		slide_left = 0.0
-	if not sliding() and grounded and crouch_held and sprinting and moving:
+	# Dash (press edge): along the wish direction, or the view's forward with no move key.
+	# Ends an active slide; refusals (no charge, air dash used, Breath < 25) cost nothing.
+	if input.was_pressed(&"dash") and dash.try_start(wish if moving else forward_for(yaw), grounded, breath):
+		slide_left = 0.0
+	if not sliding() and not dash.active() and grounded and crouch_held and sprinting and moving:
 		slide_left = tuning.slide_duration
 		slide_dir = wish
 		slides += 1
@@ -215,9 +268,19 @@ func tick(input: PlayerInput, dt: float) -> void:
 			_crouched_jump = crouched
 		_rising = true
 		jumps += 1
+	# Dash: replaces the horizontal velocity for the part of this tick it covers.
+	var dash_cover := dash.advance(dt)
+	if dash_cover > 0.0:
+		var d := dash.direction * dash.speed()
+		v.x = d.x * dash_cover + v.x * (1.0 - dash_cover)
+		v.z = d.z * dash_cover + v.z * (1.0 - dash_cover)
 	velocity = v
-	# A climbed step already moved the body this tick (up, over the edge, onto the top).
-	if not (grounded and v.y <= 0.0 and _try_step_up(Vector3(v.x, 0.0, v.z) * dt)):
+	# A climbed step already moved the body this tick (up, over the edge, onto the top);
+	# the camera stays and eases up after it. (Stepping down needs no smoothing: the
+	# capsule's round bottom rolls off the edge and falls, <= 0.04 m/tick off 0.35 m.)
+	if grounded and v.y <= 0.0 and _try_step_up(Vector3(v.x, 0.0, v.z) * dt):
+		feel.add_step(last_step_rise)
+	else:
 		move_and_slide()
 	if sliding():   # SlidingTimer counts down
 		slide_left = maxf(0.0, slide_left - dt)
@@ -229,7 +292,15 @@ func tick(input: PlayerInput, dt: float) -> void:
 	eye_height = lerpf(eye_height, target, minf(1.0, dt * tuning.lerp_speed))
 	if absf(eye_height - target) < 1e-4:
 		eye_height = target
-	head.position.y = eye_height
+
+	# Landing detection for the next tick + camera feel (bob / dip / step).
+	_airborne = not grounded
+	if _airborne:
+		_air_vy = v.y
+	var gait := CameraFeel.Gait.CROUCH if crouched else (CameraFeel.Gait.SPRINT if sprinting else CameraFeel.Gait.WALK)
+	feel.tick(grounded and moving and not sliding() and dash_cover <= 0.0, gait, landed, last_landing_speed, dt)
+	var o := feel.offset()
+	head.position = Vector3(o.x, eye_height + o.y, 0.0)
 
 func _set_capsule(h: float) -> void:
 	_shape.height = h
@@ -259,7 +330,7 @@ func _can_stand() -> bool:
 ## a wall, probe up by step_height (+2 cm), forward until the capsule's bottom sphere is
 ## past the edge (contact travel + radius + 5 cm), then down; a walkable top at most
 ## step_height above the feet places the body on it (true = moved this tick).
-## (Head smoothing over the lift: step 5 camera feel.)
+## The lift goes to last_step_rise; tick() hands it to the camera feel (step 5).
 func _try_step_up(motion: Vector3) -> bool:
 	if motion.length_squared() < 1e-10:
 		return false
@@ -288,5 +359,6 @@ func _try_step_up(motion: Vector3) -> bool:
 	if rise <= 0.01 or rise > tuning.step_height + 0.005:
 		return false
 	global_transform = t
+	last_step_rise = rise
 	steps_climbed += 1
 	return true
