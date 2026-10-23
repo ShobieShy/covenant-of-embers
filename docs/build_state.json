@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 7,
+  "next_step": 8,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -11,9 +11,10 @@
     3,
     4,
     5,
-    6
+    6,
+    7
   ],
-  "last_commit": "09552e4",
+  "last_commit": "710a66a",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -62,6 +63,14 @@
       "summary": "Elements + damage formula ported: scripts/combat/element_table.gd (ElementTable Resource: Element enum in Magewar order, ARCANE = Magewar NONE; strong 1.5 / weak 0.5; Array[ElementDef] rows; effectiveness() with same/Arcane x1.0 in code and a cached 7x7 chart from the data; rebuild(); validate() with the C++ loader's checks; load_default()), scripts/combat/element_def.gd, resources/magic/elements.tres (Magewar names/colours, Fire>Earth>Air>Water>Fire, Light<->Dark), scripts/combat/damage.gd (Damage: wieldable_damage = base x rarity + sum part bonuses; resolve_hit x effectiveness x (1 - resist capped 0.6) x weak point 2; Target/Result with strong()/weak()). run_tests.sh green: 61 unit tests (11 new test_damage: 49/49 = Magewar get_effectiveness, 6 strong / 4 weak, names/colours = Magewar + PLAN hex, .tres = data/magic/elements.toml, 14 bad tables rejected, patch rebuild, rarity x1.0-x3.0 + part bonuses, resist 0.8/0.9 -> 0.6, weak point x2, Fire vs Earth 15, worked example 25.2000 and 7.2), 2 s smoke 120 ticks, asset lint OK.",
       "plan_changes": "Magewar check: chart, multipliers, enum order, names, colours and get_final_damage match. Mismatches: Magewar get_elemental_resistance (clamp 0.9) is never called, so its resistances do nothing -> ours apply (steps 13, 19; cap 0.6 kept); Magewar enemies have no resistances or weak points (our additions, step 11); Light heal / Dark corrupt on hit reinterpreted as Redemption (outside slice). Refined steps 7 (Element enum, Damage.wieldable_damage, tracer colour, final damage 10/17.5/7/7.5 test, temporary rarity lookup), 11 (Damage.Target per enemy, Super Effective text, LevelToml inline tables for training_dummies.toml, Swift Wind vs Water dummy 8.4375), 13 (player hits through resolve_hit, 0.3 Earth resist test), 15 (Rarity.multiplier replaces step 7 lookup), 19 (Magewar-style resist sum stored uncapped, capped in Damage), 21 (ElementTable patches + rebuild/validate). data/magic/elements.toml kept as cross-check source. No bugs found in steps 1-5.",
       "commit": "09552e4"
+    },
+    {
+      "time": "2026-10-23T13:13-05:00",
+      "step": 7,
+      "type": "build",
+      "summary": "Wieldable data + Arcane bolt casting ported: scripts/magic/wieldable_def.gd (WieldableDef: Type STAFF/WAND, rarity id, ElementTable.Element, damage/mana/cooldown/speed/range, from_toml, validate), wieldable_part.gd (Magewar part fields), wieldable_instance.gd (Magewar final getters: damage = base x rarity + part bonuses, cooldown x Exterior x Charm >= 0.1, accuracy 50 + Head/Handle/Charm, Head element override; temp basic 1.0 / uncommon 1.25), resources/wieldables/*.tres for the 4 Magewar bases, caster.gd (semi-auto on press, cooldown counted down before the press check, hold_to_repeat off, mana_spender hook with Magewar order), spell_bolts.gd (per-tick intersect_ray from the eye excluding self, exact hit distance/time, fizzle at range, damage_target -> Damage.resolve_hit, take_hit + bolt_hit, element-coloured interpolated tracers), Player.aim()/look_direction() and cast in Player.tick, Bolts node in main.tscn, main equips the Apprentice Fire Staff and prints [cast]. run_tests.sh green: 70 unit tests (9 new test_casting: bases = Magewar .tres = TOML = plan, final damage 10/17.5/7/7.5, part getters, 11 bad defs, 20 m wall at 20.000 m ticks 40/55/30/22 for all 4 bases, 500 m/s vs 5 cm wall at 37.300 m, fizzle after 53 ticks, Air tracer colour/positions, Swift Wind spam 60/144/30 Hz never < 0.18 s, semi-auto, mana refusal no cooldown, 168 casts 0 self hits / other player hit, aim = eye not camera, Fire vs Earth target 15), 2 s smoke 120 ticks, asset lint OK.",
+      "plan_changes": "Magewar check: base numbers, rarity multipliers, final damage/fire rate/accuracy/element getters, semi-auto press, mana-before-cooldown order match. Mismatches kept: Magewar fires a gravity RigidBody sphere from the CastPoint with 8 s lifespan and never uses wieldable_range -> ours is an eye ray fizzling at range (tracer from cast point in step 10); Magewar's earthward_staff and swift_wind_wand have no wieldable_scene (not holdable there) -> all 4 castable here; Magewar hits apply effectiveness only -> ours resolve_hit. Found: Jolt ray queries see a body teleported after add_child only after the next physics step (noted for steps 13/14; tests place bodies before add). Refined steps 8 (mana_spender hook), 9 (accuracy getter exists, spread on aim), 10 (Caster per slot, tracer start at cast point, ray stays at eye), 11 (damage_target/take_hit contract, weak-point head needs collide_with_areas or shape id), 17 (getters exist; only assembly rules), 18 renamed Drop pools (bases done in step 7). No bugs found in steps 1-6.",
+      "commit": "710a66a"
     }
   ]
 }
