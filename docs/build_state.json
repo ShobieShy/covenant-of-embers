@@ -2,7 +2,7 @@
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 22,
+  "next_step": 23,
   "total_steps": 56,
   "steps_done": [
     1,
@@ -25,9 +25,10 @@
     18,
     19,
     20,
-    21
+    21,
+    22
   ],
-  "last_commit": "c811ed8",
+  "last_commit": "9cdb666",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -215,6 +216,16 @@
       "magewar": "Followed: one staff + one wand equip slot, unequip-then-equip swap blocking attack input, staff/wand default_position viewmodel offsets, bolts tied to a CastPoint, element colours on the weapon. Mismatches (fixed by design, logged): _fire_timer resets when a wieldable is re-instanced on equip (swap-cancel skips cooldown) -> per-slot cooldowns; staff models point +Z and wands -Y -> all poses -Z; camera stayed zoomed when a swap interrupted ADS -> Focus gated on Loadout::ready(); animated ADS pose -> slide toward centre by Focus::amount(); viewmodel-shader FOV -> separate 75 deg pass with depth clear; Magewar spawns the bolt at the CastPoint -> we keep the eye ray for hits and only start the tracer at the CastPoint.",
       "plan_changes": "Step 21 text = shipped design (adds window swapchain capture, sRGB-aware head check, tracer visualOffset). Weapon3/4 unbound in covenant (two slots); input-script Weapon2 press moved to frame 52. Notes added: step 22 (casts come from Loadout::tick, impacts stay on the eye ray), step 44 (hold-to-cast toggle -> Loadout::setHoldToRepeat, Weapon3/4 for quick-slots or drop, viewmodel FOV option, Aim gated by ready()). README controls/flags updated. test_gltf_loader extended but not ported to doctest (its --cooked fixture mode needs a runner option; port with its next real change).",
       "bug_fixes": "Viewmodel shaft side triangles were wound inward (back-face culled, inner wall visible) - found by test_viewmodel's winding check and fixed. smoke_headless_model centre-pixel threshold 60 -> 24 now that the blaster is textured (darker colormap; image verified). Caster no longer shared across weapons (step 17's shared-cooldown note resolved: per-slot casters). KHR_texture_transform rotation convention checked against the spec example (lower-left quadrant) and documented."
+    },
+    {
+      "time": "2026-10-23T05:30-05:00",
+      "step": 22,
+      "type": "build",
+      "commit": "9cdb666",
+      "summary": "Enemy entity, health and damage numbers: game/enemies/enemy.* (EnemyDef/EnemyTable from data/enemies/training_dummies.toml, strict TOML; EnemySystem spawns kinematic Enemy-layer body + weak-point head boxes, applyHit by body -> resolveHit with DamageTarget{affinity, resist, weakPoint}, health clamped at 0, death removes bodies and queues EnemyDeath, hit flash); Earth + Water training dummies (60 HP, x2 head) placed by new [[enemy]] level entries; game/ui/damage_numbers.* (element-coloured labels, crit/strong/weak scale, 0.8 m rise, fade 0.6-1 s, cap 64, projection, pixel check); engine/ui/imgui_layer.* (coe_ui, Dear ImGui v1.92.9b FetchContent URL_HASH SYSTEM, overlay pass after the scene); physics Enemy layer, kinematic boxes, moveKinematic, castSphere; bolts sweep a 0.1 m sphere against enemies (grazed hits). covenant --enemies, [enemy] lines, headless dummy check: 4 Fire hits of 15.0 (10 x1.5) 60->0 killed, orange '15' label (145 px in Fire colour). New smoke_headless_missing_enemies. test_enemy 7 cases/129, test_damage_numbers 4/38. Debug 34/34 incl. 3 window tests, asan 31/31 -LE window, warning-free.",
+      "magewar": "Reviewed Magewar enemy damage (take_elemental_damage, get_effectiveness, CogitoHealthAttribute, knockback). Followed: elemental effectiveness on hit, 0.1 m bolt sphere (SphereShape3D) for hits. Mismatches (noted): Magewar has no damage numbers, crits or weak points (plan design); take_elemental_damage applies effectiveness only, no resistance (ours: per-element resist, 60% cap kept vs Magewar 90%); knockback on hits > 10 damage for 0.5 s not ported -> scheduled step 23; XP/gold/loot on death deferred to step 25 (takeDeaths); Magewar health is a CogitoHealthAttribute, ours a plain field; Magewar defines no dummy HP, 60 HP is plan design.",
+      "plan_changes": "Step 22 text = shipped design. Notes added: step 23 (Gnawer = EnemyDef row via EnemySystem, moveKinematic, Magewar knockback >10 dmg 0.5 s, dead enemies stop thinking), step 24 (Heap seam = EnemyDef::weakPoint box, EnemyHit::weakPoint), step 25 ([[enemy]] already places fixed enemies; [[spawn]] for waves; kill events from EnemySystem::takeDeaths, xp/tally keys on EnemyDef, alive() for wave cleared), step 41 (hit markers from EnemyHit incl. weak point/killed, HUD text via ImGuiLayer until stb_truetype, strong/weak text under the number). ADR-0001 Dear ImGui row filled; README status/layout/flags updated.",
+      "bug_fixes": "castSphere fallback normal was NaN for a zero-length sweep with no penetration axis (-normalize(0)); now falls back to +Y."
     }
   ]
 }
