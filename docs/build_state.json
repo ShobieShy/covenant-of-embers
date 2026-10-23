@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 9,
+  "next_step": 10,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -13,9 +13,10 @@
     5,
     6,
     7,
-    8
+    8,
+    9
   ],
-  "last_commit": "146ba03",
+  "last_commit": "127884f",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -80,6 +81,14 @@
       "summary": "Mana pool ported: scripts/player/mana.gd (Mana RefCounted = Magewar ManaAttribute: 100 max, regen 3/s after 1.5 s since the last successful spend, sub-tick exact at any tick rate, refusals keep the delay and emit refused(cost), regen/max bonus hooks with Magewar equip semantics, refill, restore, auto_regenerate), PlayerTuning Mana group, Player.mana bound as caster.mana_spender and ticked before the cast, Caster.out_of_mana -> Player.hint 'Not enough mana!' (once per refused press), [cast] line shows mana. No ammo/reload. run_tests.sh green: 79 unit tests (9 new test_mana): Fire staff 20 casts to 0, 21st refused at tick 480 with no cooldown, casts again at tick 646 (144 Hz: 1102 -> 1558); empty -> full 1045/2090/5016 ticks = 34.8333 s at 30/60/144 Hz; bases until empty Fire 20/0, Swift Wind 40/0, Earthward 16/4, Arcane 33/1; regen 53.000 after 1.5+1 s at 30/60/144 Hz; bonus/max/refill/restore hooks; Player cue and idle regen. Fixed: test runner silently skipped unparsable test files (now FAIL) and run_tests.sh now fails on logged SCRIPT ERROR/ERROR lines. Magewar check: all mana rules match; frame-based regen and += bonus bookkeeping reinterpreted (tick-based, totals).",
       "plan_changes": "Step 8 marked done with Result/Fixed/Magewar check. Step 9: bloom only on real casts, focus costs no mana. Step 10: both slot Casters share player.mana via set_mana, swap no cue, shared-pool test. Step 13: respawn refills mana/Breath. Step 19: mana_bonus/mana_regen_bonus as summed totals via set_max_bonus/set_regen_bonus, Mana Potion +25 via restore, Grimoire done-check numbers. Step 23: mana pickups via restore. Step 27: level-up +5 mana (level part) + refill, test 105/105. Step 29: mana bar Color(0.2,0.4,1.0) from fraction(), hint label, refusal flash. Step 37: cast-fail sound on out_of_mana. Step 38: save mana/Breath values, rebuild bonuses on load.",
       "commit": "146ba03"
+    },
+    {
+      "time": "2026-10-23T15:16-05:00",
+      "step": 9,
+      "type": "build",
+      "summary": "Focus, accuracy and spread: Focus (action_secondary FOV 75 -> 55 in 0.2 s for staff and wand, retarget from the current FOV, look scale 0.6784, no mana), Spread (cone (4 + bloom) x (1 - accuracy/100) x stance: focus 0.35 / crouch 0.8 / moving 1.3 / air 1.8; bloom +1 deg per real cast, cap 4, clears in 0.5 s; seeded uniform cap sampling), Player perturbs aim() before Caster.tick and blooms only when it cast. 87 tests green (8 new): 55 deg at tick 12, 100 % = 0 spread, 50 % hip 2.000 / focused 0.700, bloom 30 ticks at 60 Hz (72/15 at 144/30), 30 refused no-mana presses = 0 bloom. Magewar ADS/accuracy checked: numbers match; its accuracy is display-only and it doesn't scale look or kill old FOV tweens (ours: cone, tan-ratio look, single retarget).",
+      "plan_changes": "Step 9 marked done with Result/Fixed/Magewar check. Step notes added: 10 (shared focus/spread across slots, focus slide = Magewar ADS pose lerped by focus.amount(), swap retargets focus, no spread draw during swap), 29 (crosshair hidden while focused, radius from spread.cone_deg), 32 (hip FOV -> focus.hip_fov, focus toggle, aim sensitivity multiplier), 37 (focus-in sound_secondary), 40 (fixed spread seed). No earlier-step bugs found.",
+      "commit": "127884f"
     }
   ]
 }
