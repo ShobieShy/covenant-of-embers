@@ -2,14 +2,14 @@
 
 ## Standing rules (every hourly run)
 1. Building the next step is the priority.
-2. Review the Magewar references in the project and in `~/game/magewar` (read-only), and make sure the build follows them. Reinterpret, don't copy.
+2. Review the Magewar references in the project and in `~/game/magewar` (read-only), and make sure the build follows them. The weapon/loot/crafting system follows Magewar's design directly (ShobieShy's own IP, approved 2026-10-22: staffs, wands, parts, rarities, equipment, crafting); other systems are reinterpreted.
 3. Look for plan improvements: refine future steps, or go back and fix bugs from earlier steps.
 4. Log any such changes in the history in `docs/build_state.json`.
 
 Design source of truth: [PLAN.md](PLAN.md) (§26 milestones, §30 loot-shooter spec). Progress: [build_state.json](build_state.json) (`next_step`).
 Each step is sized at ~1 hour. Every step must keep `cmake --build --preset debug` warning-free and `ctest --test-dir build/debug` green (from step 8 on, also `ctest --test-dir build/asan -LE window`), and ends with a local commit (never push). Register every test with `coe_add_test()` (cmake/CoeTesting.cmake); configure fails on a plain `add_test()`. Third-party libraries come in via CMake FetchContent, pinned + `SYSTEM` (no system installs; library list in [ADR-0001](adr/0001-language-and-libraries.md)); every new asset goes into ASSETS.toml + CREDITS.md.
 
-Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, fights Gnawers and Heaps with procedurally rolled Sidearms/Repeaters, picks up loot, levels up, clears a Breach room slice with a mini-boss, hears Kenney audio, and saves/loads.
+Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, fights Gnawers and Heaps with Magewar-style staffs and wands, picks up rarity-coloured parts and equipment, crafts at a Magic Assembly Station, levels up, clears a Breach room slice with a mini-boss, hears Kenney audio, and saves/loads.
 
 ---
 
@@ -55,183 +55,206 @@ Goal: a **minimal playable vertical slice**. One player walks a greybox Midden, 
 - Files: game/player/dash.*, game/player/camera_feel.*.
 - Done: tests for charges/recharge and distance ±0.3 m.
 
-**17. Weapon data model + Sidearm hitscan**
-- Does: WeaponDef/WeaponInstance (family, fire mode, mag, rate), hitscan raycast via Jolt (`physics::PhysicsWorld::castRay` from step 13; add a body/layer filter so shots skip the shooter's own character: step 14's `physics::Character::innerBody()` is the kinematic body on `Layers::Character` that rays hit), muzzle flash debug line.
-Parse families.toml the way step 12's level.cpp does (toml++ with `TOML_EXCEPTIONS 0` inside coe_game, unknown keys and out-of-range values rejected with file:line); with a second parser, move the shared helpers (`vec3`/colour/number readers, unknown-key check, error formatting) from game/world/level.cpp into game/data/toml_read.*.
-- Files: game/weapons/{weapon,firing}.*, data/weapons/families.toml.
-- Done: test fires at a target box and registers a hit at the right distance; fire rate respected.
+**17. Spell data model: staffs, wands + Arcane bolt**
+- Does: Magewar weapon model (PLAN §30.1): `WieldableDef` {type Staff|Wand, base_rarity, primary element, base damage, mana cost, cooldown, projectile speed} and `WieldableInstance` (def + attached parts, empty until step 28). Casting = a fast spell projectile (Jolt ray swept per tick at projectile speed, so shots still hit at the right distance; body filter skips the caster's step-14 `physics::Character::innerBody()` on `Layers::Character`), element-coloured debug line. Data: data/magic/wieldables.toml with Magewar's four bases (Apprentice Fire Staff 10 dmg/5 mana/0.40 s, Earthward Battlestaff 14/6/0.55, Novice Arcane Wand 7/3/0.25, Swift Wind Wand 6/2.5/0.18). Parse like step 12's level.cpp (toml++ `TOML_EXCEPTIONS 0`, unknown keys/out-of-range values rejected with file:line); move shared helpers from game/world/level.cpp into game/data/toml_read.*.
+- Files: game/magic/{wieldable,casting,projectile}.*, game/data/toml_read.*, data/magic/wieldables.toml, tests/test_casting.cpp.
+- Done: test casts at a target box and registers a hit at the right distance and travel time (±1 tick); cooldown respected (Swift Wind Wand: max 1 cast per 0.18 s); the caster's own capsule is never hit.
 
-**18. Ammo, magazine and reload**
-- Does: magazine + reserve, tactical vs empty reload times, reload cancel on sprint/swap.
-- Files: game/weapons/ammo.*.
-- Done: unit tests for tactical/empty timings and cancel behaviour.
+**18. Mana pool (replaces ammo/reload)**
+- Does: Magewar mana_attribute: mana 100 base, each cast spends the wieldable's mana cost, no cast when mana < cost, regen 3/s after a 1.5 s delay since the last cast, `equipment_regen_bonus` hook (filled by step 30 gear). No magazines or reloads; Reload action is freed for later (step 36 uses Interact, not Reload).
+- Files: game/player/mana.*, tests/test_mana.cpp.
+- Done: tests: 20 casts of a 5-mana staff empty 100 mana and the 21st fails; regen starts exactly 1.5 s after the last cast and refills at 3/s; regen bonus adds.
 
-**19. ADS, spread and bloom**
-- Does: ADS FOV tween, spread cone with stance multipliers and per-shot bloom/decay (§30.1). FOV is vertical (`Camera::fovYDeg`): hip 75° (`Camera::kDefaultFovYDeg`, Magewar/Godot default) → per-family ADS FOV in WeaponDef (Magewar: staff 55°, Cogito pistols 65°) tweened over 0.2 s like Magewar's wieldable_staff; scale mouse look by tan(ads/2)/tan(hip/2) while aimed; the first-person viewmodel keeps its own fixed 75° FOV (Magewar's `viewmodel_fov` shader global) so zooming doesn't distort the gun.
-- Files: game/weapons/accuracy.*, engine/render/camera.*.
-- Done: tests: ADS spread = 0.35× hip; bloom decays to base within configured time.
+**19. Focus (ADS), accuracy and spread**
+- Does: Aim = focus: FOV tween hip 75° → staff 55° / wand 65° over 0.2 s (Magewar wieldable_staff), mouse look scaled by tan(ads/2)/tan(hip/2); viewmodel keeps a fixed 75°. Magewar accuracy 0–100 % (base 50 + head/handle/charm bonuses, clamped) maps to a spread cone `s = s_max × (1 − acc/100) × stance` (focus 0.35, crouch 0.8, moving 1.3, airborne 1.8) with small per-cast bloom that decays.
+- Files: game/magic/accuracy.*, engine/render/camera.*.
+- Done: tests: 100 % accuracy ⇒ zero spread; focused spread = 0.35× hip; bloom decays to base within its configured time; FOV reaches 55° in 0.2 s.
 
-**20. Damage formula + test framework**
-- Does: doctest via FetchContent (one `coe_tests` doctest runner via `coe_add_test`; port tests/test_fixed_timestep.cpp from plain CHECKs); implement §30.1 formula (Base×1.13^(ilvl−1), Grade, parts, essence match, resist cap 60 %, crit, falloff).
-- Files: game/combat/damage.*, tests/test_damage.cpp.
-- Done: ≥8 doctest cases incl. resist cap and weak-point crit pass.
+**20. Damage formula + elements + doctest**
+- Does: doctest via FetchContent (one `coe_tests` runner via `coe_add_test`; port test_fixed_timestep.cpp). Magewar formula: `dmg = base × RarityMult(base_rarity) + Σ part damage_bonus`, then `× ElementEffectiveness × (1 − resist, cap 60 %) × crit (weak point ×2)`. Elements Fire/Water/Earth/Air/Light/Dark + Arcane (none): cycle Fire > Earth > Air > Water > Fire (1.5 strong, 0.5 weak), Light ⇄ Dark 1.5 both ways, same/Arcane 1.0 (magic_element.gd). Element colours in data/magic/elements.toml (§30.4).
+- Files: game/combat/{damage,element}.*, data/magic/elements.toml, tests/test_damage.cpp.
+- Done: ≥10 doctest cases: full 7×7 effectiveness table, rarity multipliers ×1.0…×3.0, part bonus sum, resist cap, weak-point crit.
 
-**21. Repeater, weapon slots and viewmodel**
-- Does: auto-fire Repeater, 2 unlocked slots with 1/2 swap and equip time, viewmodel draws the Kenney blaster mesh (loaded via step 11's manifest + `loadGltfMesh`). Reinterpret Magewar's Cogito wieldable scenes: the blaster model is rotated 180° about Y (glTF +Z barrel → camera −Z) and scaled 0.8 under the camera, drawn after the world with its own near-range projection/depth so it never clips walls. Add colormap texturing here: stb_image (FetchContent, URL_HASH) decodes the GLB's embedded PNG, one sampled image + sampler per material (descriptor set), UVs already in `assets::Vertex`, honour `KHR_texture_transform` (Kenney's colormap uses it) by baking offset/scale into the UVs at load time.
-Renderer notes from step 12: per-frame data (viewProj, camera position, light, ambient, fog) lives in the set-0 `Frame` UBO (shaders/frame.glsl) and push constants are `{model, tint}` = 80 of 128 B, so the viewmodel's own projection is a second `Frame` UBO slot (or a `viewProj` override in the remaining 48 B) and the draws after the world clear depth first. Textured materials make tint a material parameter; the 2× MSAA targets already apply to the viewmodel.
-- Files: game/weapons/loadout.*, game/render/viewmodel.*.
-- Done: swap test respects equip time; viewmodel visible in window run.
+**21. Staff + wand slots and viewmodel**
+- Does: loadout = 1 Staff slot (main hand) + 1 Wand slot (Magewar: wand is an equipable), 1/2 swap with 0.4 s equip time; viewmodel draws a staff/wand mesh (greybox: cylinder shaft + element-tinted head; Kenney blaster kept as fallback until art), rotated/scaled under the camera, drawn after the world with its own projection and depth clear. Add colormap texturing (stb_image FetchContent + URL_HASH, one sampler per material, bake `KHR_texture_transform` into UVs). Push constants are `{model, tint}` (80/128 B); viewmodel uses a second `Frame` UBO slot.
+- Files: game/magic/loadout.*, game/render/viewmodel.*.
+- Done: swap test respects equip time; casting uses the active slot's stats; viewmodel visible in window run, head tinted by element colour.
 
 **22. Enemy entity, health and damage numbers**
-- Does: enemy component (health, armour type, weak-point hitbox), death, floating damage numbers (debug text via ImGui, FetchContent).
+- Does: enemy component (health, element affinity for step 20's table, weak-point hitbox), death, floating damage numbers coloured by element (debug text via ImGui, FetchContent).
 - Files: game/enemies/enemy.*, game/ui/damage_numbers.*, engine/ui/imgui_layer.*.
-- Done: shooting a dummy reduces health by formula value and shows a number; dies at 0.
+- Done: casting at a dummy reduces health by formula value and shows a number; Fire vs an Earth dummy does ×1.5; dies at 0.
 
 **23. Gnawer AI (rusher)**
-- Does: idle → detect (15 m) → aggro (10 m) → chase → melee with cooldown (§7); straight-line steering on the greybox.
+- Does: idle → detect (15 m) → aggro (10 m) → chase → melee with cooldown (§7); straight-line steering on the greybox. (Magewar's mutant rat is the reference.)
 - Files: game/ai/{state_machine,gnawer}.*, data/enemies/gnawer.toml.
 - Done: tests for state transitions at ranges; in window, Gnawer chases and damages the player.
 
 **24. Heap AI (tank) + player health/shield**
-- Does: slow tank with glowing weak-point seam (×2), player shield with delayed regen then health, death/respawn at start.
+- Does: slow tank (Magewar garbage golem reference, Earth affinity) with glowing weak-point seam (×2), player shield with delayed regen then health, death/respawn at start.
 - Files: game/enemies/heap.*, game/player/health.*.
 - Done: tests: weak-point hit doubles damage; shield regen starts after delay.
 
 **25. Enemy spawner + kill events**
-- Does: spawn points in level data (`[[spawn]]` tables in data/levels/midden_greybox.toml: `kind`, `position`, `yaw_deg`, parsed and validated by game/world/level.cpp alongside `[[box]]`; a spawn must stand on a ground/platform/ramp box via `Level::boxAtSurface`, like step 14's `[player_start]` already does), wave of Gnawers/Heaps, kill event carrying XP and Tally values. **M1 gunplay complete.**
+- Does: spawn points in level data (`[[spawn]]` tables in data/levels/midden_greybox.toml: `kind`, `position`, `yaw_deg`, validated by level.cpp alongside `[[box]]`; a spawn must stand on a box via `Level::boxAtSurface`, like step 14's `[player_start]`), wave of Gnawers/Heaps, kill event carrying XP and Tally values. **M1 spellcasting complete.**
 - Files: game/world/spawner.*, game/core/events.*.
 - Done: clearing the wave emits N kill events; ctest passes.
 
-## Vertical slice – loot, progression, UI, dungeon, audio, saves
+## Vertical slice – loot, crafting, progression, UI, dungeon, audio, saves
 
-**26. Item model: parts and Grades**
-- Does: Frame/Barrel/Chamber/Grip/Sight part data, 5 Grades with weights 52/26/13/6/3 and multipliers, deterministic generation from seed (§30.2). Magewar reference: staff parts + rarity multiplier → reinterpreted.
-- Files: game/loot/{item,parts,grades,generator}.*, data/loot/parts.toml, tests/test_loot.cpp.
-- Done: same seed ⇒ identical item; 100k rolls within ±1 % of weights; affix exclusivity test.
+**26. Rarity tiers + part model**
+- Does: Magewar's six rarities as data (data/loot/rarities.toml): Basic #B3B3B3 ×1.0 w50, Uncommon #33CC33 ×1.25 w25, Rare #3366FF ×1.5 w15, Mythic #991AE6 ×2.0 w7, Primordial #FF9900 ×2.75 w2, Unique #FFD900 ×3.0 w1; `roll_rarity(luck)` (luck −5/pt on Basic/Uncommon, min 1; +2/pt on Rare+). Part model with Magewar's five part types: Head (staff + wand, gem slots, element), Exterior (fire-rate modifier), Interior (base damage), Handle (accuracy/handling; optional on wands), Charm (staff only, optional extra augment). Deterministic generation from seed (§30.2).
+- Files: game/loot/{rarity,part,generator}.*, data/loot/rarities.toml, tests/test_loot.cpp.
+- Done: same seed ⇒ identical part; 100k rolls within ±1 % of weights 50/25/15/7/2/1; luck 3 shifts Rare+ share up; every rarity name/colour/multiplier matches the table.
 
-**27. Patterns + part constraints**
-- Does: data-driven Patterns (ordered part categories with pick min/max, allow_repeat, weighted, optional), inheritance with replace/override/append merges flattened at load, `requires`/`forbids` by part id or tag, rolled in Pattern order (PLAN §31.1–31.2).
-- Files: game/loot/{pattern,constraints}.*, data/loot/patterns/*.toml, tests/test_patterns.cpp, tools/asset_cooker/ (Pattern check pass, sharing the loot loader as a library).
-- Done: tests: merge modes produce expected flattened lists; a forbidden combo never rolls in 10k rolls; cooker check reports reachable-build count and fails on a deliberate dead-end Pattern.
+**27. Part stat rolls, gems and names**
+- Does: Magewar loot_generator ranges × rarity multiplier: Head dmg 1–5, acc 0–10, gem slots 1 (+1 at Rare+, +1 at Primordial+, max 3); Exterior fire-rate ×1.0 (×0.5–1.0 at Rare+); Interior dmg 2–8; Handle acc 5–20, handling 2–10; Charm dmg 0–3, acc 0–8, fire-rate modifier. Element rolled per Head/Interior/Charm. Generated names ("Rare Fire Crystal Head", material ladder per rarity for Exteriors/Handles) via data/loot/part_names.toml. Patterns (§31.1) become per-part-type stat tables with `requires`/`forbids` tags (e.g. Charm `requires tag:staff`).
+- Files: game/loot/{part_rolls,part_names,constraints}.*, data/loot/parts.toml, data/loot/part_names.toml, tests/test_parts.cpp.
+- Done: 10k rolls per type stay within range × multiplier; gem-slot counts match rarity exactly; a Charm never rolls for a wand; names include rarity + element.
 
-**28. Weapon stats from parts**
-- Does: compute final WeaponInstance stats from rolled parts + affixes; generated names.
-- Files: game/loot/assemble.*, game/weapons/weapon.*.
-- Done: tests: higher Grade ⇒ higher damage; name built from strongest bonus + Workshop.
+**28. Staff/wand assembly rules + final stats**
+- Does: assemble a wieldable from parts (magic_assembly_station.gd rules): Staff needs Head + Exterior + Interior + Handle (+ optional Charm) = 4–5 parts; Wand needs Head + Exterior (+ optional Handle) = 2–3. Assembled rarity = floor(mean part rarity). Final stats: damage per step 20; cooldown = base × Exterior × Charm modifiers, min 0.1 s; accuracy = 50 + Head + Handle + Charm, clamp 0–100; element = Head element if set, else base element. Stats summary string `[Rare] Staff - Fire / Damage / Fire Rate / Accuracy / Mana Cost`.
+- Files: game/loot/assemble.*, game/magic/wieldable.*, tests/test_assemble.cpp.
+- Done: tests: missing required part ⇒ refused with reason; a Basic+Rare+Rare+Mythic staff is Rare; cooldown never below 0.1 s; Head element overrides base; summary matches.
 
-**29. Ember Mark item codes**
-- Does: versioned bit-packed item code `EM1-…` (Crockford base32, CRC-16) from an append-only Part Index Table; decode with host-side validation (PLAN §31.5).
+**29. Base wieldables + drop pools**
+- Does: base staffs/wands carry their own rarity (Bible: "base staff/wand have rarities") and are the spell; parts modify it. Data-driven pools of bases and parts per enemy/level (Patterns §31.1 reused as pools with weights); constraint validation in the cooker (no dead-end pool).
+- Files: game/loot/pools.*, data/loot/pools/*.toml, tools/asset_cooker/ (pool check pass).
+- Done: tests: every pool resolves; a deliberately empty pool fails the cooker check; base rarity rolls follow step 26 weights.
+
+**30. Equipment items**
+- Does: Magewar equipables: Hat (mana, spell dmg, mana regen), Clothes/Robes (health, mana, Rare+ elemental resist 5–15 %), Belt (health, stamina/Breath), Shoes (speed ×1.02–1.10, Breath), Grimoire (spell dmg 2–8, mana 10–25, regen 0.5–2), all × rarity multiplier; Potion quick-slot (health/mana potions, not rolled). Equipping applies bonuses to health/mana/Breath/regen/speed (step 18 regen hook).
+- Files: game/loot/equipment.*, game/player/stats.*, data/loot/equipment.toml, tests/test_equipment.cpp.
+- Done: tests: rolls within range × multiplier per slot; equipping a Grimoire raises spell damage and mana regen; resist capped at 60 %.
+
+**31. Ember Mark item codes**
+- Does: versioned bit-packed code `EM1-…` (Crockford base32, CRC-16) from an append-only Part Index Table, covering parts, assembled staffs/wands (base + up to 5 parts + gems) and equipment; host-side validation (PLAN §31.5).
 - Files: game/loot/ember_mark.*, data/loot/part_index_v1.toml, tests/test_ember_mark.cpp.
-- Done: 100k random items round-trip `encode(decode(x)) == x`; a 1-char typo fails CRC; an illegal-constraint code is rejected by validation.
+- Done: 100k random items round-trip `encode(decode(x)) == x`; a 1-char typo fails CRC; an illegal assembly (Charm on a wand) is rejected.
 
-**30. Balance patch loader**
-- Does: `data/patches/*.toml` typed edits (`set`, `set_if`, `append`, `remove`, `table_row`) applied in phases `boot` / `level:<id|*>` / `enemy:<id|*>`; re-flattens Patterns after boot; bad lines logged and skipped (PLAN §31.6).
+**32. Balance patch loader**
+- Does: `data/patches/*.toml` typed edits (`set`, `set_if`, `append`, `remove`, `table_row`) applied in phases `boot` / `level:<id|*>` / `enemy:<id|*>`; re-resolves pools after boot; bad lines logged and skipped (PLAN §31.6). Rarity weights/multipliers patchable.
 - Files: engine/data/patch.*, data/patches/0001_example.toml, tests/test_patch.cpp.
 - Done: tests: set_if skips when old value differs; level-phase patch applies only on matching level; malformed line doesn't abort load; active-patch count exposed.
 
-**31. Loot drops on kill**
-- Does: per-player drop roll on kill event (drop chance per enemy table), spawn world item with Grade-coloured light pillar. World items are dynamic Jolt bodies on a new pickup/interactables object layer (Magewar layer 2 "Interactables": collides with the level, not with characters), so they drop and settle on the greybox; give them a per-kind friction (Magewar runs on Godot's default friction 1.0 — our level boxes use Jolt's 0.2 since step 13, revisit `frictionFor(BoxKind)` here so loot doesn't skate down ramps).
+**33. Loot drops on kill**
+- Does: per-player drop roll on kill event (parts, base staffs/wands, equipment, potions per enemy table), world item with a rarity-coloured light pillar (step 26 hex). World items are dynamic Jolt bodies on a pickup/interactables layer (Magewar layer 2: collides with level, not characters); per-kind friction (revisit `frictionFor(BoxKind)` so loot doesn't skate down ramps).
 - Files: game/loot/drop_table.*, game/world/world_item.*, data/enemies/*.toml.
-- Done: test: 1000 Gnawer kills produce drop rate within ±2 % of table; pillar colour matches Grade.
+- Done: test: 1000 Gnawer kills produce drop rate within ±2 % of table; pillar colour equals the item's rarity colour.
 
-**32. Pickup + auto-collect**
-- Does: Interact to pick up weapons; Tallies/ammo auto-collect in radius; loot feed log.
+**34. Pickup + auto-collect**
+- Does: Interact to pick up parts/wieldables/equipment; Tallies/potions auto-collect in radius; loot feed log with rarity-coloured names.
 - Files: game/loot/pickup.*.
 - Done: tests: pickup moves item to inventory; Tallies auto-collect within 2 m only.
 
-**33. Inventory and equip**
-- Does: 30-slot backpack, equip to weapon slots, drop, salvage to Scrap.
+**35. Inventory and equip**
+- Does: 30-slot backpack (parts stack by type filter), equip Staff/Wand slots + Hat/Clothes/Belt/Shoes/Grimoire/Potion slots, drop, salvage to Scrap (amount by rarity).
 - Files: game/inventory/inventory.*.
-- Done: tests for add/full/equip/swap/salvage.
+- Done: tests for add/full/equip/swap/salvage; equipping gear applies step 30 bonuses and unequipping removes them exactly.
 
-**34. XP curve and levels**
-- Does: XP(L)=120×1.35^(L−1), cap 50, level-up +health/+Breath/+Oil, XP from kill events (§30.5).
+**36. Magic Assembly Station (crafting core)**
+- Does: Bible rule "staffs and wands may only be customized at a Magic Assembly Station": station interactable in the Midden (Interact within 2 m), session API select part per slot / preview (no consumption) / assemble (consumes parts, outputs wieldable) / disassemble a wieldable back into its parts. Crafting outside a station is refused.
+- Files: game/crafting/assembly_station.*, game/world/interactable.*, data/levels/midden_greybox.toml (station placement), tests/test_crafting.cpp.
+- Done: tests: preview == assembled stats and leaves inventory untouched; assemble removes exactly the used parts; disassemble restores identical parts (Ember Marks equal); refused away from the station.
+
+**37. Crafting extras: gems and part salvage**
+- Does: element gems socket into Head gem slots (1–3) at the station: first gem sets element, extra gems add +X % elemental damage; salvage parts into Arcane Dust by rarity; spend Dust to upgrade a part one rarity tier (re-scale its rolls by the new multiplier, Unique not reachable by upgrade).
+- Files: game/crafting/{gems,salvage,upgrade}.*, data/crafting/*.toml, tests/test_crafting_extras.cpp.
+- Done: tests: can't exceed the Head's gem slots; upgrade Rare→Mythic scales stats by 2.0/1.5; Unique never produced by upgrade; Dust totals match table.
+
+**38. XP curve and levels**
+- Does: XP(L)=120×1.35^(L−1), cap 50, level-up +health/+Breath/+mana, XP from kill events (§30.5).
 - Files: game/progression/xp.*, tests/test_xp.cpp.
 - Done: tests for curve values, multi-level gain and cap.
 
-**35. Weight model + Vigil plumbing**
-- Does: shared weight model `base × Π(modifiers)` with live attributes (player count, health %, ammo %, Vigil tier) and named tiers; Vigil tier 0–2 data path scaling enemy stats and rewards on separate curves, seeded Omen pick (one sample Omen) stored in the save (PLAN §31.4).
+**39. Weight model + Vigil plumbing**
+- Does: shared weight model `base × Π(modifiers)` with live attributes (player count, health %, mana %, Vigil tier, luck feeding `roll_rarity`); Vigil tier 0–2 scaling enemy stats and rewards on separate curves, seeded Omen pick stored in the save (PLAN §31.4).
 - Files: game/loot/weights.*, game/progression/vigil.*, data/loot/weight_tiers.toml, data/vigil/*.toml.
-- Done: tests: contextual health drop weight rises below 40 % health; same Vigil seed ⇒ same Omens; reward curve independent of difficulty curve.
+- Done: tests: contextual potion weight rises below 40 % health; same Vigil seed ⇒ same Omens; reward curve independent of difficulty curve.
 
-**36. UI renderer (text + sprites)**
+**40. UI renderer (text + sprites)**
 - Does: 2D quad batcher in Vulkan, Kenney Future font (assets/kenney/ui-pack/Font) via stb_truetype, Kenney UI PNG panels.
 - Files: engine/ui/{ui_renderer,font}.*, shaders/ui.*.
 - Done: headless test renders a text string; pixel check finds non-background pixels in its rect.
 
-**37. HUD**
-- Does: crosshair + hit markers, health/shield/Breath bars, ammo/mag counter, XP bar + level, loot feed.
+**41. HUD**
+- Does: crosshair + hit markers, health/shield/Breath bars, mana bar (Magewar mana_bar_ui), active staff/wand with element icon + cooldown, XP bar + level, loot feed in rarity colours.
 - Files: game/ui/hud.*.
-- Done: values on HUD update when shooting/reloading/levelling in a window run; headless snapshot test.
+- Done: values on HUD update when casting/regenerating/levelling in a window run; headless snapshot test.
 
-**38. Inventory screen**
-- Does: Tab opens backpack grid with compare card (green/red stat deltas), equip/salvage buttons, mouse + keyboard. While any UI screen is open, relative mouse mode is off (cursor visible, like Magewar's inventory/menu) and gameplay actions are released (`InputState::releaseAll()`); both restored on close.
+**42. Inventory + equipment screen**
+- Does: Tab opens backpack grid with rarity-coloured borders/names, equipment panel (Staff, Wand, Hat, Clothes, Belt, Shoes, Grimoire, Potion; Magewar equipment_panel), compare card (green/red deltas), equip/salvage buttons. While any UI screen is open, relative mouse mode is off and gameplay actions are released (`InputState::releaseAll()`).
 - Files: game/ui/inventory_screen.*.
-- Done: equipping from the screen changes the active weapon; compare deltas match computed stats in a test.
+- Done: equipping from the screen changes the active wieldable/gear; compare deltas and border colours match computed stats/rarity in a test.
 
-**39. Key-bindings config**
-- Does: load/save `config/bindings.toml` (user dir via SDL_GetPrefPath) serialising the step-9 `coe::input::ActionMap` (keys by SDL scancode name, `Mouse N` for buttons; unknown names ⇒ that action keeps its defaults), defaults on first run, mouse sensitivity (default 0.25°/count)/invert-Y (default off; Magewar's options loader defaults invert to on, not copied), hold-vs-toggle for Crouch and Aim (Magewar has TOGGLE_CROUCH), simple rebind menu, gamepad bindings + stick look noted as post-slice (PLAN §20; Magewar binds joypad buttons for every action), plus a frame-rate cap / vsync (present mode) option (Magewar caps at 120 fps via `run/max_fps`; the sim stays 60 Hz either way).
+**43. Assembly Station UI**
+- Does: station screen (Magewar assembly_station_ui): one slot per part type filtered from inventory, Staff/Wand toggle (hides Interior/Charm for wands), live preview card with assembled rarity colour and stats summary, Assemble/Disassemble/Socket gem buttons.
+- Files: game/ui/assembly_screen.*.
+- Done: test drives the screen to build a staff and the result equals step 36's assemble; Assemble disabled until required parts are set.
+
+**44. Key-bindings config**
+- Does: load/save `config/bindings.toml` (SDL_GetPrefPath) serialising the step-9 `coe::input::ActionMap` (scancode names, `Mouse N`; unknown names keep defaults), mouse sensitivity (0.25°/count), invert-Y (default off), hold-vs-toggle for Crouch and Aim, simple rebind menu, gamepad noted post-slice, frame-rate cap / vsync option (sim stays 60 Hz).
 - Files: engine/input/bindings.*, game/ui/options_screen.*.
 - Done: test: rebinding Jump writes file; reload restores it; malformed file falls back to defaults.
 
-**40. Breach room slice: layout**
-- Does: greybox Breach (entrance → 2 combat rooms → mini-boss arena → loot vault) with door triggers and arena lock; built as a persistent level + `_combat`/`_dynamic` layers addressable by balance patches (PLAN §31.7).
+**45. Breach room slice: layout**
+- Does: greybox Breach (entrance → 2 combat rooms → mini-boss arena → loot vault) with door triggers and arena lock; persistent level + `_combat`/`_dynamic` layers (PLAN §31.7).
 - Files: data/levels/breach_slice.toml, game/world/{doors,triggers}.*.
 - Done: walking through triggers advances room state; doors lock during combat and open on clear.
 
-**41. Mini-boss (2 phases)**
-- Does: "Midden Spawn" mini-boss: phase 1 sludge lob; phase 2 at 50 % adds ooze spawns and faster cadence; boss health bar.
+**46. Mini-boss (2 phases)**
+- Does: "Midden Spawn" mini-boss (Magewar The Filth reference): phase 1 sludge lob; phase 2 at 50 % adds ooze spawns and faster cadence; boss health bar.
 - Files: game/bosses/midden_spawn.*, game/ui/boss_bar.*.
 - Done: tests: phase switches at 50 %; boss bar visible; killing it opens the vault door.
 
-**42. Vault + guaranteed boss loot**
-- Does: per-player guaranteed Gold+ drop from boss, vault chest, room-clear state.
+**47. Vault + guaranteed boss loot**
+- Does: per-player guaranteed Mythic+ drop from boss (part, base wieldable or equipment), vault chest, room-clear state.
 - Files: game/loot/boss_rewards.*, game/world/chest.*.
-- Done: test: boss kill always yields ≥ Gold; chest opens once.
+- Done: test: boss kill always yields ≥ Mythic; chest opens once.
 
-**43. Consecrations**
-- Does: separate post-parts "generic" roll on Silver+ boss/vault loot with a "none" entry and Calling-aware weighting; 3 sample Consecrations hooked to verbs (dash, Release, full shield) (PLAN §31.4).
+**48. Consecrations (enchantments)**
+- Does: separate post-assembly roll on Rare+ boss/vault wieldables with a "none" entry and Calling-aware weighting; 3 sample effects hooked to verbs (dash, Light summon, full shield) (PLAN §31.4).
 - Files: game/loot/consecration.*, data/loot/consecrations.toml.
-- Done: tests: Calling-specific weight rises per matching party member; effects trigger on their verb; Ember Mark encodes the consecration id.
+- Done: tests: Calling weight rises per matching party member; effects trigger on their verb; Ember Mark encodes the consecration id.
 
-**44. Audio engine**
+**49. Audio engine**
 - Does: miniaudio via FetchContent, buses (Master/SFX/UI/Music) with volumes, 3D positional one-shots.
 - Files: engine/audio/audio.*.
 - Done: unit test loads a Kenney OGG and plays to the null device without error; volumes clamp.
 
-**45. Audio hookup with Kenney sounds**
-- Does: map events to Kenney sounds: shots/hits (impact-sounds), UI clicks/pickups/level-up (interface-sounds, ui-pack/Sounds); data-driven sound table.
+**50. Audio hookup with Kenney sounds**
+- Does: map events to Kenney sounds: casts/hits (impact-sounds), UI clicks/pickups/crafting/level-up (interface-sounds, ui-pack/Sounds); data-driven sound table.
 - Files: data/audio/sounds.toml, game/audio/sound_events.*.
-- Done: every sound path in sounds.toml exists and is covered by ASSETS.toml (extend tools/check_assets.py with a `--paths-from data/audio/sounds.toml` mode reusing its coverage rule, as a ctest); audible in window run.
+- Done: every sound path in sounds.toml exists and is covered by ASSETS.toml (`check_assets.py --paths-from data/audio/sounds.toml` ctest); audible in window run.
 
-**46. Save format**
-- Does: character save (level, XP, Tallies, inventory items as Ember Marks, equipped slots, bindings untouched) as versioned JSON/TOML in pref path.
+**51. Save format**
+- Does: character save (level, XP, Tallies, Arcane Dust, inventory parts/wieldables/equipment as Ember Marks, equipped slots) as versioned TOML in pref path.
 - Files: game/save/save.*.
 - Done: save file written on quit/Interact at camp marker; schema version field present.
 
-**47. Save round-trip + load**
+**52. Save round-trip + load**
 - Does: load on start, version migration hook, corruption fallback.
 - Files: game/save/save.*, tests/test_save.cpp.
-- Done: test: save → load → save produces byte-identical file; regenerated items equal originals; saves containing every historic Ember Mark version load.
+- Done: test: save → load → save byte-identical; regenerated items equal originals; every historic Ember Mark version loads.
 
-**48. Main menu + flow**
+**53. Main menu + flow**
 - Does: title screen (Continue/New/Options/Quit), Midden → Breach transition, death/respawn flow.
 - Files: game/ui/main_menu.*, game/core/game_flow.*.
 - Done: full flow reachable by keyboard only in a window run.
 
-**49. Playtest pass 1 – automated**
-- Does: scripted headless bot run (`--playtest`) that spawns, kills a wave, picks loot, levels, saves, reloads; asserts no validation errors.
+**54. Playtest pass 1 – automated**
+- Does: scripted headless bot (`--playtest`): spawn, kill a wave, pick up parts, assemble a staff at the station, level, save, reload; assert no validation errors.
 - Files: game/debug/playtest.*, CMakeLists.txt (ctest).
 - Done: ctest `playtest_bot` passes.
 
-**50. Playtest pass 2 – manual + fixes**
-- Does: 15-minute manual run with checklist (feel, balance, readability, crashes); fix top issues; record findings.
+**55. Playtest pass 2 – manual + fixes**
+- Does: 15-minute manual run with checklist (feel, balance, readability, crafting flow, crashes); fix top issues; record findings.
 - Files: docs/playtests/2026-xx-xx.md, any fixes.
 - Done: checklist filled, no blocker bugs left, README "How to play" updated. **Vertical slice complete** (tag `v0.1-slice` locally).
 
 ## After the slice
 
-**51. CI breadth (deferred from step 7)**
+**56. CI breadth (deferred from step 7; was step 51)**
 - Does: `.clang-format` + `.clang-tidy` baselines and CI jobs (format check, tidy on changed files); Windows/MSVC job (`windows` preset, MSVC `/W4 /WX`, `/fsanitize=address` only since MSVC has no UBSan); ADR-0002 if Windows forces a package manager.
 - Files: .clang-format, .clang-tidy, CMakePresets.json, .github/workflows/ci.yml.
 - Done: all jobs green on a branch push; local `clang-format --dry-run -Werror` clean.

@@ -323,40 +323,54 @@ _Source canvas: https://cursor.com/canvas/store-396a3e54-44f5-47da-91d4-d350fd08
 
 ## 30. Loot-shooter core specification (implementation reference)
 
-Original system that consolidates sections 3–11 into buildable rules for M1–M2. Magewar ideas (modular staff parts, mana-only casting, 6 rarity tiers ×1.0–×3.0, per-part rolls scaled by a rarity multiplier in `loot_generator.gd`) were reinterpreted, not copied: different part slots, a real ammo economy, a flatter 5-Grade curve, and affix rolls instead of flat stat ranges.
+Buildable rules for M1–M2. **Weapons, loot and crafting follow the Magewar design directly** (ShobieShy's own IP; user-approved 2026-10-22). Sources: `~/game/Magewar Bible.md` (Gameplay Overview, Staff/Wand Crafting, Equipment and Inventory) and `~/game/magewar/scripts/{items/item_rarity.gd, items/staff_part_item.gd, items/staff_wieldable_item.gd, items/equipment_item.gd, magic/magic_element.gd, magic/loot_generator.gd, magic/magic_assembly_station.gd, player/mana_attribute.gd}` plus `resources/items/`. The earlier gun families, ammo and 5-Grade curve are retired.
 
-### 30.1 Weapons, firing and resources
-| Family | Fire modes | Resource | Reload / cooldown | Role |
+### 30.1 Wieldables, casting and mana
+| Type | Parts | Slot | Magewar bases (dmg / mana / cooldown) | Role |
 |---|---|---|---|---|
-| Sidearm | semi, burst | Light rounds, 8–18 mag | 1.2–1.6 s | Precision backup, fast swap |
-| Repeater (SMG) | auto | Light rounds, 24–48 | 1.6–2.0 s | Close/mid sustained DPS |
-| Longbarrel (rifle) | semi, auto | Heavy rounds, 5–30 | 2.0–2.8 s | Mid/long, crit focused |
-| Scattergun | semi, pump | Shells, 2–8 | per-shell or 2.4 s | Burst close range |
-| Sling-launcher | semi, charge | Charges, 1–4 | 2.6–3.4 s | Explosive arcs, AoE |
-| Lance (beam) | continuous | Lamp Oil only | no reload; overheat cools 2.5 s | Sustained essence damage |
+| Staff | 4–5: Head, Exterior, Interior, Handle, Charm (optional) | main weapon | Apprentice Fire Staff 10 / 5 / 0.40 s; Earthward Battlestaff 14 / 6 / 0.55 s | Primary caster, higher damage, focus FOV 55° |
+| Wand | 2–3: Head, Exterior, Handle (optional) | equipable | Novice Arcane Wand 7 / 3 / 0.25 s; Swift Wind Wand 6 / 2.5 / 0.18 s | Fast light caster, focus FOV 65° |
 
-- **Reload**: tactical (round in chamber, faster) vs empty; cancellable by sprint/swap; Chamber part sets speed. **Ammo** reserve capped by Satchel.
-- **Lamp Oil**: second pool (base 100), regenerates 12/s after 1.5 s without spending; powers Seals, alt-fires and Lances. This is the reinterpretation of Magewar's mana — mana becomes a support layer, not the main gun resource.
-- **ADS**: FOV tween over Grip handling time (0.15–0.35 s), spread ×0.35, sway ×0.4, move speed ×0.7, Sight crit bonus +10–60 %.
-- **Accuracy**: spread cone `s = s_base × stance × (1 + bloom)`; bloom +k per shot (Grip), decays per second; stance: ADS 0.35, crouch 0.8, moving 1.3, airborne 1.8, sprint-fire disallowed.
-- **Damage formula**:
-  `dmg = Base(family, ilvl) × GradeMult × (1 + ΣpartBonus%) × EssenceMatch × (1 − Resist) × Crit × CallingMult × Falloff(dist)`
-  where `Base = B_family × 1.13^(ilvl−1)`, `EssenceMatch ∈ {1.5, 1.0, 0.6}`, `Crit = 2.0` weak point `× (1 + sightBonus if ADS)`, `Resist ≤ 0.6`, Falloff linear from Barrel range to 50 %.
+- The base staff/wand **is the spell** (element, projectile speed, mana cost, cooldown) and has its own rarity; parts are modifiers added at a Magic Assembly Station.
+- **Mana** is the only casting resource: 100 base, cost per cast, regen 3/s after 1.5 s without casting, equipment adds regen. No ammo or reloads.
+- **Accuracy** 0–100 %: 50 base + Head + Handle + Charm bonuses; spread cone `s_max × (1 − acc/100) × stance` (focus 0.35, crouch 0.8, moving 1.3, airborne 1.8).
+- **Damage**: `dmg = base × RarityMult(base rarity) + Σ part damage_bonus`, then `× ElementEffectiveness × (1 − Resist ≤ 0.6) × Crit (weak point ×2)`.
+- **Cooldown** = base × Exterior modifier × Charm modifier, minimum 0.1 s. **Element** = Head element if set, else base element.
 
-### 30.2 Procedural weapons from parts
-- Roll order: Family → Workshop (weighted per region) → Grade → item level (area level ±2) → one part per slot from that Workshop/Family pool → affixes (Clay 0, Bronze 1, Silver 2, Gold 3, Crown 3 + 1 Workshop signature) → optional Seal socket (Silver+ 40 %, Gold+ 100 %).
-- Six slots: Frame, Barrel, Chamber, Grip, Sight, Seal. Parts are data (TOML) with stat ranges; affixes come from a shared pool with exclusive tags so rolls can't stack the same stat twice.
-- **Grades**: Clay ×1.00 (w52), Bronze ×1.15 (w26), Silver ×1.35 (w13), Gold ×1.60 (w6), Crown ×1.90 (w3). Luck/Vigil modifiers shift weights upward; Relics are hand-authored overrides at Gold/Crown (≈1 % of Gold+ drops).
-- **Gifts as Seals**: a Gift slotted into the Seal becomes a modifier (essence conversion, on-hit effect, or alt-fire); its Fruit tunes it (Patience = charge shot, Self-control = −recoil, Kindness = ally-heal pass-through). Gifts are earned, never random, so they are the deterministic layer on top of random guns.
-- Deterministic generation: every item stores `seed + ilvl + grade + part ids`; the host rolls it and clients regenerate it identically (small network payload, save-friendly, testable).
-- *Refined (see §31.1–31.2):* slots are no longer hard-coded; each weapon family declares a **Pattern** (ordered list of part categories with pick-count rules), and parts carry `requires`/`forbids` tags. Grade is rolled from a weighted table before parts, and Grade gates which part tiers and how many affix picks are allowed.
-- *Refined (see §31.5):* the stored form of an item is its **Ember Mark** (versioned compact code), not a loose struct.
+### 30.2 Parts and rarities
+| Rarity | Colour | Multiplier | Drop weight |
+|---|---|---|---|
+| Basic | #B3B3B3 (gray) | ×1.0 | 50 |
+| Uncommon | #33CC33 (green) | ×1.25 | 25 |
+| Rare | #3366FF (blue) | ×1.5 | 15 |
+| Mythic | #991AE6 (purple) | ×2.0 | 7 |
+| Primordial | #FF9900 (orange) | ×2.75 | 2 |
+| Unique | #FFD900 (gold) | ×3.0 | 1 |
 
-### 30.3 Equipment and inventory
-- 4 weapon slots (2 at start, 3rd at level 10, 4th at 25). Gear: Mantle (shield capacity/recharge), Satchel (ammo/Flask capacity), Sandals (speed, dash charges), Signet (stat ring), Lamp (Oil pool/regen), Throwable (Flask type). Consumable quick-slot: Healing Bread, Oil Flask.
-- Backpack grid (30 slots, +5 per Satchel tier), compare cards with stat deltas, junk/favourite flags, salvage to Scrap, shared camp stash.
+- Luck: −5 weight per point on Basic/Uncommon (min 1), +2 per point on Rare and above.
+- Part types and rolls (× rarity multiplier):
+  - **Head** (staff and wand): damage 1–5, accuracy 0–10, element, gem slots 1 (+1 at Rare+, +1 at Primordial+, max 3; wands use 1).
+  - **Exterior**: fire-rate modifier ×1.0, ×0.5–1.0 (faster) at Rare+.
+  - **Interior** (staff; base damage): damage 2–8, element.
+  - **Handle** (optional on wands): accuracy 5–20, handling 2–10.
+  - **Charm** (staff only, optional extra augment): damage 0–3, accuracy 0–8, fire-rate modifier, element.
+- Names: rarity + element + part ("Rare Fire Crystal Head"), material ladder per rarity for Exteriors/Handles.
+- Deterministic generation: every item stores `seed + rarity + part ids`; the host rolls, clients regenerate identically. Stored form is an **Ember Mark** (§31.5).
+
+### 30.3 Equipment, inventory and crafting
+- Equip slots (Bible): Staff, Wand, Hat, Clothes, Belt, Shoes, Grimoire, Potion.
+  - Hat: mana 5–15, spell damage 0.5–3, mana regen 0.2–1.
+  - Clothes/Robes: health 5–20, mana 3–10, Rare+ elemental resist 5–15 %.
+  - Belt: health 3–8, stamina/Breath 5–15.
+  - Shoes: speed ×1.02–1.10, Breath 3–10.
+  - Grimoire: spell damage 2–8, mana 10–25, mana regen 0.5–2.
+  - Potion: health or mana potion quick-slot.
+  All rolls × rarity multiplier.
+- Backpack grid (30 slots), rarity-coloured borders, compare cards with stat deltas, salvage to Scrap, shared camp stash.
+- **Crafting: Magic Assembly Station only.** Staff = Head + Exterior + Interior + Handle (+ Charm); Wand = Head + Exterior (+ Handle). Assembled rarity = floor(mean part rarity). Preview without consuming, assemble consumes parts, disassemble returns them. Extras (our additions on Magewar's base): element gems socket into Head gem slots; parts salvage to Arcane Dust; Dust upgrades a part one rarity tier (never to Unique).
 
 ### 30.4 Elements, resistances, summons and corruption
+- **Magewar elements (authoritative for the weapon system):** Fire #FF4D1A, Water #1A66FF, Earth #80591A, Air #CCF2FF, Light #FFF2B3, Dark #4D0080, Arcane (none) #B3B3B3. Cycle Fire > Earth > Air > Water > Fire (×1.5 strong / ×0.5 weak), Light and Dark ×1.5 against each other, same or Arcane ×1.0. Light heals and has one summon; Dark corrupts enemies into summons. The essence names below are kept as lore flavour only.
 - Essences: Kindling, Brine, Tempest, Radiance, plus Plain. Counters are against armour types (Kindling > Flesh, Brine > Plate, Tempest > Ward, Radiance > Shadowed) — a matchup table, not a cycle. Weak match ×0.6.
 - Status: Burning (DoT), Corroded (−25 % armour), Shocked (chain 3 targets, stuns Wards), Blessed (ally HoT), Staggered, Slowed. Build-up meters per status so status is earned, not a coin flip.
 - Player resistance per essence from gear and Fruits, hard cap 60 %.
@@ -386,6 +400,8 @@ Original system that consolidates sections 3–11 into buildable rules for M1–
 Headless tests for damage formula, Grade weight distribution (statistical), deterministic item regen from seed, affix exclusivity, essence matchups, per-player loot isolation, XP curve, and save round-trips.
 
 ## 31. Loot-system architecture (original, informed by public BL3 modding research)
+
+> **2026-10-22 update:** the weapon/loot model now follows Magewar (§30.1–30.3). Applying this section: Patterns become part-type stat tables and drop pools for staff/wand parts (Head, Exterior, Interior, Handle, Charm), with `requires`/`forbids` tags (e.g. Charm requires `tag:staff`). Workshops become flavour on part names, not separate gun makers. "Grades" below means Magewar's six rarities (Basic…Unique). Ember Marks encode parts, assembled staffs/wands (base + up to 5 parts + gems) and equipment. Consecrations roll on Rare+ boss/vault wieldables.
 
 Everything below is an **original** design. We studied how the community describes a well-known looter's systems (sources in §32) only to learn general architecture lessons. No game files, keys, names, numbers or data tables were used or copied; all names, weights and formats here are our own.
 

@@ -3,7 +3,7 @@
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
   "next_step": 15,
-  "total_steps": 51,
+  "total_steps": 56,
   "steps_done": [
     1,
     2,
@@ -135,6 +135,12 @@
       "type": "build",
       "summary": "FPS controller: walk, jump, crouch, look. New physics::Character (engine/physics/character.*): Jolt 5.6.0 CharacterVirtual capsule r 0.3, standing 1.7 m / crouching 0.7 m (RotatedTranslatedShape so the feet sit at position), ExtendedUpdate with step-up 0.35 m and stick-to-floor 0.5 m, max slope 45 deg, supporting-volume plane at -r, inner body on new Layers::Character (=2, Count 3) so raycasts/dynamic bodies see the player; setCrouched() refuses to stand up under a ceiling (SetShape with 1.5x padding penetration). Jolt stays inside engine/physics via a private physics_impl.hpp shared by physics.cpp and character.cpp (ADR-0001 note updated). New game/player/player_controller.*: PlayerTuning with Magewar cogito_player numbers (walk 4, crouch 3, jump 4.5, crouch-jump 3.0, gravity 9.8, ground lerp 10, air lerp 6, eye 1.5/0.6 easing 10/s, mouse 0.25 deg/count, pitch clamp), fixed 60 Hz tick before physics.step, look applied per render frame, camera(alpha) interpolated; jump on the press edge from ground only; crouch-jump keeps the crouch until landing; air steering only with input; ground velocity inherited. Level format: [player_start] position (feet) + yaw_deg replaces the camera table, validated to lie on a box surface within 5 cm (file:line errors); midden start (0,0,12.5) yaw 0. main.cpp: player drives the level camera, --crate flag for step 13's demo crate, --input-script now also requires the scripted W+Space to walk > 0.2 m and jump (apex > 0.5 m). Done-check evidence: new ctest `player` (tests/test_player.cpp, coe_add_test with timeout): walk 1 s = 3.667 m, end speed 4.000 m/s; eye 1.500 m over the floor; ramp climbed to feet y 0.787 at z -7 (analytic 0.75) and ended on the platform (y 1.500) on-ground; 0.35 m step climbed, 0.5 m step blocked; jump apex 1.071 m standing / 0.484 m crouched; crouch eye 0.600 m, 3.000 m/s under a slab, cannot stand under it; look clamp/wrap; inner body hit by raycast. input_script_window: walked 2.32 m, 1 jump, apex 1.07 m; smoke_window --seconds 3: spawned on-ground, 180 physics steps, 0 validation messages; smoke_headless passes from the start eye at pitch 0; --crate: crate settles asleep. cmake --build --preset debug warning-free (clean rebuild), ctest build/debug 21/21, ctest build/asan -LE window 18/18, pgrep -a covenant empty afterwards. Bug fixes: ASAN stack-use-after-scope in test_player (initializer_list kept from a ternary); input_script_window flaked 1/30 because a real desktop key press (S) reached the focused test window - script mode now drops real keyboard/mouse events (scripted events carry a device-id tag), 0/12 failures after; level start was pitched -8 deg (Magewar starts level). Plan changes: step 14 rewritten with evidence; step 15 gets sprint 7 m/s (Magewar SPRINTING_SPEED override vs script default 8) and slide notes; step 16 dash + camera-feel notes; step 17 notes the Character inner-body layer filter for hitscan; step 25 uses [player_start] (the plan's [spawn] name clashed with TOML [[spawn]] enemy spawns). Magewar notes: numbers reinterpreted from cogito_player (walk 4, crouch 3, jump 4.5/3.0, gravity 9.8, lerps 10/6, eye 1.5/0.6, step 0.35, mouse 0.25); mismatches fixed: start pitch -8 -> 0, crouch speed 3 missing from plan -> added, [spawn] -> [player_start]; deliberate deviation documented: jump fires on the press edge rather than while held. Commit 90b2923.",
       "commit": "90b2923"
+    },
+    {
+      "time": "2026-10-22T21:40-05:00",
+      "step": null,
+      "type": "plan",
+      "summary": "User request: weapon system follows the Magewar bible. Steps 17-50 rewritten/renumbered to 17-55 (staffs/wands, mana, Magewar elements, 6 rarities with colours, 5 part types, equipment, Magic Assembly Station crafting + gems/salvage/upgrade, assembly UI); CI breadth moved 51->56 (step 7's 'step 51' reference now means 56). PLAN.md \u00a730.1-30.4 and \u00a731 updated. total_steps 51->56."
     }
   ]
 }
