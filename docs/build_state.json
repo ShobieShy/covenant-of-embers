@@ -2,7 +2,7 @@
   "project": "covenant-of-embers",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 20,
+  "next_step": 21,
   "total_steps": 56,
   "steps_done": [
     1,
@@ -23,9 +23,10 @@
     16,
     17,
     18,
-    19
+    19,
+    20
   ],
-  "last_commit": "903be32",
+  "last_commit": "0328108",
   "history": [
     {
       "time": "2026-10-22T10:22-05:00",
@@ -193,6 +194,16 @@
       "magewar": "Mismatch fixed: the plan's wand focus FOV 65 deg is from Cogito's toy_pistol/laser_rifle; Magewar's wieldable_wand.tscn uses wieldable_staff.gd without overriding ads_fov, so wands focus at 55 like staffs (BUILD_PLAN step 19 + PLAN.md 30.1 corrected; separate wandFovDeg kept). Followed: ads_fov 55, 0.2 s tween to/from 75 starting from the current FOV, viewmodel_fov 75 shader global, get_final_accuracy = 50 + head + handle + charm clamped 0-100 (Exterior/Interior accuracy_bonus ignored, as in Magewar). Magewar never applies accuracy to aim and has no spread/bloom or FOV-scaled sensitivity (tscn 'spread' values are particles): the cone, stance multipliers, bloom and look scaling are plan design.",
       "plan_changes": "Step 19 text: wand 55 deg (Magewar) and the shipped tuning/API. PLAN.md 30.1: wand focus FOV 55, cone formula with bloom and the s_max/bloom numbers. Step 21: viewmodel uses Camera::kViewmodelFovYDeg regardless of focus, ADS slides it from Magewar default_position (staff 0.33,-0.26,-0.53; wand 0.30,-0.24,-0.50) to x=0 over 0.2 s, Focus::tick takes the active slot so swaps retarget. Step 28: fill WieldablePart::accuracyBonus from part data (Head/Handle/Charm only). Step 41: hide the crosshair while focused (Magewar update_crosshair(false)) and size the hip reticle from Spread::coneDeg. Step 44: hip FOV option -> FocusTuning::hipFovDeg / lookScaleForFov hip, Aim hold/toggle.",
       "bug_fixes": "None needed in earlier steps' code; the plan/PLAN wand-65 deg data error above is the only correction."
+    },
+    {
+      "time": "2026-10-23T03:18-05:00",
+      "step": 20,
+      "type": "build",
+      "commit": "0328108",
+      "summary": "Damage formula + elements + doctest: doctest v2.5.3 via FetchContent, one coe_tests runner run per file by ctest (filter-matches-nothing fails); test_fixed_timestep (5 cases) and test_casting (6) ported. game/combat/element.*: Element moved out of wieldable, ElementTable (names, colours, 7x7 chart, strong 1.5 / weak 0.5) loaded and validated (file:line) from data/magic/elements.toml; same/Arcane x1.0 enforced in code. game/combat/damage.*: wieldableDamage = base x rarity + part bonuses, per-element Resistances capped 60 %, weak point x2, resolveHit -> DamageResult{amount, effectiveness, resist, crit, strong/weak}. WieldablePart::damageBonus; tracers coloured from the table; covenant --elements flag, [magic] load line, missing-file smoke test. test_damage 11 cases / 300 assertions (full Magewar 7x7 table, rarity x1.0-x3.0, part bonuses, resist cap, weak point, worked example 25.2). Debug 29/29 incl. window tests, asan 26/26 -LE window, warning-free.",
+      "magewar": "Followed: magic_element.gd chart (Fire>Earth>Air>Water>Fire, Light<->Dark, x1.5/x0.5, same/Arcane x1.0), ELEMENT_NAMES and element colours, item_rarity.gd multipliers, damage = base x rarity + part damage_bonus. Mismatches kept/noted: Magewar clamps resistance to 0.9 and only for gear matching the element (we cap 60 % per element per PLAN 30.4; decide in step 30); Magewar has no crits/weak points (x2 is plan design); its chart is hardcoded (ours is data with code-enforced same/Arcane rules); its 'Super Effective!'/'Not Very Effective...' text becomes DamageResult::strong()/weak() for steps 22/41.",
+      "plan_changes": "Step 20 text = shipped design. Notes added: step 22 (ProjectileHit carries damage + element, enemy DamageTarget + resolveHit, numbers coloured from ElementTable), 24 (seam sets weakPoint; player hits via resolveHit with Resistances), 26 (feed wieldableDamage's multiplier from rarities.toml), 28 (fill WieldablePart::damageBonus), 30 (gear resist -> Resistances, 60 vs 90 % decision), 32 (elements.toml patchable), 41 (effectiveness hit text, element icon colour). PLAN 30.1 damage line notes the resist/crit mismatches; ADR-0001 doctest row describes the runner; README lists --elements and running one doctest file. Remaining plain-check tests port to doctest as they are next touched.",
+      "bug_fixes": "Step 17's pending plan item done (test_casting ported to doctest; Element/elementColor moved to game/combat, tracer colours from data). Latent test bug fixed: test_casting's withLine helper only CHECKed the find() result, so a typo'd fixture would throw std::out_of_range from replace() and abort the run; now REQUIRE. No other earlier-step code bugs found."
     }
   ]
 }
