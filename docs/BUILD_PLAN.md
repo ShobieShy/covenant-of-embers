@@ -384,9 +384,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_inventory_ui.gd / test_station_ui.gd: card text includes gem + consecration lines.
 - Result: PASS (248 tests + headless playtest)
 
-**46. Assembly Station in the Breach + station polish**
+**46. Assembly Station in the Breach + station polish** ✅ `d335141`
 - Does: Place an AssemblyStation in the Breach entrance/hub (step 31 flag), shared station prompt; F-interact range check.
 - Done: test_breach.gd: Breach has a reachable station; crafting there works.
+- Result: PASS (249 tests + headless playtest)
 
 **47. Breach layout pass (out of greybox)**
 - Does: Replace the Breach blockout with built rooms per PLAN §14: entrance → 3 combat rooms → switch puzzle → mini-boss → boss arena → vault; per-room [[encounter]] blocks (deferred in step 33); level gate placed properly (step 39 flag).
