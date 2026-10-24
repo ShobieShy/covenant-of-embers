@@ -7,12 +7,18 @@ extends Control
 ##  --seconds N  quit after N s if still on the menu (never hangs a headless run).
 
 var buttons := {}
+var version_label: Label
 var slot_buttons: Array[Button] = []
 ## Step 49: New Run over an existing save asks first.
 var confirm: ConfirmationDialog
 var settings_ui: SettingsUi
 var _seconds := -1.0
 var _elapsed := 0.0
+
+
+## "v0.1.0" from application/config/version (step 84; also stamped into the Windows exe).
+static func version_string() -> String:
+	return "v" + String(ProjectSettings.get_setting("application/config/version", "0.0.0"))
 
 
 func _ready() -> void:
@@ -34,6 +40,11 @@ func _ready() -> void:
 	title.add_theme_font_size_override("font_size", 40)
 	title.add_theme_color_override("font_color", Color(1.0, 0.55, 0.2))
 	v.add_child(title)
+	version_label = Label.new()  # step 84
+	version_label.text = version_string()
+	version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	version_label.modulate = Color(1, 1, 1, 0.6)
+	v.add_child(version_label)
 	var slots := HBoxContainer.new()
 	slots.alignment = BoxContainer.ALIGNMENT_CENTER
 	v.add_child(slots)

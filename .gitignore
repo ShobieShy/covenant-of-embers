@@ -15,3 +15,6 @@ CMakeUserPresets.json
 
 # Playtest screenshots/logs (step 41)
 playtest/
+
+# Release/packaging output (step 84)
+dist/

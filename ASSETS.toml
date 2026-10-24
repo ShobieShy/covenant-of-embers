@@ -56,3 +56,10 @@ license = "MIT"
 license_url = "assets/magewar/LICENSE-magewar.txt"
 date_added = "2026-10-23"
 use = "Reference data for staffs, wands, parts, equipment (ported into Covenant .tres); .gdignore'd, not loaded"
+
+[[asset]]
+name = "Covenant of Embers icon"
+path = "assets/branding"
+author = "Covenant of Embers project (generated with ImageMagick, tools: step 84)"
+source = "original (this repository)"
+license = "Apache-2.0"

@@ -8,6 +8,7 @@
 | Impact Sounds | Kenney | CC0 1.0 | https://kenney.nl/assets/impact-sounds | 2026-10-22 |
 | Interface Sounds | Kenney | CC0 1.0 | https://kenney.nl/assets/interface-sounds | 2026-10-22 |
 | Magewar item resources | ShobieShy (Magewar) | MIT (~/game LICENSE) | local ~/game/magewar/resources | 2026-10-23 |
+| Covenant of Embers icon | Covenant of Embers project | Apache 2.0 (original) | this repository | 2026-10-24 |
 
 CC0 does not require attribution; Kenney is credited anyway with thanks. Support: https://kenney.nl/donate
 

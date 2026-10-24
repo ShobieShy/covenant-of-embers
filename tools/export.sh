@@ -11,6 +11,11 @@ touch build/.gdignore
 timeout 600 "$GODOT" --headless --path . --export-release Linux build/linux/covenant_of_embers.x86_64
 timeout 600 "$GODOT" --headless --path . --export-release Windows build/windows/covenant_of_embers.exe
 test -s build/linux/covenant_of_embers.x86_64 && test -s build/windows/covenant_of_embers.exe
+# Step 84: Windows exe must carry the icon + version resources; Linux gets .desktop + icon.
+VERSION=$(sed -n 's/^config\/version="\(.*\)"/\1/p' project.godot)
+python3 tools/pe_resources.py build/windows/covenant_of_embers.exe --expect-version "$VERSION.0" --expect-product "Covenant of Embers"
+cp packaging/linux/covenant-of-embers.desktop build/linux/
+cp assets/branding/icon.png build/linux/covenant-of-embers.png
 log=$(mktemp)
 timeout 60 build/linux/covenant_of_embers.x86_64 --headless -- --seconds 2 >"$log" 2>&1 </dev/null; cat "$log"
 if grep -qE "SCRIPT ERROR|^ERROR" "$log"; then echo "[export] linux export logged errors"; exit 1; fi

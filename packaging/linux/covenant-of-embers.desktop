@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=Covenant of Embers
+GenericName=Co-op loot FPS
+Comment=Original open-source co-op loot FPS with Magewar-style staffs and wands
+Exec=covenant_of_embers.x86_64
+Icon=covenant-of-embers
+Terminal=false
+Categories=Game;ActionGame;
+Keywords=fps;magic;loot;coop;
+StartupWMClass=Covenant of Embers
