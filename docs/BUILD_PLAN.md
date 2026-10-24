@@ -600,7 +600,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_save.gd: atomic write survives interrupted temp; asset lint fails on case-mismatched paths; OS.get_user_data_dir() matches expected per OS.
 - Result: PASS (241 tests + headless playtest)
 
-**84. App icon, version + Windows metadata**
+**84. App icon, version + Windows metadata** ✅ `b802e6c`
 - Does: Game icon (.png + .ico), project version shown in menu, Windows export file/product version + company fields (rcedit via Godot), Linux .desktop file + icon.
 - Done: export.sh: Windows exe has icon/version resources (checked under wine or by resource dump); menu shows version string.
 

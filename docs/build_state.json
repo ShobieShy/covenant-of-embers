@@ -6,7 +6,7 @@
   "next_step": 43,
   "total_steps": 93,
   "steps_done": 61,
-  "last_commit": "7c13e1b",
+  "last_commit": "b802e6c",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -597,6 +597,14 @@
       "summary": "PlatformDisplay: renderer choice (auto/vulkan/d3d12/opengl3) written to override.cfg, explicit fallback_to_* + hidpi, window modes, DPI-aware UI scale, Alt+Tab releases mouse; OS-agnostic SDL pad mapping test; playtest/OS_CHECKLIST.md",
       "tests": "287 tests",
       "commit": "7c13e1b"
+    },
+    {
+      "time": "2026-10-24T06:09:46-05:00",
+      "step": 84,
+      "type": "build",
+      "summary": "Icon png+ico (assets/branding), config/version 0.1.0 shown in menu, Windows exe icon+version+company via Godot modify_resources (verified by tools/pe_resources.py in export.sh), packaging/linux .desktop + icon copied into build/linux; dist/ gitignored; test_branding.gd",
+      "tests": "290 tests",
+      "commit": "b802e6c"
     }
   ],
   "completed_steps": [
@@ -646,6 +654,7 @@
     45,
     46,
     48,
-    83
+    83,
+    84
   ]
 }
