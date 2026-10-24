@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 18,
+  "next_step": 19,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -22,9 +22,10 @@
     14,
     15,
     16,
-    17
+    17,
+    18
   ],
-  "last_commit": "b928ad8",
+  "last_commit": "1106bb4",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -161,6 +162,14 @@
       "summary": "Step 17 Assembly rules + final stats: scripts/magic/assembly.gd = Assembly (Magewar MagicAssemblyStation rules): staff Head+Exterior+Interior+Handle (+Charm) 4-5 parts, wand Head+Exterior (+Handle) 2-3; check() returns a message per problem (missing/duplicate/disallowed type, count, empty/invalid part, no base), assemble() = preview with the same part objects sorted Head..Charm (null when invalid), disassemble(); assembled rarity = floor(mean part tier) replacing the base's; name '<Rarity> <Element> Staff|Wand'. WieldableInstance gains assembled flag, part(), handling(), draw_seconds() (0.4 x 100/(100+handling), >= 0.2 s; Loadout.select uses it), gem_slots() (wand capped at 1). PLAN 30.3 worked examples: Fire staff 15/0.40s/65%, +charm 17.5/0.36s/75%, Earthward Rare Fire Staff 46/0.2571s/99%, Swift Wind Uncommon Water Wand 14.5/0.117s/77%. main prints [assembly]. 157 tests green (8 new in test_assembly.gd).",
       "plan_changes": "PLAN 30.3: rejection rule, chosen base, assembled name, handling -> draw time, wand 1 gem slot, 4 numeric worked examples; 30.1 damage names the assembled rarity. Refined steps 20 (Ember Mark encodes base id + assembled + parts, decode via Assembly.assemble/check), 24 (equip draw uses w.draw_seconds), 25 (station only moves parts; Assembly does rules; player picks base), 26 (sockets = gem_slots()), 30 (cards read final getters/name), 31 (Assembly.check messages, Magewar stats summary, wand slots disabled). Fixed: PLAN 30.1 stale step refs (bolts step 17 -> 7, damage 'game/combat/damage.*, step 20' -> scripts/combat/damage.gd step 6), part_roller Ember Marks step 39 -> 20, test_rarity 42.5 labelled free-form. Magewar mismatches logged: Magewar silently drops Interior/Charm on a wand and a wand Handle when an Interior is selected (ours rejects); Magewar always uses a template base (ours: chosen base); handling_bonus unused in Magewar (ours shortens the draw); wand gem cap 1 (Bible, not enforced by Magewar).",
       "commit": "b928ad8"
+    },
+    {
+      "time": "2026-10-24T00:33:38-05:00",
+      "step": 18,
+      "type": "build",
+      "summary": "Drop pools: scripts/loot DropEntry/DropPool/DropTable/LootDrop/DropRoller + resources/loot/drop_pools.tres (midden_gnawer, midden_heap). Rarity per drop = RarityTable.roll(rng, luck), then a weighted pool entry of that rarity (fallback down a tier, then up). DropRoller.roll_procedural follows Magewar roll_procedural_drops (1 part +1 at level >= 3, uniform type, enemy element else weighted roll_element, 25% equipment spec at luck x0.5); roll_kill/roll_enemy = pool entry by drop_chance 0.3 + procedural. EnemyDef gains level (Gnawer 1, Heap 3). main prints [drops]. 163 tests green (6 new in test_pools.gd; 10k rolls within 2%, worst 1.1%).",
+      "plan_changes": "PLAN 30.2 drop rule. Refined steps 19 (EquipmentRoller.from_seed fills the LootDrop equipment spec, keep one-randi contract), 20 (pool drops = base id + rarity tier), 21 (DropTable patches, loaders outside the class they return), 22 (roll_enemy, per-peer rng, skip dummies, rarity_color/describe), 27 (EnemyDef.level, add xp_reward). Fixed: Godot #86540 exit leak from DropTable static loader -> DropRoller.default_pools (latent in RarityTable/EnemyTable/ElementTable.load_default); stale step refs in training_dummies.toml/gnawer.toml. Magewar mismatches: fixed thresholds 45/25/15/8/5/2 vs RarityTable weights (kept weights, flagged); per-item loot_table chances vs one pool roll per kill; tier fallback is ours; equipment returned as a seed spec until step 19.",
+      "commit": "1106bb4"
     }
   ]
 }
