@@ -280,10 +280,11 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 17 notes): wieldable cards/compare deltas read the final getters (`damage()`, `cooldown()`, `accuracy()`, `element()`, `gem_slots()`, `draw_seconds(swap_seconds)`) and `display_name()` (assembled = "<Rarity> <Element> Staff|Wand").
 - Result: PASS — 214 tests (test_inventory_ui.gd 3). scripts/ui/inventory_ui.gd = `InventoryUi` (CanvasLayer 3, Tab = new `inventory` action): 30-slot backpack grid (rarity tint), worn staff/wand + 5 equipment slots, BBCode compare card (green/red deltas vs worn), Equip (swaps old back to the pack), Copy Ember Mark (field + clipboard when available), Import (bad code -> reason, potions -> potion slot). Player.ui_open freezes actions + mouse look while open; mouse shown.
 
-**31. Assembly Station UI**
+**31. Assembly Station UI** ✅ `9c57d53`
 - Does: Station UI for assemble/disassemble/salvage/upgrade.
 - Done: test_station_ui.gd: assemble via UI produces the item.
 - Does (step 17 notes): slots by part type (Magewar assembly_station_ui); the hint/error line lists `Assembly.check()` messages (Magewar's "Need Head + Exterior + Interior + Handle for a Staff / Or Head + Exterior for a Wand"); the preview panel = Magewar get_stats_summary ("[Rarity] Staff - Element", Damage, Fire Rate, Accuracy, Mana Cost) from `Assembly.assemble` + draw time and gem slots; Charm/Interior slots disabled for a wand base.
+- Result: PASS — 216 tests (test_station_ui.gd 2). scripts/ui/station_ui.gd = `StationUi` (CanvasLayer 3, E near a station): backpack list (rarity colours), base + 5 part-type slots (Interior/Charm disabled for a wand), live preview (Magewar get_stats_summary + draw time + gem slots), error line = AssemblyStation.check(), Assemble / Disassemble / Salvage / Upgrade, clicking a gem sockets it into the chosen Head. main places a greybox AssemblyStation 2 m from the Midden start.
 
 **32. Key-bindings config**
 - Does: Rebind UI over the project.godot InputMap actions (PlayerInput.ACTIONS) + user://keybinds.cfg, invert-Y, hip FOV, focus hold/toggle, crouch hold/toggle (Cogito TOGGLE_CROUCH; the slide needs Crouch held, so toggle mode keeps it "held" until pressed again), Reload unbound.
