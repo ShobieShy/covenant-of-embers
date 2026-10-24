@@ -41,6 +41,14 @@ func bind(q: QuestLog) -> void:
 	refresh()
 
 
+## Hidden while a cinematic plays, refreshed when it ends (no stale "(3/3)" over the Filth reveal).
+func _process(_dt: float) -> void:
+	var show := Cinematic.playing == null
+	if show and not tracker.visible:
+		refresh()
+	tracker.visible = show
+
+
 func refresh() -> void:
 	if log == null:
 		return

@@ -267,6 +267,7 @@ func crosshair_gap() -> float:
 
 
 func refresh(dt: float) -> void:
+	root.visible = Cinematic.playing == null  # cinematics own the screen (no 0-HP bar mid-summoning)
 	if player == null:
 		return
 	var h := player.health

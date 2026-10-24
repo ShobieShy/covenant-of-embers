@@ -11,6 +11,8 @@ const PICKUP_LAYER := 5  ## physics layer 5 = pickups (1 world, 2 player, 3 enem
 const GROUP := &"loot_pickups"
 const BEAM_BASE := 1.5  ## m, Basic
 const BEAM_PER_TIER := 0.5  ## m per rarity tier above Basic
+const BEAM_FADE_NEAR := 0.6  ## m from the camera: beam fully faded
+const BEAM_FADE_FAR := 3.0  ## m: beam at full strength beyond this
 const GEM_SIZE := 0.25
 
 enum Auto { NONE, MANA, DUST, POTION, GOLD }  ## step 23: walk-over auto-collect kinds
@@ -111,6 +113,10 @@ func _build(n: String, c: Color, text: String) -> void:
 	mm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mm.albedo_color = Color(color, 0.55)
+	# Up close the beam filled the screen: fade it out inside BEAM_FADE_FAR, gone at BEAM_FADE_NEAR.
+	mm.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_ALPHA
+	mm.distance_fade_min_distance = BEAM_FADE_NEAR
+	mm.distance_fade_max_distance = BEAM_FADE_FAR
 	beam.material_override = mm
 	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(beam)
