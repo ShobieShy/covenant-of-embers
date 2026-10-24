@@ -20,6 +20,8 @@ var mentor_played := false
 var fast_travel: FastTravel  # step 68
 var waystone: Waystone
 var travel_ui: FastTravelUI
+var world_map: WorldMap  # step 69
+var world_map_ui: WorldMapUI
 var load_warnings := PackedStringArray()
 
 func _ready() -> void:
@@ -263,6 +265,10 @@ func _setup_fast_travel(player: Player, here: String) -> void:
 	travel_ui = FastTravelUI.new()
 	layer.add_child(travel_ui)
 	travel_ui.closed.connect(_on_map_closed)
+	world_map = WorldMap.new(story_flags)  # step 69: the Elyria map beside the crystal's
+	world_map.visit_level(here)
+	world_map_ui = WorldMapUI.new()
+	layer.add_child(world_map_ui)
 	var point := String(FastTravel.LEVEL_POINT.get(here, ""))
 	if point.is_empty():
 		return
@@ -278,8 +284,10 @@ func open_map(point := "") -> void:
 	if player:
 		player.ui_open = true
 	travel_ui.show_map(fast_travel, point)
+	world_map_ui.show_map(world_map)
 
 func _on_map_closed() -> void:
+	world_map_ui.visible = false
 	var player := get_node_or_null("Player") as Player
 	if player:
 		player.ui_open = false
