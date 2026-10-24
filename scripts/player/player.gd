@@ -88,6 +88,13 @@ var direction := Vector3.ZERO   # smoothed move direction (Magewar `direction`)
 var speed := 4.0                # Magewar `current_speed`
 var input_enabled := true       # false in tests: no Input polling in _physics_process
 var ui_open := false            # step 30: a menu screen is up: no actions, no mouse look
+# Step 32 settings (Settings.apply_to): look + hold/toggle modes.
+var invert_y := false
+var aim_sensitivity := 1.0      ## on top of focus.look_scale(); Magewar-like raw = 1/0.6784
+var focus_toggle := false       ## action_secondary press latches focus
+var crouch_toggle := false      ## crouch press latches "held" (Cogito TOGGLE_CROUCH)
+var _focus_latch := false
+var _crouch_latch := false
 var breath: Breath              # sprint/dash pool (step 4)
 var sprinting := false
 var slide_left := 0.0           # seconds left on the slide (Magewar SlidingTimer)
@@ -257,8 +264,8 @@ func spawn(feet: Vector3, yaw_rad: float) -> void:
 
 ## Relative mouse motion in counts (dx right, dy down); scaled down while focused (step 9).
 func add_look(dx_counts: float, dy_counts: float) -> void:
-	var r := deg_to_rad(tuning.look_deg_per_count) * focus.look_scale()
-	set_look(yaw - dx_counts * r, pitch - dy_counts * r)
+	var r := deg_to_rad(tuning.look_deg_per_count) * focus.look_scale() * aim_sensitivity
+	set_look(yaw - dx_counts * r, pitch - dy_counts * r * (-1.0 if invert_y else 1.0))
 
 func set_look(yaw_rad: float, pitch_rad: float) -> void:
 	yaw = wrapf(yaw_rad, -PI, PI)
@@ -380,6 +387,29 @@ func respawn() -> void:
 	respawns += 1
 	protection_left = tuning.respawn_protection
 	respawned.emit(self)
+
+## Step 32: toggle modes turn a press into a latched "held" for focus / crouch.
+func _apply_toggles(input: PlayerInput) -> void:
+	for pair in [[focus_toggle, &"action_secondary", "_focus_latch"], [crouch_toggle, &"crouch", "_crouch_latch"]]:
+		if not pair[0]:
+			continue
+		var a: StringName = pair[1]
+		if input.was_pressed(a):
+			set(pair[2], not get(pair[2]))
+		if get(pair[2]):
+			input.held[a] = true
+		else:
+			input.held.erase(a)
+
+## Sets the hip FOV (focus target at rest + the camera now when not focused).
+func set_hip_fov(deg: float) -> void:
+	focus.hip_fov = deg
+	if not focus.focused:
+		focus.fov = deg
+		focus.prev_fov = deg
+		focus.target_fov = deg
+		if is_node_ready():
+			camera.fov = deg
 
 ## Accessibility: no head bob, no landing dip (step smoothing stays).
 func set_reduced_motion(on: bool) -> void:
@@ -510,6 +540,7 @@ func set_speed_multiplier(m: float) -> void:
 
 ## One fixed tick (dt must be the physics step: move_and_slide uses the physics delta).
 func tick(input: PlayerInput, dt: float) -> void:
+	_apply_toggles(input)
 	# Dead (step 13): no input, no movement; respawn after respawn_delay.
 	if not alive():
 		respawn_left -= dt

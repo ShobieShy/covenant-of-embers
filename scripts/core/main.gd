@@ -6,6 +6,7 @@ var _seconds := -1.0
 var _elapsed := 0.0
 var _frames := 0
 var _ticks := 0
+var settings: Settings   # step 32
 
 func _ready() -> void:
 	var args := OS.get_cmdline_user_args()
@@ -77,6 +78,10 @@ func _ready() -> void:
 		st_ui.name = "StationUi"
 		add_child(st_ui)
 		st_ui.bind(player)
+		# Step 32: saved bindings + options (user://keybinds.cfg), applied at spawn.
+		settings = Settings.load_from()
+		settings.apply_input_map()
+		settings.apply_to(player)
 		print("[enemies] %d spawned (%s), %d skipped (%s)" % [spawned.size(),
 			", ".join(spawned.map(func(e: Enemy) -> String: return e.def.id)), skipped.size(), ", ".join(skipped)])
 		var nav := $Level.get_node_or_null("Navigation") as LevelNavigation
