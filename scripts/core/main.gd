@@ -326,7 +326,7 @@ func _on_map_closed() -> void:
 func _on_fast_travel(_point: String, level: String) -> void:
 	travel(level)
 
-## Step 71: skill respec is free, and only offered at the Old Oak (a cost waits for Q4).
+## Step 71: skill respec is only offered at the Old Oak; step 59: it costs Player.respec_price() gold.
 func can_respec() -> bool:
 	return GameFlow.id_of($Level) == "old_oak"
 

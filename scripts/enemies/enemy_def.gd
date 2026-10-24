@@ -15,6 +15,7 @@ extends Resource
 @export var max_health := 100.0  ## 1..100000
 @export_range(1, 50) var level := 1  ## Magewar enemy_level 1..50 (step 18 drops: +1 part at >= 3)
 @export_range(0, 10000) var xp_reward := 10  ## step 27: Magewar enemy_base xp_reward (default 10)
+@export_range(-1, 100000) var gold_drop := -1  ## step 59: Magewar gold_drop; -1 = 3 x level
 @export var size := Vector3(0.7, 1.6, 0.7)  ## body box full extents; stands on its feet
 @export var color := Color(0.6, 0.6, 0.6)  ## greybox tint (the weak point draws brighter)
 @export var resist: Dictionary = {}  ## element id -> 0..1 (applied capped at 60 %)
@@ -83,7 +84,18 @@ func rusher() -> RusherDef:
 
 
 const KEYS: PackedStringArray = [
-	"id", "name", "affinity", "max_health", "level", "xp_reward", "size", "color", "resist", "weak_point", "ai"
+	"id",
+	"name",
+	"affinity",
+	"max_health",
+	"level",
+	"xp_reward",
+	"gold_drop",
+	"size",
+	"color",
+	"resist",
+	"weak_point",
+	"ai"
 ]
 const REQUIRED: PackedStringArray = ["id", "name", "affinity", "max_health", "size", "color"]
 
@@ -120,6 +132,11 @@ static func from_toml(row: Dictionary) -> Dictionary:
 		if not (xr is float or xr is int) or float(xr) != floorf(float(xr)) or float(xr) < 0.0:
 			return {"error": "'%s': xp_reward must be a whole number >= 0" % d.id}
 		d.xp_reward = int(xr)
+	if row.has("gold_drop"):
+		var gd: Variant = row["gold_drop"]
+		if not (gd is float or gd is int) or float(gd) != floorf(float(gd)) or float(gd) < 0.0:
+			return {"error": "'%s': gold_drop must be a whole number >= 0" % d.id}
+		d.gold_drop = int(gd)
 	var sz: Variant = _vec3_or_null(row["size"])
 	var col: Variant = _vec3_or_null(row["color"])
 	if sz == null or col == null:
@@ -165,3 +182,8 @@ static func _vec3_or_null(v: Variant) -> Variant:
 		if not (x is float):
 			return null
 	return LevelToml.vec3(v)
+
+
+## Step 59: base gold for a kill (gold_drop, else 3 per level).
+func gold_base() -> int:
+	return gold_drop if gold_drop >= 0 else 3 * level

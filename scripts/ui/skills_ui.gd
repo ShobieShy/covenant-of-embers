@@ -84,7 +84,9 @@ func refresh() -> void:
 		return
 	var lv := player.progression.level
 	points_label.text = "Skill points: %d   (level %d)" % [player.skills.available(lv), lv]
-	respec_button.disabled = not (can_respec.is_valid() and bool(can_respec.call()))
+	var price := player.respec_price()
+	respec_button.text = "Respec (Old Oak, %d Gold)" % price if price > 0 else "Respec (Old Oak)"
+	respec_button.disabled = not (can_respec.is_valid() and bool(can_respec.call())) or player.inventory.gold < price
 	for sid in buttons:
 		var s := player.skills.tree.skill(sid)
 		var b: Button = buttons[sid]

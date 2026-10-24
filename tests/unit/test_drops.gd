@@ -45,10 +45,17 @@ func test_kill_spawns_coloured_drops() -> void:
 		var at := Vector3(k * 3.0, 0, 0)
 		var e := _enemy(id, at, w)
 		var expect := DropRoller.roll_enemy(replay, e.def, 0.0)
-		var before := w.get_children().filter(func(n: Node) -> bool: return n is LootPickup).size()
+		var before := (
+			w
+			. get_children()
+			. filter(func(n: Node) -> bool: return n is LootPickup and not (n as LootPickup).is_auto())
+			. size()
+		)
 		check(e.apply_damage(100000.0, E.FIRE), "%s dies" % id)
 		e.apply_damage(100000.0, E.FIRE)  # hitting the corpse: no second roll
-		var pickups: Array = w.get_children().filter(func(n: Node) -> bool: return n is LootPickup)
+		var pickups: Array = w.get_children().filter(
+			func(n: Node) -> bool: return n is LootPickup and not (n as LootPickup).is_auto()
+		)
 		var new_ones := pickups.slice(before)
 		check(
 			new_ones.size() == expect.size(), "kill %d: %d pickups, expected %d" % [k, new_ones.size(), expect.size()]

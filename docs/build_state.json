@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 59,
+  "next_step": 60,
   "total_steps": 107,
-  "steps_done": 81,
-  "last_commit": "dd2b83c",
+  "steps_done": 82,
+  "last_commit": "e36c1eb",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -947,6 +947,13 @@
       "step": "67",
       "type": "build",
       "summary": "Tutorial chain wired: QuestDriver feeds kills/pickups/reach/talk into QuestLog; Landfill needs 3 Gnawers + The Filth + Joe's Trash; Bob grants tutorial_done + fast_travel_crystal",
+      "commit": "e36c1eb"
+    },
+    {
+      "time": "2026-10-24T09:16-05:00",
+      "step": "59",
+      "type": "build",
+      "summary": "Gold wallet (start 50); kills drop gold pickups (EnemyDef.gold_drop or 3 x level, +-25 %, own rng stream) that auto-collect; salvage pays 2 gold per Dust; Old Oak respec costs 25 x (respecs+1) gold, max 200; HUD shows gold; saved (old saves get 50); The Filth drops 120",
       "commit": "PENDING"
     }
   ],
@@ -1004,6 +1011,7 @@
     56,
     57,
     58,
+    59,
     62,
     63,
     64,

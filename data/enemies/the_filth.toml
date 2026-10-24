@@ -13,6 +13,7 @@ affinity = "earth"
 max_health = 900
 level = 4
 xp_reward = 80
+gold_drop = 120
 size = [2.2, 2.0, 2.2]
 color = [0.35, 0.42, 0.18]
 weak_point = { offset = [0.0, 1.2, 1.12], size = [0.8, 0.4, 0.1] }   # the core

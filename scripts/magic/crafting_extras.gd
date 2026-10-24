@@ -56,6 +56,11 @@ static func salvage_value(part: WieldablePart) -> int:
 	return SALVAGE_DUST[clampi(Rarity.parse(part.rarity), 0, Rarity.COUNT - 1)]
 
 
+## Step 59: salvage also pays gold (2 per Dust).
+static func salvage_gold(part: WieldablePart) -> int:
+	return salvage_value(part) * 2
+
+
 static func salvage(inv: Inventory, part: WieldablePart) -> String:
 	if part == null or not inv.has(part):
 		return "Choose a loose part in your backpack."
@@ -66,6 +71,7 @@ static func salvage(inv: Inventory, part: WieldablePart) -> String:
 		inv.add(g)
 	part.gems = [] as Array[ElementGem]
 	inv.add_dust(salvage_value(part))
+	inv.add_gold(salvage_gold(part))
 	return ""
 
 

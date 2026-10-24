@@ -86,6 +86,9 @@ func _auto(p: Player, lp: LootPickup) -> void:
 		LootPickup.Auto.DUST:
 			p.inventory.add_dust(lp.amount)
 			_done(lp, "dust")
+		LootPickup.Auto.GOLD:
+			p.inventory.add_gold(lp.amount)
+			_done(lp, "gold")
 		LootPickup.Auto.POTION:
 			var took := p.equipment.add_potions(lp.potion, lp.amount)
 			if took <= 0:

@@ -23,9 +23,19 @@ var vigil: Vigil  ## step 28: null/tier 0 = shipped weights; else a shifted copy
 var _vigil_table: RarityTable
 var _vigil_key := ""
 var rng: RandomNumberGenerator
+var gold_rng: RandomNumberGenerator  ## step 59: own stream so item rolls stay as before
 var spawned := 0  ## pickups spawned (all time)
 var kills_seen := 0
 var kills_skipped := 0
+var gold_spawned := 0  ## gold pickups (not counted in `spawned`)
+
+
+## Step 59: gold for one kill: base +-25 % (0 stays 0).
+static func gold_for(def: EnemyDef, r: RandomNumberGenerator) -> int:
+	var b := def.gold_base()
+	if b <= 0:
+		return 0
+	return maxi(1, int(round(b * r.randf_range(0.75, 1.25))))
 
 
 static func make_peer_rng(base: String, peer: int) -> RandomNumberGenerator:
@@ -41,6 +51,8 @@ static func drops_for(enemy_id: String) -> bool:
 func _ready() -> void:
 	if rng == null:
 		rng = make_peer_rng(seed_base, peer_id)
+	if gold_rng == null:
+		gold_rng = make_peer_rng(seed_base + ":gold", peer_id)
 	if parent == null:
 		parent = get_parent() as Node3D
 	var bus := GameEvents.bus()
@@ -63,6 +75,11 @@ func _on_enemy_killed(enemy: Enemy, _element: ElementTable.Element) -> void:
 		return
 	var at := parent.to_local(enemy.global_position)
 	spawn_drops(DropRoller.roll_enemy(rng, enemy.def, luck, null, rarity_table()), at, enemy.def.id)
+	var g := gold_for(enemy.def, gold_rng)
+	if g > 0:
+		var gp := LootPickup.create_gold(g, at + Vector3(0.0, LIFT, -SCATTER * 0.5))
+		parent.add_child(gp)
+		gold_spawned += 1
 
 
 ## Step 28: the rarity table drops roll on (null = shipped default).

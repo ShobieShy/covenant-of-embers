@@ -457,11 +457,11 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase J – Economy
 
-**59. Gold currency** 🔜 Unblocked
+**59. Gold currency** ✅ PENDING
 - Does: Gold wallet (start 50, Magewar story), enemy gold drops that auto-collect, salvage gives gold + Arcane Dust; HUD counter; saved.
 - Done: test_gold.gd: drops, auto-collect, save round-trip.
 - Q4 answered 2026-10-24: gold, start 50; Old Oak respec gets a gold price.
-
+- Result: PASS (338 tests passed; lint green)
 **60. Vendor framework + shop UI** ⛔ Blocked (prerequisite)
 - Does: Vendor node with stock tables, buy/sell (sell price by rarity), shop screen with compare cards.
 - Done: test_vendor.gd: buy/sell math, can't overspend, stock restock.
@@ -497,7 +497,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_hub.gd: stash shared, station present, mentor scene once.
 - Q1 answered (Magewar storyline)
 - Result: PASS (273 tests + headless playtest)
-**67. Tutorial quest chain** ✅ PENDING
+**67. Tutorial quest chain** ✅ `e36c1eb`
 - Does: Bob → Landfill (the Midden level, renamed Landfill in UI) → defeat The Filth → bring Joe's Trash back → Bob crafts the Fast Travel Teleportation Crystal; first levels.
 - Done: headless playtest variant runs the whole chain, PASS.
 - Q1 answered (Magewar storyline)

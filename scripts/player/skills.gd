@@ -4,7 +4,7 @@ extends RefCounted
 ## Points: one per level from FIRST_POINT_LEVEL (level 2 -> 1 point, level 10 -> 9).
 ## A skill can take a rank when a point is free, it is below max_rank and its tier is
 ## open: tier t needs t x SkillTree.POINTS_PER_TIER points already spent in its branch.
-## respec() refunds everything (free at the Old Oak; a gold cost waits for Q4).
+## respec() refunds everything (at the Old Oak; Player.respec_price() gold, step 59).
 ## totals() sums every rank's effects; Player.apply_bonuses() reads it (never +=/-=).
 ## Ranks travel with the character save (portable between hosts, step 91).
 

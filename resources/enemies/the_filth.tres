@@ -11,6 +11,7 @@ affinity = 3
 max_health = 900.0
 level = 4
 xp_reward = 80
+gold_drop = 120
 size = Vector3(2.2, 2, 2.2)
 color = Color(0.35, 0.42, 0.18, 1)
 resist = {}

@@ -315,7 +315,7 @@ func refresh(dt: float) -> void:
 		banner.text = "Wave %d/%d%s" % [spawner.wave_index + 1, spawner.waves.size(), left]
 	_refresh_boss()
 	var pr := player.progression
-	level_label.text = "Level %d   %d / %d XP" % [pr.level, pr.xp, pr.xp_to_next]
+	level_label.text = "Level %d   %d / %d XP   %d Gold" % [pr.level, pr.xp, pr.xp_to_next, player.inventory.gold]
 	death_overlay.visible = not player.alive()
 	if death_overlay.visible:
 		if player.downed:

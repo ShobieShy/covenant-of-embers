@@ -66,6 +66,8 @@ extends CharacterBody3D
 ##    use_potion() drinks the quick-slot potion (Health +30 / Mana +25), refused when full.
 ## In game _physics_process feeds PlayerInput.from_input(); tests call tick() directly.
 
+const RESPEC_BASE := 25  ## step 59 gold
+const RESPEC_MAX := 200
 const GROUP := &"players"  # step 27: XpRewarder finds players here
 const CHARACTER_LAYER := 2  # physics layer "character" (bit 2)
 const HINT_NOT_ENOUGH_MANA := "Not enough mana!"  # Magewar wieldable_staff.gd
@@ -624,8 +626,18 @@ func spend_skill(sid: String) -> bool:
 	return true
 
 
-## Step 71: refund every skill point (main.gd only offers it at the Old Oak).
+## Step 59: respec price in gold: 25 x (respecs so far + 1), at most 200; free with nothing spent.
+func respec_price() -> int:
+	if skills.spent() <= 0:
+		return 0
+	return mini(RESPEC_MAX, RESPEC_BASE * (skills.respecs + 1))
+
+
+## Step 71: refund every skill point (main.gd only offers it at the Old Oak); step 59: costs
+## respec_price() gold, -1 when the player can't pay.
 func respec_skills() -> int:
+	if not inventory.spend_gold(respec_price()):
+		return -1
 	var n := skills.respec()
 	apply_bonuses()
 	return n

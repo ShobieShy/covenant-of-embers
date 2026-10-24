@@ -43,6 +43,7 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 			"xp_to_next": p.progression.xp_to_next,
 			"total_xp": p.progression.total_xp,
 			"dust": p.inventory.dust,
+			"gold": p.inventory.gold,  # step 59
 			"health": p.health.max_value() if dead else p.health.value,
 			"shield": p.health.shield_max if dead else p.health.shield,
 			"mana": p.mana.max_value() if dead else p.mana.value,
@@ -113,6 +114,7 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 	p.level_breath_bonus = Progression.BREATH_PER_LEVEL * (pr.level - 1)
 	p.inventory.items.clear()
 	p.inventory.dust = maxi(0, int(pl.get("dust", 0)))
+	p.inventory.gold = maxi(0, int(pl.get("gold", Inventory.STARTING_GOLD)))
 	for c in it.get("inventory", []):
 		var m := _decode(String(c), null, warn, "inventory")
 		if m:

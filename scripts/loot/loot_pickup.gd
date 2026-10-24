@@ -13,7 +13,7 @@ const BEAM_BASE := 1.5  ## m, Basic
 const BEAM_PER_TIER := 0.5  ## m per rarity tier above Basic
 const GEM_SIZE := 0.25
 
-enum Auto { NONE, MANA, DUST, POTION }  ## step 23: walk-over auto-collect kinds
+enum Auto { NONE, MANA, DUST, POTION, GOLD }  ## step 23: walk-over auto-collect kinds
 
 var drop: LootDrop  ## the item (Interact to pick up); null for auto pickups
 var auto: Auto = Auto.NONE
@@ -41,6 +41,11 @@ static func create_mana(n: int, at: Vector3) -> LootPickup:
 ## Arcane Dust (step 26 salvage currency) on walk-over.
 static func create_dust(n: int, at: Vector3) -> LootPickup:
 	return _auto(Auto.DUST, n, null, at, Color(0.8, 0.6, 1.0), "Arcane Dust x%d" % n)
+
+
+## Step 59: gold coins (Magewar gold_drop) on walk-over.
+static func create_gold(n: int, at: Vector3) -> LootPickup:
+	return _auto(Auto.GOLD, n, null, at, Color(1.0, 0.82, 0.2), "%d Gold" % n)
 
 
 ## Potions go to the quick-slot on walk-over; what does not fit stays on the ground.

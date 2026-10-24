@@ -8,10 +8,12 @@ extends RefCounted
 signal changed
 
 const CAPACITY := 30
+const STARTING_GOLD := 50
 
 var capacity := CAPACITY
 var items: Array[Resource] = []  ## dense, slot order = list order
 var dust := 0  ## Arcane Dust
+var gold := STARTING_GOLD  ## step 59: Magewar gold (the government grants 50)
 
 
 static func accepts(item: Resource) -> bool:
@@ -66,6 +68,20 @@ func spend_dust(n: int) -> bool:
 	if n < 0 or dust < n:
 		return false
 	dust -= n
+	changed.emit()
+	return true
+
+
+func add_gold(n: int) -> void:
+	if n > 0:
+		gold += n
+		changed.emit()
+
+
+func spend_gold(n: int) -> bool:
+	if n < 0 or gold < n:
+		return false
+	gold -= n
 	changed.emit()
 	return true
 
