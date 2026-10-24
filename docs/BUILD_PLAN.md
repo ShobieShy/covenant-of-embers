@@ -497,9 +497,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Bob → Landfill (the Midden level, renamed Landfill in UI) → defeat The Filth → bring Joe's Trash back → Bob crafts the Fast Travel Teleportation Crystal; first levels.
 - Done: headless playtest variant runs the whole chain, PASS.
 - Q1 answered (Magewar storyline)
-**68. Fast travel crystal + waystones**
+**68. Fast travel crystal + waystones** ✅ `cf6dbb3`
 - Does: Teleportation crystal item (Magewar fast_travel_crystal) unlocks attuned points (hub, town gate, Landfill, Breach); map screen to travel.
 - Done: test_fast_travel.gd: attune, travel, locked before tutorial end.
+- Result: PASS (275 tests + headless playtest)
 
 **69. Barriers / wild land map**
 - Does: Elyria map: barrier-protected towns (Eldoria, Luminar, Willowbrook, Stonehaven) vs wild land (~60 %); areas like Whispering Woods, Shattered Peaks, Crimson Sea shown as locked; region states saved.

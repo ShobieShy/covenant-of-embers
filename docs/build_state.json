@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 56,
-  "last_commit": "d6c13fb",
+  "steps_done": 57,
+  "last_commit": "cf6dbb3",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -557,6 +557,14 @@
       "summary": "old_oak greybox level (moss beds, candles, stash, upgrade slots, exit to town; town exit to it), shared Stash (user://stash.json, ItemCodes), MentorArrival (Bob vortex + bob_intro + mana potion, once via bob_arrived), story flags saved in progress; test_hub.gd",
       "tests": "273 tests",
       "commit": "d6c13fb"
+    },
+    {
+      "time": "2026-10-24T05:47-05:00",
+      "step": 68,
+      "type": "build",
+      "summary": "FastTravel (crystal flag, locked until tutorial_done, waystone:<id> attunement in story flags; points old_oak/town_gate/landfill/breach), Waystone node per level (auto-attune, F opens map), FastTravelUI map screen; test_fast_travel.gd",
+      "tests": "275 tests",
+      "commit": "cf6dbb3"
     }
   ],
   "completed_steps": [
