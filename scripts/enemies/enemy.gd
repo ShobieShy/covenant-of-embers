@@ -39,6 +39,7 @@ const BRAINS := {
 	"filth": "res://scripts/enemies/filth.gd",  # step 56
 }
 
+const BURN_TICK := 0.5  ## s between burn damage ticks (step 53)
 const ALLY_COLOR := Color(0.55, 0.2, 0.85)  ## step 52: corrupted tint
 
 var health_scale := 1.0  ## step 80: co-op enemy health multiplier
@@ -61,6 +62,15 @@ var _death_announced := false
 ## Step 52 (Magewar Dark): > 0 while corrupted into the players' ally (s left). When it runs
 ## out the husk crumbles (dies, announced as a Dark kill).
 var corrupted_left := 0.0
+## Step 53 status effects (MagicEffects applies them): burn (Fire DoT), slow (Water),
+## stagger (Earth: no moving or attacking). Seconds left; burn_dps = damage per second.
+var burn_left := 0.0
+var burn_dps := 0.0
+var burn_damage := 0.0  ## total burn damage dealt
+var slow_left := 0.0
+var slow_factor := 1.0
+var stagger_left := 0.0
+var _burn_acc := 0.0
 var corruptions := 0
 
 var body_shape: CollisionShape3D
@@ -249,6 +259,7 @@ func _announce_death() -> void:
 func reset(xform: Variant = null) -> void:
 	dead = false
 	corrupted_left = 0.0
+	clear_statuses()
 	_death_announced = false
 	health = max_health()
 	flash = 0.0
@@ -298,7 +309,8 @@ func _physics_process(delta: float) -> void:
 
 ## Hit flash: the greybox tint goes towards white for FLASH_TIME after a hit.
 func tick(dt: float) -> void:
-	if corrupted_left > 0.0:
+	_status_tick(dt)
+	if corrupted_left > 0.0 and not dead:
 		corrupted_left = maxf(0.0, corrupted_left - dt)
 		if corrupted_left <= 0.0:
 			_uncorrupt()
@@ -366,3 +378,39 @@ func _uncorrupt() -> void:
 	if _body_mat:
 		_body_mat.albedo_color = def.color
 	apply_damage(health + 1.0, ElementTable.Element.DARK)
+
+
+## Step 53: walk speed multiplier from statuses (0 while staggered).
+func move_scale() -> float:
+	if stagger_left > 0.0:
+		return 0.0
+	return slow_factor if slow_left > 0.0 else 1.0
+
+
+func staggered() -> bool:
+	return stagger_left > 0.0
+
+
+func clear_statuses() -> void:
+	burn_left = 0.0
+	burn_dps = 0.0
+	slow_left = 0.0
+	slow_factor = 1.0
+	stagger_left = 0.0
+	_burn_acc = 0.0
+
+
+## Burn ticks every BURN_TICK s (Fire kills count as Fire kills).
+func _status_tick(dt: float) -> void:
+	slow_left = maxf(0.0, slow_left - dt)
+	stagger_left = maxf(0.0, stagger_left - dt)
+	if burn_left <= 0.0 or dead:
+		return
+	var step := minf(dt, burn_left)
+	burn_left -= step
+	_burn_acc += step
+	if _burn_acc >= BURN_TICK - 1e-6 or burn_left <= 1e-6:
+		var amount := burn_dps * _burn_acc
+		_burn_acc = 0.0
+		burn_damage += minf(amount, health)
+		apply_damage(amount, ElementTable.Element.FIRE)

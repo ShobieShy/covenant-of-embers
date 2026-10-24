@@ -438,7 +438,8 @@ func test_knockback() -> void:
 	check_near(moved.x, 2.5, 0.02, "pushed 2.5 m along the bolt")
 	check(absf(moved.z) < 0.01, "straight along it")
 	check(g.state == S.IDLE, "then idle (no target)")
-	check(g.health == 30.0 - 10.0 - 15.0, "health 5")
+	# Step 53: the Fire bolt also burns (MagicEffects), so the burn so far comes off too.
+	check(g.burn_damage > 0.0 and is_equal_approx(g.health, 30.0 - 10.0 - 15.0 - g.burn_damage), "health 5 less burn")
 	w.free()
 
 

@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 53,
+  "next_step": 70,
   "total_steps": 107,
-  "steps_done": 87,
-  "last_commit": "edcdb63",
+  "steps_done": 88,
+  "last_commit": "237008a",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -975,6 +975,13 @@
       "step": "52",
       "type": "build",
       "summary": "Dark: hit leaving a non-boss at <=25% HP has 40% (injectable roll) to corrupt it into a purple-tinted ally for 30 s; it hunts and bites other enemies, then crumbles; bosses immune",
+      "commit": "237008a"
+    },
+    {
+      "time": "2026-10-24T09:32-05:00",
+      "step": "53",
+      "type": "build",
+      "summary": "Status effects on enemies: Fire burn (30% over 3 s), Water slow (x0.6, 2.5 s), Earth stagger (0.4 s no move/attack), Air chain (50% to nearest within 6 m, one jump); durations scale by 1-resist (60% cap)",
       "commit": "PENDING"
     }
   ],
@@ -1030,6 +1037,7 @@
     50,
     51,
     52,
+    53,
     54,
     55,
     56,

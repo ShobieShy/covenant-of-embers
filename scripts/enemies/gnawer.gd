@@ -244,9 +244,10 @@ func think(dt: float) -> void:
 			if knockback_left < 1e-6:  # 0.5 - 30 x (1/60) leaves ~1e-16 in doubles: 30 ticks, as in C++
 				knockback_left = 0.0
 
+	walk *= move_scale()  # step 53: Water slow / Earth stagger
 	_attack_tick(dt, next, s.distance, feet)  # Heap: a winding-up slam lands / is cancelled
 	# (1e-4 s slack: 0.8 - 48 x 1/60 is not exactly 0 in floats.)
-	if next == State.ATTACK and attack_timer <= 1e-4 and _in_reach(s.distance, feet):
+	if next == State.ATTACK and attack_timer <= 1e-4 and not staggered() and _in_reach(s.distance, feet):
 		_start_attack(feet)
 	if _rooted():  # Heap winding up: planted, no walk, no turn
 		walk = 0.0
