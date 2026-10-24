@@ -3,6 +3,18 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/world/level_navigation.gd" id="1_nav"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_oak.glb" id="1_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_oak_dark.glb" id="2_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_oldTall.glb" id="3_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/grass_large.glb" id="4_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/flower_redA.glb" id="5_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/mushroom_redGroup.glb" id="6_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/mushroom_redTall.glb" id="7_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/mushroom_red.glb" id="8_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/flower_redB.glb" id="9_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/flower_redC.glb" id="10_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_roundDetailed.glb" id="11_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_squareDetailedWide.glb" id="12_glb"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -282,6 +294,68 @@ surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/slot_portals"]
 shape = SubResource("BoxShape3D_7")
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="old_oak" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(8, 0, 0, 0, 8, 0, 0, 0, 8, 0, -0.1, -10.5)
+
+[node name="old_oak_back" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(-3.856726, 0, 4.596267, 0, 6, 0, -4.596267, 0, -3.856726, -3.5, -0.1, -12.5)
+
+[node name="root_1" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -6.6, 0.2, -6.6)
+
+[node name="root_2" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(0, 0, 3, 0, 3, 0, -3, 0, 0, 6.6, 0.2, -6.6)
+
+[node name="root_3" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, -6.6, 0.2, 6.6)
+
+[node name="root_4" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(0, 0, -3, 0, 3, 0, 3, 0, 0, 6.6, 0.2, 6.6)
+
+[node name="bed_moss_1" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -5.5, 0.45, -5.6)
+
+[node name="bed_flower_1" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -4.4, 0.45, -4)
+
+[node name="bed_moss_2" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(1.732051, 0, 1, 0, 2, 0, -1, 0, 1.732051, -3, 0.45, -5.6)
+
+[node name="bed_flower_2" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(1.931852, 0, 0.517638, 0, 2, 0, -0.517638, 0, 1.931852, -1.9, 0.45, -4)
+
+[node name="bed_moss_3" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(1, 0, 1.732051, 0, 2, 0, -1.732051, 0, 1, 2, 0.45, -5.6)
+
+[node name="bed_flower_3" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(1.732051, 0, 1, 0, 2, 0, -1, 0, 1.732051, 3.1, 0.45, -4)
+
+[node name="deco_1" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -6.6, 0.15, 1)
+
+[node name="deco_2" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(2.298133, 0, 1.928363, 0, 3, 0, -1.928363, 0, 2.298133, 6.6, 0.15, -3.5)
+
+[node name="deco_3" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0.520945, 0, 2.954423, 0, 3, 0, -2.954423, 0, 0.520945, -6.7, 0.15, -3.6)
+
+[node name="deco_4" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(-1.5, 0, 2.598076, 0, 3, 0, -2.598076, 0, -1.5, 6.7, 0.15, 1.5)
+
+[node name="deco_5" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-2.819078, 0, 1.02606, 0, 3, 0, -1.02606, 0, -2.819078, -3, 0.15, 6.7)
+
+[node name="deco_6" parent="Props" instance=ExtResource("10_glb")]
+transform = Transform3D(-2.819078, 0, -1.02606, 0, 3, 0, 1.02606, 0, -2.819078, 3, 0.15, 6.7)
+
+[node name="stool" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 3.8, 0.15, -5.5)
+
+[node name="table" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(2.819078, 0, 1.02606, 0, 3, 0, -1.02606, 0, 2.819078, -1.6, 0.15, 3.4)
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
 script = ExtResource("1_nav")

@@ -3,6 +3,32 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/world/level_navigation.gd" id="1_nav"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall.glb" id="1_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/pillar-stone.glb" id="2_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/lantern.glb" id="3_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-door.glb" id="4_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-arch-top-detail.glb" id="5_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/banner-red.glb" id="6_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/banner-green.glb" id="7_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/road.glb" id="8_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/fountain-square-detail.glb" id="9_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall-red.glb" id="10_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall-green.glb" id="11_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/cart-high.glb" id="12_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-wood-window-shutters.glb" id="13_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb" id="14_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-wood.glb" id="15_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-wood-door.glb" id="16_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/roof-high-point.glb" id="17_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/chimney.glb" id="18_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/tree-high.glb" id="19_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/tree-high-round.glb" id="20_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/tree.glb" id="21_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/tree-high-crooked.glb" id="22_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/tree-crooked.glb" id="23_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-block.glb" id="24_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/windmill.glb" id="25_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_oak.glb" id="26_glb"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -120,6 +146,7 @@ metadata/toml_index = 1
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/wall_north_w"]
 mesh = SubResource("BoxMesh_2")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/wall_north_w"]
 shape = SubResource("BoxShape3D_2")
@@ -132,6 +159,7 @@ metadata/toml_index = 2
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/wall_north_e"]
 mesh = SubResource("BoxMesh_2")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/wall_north_e"]
 shape = SubResource("BoxShape3D_2")
@@ -144,6 +172,7 @@ metadata/toml_index = 3
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/wall_south_w"]
 mesh = SubResource("BoxMesh_2")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/wall_south_w"]
 shape = SubResource("BoxShape3D_2")
@@ -156,6 +185,7 @@ metadata/toml_index = 4
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/wall_south_e"]
 mesh = SubResource("BoxMesh_2")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/wall_south_e"]
 shape = SubResource("BoxShape3D_2")
@@ -168,6 +198,7 @@ metadata/toml_index = 5
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/wall_west"]
 mesh = SubResource("BoxMesh_3")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/wall_west"]
 shape = SubResource("BoxShape3D_3")
@@ -180,6 +211,7 @@ metadata/toml_index = 6
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/wall_east"]
 mesh = SubResource("BoxMesh_3")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/wall_east"]
 shape = SubResource("BoxShape3D_3")
@@ -192,6 +224,7 @@ metadata/toml_index = 7
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/ward_1"]
 mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ward_1"]
 shape = SubResource("BoxShape3D_4")
@@ -204,6 +237,7 @@ metadata/toml_index = 8
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/ward_2"]
 mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ward_2"]
 shape = SubResource("BoxShape3D_4")
@@ -216,6 +250,7 @@ metadata/toml_index = 9
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/ward_3"]
 mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ward_3"]
 shape = SubResource("BoxShape3D_4")
@@ -228,6 +263,7 @@ metadata/toml_index = 10
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/ward_4"]
 mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ward_4"]
 shape = SubResource("BoxShape3D_4")
@@ -240,6 +276,7 @@ metadata/toml_index = 11
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/association_doors"]
 mesh = SubResource("BoxMesh_5")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/association_doors"]
 shape = SubResource("BoxShape3D_5")
@@ -252,6 +289,7 @@ metadata/toml_index = 12
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/fountain"]
 mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_5")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/fountain"]
 shape = SubResource("BoxShape3D_6")
@@ -264,6 +302,7 @@ metadata/toml_index = 13
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/stall_1"]
 mesh = SubResource("BoxMesh_7")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/stall_1"]
 shape = SubResource("BoxShape3D_7")
@@ -276,6 +315,7 @@ metadata/toml_index = 14
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/stall_2"]
 mesh = SubResource("BoxMesh_7")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/stall_2"]
 shape = SubResource("BoxShape3D_7")
@@ -288,6 +328,7 @@ metadata/toml_index = 15
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/stall_3"]
 mesh = SubResource("BoxMesh_7")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/stall_3"]
 shape = SubResource("BoxShape3D_7")
@@ -300,6 +341,7 @@ metadata/toml_index = 16
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/stall_4"]
 mesh = SubResource("BoxMesh_7")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/stall_4"]
 shape = SubResource("BoxShape3D_7")
@@ -312,9 +354,309 @@ metadata/toml_index = 17
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/flagon"]
 mesh = SubResource("BoxMesh_8")
 surface_material_override/0 = SubResource("StandardMaterial3D_7")
+visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/flagon"]
 shape = SubResource("BoxShape3D_8")
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="north_w_wall_1" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, 4.5, 0, 4, 0, -10, 0, 0, -17.75, 0, -15)
+
+[node name="north_w_wall_2" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, 4.5, 0, 4, 0, -10, 0, 0, -13.25, 0, -15)
+
+[node name="north_w_wall_3" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, 4.5, 0, 4, 0, -10, 0, 0, -8.75, 0, -15)
+
+[node name="north_w_wall_4" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, 4.5, 0, 4, 0, -10, 0, 0, -4.25, 0, -15)
+
+[node name="north_e_wall_1" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, 4.5, 0, 4, 0, -10, 0, 0, 4.25, 0, -15)
+
+[node name="north_e_wall_2" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, 4.5, 0, 4, 0, -10, 0, 0, 8.75, 0, -15)
+
+[node name="north_e_wall_3" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, 4.5, 0, 4, 0, -10, 0, 0, 13.25, 0, -15)
+
+[node name="north_e_wall_4" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, 4.5, 0, 4, 0, -10, 0, 0, 17.75, 0, -15)
+
+[node name="south_w_wall_1" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, -17.75, 0, 15)
+
+[node name="south_w_wall_2" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, -13.25, 0, 15)
+
+[node name="south_w_wall_3" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, -8.75, 0, 15)
+
+[node name="south_w_wall_4" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, -4.25, 0, 15)
+
+[node name="south_e_wall_1" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, 4.25, 0, 15)
+
+[node name="south_e_wall_2" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, 8.75, 0, 15)
+
+[node name="south_e_wall_3" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, 13.25, 0, 15)
+
+[node name="south_e_wall_4" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, 17.75, 0, 15)
+
+[node name="west_wall_1" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 3.8, -24, 0, -17.1)
+
+[node name="west_wall_2" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 3.8, -24, 0, -13.3)
+
+[node name="west_wall_3" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 3.8, -24, 0, -9.5)
+
+[node name="west_wall_4" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 3.8, -24, 0, -5.7)
+
+[node name="west_wall_5" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 3.8, -24, 0, -1.9)
+
+[node name="west_wall_6" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 3.8, -24, 0, 1.9)
+
+[node name="west_wall_7" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 3.8, -24, 0, 5.7)
+
+[node name="west_wall_8" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 3.8, -24, 0, 9.5)
+
+[node name="west_wall_9" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 3.8, -24, 0, 13.3)
+
+[node name="west_wall_10" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 3.8, -24, 0, 17.1)
+
+[node name="east_wall_1" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -3.8, 24, 0, -17.1)
+
+[node name="east_wall_2" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -3.8, 24, 0, -13.3)
+
+[node name="east_wall_3" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -3.8, 24, 0, -9.5)
+
+[node name="east_wall_4" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -3.8, 24, 0, -5.7)
+
+[node name="east_wall_5" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -3.8, 24, 0, -1.9)
+
+[node name="east_wall_6" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -3.8, 24, 0, 1.9)
+
+[node name="east_wall_7" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -3.8, 24, 0, 5.7)
+
+[node name="east_wall_8" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -3.8, 24, 0, 9.5)
+
+[node name="east_wall_9" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -3.8, 24, 0, 13.3)
+
+[node name="east_wall_10" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -3.8, 24, 0, 17.1)
+
+[node name="ward_1" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(7.5, 0, 0, 0, 6, 0, 0, 0, 7.5, -18, 0, -18)
+
+[node name="ward_lantern_1" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -18, 6, -18)
+
+[node name="ward_2" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(7.5, 0, 0, 0, 6, 0, 0, 0, 7.5, 18, 0, -18)
+
+[node name="ward_lantern_2" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 18, 6, -18)
+
+[node name="ward_3" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(7.5, 0, 0, 0, 6, 0, 0, 0, 7.5, -18, 0, 18)
+
+[node name="ward_lantern_3" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -18, 6, 18)
+
+[node name="ward_4" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(7.5, 0, 0, 0, 6, 0, 0, 0, 7.5, 18, 0, 18)
+
+[node name="ward_lantern_4" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 18, 6, 18)
+
+[node name="association_door" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(0, 0, 4, 0, 5, 0, -4, 0, 0, 0, 0, -17.4)
+
+[node name="association_arch" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(0, 0, 4, 0, 1.5, 0, -10, 0, 0, 0, 4, -15)
+
+[node name="gate_lantern_n1" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -2.6, 0, -18.7)
+
+[node name="gate_lantern_s1" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -2.6, 0, 18.7)
+
+[node name="gate_lantern_n2" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 2.6, 0, -18.7)
+
+[node name="gate_lantern_s2" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 2.6, 0, 18.7)
+
+[node name="gate_pillars_s_1" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(6, 0, 0, 0, 5, 0, 0, 0, 6, -2, 0, 19.5)
+
+[node name="gate_pillars_s_2" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(6, 0, 0, 0, 5, 0, 0, 0, 6, 2, 0, 19.5)
+
+[node name="banner_n1" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(0, 0, 3, 0, 3, 0, -3, 0, 0, -14, 1, -17.71)
+
+[node name="banner_n2" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(0, 0, 3, 0, 3, 0, -3, 0, 0, -6, 1, -17.71)
+
+[node name="banner_n3" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(0, 0, 3, 0, 3, 0, -3, 0, 0, 6, 1, -17.71)
+
+[node name="banner_n4" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(0, 0, 3, 0, 3, 0, -3, 0, 0, 14, 1, -17.71)
+
+[node name="road_1" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, 17)
+
+[node name="road_2" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, 13)
+
+[node name="road_3" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, 9)
+
+[node name="road_4" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, 5)
+
+[node name="road_5" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, 1)
+
+[node name="road_6" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, -3)
+
+[node name="road_7" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, -7)
+
+[node name="road_8" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, -11)
+
+[node name="road_9" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, -15)
+
+[node name="road_e_1" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 4, 0.001, 14)
+
+[node name="road_e_2" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 8, 0.001, 14)
+
+[node name="road_e_3" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 12, 0.001, 14)
+
+[node name="road_e_4" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 16, 0.001, 14)
+
+[node name="fountain" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(2, 0, 0, 0, 1.667, 0, 0, 0, 2, 0, 0, 0)
+
+[node name="stall_1" parent="Props" instance=ExtResource("10_glb")]
+transform = Transform3D(2.5, 0, 0, 0, 1.21, 0, 0, 0, 1.5, -12, 0, -6)
+
+[node name="stall_2" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(2.5, 0, 0, 0, 1.21, 0, 0, 0, 1.5, -8, 0, -6)
+
+[node name="stall_3" parent="Props" instance=ExtResource("10_glb")]
+transform = Transform3D(2.5, 0, 0, 0, 1.21, 0, 0, 0, 1.5, 8, 0, -6)
+
+[node name="stall_4" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(2.5, 0, 0, 0, 1.21, 0, 0, 0, 1.5, 12, 0, -6)
+
+[node name="cart" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(0, 0, 1.6, 0, 1.6, 0, -1.6, 0, 0, -15.5, 0, -6.2)
+
+[node name="flagon_n_1" parent="Props" instance=ExtResource("13_glb")]
+transform = Transform3D(0, 0, 2.6667, 0, 4, 0, -4, 0, 0, -16.6667, 0, 6.8)
+
+[node name="flagon_n_2" parent="Props" instance=ExtResource("13_glb")]
+transform = Transform3D(0, 0, 2.6667, 0, 4, 0, -4, 0, 0, -14, 0, 6.8)
+
+[node name="flagon_n_3" parent="Props" instance=ExtResource("13_glb")]
+transform = Transform3D(0, 0, 2.6667, 0, 4, 0, -4, 0, 0, -11.3333, 0, 6.8)
+
+[node name="flagon_s_1" parent="Props" instance=ExtResource("14_glb")]
+transform = Transform3D(0, 0, -2.6667, 0, 4, 0, 4, 0, 0, -16.6667, 0, 9.2)
+
+[node name="flagon_s_2" parent="Props" instance=ExtResource("14_glb")]
+transform = Transform3D(0, 0, -2.6667, 0, 4, 0, 4, 0, 0, -14, 0, 9.2)
+
+[node name="flagon_s_3" parent="Props" instance=ExtResource("14_glb")]
+transform = Transform3D(0, 0, -2.6667, 0, 4, 0, 4, 0, 0, -11.3333, 0, 9.2)
+
+[node name="flagon_w_1" parent="Props" instance=ExtResource("15_glb")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 3, -19.8, 0, 6.5)
+
+[node name="flagon_w_2" parent="Props" instance=ExtResource("15_glb")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 3, -19.8, 0, 9.5)
+
+[node name="flagon_e" parent="Props" instance=ExtResource("16_glb")]
+transform = Transform3D(-4, 0, 0, 0, 4, 0, 0, 0, -6, -8.2, 0, 8)
+
+[node name="flagon_roof" parent="Props" instance=ExtResource("17_glb")]
+transform = Transform3D(7.4545, 0, 0, 0, 3, 0, 0, 0, 5.6364, -14, 4, 8)
+
+[node name="flagon_chimney" parent="Props" instance=ExtResource("18_glb")]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, -16.3, 5.2, 7.2)
+
+[node name="flagon_lantern" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, -9.75, 0, 6.2)
+
+[node name="tree_1" parent="Props" instance=ExtResource("19_glb")]
+transform = Transform3D(3.2, 0, 0, 0, 3.2, 0, 0, 0, 3.2, -24, 0, -10)
+
+[node name="tree_2" parent="Props" instance=ExtResource("20_glb")]
+transform = Transform3D(2.451342, 0, 2.05692, 0, 3.2, 0, -2.05692, 0, 2.451342, -25, 0, 4)
+
+[node name="tree_3" parent="Props" instance=ExtResource("21_glb")]
+transform = Transform3D(0.555674, 0, 3.151385, 0, 3.2, 0, -3.151385, 0, 0.555674, -23, 0, 16)
+
+[node name="tree_4" parent="Props" instance=ExtResource("22_glb")]
+transform = Transform3D(3.151385, 0, 0.555674, 0, 3.2, 0, -0.555674, 0, 3.151385, 24, 0, -12)
+
+[node name="tree_5" parent="Props" instance=ExtResource("19_glb")]
+transform = Transform3D(1.094464, 0, 3.007016, 0, 3.2, 0, -3.007016, 0, 1.094464, 25, 0, 0)
+
+[node name="tree_6" parent="Props" instance=ExtResource("20_glb")]
+transform = Transform3D(3.007016, 0, 1.094464, 0, 3.2, 0, -1.094464, 0, 3.007016, -8, 0, -25)
+
+[node name="tree_7" parent="Props" instance=ExtResource("23_glb")]
+transform = Transform3D(2.05692, 0, 2.451342, 0, 3.2, 0, -2.451342, 0, 2.05692, 10, 0, -24)
+
+[node name="tree_8" parent="Props" instance=ExtResource("19_glb")]
+transform = Transform3D(2.771281, 0, 1.6, 0, 3.2, 0, -1.6, 0, 2.771281, -12, 0, 25)
+
+[node name="tree_9" parent="Props" instance=ExtResource("20_glb")]
+transform = Transform3D(1.6, 0, 2.771281, 0, 3.2, 0, -2.771281, 0, 1.6, 12, 0, 25)
+
+[node name="windmill_base" parent="Props" instance=ExtResource("24_glb")]
+transform = Transform3D(3, 0, 0, 0, 6, 0, 0, 0, 3, -27, 0, -22)
+
+[node name="windmill" parent="Props" instance=ExtResource("25_glb")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -27, 5.5, -20.4)
+
+[node name="old_oak" parent="Props" instance=ExtResource("26_glb")]
+transform = Transform3D(7.250462, 0, 3.380946, 0, 8, 0, -3.380946, 0, 7.250462, 26, 0, 14)
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
 script = ExtResource("1_nav")
