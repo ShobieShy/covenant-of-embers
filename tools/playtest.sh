@@ -4,4 +4,4 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 # Step 96: PLAYTEST_SPEED=4 runs it at --time-scale 4.
-exec timeout 300 "${GODOT:-godot}" --headless --fixed-fps 60 ${PLAYTEST_SPEED:+--time-scale "$PLAYTEST_SPEED"} --path . -- --autoplay
+exec timeout 600 "${GODOT:-godot}" --headless --fixed-fps 60 ${PLAYTEST_SPEED:+--time-scale "$PLAYTEST_SPEED"} --path . -- --autoplay

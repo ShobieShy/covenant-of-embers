@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 118,
-  "steps_done": 98,
-  "last_commit": "5fd2a91",
+  "steps_done": 99,
+  "last_commit": "0f368f4",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1080,13 +1080,20 @@
       "step": 116,
       "type": "build",
       "summary": "Beats 11-13: Filth reveal cinematic on the boss wave (walls + THE FILTH card, existing arena checkpoint), filth_defeated -> return_to_bob (barrier gate opens), home -> crystal beat, bob_after_filth -> crystal cinematic -> complete(): finish flags, every gate + menu open, waystone awake, 'Prologue complete' banner; [tests] 385 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
-      "commit": "PENDING"
+      "commit": "0f368f4"
     },
     {
       "time": "2026-10-24T11:02:13-05:00",
       "step": 117,
       "type": "build",
       "summary": "Co-op intro sync: IntroSync host broadcast/late-join push, client mirror + kit + recap cards, host-only skip, character intro_done; [tests] 387 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
+      "commit": "0f368f4"
+    },
+    {
+      "time": "2026-10-24T11:33:46-05:00",
+      "step": 118,
+      "type": "build",
+      "summary": "Save migration (SaveGame.intro_status/migrate_intro: clearly-past saves marked done, others asked once 'Play the new intro?'), 'Skip prologue' on New Game once any slot finished it, --skip-intro kept (--autoplay now plays the intro); bot plays beats 1-13 (full tutorial kit drop, arena ring fits boss+players, QuestLog merge fix, path-follow fix); test_save_migration.gd; [tests] 392 passed, 0 failed, playtests solo/4x/--skip-intro/co-op PASS, lint green",
       "commit": "PENDING"
     }
   ],
@@ -1188,7 +1195,8 @@
     114,
     115,
     116,
-    117
+    117,
+    118
   ],
   "deferred": [
     74,

@@ -75,6 +75,87 @@ static func write(data: Dictionary, path := PATH) -> Error:
 	return UserDir.write_atomic(path, Compat.canonical(data))  # step 83 atomic, step 90 canonical bytes
 
 
+# --- Step 118: saves from before the intro --------------------------------------------------
+## Levels the prologue plays in; an old save anywhere else is clearly past it.
+const INTRO_LEVELS: PackedStringArray = ["mage_association", "town_square", "old_oak", "midden"]
+const INTRO_DONE := "done"  ## intro_done set (finished, skipped or migrated)
+const INTRO_ACTIVE := "active"  ## a new-style save mid-prologue
+const INTRO_PAST := "past"  ## an old save clearly past the intro: mark it done, no question
+const INTRO_ASK := "ask"  ## an old save that might not be: ask once, "Play the new intro?"
+
+
+static func _flags_of(data: Dictionary) -> Dictionary:
+	return (data.get("progress", {}) as Dictionary).get("flags", {})
+
+
+static func intro_status(data: Dictionary) -> String:
+	var fl := _flags_of(data)
+	if int(fl.get(IntroDirector.DONE, 0)) != 0:
+		return INTRO_DONE
+	if int(fl.get(IntroDirector.FLAG, 0)) != 0:
+		return INTRO_ACTIVE
+	var lvl := String((data.get("progress", {}) as Dictionary).get("level_id", "midden"))
+	var past := (
+		int(fl.get("tutorial_done", 0)) != 0
+		or int(fl.get("filth_defeated", 0)) != 0
+		or int((data.get("player", {}) as Dictionary).get("level", 1)) >= 3
+		or not INTRO_LEVELS.has(lvl)
+	)
+	return INTRO_PAST if past else INTRO_ASK
+
+
+## Rewrites an old save's flags: `play` restarts it at the summoning (character and gear kept),
+## otherwise the intro is marked done. Returns true when `data` changed.
+static func resolve_intro(data: Dictionary, play: bool) -> bool:
+	var st := intro_status(data)
+	if st == INTRO_DONE or st == INTRO_ACTIVE:
+		return false
+	var f := StoryFlags.new()
+	f.from_dict(_flags_of(data))
+	if play:
+		IntroDirector.start(f)
+	else:
+		IntroDirector.finish(f)
+	if not data.has("progress"):
+		data["progress"] = {}
+	data["progress"]["flags"] = f.to_dict()
+	if play:
+		data["progress"]["level_id"] = "mage_association"
+	return true
+
+
+## Old saves past the intro get marked done on disk; returns the status before.
+static func migrate_intro(path: String) -> String:
+	var r := read(path)
+	if r.has("error"):
+		return ""
+	var st := intro_status(r["data"])
+	if st == INTRO_PAST and resolve_intro(r["data"], false):
+		write(r["data"], path)
+		print("[save] %s is past the intro: marked done" % path)
+	return st
+
+
+## Answers "Play the new intro?" for an old save at `path` (asked once: both answers set a flag).
+static func answer_intro(path: String, play: bool) -> Error:
+	var r := read(path)
+	if r.has("error"):
+		return ERR_FILE_NOT_FOUND
+	if not resolve_intro(r["data"], play):
+		return OK
+	print("[save] %s: %s" % [path, "plays the new intro" if play else "intro marked done"])
+	return write(r["data"], path)
+
+
+## "Skip prologue" shows on New Game once any slot has finished the intro.
+static func any_intro_done() -> bool:
+	for n in range(1, SLOTS + 1):
+		var r := read(slot_path(n))
+		if not r.has("error") and intro_status(r["data"]) == INTRO_DONE:
+			return true
+	return false
+
+
 ## {"data": Dictionary} or {"error": String}.
 static func read(path := PATH) -> Dictionary:
 	if not FileAccess.file_exists(path):

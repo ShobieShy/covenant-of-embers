@@ -664,6 +664,8 @@ const JOE_CAMP := Vector3(7.0, 0.0, 7.5)
 const LIGHT_SHRINE := Vector3(-5.0, 0.0, 4.0)
 const DARK_SHRINE := Vector3(5.0, 0.0, 4.0)
 const TUTORIAL_PART := "basic_fire_head"
+## Step 118: one head can't make a staff, so the yard drops a full salvage kit.
+const TUTORIAL_KIT: PackedStringArray = ["basic_fire_head", "basic_exterior", "basic_interior", "basic_handle"]
 ## Soft walls across the Landfill: name -> [z, flag that drops it].
 const WALLS := {
 	"YardWall": [9.0, "gnawers_cleared"],
@@ -680,8 +682,8 @@ const TOASTS := {
 	],
 	"crafting":
 	[
-		"Pick up the part (E), then E at Joe's bench",
-		"Drag the part into your staff; the card shows the change",
+		"Pick up the parts (E), then E at Joe's bench",
+		"Fit the parts to your staff; the card shows the change",
 	],
 	"light_dark":
 	[
@@ -696,7 +698,8 @@ var yard_kills := 0
 var walls := {}  ## name -> StaticBody3D
 var shrines := {}  ## speaker -> Npc
 var dark_gnawer: Enemy
-var part_pickup: LootPickup
+var part_pickup: LootPickup  ## the kit piece still on the ground nearest the start (or null)
+var part_pickups: Array[LootPickup] = []
 var _saved_trigger := -1.0
 var _toasts: Array[String] = []
 var _toast_left := 0.0
@@ -806,19 +809,35 @@ func _on_yard_kill(e: Enemy) -> void:
 	_queue_toasts("crafting")
 
 
-## The guaranteed first part (beat 8): a Basic fire head, Interact to pick up.
+## The guaranteed first parts (beat 8): a Basic salvage kit around the last kill, Interact to pick up.
 func _drop_part(at: Vector3) -> void:
-	var part := WieldablePart.load_part(TUTORIAL_PART)
-	if part == null:
-		return
-	var d := LootDrop.new()
-	d.kind = LootDrop.Kind.PART
-	d.item = part.duplicate()
-	d.rarity_id = "basic"
-	d.rolled_rarity_id = "basic"
-	d.element = part.element
-	part_pickup = LootPickup.create(d, Vector3(at.x, 0.4, at.z))
-	main.add_child(part_pickup)
+	part_pickups.clear()
+	var i := 0
+	for id in TUTORIAL_KIT:
+		var part := WieldablePart.load_part(id)
+		if part == null:
+			continue
+		var d := LootDrop.new()
+		d.kind = LootDrop.Kind.PART
+		d.item = part.duplicate()
+		d.rarity_id = "basic"
+		d.rolled_rarity_id = "basic"
+		d.element = part.element
+		var off := Vector3(cos(i * TAU / TUTORIAL_KIT.size()), 0, sin(i * TAU / TUTORIAL_KIT.size())) * 0.9
+		var pk := LootPickup.create(d, Vector3(at.x, 0.4, at.z) + off)
+		main.add_child(pk)
+		part_pickups.append(pk)
+		i += 1
+	next_pickup()
+
+
+## The next kit piece still lying around (also kept in `part_pickup`).
+func next_pickup() -> LootPickup:
+	part_pickup = null
+	for pk in part_pickups:
+		if part_pickup == null and is_instance_valid(pk) and pk.is_inside_tree():
+			part_pickup = pk
+	return part_pickup
 
 
 func _on_crafted(_p: Player, _w: WieldableInstance) -> void:

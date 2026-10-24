@@ -44,8 +44,7 @@ static var intro_mode := ""
 
 ## Step 109: --skip-intro on the command line skips the prologue.
 static func intro_mode_from_args(args: PackedStringArray) -> String:
-	# Until the bot plays the intro (step 118), --autoplay skips it too.
-	return INTRO_SKIP if args.has("--skip-intro") or args.has("--autoplay") else INTRO_PLAY
+	return INTRO_SKIP if args.has("--skip-intro") else INTRO_PLAY  # step 118: the bot plays it
 
 
 ## Step 73: --archetype <id> / --char-name <name> / --color <#hex> (playtests, scripts).
@@ -90,6 +89,8 @@ static func new_run(tree: SceneTree, mode := INTRO_PLAY) -> void:
 
 ## Continue: the saved level, state loaded. False (nothing happens) without a valid save.
 static func continue_run(tree: SceneTree) -> bool:
+	if SaveGame.migrate_intro(save_path) == SaveGame.INTRO_ASK:
+		SaveGame.answer_intro(save_path, false)  # step 118: unasked (scripted --continue): keep playing
 	var r := SaveGame.read(save_path)
 	if r.has("error"):
 		return false

@@ -184,4 +184,9 @@ func from_dict(d: Dictionary) -> void:
 	clues = PackedStringArray(
 		Array(d.get("clues", [])).filter(func(x: Variant) -> bool: return clue_defs.has(String(x)))
 	)
-	flags.from_dict(d.get("flags", {}))
+	# Step 118: the save's progress flags (often the same StoryFlags) are already live and may
+	# have moved on (the intro advances on level load); only fill in flags that are missing.
+	var fd: Dictionary = d.get("flags", {})
+	for k in fd:
+		if int(fd[k]) != 0 and not flags.values.has(String(k)):
+			flags.values[String(k)] = int(fd[k])

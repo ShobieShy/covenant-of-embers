@@ -11,6 +11,9 @@ var version_label: Label
 var slot_buttons: Array[Button] = []
 ## Step 49: New Run over an existing save asks first.
 var confirm: ConfirmationDialog
+## Step 118: an old save that may predate the intro asks once; New Game can skip the prologue.
+var intro_ask: ConfirmationDialog
+var _new_mode := ""
 var settings_ui: SettingsUi
 var coop_menu: CoopMenu  ## step 88
 var _seconds := -1.0
@@ -58,7 +61,7 @@ func _ready() -> void:
 		slots.add_child(sb)
 		slot_buttons.append(sb)
 	_build_identity(v)  # step 73
-	for id in ["new_run", "continue", "coop", "settings", "quit"]:
+	for id in ["new_run", "skip_prologue", "continue", "coop", "settings", "quit"]:
 		var b := Button.new()
 		b.text = "Co-op" if id == "coop" else id.capitalize()
 		b.custom_minimum_size = Vector2(0, 40)
@@ -73,6 +76,14 @@ func _ready() -> void:
 	confirm.ok_button_text = "Overwrite"
 	confirm.confirmed.connect(_start_new)
 	add_child(confirm)
+	intro_ask = ConfirmationDialog.new()
+	intro_ask.title = "New intro"
+	intro_ask.dialog_text = "This save is from before the prologue was added.\nPlay the new intro?"
+	intro_ask.ok_button_text = "Play intro"
+	intro_ask.cancel_button_text = "Keep playing"
+	intro_ask.confirmed.connect(_answer_intro.bind(true))
+	intro_ask.canceled.connect(_answer_intro.bind(false))
+	add_child(intro_ask)
 	select_slot(GameFlow.slot)
 	settings_ui = SettingsUi.new()
 	add_child(settings_ui)
@@ -115,12 +126,16 @@ func _ready() -> void:
 
 func press(id: String) -> void:
 	match id:
-		"new_run":
+		"new_run", "skip_prologue":
+			_new_mode = GameFlow.INTRO_SKIP if id == "skip_prologue" else ""
 			if GameFlow.has_save():
 				confirm.popup_centered()
 			else:
 				_start_new()
 		"continue":
+			if SaveGame.migrate_intro(GameFlow.save_path) == SaveGame.INTRO_ASK:
+				intro_ask.popup_centered()
+				return
 			if not GameFlow.continue_run(get_tree()):
 				GameFlow.new_run(get_tree())
 		"coop":
@@ -133,7 +148,13 @@ func press(id: String) -> void:
 
 func _start_new() -> void:
 	GameFlow.new_identity = identity()
-	GameFlow.new_run(get_tree(), GameFlow.intro_mode_from_args(OS.get_cmdline_user_args()))
+	var mode := _new_mode if _new_mode != "" else GameFlow.intro_mode_from_args(OS.get_cmdline_user_args())
+	GameFlow.new_run(get_tree(), mode)
+
+
+func _answer_intro(play: bool) -> void:
+	SaveGame.answer_intro(GameFlow.save_path, play)
+	press("continue")
 
 
 ## Step 73 / 111: the picker lives in CharacterCreator (the intro shows it again in-game).
@@ -153,6 +174,7 @@ func select_slot(n: int) -> void:
 		b.button_pressed = i + 1 == GameFlow.slot
 		b.text = "Slot %d%s" % [i + 1, "" if GameFlow.slot_has_save(i + 1) else " (empty)"]
 	(buttons["continue"] as Button).disabled = not GameFlow.has_save()
+	(buttons["skip_prologue"] as Button).visible = SaveGame.any_intro_done()
 
 
 func _process(delta: float) -> void:

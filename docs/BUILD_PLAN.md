@@ -673,15 +673,15 @@ Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below;
 - Does: Beats 8-10: TutorialHints toast queue, scripted Gnawer yard with soft wall, guaranteed part drop, Assembly Station at Joe's camp + crafted_once, Light (heal scavenger) and Dark (one forced convert) shrines gating the arena.
 - Done: test_tutorial_lessons.gd: each wall drops on its flag; forced convert happens once only.
 
-**116. Filth intro, return, crystal finale, world open** ✅ PENDING
+**116. Filth intro, return, crystal finale, world open** ✅ `0f368f4`
 - Does: Beats 11-13: Filth reveal cinematic + arena checkpoint respawn, return route, Bob crystal cinematic, tutorial_done/fast_travel_crystal/intro_done, all gates/menus open, 'Prologue complete' end card.
 - Done: test: full chain to intro_done; fast travel usable only after; world open.
 
-**117. Co-op intro sync** ✅ PENDING
+**117. Co-op intro sync** ✅ `0f368f4`
 - Does: Host-authoritative beat messages; clients mirror gates/markers/tracker; join-during-cinematic wait card and recap card; kit/crystal granted to every player present or on late join; client character records intro_done.
 - Done: test_coop_intro.gd (loopback): client follows beats, late joiner gets kit and recap.
 
-**118. Save migration, skip prologue, intro playtest**
+**118. Save migration, skip prologue, intro playtest** ✅ PENDING
 - Does: SaveGame.apply marks old saves intro_done (tutorial_done / filth_defeated / level>=3 / non-intro level) or offers 'Play the new intro?'; 'Skip prologue' on New Game once any slot has intro_done; playtest bot walks beats 1-13.
 - Done: test_save_migration.gd; solo + co-op playtests pass with --autoplay through the intro.
 

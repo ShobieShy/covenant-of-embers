@@ -39,6 +39,7 @@ func _on_wave_started(_i: int, id: String) -> void:
 func raise() -> void:
 	if raised():
 		return
+	_fit_radius()
 	var seg_len := TAU * radius / SEGMENTS + 0.2
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = COLOR
@@ -64,6 +65,22 @@ func raise() -> void:
 		b.global_position = center + Vector3(sin(ang) * radius, HEIGHT * 0.5, cos(ang) * radius)
 		b.global_rotation = Vector3(0, ang, 0)
 	print("[arena] walls up (r %.1f)" % radius)
+
+
+## Step 118: the ring must enclose the spawner's live enemies (the boss) and every player when it rises (the Filth sits on
+## a ledge beyond the trigger, and a player can trip the trigger from its edge).
+func _fit_radius() -> void:
+	if not is_inside_tree():
+		return
+	var fit := radius
+	for g in [Enemy.GROUP, Player.GROUP]:
+		for n in get_tree().get_nodes_in_group(g):
+			var n3 := n as Node3D
+			if n3 == null or (n3 is Enemy and (not (n3 as Enemy).alive() or not get_parent().is_ancestor_of(n3))):
+				continue
+			var off := n3.global_position - center
+			fit = maxf(fit, Vector2(off.x, off.z).length() + MARGIN)
+	radius = fit
 
 
 func drop() -> void:

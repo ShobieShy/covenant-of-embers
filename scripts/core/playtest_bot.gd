@@ -12,7 +12,7 @@ extends Node
 ## stage survives the scene change (static). Fixed spread seed: runs are reproducible.
 
 const MIDDEN_KILLS := 2
-const SIM_LIMIT := 1500.0  ## simulated seconds for the whole run
+const SIM_LIMIT := 2400.0  ## simulated seconds for the whole run
 const STAGE_LIMIT := 600.0
 const REPLAN := 0.5
 
@@ -43,6 +43,7 @@ static func reset_run() -> void:
 		"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0, "teleports": 0, "looted_parts": 0
 	}
 	log_lines = PackedStringArray()
+	intro_beats = PackedStringArray()
 
 
 func setup(m: Node, p: Player) -> void:
@@ -58,6 +59,8 @@ func setup(m: Node, p: Player) -> void:
 		stage = "coop_follow"
 		Coop.session.message.connect(_on_coop_bot_message)
 		Coop.session.ended.connect(func(r: String): _client_done("session ended: " + r))
+	elif stage == "midden_walk" and IntroDirector.live and IntroDirector.active(IntroDirector.live):
+		stage = "intro"  # step 118: a new game plays the prologue first
 	note("start %s in %s" % [stage, GameFlow.id_of(m.get_node("Level"))])
 
 
@@ -270,9 +273,15 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 			_path = NavigationServer3D.map_get_path(nav.get_navigation_map(), player.global_position, at, true)
 	var next := at
 	var feet := player.global_position
-	for wp in _path:
-		if Vector2(wp.x - feet.x, wp.z - feet.z).length() > 0.6:
-			next = wp
+	# Step 118: start from the waypoint nearest the feet (a long, wiggly path otherwise hands back
+	# an already-passed point and the bot turns round every few ticks).
+	var from := 0
+	for i in _path.size():
+		if _path[i].distance_squared_to(feet) < _path[from].distance_squared_to(feet):
+			from = i
+	for i in range(from, _path.size()):
+		if Vector2(_path[i].x - feet.x, _path[i].z - feet.z).length() > 0.6:
+			next = _path[i]
 			break
 	look_at_point(next + Vector3(0, 1.0, 0))
 	player.set_look(player.yaw, 0.0)
@@ -316,6 +325,8 @@ func _physics_process(delta: float) -> void:
 	match stage:
 		"coop_follow":
 			_follow_host()
+		"intro":
+			_intro_tick()
 		"midden_walk":
 			if GameFlow.id_of(main.get_node("Level")) != "midden":  # step 109: a new game starts elsewhere
 				if t > 0.5:
@@ -491,9 +502,144 @@ func _craft(st: AssemblyStation) -> void:
 			)
 		)
 		return
+	if tried.is_empty() and not String(stats["crafted"]).is_empty():
+		note("no bare base left: %s was crafted in the prologue" % stats["crafted"])  # step 118
+		return
 	var why := "looted parts make no build (%d part(s); %s)" % [looted.size(), "; ".join(tried)]
 	if Coop.active():  # step 93: co-op kill order changes the loot rolls; crafting is solo-checked
 		stats["crafted"] = "none (co-op loot)"
 		note("craft skipped in co-op: " + why)
 		return
 	_finish(false, why)
+
+
+## --- step 118: the prologue, beats 1-13 -------------------------------------------------
+## Plays each beat the way a player would: watch a second of every cinematic then skip it,
+## confirm the appraisal, click through dialogue (first choice), walk the navmesh to the
+## objective marker and Interact, fight the yard and the Filth, pick up and craft the part.
+
+static var intro_beats := PackedStringArray()
+var _intro_beat := ""
+var _cine_t := 0.0
+var _talk_cd := 0.0
+
+
+func _intro_director() -> IntroDirector:
+	return main.get_node_or_null("IntroDirector") as IntroDirector
+
+
+func _intro_tick() -> void:
+	var d := _intro_director()
+	if d == null or not IntroDirector.active(d.flags):
+		note("prologue done: %d beat(s) %s" % [intro_beats.size(), ",".join(intro_beats)])
+		if intro_beats.size() < IntroDirector.BEATS.size():
+			_finish(false, "prologue skipped beats (%s)" % ",".join(intro_beats))
+		else:
+			_goto("midden_walk")
+		return
+	var b := d.current()
+	if b != _intro_beat:
+		_intro_beat = b
+		if not intro_beats.has(b):
+			intro_beats.append(b)
+		t = 0.0
+		note("intro beat %s (%d/%d) in %s" % [b, intro_beats.size(), IntroDirector.BEATS.size(), d.here])
+	_talk_cd -= get_physics_process_delta_time()
+	_intro_shot(b)
+	if _intro_ui(d):
+		return
+	if d.here == IntroDirector.LEVEL.get(b, d.here) and b in ["combat", "filth"] and _intro_fight(d, b):
+		return
+	if b == "crafting" and d.here == "midden" and _intro_craft(d):
+		return
+	_intro_interact(d)
+
+
+## With --shots: one screenshot per beat 1 s in, and one 0.7 s into every cinematic (before the skip).
+func _intro_shot(b: String) -> void:
+	var sh := main.get_node_or_null("Screenshots") as Screenshots
+	if sh == null:
+		return
+	var dt := get_physics_process_delta_time()
+	if Cinematic.playing and _cine_t < 0.7 and _cine_t + dt >= 0.7:
+		sh.take("cine_" + b)
+	elif t >= 1.0 and t - dt < 1.0:
+		sh.take("beat_" + b)
+
+
+## Cinematics (watch 1 s, skip), the appraisal, dialogue (first choice). True while busy.
+func _intro_ui(d: IntroDirector) -> bool:
+	if Cinematic.playing:
+		_cine_t += get_physics_process_delta_time()
+		if _cine_t > 1.0:
+			Cinematic.playing.skip()
+		return true
+	_cine_t = 0.0
+	if d.creator:
+		d.choose_identity(
+			{"archetype": player.archetype, "name": player.character_name, "color": player.character_color}
+		)
+		return true
+	var dlg: DialogueRunner = main.get(&"dialogue")
+	if dlg and dlg.active:
+		if _talk_cd <= 0.0:
+			_talk_cd = 0.3
+			if dlg.awaiting_choice():
+				dlg.choose(0)
+			else:
+				dlg.advance()
+		return true
+	return false
+
+
+func _intro_fight(d: IntroDirector, b: String) -> bool:
+	var e := nearest_enemy()
+	if e and e.corrupted_left <= 0.0:
+		fight(e)
+		return true
+	if b != "filth":
+		return false
+	for q in get_tree().get_nodes_in_group(QuestPickup.GROUP):  # Joe's trash, after the kill
+		walk_to((q as Node3D).global_position)
+		return true
+	var sp := d.spawner()
+	if sp:
+		walk_to(sp.trigger_center)
+	return true
+
+
+func _intro_craft(d: IntroDirector) -> bool:
+	var pk := d.next_pickup()
+	if pk:
+		if pk.global_position.distance_to(player.eye_position()) < 2.5:
+			look_at_point(pk.global_position + Vector3(0, LootPickup.GEM_SIZE * 0.5, 0))
+			_input = PlayerInput.hold([], ["interact"] if _tick % 2 == 0 else [])
+		else:
+			walk_to(pk.global_position)
+		return true
+	var st := d.station()
+	if st and st.in_reach(player):
+		_craft(st)
+		return true
+	return false
+
+
+## Walk to the objective marker, then Interact with the NPC / gate there.
+func _intro_interact(d: IntroDirector) -> void:
+	var at: Variant = d.target_point()
+	if at == null:
+		return
+	if flat_distance(at) > 1.8:
+		walk_to(at)
+		return
+	if _talk_cd > 0.0:
+		return
+	_talk_cd = 1.0
+	for n in main.find_children("*", "", true, false):
+		if (n is Npc or n is LevelGate) and (n as Node3D).global_position.distance_to(at) < 0.6:
+			look_at_point((n as Node3D).global_position + Vector3(0, 1.2, 0))
+			if n is Npc:
+				(n as Npc).talk()
+			else:
+				(n as LevelGate).use()
+			return
