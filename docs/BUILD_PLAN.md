@@ -442,7 +442,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_filth.gd: phase transitions at thresholds, attack cadence per phase.
 - Needs ShobieShy: Q8 (Filth replaces or follows the current Heap/wave ending)
 - Q1 answered (Magewar storyline)
-**57. The Filth phase 3 + Joe's Trash drop**
+**57. The Filth phase 3 + Joe's Trash drop** ⛔ Blocked (prerequisite)
 - Does: Phase 3 exposes the core weak spot; always drops the quest item 'Joe's Trash' (cracked crystals, 'trash portal' notes) plus glowing sludge and loot; checkpoint at the boss door.
 - Done: test_filth.gd: phase 3, quest drop always spawns, checkpoint respawn.
 - Q1 answered (Magewar storyline)
@@ -458,11 +458,11 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_gold.gd: drops, auto-collect, save round-trip.
 - Needs ShobieShy: Q4 (gold vs Tallies)
 
-**60. Vendor framework + shop UI**
+**60. Vendor framework + shop UI** ⛔ Blocked (prerequisite)
 - Does: Vendor node with stock tables, buy/sell (sell price by rarity), shop screen with compare cards.
 - Done: test_vendor.gd: buy/sell math, can't overspend, stock restock.
 
-**61. Vendors: potions/parts, gear, re-roll**
+**61. Vendors: potions/parts, gear, re-roll** ⛔ Blocked (prerequisite)
 - Does: Three vendors per PLAN §11 roles (consumables+basic parts, equipment, re-roll one part stat for gold+Dust).
 - Done: test_vendor.gd: each vendor's stock and re-roll keeps rarity.
 
@@ -493,7 +493,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_hub.gd: stash shared, station present, mentor scene once.
 - Q1 answered (Magewar storyline)
 - Result: PASS (273 tests + headless playtest)
-**67. Tutorial quest chain**
+**67. Tutorial quest chain** ⛔ Blocked (prerequisite)
 - Does: Bob → Landfill (the Midden level, renamed Landfill in UI) → defeat The Filth → bring Joe's Trash back → Bob crafts the Fast Travel Teleportation Crystal; first levels.
 - Done: headless playtest variant runs the whole chain, PASS.
 - Q1 answered (Magewar storyline)
@@ -569,11 +569,11 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase O – Content and wrap-up
 
-**81. Dungeon 1 region + Town 2**
+**81. Dungeon 1 region + Town 2** ⛔ Blocked (prerequisite)
 - Does: Bible 'Town 2' (e.g. Willowbrook: farmer side quest vs goblin raids uncovers the hidden entrance) + Dungeon 1, first of five toward the Demon Lord's lair, built on the Breach template with its own boss.
 - Done: test_dungeon1.gd: clearable, boss loot.
 - Q1 answered (Magewar storyline)
-**82. Playtest pass 3 + CI**
+**82. Playtest pass 3 + CI** ⛔ Blocked (prerequisite)
 - Does: Full automated run prologue→tutorial→Dungeon 1; graphical user-session run with screenshots; tools/lint.sh + export.sh green.
 - Done: run_tests + lint + export green; playtest PASS.
 

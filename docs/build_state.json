@@ -621,6 +621,209 @@
       "summary": "Art pass: CC0 ambientCG triplanar textures (Midden, Breach)",
       "tests": "test_level tint/normal/triplanar; toml_to_scene self-test; check_assets; 291 tests",
       "commit": "4ff0a82"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 43,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q9"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 50,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q2"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 51,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q3"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 52,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q3"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 53,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q5"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 56,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q8"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 57,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "blocked by prerequisite: needs 56 (Filth phases 1-2, Q8)"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 59,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q4"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 60,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "blocked by prerequisite: needs 59 (gold, Q4)"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 61,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "blocked by prerequisite: needs 59-60 (gold, vendor framework)"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 67,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "blocked by prerequisite: needs 71-73 (skill trees/archetypes) for the tutorial content"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 70,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q12"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 71,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q11"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 72,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q11"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 73,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q6"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 74,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q10"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 78,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q7/Q15/Q16"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 79,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q7/Q15/Q16"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 80,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q7/Q15/Q16"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 81,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "blocked by prerequisite: needs 56-57 and 60-61 (Filth boss, vendors) for the dungeon/town"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 82,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "blocked by prerequisite: playtest pass 3 + CI needs 81 (Dungeon 1)"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 85,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q13"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 87,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q14"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 88,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q7/Q15/Q16"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 89,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q7/Q15/Q16"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 90,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q7/Q15/Q16"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 91,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q7/Q15/Q16"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 92,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q7/Q15/Q16"
+    },
+    {
+      "time": "2026-10-24T06:29:14-05:00",
+      "step": 93,
+      "type": "skip",
+      "summary": "skipped this session",
+      "reason": "waiting on ShobieShy's answer to Q7/Q15/Q16"
     }
   ],
   "completed_steps": [
@@ -671,8 +874,22 @@
     46,
     47,
     48,
+    49,
+    54,
+    55,
+    58,
+    62,
+    63,
+    64,
+    65,
+    66,
+    68,
+    69,
     75,
+    76,
+    77,
     83,
-    84
+    84,
+    86
   ]
 }
