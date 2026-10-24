@@ -18,6 +18,19 @@ func _init(s := "") -> void:
 
 
 func _ready() -> void:
+	var model := CharacterModel.make(CharacterModel.for_speaker(speaker))  # batch_02 art
+	if model:
+		add_child(model)
+	else:
+		_placeholder_body()
+	var l := Label3D.new()
+	l.text = "%s  [F]" % speaker
+	l.position.y = 2.2
+	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	add_child(l)
+
+
+func _placeholder_body() -> void:
 	var body := CSGCylinder3D.new()
 	body.radius = 0.35
 	body.height = 1.8
@@ -26,11 +39,6 @@ func _ready() -> void:
 	m.albedo_color = Color(0.3, 0.55, 0.85)
 	body.material = m
 	add_child(body)
-	var l := Label3D.new()
-	l.text = "%s  [F]" % speaker
-	l.position.y = 2.2
-	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	add_child(l)
 
 
 func in_reach(p: Player) -> bool:

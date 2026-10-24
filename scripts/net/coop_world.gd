@@ -105,6 +105,9 @@ func local_pose() -> Dictionary:
 	var nm: Variant = player.get(&"character_name")
 	if nm is String and not (nm as String).is_empty() and nm != "Ember":
 		d["n"] = nm
+	var arch: Variant = player.get(&"archetype")
+	if arch is String:  # batch_02: the others see the archetype's model
+		d["k"] = arch
 	d["a"] = bool(player.call(&"alive")) if player.has_method(&"alive") else true
 	d["i"] = bool(player.call(&"invulnerable")) if player.has_method(&"invulnerable") else false
 	d["d"] = bool(player.get(&"downed")) if &"downed" in player else false

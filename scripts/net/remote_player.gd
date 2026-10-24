@@ -28,6 +28,9 @@ var _tag: Label3D
 var color := Color(0.35, 0.6, 1.0)  ## step 73: the character colour (pose "c")
 var _mat: StandardMaterial3D
 var _placed := false
+var archetype := ""  ## pose "k": batch_02 player model for gal / buff
+var _body: Node3D
+var _model: CharacterModel
 
 
 func _ready() -> void:
@@ -43,6 +46,7 @@ func _ready() -> void:
 	_mat = m
 	mi.material_override = m
 	add_child(mi)
+	_body = mi
 	var hb := StaticBody3D.new()
 	hb.name = "Hitbox"
 	hb.collision_layer = HITBOX_LAYER
@@ -76,6 +80,8 @@ func apply_pose(d: Dictionary) -> void:
 		color = Color.from_string(String(d["c"]), color)
 		if _mat:
 			_mat.albedo_color = color
+	if d.has("k") and String(d["k"]) != archetype:
+		_set_archetype(String(d["k"]))
 	if _tag:
 		_tag.text = "%s%s" % [display_name, " (down)" if downed else ""]
 	poses += 1
@@ -83,6 +89,18 @@ func apply_pose(d: Dictionary) -> void:
 		_placed = true
 		global_position = target_pos
 		rotation.y = target_yaw
+
+
+func _set_archetype(id: String) -> void:
+	archetype = id
+	if _model:
+		_model.queue_free()
+		_model = null
+	_model = CharacterModel.make(CharacterModel.for_archetype(id))
+	if _model:
+		add_child(_model)
+	if _body:
+		_body.visible = _model == null
 
 
 func smooth(dt: float) -> void:
