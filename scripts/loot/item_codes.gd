@@ -16,6 +16,12 @@ extends RefCounted
 ##   EQUIPMENT_TEMPLATE  equipment index
 ##   POTION              consumable index | count 7 b (1..stack_size)
 ##   part record = rolled 1 b, then the PART fields (rolled) or a part index (hand-made)
+##   GEM (step 44)       element 3 b
+##   v2 extras (step 44): flag FLAG_EXTRAS set (and prefix "EM2-") when an item carries
+##   socketed gems or a consecration. Then every part record (loose or inside an assembled
+##   wieldable) is followed by: gem count 2 b | count × element 3 b, and an EQUIPMENT /
+##   EQUIPMENT_TEMPLATE record by: consecration 3 b (0 none, else Consecrations.IDS index + 1).
+##   Items without extras still encode as the exact same EM1 code (old codes keep decoding).
 ##   then CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF) over the payload bytes.
 ## Indices point into the version's append-only index tables (TABLES); their bit width is
 ## bits_for(table size) of that version, so a frozen version always decodes the same way.
@@ -33,9 +39,13 @@ extends RefCounted
 ## rolled stat and a resource path for anything else, and can't send assembled staffs;
 ## ours is seed-based and covers every item kind (reinterpreted, PLAN §31.5).
 
-enum Kind { WIELDABLE, ASSEMBLED, PART, PART_HANDMADE, EQUIPMENT, EQUIPMENT_TEMPLATE, POTION }
+enum Kind { WIELDABLE, ASSEMBLED, PART, PART_HANDMADE, EQUIPMENT, EQUIPMENT_TEMPLATE, POTION, GEM }
 
 const PREFIX := "EM1-"
+const PREFIX_V2 := "EM2-"  ## step 44: codes with FLAG_EXTRAS or a GEM
+const FLAG_EXTRAS := 1
+const GEM_COUNT_BITS := 2
+const CONSECRATION_BITS := 3
 const VERSION := 1  ## current index-table version (written by encode)
 const ALPHABET := "0123456789ABCDEFGHJKMNPQRSTVWXYZ"  ## Crockford base32
 const GROUP := 5  ## characters per "-" group
@@ -55,7 +65,8 @@ const COUNT_BITS := 7
 const TABLES := {
 	1:
 	{
-		"wieldables": ["apprentice_fire_staff", "earthward_battlestaff", "novice_arcane_wand", "swift_wind_wand"],
+		"wieldables":
+		["apprentice_fire_staff", "earthward_battlestaff", "novice_arcane_wand", "swift_wind_wand"],
 		"parts":
 		[
 			"basic_earth_interior",
@@ -75,7 +86,8 @@ const TABLES := {
 			"uncommon_fire_head",
 			"unique_void_charm"
 		],
-		"equipment": ["apprentice_hat", "basic_robes", "leather_belt", "novice_grimoire", "traveler_shoes"],
+		"equipment":
+		["apprentice_hat", "basic_robes", "leather_belt", "novice_grimoire", "traveler_shoes"],
 		"consumables": ["health_potion", "mana_potion"],
 	},
 }
@@ -109,26 +121,45 @@ static func _encode(item: Variant, count: int) -> Array:
 		item = (item as LootDrop).item
 	var w := BitStream.new()
 	var err := ""
+	var ex := has_extras(item)
+	if item is ElementGem:
+		write_header(w, Kind.GEM)
+		w.write((item as ElementGem).element, ELEMENT_BITS)
+		return [seal(w.to_bytes(), PREFIX_V2), ""]
 	if item is WieldableInstance:
-		err = _write_wieldable(w, item)
+		err = _write_wieldable(w, item, ex)
 	elif item is WieldablePart:
 		var p := item as WieldablePart
 		err = _check_part(p)
 		if err.is_empty():
+			var fl := FLAG_EXTRAS if ex else 0
 			if p.roll_seed >= 0:
-				write_header(w, Kind.PART)
+				write_header(w, Kind.PART, VERSION, fl)
 			else:
-				write_header(w, Kind.PART_HANDMADE)
-			_write_part_fields(w, p)
+				write_header(w, Kind.PART_HANDMADE, VERSION, fl)
+			_write_part_fields(w, p, ex)
 	elif item is EquipmentItem:
-		err = _write_equipment(w, item)
+		err = _write_equipment(w, item, ex)
 	elif item is ConsumableItem:
 		err = _write_potion(w, item, count)
 	else:
 		err = "not an item"
 	if not err.is_empty():
 		return ["", err]
-	return [seal(w.to_bytes()), ""]
+	return [seal(w.to_bytes(), PREFIX_V2 if ex else PREFIX), ""]
+
+
+## Step 44: true when `item` needs the v2 extras (socketed gems or a consecration).
+static func has_extras(item: Variant) -> bool:
+	if item is WieldablePart:
+		return not (item as WieldablePart).gems.is_empty()
+	if item is EquipmentItem:
+		return not (item as EquipmentItem).consecration.is_empty()
+	if item is WieldableInstance:
+		for p in (item as WieldableInstance).parts:
+			if p != null and not p.gems.is_empty():
+				return true
+	return false
 
 
 static func write_header(w: BitStream, kind: int, version := VERSION, flags := 0) -> void:
@@ -137,7 +168,7 @@ static func write_header(w: BitStream, kind: int, version := VERSION, flags := 0
 	w.write(flags, FLAGS_BITS)
 
 
-static func _write_wieldable(w: BitStream, wi: WieldableInstance) -> String:
+static func _write_wieldable(w: BitStream, wi: WieldableInstance, ex := false) -> String:
 	if wi.def == null:
 		return "wieldable has no base"
 	var ids := table("wieldables")
@@ -158,13 +189,13 @@ static func _write_wieldable(w: BitStream, wi: WieldableInstance) -> String:
 			var e := _check_part(p)
 			if not e.is_empty():
 				return e
-		write_header(w, Kind.ASSEMBLED)
+		write_header(w, Kind.ASSEMBLED, VERSION, FLAG_EXTRAS if ex else 0)
 		w.write(idx, bits_for(ids.size()))
 		w.write(tier, TIER_BITS)
 		w.write(wi.parts.size(), PART_COUNT_BITS)
 		for p in wi.parts:
 			w.write(1 if p.roll_seed >= 0 else 0, 1)
-			_write_part_fields(w, p)
+			_write_part_fields(w, p, ex)
 		return ""
 	if not wi.parts.is_empty():
 		return "loose parts on an unassembled base (assemble it first)"
@@ -183,17 +214,19 @@ static func _check_part(p: WieldablePart) -> String:
 		if p.roll_seed >= (1 << SEED_BITS):
 			return "part '%s': roll_seed out of range" % p.id
 		var again := PartRoller.regenerate(p)
-		if again == null or not _props_equal(p, again):
+		if again == null or not _props_equal(p, again, ["gems"]):
 			return "part '%s' doesn't match its roll seed (edited?)" % p.id
 		return ""
 	if table("parts").find(p.id) < 0:
 		return "hand-made part '%s' is not in the index table" % p.id
-	if not _props_equal(p, WieldablePart.load_part(p.id)):
+	if not _props_equal(p, WieldablePart.load_part(p.id), ["gems"]):
 		return "hand-made part '%s' was edited" % p.id
+	if p.gems.size() > (1 << GEM_COUNT_BITS) - 1:
+		return "part '%s': too many gems" % p.id
 	return ""
 
 
-static func _write_part_fields(w: BitStream, p: WieldablePart) -> void:
+static func _write_part_fields(w: BitStream, p: WieldablePart, ex := false) -> void:
 	if p.roll_seed >= 0:
 		w.write(p.part_type, PART_TYPE_BITS)
 		w.write(Rarity.parse(p.rarity), TIER_BITS)
@@ -202,29 +235,43 @@ static func _write_part_fields(w: BitStream, p: WieldablePart) -> void:
 	else:
 		var ids := table("parts")
 		w.write(ids.find(p.id), bits_for(ids.size()))
+	if ex:
+		w.write(p.gems.size(), GEM_COUNT_BITS)
+		for g in p.gems:
+			w.write(g.element, ELEMENT_BITS)
 
 
-static func _write_equipment(w: BitStream, e: EquipmentItem) -> String:
+static func _write_consecration(w: BitStream, e: EquipmentItem, ex: bool) -> void:
+	if ex:
+		w.write(Consecrations.IDS.find(e.consecration) + 1, CONSECRATION_BITS)
+
+
+static func _write_equipment(w: BitStream, e: EquipmentItem, ex := false) -> String:
+	if not e.consecration.is_empty() and Consecrations.IDS.find(e.consecration) < 0:
+		return "unknown consecration '%s'" % e.consecration
+	var fl := FLAG_EXTRAS if ex else 0
 	if e.roll_seed >= 0:
 		if e.roll_seed >= (1 << SEED_BITS):
 			return "equipment '%s': roll_seed out of range" % e.id
 		var again := EquipmentRoller.regenerate(e)
-		if again == null or not _props_equal(e, again):
+		if again == null or not _props_equal(e, again, ["consecration"]):
 			return "equipment '%s' doesn't match its roll seed (edited?)" % e.id
-		write_header(w, Kind.EQUIPMENT)
+		write_header(w, Kind.EQUIPMENT, VERSION, fl)
 		w.write(e.slot, SLOT_BITS)
 		w.write(Rarity.parse(e.rarity), TIER_BITS)
 		w.write(e.element_affinity, ELEMENT_BITS)
 		w.write(e.roll_seed, SEED_BITS)
+		_write_consecration(w, e, ex)
 		return ""
 	var ids := table("equipment")
 	var idx := ids.find(e.id)
 	if idx < 0:
 		return "equipment '%s' is not in the index table" % e.id
-	if not _props_equal(e, EquipmentItem.load_item(e.id)):
+	if not _props_equal(e, EquipmentItem.load_item(e.id), ["consecration"]):
 		return "equipment '%s' was edited" % e.id
-	write_header(w, Kind.EQUIPMENT_TEMPLATE)
+	write_header(w, Kind.EQUIPMENT_TEMPLATE, VERSION, fl)
 	w.write(idx, bits_for(ids.size()))
+	_write_consecration(w, e, ex)
 	return ""
 
 
@@ -244,7 +291,7 @@ static func _write_potion(w: BitStream, c: ConsumableItem, count: int) -> String
 
 
 ## "EM1-" + grouped base32 of payload + CRC-16 (public so tests can craft raw payloads).
-static func seal(payload: PackedByteArray) -> String:
+static func seal(payload: PackedByteArray, prefix := PREFIX) -> String:
 	var bytes := payload.duplicate()
 	var crc := crc16(payload)
 	bytes.append((crc >> 8) & 0xFF)
@@ -253,7 +300,7 @@ static func seal(payload: PackedByteArray) -> String:
 	var groups := PackedStringArray()
 	for i in range(0, body.length(), GROUP):
 		groups.append(body.substr(i, GROUP))
-	return PREFIX + "-".join(groups)
+	return prefix + "-".join(groups)
 
 
 ## CRC-16/CCITT-FALSE (check value of "123456789" = 0x29B1).
@@ -306,8 +353,9 @@ static func base32_decode(text: String) -> Dictionary:
 static func decode(code: String) -> EmberMark:
 	var m := EmberMark.new()
 	var s := code.strip_edges()
-	if not s.to_upper().begins_with(PREFIX):
-		m.error = "bad prefix (expected %s)" % PREFIX
+	var v2 := s.to_upper().begins_with(PREFIX_V2)
+	if not v2 and not s.to_upper().begins_with(PREFIX):
+		m.error = "bad prefix (expected %s or %s)" % [PREFIX, PREFIX_V2]
 		return m
 	var body := s.substr(PREFIX.length()).replace("-", "").replace(" ", "")
 	if body.is_empty():
@@ -334,10 +382,14 @@ static func decode(code: String) -> EmberMark:
 	if not TABLES.has(m.version):
 		m.error = "unknown version %d" % m.version
 		return m
-	if flags != 0:
+	if flags & ~FLAG_EXTRAS:
 		m.error = "unknown flags %d" % flags
 		return m
-	var res: Array = _read_item(r, m.kind, m.version)
+	var ex := (flags & FLAG_EXTRAS) != 0
+	if ex != v2 and m.kind != Kind.GEM or (m.kind == Kind.GEM and not v2):
+		m.error = "prefix doesn't match the code's kind/flags"
+		return m
+	var res: Array = _read_item(r, m.kind, m.version, ex)
 	if r.overrun:
 		m.error = "truncated payload"
 		return m
@@ -353,8 +405,15 @@ static func decode(code: String) -> EmberMark:
 
 
 ## [item, error, count]
-static func _read_item(r: BitStream, kind: int, version: int) -> Array:
+static func _read_item(r: BitStream, kind: int, version: int, ex := false) -> Array:
 	match kind:
+		Kind.GEM:
+			var el := r.read(ELEMENT_BITS)
+			if r.overrun:
+				return [null, "", 1]
+			if el >= ElementTable.COUNT:
+				return [null, "unknown element %d" % el, 1]
+			return [ElementGem.make(el as ElementTable.Element), "", 1]
 		Kind.WIELDABLE, Kind.ASSEMBLED:
 			var ids := table("wieldables", version)
 			var idx := r.read(bits_for(ids.size()))
@@ -375,7 +434,7 @@ static func _read_item(r: BitStream, kind: int, version: int) -> Array:
 			var parts: Array[WieldablePart] = []
 			for i in n:
 				var rolled := r.read(1) == 1
-				var pr := _read_part(r, rolled, version)
+				var pr := _read_part(r, rolled, version, ex)
 				if r.overrun:
 					return [null, "", 1]
 				if not pr[1].is_empty():
@@ -386,10 +445,10 @@ static func _read_item(r: BitStream, kind: int, version: int) -> Array:
 				return [null, "assembly fails: " + "; ".join(Assembly.check(def, parts)), 1]
 			return [w, "", 1]
 		Kind.PART:
-			var pr := _read_part(r, true, version)
+			var pr := _read_part(r, true, version, ex)
 			return [pr[0], pr[1], 1]
 		Kind.PART_HANDMADE:
-			var pr := _read_part(r, false, version)
+			var pr := _read_part(r, false, version, ex)
 			return [pr[0], pr[1], 1]
 		Kind.EQUIPMENT:
 			var slot := r.read(SLOT_BITS)
@@ -405,7 +464,9 @@ static func _read_item(r: BitStream, kind: int, version: int) -> Array:
 			if el >= ElementTable.COUNT:
 				return [null, "unknown element %d" % el, 1]
 			var e := EquipmentRoller.from_seed(seed, slot, Rarity.IDS[tier], el)
-			return [e, "" if e != null else "equipment roll failed", 1]
+			if e == null:
+				return [null, "equipment roll failed", 1]
+			return [e, _read_consecration(r, e, ex), 1]
 		Kind.EQUIPMENT_TEMPLATE:
 			var ids := table("equipment", version)
 			var idx := r.read(bits_for(ids.size()))
@@ -413,7 +474,8 @@ static func _read_item(r: BitStream, kind: int, version: int) -> Array:
 				return [null, "", 1]
 			if idx >= ids.size():
 				return [null, "unknown equipment index %d" % idx, 1]
-			return [EquipmentItem.load_item(ids[idx]).duplicate(), "", 1]
+			var t := EquipmentItem.load_item(ids[idx]).duplicate() as EquipmentItem
+			return [t, _read_consecration(r, t, ex), 1]
 		Kind.POTION:
 			var ids := table("consumables", version)
 			var idx := r.read(bits_for(ids.size()))
@@ -429,8 +491,45 @@ static func _read_item(r: BitStream, kind: int, version: int) -> Array:
 	return [null, "unknown item kind %d" % kind, 1]
 
 
+static func _read_consecration(r: BitStream, e: EquipmentItem, ex: bool) -> String:
+	if not ex:
+		return ""
+	var c := r.read(CONSECRATION_BITS)
+	if r.overrun:
+		return ""
+	if c > Consecrations.IDS.size():
+		return "unknown consecration %d" % c
+	e.consecration = Consecrations.IDS[c - 1] if c > 0 else ""
+	return ""
+
+
+static func _read_gems(r: BitStream, p: WieldablePart, ex: bool) -> String:
+	if not ex or p == null:
+		return ""
+	var n := r.read(GEM_COUNT_BITS)
+	var a: Array[ElementGem] = []
+	for i in n:
+		var el := r.read(ELEMENT_BITS)
+		if r.overrun:
+			return ""
+		if el >= ElementTable.COUNT:
+			return "unknown gem element %d" % el
+		a.append(ElementGem.make(el as ElementTable.Element))
+	p.gems = a
+	return ""
+
+
 ## [part, error]
-static func _read_part(r: BitStream, rolled: bool, version: int) -> Array:
+static func _read_part(r: BitStream, rolled: bool, version: int, ex := false) -> Array:
+	var res := _read_part_base(r, rolled, version)
+	if res[0] != null:
+		var e := _read_gems(r, res[0], ex)
+		if not e.is_empty():
+			return [null, e]
+	return res
+
+
+static func _read_part_base(r: BitStream, rolled: bool, version: int) -> Array:
 	if rolled:
 		var type := r.read(PART_TYPE_BITS)
 		var tier := r.read(TIER_BITS)

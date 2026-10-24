@@ -168,6 +168,8 @@ func test_round_trip_1000_random_items() -> void:
 				fail("wieldable stats differ for %s" % code)
 	check(bad == 0, "%d of 1000 items failed the round trip" % bad)
 	for k in ItemCodes.Kind.values():
+		if k == ItemCodes.Kind.GEM:
+			continue  # v2 kind, covered by test_item_codes_v2.gd (step 44)
 		check(kinds.get(k, 0) >= 10, "kind %s covered (%d)" % [ItemCodes.Kind.keys()[k], kinds.get(k, 0)])
 	check(longest <= 64, "longest code %d chars" % longest)
 	print("    round trip: 1000 items, kinds %s, longest code %d chars" % [kinds, longest])
@@ -264,7 +266,7 @@ func test_bad_codes_rejected() -> void:
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 2); w.write(0, 5)), "version", "unknown version 2")
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 0); w.write(0, 5)), "version", "version 0")
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, 7); w.write(0, 8)), "kind", "unknown kind 7")
-	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 1, 1); w.write(0, 5)), "flags", "unknown flags")
+	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 1, 2); w.write(0, 5)), "flags", "unknown flags")
 	# Unknown ids / out-of-range fields.
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.EQUIPMENT_TEMPLATE); w.write(7, 3)), "unknown equipment index", "equipment index 7")
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.EQUIPMENT_TEMPLATE); w.write(5, 3)), "unknown equipment index", "equipment index 5")
