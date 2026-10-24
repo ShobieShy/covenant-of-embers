@@ -636,7 +636,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_net.gd: item codes/loot seeds and character file bytes identical across targets; manual Win↔Linux session pending Q14.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**91. Co-op saves + host leaving**
+**91. Co-op saves + host leaving** ✅ `ae24541`
 - Does: Borderlands-style ownership: the host's save holds world/quest progress; each client joins with a portable character save from any game (level, gear, skills) and keeps it. On host disconnect clients exit to menu with their character saved; no host migration. Client quest progress is not written to the host world.
 - Done: test_net.gd: client character persists after host quits; host world flags unchanged by clients; character file loads into any host.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)

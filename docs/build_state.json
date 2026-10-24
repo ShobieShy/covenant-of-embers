@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 61,
-  "last_commit": "9153b78",
+  "steps_done": 71,
+  "last_commit": "ae24541",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -872,6 +872,14 @@
       "summary": "Last stand 15 s, revive by teammate within 2.5 m for 3 s at 30% HP, bleed-out to respawn; enemy HP x(1+0.6(n-1)); PartyFrames",
       "tests": "test_downed_revive_and_bleed_out, test_scaling_revive_and_party_frames; 312 pass",
       "commit": "9153b78"
+    },
+    {
+      "time": "2026-10-24T07:51:22-05:00",
+      "step": 91,
+      "type": "build",
+      "summary": "Host slot holds world; clients load/save CharacterSave user://character_<name>.json (refuses non-character paths), host sends travel, clients follow; client saves on host leave",
+      "tests": "test_coop_saves.gd 4 tests; 316 pass",
+      "commit": "ae24541"
     }
   ],
   "completed_steps": [
@@ -944,6 +952,7 @@
     83,
     84,
     86,
-    88
+    88,
+    91
   ]
 }
