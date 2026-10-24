@@ -56,6 +56,10 @@ func _ready() -> void:
 		numbers.name = "DamageNumbers"
 		add_child(numbers)
 		numbers.connect_bolts(player.bolts)
+		# Step 29: HUD (CanvasLayer 2, above the viewmodel overlay).
+		var hud := Hud.new()
+		add_child(hud)
+		hud.bind(player, spawner)
 		print("[enemies] %d spawned (%s), %d skipped (%s)" % [spawned.size(),
 			", ".join(spawned.map(func(e: Enemy) -> String: return e.def.id)), skipped.size(), ", ".join(skipped)])
 		var nav := $Level.get_node_or_null("Navigation") as LevelNavigation
