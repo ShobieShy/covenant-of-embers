@@ -4,7 +4,7 @@
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
   "next_step": 43,
-  "total_steps": 42,
+  "total_steps": 82,
   "steps_done": 42,
   "last_commit": "d223d16",
   "history": [
@@ -417,6 +417,15 @@
         ]
       },
       "commit": "d223d16"
+    },
+    {
+      "time": "2026-10-24T04:55:00-05:00",
+      "step": null,
+      "type": "plan",
+      "summary": "Bible + Magewar Storyline + PLAN gap review; appended steps 43-82 (slice follow-ups, Light/Dark, enemies/Filth, gold/vendors, story/hub/quests, progression, audio/art/accessibility, co-op, Dungeon 1). 12 open questions for ShobieShy; marked steps wait for answers.",
+      "plan_changes": [
+        "total_steps 42 -> 82"
+      ]
     }
   ]
 }

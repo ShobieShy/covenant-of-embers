@@ -358,6 +358,226 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 ## After the slice
 - Result: graphical runs on KDE Wayland (RX 6950 XT, Vulkan Forward+): autoplay PASS in ~4.5 min real time, UI smoke menu->new run->inventory->pause->main menu->continue->60 s->quit, 0 errors/warnings/leaks
 
-**42. CI breadth**
+**42. CI breadth** ✅ `d223d16`
 - Does: gdlint/gdformat (gdtoolkit) check, Windows + Linux export presets built headless in CI.
 - Done: all jobs green locally via act or scripted equivalent; exports run --seconds 2.
+- Result: PASS (237 tests; tools/lint.sh, tools/export.sh green)
+
+## Phase G+ – Bible / storyline gaps (planned 2026-10-24, not yet built)
+
+Steps marked **Needs ShobieShy** wait for his answer to the listed open question (see 'Open questions' below); the hourly run skips to the next unblocked step and logs that.
+
+### Phase G – Slice follow-ups (from steps 29–42)
+
+**43. Heap time-to-kill balance** ⏸ Needs ShobieShy
+- Does: Midden Heap took ~107 s simulated to kill with the starter staff (step 40 flag). Tune Heap HP/armour or starter Interior damage via a balance patch so Heap TTK is 20–35 s and Gnawer TTK 1–3 s; record the targets in PLAN §30.
+- Done: test_balance.gd: simulated TTK for starter staff vs Gnawer/Heap/Warden within target bands; headless playtest still PASS.
+- Needs ShobieShy: Q9 (lower Heap HP vs raise starter damage)
+
+**44. Item codes v2: gems + consecrations**
+- Does: Bump Ember Mark code version (EM2-) to encode socketed gems and consecrations; EM1 codes still decode (migration); save files re-encode on load.
+- Done: test_item_codes.gd: EM2 round-trip with gems+consecration, EM1 decodes unchanged, save round-trip keeps them.
+
+**45. Item cards show gems + consecrations**
+- Does: CompareCard/inventory/station screens list socketed gems (element colour) and the consecration text and delta lines.
+- Done: test_inventory_ui.gd / test_station_ui.gd: card text includes gem + consecration lines.
+
+**46. Assembly Station in the Breach + station polish**
+- Does: Place an AssemblyStation in the Breach entrance/hub (step 31 flag), shared station prompt; F-interact range check.
+- Done: test_breach.gd: Breach has a reachable station; crafting there works.
+
+**47. Breach layout pass (out of greybox)**
+- Does: Replace the Breach blockout with built rooms per PLAN §14: entrance → 3 combat rooms → switch puzzle → mini-boss → boss arena → vault; per-room [[encounter]] blocks (deferred in step 33); level gate placed properly (step 39 flag).
+- Done: test_breach.gd: room graph connected on the navmesh, every encounter spawns and clears, vault reachable only after boss.
+
+**48. Playtest bot paths instead of teleporting**
+- Does: Bot walks to wave triggers via NavigationAgent (step 40 flag) and crafts from parts it actually looted, not supplied.
+- Done: headless playtest PASS with no teleports and no supplied parts.
+
+**49. New Run vs existing save**
+- Does: New Run with an existing save asks to confirm overwrite (step 39 flag); multiple save slots (3).
+- Done: test_flow.gd: confirm dialog appears, slots isolated.
+
+### Phase H – Magewar elements: Light and Dark (Bible: 'Light heals and has one summon, Dark corrupts enemies into summons')
+
+**50. Light heal** ⏸ Needs ShobieShy
+- Does: Light spell hits heal the caster (Magewar MagicSpecialEffects: max(8, 35 % of damage)); healing numbers in green.
+- Done: test_light.gd: heal amount matches formula, clamps at max health, no heal on Arcane.
+- Needs ShobieShy: Q2/Q3 (Magewar Light/Dark vs PLAN's Redemption + Lamp companion)
+
+**51. Light summon (one per caster)** ⏸ Needs ShobieShy
+- Does: Light cast creates one follower orb (Magewar light_summon, 30 s lifetime) that fights/marks enemies; only one active per caster.
+- Done: test_light.gd: second cast while one is alive spawns none; expires at 30 s.
+- Needs ShobieShy: Q3
+
+**52. Dark corruption into summons** ⏸ Needs ShobieShy
+- Does: Dark hit bringing an enemy ≤25 % HP rolls 40 % to corrupt it into an allied summon (Magewar MagicSpecialEffects) for 30 s; bosses immune; enemy AI gains an ally/target-enemies mode.
+- Done: test_dark.gd: threshold + injected roll, corrupted Gnawer attacks enemies, boss never corrupts, timer expiry.
+- Needs ShobieShy: Q2
+
+**53. Status effects** ⏸ Needs ShobieShy
+- Does: Per-element on-hit statuses (e.g. Fire burn, Water slow, Earth stagger, Air chain, Light/Dark as above) with resist from gear (60 % cap applies).
+- Done: test_status.gd: ticks, durations, resist scaling, cap.
+- Needs ShobieShy: Q5 (Magewar has no statuses; adopt PLAN §5 set?)
+
+### Phase I – Enemies and bosses
+
+**54. Ember Scorchling (ranged)**
+- Does: Port Magewar enemy_ember_scorchling as a ranged Fire imp that lobs embers and flees when hurt (PLAN Cinderkin role).
+- Done: test_scorchling.gd: keeps range, projectile damage, flee under 30 %.
+
+**55. Slime / Mire ooze (splitter)**
+- Does: Slime that splits into 2 smaller slimes on death or on Fire hits, leaves slowing puddles.
+- Done: test_ooze.gd: split count/HP, puddle slow.
+
+**56. Midden tutorial boss: The Filth, phases 1–2** ⏸ Needs ShobieShy
+- Does: 3-phase landfill slime boss from Magewar boss_the_filth (phase thresholds, acid blobs, absorbs debris); boss bar with phase pips; arena lock.
+- Done: test_filth.gd: phase transitions at thresholds, attack cadence per phase.
+- Needs ShobieShy: Q1/Q8 (Filth vs PLAN's 'The Midden' naming; replaces or adds to Heap tutorial end)
+
+**57. The Filth phase 3 + Joe's trash drop** ⏸ Needs ShobieShy
+- Does: Phase 3 core exposed; drop quest item 'Joe's Trash' (PLAN: Old Lantern Coil) + guaranteed loot; checkpoint at boss door.
+- Done: test_filth.gd: phase 3, quest drop always spawns, checkpoint respawn.
+- Needs ShobieShy: Q1
+
+**58. Elite affixes**
+- Does: Elite variants (Burning, Warded, Swift, Splitting) weighted by Vigil tier (PLAN §7).
+- Done: test_elites.gd: affix rolls per Vigil, stat changes applied.
+
+### Phase J – Economy
+
+**59. Gold currency** ⏸ Needs ShobieShy
+- Does: Gold wallet (start 50, Magewar story), enemy gold drops that auto-collect, salvage gives gold + Arcane Dust; HUD counter; saved.
+- Done: test_gold.gd: drops, auto-collect, save round-trip.
+- Needs ShobieShy: Q4 (gold vs Tallies)
+
+**60. Vendor framework + shop UI**
+- Does: Vendor node with stock tables, buy/sell (sell price by rarity), shop screen with compare cards.
+- Done: test_vendor.gd: buy/sell math, can't overspend, stock restock.
+
+**61. Vendors: potions/parts, gear, re-roll**
+- Does: Three vendors per PLAN §11 roles (consumables+basic parts, equipment, re-roll one part stat for gold+Dust).
+- Done: test_vendor.gd: each vendor's stock and re-roll keeps rarity.
+
+### Phase K – Story, hub and quests
+
+**62. Dialogue system** ⏸ Needs ShobieShy
+- Does: Data-driven dialogue (TOML) with lines, choices, flag conditions; dialogue UI; port Magewar npc_dialogue behaviour.
+- Done: test_dialogue.gd: branching on flags, repeat lines.
+- Needs ShobieShy: Q1
+
+**63. Quest system + tracker + clue log**
+- Does: Quest data (kill/collect/talk/reach), flags, rewards, on-screen tracker, Clue Log screen; saved (Magewar magewar_quest_tracker).
+- Done: test_quests.gd: objective progress, completion rewards, save round-trip.
+
+**64. Prologue: the summoning** ⏸ Needs ShobieShy
+- Does: Opening scene in the Mage Association hall (or PLAN equivalent): summoning, expulsion of the summoner, gold + home granted; port Magewar prologue driver beats.
+- Done: test_prologue.gd: beats fire in order, ends with home unlocked.
+- Needs ShobieShy: Q1
+
+**65. Starting town: square + Association** ⏸ Needs ShobieShy
+- Does: Town Square and Association greybox levels with exits per the Bible's Levels/Maps; NPCs placed; level travel.
+- Done: test_town.gd: all exits link, NPCs talkable.
+- Needs ShobieShy: Q1
+
+**66. Home Tree hub** ⏸ Needs ShobieShy
+- Does: Hollow, dark, candle-lit tree hub (Bible) holding stash, Assembly Station, vendors' later slots; night visit by the mentor (Bob / PLAN's Mother Ada).
+- Done: test_hub.gd: stash shared, station present, mentor scene once.
+- Needs ShobieShy: Q1
+
+**67. Tutorial quest chain** ⏸ Needs ShobieShy
+- Does: Mentor → Landfill (Midden) → defeat The Filth → bring Joe's Trash back → mentor crafts teleport crystal; first levels.
+- Done: headless playtest variant runs the whole chain, PASS.
+- Needs ShobieShy: Q1
+
+**68. Fast travel crystal + waystones**
+- Does: Teleportation crystal item (Magewar fast_travel_crystal) unlocks attuned points (hub, town gate, Landfill, Breach); map screen to travel.
+- Done: test_fast_travel.gd: attune, travel, locked before tutorial end.
+
+**69. Barriers / wild land map** ⏸ Needs ShobieShy
+- Does: Region map showing barrier-protected vs wild areas (Bible: ~60 % wild); progress measure (PLAN Watchfires).
+- Done: test_world_map.gd: region states saved and shown.
+- Needs ShobieShy: Q1
+
+### Phase L – Progression depth
+
+**70. Summoned growth multiplier** ⏸ Needs ShobieShy
+- Does: Summoned gain XP ×1.5 (Magewar storyline 'growth multipliers'; PLAN Resolve catch-up as alternative).
+- Done: test_xp.gd: multiplier applied, level curve unchanged.
+- Needs ShobieShy: Q12
+
+**71. Skill trees: framework** ⏸ Needs ShobieShy
+- Does: Skill-point per level, tree data, respec at hub for gold.
+- Done: test_skills.gd: spend/respec, prerequisites.
+- Needs ShobieShy: Q11 (PLAN Callings vs simpler Magewar 'basic skills')
+
+**72. Skill trees: first tree + part consecrations** ⏸ Needs ShobieShy
+- Does: First full tree; part consecrations and Calling-aware loot weights (step 36 deferral).
+- Done: test_skills.gd + test_consecrations.gd.
+- Needs ShobieShy: Q11
+
+**73. Playable archetypes** ⏸ Needs ShobieShy
+- Does: Four archetypes with cosmetic + small perk, picked at new run (Bible Nerd/Gal/Buff/Loli; PLAN Scholar/Talker/Hauler/Scout).
+- Done: test_archetypes.gd: perk applied, saved.
+- Needs ShobieShy: Q6
+
+### Phase M – Audio and presentation
+
+**74. Music: menu + exploration + combat** ⏸ Needs ShobieShy
+- Does: Music bus gets tracks (CC0/free-licensed or Magewar's own), crossfade explore↔combat on wave start/clear, boss stem.
+- Done: test_audio.gd: streams load, licence lint passes, crossfade on events.
+- Needs ShobieShy: Q10 (Bible's Music Overview is empty: style/source)
+
+**75. Art pass: Midden + Breach materials**
+- Does: Replace greybox CSG with free-licensed/Magewar textures and props, Bible-style palette (step 41 palette note).
+- Done: asset licence lint OK; screenshots in playtest/; perf ≥ 60 fps on smoke.
+
+**76. Accessibility**
+- Does: Colour-blind palettes for rarities/elements, reduced motion toggle wiring, subtitles for dialogue, hold/toggle options.
+- Done: test_settings.gd: each option saved and applied.
+
+**77. Controller support**
+- Does: Gamepad bindings for all actions and UI navigation on every screen; rebinding for controller.
+- Done: test_keybinds.gd: every action has a joypad event; UI focus chain complete.
+
+### Phase N – Co-op
+
+**78. Networking foundation (ENet host/join)** ⏸ Needs ShobieShy
+- Does: Host-authoritative ENet session, lobby with ready-up; reference Magewar network_manager.
+- Done: test_net.gd: two headless peers connect, player spawn replicated.
+- Needs ShobieShy: Q7 (co-op now vs later)
+
+**79. Replicated combat + instanced loot** ⏸ Needs ShobieShy
+- Does: Host simulates enemies/damage; per-player instanced loot and kill rewards (Magewar instanced_loot_service / kill_reward_service).
+- Done: test_net.gd: each peer sees only own drops; XP/gold to all in range.
+- Needs ShobieShy: Q7
+
+**80. Co-op polish: revive + party scaling** ⏸ Needs ShobieShy
+- Does: Downed/revive, enemy HP +60 % per extra player, party frames on HUD.
+- Done: test_net.gd: revive window, scaling factor.
+- Needs ShobieShy: Q7
+
+### Phase O – Content and wrap-up
+
+**81. Dungeon 1 region + town 2** ⏸ Needs ShobieShy
+- Does: Bible 'Town 2' + Dungeon 1 (first of five) built on the Breach template with its own hazard and boss.
+- Done: test_dungeon1.gd: clearable, boss loot.
+- Needs ShobieShy: Q1
+
+**82. Playtest pass 3 + CI**
+- Does: Full automated run prologue→tutorial→Dungeon 1; graphical user-session run with screenshots; tools/lint.sh + export.sh green.
+- Done: run_tests + lint + export green; playtest PASS.
+
+### Open questions (answer before the marked steps)
+- **Q1 Story/setting**: PLAN §2–21 has an original biblical-themed story (exiles, Mother Ada, Brother Caspar, the Midden, the Pretender) while weapons/loot now follow Magewar. Use Magewar's storyline (Elyria, the Summoned, Crazy Joe, Bob, The Filth, Demon Lord), keep PLAN's original story, or a mix?
+- **Q2 Dark**: Magewar's Dark corrupts enemies into summons vs PLAN's Light-based Redemption. Which?
+- **Q3 Light**: Magewar Light heal + one summon vs PLAN's Lamp companion drone?
+- **Q4 Currency**: gold (Magewar, start 50) or Tallies (PLAN)?
+- **Q5 Status effects**: Magewar has none; add PLAN-style per-element statuses (burn, slow, stagger, chain)?
+- **Q6 Archetypes**: Bible lists Nerd/Gal/Buff/Loli; PLAN has Scholar/Talker/Hauler/Scout. Which set (and keep or rename 'Loli')?
+- **Q7 Co-op timing**: build networking now (steps 78–80) or after single-player content?
+- **Q8 Tutorial boss**: The Filth (3-phase slime) replaces the current Heap/wave ending in the Midden, or is added after it?
+- **Q9 Heap balance**: lower Heap HP or raise starter staff damage to hit ~20–35 s TTK?
+- **Q10 Music**: style and source (free CC0 tracks, Magewar's own, or commissioned later)?
+- **Q11 Skill trees**: PLAN's four Callings or a smaller Magewar-style basic-skills set?
+- **Q12 Growth**: Summoned ×1.5 XP multiplier (storyline) or PLAN's Resolve catch-up?
