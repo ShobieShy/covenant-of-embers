@@ -251,12 +251,13 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 13 notes): level-up health = +10 to the level part of `Health.set_max_bonus` then `health.refill()` (Magewar `_level_up` raises max health and heals); check the Magewar number before choosing 10.
 - Result: PASS — 204 tests (test_xp.gd 3)
 
-**28. Weight model + Vigil plumbing**
+**28. Weight model + Vigil plumbing** ✅ `76ccab3`
 - Does: Vigil tiers 1–10 with Omens shifting rarity weights (§31).
 - Done: test_vigil.gd: weights shift per tier as specified.
 - Does (step 15 notes): Vigil/Omens shift weights through `RarityTable.weights(luck)`/`roll(rng, luck)` (luck input or a per-tier weight table on a copy), never by editing rarities.tres.
 
 ## M3 – UI, dungeon, audio, saves, playtests
+- Result: PASS — 208 tests (test_vigil.gd 4)
 
 **29. HUD**
 - Does: Control-based HUD: health/shield/mana/Breath bars (Breath = `player.breath.fraction()`, tinted while `exhausted`), crosshair (hidden while focused, spread-sized), slot icons with rarity colours, Kenney UI Pack.

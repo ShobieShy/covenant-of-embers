@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 28,
+  "next_step": 29,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -32,9 +32,10 @@
     24,
     25,
     26,
-    27
+    27,
+    28
   ],
-  "last_commit": "0fd8839",
+  "last_commit": "76ccab3",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -275,6 +276,14 @@
       "summary": "Progression (100 XP, x1.5 int per level, multi-level loop, cap 50); Player.add_xp gives Magewar +5 mana / +5 Breath per level and refills (no health, as Magewar); XpRewarder grants EnemyDef.xp_reward (Gnawer 5, Heap 15, default 10) to players within 80 m on enemy_killed, dummies none. Magewar review: matches add_xp/_level_up and kill reward service; gold not granted yet. 204 tests green.",
       "plan_changes": {},
       "commit": "0fd8839"
+    },
+    {
+      "time": "2026-10-24T03:23:34-05:00",
+      "step": 28,
+      "type": "build",
+      "summary": "WeightModel (base x prod(mods), constant/live-attribute mods, named tiers, probabilities). Vigil tiers 0-10 with seeded, re-rollable Omens (Easy/Medium/Hard pools: 1/2/3/4 omens), separate health/damage/XP curves, rarity shift on a COPY of RarityTable (Basic /(1+0.05t), Rare+ x(1+0.1t(r-1)) x omen) so rarities.tres is untouched and Magewar luck still stacks; LootDropper.vigil uses the shifted copy. All numbers placeholders. Magewar review: no Vigil in Magewar (our design); luck rule unchanged. 208 tests green.",
+      "plan_changes": {},
+      "commit": "76ccab3"
     }
   ]
 }
