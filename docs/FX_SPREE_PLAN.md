@@ -2,6 +2,16 @@
 
 Planned 2026-10-24. Nothing here is built. Renderer: Forward+ (low preset may use the same renderer with reduced settings).
 
+## User decisions (2026-10-24, Q27-Q34)
+- Style: keep low-poly stylised (Kenney/Quaternius).
+- CC-BY allowed, must appear in in-game credits.
+- Loli: a small witch in normal attire (witch hat, plain dress/cloak), ~1.3 m.
+- Equipped gear visible NOW: A1 adds modular hat/clothes attach points on all archetype rigs; A5 adds hat + clothes meshes per gear item (ground mesh and worn mesh), swapped on equip and synced in co-op via existing equipment state.
+- Night is moonlit blue and readable.
+- Everyone sees Light/Dark FX.
+- Low preset targets Steam Deck (1280x800, >= 60 FPS where possible, 40 FPS floor).
+- Order: FX F1 (step 127) runs before any art batch.
+
 ## Audit summary (current state)
 - No `.gdshader` files in the project; everything uses StandardMaterial3D with emission.
 - All levels: `tonemap_mode = 0` (Linear), flat ambient colour (`ambient_light_source = 2`), fog on, `fog_sky_affect = 0`.

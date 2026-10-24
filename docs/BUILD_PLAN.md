@@ -799,11 +799,11 @@ Suggested order: 127 first (lighting fixes make every art screenshot meaningful)
 - **Step 134 (waiting on user go)** FX F8: quality presets incl. Low, perf capture script, co-op FX parity test.
 
 ### Open questions (Phase T)
-- Q27 Art style: stay low-poly Kenney/Quaternius stylised (recommended), or move toward hand-painted textures?
-- Q28 CC-BY OK beyond CC0 (game-icons.net icons, some Quaternius), with in-game credits?
-- Q29 Loli design: small young-looking mage in a cloak, kept non-sexualised; confirm look (and the name for a public Steam page).
-- Q30 Show equipped gear (hats/clothes) on character models now, or later?
-- Q31 Night look: moonlit blue readable night (recommended) or very dark with lantern pools?
-- Q32 Should Light heal/Dark aura FX be visible to all players or only involved players? (recommended all)
-- Q33 Low preset target hardware: Steam Deck class?
-- Q34 Order: start with FX F1 lighting fix first (recommended) or art first?
+- ~~Q27 Art style: stay low-poly Kenney/Quaternius stylised (recommended), or move toward hand-painted textures?~~ **Answered 2026-10-24:** Keep the low-poly style.
+- ~~Q28 CC-BY OK beyond CC0 (game-icons.net icons, some Quaternius), with in-game credits?~~ **Answered 2026-10-24:** CC-BY OK, credited in-game.
+- ~~Q29 Loli design: small young-looking mage in a cloak, kept non-sexualised; confirm look (and the name for a public Steam page).~~ **Answered 2026-10-24:** Loli is a small witch in normal attire.
+- ~~Q30 Show equipped gear (hats/clothes) on character models now, or later?~~ **Answered 2026-10-24:** Show equipped hats and clothes now; folded into art batches A1/A5.
+- ~~Q31 Night look: moonlit blue readable night (recommended) or very dark with lantern pools?~~ **Answered 2026-10-24:** Moonlit blue, readable night.
+- ~~Q32 Should Light heal/Dark aura FX be visible to all players or only involved players? (recommended all)~~ **Answered 2026-10-24:** Everyone sees Light and Dark FX.
+- ~~Q33 Low preset target hardware: Steam Deck class?~~ **Answered 2026-10-24:** Low preset targets Steam Deck.
+- ~~Q34 Order: start with FX F1 lighting fix first (recommended) or art first?~~ **Answered 2026-10-24:** FX F1 lighting goes first.

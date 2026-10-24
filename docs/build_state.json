@@ -6,7 +6,7 @@
   "next_step": 0,
   "total_steps": 134,
   "steps_done": 99,
-  "last_commit": "478d626",
+  "last_commit": "1b11898",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1234,6 +1234,7 @@
     134
   ],
   "notes": [
-    "2026-10-24: steps 119-134 (art spree A1-A8, FX spree F1-F8) planned, waiting on user go; see docs/ART_SPREE_PLAN.md, docs/FX_SPREE_PLAN.md"
+    "2026-10-24: steps 119-134 (art spree A1-A8, FX spree F1-F8) planned, waiting on user go; see docs/ART_SPREE_PLAN.md, docs/FX_SPREE_PLAN.md",
+    "2026-10-24: Q27-Q34 answered (low-poly, CC-BY credited in-game, Loli small witch normal attire, gear visible now, moonlit night, Light/Dark FX for all, Low=Steam Deck, F1 first)"
   ]
 }
