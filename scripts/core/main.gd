@@ -61,6 +61,10 @@ func _ready() -> void:
 		var hud := Hud.new()
 		add_child(hud)
 		hud.bind(player, spawner)
+		var audio := GameAudio.new()   # step 37: Kenney SFX on the SFX/UI buses
+		audio.name = "GameAudio"
+		add_child(audio)
+		audio.bind(player)
 		var inv_ui := InventoryUi.new()   # step 30: Tab
 		inv_ui.name = "InventoryUi"
 		add_child(inv_ui)

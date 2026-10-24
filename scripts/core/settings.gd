@@ -92,6 +92,7 @@ func apply_to(p: Player) -> void:
 	p.set_hip_fov(hip_fov)
 	p.set_reduced_motion(reduced_motion)
 	p.feel.set_bob_scale(head_bob)
+	GameAudio.apply_volumes(master_volume, sfx_volume, music_volume)   # step 37
 
 func save(path := PATH) -> Error:
 	var c := ConfigFile.new()
