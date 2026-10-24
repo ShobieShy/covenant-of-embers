@@ -220,11 +220,12 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 19 notes): potion pickups go to the quick-slot via `player.equipment.add_potions(ConsumableItem.load_item(id), n)` (one kind at a time, ≤ stack 5; returns how many it took, leave the rest on the ground); drinking = `player.use_potion()` (bind a `use_potion` action here or in step 24); equipment pickups carry `LootDrop.item` (EquipmentItem).
 - Result: PASS — 192 tests green. Inventory (30 slots + Arcane Dust), PickupCollector (walk-over mana orbs/dust/potions within 1.2 m, Interact picks the looked-at item within 3 m / 12° cone, full backpack refuses with a hint), LootPickup auto kinds, CompareCard data with deltas vs the worn item.
 
-**24. Inventory and equip**
+**24. Inventory and equip** ✅ `22a997d`
 - Does: Inventory grid model, equip to staff/wand/equipment slots.
 - Done: test_inventory.gd: capacity, equip/unequip updates stats.
 - Does (step 19 notes): equipment equip/unequip = `player.equip_item(item)` (returns the replaced piece → back to the inventory) / `player.unequip_item(slot)`; both re-run `apply_bonuses()`, so stats are exact after any sequence.
 - Does (step 10 notes): equipping a staff/wand goes through `Player.equip(w)` (Loadout picks the slot by type, keeps the other slot's cooldown); unequip = `loadout.unequip(slot)` + `viewmodel.show_wieldable(...)`; equipping into the slot in hand should start a draw (`swap_left = draw_seconds = w.draw_seconds(swap_seconds)`, step 17 handling) so inventory swaps can't skip it.
+- Result: PASS — 196 tests green. Player.equip_from_inventory / unequip_wieldable_to_inventory / unequip_item_to_inventory (replaced piece goes back to the backpack, stats via apply_bonuses, full backpack refuses with a hint); replacing the staff/wand in hand starts a draw; use_potion action bound to R.
 
 **25. Magic Assembly Station (crafting core)**
 - Does: Assemble/disassemble at a station node (Magewar).

@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 24,
+  "next_step": 25,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -28,9 +28,10 @@
     20,
     21,
     22,
-    23
+    23,
+    24
   ],
-  "last_commit": "1e63328",
+  "last_commit": "22a997d",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -232,6 +233,16 @@
         "Step 26: PLAN §30.3 says Dust upgrades never reach Unique — cap upgrades at Primordial"
       ],
       "commit": "1e63328"
+    },
+    {
+      "time": "2026-10-24T03:15:09-05:00",
+      "step": 24,
+      "type": "build",
+      "summary": "Backpack equip/unequip for staffs, wands and gear; draw on in-hand replace; R = use potion. Magewar review: Magewar equips via Cogito inventory slots with the same swap-back behaviour; Magewar has no dedicated potion key (potions used from the inventory) — R is our choice, flag for ShobieShy. 196 tests green.",
+      "plan_changes": [
+        "Step 25: station takes parts + chosen base from player.inventory; disassemble refuses when inventory lacks room (needs parts count free slots)"
+      ],
+      "commit": "22a997d"
     }
   ]
 }
