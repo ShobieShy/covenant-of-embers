@@ -311,11 +311,12 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_vault.gd: drop rarity ≥ floor across 1000 seeds.
 - Result: PASS (226 tests)
 
-**36. Consecrations (enchantments)**
+**36. Consecrations (enchantments)** ✅ `738de92`
 - Does: Our version of anointments on parts/equipment.
 - Does (step 5 notes): include PLAN's "Sandals: +1 dash charge" via `player.dash.set_bonus_charges(1)` (set_bonus_charges clamps charges when removed).
 - Does (step 19 notes): a Consecration on an `EquipmentItem` should be applied from `Player.apply_bonuses()` (recomputed from the worn set), not with one-off +=/-=.
 - Done: test_consecrations.gd: effects trigger as specified.
+- Result: PASS (230 tests)
 
 **37. Audio: buses + Kenney sounds**
 - Does: Audio buses (Master/SFX/UI/Music), cast/hit/footstep/UI sounds from Kenney packs, 3D AudioStreamPlayer3D.

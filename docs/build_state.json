@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 36,
+  "next_step": 37,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -40,9 +40,10 @@
     32,
     33,
     34,
-    35
+    35,
+    36
   ],
-  "last_commit": "d64f243",
+  "last_commit": "738de92",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -363,6 +364,18 @@
         "rolled_rarity_id keeps the pre-floor roll for balance stats"
       ],
       "commit": "d64f243"
+    },
+    {
+      "time": "2026-10-24T03:42:37-05:00",
+      "step": 36,
+      "type": "build",
+      "summary": "Consecrations on EquipmentItem (fleetfoot +1 dash charge, kindling after-dash +10 next cast, bulwark +5 at full shield, reaping +10 mana per kill), recomputed in apply_bonuses; vault Rare+ equipment 50 pct consecrated 230 tests green.",
+      "plan_changes": [
+        "Part consecrations and Calling-aware weights deferred (no Callings yet)",
+        "ItemCodes do not encode consecration yet (needs a code version bump, with gems)",
+        "CompareCard does not show the consecration text yet"
+      ],
+      "commit": "738de92"
     }
   ]
 }
