@@ -166,3 +166,12 @@ func advance(id: String) -> bool:
 	print("[intro] -> %s" % id)
 	beat_changed.emit(id)
 	return true
+
+
+## Step 110: plays a cinematic here; `done` runs when it ends or is skipped (flags apply).
+func play_cinematic(cid: String, shots: Array, done: Callable = Callable()) -> Cinematic:
+	var c := Cinematic.make(cid, shots, player)
+	if done.is_valid():
+		c.finished.connect(func(_i: String, _s: bool): done.call())
+	main.add_child(c)
+	return c

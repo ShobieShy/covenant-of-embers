@@ -645,11 +645,11 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below; steps 113/114/115 are **Needs ShobieShy** for Q18/Q20/Q24 only where noted.
 
-**109. Intro director + beat state** ✅ PENDING
+**109. Intro director + beat state** ✅ `59f8e9c`
 - Does: IntroDirector (scripts/story/intro_director.gd) owns the INTRO_PLAN beats 1-13 as `intro_beat:<id>` flags, drives Prologue/MentorArrival/QuestLog, emits beat_started; GameFlow.new_run starts in mage_association at beat 1; --skip-intro jumps to the end state.
 - Done: test_intro_director.gd: beats run strictly in order, flags/save round-trip, skip-intro end state matches beat 13.
 
-**110. Cinematic camera + letterbox + skip**
+**110. Cinematic camera + letterbox + skip** ✅ PENDING
 - Does: CinematicCamera (2-4 eased keyframes), Letterbox bars, HUD hide, input freeze, hold-Esc 1 s skip that still applies the beat's flags; saving off during cinematics.
 - Done: test_cinematic.gd: path finishes, skip applies flags, input restored; headless playtest skips all.
 

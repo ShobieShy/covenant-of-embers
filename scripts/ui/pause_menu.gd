@@ -47,6 +47,8 @@ func bind(p: Player, s: SettingsUi) -> void:
 
 
 func open() -> void:
+	if Cinematic.playing:  # step 110: Esc held during a cinematic skips it instead
+		return
 	visible = true
 	# Anchors set in _init (before entering the tree) resolve against a zero rect; re-apply
 	# now so the panel sits in the middle of the real window (found in the step-41 playtest).

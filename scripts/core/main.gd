@@ -452,6 +452,9 @@ func save_game() -> Error:
 	var player := get_node_or_null("Player") as Player
 	if player == null:
 		return ERR_UNAVAILABLE
+	if Cinematic.playing:  # step 110: never mid-cinematic
+		print("[save] not during a cinematic")
+		return ERR_BUSY
 	if coop and not coop.host:
 		var cerr := CharacterSave.write(player, Coop.character)  # step 91: never the host slot
 		print("[save] character %s: %s" % [Coop.character, error_string(cerr)])

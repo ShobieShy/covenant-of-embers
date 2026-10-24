@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 118,
-  "steps_done": 90,
-  "last_commit": "10318a0",
+  "steps_done": 91,
+  "last_commit": "59f8e9c",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1030,7 +1030,14 @@
       "time": "2026-10-24T10:25:26-05:00",
       "step": 109,
       "type": "build",
-      "summary": "IntroDirector (13 beats as the intro_beat flag, forward only), New Game -> Association empty-handed, --skip-intro -> Old Oak with the end state, empty save slots stay empty; tests 373/373, lint green",
+      "summary": "IntroDirector (13 beats as the intro_beat flag, forward only), New Game -> Association empty-handed, --skip-intro -> Old Oak with the end state, empty save slots stay empty; unit tests 369/369, playtests solo/4x/co-op PASS, lint green",
+      "commit": "59f8e9c"
+    },
+    {
+      "time": "2026-10-24T10:30:08-05:00",
+      "step": 110,
+      "type": "build",
+      "summary": "Cinematic: camera through shots, letterbox, caption, hold Esc 1 s to skip (host-only in co-op), no save/pause mid-cinematic, --shots grabs each shot; unit tests 371/371, playtests solo/4x/co-op PASS, lint green (also gdformat fix for test_intro_director)",
       "commit": "PENDING"
     }
   ],
@@ -1124,7 +1131,8 @@
     92,
     93,
     108,
-    109
+    109,
+    110
   ],
   "deferred": [
     74,

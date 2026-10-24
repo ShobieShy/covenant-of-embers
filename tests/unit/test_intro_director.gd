@@ -51,7 +51,10 @@ func test_beats_forward_only() -> void:
 func test_new_game_runs_intro() -> void:
 	GameFlow.dry_run = true
 	GameFlow.new_run(null)
-	check(GameFlow.level_id == "mage_association" and GameFlow.intro_mode == GameFlow.INTRO_PLAY, "new game -> Association")
+	check(
+		GameFlow.level_id == "mage_association" and GameFlow.intro_mode == GameFlow.INTRO_PLAY,
+		"new game -> Association"
+	)
 	var g := _game("mage_association", GameFlow.INTRO_PLAY)
 	var p := g.get_node("Player") as Player
 	check(g.intro != null and g.intro.current() == "summoning", "director runs the summoning")
@@ -65,7 +68,10 @@ func test_new_game_runs_intro() -> void:
 	var h: Node = (load(GameFlow.GAME) as PackedScene).instantiate()
 	runner_tree.root.add_child(h)
 	var hp := h.get_node("Player") as Player
-	check(h.intro != null and hp.loadout.wieldable(Loadout.Slot.STAFF) == null, "reload keeps the intro and the empty hand")
+	check(
+		h.intro != null and hp.loadout.wieldable(Loadout.Slot.STAFF) == null,
+		"reload keeps the intro and the empty hand"
+	)
 	_cleanup(h)
 
 
