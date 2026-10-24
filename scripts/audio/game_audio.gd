@@ -124,7 +124,7 @@ func _physics_process(_dt: float) -> void:
 	_last_pos = pos
 
 func _on_hurt(p: Player, _r: Damage.Result) -> void:
-	play("shield_break" if p.health.shield <= 0.0 and p.health.health > 0.0 and _r.amount > 0.0 and p.health.shield_absorbed > 0.0 else "hurt")
+	play("shield_break" if p.health.shield <= 0.0 and p.health.value > 0.0 and p.health.shield_absorbed > 0.0 else "hurt")
 
 func _on_enemy_spawned(e: Enemy) -> void:
 	if e == null:
