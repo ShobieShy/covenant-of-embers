@@ -304,7 +304,10 @@ func test_part_helpers() -> void:
 	)
 	var charm := WieldablePart.load_part("unique_void_charm").full_description()
 	check(
-		charm == "[Unique] Charm\nElement: Dark\nDamage: +8\nFire Rate: x0.85\nAccuracy: +12\nHandling: +5",
+		(
+			charm
+			== "[Unique] Charm\nElement: Dark\nDamage: +8\nFire Rate: x0.85\nAccuracy: +12\nHandling: +5\nDark Conversion: +3%"
+		),
 		"charm:\n%s" % charm
 	)
 	check(WieldablePart.load_part("basic_exterior").full_description() == "[Basic] Exterior", "plain exterior")

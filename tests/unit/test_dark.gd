@@ -1,7 +1,7 @@
 extends TestCase
-## Step 52 done check (Q2/Q3: Magewar Dark): a Dark hit that leaves a non-boss enemy at
-## <= 25% health has a 40% chance to corrupt it into an ally for 30 s; the ally hunts and
-## bites other enemies, bosses are immune, and the husk crumbles when it runs out.
+## Step 52 done check (Q2/Q3: Magewar Dark), reworked in step 108: every Dark hit on a
+## non-boss brute has 1% + the Dark-part bonus (capped at 15%) to corrupt it into an ally for
+## 30 s; the ally hunts and bites other enemies, bosses are immune, and the husk crumbles.
 
 const DT := 1.0 / 60.0
 const E := ElementTable.Element
@@ -39,21 +39,50 @@ func _dark(e: Enemy) -> SpellBolts.Hit:
 	return h
 
 
-func test_threshold_and_roll() -> void:
+func test_base_chance_and_roll() -> void:
 	var w := _world(1)
 	var e := _enemy(w, "gnawer", Vector3.ZERO)
-	MagicEffects.dark_roll = func() -> float: return 0.1
-	e.health = e.max_health() * 0.5
-	check(not MagicEffects.dark(_dark(e)), "above 25%: no")
-	e.health = e.max_health() * 0.25
-	MagicEffects.dark_roll = func() -> float: return 0.45
-	check(not MagicEffects.dark(_dark(e)), "roll 0.45 misses the 40%")
-	MagicEffects.dark_roll = func() -> float: return 0.39
-	check(MagicEffects.dark(_dark(e)) and e.is_ally(), "roll 0.39 corrupts")
+	check(is_equal_approx(MagicEffects.dark_chance(0.0), 0.01), "1% base")
+	check(is_equal_approx(MagicEffects.dark_chance(1.0), MagicEffects.DARK_MAX_CHANCE), "capped at 15%")
+	MagicEffects.dark_roll = func() -> float: return 0.011
+	check(not MagicEffects.dark(_dark(e)), "roll 0.011 misses the 1%")
+	var h := _dark(e)
+	h.dark_bonus = 0.005
+	check(MagicEffects.dark(h) and e.is_ally(), "+0.5% bonus: 0.011 < 1.5% corrupts (at full health)")
 	check(is_equal_approx(e.corrupted_left, 30.0), "for 30 s")
+	MagicEffects.dark_roll = func() -> float: return 0.0
 	MagicEffects.on_hit(_dark(e))
 	check(e.corruptions == 1, "already an ally: not again")
+	var pup := _enemy(w, "gnawer", Vector3(0, 0, 5))
+	pup.hold_death = true
+	check(not MagicEffects.dark(_dark(pup)), "a co-op puppet never converts locally (the host rolls)")
 	MagicEffects.dark_roll = Callable()
+	w.queue_free()
+
+
+func test_part_bonuses() -> void:
+	var b := WieldablePart.DARK_BONUS
+	check(b["basic"] == 0.0025 and b["rare"] == 0.01 and b["unique"] == 0.03, "per-rarity table")
+	check_near(WieldablePart.load_part("uncommon_dark_handle").dark_chance_bonus(), 0.005, 1e-6, "uncommon +0.5%")
+	check(WieldablePart.load_part("rare_light_charm").dark_chance_bonus() == 0.0, "non-Dark part: none")
+	check(
+		WieldablePart.load_part("uncommon_dark_handle").full_description().ends_with("Dark Conversion: +0.5%"),
+		"tooltip line"
+	)
+	var wand := WieldableInstance.load_base("novice_arcane_wand")
+	wand.parts.append(WieldablePart.load_part("uncommon_dark_handle"))
+	wand.parts.append(WieldablePart.load_part("unique_void_charm"))
+	check_near(wand.dark_chance_bonus(), 0.035, 1e-6, "parts add up")
+	var card := CompareCard.for_item(WieldablePart.load_part("unique_void_charm"))
+	check_near(float(card.row("dark_bonus").get("value", 0.0)), 3.0, 1e-6, "compare card row")
+	# The caster carries it on the bolt.
+	var w := _world(4)
+	var bolts := SpellBolts.new()
+	bolts.auto_tick = false
+	w.add_child(bolts)
+	var c := Caster.new(wand)
+	check(c.tick(true, true, DT, Caster.Aim.make(w.global_position + Vector3(0, 50, 0), Vector3.UP), bolts), "cast")
+	check_near(bolts.live[0].spawn.dark_bonus, 0.035, 1e-6, "Spawn.dark_bonus")
 	w.queue_free()
 
 

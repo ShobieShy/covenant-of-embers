@@ -39,6 +39,9 @@ var snaps_sent := 0
 var snaps_seen := 0
 var hits_sent := 0
 var hits_applied := 0
+var heals_sent := 0  ## step 108
+var heals_taken := 0
+const PUPPET_ALLY_SECONDS := 1.0e6
 var hurts_sent := 0
 var hurts_taken := 0
 var kills_relayed := 0
@@ -125,6 +128,7 @@ func proxy(peer: int) -> RemotePlayer:
 		var r := RemotePlayer.new()
 		r.name = "Remote%d" % peer
 		r.peer = peer
+		r.light_healed.connect(func(amt: float): send_heal(peer, amt))
 		add_child(r)
 		proxies[peer] = r
 	return proxies[peer]
@@ -250,7 +254,9 @@ func send_snapshot() -> void:
 	for e in host_enemies():
 		if list.size() >= MAX_ENEMIES:
 			break
-		list.append([enemy_id(e), e.def.id, e.global_position, e.rotation.y, e.health, e.max_health(), e.dead])
+		list.append(
+			[enemy_id(e), e.def.id, e.global_position, e.rotation.y, e.health, e.max_health(), e.dead, e.is_ally()]
+		)
 	snaps_sent += 1
 	session.send("snap", {"e": list}, 0, false)
 
@@ -303,6 +309,9 @@ func _apply_snapshot(list: Array) -> void:
 		_snap_dead[id] = host_dead
 		if not e.dead:
 			e.health = minf(e.health, hp) if e.health > 0.0 else hp
+			# step 108: the host's ally flag (the puppet never times out on its own)
+			var ally := row.size() > 7 and bool(row[7])
+			e.corrupted_left = PUPPET_ALLY_SECONDS if ally else 0.0
 	for id in puppets.keys():
 		if not seen.has(id):
 			var gone: Enemy = puppets[id]
@@ -316,13 +325,27 @@ func _apply_snapshot(list: Array) -> void:
 func _on_puppet_hit(e: Enemy, h: SpellBolts.Hit) -> void:
 	if h == null or h.result == null:
 		return
-	send_hit(e, h.result.amount, h.element)
+	send_hit(e, h.result.amount, h.element, h.dark_bonus)
 
 
-## The client's hit on a puppet goes to the host (the puppet already showed it).
-func send_hit(e: Enemy, amount: float, element: ElementTable.Element) -> void:
+## The client's hit on a puppet goes to the host (the puppet already showed it). Step 108:
+## "db" = the Dark-part bonus; the host rolls the conversion.
+func send_hit(e: Enemy, amount: float, element: ElementTable.Element, dark_bonus := 0.0) -> void:
 	hits_sent += 1
-	session.send("hit", {"id": int(e.get_meta(&"net_id", 0)), "amt": amount, "el": int(element)}, 1)
+	var d := {"id": int(e.get_meta(&"net_id", 0)), "amt": amount, "el": int(element), "db": dark_bonus}
+	session.send("hit", d, 1)
+
+
+## Step 108: our Light bolt healed `peer`'s player; its owner applies it.
+func send_heal(peer: int, amount: float) -> void:
+	heals_sent += 1
+	session.send("heal", {"amt": amount}, peer)
+
+
+## Step 108 (client): our Light bolt healed an ally puppet; the host heals the real one.
+func send_puppet_heal(e: Enemy, amount: float) -> void:
+	heals_sent += 1
+	session.send("pheal", {"id": int(e.get_meta(&"net_id", 0)), "amt": amount}, 1)
 
 
 ## --- messages ------------------------------------------------------------------------
@@ -346,9 +369,24 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 				var e: Enemy = by_id.get(int(data.get("id", 0)))
 				if e and is_instance_valid(e) and not e.dead:
 					hits_applied += 1
-					e.apply_damage(
-						maxf(0.0, float(data.get("amt", 0.0))), int(data.get("el", 0)) as ElementTable.Element
-					)
+					var el := int(data.get("el", 0)) as ElementTable.Element
+					e.apply_damage(maxf(0.0, float(data.get("amt", 0.0))), el)
+					if el == ElementTable.Element.DARK and float(data.get("amt", 0.0)) > 0.0:
+						MagicEffects.try_corrupt(e, float(data.get("db", 0.0)))
+		"heal":
+			var amt := maxf(0.0, float(data.get("amt", 0.0)))
+			if player is Player:
+				heals_taken += 1
+				MagicEffects.heal_player(player as Player, amt)
+			elif player and player.has_method(&"on_ally_heal"):
+				heals_taken += 1
+				player.call(&"on_ally_heal", amt)
+		"pheal":
+			if host:
+				var e: Enemy = by_id.get(int(data.get("id", 0)))
+				if e and is_instance_valid(e) and e.is_ally():
+					heals_taken += 1
+					MagicEffects.heal_enemy(e, maxf(0.0, float(data.get("amt", 0.0))))
 		"hurt":
 			if from == 1 and player and player.has_method(&"on_enemy_attack"):
 				hurts_taken += 1

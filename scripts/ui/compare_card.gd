@@ -36,6 +36,14 @@ static func for_item(item: Resource, player: Player = null) -> CompareCard:
 		c._row("accuracy", "Accuracy", w.accuracy(), cw.accuracy() if cw else NAN, true)
 		c._row("mana_cost", "Mana cost", w.mana_cost(), cw.mana_cost() if cw else NAN, false)
 		c._row("gem_slots", "Gem slots", w.gem_slots(), cw.gem_slots() if cw else NAN, true)
+		if w.dark_chance_bonus() > 0.0 or (cw and cw.dark_chance_bonus() > 0.0):
+			c._row(
+				"dark_bonus",
+				"Dark conversion %",
+				w.dark_chance_bonus() * 100.0,
+				cw.dark_chance_bonus() * 100.0 if cw else NAN,
+				true
+			)
 		for part in w.parts:
 			if part != null:
 				c._add_gems(part.gems)
@@ -49,6 +57,8 @@ static func for_item(item: Resource, player: Player = null) -> CompareCard:
 		c._row("accuracy_bonus", "Accuracy", p.accuracy_bonus, NAN, true)
 		c._row("handling_bonus", "Handling", p.handling_bonus, NAN, true)
 		c._row("gem_slots", "Gem slots", p.gem_slots, NAN, true)
+		if p.dark_chance_bonus() > 0.0:
+			c._row("dark_bonus", "Dark conversion %", p.dark_chance_bonus() * 100.0, NAN, true)
 		c._add_gems(p.gems)
 	elif item is EquipmentItem:
 		var e := item as EquipmentItem

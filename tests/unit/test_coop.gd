@@ -22,6 +22,11 @@ class FakePlayer:
 	func on_enemy_attack(_from: Variant, bite: Gnawer.Bite) -> void:
 		hits.append(bite.damage)
 
+	var healed := 0.0
+
+	func on_ally_heal(a: float) -> void:
+		healed += a
+
 	func revive(_f: float) -> bool:
 		downed = false
 		return true
@@ -216,6 +221,53 @@ func test_scaling_revive_and_party_frames() -> void:
 		if cw.revives > 0:
 			break
 	check(cw.revives == 1, "revived by the host standing beside")
+	(d["c"] as NetSession).leave()
+	(d["h"] as NetSession).leave()
+	(d["root"] as Node).queue_free()
+	await runner_tree.process_frame
+
+
+## Step 108: a Light heal on a RemotePlayer reaches its owner; a client's Dark hit carries
+## its part bonus and the host rolls the conversion; the ally flag reaches the puppet, and
+## a client's Light heal on that puppet heals the host's brute.
+func test_light_heal_and_dark_convert() -> void:
+	var d := await _coop_pair()
+	var table := EnemyTable.load_default()
+	var real := Enemy.create(table.find("gnawer"), Transform3D(Basis(), Vector3(6, 0, -6)))
+	(d["henemies"] as Node).add_child(real)
+	(real as Gnawer).auto_tick = false
+	var hw: CoopWorld = d["hw"]
+	var cw: CoopWorld = d["cw"]
+	hw.setup(d["h"], d["hp"], d["henemies"], table)
+	cw.setup(d["c"], d["cp"], d["cenemies"], table)
+	var cid := (d["c"] as NetSession).my_id()
+	for i in 120:
+		await _tick_both(d)
+		if cw.puppets.size() == 1 and hw.proxies.has(cid):
+			break
+	(hw.proxies[cid] as RemotePlayer).light_healed.emit(12.0)
+	check(await _wait(func(): return (d["cp"] as FakePlayer).healed == 12.0), "client healed by host's Light")
+	var pup: Enemy = cw.puppets.values()[0]
+	MagicEffects.dark_roll = func() -> float: return 0.02
+	cw.send_hit(pup, 1.0, ElementTable.Element.DARK, 0.0)
+	await _wait(func(): return hw.hits_applied == 1)
+	check(not real.is_ally(), "roll 0.02 vs 1%: no")
+	cw.send_hit(pup, 1.0, ElementTable.Element.DARK, 0.015)
+	check(await _wait(func(): return real.is_ally()), "with +1.5% the host converts it")
+	MagicEffects.dark_roll = Callable()
+	for i in 60:
+		await _tick_both(d)
+		if pup.is_ally():
+			break
+	check(pup.is_ally(), "puppet shows the ally")
+	real.health = 3.0
+	var h := SpellBolts.Hit.new()
+	h.collider = pup
+	h.source = d["cp"]
+	h.element = ElementTable.Element.LIGHT
+	h.damage = 10.0
+	check(MagicEffects.intercept(h), "client Light on ally puppet intercepted")
+	check(await _wait(func(): return is_equal_approx(real.health, 11.0)), "host brute healed 8 (%.1f)" % real.health)
 	(d["c"] as NetSession).leave()
 	(d["h"] as NetSession).leave()
 	(d["root"] as Node).queue_free()

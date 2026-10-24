@@ -543,7 +543,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_archetypes.gd: perk applied, saved.
 - Q6 answered 2026-10-24: Nerd/Gal/Buff/Loli plus customization (name and colour for now); the customization travels with the portable co-op character.
 - Result: PASS (361 tests green)
-- Note: Perks are placeholders (Q6 gave archetypes, not numbers). Old saves = no archetype, no perk.
+- Note: Perks are placeholders (Q6 gave archetypes, not numbers). Old saves = no archetype, no perk. Owner 2026-10-24: placeholders are fine for now.
 
 ### Phase M – Audio and presentation
 
@@ -607,6 +607,12 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Bot fire presses use a physics tick counter; walk budgets scale with time scale; unstick; backpack-full craft fix; run_tests runs the 4× playtest.
 - Done: run_tests green incl. 4× playtest.
 
+**108. Light/Dark rework (owner feedback 2026-10-24)** ✅ PENDING
+- Does: Light bolts deal 0.9× damage (MagicEffects.LIGHT_DAMAGE_SCALE, applied in Caster) and heal allies they hit instead of hurting them: another Player, a co-op RemotePlayer (new bolt-only hitbox on layer 2; owner heals via "heal"), or a corrupted ally brute (client puppets forward "pheal" to the host). Ally heal = max(8, 50 % of bolt damage); caster self-heal on enemy hits unchanged (max(8, 35 % of damage dealt)) plus the one Light summon. LightSummons have no health and are not healed. Player bolts never hurt allies. Dark: the ≤25 % HP / 40 % rule is replaced by 1 % per Dark hit (DARK_BASE_CHANCE) + the wieldable's Dark-part bonus, total capped at 15 %; non-boss brutes only (only Gnawers have ally AI); 30 s ally duration kept. Dark-part bonus by rarity: basic +0.25 %, uncommon +0.5 %, rare +1 %, mythic +1.5 %, primordial +2.5 %, unique +3 % (WieldablePart.DARK_BONUS), shown as "Dark Conversion: +X%" in part tooltips and a "Dark conversion %" compare-card row. Co-op: the host alone rolls conversions (client "hit" carries "db"); snapshots carry the ally flag to puppets.
+- Done: test_light.gd (0.9× bolt, ally heals, no friendly fire, proxy hitbox), test_dark.gd (1 %/bonus/cap, puppet never converts, part table, tooltip, compare row, Spawn.dark_bonus), test_coop.gd (heal over the net, host-rolled conversion, ally flag on puppet, puppet heal), test_rarity.gd tooltip.
+- Note: Owner 2026-10-24: placeholder archetype perks and Steam test app 480 are fine for now.
+- Result: PASS (365 passed, lint green, solo + co-op playtests PASS)
+
 ### Plan-only (not to be built yet)
 - **97. Dungeons 2–5**: four more dungeons toward the Demon Lord, each on the Breach template with its own boss and town.
 - **98. Demon Lord's lair**: final dungeon.
@@ -652,7 +658,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: package.sh produces both archives; unpack + run --seconds 2 green (Windows under WINE_SMOKE).
 - Q13 answered 2026-10-24: Steam depot/build config (app id 480 placeholder, no upload), Linux AppImage, Windows zip.
 - Result: PASS (package.sh green; AppImage smoke-run headless OK; wine smoke OK; 362 tests green)
-- Note: Not run on real Windows (Q14). App id 480 is a placeholder; depots 481/482 likewise.
+- Note: Not run on real Windows (Q14). App id 480 is a placeholder; depots 481/482 likewise. Owner 2026-10-24: the Steam test app 480 is fine for now.
 **86. Input and display differences per OS** ✅ `7c13e1b`
 - Does: Check XInput/SDL gamepad names on Windows vs Linux map to the same actions (step 77), mouse capture/raw input, Alt+Tab/fullscreen modes, DPI scaling, Vulkan → D3D12/OpenGL fallback renderer setting.
 - Done: test_keybinds.gd: joypad mappings OS-agnostic; settings expose renderer fallback; manual checklist in playtest/.

@@ -95,3 +95,56 @@ func test_summon_smites_then_expires() -> void:
 	check(LightSummon.of(p) == null, "no live summon")
 	check(MagicEffects.summon_light(p) != null, "can summon again")
 	w.queue_free()
+
+
+## Step 108: Light bolts deal 0.9x; a Light bolt on an ally heals it (no take_hit, no damage).
+func test_light_scale_and_ally_heals() -> void:
+	var w := _world(9)
+	var bolts := SpellBolts.new()
+	bolts.auto_tick = false
+	w.add_child(bolts)
+	var wand := WieldableInstance.load_base("novice_arcane_wand")
+	var head := WieldablePart.make(WieldablePart.PartType.HEAD)
+	head.element = E.LIGHT
+	wand.parts.append(head)
+	var c := Caster.new(wand)
+	check(c.tick(true, true, DT, Caster.Aim.make(w.global_position + Vector3(0, 80, 0), Vector3.UP), bolts), "cast")
+	check_near(bolts.live[0].spawn.damage, wand.damage() * 0.9, 1e-4, "Light bolt x0.9")
+	check(MagicEffects.ally_heal_amount(4.0) == 8.0, "ally heal minimum 8")
+	check_near(MagicEffects.ally_heal_amount(40.0), 20.0, 1e-4, "ally heal 50% of the bolt")
+	var me := _player(w)
+	var buddy := _player(w)
+	buddy.global_position = w.global_position + Vector3(4, 0, 0)
+	buddy.health.value = 40.0
+	var hp := buddy.health.value
+	var h := SpellBolts.Hit.new()
+	h.collider = buddy
+	h.source = me
+	h.element = E.LIGHT
+	h.damage = 30.0
+	check(MagicEffects.intercept(h), "Light on another player: intercepted")
+	check_near(buddy.health.value, hp + 15.0, 1e-3, "healed 15")
+	h.element = E.FIRE
+	check(not MagicEffects.intercept(h), "Fire on a player: not an ally heal")
+	h.collider = me
+	h.element = E.LIGHT
+	check(not MagicEffects.intercept(h), "own bolt on himself: no")
+	var ally := _enemy(w, Vector3(0, 0, -6))
+	ally.corrupt(30.0)
+	ally.health = 5.0
+	h.collider = ally
+	check(MagicEffects.intercept(h) and is_equal_approx(ally.health, 20.0), "ally brute healed")
+	h.element = E.DARK
+	check(MagicEffects.intercept(h) and is_equal_approx(ally.health, 20.0), "other bolts spare allies")
+	var foe := _enemy(w, Vector3(0, 0, -9))
+	h.collider = foe
+	h.element = E.LIGHT
+	check(not MagicEffects.intercept(h), "enemies are not intercepted")
+	var rp := RemotePlayer.new()
+	w.add_child(rp)
+	var got := []
+	rp.light_healed.connect(func(a: float): got.append(a))
+	h.collider = rp.get_node("Hitbox")
+	check(MagicEffects.intercept(h) and got == [15.0], "co-op proxy hitbox: light_healed(15)")
+	w.queue_free()
+	await runner_tree.process_frame

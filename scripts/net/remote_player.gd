@@ -8,6 +8,10 @@ extends Node3D
 const SMOOTH := 12.0  ## 1/s, how fast the shown pose catches up
 const EYE := 1.5
 const GROUP := &"remote_players"
+const HITBOX_LAYER := 2  ## step 108: bolts hit it (Light heals); players/enemies don't collide
+
+## Step 108: a local Light bolt hit this player; CoopWorld sends "heal" to its owner.
+signal light_healed(amount: float)
 
 var peer := 0
 var display_name := "Player"
@@ -39,6 +43,18 @@ func _ready() -> void:
 	_mat = m
 	mi.material_override = m
 	add_child(mi)
+	var hb := StaticBody3D.new()
+	hb.name = "Hitbox"
+	hb.collision_layer = HITBOX_LAYER
+	hb.collision_mask = 0
+	var cs := CollisionShape3D.new()
+	var shape := CapsuleShape3D.new()
+	shape.radius = 0.3
+	shape.height = 1.8
+	cs.shape = shape
+	cs.position = Vector3(0, 0.9, 0)
+	hb.add_child(cs)
+	add_child(hb)
 	_tag = Label3D.new()
 	_tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_tag.position = Vector3(0, 2.1, 0)

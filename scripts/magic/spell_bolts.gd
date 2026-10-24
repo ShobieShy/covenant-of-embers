@@ -63,6 +63,7 @@ class Spawn:
 	var visual_origin := Vector3.ZERO
 	var graze_radius := GRAZE_RADIUS  ## step 11: enemy graze sphere radius (0 = off)
 	var source: Object  ## step 50: the caster (Player) or null
+	var dark_bonus := 0.0  ## step 108: Dark-part conversion bonus (WieldableInstance)
 
 
 class Bolt:
@@ -92,6 +93,7 @@ class Hit:
 	var shape := -1  ## step 11: shape index on the collider
 	var grazed := false  ## step 11: the graze sphere hit, not the ray
 	var source: Object  ## step 50: the caster (Spawn.source)
+	var dark_bonus := 0.0  ## step 108: Spawn.dark_bonus
 
 
 class Line:
@@ -190,6 +192,7 @@ func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
 			h.damage = s.damage
 			h.direction = s.direction
 			h.source = s.source
+			h.dark_bonus = s.dark_bonus
 			_resolve(h)
 			last_hits.append(h)
 			hits += 1
@@ -206,6 +209,8 @@ func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
 			b.ticks = -1
 	live = live.filter(func(x: Bolt) -> bool: return x.ticks >= 0)
 	for h in last_hits:
+		if MagicEffects.intercept(h):  # step 108: an ally (Light heals it)
+			continue
 		if is_instance_valid(h.collider) and h.collider.has_method(&"take_hit"):
 			h.collider.call(&"take_hit", h)
 		MagicEffects.on_hit(h)

@@ -8,9 +8,16 @@ extends RefCounted
 ## damage to an enemy heals its caster for max(LIGHT_HEAL_MIN, LIGHT_HEAL_FRACTION x damage)
 ## (green number via EventBus.player_healed) and, if the caster has none, calls one
 ## LightSummon that fights beside him for LightSummon.LIFETIME (30 s).
-## Dark (step 52, Bible: Dark "corrupts"): a Dark hit that leaves a non-boss enemy at <= 25%
-## health has a 40% chance to turn it into an ally for 30 s (Enemy.corrupt): it hunts other
-## enemies (Gnawer._ally_retarget), its bites hurt them, and it then crumbles.
+## Light rework (step 108): Light bolts deal LIGHT_DAMAGE_SCALE (0.9x) damage (Caster), and a
+## Light bolt that hits an ALLY heals it instead of hurting it (intercept): another Player,
+## a co-op RemotePlayer (its owner heals over the net, "heal"), or a corrupted ally enemy, for
+## max(LIGHT_HEAL_MIN, LIGHT_ALLY_FRACTION x bolt damage). LightSummons have no health and
+## are not healed. Player bolts never hurt allies (other elements pass harmlessly).
+## Dark (step 52, reworked step 108, Bible: Dark "corrupts"): every Dark hit on a non-boss
+## brute has DARK_BASE_CHANCE (1%) + the wieldable's Dark-part bonus (capped, see
+## WieldablePart.DARK_BONUS) to turn it into an ally for 30 s (Enemy.corrupt): it hunts other
+## enemies (Gnawer._ally_retarget), its bites hurt them, and it then crumbles. In co-op only
+## the host rolls (clients send the bonus with their "hit").
 ## Status effects (step 53): Fire burns (30% of the hit again over 3 s, refreshed, not
 ## stacked), Water slows (x0.6 walk for 2.5 s), Earth staggers (0.4 s: no move, no attack),
 ## Air chains (50% of the bolt's damage to the nearest other enemy within 6 m, one jump,
@@ -20,8 +27,11 @@ extends RefCounted
 const LIGHT_HEAL_MIN := 8.0
 const LIGHT_HEAL_FRACTION := 0.35
 
-const DARK_THRESHOLD := 0.25
-const DARK_CHANCE := 0.4
+const LIGHT_DAMAGE_SCALE := 0.9  ## step 108: Light is very slightly weaker than the rest
+const LIGHT_ALLY_FRACTION := 0.5  ## step 108: ally heal = max(MIN, this x bolt damage)
+
+const DARK_BASE_CHANCE := 0.01  ## step 108: per Dark hit
+const DARK_MAX_CHANCE := 0.15  ## base + part bonuses never exceed this
 const DARK_SECONDS := 30.0
 
 const BURN_SECONDS := 3.0
@@ -37,6 +47,73 @@ static var chains := 0
 static var corruptions := 0
 static var dark_roll := Callable()  ## tests: func() -> float in [0, 1)
 static var summons_made := 0
+static var ally_heals := 0
+
+
+## Step 108: before take_hit. True when the bolt hit an ally: a Light bolt heals it, any
+## other bolt does nothing; SpellBolts then skips take_hit and on_hit.
+static func intercept(h: SpellBolts.Hit) -> bool:
+	if h == null or not is_instance_valid(h.collider) or h.source == null:
+		return false
+	var light_bolt := h.element == ElementTable.Element.LIGHT
+	var amt := ally_heal_amount(h.damage)
+	var c: Object = h.collider
+	if c is Enemy:
+		var e := c as Enemy
+		if not e.is_ally():
+			return false
+		if light_bolt:
+			if e.hold_death and e.get_parent() is CoopWorld:  # a client puppet: tell the host
+				(e.get_parent() as CoopWorld).send_puppet_heal(e, amt)
+			heal_enemy(e, amt)
+		return true
+	if c is Player:
+		if c == h.source:
+			return false
+		if light_bolt:
+			heal_player(c as Player, amt)
+			return true
+		return false
+	var rp := remote_of(c)
+	if rp != null:
+		if light_bolt:
+			ally_heals += 1
+			rp.light_healed.emit(amt)
+		return true
+	return false
+
+
+static func remote_of(c: Object) -> RemotePlayer:
+	if c is RemotePlayer:
+		return c
+	if c is Node and (c as Node).get_parent() is RemotePlayer:
+		return (c as Node).get_parent()
+	return null
+
+
+static func ally_heal_amount(bolt_damage: float) -> float:
+	return maxf(LIGHT_HEAL_MIN, LIGHT_ALLY_FRACTION * bolt_damage)
+
+
+static func heal_player(p: Player, amt: float) -> float:
+	if p == null or not is_instance_valid(p) or not p.alive() or p.health == null:
+		return 0.0
+	var before := p.health.value
+	p.health.heal(amt)
+	var gained := p.health.value - before
+	ally_heals += 1
+	if gained > 0.0:
+		GameEvents.bus().player_healed.emit(p, gained)
+	return gained
+
+
+static func heal_enemy(e: Enemy, amt: float) -> float:
+	if e == null or not is_instance_valid(e) or e.dead:
+		return 0.0
+	var before := e.health
+	e.health = minf(e.max_health(), e.health + amt)
+	ally_heals += 1
+	return e.health - before
 
 
 static func on_hit(h: SpellBolts.Hit) -> void:
@@ -95,16 +172,25 @@ static func is_ally(e: Enemy) -> bool:
 	return e != null and e.is_ally()
 
 
-## Dark: the hit left a non-boss brute at <= DARK_THRESHOLD of its health; DARK_CHANCE to
-## corrupt it into an ally for DARK_SECONDS. `dark_roll` (tests) returns the 0..1 roll.
+## Dark: chance = DARK_BASE_CHANCE + bonus (capped at DARK_MAX_CHANCE) to corrupt a
+## non-boss brute into an ally for DARK_SECONDS. `dark_roll` (tests) returns the 0..1 roll.
+## A co-op client's puppet never converts locally: the host rolls (CoopWorld "hit").
 static func dark(h: SpellBolts.Hit) -> bool:
 	var e := h.collider as Enemy
+	if e == null or e.hold_death:
+		return false
+	return try_corrupt(e, h.dark_bonus)
+
+
+static func dark_chance(bonus: float) -> float:
+	return clampf(DARK_BASE_CHANCE + maxf(0.0, bonus), 0.0, DARK_MAX_CHANCE)
+
+
+static func try_corrupt(e: Enemy, bonus: float) -> bool:
 	if e == null or not e.alive() or e.is_boss() or not (e is Gnawer) or e.is_ally():
 		return false
-	if e.health > DARK_THRESHOLD * e.max_health():
-		return false
 	var roll := float(dark_roll.call()) if dark_roll.is_valid() else randf()
-	if roll >= DARK_CHANCE:
+	if roll >= dark_chance(bonus):
 		return false
 	if e.corrupt(DARK_SECONDS):
 		corruptions += 1

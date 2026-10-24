@@ -97,6 +97,9 @@ func tick(pressed: bool, held: bool, dt: float, aim: Aim, bolts: SpellBolts) -> 
 		s.element = wieldable.element()
 		s.damage = wieldable.damage() + damage_bonus + conditional_bonus + next_cast_bonus
 		next_cast_bonus = 0.0
+		if s.element == ElementTable.Element.LIGHT:
+			s.damage *= MagicEffects.LIGHT_DAMAGE_SCALE  # step 108
+		s.dark_bonus = wieldable.dark_chance_bonus()
 		s.exclude = aim.exclude
 		s.has_visual_origin = aim.has_visual_origin
 		s.visual_origin = aim.visual_origin

@@ -23,6 +23,11 @@ const MAX_GEM_SLOTS := 3
 @export var part_type: PartType = PartType.HEAD
 @export var rarity := "basic"  ## Rarity.IDS (look up with rarity_def())
 @export var element: ElementTable.Element = ElementTable.Element.ARCANE  ## ARCANE = Magewar NONE = no override
+
+## Step 108: a Dark part adds this (by rarity) to the 1% Dark conversion chance per hit.
+const DARK_BONUS := {
+	"basic": 0.0025, "uncommon": 0.005, "rare": 0.01, "mythic": 0.015, "primordial": 0.025, "unique": 0.03
+}
 @export var damage_bonus := 0.0  ## flat, every part type counts (Magewar)
 @export var fire_rate_modifier := 1.0  ## Exterior and Charm multiply the cooldown
 @export var accuracy_bonus := 0.0  ## Head, Handle and Charm count
@@ -106,7 +111,16 @@ func full_description() -> String:
 		lines.append("Handling: " + _signed(handling_bonus))
 	if gem_slots > 0 and part_type == PartType.HEAD:
 		lines.append("Gem Slots: %d" % gem_slots)
+	if dark_chance_bonus() > 0.0:
+		lines.append("Dark Conversion: +%s%%" % _num(dark_chance_bonus() * 100.0))
 	return "\n".join(lines)
+
+
+## Step 108: conversion chance this part adds (0 unless it is a Dark part).
+func dark_chance_bonus() -> float:
+	if element != ElementTable.Element.DARK:
+		return 0.0
+	return float(DARK_BONUS.get(rarity, 0.0))
 
 
 static func _num(v: float) -> String:

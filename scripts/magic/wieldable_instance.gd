@@ -113,6 +113,15 @@ func accuracy() -> float:
 
 
 ## Step 26: the Head's first socketed gem wins, then the Head's element, then the base's.
+## Step 108: Dark conversion bonus from its Dark parts (MagicEffects caps the total chance).
+func dark_chance_bonus() -> float:
+	var b := 0.0
+	for p in parts:
+		if p != null:
+			b += p.dark_chance_bonus()
+	return b
+
+
 func element() -> ElementTable.Element:
 	var head := part(WieldablePart.PartType.HEAD)
 	if head != null and not head.gems.is_empty():
