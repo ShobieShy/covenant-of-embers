@@ -4,14 +4,17 @@ extends TestCase
 
 func test_version_string() -> void:
 	var v := String(ProjectSettings.get_setting("application/config/version", ""))
-	check(v == "0.1.0", "project version is 0.1.0 (got %s)" % v)
-	check(MainMenu.version_string() == "v0.1.0", "menu version string")
+	check(v == "0.1.0-prealpha", "project version is 0.1.0-prealpha (got %s)" % v)
+	check(
+		MainMenu.version_string() == "v0.1.0-prealpha" and MainMenu.release_name() == "Pre-Alpha 0.1",
+		"menu version string"
+	)
 
 
 func test_menu_shows_version() -> void:
 	var m: MainMenu = (load(GameFlow.MENU) as PackedScene).instantiate()
 	runner_tree.root.add_child(m)
-	check(m.version_label != null and m.version_label.text == "v0.1.0", "menu has version label")
+	check(m.version_label != null and m.version_label.text.begins_with("Pre-Alpha 0.1"), "menu has version label")
 	m.queue_free()
 
 

@@ -27,6 +27,15 @@ static func version_string() -> String:
 	return "v" + String(ProjectSettings.get_setting("application/config/version", "0.0.0"))
 
 
+## "Pre-Alpha 0.1" for 0.1.0-prealpha (the menu's release name), else the plain version.
+static func release_name() -> String:
+	var v := String(ProjectSettings.get_setting("application/config/version", "0.0.0"))
+	if v.ends_with("-prealpha"):
+		var n := v.trim_suffix("-prealpha").split(".")
+		return "Pre-Alpha %s.%s" % [n[0], n[1] if n.size() > 1 else "0"]
+	return "v" + v
+
+
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var bg := ColorRect.new()
@@ -47,7 +56,7 @@ func _ready() -> void:
 	title.add_theme_color_override("font_color", Color(1.0, 0.55, 0.2))
 	v.add_child(title)
 	version_label = Label.new()  # step 84
-	version_label.text = version_string()
+	version_label.text = "%s  (%s)" % [release_name(), version_string()]
 	version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	version_label.modulate = Color(1, 1, 1, 0.6)
 	v.add_child(version_label)
