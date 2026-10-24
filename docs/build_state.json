@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 59,
-  "last_commit": "884eeae",
+  "steps_done": 60,
+  "last_commit": "9f96598",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -581,6 +581,14 @@
       "summary": "Colour-blind palettes (deuter/protan/tritan) for rarity+element colours, subtitles toggle + scale for dialogue, reduced motion and hold/toggle verified; test_settings.gd",
       "tests": "281 tests",
       "commit": "884eeae"
+    },
+    {
+      "time": "2026-10-24T06:01-05:00",
+      "step": 77,
+      "type": "build",
+      "summary": "Gamepad: SDL default pad events on every action (sticks/triggers/buttons), right-stick look, pad rebinding that keeps keyboard binds (and vice versa), pad capture in settings UI, focus_first on every menu; 4 new test_keybinds tests",
+      "tests": "285 tests",
+      "commit": "9f96598"
     }
   ],
   "completed_steps": [

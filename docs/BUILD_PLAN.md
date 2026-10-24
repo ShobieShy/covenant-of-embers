@@ -545,9 +545,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_settings.gd: each option saved and applied.
 - Result: PASS (281 tests + headless playtest)
 
-**77. Controller support**
+**77. Controller support** ✅ `9f96598`
 - Does: Gamepad bindings for all actions and UI navigation on every screen; rebinding for controller.
 - Done: test_keybinds.gd: every action has a joypad event; UI focus chain complete.
+- Result: PASS (285 tests + headless playtest)
 
 ### Phase N – Co-op
 
