@@ -26,6 +26,7 @@ class Aim:
 	var exclude: Array[RID] = []
 	var has_visual_origin := false  ## step 10: tracer starts at the viewmodel cast point
 	var visual_origin := Vector3.ZERO
+	var source: Object  ## step 50: who cast (the Player; Light/Dark effects need him)
 
 	## Same aim with the tracer drawn from `p` (the ray itself stays at `origin`).
 	func with_visual_origin(p: Vector3) -> Aim:
@@ -99,6 +100,7 @@ func tick(pressed: bool, held: bool, dt: float, aim: Aim, bolts: SpellBolts) -> 
 		s.exclude = aim.exclude
 		s.has_visual_origin = aim.has_visual_origin
 		s.visual_origin = aim.visual_origin
+		s.source = aim.source
 		bolts.spawn(s)
 	casts += 1
 	return true

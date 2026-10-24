@@ -360,7 +360,9 @@ func look_direction() -> Vector3:
 ## Cast aim: the plain eye (not the bobbed camera) along the look, skipping this body.
 func aim() -> Caster.Aim:
 	var ex: Array[RID] = [get_rid()]
-	return Caster.Aim.make(eye_position(), look_direction(), ex)
+	var a := Caster.Aim.make(eye_position(), look_direction(), ex)
+	a.source = self
+	return a
 
 
 ## Spread stance right now (after this tick's move): focus amount, crouched (also while

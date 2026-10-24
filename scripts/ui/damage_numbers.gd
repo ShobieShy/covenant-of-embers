@@ -31,6 +31,7 @@ const NOT_VERY_EFFECTIVE := "Not Very Effective..."
 const SUPER_COLOR := Color(1.0, 0.8, 0.0)  ## Magewar's callout colours
 const NOT_VERY_COLOR := Color(0.5, 0.5, 0.5)
 const CALLOUT_FONT_SIZE := 28
+const HEAL_COLOR := Color(0.35, 1.0, 0.45)  ## step 50: heal numbers
 
 
 class Number:
@@ -57,6 +58,26 @@ var spawned := 0
 func connect_bolts(b: SpellBolts) -> void:
 	if b and not b.bolt_hit.is_connected(_on_bolt_hit):
 		b.bolt_hit.connect(_on_bolt_hit)
+	var bus := GameEvents.bus()
+	if not bus.player_healed.is_connected(_on_player_healed):
+		bus.player_healed.connect(_on_player_healed)
+
+
+func _on_player_healed(p: Player, amount: float) -> void:
+	if is_instance_valid(p) and p.is_inside_tree():
+		add_heal(p.global_position + Vector3(0.0, 1.9, 0.0), amount)
+
+
+## Step 50: a green "+N" heal number (Light heals) at `world`.
+func add_heal(world: Vector3, amount: float) -> Number:
+	var r := Damage.Result.new()
+	r.amount = amount
+	var n := add(world, r, ElementTable.Element.LIGHT)
+	n.color = HEAL_COLOR
+	if n.label:
+		n.label.text = "+" + format(amount)
+		n.label.modulate = HEAL_COLOR
+	return n
 
 
 func _on_bolt_hit(h: SpellBolts.Hit) -> void:

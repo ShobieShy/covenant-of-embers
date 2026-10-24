@@ -62,6 +62,7 @@ class Spawn:
 	var has_visual_origin := false  ## step 10: tracer drawn from visual_origin
 	var visual_origin := Vector3.ZERO
 	var graze_radius := GRAZE_RADIUS  ## step 11: enemy graze sphere radius (0 = off)
+	var source: Object  ## step 50: the caster (Player) or null
 
 
 class Bolt:
@@ -90,6 +91,7 @@ class Hit:
 	var result: Damage.Result  ## set when the collider had a damage_target
 	var shape := -1  ## step 11: shape index on the collider
 	var grazed := false  ## step 11: the graze sphere hit, not the ray
+	var source: Object  ## step 50: the caster (Spawn.source)
 
 
 class Line:
@@ -187,6 +189,7 @@ func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
 			h.element = s.element
 			h.damage = s.damage
 			h.direction = s.direction
+			h.source = s.source
 			_resolve(h)
 			last_hits.append(h)
 			hits += 1
@@ -205,6 +208,7 @@ func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
 	for h in last_hits:
 		if is_instance_valid(h.collider) and h.collider.has_method(&"take_hit"):
 			h.collider.call(&"take_hit", h)
+		MagicEffects.on_hit(h)
 		bolt_hit.emit(h)
 	return last_hits
 

@@ -127,7 +127,9 @@ func apply(aim: Caster.Aim, accuracy: float, s: Stance) -> Caster.Aim:
 	var u2 := rng.randf()
 	if last_cone_deg <= 0.0:
 		return aim
-	return Caster.Aim.make(aim.origin, cone_direction(aim.direction, deg_to_rad(last_cone_deg), u1, u2), aim.exclude)
+	var a := Caster.Aim.make(aim.origin, cone_direction(aim.direction, deg_to_rad(last_cone_deg), u1, u2), aim.exclude)
+	a.source = aim.source
+	return a
 
 
 ## After a real cast (Caster.tick returned true): bloom grows.

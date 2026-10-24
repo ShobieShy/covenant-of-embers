@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 50,
+  "next_step": 52,
   "total_steps": 107,
-  "steps_done": 84,
-  "last_commit": "04ed1ad",
+  "steps_done": 86,
+  "last_commit": "166ab97",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -961,6 +961,13 @@
       "step": "60,61",
       "type": "build",
       "summary": "Vendor (scripts/economy/vendor.gd) + VendorUi shop screen (buy/sell/re-roll, gold+Dust line, compare vs equipped). Eldoria Town Square: Potion Merchant (potions + Basic/Uncommon parts), Tailor (gear up to Rare), Runesmith (re-roll for gold+Dust). Stock seeded per vendor+day, restocks daily. Buy 20 x rarity step (1/2/5/12/30/60), sell 1/4. Vendors talk, then their shop opens",
+      "commit": "166ab97"
+    },
+    {
+      "time": "2026-10-24T09:26-05:00",
+      "step": "50,51",
+      "type": "build",
+      "summary": "Light: caster heal max(8,35%) with green numbers; one 30 s LightSummon per caster smiting enemies in 14 m; bolts carry their caster (Hit.source)",
       "commit": "PENDING"
     }
   ],
@@ -1013,6 +1020,8 @@
     47,
     48,
     49,
+    50,
+    51,
     54,
     55,
     56,
