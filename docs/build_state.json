@@ -6,7 +6,7 @@
   "next_step": 43,
   "total_steps": 93,
   "steps_done": 61,
-  "last_commit": "e3024d1",
+  "last_commit": "43cf026",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -848,6 +848,14 @@
       "summary": "NetTransport abstraction (EnetTransport, SteamTransport via Engine.get_singleton, lazy init, never in headless), NetAddress parsing, NetSession (own SceneMultiplayer, hello/welcome/reject, roster, ready-up, host-only start, message channel reliable+unreliable, host leave ends session, connect timeout)",
       "tests": "test_net.gd (5)",
       "commit": "e3024d1"
+    },
+    {
+      "time": "2026-10-24T07:35:49-05:00",
+      "step": 88,
+      "type": "build",
+      "summary": "Co-op menu: direct-IP host/join (ENet), optional UPnP PortMapper, lobby roster/Ready/Start, player-facing errors (bad port/address, no answer, version mismatch, full, host left), persistent Coop session under root, --host/--join/--name/--coop-players args; headless 2-process host+join verified",
+      "tests": "test_net: port_mapper, coop_args, coop_menu_errors (309 pass)",
+      "commit": "43cf026"
     }
   ],
   "completed_steps": [
@@ -917,6 +925,7 @@
     78,
     83,
     84,
-    86
+    86,
+    88
   ]
 }

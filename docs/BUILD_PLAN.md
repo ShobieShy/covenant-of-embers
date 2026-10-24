@@ -621,7 +621,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase Q – Co-op beyond steps 78–80
 
-**88. Direct IP connect + port handling**
+**88. Direct IP connect + port handling** ✅ `43cf026`
 - Does: Direct IP is the dev/LAN fallback: Host/Join by IP:port (default UDP port, configurable), clear errors for timeout/refused/version mismatch, UPnP attempt with fallback message.
 - Done: test_net.gd: wrong version rejected cleanly; UPnP failure falls back without crash.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
