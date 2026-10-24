@@ -21,6 +21,9 @@ var session: NetSession
 var mapper: PortMapper
 var auto_opts := {}
 var _upnp_thread: Thread
+var lobby: LobbyBackend  ## step 89: Steam lobbies (or the fake one in tests)
+var lobby_transport: NetTransport
+var _hosting_lobby := false
 
 
 func _ready() -> void:
@@ -126,20 +129,22 @@ func press(id: String) -> void:
 			if _session().join(NetTransport.make("enet"), address_edit.text, info()):
 				set_status("Connecting to %s:%d ..." % [a["host"], a["port"]])
 		"host_steam":
-			var t := NetTransport.make("steam") as SteamTransport
-			if not t.init():
-				return set_status(t.last_error + ". Direct IP still works.")
-			if _session().host(t, null, info()):
-				set_status("Steam lobby open. Use Invite or the Steam overlay to bring friends.")
+			if not _ensure_lobby():
+				return
+			_hosting_lobby = true
+			if lobby.create_lobby():
+				set_status("Creating a Steam lobby ...")
 		"invite_steam":
-			if session and session.transport is SteamTransport:
-				(session.transport as SteamTransport).invite_dialog()
+			if lobby and lobby.lobby_id != 0:
+				lobby.invite(invite_name)
 			else:
 				set_status("Invites need a Steam lobby: press Host (Steam) first.")
 		"start":
 			if session == null or not session.start_game():
 				set_status("Everyone must be ready before the host starts.")
 		"leave":
+			if lobby:
+				lobby.leave_lobby()
 			Coop.end("left")
 			session = null
 			set_status("Left the session.")
@@ -150,6 +155,58 @@ func press(id: String) -> void:
 			hide()
 			closed.emit()
 	_refresh()
+
+
+var invite_name := ""  ## fake backend: the friend to invite (Steam uses its overlay)
+
+
+## Step 89: the Steam lobby backend (tests set `lobby` to a FakeLobbyBackend first).
+func _ensure_lobby() -> bool:
+	if lobby == null:
+		var t := NetTransport.make("steam") as SteamTransport
+		if not t.init():
+			set_status(t.last_error + ". Direct IP still works.")
+			return false
+		lobby = SteamLobbyBackend.new(t)
+	if not lobby.lobby_created.is_connected(_on_lobby_created):
+		lobby.lobby_created.connect(_on_lobby_created)
+		lobby.lobby_joined.connect(_on_lobby_joined)
+		lobby.join_requested.connect(_on_join_requested)
+		lobby.failed.connect(func(r: String): set_status(r))
+	lobby_transport = lobby.make_transport()
+	return true
+
+
+func _on_lobby_created(id: int) -> void:
+	if _session().host(lobby_transport, lobby.host_target(id), info()):
+		set_status("Steam lobby open. Use Invite or the Steam overlay to bring friends.")
+	_refresh()
+
+
+func _on_join_requested(id: int, from_friend: String) -> void:
+	set_status("Joining %s's lobby ..." % from_friend)
+	_hosting_lobby = false
+	lobby.join_lobby(id)
+
+
+func _on_lobby_joined(id: int) -> void:
+	if _hosting_lobby:
+		return  # the creator also "joins" its own lobby
+	if _session().join(lobby_transport, lobby.join_target(id), info()):
+		set_status("Connecting through Steam ...")
+	_refresh()
+
+
+## Steam join-on-launch ("+connect_lobby <id>") or an invite accepted from the menu.
+func join_lobby_id(id: int) -> void:
+	if id != 0 and _ensure_lobby():
+		show()
+		_on_join_requested(id, "a friend")
+
+
+func _process(_dt: float) -> void:
+	if lobby:
+		lobby.poll()
 
 
 func set_status(text: String) -> void:
@@ -220,7 +277,7 @@ func _refresh() -> void:
 	for id in ["host_ip", "join_ip", "host_steam"]:
 		(buttons[id] as Button).disabled = busy
 	(buttons["leave"] as Button).disabled = not busy
-	(buttons["invite_steam"] as Button).disabled = not (in_lobby and s.transport is SteamTransport)
+	(buttons["invite_steam"] as Button).disabled = not (in_lobby and lobby != null and lobby.lobby_id != 0)
 	ready_button.disabled = not in_lobby
 	start_button.visible = in_lobby and s.is_host()
 	start_button.disabled = not (in_lobby and s.all_ready())
