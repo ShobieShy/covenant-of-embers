@@ -344,10 +344,11 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_flow.gd: scene transitions headless.
 - Result: PASS (237 tests)
 
-**40. Playtest pass 1 – automated**
+**40. Playtest pass 1 – automated** ✅ `84cde7f`
 - Does: Scripted bot plays the slice headless (move, cast, kill, loot, craft, save).
 - Does (step 9 notes): call `player.set_spread_seed()` with a fixed seed so bolt spread (and the run) is reproducible.
 - Done: playtest.gd completes the slice in headless mode, no errors.
+- Result: PASS (237 tests + headless playtest)
 
 **41. Playtest pass 2 – manual + fixes**
 - Does: ShobieShy plays; fix reported issues. Also judge the Midden palette vs Magewar's landfill (step 2 note: TOML colours are linear, Magewar's sRGB).

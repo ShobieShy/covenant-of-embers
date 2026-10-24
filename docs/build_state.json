@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 40,
+  "next_step": 41,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -44,9 +44,10 @@
     36,
     37,
     38,
-    39
+    39,
+    40
   ],
-  "last_commit": "99fe4e2",
+  "last_commit": "84cde7f",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -417,6 +418,21 @@
         ]
       },
       "commit": "99fe4e2"
+    },
+    {
+      "time": "2026-10-24T03:58:35-05:00",
+      "step": 40,
+      "type": "build",
+      "summary": "PlaytestBot (--autoplay) drives the real Player via PlayerInput: walk, fight, item pickups (F), craft at the station, save, gate to Breach, waves + Warden, vault chest, loot, save; fixed spread seed; tools/playtest.sh runs in run_tests. Fixes found: vault chest had no LootDropper in main (loot never appeared); headless bot mutes audio (3D sound leak at quit). 41 tests green.",
+      "plan_changes": {
+        "magewar": "n/a (test tooling)",
+        "flags": [
+          "bot teleports into wave triggers instead of pathing",
+          "Midden Heap took ~107 s simulated to kill with starter staff - balance check",
+          "bot supplies base+parts for crafting"
+        ]
+      },
+      "commit": "84cde7f"
     }
   ]
 }
