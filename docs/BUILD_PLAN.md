@@ -514,15 +514,15 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_xp.gd: multiplier applied, level curve unchanged.
 - Needs ShobieShy: Q12
 
-**71. Skill trees: framework** ⏸ Needs ShobieShy
-- Does: Skill-point per level, tree data, respec at hub for gold.
-- Done: test_skills.gd: spend/respec, prerequisites.
-- Needs ShobieShy: Q11 (PLAN Callings vs simpler Magewar 'basic skills')
+**71. Skill trees: framework**
+- Does: Borderlands-style skill trees as a design pattern only (no Borderlands names/text/assets): data-driven trees in data/skills/*.toml, not tied to archetypes (Q6 open); 1 skill point per level from level 2; tiers unlock by points spent in that tree (5 per tier); ranked skills (max rank), capstone at the last tier; free respec at the Old Oak (gold cost pending Q4); points/ranks saved in the character save.
+- Done: test_skills.gd: point grant per level, tier gating by points spent, rank caps, capstone, respec refunds, save round trip.
+- Q11 answered 2026-10-24 (Borderlands-style trees, placeholders)
 
-**72. Skill trees: first tree + part consecrations** ⏸ Needs ShobieShy
-- Does: First full tree; part consecrations and Calling-aware loot weights (step 36 deferral).
-- Done: test_skills.gd + test_consecrations.gd.
-- Needs ShobieShy: Q11
+**72. Skill trees: first tree + part consecrations**
+- Does: First placeholder tree (3 branches, ~12 skills: flat/percent stat bonuses, a cast proc, a capstone) applied to the player via modifiers; part consecrations and tree-aware loot weights (step 36 deferral). Skill names are placeholders to be renamed later.
+- Done: test_skills.gd + test_consecrations.gd: skill effects apply and stack with gear, consecration weights follow the invested branch.
+- Q11 answered 2026-10-24 (Borderlands-style trees, placeholders)
 
 **73. Playable archetypes** ⏸ Needs ShobieShy
 - Does: Four archetypes with cosmetic + small perk, picked at new run (Bible Nerd/Gal/Buff/Loli; PLAN Scholar/Talker/Hauler/Scout).
@@ -552,20 +552,20 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase N – Co-op
 
-**78. Networking foundation (ENet host/join)** ⏸ Needs ShobieShy
-- Does: Host-authoritative ENet session, lobby with ready-up; reference Magewar network_manager.
-- Done: test_net.gd: two headless peers connect, player spawn replicated.
-- Needs ShobieShy: Q7 (co-op now vs later)
+**78. Networking foundation (ENet host/join)**
+- Does: Transport abstraction (NetTransport): ENet direct-IP (always available, headless tests) and Steam P2P lobbies via GodotSteam, app id 480 for development; game runs normally when Steam/GodotSteam is missing. Host-authoritative session, lobby with ready-up; reference Magewar network_manager.
+- Done: test_net.gd: two headless ENet peers connect, ready-up, player spawn replicated; Steam transport reports unavailable without crashing.
+- Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**79. Replicated combat + instanced loot** ⏸ Needs ShobieShy
-- Does: Host simulates enemies/damage; per-player instanced loot and kill rewards (Magewar instanced_loot_service / kill_reward_service).
-- Done: test_net.gd: each peer sees only own drops; XP/gold to all in range.
-- Needs ShobieShy: Q7
+**79. Replicated combat + instanced loot**
+- Does: Host simulates enemies/damage; per-player instanced loot and kill rewards (Magewar instanced_loot_service / kill_reward_service). Clients bring their own character (level, gear, skills); the world is the host's save.
+- Done: test_net.gd: each peer sees only own drops; XP/currency to all in range; client character stats come from the client save.
+- Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**80. Co-op polish: revive + party scaling** ⏸ Needs ShobieShy
-- Does: Downed/revive, enemy HP +60 % per extra player, party frames on HUD.
-- Done: test_net.gd: revive window, scaling factor.
-- Needs ShobieShy: Q7
+**80. Co-op polish: revive + party scaling**
+- Does: Borderlands-style downed state: 'last stand' window to get a kill and recover, or a teammate revives (hold interact); enemy HP +60 % per extra player; party frames on HUD.
+- Done: test_net.gd: downed window, self-recover on kill, revive by teammate, scaling factor.
+- Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
 ### Phase O – Content and wrap-up
 
@@ -584,11 +584,11 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - **Q4 Currency**: gold (Magewar, start 50) or Tallies (PLAN)?
 - **Q5 Status effects**: Magewar has none; add PLAN-style per-element statuses (burn, slow, stagger, chain)?
 - **Q6 Archetypes**: Bible lists Nerd/Gal/Buff/Loli; PLAN has Scholar/Talker/Hauler/Scout. Which set (and keep or rename 'Loli')?
-- **Q7 Co-op timing**: build networking now (steps 78–80) or after single-player content?
+- ~~**Q7 Co-op timing**~~ **Answered 2026-10-24: build co-op now**, derived from Borderlands design (patterns only; no Borderlands names, text or assets), Steam peer-to-peer.
 - **Q8 Tutorial boss**: The Filth (3-phase slime) replaces the current Heap/wave ending in the Midden, or is added after it?
 - **Q9 Heap balance**: lower Heap HP or raise starter staff damage to hit ~20–35 s TTK?
 - **Q10 Music**: style and source (free CC0 tracks, Magewar's own, or commissioned later)?
-- **Q11 Skill trees**: PLAN's four Callings or a smaller Magewar-style basic-skills set?
+- ~~**Q11 Skill trees**~~ **Answered 2026-10-24: Borderlands-style trees** (per character, points per level, tiers unlocked by points spent, capstone); placeholder skills, renamed later; data-driven and not tied to archetypes while Q6 is open.
 - **Q12 Growth**: Summoned ×1.5 XP multiplier (storyline) or PLAN's Resolve catch-up?
 
 ## Phase P/Q – Cross-platform + co-op additions (planned 2026-10-24)
@@ -621,35 +621,35 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase Q – Co-op beyond steps 78–80
 
-**88. Direct IP connect + port handling** ⏸ Needs ShobieShy
-- Does: Host/Join by IP:port in the lobby UI (default UDP port, configurable), clear errors for timeout/refused/version mismatch, Windows firewall prompt note, UPnP port-mapping attempt (Godot UPNP) with fallback message.
-- Done: test_net.gd: join with wrong version is rejected cleanly; UPNP failure falls back without crash.
-- Needs ShobieShy: Q7
+**88. Direct IP connect + port handling**
+- Does: Direct IP is the dev/LAN fallback: Host/Join by IP:port (default UDP port, configurable), clear errors for timeout/refused/version mismatch, UPnP attempt with fallback message.
+- Done: test_net.gd: wrong version rejected cleanly; UPnP failure falls back without crash.
+- Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**89. Invite codes / relay (NAT traversal)** ⏸ Needs ShobieShy
-- Does: Join without port forwarding: invite codes via a relay or Steam/Epic lobbies, or document VPN (Tailscale/ZeroTier) as the supported path.
-- Done: two peers behind NAT join by code (manual), or docs list supported path.
-- Needs ShobieShy: Q7 + Q15 (relay service / Steam vs direct IP + VPN only)
+**89. Invite codes / relay (NAT traversal)**
+- Does: NAT traversal via Steam: lobbies, friends invites (overlay join / join-on-launch), Steam networking relay; direct IP + VPN documented as fallback.
+- Done: test_net.gd: lobby/invite flow against a fake Steam backend; manual Steam join with app 480 when Steam is running.
+- Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**90. Cross-platform co-op (Windows ↔ Linux)** ⏸ Needs ShobieShy
-- Does: Same build version gate on both OSes; deterministic data (no float/locale/path-dependent IDs, item codes identical); Windows host + Linux client and reverse.
-- Done: test_net.gd: item codes/loot seeds identical across export targets; manual Win↔Linux session PASS.
-- Needs ShobieShy: Q7
+**90. Cross-platform co-op (Windows ↔ Linux)**
+- Does: Same build version gate on both OSes; deterministic data (no float/locale/path-dependent IDs, item codes identical); portable character files identical across OSes; Windows host + Linux client and reverse.
+- Done: test_net.gd: item codes/loot seeds and character file bytes identical across targets; manual Win↔Linux session pending Q14.
+- Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**91. Co-op saves + host leaving** ⏸ Needs ShobieShy
-- Does: Each player keeps their own character save (loot instanced); world/quest progress owned by host; on host disconnect clients return to menu with their character saved (host migration only if Q16 says so).
-- Done: test_net.gd: client character persists after host quits; progress flags merged per rule.
-- Needs ShobieShy: Q7 + Q16 (host migration or just safe exit; whose quest progress counts)
+**91. Co-op saves + host leaving**
+- Does: Borderlands-style ownership: the host's save holds world/quest progress; each client joins with a portable character save from any game (level, gear, skills) and keeps it. On host disconnect clients exit to menu with their character saved; no host migration. Client quest progress is not written to the host world.
+- Done: test_net.gd: client character persists after host quits; host world flags unchanged by clients; character file loads into any host.
+- Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**92. Desync + latency tests** ⏸ Needs ShobieShy
-- Does: Headless 2–4 peer test harness with simulated latency/packet loss; state hash checks for enemies, HP, loot; client prediction for own movement/casting.
-- Done: test_net_desync.gd: hashes match after 60 s scripted fight at 150 ms/2 % loss.
-- Needs ShobieShy: Q7
+**92. Desync + latency tests**
+- Does: Headless 2–4 peer harness with simulated latency/packet loss; state hash checks for enemies, HP, loot; client prediction for own movement/casting.
+- Done: test_net_desync.gd: hashes match after a scripted fight at 150 ms/2 % loss.
+- Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**93. Co-op playtest** ⏸ Needs ShobieShy
-- Does: Scripted 2-bot co-op run of the slice (host + client, one Windows under wine/real Windows), then a manual session with a friend.
-- Done: co-op autoplay PASS, manual issue list closed or deferred.
-- Needs ShobieShy: Q7
+**93. Co-op playtest**
+- Does: Scripted 2-bot co-op run of the slice (host + client); manual session with a friend left for ShobieShy.
+- Done: co-op autoplay PASS; manual issue list pending.
+- Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
 ### Overlaps / conflicts with existing steps
 - Step 42 (CI breadth) already builds Linux + Windows exports and wine smoke; 84–85 extend it (icon/version/packaging) and 87 replaces wine-only checking with a real Windows run.
@@ -663,5 +663,5 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 ### Open questions (added)
 - **Q13 Packaging**: Windows zip only, or also an installer / Steam/itch page later?
 - **Q14 Windows test machine**: is there a Windows PC or VM to playtest on?
-- **Q15 NAT**: relay/invite codes (Steam or a hosted relay) or direct IP + VPN (Tailscale/ZeroTier) only?
-- **Q16 Co-op progress**: host migration, or just safe exit; does quest progress count for clients?
+- ~~**Q15 NAT**~~ **Answered 2026-10-24: Steam P2P lobbies/invites** (GodotSteam, app id 480 for development); direct IP kept as dev/LAN fallback.
+- ~~**Q16 Co-op progress**~~ **Answered 2026-10-24: the host's save holds world/quest progress; clients join with their own character from any game**; on host leaving clients exit safely with the character saved; no host migration.
