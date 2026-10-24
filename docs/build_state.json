@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 17,
+  "next_step": 18,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -21,9 +21,10 @@
     13,
     14,
     15,
-    16
+    16,
+    17
   ],
-  "last_commit": "f6d7d98",
+  "last_commit": "b928ad8",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -152,6 +153,14 @@
       "summary": "Step 16 Part stat rolls, gems, names: scripts/loot/part_roller.gd = PartRoller (Magewar loot_generator, seeded): roll(rng, type, rarity, element) draws one seed from the caller's rng, from_seed() rolls on a private generator (global RNG never used), regenerate() rebuilds from roll_seed/type/rarity/element; Magewar template part per type for unrolled stats, Magewar ranges x rarity multiplier (fire rates unscaled; Exterior x0.7-1.3, x0.5-1.0 at Rare+), Head gem slots 1/+1 Rare/+1 Primordial (others 0), element from caller or Magewar element_weights, Magewar name ladders, id <rarity>_<element>_<type>_<seed>, description = full_description. WieldablePart gains roll_seed; main prints [parts]. 149 tests green (6 new in test_parts.gd).",
       "plan_changes": "PLAN §30.2: Exterior rate x0.7-1.3 below Rare (Magewar generator, not x1.0), Charm rate x0.85-1.0, template stats, element weights, Magewar name ladders. Refined step 18 (PartRoller drops, Magewar roll_procedural_drops recipe; its 45/25/15/8/5/2 rarity thresholds differ from ItemRarity weights, keep RarityTable), 19 (equipment rolls = generate_equipment_with_rng ranges/names/templates; resist on any elemental Clothes, not Rare+ only), 20 (rolled parts encode as seed+type+rarity+element), 26 (sockets = Head gem_slots; upgrade = from_seed at next tier). Fixed: make() gave non-Heads 1 gem slot; step 15 note 'exterior rate rolls from Uncommon' corrected (Magewar rolls from Basic). Magewar mismatches logged: per-part seed draw (regenerable) vs direct rng, single Rare+ exterior draw, element_weights used (Magewar's roll_element ignores them).",
       "commit": "f6d7d98"
+    },
+    {
+      "time": "2026-10-23T23:11-05:00",
+      "step": 17,
+      "type": "build",
+      "summary": "Step 17 Assembly rules + final stats: scripts/magic/assembly.gd = Assembly (Magewar MagicAssemblyStation rules): staff Head+Exterior+Interior+Handle (+Charm) 4-5 parts, wand Head+Exterior (+Handle) 2-3; check() returns a message per problem (missing/duplicate/disallowed type, count, empty/invalid part, no base), assemble() = preview with the same part objects sorted Head..Charm (null when invalid), disassemble(); assembled rarity = floor(mean part tier) replacing the base's; name '<Rarity> <Element> Staff|Wand'. WieldableInstance gains assembled flag, part(), handling(), draw_seconds() (0.4 x 100/(100+handling), >= 0.2 s; Loadout.select uses it), gem_slots() (wand capped at 1). PLAN 30.3 worked examples: Fire staff 15/0.40s/65%, +charm 17.5/0.36s/75%, Earthward Rare Fire Staff 46/0.2571s/99%, Swift Wind Uncommon Water Wand 14.5/0.117s/77%. main prints [assembly]. 157 tests green (8 new in test_assembly.gd).",
+      "plan_changes": "PLAN 30.3: rejection rule, chosen base, assembled name, handling -> draw time, wand 1 gem slot, 4 numeric worked examples; 30.1 damage names the assembled rarity. Refined steps 20 (Ember Mark encodes base id + assembled + parts, decode via Assembly.assemble/check), 24 (equip draw uses w.draw_seconds), 25 (station only moves parts; Assembly does rules; player picks base), 26 (sockets = gem_slots()), 30 (cards read final getters/name), 31 (Assembly.check messages, Magewar stats summary, wand slots disabled). Fixed: PLAN 30.1 stale step refs (bolts step 17 -> 7, damage 'game/combat/damage.*, step 20' -> scripts/combat/damage.gd step 6), part_roller Ember Marks step 39 -> 20, test_rarity 42.5 labelled free-form. Magewar mismatches logged: Magewar silently drops Interior/Charm on a wand and a wand Handle when an Interior is selected (ours rejects); Magewar always uses a template base (ours: chosen base); handling_bonus unused in Magewar (ours shortens the draw); wand gem cap 1 (Bible, not enforced by Magewar).",
+      "commit": "b928ad8"
     }
   ]
 }
