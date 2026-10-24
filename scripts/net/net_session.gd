@@ -28,6 +28,8 @@ var roster := {}  ## peer id -> {name, ready, version}
 var local_info := {}
 var last_reason := ""
 var _connect_left := 0.0
+var conditioner: LinkConditioner = LinkConditioner.from_args(OS.get_cmdline_user_args())  ## step 92
+var _clock_ms := 0.0  ## game-time clock for the conditioner (frame deltas, so --fixed-fps tests are exact)
 
 
 static func version() -> String:
@@ -124,6 +126,15 @@ func start_game() -> bool:
 func send(kind: String, data: Dictionary, to := 0, reliable := true) -> void:
 	if state == State.IDLE or state == State.ENDED or not api.has_multiplayer_peer():
 		return
+	if conditioner:
+		conditioner.push(reliable, to, kind, data, _clock_ms)
+		return
+	_send_now(kind, data, to, reliable)
+
+
+func _send_now(kind: String, data: Dictionary, to: int, reliable: bool) -> void:
+	if state == State.IDLE or state == State.ENDED or not api.has_multiplayer_peer():
+		return
 	var f: Callable = _msg if reliable else _msg_fast
 	if to != 0:
 		f.rpc_id(to, kind, data)
@@ -145,6 +156,10 @@ func _close_peer() -> void:
 func _process(delta: float) -> void:
 	if transport:
 		transport.poll()
+	_clock_ms += delta * 1000.0
+	if conditioner:
+		for m: Array in conditioner.pop_due(_clock_ms):
+			_send_now(m[3], m[4], m[2], m[1])
 	if state == State.CONNECTING:
 		_connect_left -= delta
 		if _connect_left <= 0.0:
