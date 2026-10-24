@@ -92,9 +92,19 @@ func test_box_sizes_rotations_colours() -> void:
 		check(shape != null and shape.size.distance_to(size) < EPS, "%s shape size" % n.name)
 		check((mi.mesh as BoxMesh).size.distance_to(size) < EPS, "%s mesh size" % n.name)
 		var mat := mi.get_surface_override_material(0) as StandardMaterial3D
-		var lin := mat.albedo_color.srgb_to_linear()
 		var c := LevelToml.color(b["color"])
-		check(Vector3(lin.r - c.r, lin.g - c.g, lin.b - c.b).length() < 1e-3, "%s colour (linear TOML)" % n.name)
+		if mat.albedo_texture != null:
+			# Step 75: textured boxes keep the TOML hue as a tint (brightest channel 1, halfway to white).
+			var s := c.linear_to_srgb()
+			var m := maxf(maxf(s.r, s.g), maxf(s.b, 1e-4))
+			var t := Vector3(0.5 + 0.5 * s.r / m, 0.5 + 0.5 * s.g / m, 0.5 + 0.5 * s.b / m)
+			var a := mat.albedo_color
+			check(Vector3(a.r, a.g, a.b).distance_to(t) < 2e-3, "%s tint (TOML hue)" % n.name)
+			check(mat.normal_enabled and mat.normal_texture != null, "%s normal map" % n.name)
+			check(mat.uv1_triplanar and mat.uv1_world_triplanar, "%s world triplanar" % n.name)
+		else:
+			var lin := mat.albedo_color.srgb_to_linear()
+			check(Vector3(lin.r - c.r, lin.g - c.g, lin.b - c.b).length() < 1e-3, "%s colour (linear TOML)" % n.name)
 	level.free()
 
 

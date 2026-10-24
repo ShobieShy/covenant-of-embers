@@ -3,6 +3,18 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/world/level_navigation.gd" id="1_nav"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/PavingStones131/color.jpg" id="2_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/PavingStones131/roughness.jpg" id="3_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/PavingStones131/normal.jpg" id="4_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Bricks076C/color.jpg" id="5_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Bricks076C/roughness.jpg" id="6_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Bricks076C/normal.jpg" id="7_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/color.jpg" id="8_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/roughness.jpg" id="9_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/normal.jpg" id="10_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/color.jpg" id="11_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/roughness.jpg" id="12_tex"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/normal.jpg" id="13_tex"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -23,7 +35,17 @@ size = Vector3(30, 0.2, 48)
 size = Vector3(30, 0.2, 48)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
-albedo_color = Color(0.565728, 0.546854, 0.527113, 1)
+albedo_color = Color(1, 0.983319, 0.965871, 1)
+albedo_texture = ExtResource("2_tex")
+roughness = 1.0
+roughness_texture = ExtResource("3_tex")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_texture = ExtResource("4_tex")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
 
 [sub_resource type="BoxMesh" id="BoxMesh_2"]
 size = Vector3(1, 4, 10)
@@ -32,7 +54,17 @@ size = Vector3(1, 4, 10)
 size = Vector3(1, 4, 10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
-albedo_color = Color(0.583831, 0.583831, 0.618031, 1)
+albedo_color = Color(0.972332, 0.972332, 1, 1)
+albedo_texture = ExtResource("5_tex")
+roughness = 1.0
+roughness_texture = ExtResource("6_tex")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_texture = ExtResource("7_tex")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
 
 [sub_resource type="BoxMesh" id="BoxMesh_3"]
 size = Vector3(5, 4, 1)
@@ -41,7 +73,17 @@ size = Vector3(5, 4, 1)
 size = Vector3(5, 4, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
-albedo_color = Color(0.701411, 0.583831, 0.797738, 1)
+albedo_color = Color(0.939625, 0.865929, 1, 1)
+albedo_texture = ExtResource("5_tex")
+roughness = 1.0
+roughness_texture = ExtResource("6_tex")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_texture = ExtResource("7_tex")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
 
 [sub_resource type="BoxMesh" id="BoxMesh_4"]
 size = Vector3(16, 0.2, 56)
@@ -50,7 +92,17 @@ size = Vector3(16, 0.2, 56)
 size = Vector3(16, 0.2, 56)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
-albedo_color = Color(0.556393, 0.537099, 0.516881, 1)
+albedo_color = Color(1, 0.982661, 0.964493, 1)
+albedo_texture = ExtResource("2_tex")
+roughness = 1.0
+roughness_texture = ExtResource("3_tex")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_texture = ExtResource("4_tex")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
 
 [sub_resource type="BoxMesh" id="BoxMesh_5"]
 size = Vector3(1, 4, 56)
@@ -83,7 +135,17 @@ size = Vector3(4, 4, 1)
 size = Vector3(4, 4, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
-albedo_color = Color(0.767376, 0.601243, 0.381092, 1)
+albedo_color = Color(1, 0.891753, 0.748309, 1)
+albedo_texture = ExtResource("5_tex")
+roughness = 1.0
+roughness_texture = ExtResource("6_tex")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_texture = ExtResource("7_tex")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
 
 [sub_resource type="BoxMesh" id="BoxMesh_10"]
 size = Vector3(1, 4, 8)
@@ -98,7 +160,17 @@ size = Vector3(6, 0.2, 3)
 size = Vector3(6, 0.2, 3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
-albedo_color = Color(0.679976, 0.634253, 0.583831, 1)
+albedo_color = Color(1, 0.966379, 0.929303, 1)
+albedo_texture = ExtResource("8_tex")
+roughness = 1.0
+roughness_texture = ExtResource("9_tex")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_texture = ExtResource("10_tex")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
 
 [sub_resource type="BoxMesh" id="BoxMesh_12"]
 size = Vector3(1.5, 3, 1.5)
@@ -107,7 +179,17 @@ size = Vector3(1.5, 3, 1.5)
 size = Vector3(1.5, 3, 1.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
-albedo_color = Color(0.665185, 0.634253, 0.609712, 1)
+albedo_color = Color(1, 0.976749, 0.958302, 1)
+albedo_texture = ExtResource("11_tex")
+roughness = 1.0
+roughness_texture = ExtResource("12_tex")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_texture = ExtResource("13_tex")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
 
 [sub_resource type="BoxMesh" id="BoxMesh_13"]
 size = Vector3(5.5, 4, 1)

@@ -18,6 +18,15 @@
 id = "midden_greybox"
 name = "The Ashen Midden (greybox)"
 
+[materials]                  # step 75 art pass: CC0 ambientCG sets, tinted by each box colour
+ground = "assets/ambientcg/Ground037"
+heap = "assets/ambientcg/Ground037"
+wall = "assets/ambientcg/Rock030"
+crate = "assets/ambientcg/Wood049"
+platform = "assets/ambientcg/Metal032"
+ramp = "assets/ambientcg/Metal032"
+uv_scale = 0.4
+
 [environment]
 sky_color = [0.40, 0.35, 0.25]      # Magewar sky_horizon_color; also the clear colour
 ambient_color = [0.28, 0.24, 0.16]  # Magewar ambient (0.35, 0.3, 0.2) hue, brighter (no GI/sky light here)

@@ -20,6 +20,15 @@
 id = "breach_slice"
 name = "The Breach"
 
+[materials]                  # step 75 art pass: CC0 ambientCG sets, tinted by each box colour
+ground = "assets/ambientcg/PavingStones131"
+wall = "assets/ambientcg/Bricks076C"
+crate = "assets/ambientcg/Wood049"
+heap = "assets/ambientcg/Rock030"
+platform = "assets/ambientcg/Rock030"
+ramp = "assets/ambientcg/Rock030"
+uv_scale = 0.4
+
 [environment]
 sky_color = [0.16, 0.12, 0.14]
 ambient_color = [0.22, 0.18, 0.18]

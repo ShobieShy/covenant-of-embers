@@ -168,7 +168,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch"}, "top level")
+               "encounter", "switch", "materials"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -208,7 +208,20 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "npcs": [],
         "encounters": [],
         "switches": [],
+        "materials": {},
     }
+    # Step 75: [materials] kind = "assets/<vendor>/<set>" (color/normal/roughness.jpg there),
+    # uv_scale = world tiling per metre (triplanar, so boxes of any size tile evenly).
+    mats = d.get("materials", {})
+    _only(mats, set(KINDS) | {"uv_scale"}, "[materials]")
+    out["uv_scale"] = float(mats.get("uv_scale", 0.5))
+    for k, v in mats.items():
+        if k == "uv_scale":
+            continue
+        tex = str(v).rstrip("/")
+        if not tex.startswith("assets/") or not (ROOT / tex / "color.jpg").is_file():
+            raise LevelError(f"[materials] {k}: no {tex}/color.jpg")
+        out["materials"][k] = tex
     names: set[str] = set()
     for i, b in enumerate(d.get("box", [])):
         w = f"box {i + 1}"
@@ -375,9 +388,39 @@ def sun_basis(z: list[float]) -> list[list[float]]:
     return [[x[i], y[i], z[i]] for i in range(3)]  # columns x, y, z
 
 
+def _tint(c: list[float]) -> list[float]:
+    """Step 75: the greybox colour as a hue tint over a texture: brightest channel to 1,
+    then halfway to white, so the palette reads without darkening the albedo map."""
+    m = max(max(c), 1e-4)
+    return [0.5 + 0.5 * x / m for x in c]
+
+
+def _textured(color: list[float], tex: str, uv: float, ext_id) -> str:
+    t = _tint([_srgb(x) for x in color])
+    return "\n".join([
+        "albedo_color = Color(%s, 1)" % ", ".join(_f(x) for x in t),
+        f'albedo_texture = ExtResource("{ext_id(tex + "/color.jpg")}")',
+        "roughness = 1.0",
+        f'roughness_texture = ExtResource("{ext_id(tex + "/roughness.jpg")}")',
+        "roughness_texture_channel = 0",
+        "normal_enabled = true",
+        f'normal_texture = ExtResource("{ext_id(tex + "/normal.jpg")}")',
+        f"uv1_scale = Vector3({_f(uv)}, {_f(uv)}, {_f(uv)})",
+        "uv1_triplanar = true",
+        "uv1_world_triplanar = true",
+        "texture_filter = 5",
+    ])
+
+
 def to_tscn(lv: dict, source: str) -> str:
     subs: list[str] = []
     ids: dict[tuple, str] = {}
+    exts: dict[str, str] = {}
+
+    def ext_id(path: str) -> str:
+        if path not in exts:
+            exts[path] = f"{len(exts) + 2}_tex"
+        return exts[path]
 
     def sub(kind: str, key, body: str) -> str:
         k = (kind, key)
@@ -411,7 +454,11 @@ def to_tscn(lv: dict, source: str) -> str:
         sk = tuple(b["size"])
         mesh = sub("BoxMesh", sk, f"size = {_v3(b['size'])}")
         shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
-        mat = sub("StandardMaterial3D", tuple(b["color"]), f"albedo_color = {_color_str(b['color'])}")
+        tex = lv.get("materials", {}).get(b["kind"])
+        if tex:
+            mat = sub("StandardMaterial3D", (tuple(b["color"]), tex), _textured(b["color"], tex, lv["uv_scale"], ext_id))
+        else:
+            mat = sub("StandardMaterial3D", tuple(b["color"]), f"albedo_color = {_color_str(b['color'])}")
         nodes.append(f'[node name="{b["name"]}" type="StaticBody3D" parent="Boxes"]\n'
                      f'transform = {_xf(rot_yxz(b["rotation_deg"]), b["center"])}\n'
                      f'metadata/kind = "{b["kind"]}"\nmetadata/toml_index = {i}\n')
@@ -472,6 +519,8 @@ def to_tscn(lv: dict, source: str) -> str:
             f"; rerun the tool (tools/run_tests.sh fails while this file is stale).\n"
             f"[gd_scene format=3]\n")
     ext = f'[ext_resource type="Script" path="{NAV_SCRIPT}" id="1_nav"]\n'
+    for path, i in exts.items():
+        ext += f'[ext_resource type="Texture2D" path="res://{path}" id="{i}"]\n'
     return head + "\n" + ext + "\n" + "\n".join(subs) + "\n" + "\n".join(nodes)
 
 
@@ -483,10 +532,26 @@ def generate(src: Path, rel_src: str) -> str:
     return to_tscn(lv, rel_src)
 
 
+def _swap_materials(text: str, block: str) -> str:
+    i = text.index("[materials]")
+    j = text.index("\n[", i + 1)
+    return text[:i] + block + text[j + 1:]
+
+
 def self_test() -> int:
     good = (Path(ROOT / "data/levels/midden_greybox.toml")).read_text(encoding="utf-8")
     lv = parse_level(good)
     assert len(lv["boxes"]) == 17, len(lv["boxes"])
+    assert lv["materials"]["wall"] == "assets/ambientcg/Rock030", lv["materials"]
+    tscn = to_tscn(lv, "self-test")
+    assert 'path="res://assets/ambientcg/Rock030/normal.jpg"' in tscn and "uv1_world_triplanar = true" in tscn
+    for bad in ('[materials]\nwall = "assets/nope"\n', '[materials]\nroof = "assets/ambientcg/Rock030"\n'):
+        try:
+            parse_level(_swap_materials(good, bad))
+        except LevelError:
+            pass
+        else:
+            raise AssertionError(f"accepted bad materials: {bad!r}")
     scene = to_tscn(lv, "data/levels/midden_greybox.toml")
     assert '[node name="Navigation" type="NavigationRegion3D" parent="."]' in scene
     assert scene.index('name="Navigation"') > scene.index('parent="Boxes"')  # after the boxes it bakes
