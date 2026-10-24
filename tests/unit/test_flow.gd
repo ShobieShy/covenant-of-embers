@@ -10,17 +10,20 @@ const FILE := "user://test_flow_save.json"
 func _reset() -> void:
 	GameFlow.dry_run = true
 	GameFlow.save_path = FILE
+	GameFlow.path_override = FILE  # the menu's select_slot must not read the player's real save
 	GameFlow.last_request = ""
 
 
 func _restore() -> void:
 	GameFlow.dry_run = false
+	GameFlow.path_override = ""
 	GameFlow.select_slot(1)
 	GameFlow.level_id = "midden"
 	GameFlow.load_save = false
 	runner_tree.paused = false
-	if FileAccess.file_exists(FILE):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(FILE))
+	for f in [FILE, FILE + ".bak", FILE + ".tmp"]:
+		if FileAccess.file_exists(f):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(f))
 
 
 func _game(level: String, load_save: bool) -> Node:
@@ -132,6 +135,7 @@ func test_new_run_confirm_and_slots() -> void:  # step 49
 	var had := FileAccess.file_exists(p2)
 	if not had:
 		SaveGame.write({"version": SaveGame.VERSION, "progress": {"level_id": "breach"}}, p2)
+	GameFlow.path_override = ""  # this test exercises real slot paths
 	m.select_slot(2)
 	check(GameFlow.save_path == p2 and GameFlow.slot_has_save(2), "slot 2 selected + has its save")
 	check(not (m.buttons["continue"] as Button).disabled, "continue enabled for slot 2")

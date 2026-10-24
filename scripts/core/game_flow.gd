@@ -27,6 +27,8 @@ static var level_id := "midden"
 static var load_save := false
 static var save_path := SaveGame.PATH
 static var slot := 1
+## Tests: when set, select_slot keeps this path (the real slot saves stay untouched and unread).
+static var path_override := ""
 static var dry_run := false
 static var last_request := ""
 static var requests := 0
@@ -87,7 +89,7 @@ static func has_save() -> bool:
 ## Step 49: picks save slot 1..SaveGame.SLOTS; New Run / Continue / autosaves then use it.
 static func select_slot(n: int) -> void:
 	slot = clampi(n, 1, SaveGame.SLOTS)
-	save_path = SaveGame.slot_path(slot)
+	save_path = path_override if path_override != "" else SaveGame.slot_path(slot)
 
 
 static func slot_has_save(n: int) -> bool:
