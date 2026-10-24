@@ -7,6 +7,10 @@ var _elapsed := 0.0
 var _frames := 0
 var _ticks := 0
 var settings: Settings   # step 32
+var pause_menu: PauseMenu   # step 39
+var breach: Breach          # step 39: the Breach room logic when the Breach is loaded
+var gate: LevelGate         # step 39: travel gate (Midden -> Breach -> back)
+var load_warnings := PackedStringArray()
 
 func _ready() -> void:
 	var args := OS.get_cmdline_user_args()
@@ -21,6 +25,7 @@ func _ready() -> void:
 	print("[patches] %d applied, %d rejected" % [BalancePatch.applied.size(), patch_log.size()])
 	for m in patch_log:
 		push_warning("[patches] " + m)
+	_swap_level(GameFlow.level_id)
 	# The player spawns at the level's PlayerStart (feet), facing its yaw; its Head sits
 	# at PlayerStart/Eye (1.5 m).
 	var start := get_node_or_null("Level/PlayerStart") as Node3D
@@ -86,6 +91,7 @@ func _ready() -> void:
 		settings = Settings.load_from()
 		settings.apply_input_map()
 		settings.apply_to(player)
+		_setup_flow(player)
 		print("[enemies] %d spawned (%s), %d skipped (%s)" % [spawned.size(),
 			", ".join(spawned.map(func(e: Enemy) -> String: return e.def.id)), skipped.size(), ", ".join(skipped)])
 		var nav := $Level.get_node_or_null("Navigation") as LevelNavigation
@@ -133,6 +139,78 @@ func _ready() -> void:
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])
+
+## Step 39: replaces the scene's Level (the Midden) with the GameFlow level before anything
+## reads it (spawn point, navmesh, waves).
+func _swap_level(id: String) -> void:
+	var old := get_node_or_null("Level")
+	if old and GameFlow.id_of(old) == id:
+		return
+	var lv := (load(GameFlow.level_scene(id)) as PackedScene).instantiate()
+	if old:
+		remove_child(old)
+		old.free()
+	lv.name = "Level"
+	add_child(lv)
+	move_child(lv, 0)
+
+## Step 39: Breach logic, the travel gate, the pause menu (+ its settings screen), and the
+## save load when the flow asks for it.
+func _setup_flow(player: Player) -> void:
+	var here := GameFlow.id_of($Level)
+	if here == "breach":
+		breach = Breach.new()
+		breach.name = "Breach"
+		add_child(breach)
+		breach.setup($Level)
+	gate = LevelGate.new("midden" if here == "breach" else "breach")
+	gate.name = "Gate"
+	gate.player = player
+	add_child(gate)
+	gate.global_position = player.spawn_feet + Vector3(-3.0, 0.0, -1.0)
+	gate.used.connect(travel)
+	var s_ui := SettingsUi.new()
+	s_ui.name = "SettingsUi"
+	s_ui.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(s_ui)
+	s_ui.setup(settings, player)
+	pause_menu = PauseMenu.new()
+	pause_menu.name = "PauseMenu"
+	add_child(pause_menu)
+	pause_menu.bind(player, s_ui)
+	pause_menu.save_requested.connect(save_game)
+	if GameFlow.load_save:
+		var r := SaveGame.read(GameFlow.save_path)
+		if r.has("error"):
+			push_warning("[save] " + String(r["error"]))
+		else:
+			load_warnings = SaveGame.apply(player, r["data"])
+			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
+	print("[flow] level %s, gate to %s" % [here, gate.target])
+
+func progress() -> Dictionary:
+	return {"level_id": GameFlow.id_of($Level), "vault_open": breach.open if breach else false}
+
+func save_game() -> Error:
+	var player := get_node_or_null("Player") as Player
+	if player == null:
+		return ERR_UNAVAILABLE
+	var err := SaveGame.write(SaveGame.capture(player, progress()), GameFlow.save_path)
+	print("[save] wrote %s: %s" % [GameFlow.save_path, error_string(err)])
+	return err
+
+## Autosave, then load `to` with the saved state.
+func travel(to: String) -> void:
+	var player := get_node_or_null("Player") as Player
+	if player:
+		var d := SaveGame.capture(player, progress())
+		d["progress"]["level_id"] = to
+		SaveGame.write(d, GameFlow.save_path)
+	GameFlow.travel(get_tree(), to)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST and pause_menu:
+		save_game()
 
 func _process(delta: float) -> void:
 	_frames += 1
