@@ -607,7 +607,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Bot fire presses use a physics tick counter; walk budgets scale with time scale; unstick; backpack-full craft fix; run_tests runs the 4× playtest.
 - Done: run_tests green incl. 4× playtest.
 
-**108. Light/Dark rework (owner feedback 2026-10-24)** ✅ PENDING
+**108. Light/Dark rework (owner feedback 2026-10-24)** ✅ `c7b30ca`
 - Does: Light bolts deal 0.9× damage (MagicEffects.LIGHT_DAMAGE_SCALE, applied in Caster) and heal allies they hit instead of hurting them: another Player, a co-op RemotePlayer (new bolt-only hitbox on layer 2; owner heals via "heal"), or a corrupted ally brute (client puppets forward "pheal" to the host). Ally heal = max(8, 50 % of bolt damage); caster self-heal on enemy hits unchanged (max(8, 35 % of damage dealt)) plus the one Light summon. LightSummons have no health and are not healed. Player bolts never hurt allies. Dark: the ≤25 % HP / 40 % rule is replaced by 1 % per Dark hit (DARK_BASE_CHANCE) + the wieldable's Dark-part bonus, total capped at 15 %; non-boss brutes only (only Gnawers have ally AI); 30 s ally duration kept. Dark-part bonus by rarity: basic +0.25 %, uncommon +0.5 %, rare +1 %, mythic +1.5 %, primordial +2.5 %, unique +3 % (WieldablePart.DARK_BONUS), shown as "Dark Conversion: +X%" in part tooltips and a "Dark conversion %" compare-card row. Co-op: the host alone rolls conversions (client "hit" carries "db"); snapshots carry the ally flag to puppets.
 - Done: test_light.gd (0.9× bolt, ally heals, no friendly fire, proxy hitbox), test_dark.gd (1 %/bonus/cap, puppet never converts, part table, tooltip, compare row, Spawn.dark_bonus), test_coop.gd (heal over the net, host-rolled conversion, ally flag on puppet, puppet heal), test_rarity.gd tooltip.
 - Note: Owner 2026-10-24: placeholder archetype perks and Steam test app 480 are fine for now.
@@ -639,6 +639,51 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - ~~**Q10 Music**~~ **Answered 2026-10-24: later** (step 74 deferred). Was: style and source (free CC0 tracks, Magewar's own, or commissioned later)?
 - ~~**Q11 Skill trees**~~ **Answered 2026-10-24: Borderlands-style trees** (per character, points per level, tiers unlocked by points spent, capstone); placeholder skills, renamed later; data-driven and not tied to archetypes while Q6 is open.
 - ~~**Q12 Growth**~~ **Answered 2026-10-24: Resolve catch-up**. Was: Summoned ×1.5 XP multiplier (storyline) or PLAN's Resolve catch-up?
+
+
+## Phase S – Linear intro and tutorial (planned 2026-10-24, not yet built)
+
+Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below; steps 113/114/115 are **Needs ShobieShy** for Q18/Q20/Q24 only where noted.
+
+**109. Intro director + beat state**
+- Does: IntroDirector (scripts/story/intro_director.gd) owns the INTRO_PLAN beats 1-13 as `intro_beat:<id>` flags, drives Prologue/MentorArrival/QuestLog, emits beat_started; GameFlow.new_run starts in mage_association at beat 1; --skip-intro jumps to the end state.
+- Done: test_intro_director.gd: beats run strictly in order, flags/save round-trip, skip-intro end state matches beat 13.
+
+**110. Cinematic camera + letterbox + skip**
+- Does: CinematicCamera (2-4 eased keyframes), Letterbox bars, HUD hide, input freeze, hold-Esc 1 s skip that still applies the beat's flags; saving off during cinematics.
+- Done: test_cinematic.gd: path finishes, skip applies flags, input restored; headless playtest skips all.
+
+**111. Summoning + appraisal character creation**
+- Does: Beats 1-4: ritual-circle cinematic, CharacterCreator lifted out of main_menu as the appraisal-crystal readout, expulsion (Joe out the back door), the clerk grant (50 gold, clothes, permit); New Game skips the menu picker.
+- Done: test: identity applied from creator; grant flags/gold; front door opens only after the permit.
+
+**112. Gates, markers, menu locks**
+- Does: LevelGate requires_flag + locked_text, guard-blocked town to_landfill, dormant waystone text, world-space objective marker chaining exits, inventory/skills/map/save locked until their beat.
+- Done: test_intro_gates.gd: each gate opens on its flag; markers follow the active objective.
+
+**113. Old Oak night + Bob's starter kit**
+- Does: Beat 6: moss-bed rest, night lighting preset, 'That night...' card, MentorArrival vortex cinematic; starter weapon moves from spawn to Bob (per Q18), bark map, stash, save enabled.
+- Done: test: fresh run has no weapon before Bob, has kit after; mentor plays once.
+
+**114. Association back door to the Landfill**
+- Does: Beat 7: [[exit]] to_landfill in mage_association.toml gated on landfill_route_open (set by Bob); clerk bark; town gate guarded until filth_defeated (Q20).
+- Done: test: back door locked before Bob, leads to midden after.
+
+**115. Landfill lessons: combat, crafting, Light/Dark**
+- Does: Beats 8-10: TutorialHints toast queue, scripted Gnawer yard with soft wall, guaranteed part drop, Assembly Station at Joe's camp + crafted_once, Light (heal scavenger) and Dark (one forced convert) shrines gating the arena.
+- Done: test_tutorial_lessons.gd: each wall drops on its flag; forced convert happens once only.
+
+**116. Filth intro, return, crystal finale, world open**
+- Does: Beats 11-13: Filth reveal cinematic + arena checkpoint respawn, return route, Bob crystal cinematic, tutorial_done/fast_travel_crystal/intro_done, all gates/menus open, 'Prologue complete' end card.
+- Done: test: full chain to intro_done; fast travel usable only after; world open.
+
+**117. Co-op intro sync**
+- Does: Host-authoritative beat messages; clients mirror gates/markers/tracker; join-during-cinematic wait card and recap card; kit/crystal granted to every player present or on late join; client character records intro_done.
+- Done: test_coop_intro.gd (loopback): client follows beats, late joiner gets kit and recap.
+
+**118. Save migration, skip prologue, intro playtest**
+- Does: SaveGame.apply marks old saves intro_done (tutorial_done / filth_defeated / level>=3 / non-intro level) or offers 'Play the new intro?'; 'Skip prologue' on New Game once any slot has intro_done; playtest bot walks beats 1-13.
+- Done: test_save_migration.gd; solo + co-op playtests pass with --autoplay through the intro.
 
 ## Phase P/Q – Cross-platform + co-op additions (planned 2026-10-24)
 
@@ -717,6 +762,15 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - ~~**Q16 Co-op progress**~~ **Answered 2026-10-24: the host's save holds world/quest progress; clients join with their own character from any game**; on host leaving clients exit safely with the character saved; no host migration.
 - **Q17 Rusty dagger**: should the starter gear include the Storyline's rusty dagger (step 107)?
 
+- **Q18 Starter weapon**: should the fire staff/wind wand still be given at spawn, or only by Bob (step 113)? Rusty dagger as glowing key item (recommended), wand reskin, or real melee (Q17)?
+- **Q19 Cinematic skip**: skippable on the first playthrough (recommended yes)?
+- **Q20 Landfill route**: confirm the Association back door as the intro route, and keep the town gate guarded until the Filth dies (step 114)?
+- **Q21 Joe/clerk**: does Joe give the grant, or a new clerk NPC? Joe cameo in the Landfill?
+- **Q22 Co-op skip**: host-only or majority vote (step 117)?
+- **Q23 Other Summoned in solo**: show the other three as NPCs in cinematics, or absent?
+- **Q24 Tutorial enemies**: Gnawers now, or wait for plan-only step 103 rats/golems (step 115)?
+- **Q25 Skip prologue**: offer it on later New Games (recommended), or always play?
+- **Q26 Name**: rename the visible 'Ashen Midden' to 'The Landfill'?
 ### Playtest run 3 (2026-10-24, after steps 50-85)
 - Solo bot (`tools/playtest.sh`): PASS - 26 kills, 2 saves, 2 deaths, level 3, 424 s simulated (playtest/run3_solo.log).
 - Co-op two bots (`tools/coop_playtest.sh`): PASS on both host and joiner (playtest/run3_coop.log).
