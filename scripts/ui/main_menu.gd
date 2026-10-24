@@ -93,6 +93,12 @@ func _ready() -> void:
 	if args.has("--autoplay"):  # step 40: the bot never touches the real save
 		GameFlow.save_path = "user://playtest_save.json"
 		PlaytestBot.reset_run()
+		var cargs := Coop.parse_args(OS.get_cmdline_user_args())
+		if cargs["mode"] != "" and not PlaytestBot.coop_started:  # step 93: bots start fresh
+			PlaytestBot.coop_started = true
+			for f in [GameFlow.save_path, CharacterSave.path_for(String(cargs["name"]))]:
+				if FileAccess.file_exists(f):
+					DirAccess.remove_absolute(ProjectSettings.globalize_path(f))
 		if not args.has("--start"):
 			args.append("--start")
 	Screenshots.attach(self, "menu")

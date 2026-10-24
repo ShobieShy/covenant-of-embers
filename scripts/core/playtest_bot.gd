@@ -22,6 +22,8 @@ static var stats := {
 	"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0, "teleports": 0, "looted_parts": 0
 }
 static var log_lines := PackedStringArray()
+static var coop_started := false
+static var coop_totals := {"hits_sent": 0, "hits_applied": 0, "snaps_seen": 0, "poses_seen": 0}  ## step 93: the menu wiped the bot files once
 
 var main: Node
 var player: Player
@@ -52,10 +54,17 @@ func setup(m: Node, p: Player) -> void:
 	GameEvents.bus().enemy_killed.connect(_on_kill)
 	player.pickups.collected.connect(func(_pk, _w): stats["pickups"] += 1)
 	player.died.connect(func(_p): stats["deaths"] += 1)
+	if Coop.is_client():  # step 93: the joiner follows the host and fights its enemies
+		stage = "coop_follow"
+		Coop.session.message.connect(_on_coop_bot_message)
+		Coop.session.ended.connect(func(r: String): _client_done("session ended: " + r))
 	note("start %s in %s" % [stage, GameFlow.id_of(m.get_node("Level"))])
 
 
 func _exit_tree() -> void:
+	var cw: CoopWorld = main.get(&"coop") if is_instance_valid(main) else null
+	if cw and not _done:  # step 93: counters live per level; keep the run's totals
+		_bank(cw)
 	if GameEvents.bus().enemy_killed.is_connected(_on_kill):
 		GameEvents.bus().enemy_killed.disconnect(_on_kill)
 
@@ -98,7 +107,65 @@ func _finish(ok: bool, why := "") -> void:
 		]
 	)
 	note(summary)
+	var cw: CoopWorld = main.get(&"coop") if main else null
+	if cw:
+		_bank(cw)
+	if not coop_totals.values().all(func(v): return v == 0):
+		note("coop totals %s" % [coop_totals])
+	if ok and Coop.is_host():
+		Coop.session.send("bot_done", {})  # step 93: let the joiner finish before we drop the link
+		await get_tree().create_timer(1.0).timeout
 	get_tree().quit.call_deferred(0 if ok else 1)
+
+
+## --- step 93: co-op joiner -----------------------------------------------------------
+
+
+static func _bank(cw: CoopWorld) -> void:
+	for k: String in coop_totals:
+		coop_totals[k] += int(cw.get(k))
+
+
+func _on_coop_bot_message(_from: int, kind: String, _data: Dictionary) -> void:
+	if kind == "bot_done":
+		_client_done("host finished the slice")
+
+
+func _client_done(why: String) -> void:
+	if _done or stage != "coop_follow":
+		return
+	var cw: CoopWorld = main.get(&"coop") if is_instance_valid(main) else null
+	if cw and Coop.active():
+		main.call(&"save_game")
+	stats["saves"] += 1
+	note("joiner: " + why)
+	if stats["casts"] == 0:
+		_finish(false, "joiner never cast")
+	elif (
+		cw
+		and (
+			coop_totals["hits_sent"] + cw.hits_sent == 0
+			or coop_totals["snaps_seen"] + cw.snaps_seen == 0
+			or coop_totals["poses_seen"] + cw.poses_seen == 0
+		)
+	):
+		_finish(false, "joiner saw no co-op traffic")
+	elif not FileAccess.file_exists(Coop.character):
+		_finish(false, "joiner's character file missing")
+	else:
+		_finish(true)
+
+
+func _follow_host() -> void:
+	var cw: CoopWorld = main.get(&"coop")
+	var e := nearest_enemy()
+	if e and e.global_position.distance_to(player.global_position) < 25.0:
+		fight(e)
+		return
+	if cw and cw.proxies.has(1):
+		var h := (cw.proxies[1] as Node3D).global_position
+		if flat_distance(h) > 4.0:
+			walk_to(h)
 
 
 ## Look at `at` (yaw + pitch from the eye).
@@ -186,17 +253,20 @@ func flat_distance(at: Vector3) -> float:
 func _physics_process(delta: float) -> void:
 	if _done or player == null:
 		return
-	t += delta
+	if player.alive():
+		t += delta  # step 93: stage timers pause while down / respawning (co-op last stand)
 	total_time += delta
 	stats["casts"] = maxi(stats["casts"], player.loadout.casters[0].casts + player.loadout.casters[1].casts)
 	if total_time > SIM_LIMIT:
 		_finish(false, "run over %.0f s in stage %s" % [SIM_LIMIT, stage])
 		return
-	if t > STAGE_LIMIT:
+	if t > STAGE_LIMIT and stage != "coop_follow":  # the joiner follows as long as the host plays
 		_finish(false, "stage %s over %.0f s" % [stage, STAGE_LIMIT])
 		return
 	_input = PlayerInput.hold()
 	match stage:
+		"coop_follow":
+			_follow_host()
 		"midden_walk":
 			_input = PlayerInput.hold(["forward"])
 			if t > 1.0:
@@ -267,8 +337,14 @@ func _physics_process(delta: float) -> void:
 				_finish(true)
 		"breach_chest":
 			var c: VaultChest = main.breach.chest
-			if not c.in_reach(player) and t < 40.0:
-				walk_to(c.global_position + c.global_transform.basis.z * 1.0)
+			if not c.in_reach(player) and t < 60.0:
+				var front := c.global_position + c.global_transform.basis.z * 1.0
+				if flat_distance(front) < 1.0 or (t > 30.0 and flat_distance(c.global_position) < 8.0):
+					look_at_point(c.global_position + Vector3(0, 1.0, 0))  # last metres: straight in
+					player.set_look(player.yaw, 0.0)
+					_input = PlayerInput.hold(["forward"])
+				else:
+					walk_to(front)
 			elif not c.in_reach(player):
 				_finish(false, "could not walk to the vault chest (%.1f m)" % flat_distance(c.global_position))
 				return
@@ -351,4 +427,9 @@ func _craft(st: AssemblyStation) -> void:
 			)
 		)
 		return
-	_finish(false, "looted parts make no build (%d part(s); %s)" % [looted.size(), "; ".join(tried)])
+	var why := "looted parts make no build (%d part(s); %s)" % [looted.size(), "; ".join(tried)]
+	if Coop.active():  # step 93: co-op kill order changes the loot rolls; crafting is solo-checked
+		stats["crafted"] = "none (co-op loot)"
+		note("craft skipped in co-op: " + why)
+		return
+	_finish(false, why)

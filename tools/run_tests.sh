@@ -26,6 +26,7 @@ run_clean timeout 60 "$GODOT" --headless --path . -- --seconds 2
 run_clean timeout 60 "$GODOT" --headless --path . -- --start --seconds 2
 run_clean tools/playtest.sh
 grep -q "^\[playtest\] PASS" "$log" || { echo "[run_tests] playtest did not pass"; exit 1; }
+tools/coop_playtest.sh || { echo "[run_tests] co-op playtest did not pass"; exit 1; }  # step 93
 python3 tools/check_assets.py
 python3 tools/check_paths.py --self-test
 python3 tools/check_paths.py
