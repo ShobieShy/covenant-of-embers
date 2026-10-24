@@ -23,6 +23,7 @@ var travel_ui: FastTravelUI
 var world_map: WorldMap  # step 69
 var world_map_ui: WorldMapUI
 var load_warnings := PackedStringArray()
+var coop: CoopWorld  # step 79: set when a co-op session is running
 
 func _ready() -> void:
 	var args := OS.get_cmdline_user_args()
@@ -103,6 +104,8 @@ func _ready() -> void:
 		settings.apply_input_map()
 		settings.apply_to(player)
 		_setup_flow(player)
+		if Coop.active():
+			_setup_coop(player, spawner)
 		print("[enemies] %d spawned (%s), %d skipped (%s)" % [spawned.size(),
 			", ".join(spawned.map(func(e: Enemy) -> String: return e.def.id)), skipped.size(), ", ".join(skipped)])
 		var nav := $Level.get_node_or_null("Navigation") as LevelNavigation
@@ -315,6 +318,23 @@ func respec_skills() -> int:
 func talk_to(speaker: String) -> bool:
 	return dialogue != null and not dialogue.active and dialogue.start(speaker)
 
+## Step 79: the host simulates; clients mirror its enemies and send their hits.
+func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
+	coop = CoopWorld.new()
+	coop.name = "CoopWorld"
+	add_child(coop)
+	coop.setup(Coop.session, player, spawner, spawner.table)
+	if not Coop.session.ended.is_connected(_on_coop_ended):
+		Coop.session.ended.connect(_on_coop_ended)
+	print("[coop] %s, %d player(s)" % ["hosting" if coop.host else "joined", Coop.session.roster.size()])
+
+
+func _on_coop_ended(reason: String) -> void:
+	print("[coop] session ended: %s" % reason)
+	Coop.end(reason)
+	GameFlow.to_menu(get_tree())
+
+
 func progress() -> Dictionary:
 	return {"level_id": GameFlow.id_of($Level), "vault_open": breach.open if breach else false,
 		"flags": story_flags.to_dict()}
@@ -388,6 +408,10 @@ func _process(delta: float) -> void:
 				lo.swaps, "shown" if player.viewmodel.visible else "hidden",
 				player.viewmodel.model.position,
 				"on" if player.viewmodel.render_viewport else "off (headless)"])
+		if coop:
+			print("[coop] %s: %d snapshot(s) sent, %d seen, %d puppet(s), %d remote player(s), %d hit(s) sent, %d applied, %d hurt sent, %d taken, poses %d/%d" % [
+				"host" if coop.host else "client", coop.snaps_sent, coop.snaps_seen, coop.puppets.size(), coop.proxies.size(),
+				coop.hits_sent, coop.hits_applied, coop.hurts_sent, coop.hurts_taken, coop.poses_sent, coop.poses_seen])
 		get_tree().quit(0)
 
 func _physics_process(_delta: float) -> void:
