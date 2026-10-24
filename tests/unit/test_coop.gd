@@ -22,6 +22,10 @@ class FakePlayer:
 	func on_enemy_attack(_from: Variant, bite: Gnawer.Bite) -> void:
 		hits.append(bite.damage)
 
+	func revive(_f: float) -> bool:
+		downed = false
+		return true
+
 
 func _wait(cond: Callable, frames := 300) -> bool:
 	for i in frames:
@@ -138,6 +142,72 @@ func test_puppets_poses_hits_kills_and_hurt() -> void:
 	check((d["hp"] as FakePlayer).hits == [7.0], "host's own bite stays local")
 	# Nearest target: the client's proxy is nearer to an enemy at x=4.
 	check(hw.nearest_target(Vector3(4, 0, 0)) == hw.proxies[cid], "nearest = remote")
+	(d["c"] as NetSession).leave()
+	(d["h"] as NetSession).leave()
+	(d["root"] as Node).queue_free()
+	await runner_tree.process_frame
+
+
+const PLAYER_SCENE := "res://scenes/player/player.tscn"
+
+
+## Step 80: last stand -> bleed out -> respawn countdown; revive puts you up where you fell.
+func test_downed_revive_and_bleed_out() -> void:
+	var p := (load(PLAYER_SCENE) as PackedScene).instantiate() as Player
+	p.input_enabled = false
+	runner_tree.root.add_child(p)
+	p.last_stand = 2.0
+	p.take_enemy_hit(99999.0, ElementTable.Element.FIRE)
+	check(not p.alive() and p.downed, "downed, not dead-dead")
+	check(p.revive(0.3), "revive works")
+	check(p.alive() and not p.downed and p.revives == 1, "revived")
+	check_near(p.health.value, p.health.max_value() * 0.3, 0.5, "30 pct health after revive")
+	p.protection_left = 0.0
+	p.take_enemy_hit(99999.0, ElementTable.Element.FIRE)
+	check(p.downed, "down again")
+	var input := PlayerInput.new()
+	for i in 130:
+		p.tick(input, 1.0 / 60.0)
+	check(not p.downed and p.bleed_outs == 1 and not p.alive(), "bled out after 2 s")
+	check(p.respawn_left > 0.0, "respawn countdown running")
+	p.queue_free()
+	await runner_tree.process_frame
+
+
+## Step 80: enemy health x1.6 for 2 players (fraction kept), and a teammate beside a
+## downed player revives them after REVIVE_TIME; party frames list the other player.
+func test_scaling_revive_and_party_frames() -> void:
+	var d := await _coop_pair()
+	var table := EnemyTable.load_default()
+	var real := Enemy.new()
+	real.setup(table.find("gnawer"))
+	(d["henemies"] as Node).add_child(real)
+	var hw: CoopWorld = d["hw"]
+	var cw: CoopWorld = d["cw"]
+	hw.setup(d["h"], d["hp"], d["henemies"], table)
+	cw.setup(d["c"], d["cp"], d["cenemies"], table)
+	await _tick_both(d, 3)
+	check_near(real.max_health(), real.def.max_health * 1.6, 0.01, "x1.6 health")
+	check_near(real.health, real.max_health(), 0.01, "full")
+	var frames := PartyFrames.new()
+	(d["root"] as Node).add_child(frames)
+	frames.bind(hw)
+	for i in 60:
+		await _tick_both(d)
+		if hw.proxies.size() == 1 and cw.proxies.size() == 1:
+			break
+	frames.refresh()
+	var cid := (d["c"] as NetSession).my_id()
+	check(frames.row_text(cid).begins_with("C"), "party row: %s" % frames.row_text(cid))
+	# The client's (fake) player goes down next to the host: revived after 3 s.
+	var cp: FakePlayer = d["cp"]
+	cp.downed = true
+	(d["hp"] as Node3D).global_position = cp.global_position + Vector3(1, 0, 0)
+	for i in 400:
+		await _tick_both(d)
+		if cw.revives > 0:
+			break
+	check(cw.revives == 1, "revived by the host standing beside")
 	(d["c"] as NetSession).leave()
 	(d["h"] as NetSession).leave()
 	(d["root"] as Node).queue_free()

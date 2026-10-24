@@ -38,6 +38,7 @@ const BRAINS := {
 	"splitter": "res://scripts/enemies/ooze.gd",
 }
 
+var health_scale := 1.0  ## step 80: co-op enemy health multiplier
 var def: EnemyDef
 var damage_target: Damage.Target
 var health := 0.0
@@ -133,7 +134,15 @@ func display_name() -> String:
 
 
 func max_health() -> float:
-	return def.max_health if def else 0.0
+	return def.max_health * health_scale if def else 0.0
+
+
+## Step 80: co-op scaling (x1.6 with 2 players, ...); keeps the current health fraction.
+func scale_health(k: float) -> void:
+	var frac := health / max_health() if max_health() > 0.0 else 1.0
+	health_scale = maxf(0.01, k)
+	if not dead:
+		health = max_health() * frac
 
 
 func alive() -> bool:

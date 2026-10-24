@@ -75,6 +75,7 @@ signal hint(text: String)
 signal hurt(player: Player, result: Damage.Result)  ## step 13: a hit that landed (after resolve)
 signal died(player: Player)
 signal respawned(player: Player)
+signal downed_changed(player: Player, is_down: bool)  ## step 80 (co-op last stand)
 
 @export var tuning: PlayerTuning
 
@@ -126,6 +127,13 @@ var damage_target := Damage.Target.new(ElementTable.Element.ARCANE)  ## bolts + 
 var spawn_feet := Vector3.ZERO  # the last spawn() point: respawns go back there
 var spawn_yaw := 0.0
 var respawn_left := 0.0  # s until the respawn while dead
+## Step 80 (co-op): > 0 = falling leaves you downed for this many s (last stand) before
+## you bleed out and the normal respawn countdown starts; a teammate can revive you.
+var last_stand := 0.0
+var downed := false
+var downed_left := 0.0
+var revives := 0
+var bleed_outs := 0
 var protection_left := 0.0  # step 14: s of spawn protection left after a respawn
 var deaths := 0
 var respawns := 0
@@ -427,6 +435,10 @@ func _on_died() -> void:
 	sprinting = false
 	velocity = Vector3.ZERO
 	direction = Vector3.ZERO
+	if last_stand > 0.0:
+		downed = true
+		downed_left = last_stand
+		downed_changed.emit(self, true)
 	died.emit(self)
 
 
@@ -445,6 +457,35 @@ func respawn() -> void:
 	respawns += 1
 	protection_left = tuning.respawn_protection
 	respawned.emit(self)
+
+
+## Step 80: back up where you fell with `fraction` of max health (no shield), briefly
+## protected. False unless downed.
+func revive(fraction := 0.3) -> bool:
+	if not downed:
+		return false
+	downed = false
+	downed_left = 0.0
+	health.refill()
+	health.value = maxf(1.0, health.max_value() * clampf(fraction, 0.01, 1.0))
+	health.shield = 0.0
+	respawn_left = 0.0
+	protection_left = tuning.respawn_protection
+	revives += 1
+	downed_changed.emit(self, false)
+	respawned.emit(self)
+	return true
+
+
+## Step 80: the last stand ran out; the normal respawn countdown starts.
+func bleed_out() -> void:
+	if not downed:
+		return
+	downed = false
+	downed_left = 0.0
+	bleed_outs += 1
+	respawn_left = tuning.respawn_delay
+	downed_changed.emit(self, false)
 
 
 ## Step 32: toggle modes turn a press into a latched "held" for focus / crouch.
@@ -649,6 +690,11 @@ func tick(input: PlayerInput, dt: float) -> void:
 	slow_left = maxf(0.0, slow_left - dt)
 	# Dead (step 13): no input, no movement; respawn after respawn_delay.
 	if not alive():
+		if downed:
+			downed_left -= dt
+			if downed_left <= 1e-7:
+				bleed_out()
+			return
 		respawn_left -= dt
 		if respawn_left <= 1e-7:
 			respawn()

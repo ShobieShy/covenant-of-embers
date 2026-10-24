@@ -324,6 +324,10 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 	coop.name = "CoopWorld"
 	add_child(coop)
 	coop.setup(Coop.session, player, spawner, spawner.table)
+	var frames := PartyFrames.new()  # step 80
+	frames.name = "PartyFrames"
+	add_child(frames)
+	frames.bind(coop)
 	if not Coop.session.ended.is_connected(_on_coop_ended):
 		Coop.session.ended.connect(_on_coop_ended)
 	print("[coop] %s, %d player(s)" % ["hosting" if coop.host else "joined", Coop.session.roster.size()])

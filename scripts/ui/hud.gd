@@ -305,7 +305,10 @@ func refresh(dt: float) -> void:
 	level_label.text = "Level %d   %d / %d XP" % [pr.level, pr.xp, pr.xp_to_next]
 	death_overlay.visible = not player.alive()
 	if death_overlay.visible:
-		death_label.text = "You fell.\nRising in %.1f" % player.respawn_left
+		if player.downed:
+			death_label.text = "Down! %.0f s\nA friend standing beside you revives you." % player.downed_left
+		else:
+			death_label.text = "You fell.\nRising in %.1f" % player.respawn_left
 
 
 func _refresh_pips() -> void:

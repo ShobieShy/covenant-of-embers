@@ -13,6 +13,11 @@ extends Node
 
 const SNAP_HZ := 20.0
 const MAX_ENEMIES := 64  ## per snapshot
+const HP_PER_EXTRA_PLAYER := 0.6  ## step 80: enemy health +60 pct per extra player
+const LAST_STAND := 15.0  ## s downed before bleeding out
+const REVIVE_RANGE := 2.5  ## m, a living teammate this close revives
+const REVIVE_TIME := 3.0  ## s of standing there
+const REVIVE_HEALTH := 0.3  ## fraction of max health after a revive
 
 var session: NetSession
 var player: Node3D  ## the local Player (or a stand-in with the same methods in tests)
@@ -37,6 +42,8 @@ var hurts_taken := 0
 var kills_relayed := 0
 var poses_sent := 0
 var poses_seen := 0
+var revive_progress := 0.0
+var revives := 0
 
 
 func setup(s: NetSession, p: Node3D, enemy_root: Node, t: EnemyTable = null) -> void:
@@ -45,6 +52,8 @@ func setup(s: NetSession, p: Node3D, enemy_root: Node, t: EnemyTable = null) -> 
 	enemies = enemy_root
 	table = t if t != null else EnemyTable.load_default()
 	host = s.is_host()
+	if &"last_stand" in player:
+		player.set(&"last_stand", LAST_STAND)
 	s.message.connect(_on_message)
 	s.roster_changed.connect(_drop_gone)
 	if not host and enemies:
@@ -70,6 +79,7 @@ func tick(dt: float) -> void:
 			send_snapshot()
 	if host:
 		_wire_and_target()
+	_tick_revive(dt)
 	for pr: RemotePlayer in proxies.values():
 		pr.smooth(dt)
 	if not host:
@@ -141,6 +151,30 @@ func nearest_target(from: Vector3) -> Node3D:
 	return best
 
 
+## Step 80: enemy health multiplier for the players in the session.
+func health_scale() -> float:
+	return 1.0 + HP_PER_EXTRA_PLAYER * maxf(0.0, session.roster.size() - 1)
+
+
+## Step 80: a downed local player is revived by a living teammate standing beside them
+## for REVIVE_TIME (each peer decides for its own player).
+func _tick_revive(dt: float) -> void:
+	if player == null or not bool(player.get(&"downed")):
+		revive_progress = 0.0
+		return
+	var helper := false
+	for pr: RemotePlayer in proxies.values():
+		if pr.alive() and pr.global_position.distance_to(player.global_position) <= REVIVE_RANGE:
+			helper = true
+			break
+	revive_progress = revive_progress + dt if helper else maxf(0.0, revive_progress - dt)
+	if revive_progress >= REVIVE_TIME and player.has_method(&"revive"):
+		revive_progress = 0.0
+		if bool(player.call(&"revive", REVIVE_HEALTH)):
+			revives += 1
+			session.send("revived", {})
+
+
 ## --- host: enemies -------------------------------------------------------------------
 
 
@@ -168,6 +202,7 @@ func _wire_and_target() -> void:
 			_wired[e] = true
 			e.died.connect(_on_host_died)
 			e.tree_exiting.connect(_forget.bind(e))
+			e.scale_health(health_scale())
 			if e is Gnawer and player and player.has_method(&"on_enemy_attack"):
 				var g := e as Gnawer
 				var own := Callable(player, &"on_enemy_attack")
@@ -239,6 +274,8 @@ func _apply_snapshot(list: Array) -> void:
 			e.global_position = row[2]
 			e.damaged.connect(_on_puppet_hit)
 			puppets[id] = e
+		if e.def.max_health > 0.0:
+			e.health_scale = maxf(0.01, float(row[5]) / e.def.max_health)
 		e.set_meta(&"net_pos", row[2])
 		e.rotation.y = float(row[3])
 		var hp := float(row[4])
