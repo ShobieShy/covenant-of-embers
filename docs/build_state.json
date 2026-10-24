@@ -912,6 +912,14 @@
       "summary": "tools/coop_playtest.sh: host bot plays slice, joiner bot follows/fights over localhost ENet, follows travel, saves character; PASS 4/4 at 0 lag (in run_tests). With 150ms/2% the host bot hit the 600 s breach_fight limit once (enemy x1.6 HP). Co-op craft skipped when loot gives no build. Manual friend session left for ShobieShy",
       "tests": "326 passed + coop PASS",
       "commit": "15e7cbc"
+    },
+    {
+      "time": "2026-10-24T08:09:01-05:00",
+      "step": 87,
+      "type": "skip",
+      "summary": "Needs a real Windows machine (Q14); not available",
+      "tests": "-",
+      "commit": "c882ae3"
     }
   ],
   "completed_steps": [
