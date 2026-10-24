@@ -6,7 +6,7 @@
 id = "joe_summoning"
 speaker = "Crazy Joe"
 forbids = ["joe_met"]
-sets = ["joe_met", "permit_given"]
+sets = ["joe_met"]
 lines = ["*mumbles incoherently* ...interdimensional echoes... forgotten gods...", "Ah! The ritual worked! You're actually here!", "I summoned you from beyond the veil! A true outsider... a real chance!", "...well, the appraisal crystal says you're 'underwhelming.' But I KNOW you have potential!", "The dungeons fractured ten years ago. Monsters everywhere. The barriers are failing.", "Unfortunately, my colleagues didn't appreciate my... initiative. They expelled me. 'Reckless,' they called it. ME! After three centuries!", "Check the landfill. Find what's causing it. Maybe it'll lead us to answers... and to the real culprits.", "Here, take these gold coins. Fifty. It's not much, but it'll keep you fed for a week.", "Oh, and they 'gave' you the Old Oak to live in. Edge of town. Big dead tree, can't miss it. Here's the residency permit."]
 
 [[dialogue]]
