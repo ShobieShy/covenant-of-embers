@@ -647,7 +647,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Game icon (.png + .ico), project version shown in menu, Windows export file/product version + company fields (rcedit via Godot), Linux .desktop file + icon.
 - Done: export.sh: Windows exe has icon/version resources (checked under wine or by resource dump); menu shows version string.
 
-**85. Release packaging** ✅ PENDING
+**85. Release packaging** ✅ `2b83c3b`
 - Does: tools/package.sh: Linux AppImage (+ .tar.gz) (binary + .desktop + icon + LICENSE/credits incl. Magewar credit) and Windows .zip (portable, no installer); optional Inno Setup installer left as follow-up; checksums.
 - Done: package.sh produces both archives; unpack + run --seconds 2 green (Windows under WINE_SMOKE).
 - Q13 answered 2026-10-24: Steam depot/build config (app id 480 placeholder, no upload), Linux AppImage, Windows zip.
@@ -710,3 +710,9 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - ~~**Q15 NAT**~~ **Answered 2026-10-24: Steam P2P lobbies/invites** (GodotSteam, app id 480 for development); direct IP kept as dev/LAN fallback.
 - ~~**Q16 Co-op progress**~~ **Answered 2026-10-24: the host's save holds world/quest progress; clients join with their own character from any game**; on host leaving clients exit safely with the character saved; no host migration.
 - **Q17 Rusty dagger**: should the starter gear include the Storyline's rusty dagger (step 107)?
+
+### Playtest run 3 (2026-10-24, after steps 50-85)
+- Solo bot (`tools/playtest.sh`): PASS - 26 kills, 2 saves, 2 deaths, level 3, 424 s simulated (playtest/run3_solo.log).
+- Co-op two bots (`tools/coop_playtest.sh`): PASS on both host and joiner (playtest/run3_coop.log).
+- Graphical Wayland run (`--display-driver wayland --autoplay --archetype buff --char-name Shobie --color #e05a20`): PASS, "Shobie the Buff", The Filth arena walls rose; 18 screenshots + a menu shot showing the archetype/name/colour picker in playtest/wayland_20261024_run3/ (log playtest/run3_wayland.log).
+- Not tested: real Steam, real Windows (wine smoke only).
