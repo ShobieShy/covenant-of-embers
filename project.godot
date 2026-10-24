@@ -8,6 +8,8 @@ config_version=5
 config/name="Covenant of Embers"
 config/description="Original open-source co-op loot FPS (Magewar-style staffs and wands)."
 run/main_scene="res://scenes/menu.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="covenant-of-embers"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
 [autoload]

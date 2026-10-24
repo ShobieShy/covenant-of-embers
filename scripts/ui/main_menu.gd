@@ -38,6 +38,8 @@ func _ready() -> void:
 		b.pressed.connect(press.bind(id))
 		v.add_child(b)
 		buttons[id] = b
+	for f in UserDir.migrate_legacy():  # step 83
+		print("[menu] migrated %s from the old user dir" % f)
 	UiDriver.attach(get_tree())  # step 41: --ui-test <dir>
 	(buttons["continue"] as Button).disabled = not GameFlow.has_save()
 	settings_ui = SettingsUi.new()

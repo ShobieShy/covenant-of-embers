@@ -60,11 +60,7 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 
 
 static func write(data: Dictionary, path := PATH) -> Error:
-	var f := FileAccess.open(path, FileAccess.WRITE)
-	if f == null:
-		return FileAccess.get_open_error()
-	f.store_string(JSON.stringify(data, "\t"))
-	return OK
+	return UserDir.write_atomic(path, JSON.stringify(data, "\t"))  # step 83
 
 
 ## {"data": Dictionary} or {"error": String}.
