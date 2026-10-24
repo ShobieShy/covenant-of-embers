@@ -249,7 +249,10 @@ func test_part_helpers() -> void:
 		var got := Array(WieldablePart.load_part(id).ignored_stats())
 		check(got == ignored[id], "%s ignored %s (got %s)" % [id, ignored[id], got])
 	var lone := WieldablePart.make(P.EXTERIOR)
-	check(Array(lone.ignored_stats()) == ["gem_slots"], "make() default gem slot on an Exterior is inert")
+	lone.gem_slots = 1
+	check(Array(lone.ignored_stats()) == ["gem_slots"], "a gem slot on an Exterior is inert")
+	check(WieldablePart.make(P.EXTERIOR).gem_slots == 0 and WieldablePart.make(P.HEAD).gem_slots == 1,
+		"make(): Head 1 gem slot, non-Heads 0 (step 16 fix)")
 	var desc := head.full_description()
 	check(desc == "[Rare] Head\nElement: Water\nDamage: +6\nAccuracy: +12\nHandling: +1\nGem Slots: 2", "description:\n%s" % desc)
 	var charm := WieldablePart.load_part("unique_void_charm").full_description()

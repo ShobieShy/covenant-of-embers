@@ -7,7 +7,7 @@ extends Resource
 ## damage_bonus on every part, fire_rate_modifier on Exterior + Charm, accuracy_bonus on
 ## Head + Handle + Charm, gem_slots on the Head. Magewar's own data sets some stats on
 ## other part types; ignored_stats() lists them (step 30's compare card greys them out).
-## Rolls (step 16), assembly rules (step 17) and the station (step 25) come later.
+## Rolled parts: PartRoller (step 16). Assembly rules (step 17) and the station (step 25) come later.
 
 enum PartType { HEAD, EXTERIOR, INTERIOR, HANDLE, CHARM }   ## Magewar order
 
@@ -27,7 +27,8 @@ const MAX_GEM_SLOTS := 3
 @export var fire_rate_modifier := 1.0         ## Exterior and Charm multiply the cooldown
 @export var accuracy_bonus := 0.0             ## Head, Handle and Charm count
 @export var handling_bonus := 0.0             ## swap speed (step 17)
-@export_range(0, 3) var gem_slots := 1        ## Head only (step 16)
+@export_range(0, 3) var gem_slots := 1        ## Head only: 1 (+1 Rare+, +1 Primordial+); Magewar's default 1
+@export var roll_seed := -1                   ## PartRoller seed (step 16); -1 = hand-made part
 
 static func make(p_type: PartType, p_damage_bonus := 0.0, p_fire_rate := 1.0,
 		p_accuracy := 0.0, p_element: ElementTable.Element = ElementTable.Element.ARCANE) -> WieldablePart:
@@ -37,6 +38,7 @@ static func make(p_type: PartType, p_damage_bonus := 0.0, p_fire_rate := 1.0,
 	p.fire_rate_modifier = p_fire_rate
 	p.accuracy_bonus = p_accuracy
 	p.element = p_element
+	p.gem_slots = PartRoller.gem_slots_for(p_type, p.rarity)   # non-Heads 0 (step 16 fix)
 	return p
 
 ## resources/parts/<id>.tres (null when missing). Shared resource: duplicate() before editing.

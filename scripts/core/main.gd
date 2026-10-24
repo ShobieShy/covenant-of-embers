@@ -57,6 +57,9 @@ func _ready() -> void:
 			", ".join(Array(Rarity.IDS).map(func(r: String) -> String: return "%s #%s" % [rt.display_name(r), rt.color(r).to_html(false)])),
 			WieldablePart.list_ids().size(), staff.rarity().display_name if staff else "-",
 			staff.display_name() if staff else "empty", staff.rarity().multiplier if staff else 0.0])
+		var sample := PartRoller.from_seed(16, WieldablePart.PartType.HEAD, "rare")
+		print("[parts] rolled seed 16 rare Head: %s (%s), dmg %.2f, acc %.2f, %d gem slot(s)" % [sample.display_name,
+			sample.id, sample.damage_bonus, sample.accuracy_bonus, sample.gem_slots])
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])

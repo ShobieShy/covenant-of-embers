@@ -348,11 +348,12 @@ Buildable rules for M1–M2. **Weapons, loot and crafting follow the Magewar des
 - Luck: −5 weight per point on Basic/Uncommon (min 1), +2 per point on Rare and above.
 - Part types and rolls (× rarity multiplier):
   - **Head** (staff and wand): damage 1–5, accuracy 0–10, element, gem slots 1 (+1 at Rare+, +1 at Primordial+, max 3; wands use 1).
-  - **Exterior**: fire-rate modifier ×1.0, ×0.5–1.0 (faster) at Rare+.
+  - **Exterior**: fire-rate modifier ×0.7–1.3 below Rare, ×0.5–1.0 (faster) at Rare+ (Magewar loot_generator; fire-rate rolls are never × rarity).
   - **Interior** (staff; base damage): damage 2–8, element.
   - **Handle** (optional on wands): accuracy 5–20, handling 2–10.
-  - **Charm** (staff only, optional extra augment): damage 0–3, accuracy 0–8, fire-rate modifier, element.
-- Names: rarity + element + part ("Rare Fire Crystal Head"), material ladder per rarity for Exteriors/Handles.
+  - **Charm** (staff only, optional extra augment): damage 0–3, accuracy 0–8, fire-rate modifier ×0.85–1.0, element.
+  - Stats a type doesn't roll come from Magewar's template part for that type (e.g. a Charm keeps handling 4); the element is the caller's (enemy/pool) or rolled with Magewar's element weights (Arcane 2, Fire/Water/Earth/Air 1, Light/Dark 0.5).
+- Names (Magewar ladders, by rarity): Head "<Rough|Polished|Brilliant|Ethereal|Ancient|Legendary> <Element> Crystal Head", Exterior "<Oak|Ash|Ironwood|Darkwood|Starwood|Worldtree> Exterior", Interior "<Element> <Mana Core|Arcane Conduit|Ley Channel|Void Heart|Prism Core|Soul Engine>", Handle "<Leather|Silk|Chain|Rune-etched|Crystalweave|Dragonhide>-Wrapped Handle", Charm "<Element> <Charm|Talisman|Sigil|Ward|Relic|Artifact>".
 - Deterministic generation: every item stores `seed + rarity + part ids`; the host rolls, clients regenerate identically. Stored form is an **Ember Mark** (§31.5).
 
 ### 30.3 Equipment, inventory and crafting
