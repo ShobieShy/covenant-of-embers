@@ -1,0 +1,198 @@
+# The Breach - first dungeon room slice (BUILD_PLAN step 33). Same format as
+# midden_greybox.toml (see its header); generated into scenes/levels/breach.tscn.
+#
+# Layout (PLAN: a Breach is a dungeon room with a boss and a vault): a 4 m wide entrance
+# corridor from the south, a 24 x 24 m arena with four pillars for cover and a boss dais in
+# the north half, and a vault room behind a 4 m wide vault door in the north wall. The
+# vault door is a wall box named "vault_door"; step 35 opens it (Vault) when the boss dies.
+# Magewar has no dungeon room (its boss fights in the landfill ring); the scale follows the
+# Midden's 4 m walls and 4 m entrance.
+
+[level]
+id = "breach_slice"
+name = "The Breach (greybox)"
+
+[environment]
+sky_color = [0.16, 0.12, 0.14]
+ambient_color = [0.22, 0.18, 0.18]
+fog_density = 0.01
+
+[sun]
+to_light = [0.3, 0.8, 0.5]
+color = [0.75, 0.6, 0.55]
+
+[player_start]
+position = [0.0, 0.0, 20.0]
+yaw_deg = 0.0
+
+[[box]]
+name = "ground"
+kind = "ground"
+center = [0.0, -0.1, -1.0]
+size = [30.0, 0.2, 48.0]
+color = [0.28, 0.26, 0.24]
+
+[[box]]
+name = "corridor_west"
+kind = "wall"
+center = [-2.5, 2.0, 17.5]
+size = [1.0, 4.0, 10.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "corridor_east"
+kind = "wall"
+center = [2.5, 2.0, 17.5]
+size = [1.0, 4.0, 10.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "corridor_cap"
+kind = "wall"
+center = [0.0, 2.0, 22.5]
+size = [6.0, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "wall_south_west"
+kind = "wall"
+center = [-7.0, 2.0, 12.5]
+size = [10.0, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "wall_south_east"
+kind = "wall"
+center = [7.0, 2.0, 12.5]
+size = [10.0, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "wall_west"
+kind = "wall"
+center = [-12.5, 2.0, 0.0]
+size = [1.0, 4.0, 26.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "wall_east"
+kind = "wall"
+center = [12.5, 2.0, 0.0]
+size = [1.0, 4.0, 26.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "wall_north_west"
+kind = "wall"
+center = [-7.0, 2.0, -12.5]
+size = [10.0, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "wall_north_east"
+kind = "wall"
+center = [7.0, 2.0, -12.5]
+size = [10.0, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "vault_door"
+kind = "wall"
+center = [0.0, 2.0, -12.5]
+size = [4.0, 4.0, 1.0]
+color = [0.55, 0.32, 0.12]
+
+[[box]]
+name = "vault_west"
+kind = "wall"
+center = [-4.5, 2.0, -17.0]
+size = [1.0, 4.0, 8.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "vault_east"
+kind = "wall"
+center = [4.5, 2.0, -17.0]
+size = [1.0, 4.0, 8.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "vault_back"
+kind = "wall"
+center = [0.0, 2.0, -21.5]
+size = [10.0, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "boss_dais"
+kind = "platform"
+center = [0.0, 0.1, -7.0]
+size = [6.0, 0.2, 3.0]
+color = [0.42, 0.36, 0.3]
+
+[[box]]
+name = "pillar_nw"
+kind = "crate"
+center = [-6.0, 1.5, -4.0]
+size = [1.5, 3.0, 1.5]
+rotation_deg = [0.0, 45.0, 0.0]
+color = [0.4, 0.36, 0.33]
+
+[[box]]
+name = "pillar_ne"
+kind = "crate"
+center = [6.0, 1.5, -4.0]
+size = [1.5, 3.0, 1.5]
+rotation_deg = [0.0, 45.0, 0.0]
+color = [0.4, 0.36, 0.33]
+
+[[box]]
+name = "pillar_sw"
+kind = "crate"
+center = [-6.0, 1.5, 5.0]
+size = [1.5, 3.0, 1.5]
+rotation_deg = [0.0, 45.0, 0.0]
+color = [0.4, 0.36, 0.33]
+
+[[box]]
+name = "pillar_se"
+kind = "crate"
+center = [6.0, 1.5, 5.0]
+size = [1.5, 3.0, 1.5]
+rotation_deg = [0.0, 45.0, 0.0]
+color = [0.4, 0.36, 0.33]
+
+# Waves: crossing into the arena (feet within 4 m of its south half) starts them.
+[waves]
+trigger_center = [0.0, 0.0, 6.0]
+trigger_radius = 4.0
+
+[[spawn_point]]
+name = "boss_dais"            # on the 0.2 m dais (under the 0.25 m nav climb); step 34's mini-boss stands here
+position = [0.0, 0.2, -7.0]
+yaw_deg = 180.0
+
+[[spawn_point]]
+name = "west_wing"
+position = [-9.0, 0.0, 0.0]
+yaw_deg = -90.0
+
+[[spawn_point]]
+name = "east_wing"
+position = [9.0, 0.0, 0.0]
+yaw_deg = 90.0
+
+[[spawn_point]]
+name = "vault_chest"          # inside the vault (behind the door); step 35's chest
+position = [0.0, 0.0, -18.0]
+yaw_deg = 180.0
+
+[[wave]]
+id = "wing_gnawers"
+delay_s = 1.0
+enemies = [{ enemy = "gnawer", count = 2, at = "west_wing" }, { enemy = "gnawer", count = 2, at = "east_wing" }]
+
+[[wave]]
+id = "dais_heap"
+delay_s = 3.0
+enemies = [{ enemy = "heap", count = 1, at = "boss_dais" }, { enemy = "gnawer", count = 2, at = "west_wing" }]

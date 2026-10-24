@@ -44,6 +44,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LEVELS = {  # source TOML -> generated scene
     "data/levels/midden_greybox.toml": "scenes/levels/midden.tscn",
+    "data/levels/breach_slice.toml": "scenes/levels/breach.tscn",
 }
 KINDS = ("ground", "wall", "ramp", "crate", "heap", "platform")
 EYE_HEIGHT = 1.5
@@ -334,7 +335,8 @@ def to_tscn(lv: dict, source: str) -> str:
         "fog_sky_affect = 0.0",
     ]))
     nodes: list[str] = []
-    nodes.append(f'[node name="Midden" type="Node3D"]\nmetadata/level_id = "{lv["id"]}"\n'
+    root = "Midden" if lv["id"].startswith("midden") else "".join(w.capitalize() for w in lv["id"].split("_"))
+    nodes.append(f'[node name="{root}" type="Node3D"]\nmetadata/level_id = "{lv["id"]}"\n'
                  f'metadata/level_name = "{lv["name"]}"\nmetadata/source = "res://{source}"\n')
     nodes.append(f'[node name="WorldEnvironment" type="WorldEnvironment" parent="."]\nenvironment = SubResource("{env}")\n')
     nodes.append(f'[node name="Sun" type="DirectionalLight3D" parent="."]\n'
