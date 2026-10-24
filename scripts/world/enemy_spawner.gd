@@ -123,6 +123,8 @@ func current_wave_id() -> String:
 
 func _adopt(e: Enemy) -> void:
 	e.died.connect(_on_died)
+	if e is Ooze:  # step 55: its halves join the spawner (and the wave it was in)
+		(e as Ooze).split.connect(_on_split)
 	if e is Gnawer:
 		var g := e as Gnawer
 		g.auto_tick = auto_tick
@@ -131,6 +133,17 @@ func _adopt(e: Enemy) -> void:
 			if not g.attacked.is_connected(player.on_enemy_attack):
 				g.attacked.connect(player.on_enemy_attack)
 	GameEvents.bus().enemy_spawned.emit(e)
+
+
+func _on_split(parent: Ooze, halves: Array) -> void:
+	var in_wave := wave_alive.has(parent)
+	for h: Enemy in halves:
+		add_child(h)
+		_adopt(h)
+		if in_wave:
+			wave_alive.append(h)
+	if parent.puddle:
+		add_child(parent.puddle)
 
 
 func _on_died(e: Enemy, _element: ElementTable.Element) -> void:

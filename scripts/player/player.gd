@@ -102,6 +102,8 @@ var slide_dir := Vector3.ZERO
 var slides := 0
 var slide_jumps := 0
 var speed_multiplier := 1.0  # set_speed_multiplier(): Shoes hook
+var slow_factor := 1.0  # step 55: apply_slow()
+var slow_left := 0.0
 var dash: Dash  # step 5
 var feel: CameraFeel  # step 5: bob / landing dip / step smoothing
 var landings := 0
@@ -596,9 +598,21 @@ func set_speed_multiplier(m: float) -> void:
 	speed_multiplier = m
 
 
+## Step 55: a slow (Mire Ooze puddle) for `time` s; the strongest active slow wins.
+func apply_slow(factor: float, time: float) -> void:
+	if slow_left <= 0.0 or factor < slow_factor:
+		slow_factor = clampf(factor, 0.05, 1.0)
+	slow_left = maxf(slow_left, time)
+
+
+func current_slow() -> float:
+	return slow_factor if slow_left > 0.0 else 1.0
+
+
 ## One fixed tick (dt must be the physics step: move_and_slide uses the physics delta).
 func tick(input: PlayerInput, dt: float) -> void:
 	_apply_toggles(input)
+	slow_left = maxf(0.0, slow_left - dt)
 	# Dead (step 13): no input, no movement; respawn after respawn_delay.
 	if not alive():
 		respawn_left -= dt
@@ -664,7 +678,7 @@ func tick(input: PlayerInput, dt: float) -> void:
 	else:
 		if not _jumped_from_slide:  # a slide jump keeps its speed until landing
 			var base := tuning.crouch_speed if crouched else (tuning.sprint_speed if sprinting else tuning.walk_speed)
-			speed = lerpf(speed, base * speed_multiplier, minf(1.0, dt * tuning.lerp_speed))
+			speed = lerpf(speed, base * speed_multiplier * current_slow(), minf(1.0, dt * tuning.lerp_speed))
 		if grounded:
 			direction = direction.lerp(wish, minf(1.0, dt * tuning.lerp_speed))
 		elif moving:

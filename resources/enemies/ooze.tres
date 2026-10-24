@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="EnemyTable" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_table.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/enemies/enemy_def.gd" id="2"]
+
+[sub_resource type="Resource" id="ooze"]
+script = ExtResource("2")
+id = "ooze"
+display_name = "Mire Ooze"
+affinity = 2
+max_health = 60.0
+level = 2
+xp_reward = 10
+size = Vector3(1, 0.7, 1)
+color = Color(0.3, 0.45, 0.25, 1)
+resist = {}
+has_weak_point = false
+ai = {
+"aggro_range": 7.0,
+"attack_cooldown": 1.2,
+"attack_damage": 5.0,
+"attack_range": 1.2,
+"detect_range": 9.0,
+"kind": "splitter",
+"knockback_strength": 8.0,
+"knockback_threshold": 15.0,
+"knockback_time": 0.3,
+"sprint_speed": 2.2,
+"turn_rate_deg": 360.0,
+"walk_speed": 1.5
+}
+
+[resource]
+script = ExtResource("1")
+defs = Array[ExtResource("2")]([SubResource("ooze")])

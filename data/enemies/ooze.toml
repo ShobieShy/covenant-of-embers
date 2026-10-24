@@ -1,0 +1,15 @@
+# Mire Ooze (BUILD_PLAN step 55): a slow Water slime that splits in two on death (or when
+# a Fire hit leaves it under half health) and leaves slowing puddles. Plan design: Magewar
+# has no small slime (The Filth is the slime boss). 60 HP, slap 5 per 1.2 s, walk 1.5 /
+# sprint 2.2. ai kind "splitter" = scripts/enemies/ooze.gd.
+
+[[enemy]]
+id = "ooze"
+name = "Mire Ooze"
+affinity = "water"
+max_health = 60
+level = 2
+xp_reward = 10
+size = [1.0, 0.7, 1.0]
+color = [0.3, 0.45, 0.25]
+ai = { kind = "splitter", detect_range = 9.0, aggro_range = 7.0, walk_speed = 1.5, sprint_speed = 2.2, attack_range = 1.2, attack_damage = 5.0, attack_cooldown = 1.2, knockback_strength = 8.0, knockback_time = 0.3, knockback_threshold = 15.0, turn_rate_deg = 360.0 }

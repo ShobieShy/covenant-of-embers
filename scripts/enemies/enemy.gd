@@ -35,6 +35,7 @@ const BRAINS := {
 	"tank": "res://scripts/enemies/heap.gd",
 	"boss": "res://scripts/enemies/warden.gd",
 	"ranged": "res://scripts/enemies/scorchling.gd",
+	"splitter": "res://scripts/enemies/ooze.gd",
 }
 
 var def: EnemyDef
