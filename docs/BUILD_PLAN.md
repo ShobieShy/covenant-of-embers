@@ -473,9 +473,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_dialogue.gd: branching on flags, repeat lines.
 - Q1 answered (Magewar storyline)
 - Result: PASS (264 tests + headless playtest)
-**63. Quest system + tracker + clue log**
+**63. Quest system + tracker + clue log** ✅ `77f24cc`
 - Does: Quest data (kill/collect/talk/reach), flags, rewards, on-screen tracker, Clue Log screen; saved (Magewar magewar_quest_tracker).
 - Done: test_quests.gd: objective progress, completion rewards, save round-trip.
+- Result: PASS (267 tests + headless playtest)
 
 **64. Prologue: the summoning**
 - Does: Mage Association grand hall in Eldoria: Crazy Joe's forbidden ritual summons the weak Summoned, the Association expels Joe, the government grants 50 gold, basic clothes and the Old Oak; port Magewar magewar_prologue_scene_driver beats (Prologue: The Summoning / Welcome to Town / A New Home).

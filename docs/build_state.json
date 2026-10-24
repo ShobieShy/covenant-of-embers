@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 52,
-  "last_commit": "6f8cce0",
+  "steps_done": 53,
+  "last_commit": "77f24cc",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -525,6 +525,14 @@
       "summary": "StoryFlags, DialogueDB (data/story/dialogue.toml: Magewar Bob/Joe/townsfolk lines, pity->awe), DialogueRunner (flags, repeats, choices), DialogueUI",
       "tests": "264 tests",
       "commit": "6f8cce0"
+    },
+    {
+      "time": "2026-10-24T05:35-05:00",
+      "step": 63,
+      "type": "build",
+      "summary": "QuestLog (data/story/quests.toml tutorial chain; kill/collect/talk/reach in order; xp/dust/flag/clue rewards; flag auto-start; to_dict/from_dict for save progress), QuestTrackerUI tracker + Clue Log",
+      "tests": "267 tests",
+      "commit": "77f24cc"
     }
   ],
   "completed_steps": [
