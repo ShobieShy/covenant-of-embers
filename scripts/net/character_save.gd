@@ -24,18 +24,19 @@ static func path_for(player_name: String) -> String:
 
 
 ## The character only: SaveGame.capture with no world progress.
-static func capture(p: Player) -> Dictionary:
+static func capture(p: Player, intro_done := false) -> Dictionary:
 	var d := SaveGame.capture(p, {})
 	d["kind"] = "character"
 	d["progress"] = {}
+	d["intro_done"] = intro_done  # step 117: the character saw the prologue through
 	return d
 
 
-static func write(p: Player, path: String) -> Error:
+static func write(p: Player, path: String, intro_done := false) -> Error:
 	if not path.begins_with(PREFIX):
 		push_warning("[character] refusing to write %s (not a character file)" % path)
 		return ERR_FILE_NO_PERMISSION
-	return SaveGame.write(capture(p), path)
+	return SaveGame.write(capture(p, intro_done), path)
 
 
 ## Loads the character into `p` (gear, level, skills; world progress ignored).
@@ -46,4 +47,4 @@ static func load_into(p: Player, path: String) -> Dictionary:
 		return r
 	var d: Dictionary = (r["data"] as Dictionary).duplicate(true)
 	d["progress"] = {}
-	return {"warnings": SaveGame.apply(p, d)}
+	return {"warnings": SaveGame.apply(p, d), "intro_done": bool(d.get("intro_done", false))}

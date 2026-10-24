@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 118,
-  "steps_done": 97,
+  "steps_done": 98,
   "last_commit": "5fd2a91",
   "history": [
     {
@@ -1081,6 +1081,13 @@
       "type": "build",
       "summary": "Beats 11-13: Filth reveal cinematic on the boss wave (walls + THE FILTH card, existing arena checkpoint), filth_defeated -> return_to_bob (barrier gate opens), home -> crystal beat, bob_after_filth -> crystal cinematic -> complete(): finish flags, every gate + menu open, waystone awake, 'Prologue complete' banner; [tests] 385 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
       "commit": "PENDING"
+    },
+    {
+      "time": "2026-10-24T11:02:13-05:00",
+      "step": 117,
+      "type": "build",
+      "summary": "Co-op intro sync: IntroSync host broadcast/late-join push, client mirror + kit + recap cards, host-only skip, character intro_done; [tests] 387 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
+      "commit": "PENDING"
     }
   ],
   "completed_steps": [
@@ -1180,7 +1187,8 @@
     113,
     114,
     115,
-    116
+    116,
+    117
   ],
   "deferred": [
     74,

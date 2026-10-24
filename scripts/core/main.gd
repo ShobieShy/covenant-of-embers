@@ -443,6 +443,11 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 	add_child(frames)
 	frames.bind(coop)
 	Coop.session.message.connect(_on_coop_message)
+	var sync := IntroSync.new()  # step 117: host-authoritative intro beats
+	add_child(sync)
+	sync.setup(Coop.session, story_flags, player, coop.host)
+	if coop.host:
+		sync.push()
 	if not Coop.session.ended.is_connected(_on_coop_ended):
 		Coop.session.ended.connect(_on_coop_ended)
 	print("[coop] %s, %d player(s)" % ["hosting" if coop.host else "joined", Coop.session.roster.size()])
@@ -475,7 +480,7 @@ func save_game() -> Error:
 		print("[save] not during a cinematic")
 		return ERR_BUSY
 	if coop and not coop.host:
-		var cerr := CharacterSave.write(player, Coop.character)  # step 91: never the host slot
+		var cerr := CharacterSave.write(player, Coop.character, story_flags.has(IntroDirector.DONE))  # step 91: never the host slot
 		print("[save] character %s: %s" % [Coop.character, error_string(cerr)])
 		return cerr
 	if stash:

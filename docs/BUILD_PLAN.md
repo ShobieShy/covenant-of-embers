@@ -677,7 +677,7 @@ Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below;
 - Does: Beats 11-13: Filth reveal cinematic + arena checkpoint respawn, return route, Bob crystal cinematic, tutorial_done/fast_travel_crystal/intro_done, all gates/menus open, 'Prologue complete' end card.
 - Done: test: full chain to intro_done; fast travel usable only after; world open.
 
-**117. Co-op intro sync**
+**117. Co-op intro sync** ✅ PENDING
 - Does: Host-authoritative beat messages; clients mirror gates/markers/tracker; join-during-cinematic wait card and recap card; kit/crystal granted to every player present or on late join; client character records intro_done.
 - Done: test_coop_intro.gd (loopback): client follows beats, late joiner gets kit and recap.
 
