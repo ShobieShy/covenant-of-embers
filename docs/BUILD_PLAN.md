@@ -318,7 +318,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_consecrations.gd: effects trigger as specified.
 - Result: PASS (230 tests)
 
-**37. Audio: buses + Kenney sounds**
+**37. Audio: buses + Kenney sounds** ✅ `c011f3c`
 - Does: Audio buses (Master/SFX/UI/Music), cast/hit/footstep/UI sounds from Kenney packs, 3D AudioStreamPlayer3D.
 - Does (step 5 notes): landing sound when `player.landings` goes up, volume/pitch from `last_landing_speed` over 2..8 m/s (Cogito's min/max landing velocity); dash whoosh on `dash.dashes`.
 - Does (step 8 notes): cast-fail sound on `Caster.out_of_mana` (Magewar `sound_cast_fail`), once per refused press.
@@ -328,6 +328,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_audio.gd: every referenced stream loads, buses exist.
 - Does (step 13 notes): hurt sound on `Player.hurt` (shield break when `health.shield` hits 0), death/respawn stingers, Heap wind-up rumble on `Heap.slams` and slam thud on `attacked`.
 - Does (step 10 notes): equip/draw sound on `loadout.swap_started`; cast sound at `viewmodel.cast_point_position()`; a short element-coloured cast flash at the cast point (CC0/greybox, no paid assets).
+- Result: PASS (232 tests)
 
 **38. Save format, round-trip + load**
 - Does: Versioned JSON save in user:// (player, inventory, items via Ember Mark codes, progress), load from menu.

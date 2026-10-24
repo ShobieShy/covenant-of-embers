@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 37,
+  "next_step": 38,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -41,9 +41,10 @@
     33,
     34,
     35,
-    36
+    36,
+    37
   ],
-  "last_commit": "738de92",
+  "last_commit": "c011f3c",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -376,6 +377,17 @@
         "CompareCard does not show the consecration text yet"
       ],
       "commit": "738de92"
+    },
+    {
+      "time": "2026-10-24T03:44:33-05:00",
+      "step": 37,
+      "type": "build",
+      "summary": "Bus layout Master/SFX/UI/Music; GameAudio plays Kenney CC0 sounds for cast, cast fail, focus, equip, dash, landing (speed-scaled), footsteps, hits (weak point pitch), deaths, kills, hurt/shield break, waves, Heap slam; Settings volumes applied 232 tests green.",
+      "plan_changes": [
+        "No music track yet (Music bus empty); cast flash deferred to the viewmodel polish in step 41",
+        "Focus cue fires when focus passes 50 pct, close to the press"
+      ],
+      "commit": "c011f3c"
     }
   ]
 }
