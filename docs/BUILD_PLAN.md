@@ -233,11 +233,12 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 17 notes): rules/stats are `Assembly` (check → messages, `assemble` = preview, `disassemble`); the station only moves parts: preview = `Assembly.assemble` without touching the inventory, assemble = same + remove the parts (and the chosen base) from the inventory, disassemble = `Assembly.disassemble(w)` back into it (refuse when there's no room). The player chooses the base staff/wand (Magewar uses a fixed template); Magewar emits crafting_completed(item) → an EventBus signal.
 - Result: PASS — 198 tests green. AssemblyStation node (preview / assemble / disassemble against the backpack, crafting_completed on the station and EventBus, refusals with last_error, full backpack refuses disassembly); worked example 4 (Uncommon Water Wand 14.5 dmg) builds through the station.
 
-**26. Crafting extras: gems, salvage, upgrade**
+**26. Crafting extras: gems, salvage, upgrade** ✅ `d0c17d9`
 - Does: Gem sockets, salvage parts → Arcane Dust, upgrade a part one tier with Dust (our additions, flagged).
 - Done: test_crafting_extras.gd: dust amounts, tier cap at Unique.
 - Does (step 16 notes): sockets = the Head's `gem_slots` (`PartRoller.gem_slots_for`: 1/+1 Rare/+1 Primordial; wands use 1 per PLAN/Magewar's wand comment; already `WieldableInstance.gem_slots()`, step 17); upgrading a rolled part one tier = `PartRoller.from_seed(roll_seed, type, next tier, element)` (same seed → same relative roll at the higher multiplier, gem slots and name update).
 - Does (step 20 notes): an upgraded rolled part re-encodes at its new tier for free (tier is in the code); socketed gems and salvage state aren't in Ember Mark v1 → add them in a new code version (new table entries for gems + a defined header flag), keeping v1 codes decodable as "no gems".
+- Result: PASS — 201 tests green. ElementGem (first socketed gem sets the element, +1 flat dmg per gem; wand Heads 1 slot), CraftingExtras.socket/unsocket/salvage/upgrade. Salvage Dust by tier 1/3/6/12/25/50; upgrade cost 5/12/30/75 Dust per tier, same seed + relative roll, capped at Primordial (PLAN §30.3: never to Unique).
 
 **27. XP curve and levels**
 - Does: XP from kills, level-ups (+5 max mana/Breath + refill).

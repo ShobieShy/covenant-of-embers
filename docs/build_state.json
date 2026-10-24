@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 26,
+  "next_step": 27,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -30,9 +30,10 @@
     22,
     23,
     24,
-    25
+    25,
+    26
   ],
-  "last_commit": "cffb0a1",
+  "last_commit": "d0c17d9",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -254,6 +255,17 @@
         "Step 30 (screens): Assembly UI drives AssemblyStation.preview/assemble/disassemble; a station still needs placing in the Midden/hub scene (step 30 or the dungeon step)"
       ],
       "commit": "cffb0a1"
+    },
+    {
+      "time": "2026-10-24T03:18:34-05:00",
+      "step": 26,
+      "type": "build",
+      "summary": "Gems, salvage to Arcane Dust, Dust upgrades. Magewar review: Magewar has gem_slots but no gem item or effect, no salvage, no upgrade — all ours and flagged; numbers (gem +1 dmg, dust table, upgrade costs) are placeholders for ShobieShy to tune. Done check said 'tier cap at Unique'; PLAN §30.3 says never to Unique, so the cap is Primordial. 201 tests green.",
+      "plan_changes": [
+        "Ember Mark: socketed gems not encoded yet — add in a v2 code version (step 20 note) when saves land (step 38)",
+        "Balance patch (step 21) could expose SALVAGE_DUST/UPGRADE_COST later"
+      ],
+      "commit": "d0c17d9"
     }
   ]
 }
