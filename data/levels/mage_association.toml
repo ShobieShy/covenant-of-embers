@@ -1,0 +1,103 @@
+# The Mage Association grand hall (BUILD_PLAN steps 64-65; Magewar mage_association
+# reinterpreted): a 20 x 30 m hall with two rows of pillars, the summoning circle dais
+# where Crazy Joe stands, and the doors south to the Town Square. Greybox.
+
+[level]
+id = "mage_association"
+name = "Eldoria - Mage Association"
+
+[environment]
+sky_color = [0.12, 0.1, 0.2]
+ambient_color = [0.35, 0.3, 0.45]
+fog_density = 0.01
+
+[sun]
+to_light = [0.4, 0.8, 0.3]
+color = [0.8, 0.7, 1.0]
+
+[player_start]
+position = [0.0, 0.0, 12.0]
+yaw_deg = 0.0
+
+[[box]]
+name = "ground"
+kind = "ground"
+center = [0.0, -0.1, 0.0]
+size = [20.0, 0.2, 30.0]
+color = [0.3, 0.28, 0.35]
+[[box]]
+name = "wall_north"
+kind = "wall"
+center = [0.0, 3.0, -14.5]
+size = [20.0, 6.0, 1.0]
+color = [0.55, 0.5, 0.62]
+[[box]]
+name = "wall_south"
+kind = "wall"
+center = [0.0, 3.0, 14.5]
+size = [20.0, 6.0, 1.0]
+color = [0.55, 0.5, 0.62]
+[[box]]
+name = "wall_west"
+kind = "wall"
+center = [-9.5, 3.0, 0.0]
+size = [1.0, 6.0, 28.0]
+color = [0.55, 0.5, 0.62]
+[[box]]
+name = "wall_east"
+kind = "wall"
+center = [9.5, 3.0, 0.0]
+size = [1.0, 6.0, 28.0]
+color = [0.55, 0.5, 0.62]
+[[box]]
+name = "pillar_w1"
+kind = "wall"
+center = [-5.0, 3.0, -8.0]
+size = [1.0, 6.0, 1.0]
+color = [0.45, 0.4, 0.55]
+[[box]]
+name = "pillar_e1"
+kind = "wall"
+center = [5.0, 3.0, -8.0]
+size = [1.0, 6.0, 1.0]
+color = [0.45, 0.4, 0.55]
+[[box]]
+name = "pillar_w2"
+kind = "wall"
+center = [-5.0, 3.0, -2.0]
+size = [1.0, 6.0, 1.0]
+color = [0.45, 0.4, 0.55]
+[[box]]
+name = "pillar_e2"
+kind = "wall"
+center = [5.0, 3.0, -2.0]
+size = [1.0, 6.0, 1.0]
+color = [0.45, 0.4, 0.55]
+[[box]]
+name = "pillar_w3"
+kind = "wall"
+center = [-5.0, 3.0, 4.0]
+size = [1.0, 6.0, 1.0]
+color = [0.45, 0.4, 0.55]
+[[box]]
+name = "pillar_e3"
+kind = "wall"
+center = [5.0, 3.0, 4.0]
+size = [1.0, 6.0, 1.0]
+color = [0.45, 0.4, 0.55]
+[[box]]
+name = "dais"
+kind = "platform"
+center = [0.0, 0.15, -10.0]
+size = [6.0, 0.3, 4.0]
+color = [0.5, 0.3, 0.6]
+
+[[exit]]
+name = "to_town"
+to = "town_square"
+position = [0.0, 0.0, 13.0]
+[[npc]]
+name = "crazy_joe"
+speaker = "Crazy Joe"
+position = [0.0, 0.3, -10.0]
+yaw_deg = 0.0

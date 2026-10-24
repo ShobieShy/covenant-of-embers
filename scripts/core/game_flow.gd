@@ -11,8 +11,15 @@ const GAME := "res://scenes/main.tscn"
 const LEVELS := {
 	"midden": "res://scenes/levels/midden.tscn",
 	"breach": "res://scenes/levels/breach.tscn",
+	"town_square": "res://scenes/levels/town_square.tscn",  # step 65
+	"mage_association": "res://scenes/levels/mage_association.tscn",
 }
-const LEVEL_IDS := {"midden_greybox": "midden", "breach_slice": "breach"}
+const LEVEL_IDS := {
+	"midden_greybox": "midden",
+	"breach_slice": "breach",
+	"town_square": "town_square",
+	"mage_association": "mage_association",
+}
 
 static var level_id := "midden"
 static var load_save := false

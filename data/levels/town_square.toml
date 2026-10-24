@@ -1,0 +1,154 @@
+# Eldoria Town Square (BUILD_PLAN step 65; Bible Levels/Maps, Magewar eldoria_town_square
+# reinterpreted): a 40 x 40 m paved square under the arcane barrier (glowing ward pillars
+# on the wall line), market stalls, the Fractured Flagon, the Mage Association doors north
+# and the Landfill gate south, just outside the barrier. Greybox.
+
+[level]
+id = "town_square"
+name = "Eldoria - Town Square"
+
+[environment]
+sky_color = [0.45, 0.55, 0.75]
+ambient_color = [0.45, 0.45, 0.5]
+fog_density = 0.005
+
+[sun]
+to_light = [0.4, 0.8, 0.3]
+color = [1.0, 0.95, 0.85]
+
+[player_start]
+position = [0.0, 0.0, 14.0]
+yaw_deg = 0.0
+
+[[box]]
+name = "ground"
+kind = "ground"
+center = [0.0, -0.1, 0.0]
+size = [40.0, 0.2, 40.0]
+color = [0.5, 0.48, 0.44]
+[[box]]
+name = "wall_north_w"
+kind = "wall"
+center = [-11.0, 2.0, -19.5]
+size = [18.0, 4.0, 1.0]
+color = [0.55, 0.5, 0.62]
+[[box]]
+name = "wall_north_e"
+kind = "wall"
+center = [11.0, 2.0, -19.5]
+size = [18.0, 4.0, 1.0]
+color = [0.55, 0.5, 0.62]
+[[box]]
+name = "wall_south_w"
+kind = "wall"
+center = [-11.0, 2.0, 19.5]
+size = [18.0, 4.0, 1.0]
+color = [0.55, 0.5, 0.62]
+[[box]]
+name = "wall_south_e"
+kind = "wall"
+center = [11.0, 2.0, 19.5]
+size = [18.0, 4.0, 1.0]
+color = [0.55, 0.5, 0.62]
+[[box]]
+name = "wall_west"
+kind = "wall"
+center = [-19.5, 2.0, 0.0]
+size = [1.0, 4.0, 38.0]
+color = [0.55, 0.5, 0.62]
+[[box]]
+name = "wall_east"
+kind = "wall"
+center = [19.5, 2.0, 0.0]
+size = [1.0, 4.0, 38.0]
+color = [0.55, 0.5, 0.62]
+[[box]]
+name = "ward_1"
+kind = "wall"
+center = [-18.0, 3.0, -18.0]
+size = [1.2, 6.0, 1.2]
+color = [0.5, 0.7, 1.0]
+[[box]]
+name = "ward_2"
+kind = "wall"
+center = [18.0, 3.0, -18.0]
+size = [1.2, 6.0, 1.2]
+color = [0.5, 0.7, 1.0]
+[[box]]
+name = "ward_3"
+kind = "wall"
+center = [-18.0, 3.0, 18.0]
+size = [1.2, 6.0, 1.2]
+color = [0.5, 0.7, 1.0]
+[[box]]
+name = "ward_4"
+kind = "wall"
+center = [18.0, 3.0, 18.0]
+size = [1.2, 6.0, 1.2]
+color = [0.5, 0.7, 1.0]
+[[box]]
+name = "association_doors"
+kind = "wall"
+center = [0.0, 2.5, -19.2]
+size = [4.0, 5.0, 0.4]
+color = [0.35, 0.25, 0.5]
+[[box]]
+name = "fountain"
+kind = "heap"
+center = [0.0, 0.4, 0.0]
+size = [4.0, 0.8, 4.0]
+color = [0.6, 0.6, 0.65]
+[[box]]
+name = "stall_1"
+kind = "crate"
+center = [-12.0, 0.75, -6.0]
+size = [2.5, 1.5, 1.5]
+color = [0.6, 0.4, 0.25]
+[[box]]
+name = "stall_2"
+kind = "crate"
+center = [-8.0, 0.75, -6.0]
+size = [2.5, 1.5, 1.5]
+color = [0.6, 0.4, 0.25]
+[[box]]
+name = "stall_3"
+kind = "crate"
+center = [8.0, 0.75, -6.0]
+size = [2.5, 1.5, 1.5]
+color = [0.6, 0.4, 0.25]
+[[box]]
+name = "stall_4"
+kind = "crate"
+center = [12.0, 0.75, -6.0]
+size = [2.5, 1.5, 1.5]
+color = [0.6, 0.4, 0.25]
+[[box]]
+name = "flagon"
+kind = "wall"
+center = [-14.0, 2.0, 8.0]
+size = [8.0, 4.0, 6.0]
+color = [0.45, 0.32, 0.22]
+
+[[exit]]
+name = "to_association"
+to = "mage_association"
+position = [0.0, 0.0, -17.0]
+[[exit]]
+name = "to_landfill"
+to = "midden"
+position = [0.0, 0.0, 17.5]
+[[npc]]
+name = "guard_gate"
+speaker = "Bored Guard"
+position = [3.0, 0.0, 16.0]
+yaw_deg = 180.0
+[[npc]]
+name = "merchant"
+speaker = "Potion Merchant"
+position = [-8.0, 0.0, -4.0]
+yaw_deg = 0.0
+[[npc]]
+name = "patron"
+speaker = "Grizzled Patron"
+position = [-9.0, 0.0, 8.0]
+yaw_deg = 90.0

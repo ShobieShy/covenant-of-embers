@@ -10,6 +10,11 @@ var settings: Settings   # step 32
 var pause_menu: PauseMenu   # step 39
 var breach: Breach          # step 39: the Breach room logic when the Breach is loaded
 var gate: LevelGate         # step 39: travel gate (Midden -> Breach -> back)
+var gates: Array[LevelGate] = []  # step 65: every travel gate here (level [[exit]]s, or the defaults)
+var npcs: Array[Npc] = []  # step 65: level [[npc]]s
+var story_flags := StoryFlags.new()
+var dialogue: DialogueRunner
+var dialogue_ui: DialogueUI
 var load_warnings := PackedStringArray()
 
 func _ready() -> void:
@@ -158,12 +163,8 @@ func _setup_flow(player: Player) -> void:
 		add_child(breach)
 		breach.setup($Level)
 		breach.chest.dropper = get_node_or_null("LootDropper") as LootDropper   # vault loot lands as pickups
-	gate = LevelGate.new("midden" if here == "breach" else "breach")
-	gate.name = "Gate"
-	gate.player = player
-	add_child(gate)
-	gate.global_position = player.spawn_feet + Vector3(-3.0, 0.0, -1.0)
-	gate.used.connect(travel)
+	_setup_exits(player, here)
+	_setup_npcs(player)
 	var s_ui := SettingsUi.new()
 	s_ui.name = "SettingsUi"
 	s_ui.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -188,6 +189,52 @@ func _setup_flow(player: Player) -> void:
 		bot.name = "PlaytestBot"
 		add_child(bot)
 		bot.setup(self, player)
+
+## Step 65: a LevelGate per level [[exit]]; levels without exits keep the step 39 gate
+## (Midden <-> Breach), and the Midden (the Landfill) also gets the gate back to town.
+func _setup_exits(player: Player, here: String) -> void:
+	var exits := $Level.get_node_or_null("Exits")
+	var spots: Array = []
+	if exits and exits.get_child_count() > 0:
+		for m in exits.get_children():
+			spots.append([String(m.get_meta("to", "midden")), (m as Node3D).global_position])
+	else:
+		spots.append(["midden" if here == "breach" else "breach", player.spawn_feet + Vector3(-3.0, 0.0, -1.0)])
+		if here == "midden":
+			spots.append(["town_square", player.spawn_feet + Vector3(3.0, 0.0, -1.0)])
+	for i in spots.size():
+		var g := LevelGate.new(spots[i][0])
+		g.name = "Gate" if i == 0 else "Gate%d" % (i + 1)
+		g.player = player
+		add_child(g)
+		g.global_position = spots[i][1]
+		g.used.connect(travel)
+		gates.append(g)
+	gate = gates[0]
+
+## Step 65: level [[npc]]s become talkable Npcs wired to one DialogueRunner + DialogueUI.
+func _setup_npcs(player: Player) -> void:
+	var holder := $Level.get_node_or_null("NPCs")
+	if holder == null or holder.get_child_count() == 0:
+		return
+	dialogue = DialogueRunner.new(DialogueDB.load_default(), story_flags)
+	dialogue_ui = DialogueUI.new()
+	var layer := CanvasLayer.new()
+	layer.name = "DialogueLayer"
+	add_child(layer)
+	layer.add_child(dialogue_ui)
+	dialogue_ui.bind(dialogue)
+	for m in holder.get_children():
+		var n := Npc.new(String(m.get_meta("speaker", "")))
+		n.name = "Npc_" + String(m.name)
+		n.player = player
+		add_child(n)
+		n.global_transform = (m as Node3D).global_transform
+		n.talked.connect(talk_to)
+		npcs.append(n)
+
+func talk_to(speaker: String) -> bool:
+	return dialogue != null and not dialogue.active and dialogue.start(speaker)
 
 func progress() -> Dictionary:
 	return {"level_id": GameFlow.id_of($Level), "vault_open": breach.open if breach else false}
