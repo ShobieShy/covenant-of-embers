@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 25,
+  "next_step": 26,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -29,9 +29,10 @@
     21,
     22,
     23,
-    24
+    24,
+    25
   ],
-  "last_commit": "22a997d",
+  "last_commit": "cffb0a1",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -243,6 +244,16 @@
         "Step 25: station takes parts + chosen base from player.inventory; disassemble refuses when inventory lacks room (needs parts count free slots)"
       ],
       "commit": "22a997d"
+    },
+    {
+      "time": "2026-10-24T03:16:25-05:00",
+      "step": 25,
+      "type": "build",
+      "summary": "AssemblyStation in scripts/world, EventBus.crafting_completed. Magewar review: Magewar duplicates a fixed starter template as the base and loses it; we use the player-chosen bare base and return it on disassembly (the base's mana cost/spell stays the player's choice). 198 tests green.",
+      "plan_changes": [
+        "Step 30 (screens): Assembly UI drives AssemblyStation.preview/assemble/disassemble; a station still needs placing in the Midden/hub scene (step 30 or the dungeon step)"
+      ],
+      "commit": "cffb0a1"
     }
   ]
 }

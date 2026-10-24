@@ -227,10 +227,11 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 10 notes): equipping a staff/wand goes through `Player.equip(w)` (Loadout picks the slot by type, keeps the other slot's cooldown); unequip = `loadout.unequip(slot)` + `viewmodel.show_wieldable(...)`; equipping into the slot in hand should start a draw (`swap_left = draw_seconds = w.draw_seconds(swap_seconds)`, step 17 handling) so inventory swaps can't skip it.
 - Result: PASS — 196 tests green. Player.equip_from_inventory / unequip_wieldable_to_inventory / unequip_item_to_inventory (replaced piece goes back to the backpack, stats via apply_bonuses, full backpack refuses with a hint); replacing the staff/wand in hand starts a draw; use_potion action bound to R.
 
-**25. Magic Assembly Station (crafting core)**
+**25. Magic Assembly Station (crafting core)** ✅ `cffb0a1`
 - Does: Assemble/disassemble at a station node (Magewar).
 - Done: test_station.gd: assemble then disassemble returns the same parts.
 - Does (step 17 notes): rules/stats are `Assembly` (check → messages, `assemble` = preview, `disassemble`); the station only moves parts: preview = `Assembly.assemble` without touching the inventory, assemble = same + remove the parts (and the chosen base) from the inventory, disassemble = `Assembly.disassemble(w)` back into it (refuse when there's no room). The player chooses the base staff/wand (Magewar uses a fixed template); Magewar emits crafting_completed(item) → an EventBus signal.
+- Result: PASS — 198 tests green. AssemblyStation node (preview / assemble / disassemble against the backpack, crafting_completed on the station and EventBus, refusals with last_error, full backpack refuses disassembly); worked example 4 (Uncommon Water Wand 14.5 dmg) builds through the station.
 
 **26. Crafting extras: gems, salvage, upgrade**
 - Does: Gem sockets, salvage parts → Arcane Dust, upgrade a part one tier with Dust (our additions, flagged).
