@@ -6,7 +6,7 @@
   "next_step": 85,
   "total_steps": 107,
   "steps_done": 90,
-  "last_commit": "e958c5b",
+  "last_commit": "5821086",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -996,6 +996,13 @@
       "step": "73",
       "type": "build",
       "summary": "Archetypes Nerd/Gal/Buff/Loli (Archetype; perks via apply_bonuses: +15 mana / -10% vendor prices / +20 health / +8% speed) + name and colour; menu picker, --archetype/--char-name/--color; saved in the character file (portable co-op); pose 'c' paints RemotePlayer",
+      "commit": "5821086"
+    },
+    {
+      "time": "2026-10-24T09:46-05:00",
+      "step": "57",
+      "type": "build",
+      "summary": "Arena lock: ArenaLock raises 16 slag walls around the Filth wave trigger when its wave starts, drops them when the waves are done",
       "commit": "PENDING"
     }
   ],

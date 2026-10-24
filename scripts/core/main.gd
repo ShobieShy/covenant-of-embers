@@ -88,6 +88,8 @@ func _ready() -> void:
 		add_child(hud)
 		hud.bind(player, spawner)
 		_boss_spawner = spawner
+		if spawner.trigger_radius > 0.0 and spawner.waves.any(func(w): return String(w["id"]) == Filth.WAVE_ID):
+			ArenaLock.attach(spawner, Filth.WAVE_ID)  # step 57: walls during The Filth
 		GameEvents.bus().wave_started.connect(_on_wave_started)  # step 57: boss-door checkpoint
 		var audio := GameAudio.new()   # step 37: Kenney SFX on the SFX/UI buses
 		audio.name = "GameAudio"

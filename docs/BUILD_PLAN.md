@@ -446,12 +446,14 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Q1 answered (Magewar storyline)
 - Result: PASS (332 tests + 1x/4x/co-op playtests)
 - Note: No arena lock (walls) yet: the checkpoint covers the respawn; the playtest bot doesn't trigger the Midden waves, so The Filth fight is unit-tested only.
-**57. The Filth phase 3 + Joe's Trash drop** ✅ `dd2b83c`
+**57. The Filth phase 3 + Joe's Trash drop** ✅ PENDING
 - Does: Phase 3 exposes the core weak spot; always drops the quest item 'Joe's Trash' (cracked crystals, 'trash portal' notes) plus glowing sludge and loot; checkpoint at the boss door.
 - Done: test_filth.gd: phase 3, quest drop always spawns, checkpoint respawn.
 - Q1 answered (Magewar storyline)
 - Result: PASS (332 tests + 1x/4x/co-op playtests)
 - Note: No arena lock (walls) yet: the checkpoint covers the respawn; the playtest bot doesn't trigger the Midden waves, so The Filth fight is unit-tested only.
+- Result: PASS (362 tests green)
+- Note: Follow-up to step 57 (user: build the arena walls if quick).
 **58. Elite affixes** ✅ `8908ccd`
 - Does: Elite variants (Burning, Warded, Swift, Splitting) weighted by Vigil tier (PLAN §7).
 - Done: test_elites.gd: affix rolls per Vigil, stat changes applied.
@@ -536,7 +538,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_skills.gd + test_consecrations.gd: skill effects apply and stack with gear, consecration weights follow the invested branch.
 - Q11 answered 2026-10-24 (Borderlands-style trees, placeholders)
 
-**73. Playable archetypes** ✅ PENDING
+**73. Playable archetypes** ✅ `5821086`
 - Does: Four archetypes with cosmetic + small perk, picked at new run (Bible Nerd/Gal/Buff/Loli; PLAN Scholar/Talker/Hauler/Scout).
 - Done: test_archetypes.gd: perk applied, saved.
 - Q6 answered 2026-10-24: Nerd/Gal/Buff/Loli plus customization (name and colour for now); the customization travels with the portable co-op character.

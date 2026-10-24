@@ -147,3 +147,32 @@ func test_checkpoint() -> void:
 		"boss wave: respawn at the boss door"
 	)
 	p.free()
+
+
+## Arena lock: The Filth's wave raises a ring of walls around the trigger; other waves don't;
+## the walls block a ray out of the arena and drop when the waves are done.
+func test_arena_walls() -> void:
+	var w := _world(2400)
+	var sp := EnemySpawner.new()
+	sp.process_mode = Node.PROCESS_MODE_DISABLED
+	w.add_child(sp)
+	sp.trigger_center = w.global_position
+	sp.trigger_radius = 8.0
+	var lock := ArenaLock.attach(sp, Filth.WAVE_ID)
+	lock.process_mode = Node.PROCESS_MODE_ALWAYS  # the bare spawner is disabled; its walls must not be
+	sp.wave_started.emit(0, "midden_trash")
+	check(not lock.raised(), "other waves: no walls")
+	sp.wave_started.emit(1, Filth.WAVE_ID)
+	check(lock.get_child_count() == ArenaLock.SEGMENTS, "boss wave: %d walls" % lock.get_child_count())
+	await runner_tree.physics_frame
+	await runner_tree.physics_frame
+	var c := w.global_position + Vector3(0, 1, 0)
+	var q := PhysicsRayQueryParameters3D.create(c, c + Vector3(20, 0, 0), 1)
+	var hit := w.get_world_3d().direct_space_state.intersect_ray(q)
+	check(
+		not hit.is_empty() and absf((hit["position"] - c).length() - 9.5) < 0.6,
+		"a ray out hits the wall (%s)" % [hit.get("position")]
+	)
+	sp.waves_completed.emit()
+	check(not lock.raised(), "walls drop when the waves are done")
+	w.free()
