@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 35,
+  "next_step": 36,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -39,9 +39,10 @@
     31,
     32,
     33,
-    34
+    34,
+    35
   ],
-  "last_commit": "9fada1e",
+  "last_commit": "d64f243",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -351,6 +352,17 @@
         "Breach node is not yet added by main; step 35/39 wires it when the Breach is playable"
       ],
       "commit": "9fada1e"
+    },
+    {
+      "time": "2026-10-24T03:40:49-05:00",
+      "step": 35,
+      "type": "build",
+      "summary": "VaultChest: locked until the Breach boss dies, then interact spills 2 parts + 1 equipment, each raised to a Rare floor (Unique kept), boss element; Breach places it at the vault spawn 226 tests green.",
+      "plan_changes": [
+        "Rare floor and 3-item chest are plan design (Magewar has no chest)",
+        "rolled_rarity_id keeps the pre-floor roll for balance stats"
+      ],
+      "commit": "d64f243"
     }
   ]
 }

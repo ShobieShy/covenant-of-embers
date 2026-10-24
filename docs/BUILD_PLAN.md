@@ -306,9 +306,10 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_boss.gd: phase switch at 50 %, death opens vault.
 - Result: PASS (224 tests)
 
-**35. Vault + guaranteed boss loot**
+**35. Vault + guaranteed boss loot** ✅ `d64f243`
 - Does: Vault chest with guaranteed rarity floor.
 - Done: test_vault.gd: drop rarity ≥ floor across 1000 seeds.
+- Result: PASS (226 tests)
 
 **36. Consecrations (enchantments)**
 - Does: Our version of anointments on parts/equipment.
