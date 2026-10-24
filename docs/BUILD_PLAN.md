@@ -519,7 +519,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_skills.gd: point grant per level, tier gating by points spent, rank caps, capstone, respec refunds, save round trip.
 - Q11 answered 2026-10-24 (Borderlands-style trees, placeholders)
 
-**72. Skill trees: first tree + part consecrations**
+**72. Skill trees: first tree + part consecrations** ✅ `cdae445`
 - Does: First placeholder tree (3 branches, ~12 skills: flat/percent stat bonuses, a cast proc, a capstone) applied to the player via modifiers; part consecrations and tree-aware loot weights (step 36 deferral). Skill names are placeholders to be renamed later.
 - Done: test_skills.gd + test_consecrations.gd: skill effects apply and stack with gear, consecration weights follow the invested branch.
 - Q11 answered 2026-10-24 (Borderlands-style trees, placeholders)
