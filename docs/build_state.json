@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 41,
+  "next_step": 42,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -45,9 +45,10 @@
     37,
     38,
     39,
-    40
+    40,
+    41
   ],
-  "last_commit": "84cde7f",
+  "last_commit": "95075c6",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -433,6 +434,18 @@
         ]
       },
       "commit": "84cde7f"
+    },
+    {
+      "time": "2026-10-24T04:11:46-05:00",
+      "step": 41,
+      "type": "build",
+      "summary": "Graphical playtest in the user session: --shots viewport screenshots, --ui-test injected-input UI driver; fix pause menu off-centre (anchors resolved before tree), pause menu grabs focus for keyboard nav; playtest/ ignored 42 tests green.",
+      "plan_changes": {
+        "tests": 237,
+        "playtest": "PASS",
+        "graphical": "ok"
+      },
+      "commit": "95075c6"
     }
   ]
 }

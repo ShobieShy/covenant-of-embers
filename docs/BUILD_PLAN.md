@@ -350,12 +350,13 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: playtest.gd completes the slice in headless mode, no errors.
 - Result: PASS (237 tests + headless playtest)
 
-**41. Playtest pass 2 – manual + fixes**
+**41. Playtest pass 2 – manual + fixes** ✅ `95075c6`
 - Does: ShobieShy plays; fix reported issues. Also judge the Midden palette vs Magewar's landfill (step 2 note: TOML colours are linear, Magewar's sRGB).
 - Done: Issues list closed or deferred in plan.
 - Does (step 10 notes): first real look at the viewmodel overlay (headless tests can't render it): gem colour, no clipping into walls, overlay resizes with the window; tune DRAW_DROP 0.35, recoil 0.05/0.012/0.15 s and staff shake 0.2.
 
 ## After the slice
+- Result: graphical runs on KDE Wayland (RX 6950 XT, Vulkan Forward+): autoplay PASS in ~4.5 min real time, UI smoke menu->new run->inventory->pause->main menu->continue->60 s->quit, 0 errors/warnings/leaks
 
 **42. CI breadth**
 - Does: gdlint/gdformat (gdtoolkit) check, Windows + Linux export presets built headless in CI.
