@@ -6,7 +6,7 @@
   "next_step": 43,
   "total_steps": 93,
   "steps_done": 61,
-  "last_commit": "4ff0a82",
+  "last_commit": "2d52d32",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -824,6 +824,14 @@
       "type": "skip",
       "summary": "skipped this session",
       "reason": "waiting on ShobieShy's answer to Q7/Q15/Q16"
+    },
+    {
+      "time": "2026-10-24T07:22:34-05:00",
+      "step": 71,
+      "type": "build",
+      "summary": "Data-driven skill trees (SkillTree from data/skills TOML, Skills per character: 1 pt/level from 2, 5 pts per tier per branch, ranks, capstone, respec at Old Oak, saved in character)",
+      "tests": "test_skills.gd (5), test_hub respec gate",
+      "commit": "2d52d32"
     }
   ],
   "completed_steps": [
@@ -885,6 +893,7 @@
     66,
     68,
     69,
+    71,
     75,
     76,
     77,

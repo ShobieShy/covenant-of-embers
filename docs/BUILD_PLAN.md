@@ -514,7 +514,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_xp.gd: multiplier applied, level curve unchanged.
 - Needs ShobieShy: Q12
 
-**71. Skill trees: framework**
+**71. Skill trees: framework** ✅ `2d52d32`
 - Does: Borderlands-style skill trees as a design pattern only (no Borderlands names/text/assets): data-driven trees in data/skills/*.toml, not tied to archetypes (Q6 open); 1 skill point per level from level 2; tiers unlock by points spent in that tree (5 per tier); ranked skills (max rank), capstone at the last tier; free respec at the Old Oak (gold cost pending Q4); points/ranks saved in the character save.
 - Done: test_skills.gd: point grant per level, tier gating by points spent, rank caps, capstone, respec refunds, save round trip.
 - Q11 answered 2026-10-24 (Borderlands-style trees, placeholders)
