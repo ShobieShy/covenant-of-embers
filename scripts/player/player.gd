@@ -125,6 +125,8 @@ var level_health_bonus := 0.0   # step 27 (level-ups) fills these; apply_bonuses
 var level_mana_bonus := 0.0
 var level_breath_bonus := 0.0
 var potions_used := 0
+var inventory := Inventory.new()          # step 23: backpack (30 slots) + Arcane Dust
+var pickups := PickupCollector.new()      # step 23: walk-over auto-collect + Interact pickup
 
 var _wheel := 0                 # queued mouse-wheel cycles (+ next / - prev)
 var _crouched_jump := false
@@ -435,6 +437,11 @@ func use_potion() -> bool:
 
 ## Equipment speed hook (Magewar EquipmentItem.speed_modifier, Shoes x1.15): scales the
 ## walk/sprint/crouch targets, not the slide.
+## Shows a short HUD hint (Magewar/Cogito hint pop-up) and remembers it.
+func show_hint(text: String) -> void:
+	last_hint = text
+	hint.emit(text)
+
 func set_speed_multiplier(m: float) -> void:
 	speed_multiplier = m
 
@@ -573,6 +580,8 @@ func tick(input: PlayerInput, dt: float) -> void:
 	elif input.was_pressed(&"quickslot_prev_wieldable"):
 		started = loadout.cycle(-1)
 	loadout.tick(dt, started)
+	# Pickups (step 23): walk-over auto-collect, then Interact on the looked-at item.
+	pickups.tick(self, input.was_pressed(&"interact"))
 	# Mana regen (step 8) before the cast, so a pool back at the cost casts this tick.
 	mana.tick(dt)
 	# Focus (step 9): action_secondary held with a wieldable; costs no mana. A swap while

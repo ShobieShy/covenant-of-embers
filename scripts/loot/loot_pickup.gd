@@ -13,7 +13,12 @@ const BEAM_BASE := 1.5           ## m, Basic
 const BEAM_PER_TIER := 0.5       ## m per rarity tier above Basic
 const GEM_SIZE := 0.25
 
-var drop: LootDrop
+enum Auto { NONE, MANA, DUST, POTION }   ## step 23: walk-over auto-collect kinds
+
+var drop: LootDrop                ## the item (Interact to pick up); null for auto pickups
+var auto: Auto = Auto.NONE
+var amount := 0                   ## mana points / dust / potion count for auto pickups
+var potion: ConsumableItem
 var color := Color.WHITE
 var beam: MeshInstance3D
 var gem: MeshInstance3D
@@ -26,10 +31,37 @@ static func create(d: LootDrop, at: Vector3) -> LootPickup:
 	p.position = at
 	return p
 
+## Mana orb (Magewar mana pickups): restores `n` mana on walk-over, waits while mana is full.
+static func create_mana(n: int, at: Vector3) -> LootPickup:
+	return _auto(Auto.MANA, n, null, at, Color(0.35, 0.55, 1.0), "Mana +%d" % n)
+
+## Arcane Dust (step 26 salvage currency) on walk-over.
+static func create_dust(n: int, at: Vector3) -> LootPickup:
+	return _auto(Auto.DUST, n, null, at, Color(0.8, 0.6, 1.0), "Arcane Dust x%d" % n)
+
+## Potions go to the quick-slot on walk-over; what does not fit stays on the ground.
+static func create_potion(item: ConsumableItem, count: int, at: Vector3) -> LootPickup:
+	return _auto(Auto.POTION, count, item, at, Color(1.0, 0.35, 0.35), "%s x%d" % [item.display_name, count])
+
+static func _auto(k: Auto, n: int, item: ConsumableItem, at: Vector3, c: Color, text: String) -> LootPickup:
+	var p := LootPickup.new()
+	p.auto = k
+	p.amount = n
+	p.potion = item
+	p._build("Pickup_%s" % Auto.keys()[k].to_lower(), c, text)
+	p.position = at
+	return p
+
+func is_auto() -> bool:
+	return auto != Auto.NONE
+
 func setup(d: LootDrop) -> void:
 	drop = d
-	name = "Pickup_%s" % d.rarity_id
-	color = d.rarity_color()
+	_build("Pickup_%s" % d.rarity_id, d.rarity_color(), d.describe())
+
+func _build(n: String, c: Color, text: String) -> void:
+	name = n
+	color = c
 	collision_layer = 1 << (PICKUP_LAYER - 1)
 	collision_mask = 0
 	monitoring = false
@@ -78,7 +110,7 @@ func setup(d: LootDrop) -> void:
 	add_child(light)
 	label = Label3D.new()
 	label.name = "Label"
-	label.text = d.describe()
+	label.text = text
 	label.modulate = color
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.pixel_size = 0.004
