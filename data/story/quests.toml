@@ -1,0 +1,75 @@
+# Quests and clues (BUILD_PLAN step 63). The tutorial chain follows the Magewar storyline
+# (Crazy Joe -> Old Oak -> Bob -> the landfill / The Filth -> back to Bob); numbers are
+# plan design. Objective kinds: kill (enemy id), collect (item id), talk (speaker),
+# reach (area id). A quest with `auto_start_when` flags starts by itself once they are set.
+
+[[quest]]
+id = "a_new_home"
+title = "A New Home"
+auto_start_when = ["permit_given"]
+reward_xp = 20
+reward_flags = ["old_oak_unlocked"]
+reward_clue = "joes_trash"
+
+[[objective]]
+quest = "a_new_home"
+kind = "reach"
+target = "old_oak"
+text = "Find the Old Oak at the edge of town"
+
+[[quest]]
+id = "the_landfill"
+title = "Trash Talk"
+auto_start_when = ["starter_gear_given"]
+reward_xp = 100
+reward_dust = 50
+reward_flags = ["filth_defeated"]
+reward_clue = "mana_distortion"
+
+[[objective]]
+quest = "the_landfill"
+kind = "reach"
+target = "landfill"
+text = "Go to the landfill"
+
+[[objective]]
+quest = "the_landfill"
+kind = "kill"
+target = "gnawer"
+count = 3
+text = "Clear the Gnawers"
+
+[[objective]]
+quest = "the_landfill"
+kind = "collect"
+target = "joes_discards"
+text = "Recover Joe's discarded experiments"
+
+[[quest]]
+id = "report_to_bob"
+title = "Report to Bob"
+auto_start_when = ["filth_defeated"]
+reward_xp = 50
+reward_flags = ["tutorial_done"]
+reward_clue = "fracture_deliberate"
+
+[[objective]]
+quest = "report_to_bob"
+kind = "talk"
+target = "Bob"
+text = "Bring the samples to Bob"
+
+[[clue]]
+id = "joes_trash"
+title = "Joe's Trash"
+text = "Crazy Joe swears the answer to the Fracture is in the landfill. Strange mana distortions, trash that shouldn't be there."
+
+[[clue]]
+id = "mana_distortion"
+title = "Mana Distortion"
+text = "The landfill really was warped by mana. Cracked crystals and notes about 'trash portals' among Joe's discards."
+
+[[clue]]
+id = "fracture_deliberate"
+title = "Not Random"
+text = "Bob: the Fracture was caused deliberately. The distortion points outward, toward the five outer dungeons."
