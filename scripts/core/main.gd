@@ -74,6 +74,13 @@ func _ready() -> void:
 			drop_names.append(d.describe())
 		print("[drops] %d pool(s); Heap (level %d) kill, seed 18: %s" % [DropRoller.default_pools().pools.size(),
 			heap_def.level, ", ".join(drop_names)])
+		var eq_rng := RandomNumberGenerator.new()
+		eq_rng.seed = 19
+		var robes := EquipmentRoller.roll(eq_rng, EquipmentItem.Slot.CLOTHES, "rare", ElementTable.Element.FIRE)
+		var grim := EquipmentItem.load_item("novice_grimoire")
+		print("[equipment] %d Magewar templates, %d potions; seed 19 %s: health %.1f, mana %.1f, resist %.0f %%; %s +%.0f mana +%.1f/s" % [
+			EquipmentItem.list_ids().size(), ConsumableItem.list_ids().size(), robes.display_name, robes.health_bonus, robes.mana_bonus,
+			robes.elemental_resistance * 100.0, grim.display_name, grim.mana_bonus, grim.mana_regen_bonus])
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])

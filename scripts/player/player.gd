@@ -58,6 +58,12 @@ extends CharacterBody3D
 ##    focus.amount(), raised during a draw, kicked by CameraFeel recoil; casts add recoil
 ##    and screen shake (zero under reduced motion). The bolt ray stays at the eye; only the
 ##    tracer starts at the viewmodel's cast point.
+##  * Equipment (step 19, scripts/player/equipment.gd + scripts/loot/equipment_item.gd):
+##    equip_item()/unequip_item() then apply_bonuses() recomputes the worn totals:
+##    Health/Mana max (+ level_*_bonus, step 27), Mana regen, Breath max (stamina; no
+##    refill), speed_multiplier (product), damage_target.resist per affinity (uncapped;
+##    resolve_hit caps 60 %) and every caster's flat damage_bonus (spell damage).
+##    use_potion() drinks the quick-slot potion (Health +30 / Mana +25), refused when full.
 ## In game _physics_process feeds PlayerInput.from_input(); tests call tick() directly.
 
 const CHARACTER_LAYER := 2   # physics layer "character" (bit 2)
@@ -114,6 +120,11 @@ var deaths := 0
 var respawns := 0
 var hits_taken := 0
 var hits_ignored := 0           # i-frames / dead
+var equipment := Equipment.new()   # step 19: worn items + potion quick-slot
+var level_health_bonus := 0.0   # step 27 (level-ups) fills these; apply_bonuses() adds them
+var level_mana_bonus := 0.0
+var level_breath_bonus := 0.0
+var potions_used := 0
 
 var _wheel := 0                 # queued mouse-wheel cycles (+ next / - prev)
 var _crouched_jump := false
@@ -162,6 +173,7 @@ func _ready() -> void:
 	spread = Spread.from_tuning(tuning)
 	_set_health(Health.from_tuning(tuning))
 	camera.fov = focus.fov
+	apply_bonuses()   # the pools were rebuilt from tuning: put worn bonuses back
 	loadout.swap_seconds = tuning.swap_seconds
 	viewmodel = Viewmodel.new()
 	viewmodel.fov = tuning.viewmodel_fov
@@ -376,6 +388,50 @@ func capsule_height() -> float:
 
 func sliding() -> bool:
 	return slide_left > 0.0
+
+## Wears `item` (EquipmentItem) and reapplies the bonuses; returns what it replaced.
+func equip_item(item: EquipmentItem) -> EquipmentItem:
+	var old := equipment.equip(item)
+	apply_bonuses()
+	return old
+
+func unequip_item(slot: int) -> EquipmentItem:
+	var old := equipment.unequip(slot)
+	apply_bonuses()
+	return old
+
+## Pushes the worn totals (+ level parts) into the pools, speed, resists and casters.
+## Max raises add the difference (Health/Mana; Breath doesn't refill), removals clamp.
+func apply_bonuses() -> void:
+	if health != null:
+		health.set_max_bonus(equipment.health_bonus() + level_health_bonus)
+	if mana != null:
+		mana.set_max_bonus(equipment.mana_bonus() + level_mana_bonus)
+		mana.set_regen_bonus(equipment.mana_regen_bonus())
+	if breath != null:
+		breath.set_max_bonus(equipment.stamina_bonus() + level_breath_bonus)
+	set_speed_multiplier(equipment.speed_multiplier())
+	var res := equipment.resistances()
+	for e in ElementTable.COUNT:
+		damage_target.resist[e] = res[e]
+	var dmg := equipment.spell_damage_bonus()
+	for c in loadout.casters:
+		c.damage_bonus = dmg
+
+## Drinks the quick-slot potion; a refusal (pool full / dead / empty slot) costs nothing
+## and hints "<attribute> is already maxed." like Cogito.
+func use_potion() -> bool:
+	var p := equipment.potion
+	if equipment.use_potion(self):
+		potions_used += 1
+		if not p.hint.is_empty():
+			hint.emit(p.hint)
+			last_hint = p.hint
+		return true
+	if p != null:
+		hint.emit(p.maxed_hint())
+		last_hint = p.maxed_hint()
+	return false
 
 ## Equipment speed hook (Magewar EquipmentItem.speed_modifier, Shoes x1.15): scales the
 ## walk/sprint/crouch targets, not the slide.

@@ -206,7 +206,11 @@ func test_procedural_recipe() -> void:
 							same = same and gp.id == wp.id and gp.damage_bonus == wp.damage_bonus and gp.accuracy_bonus == wp.accuracy_bonus \
 								and gp.fire_rate_modifier == wp.fire_rate_modifier and g.rarity_id == wp.rarity and g.roll_seed == wp.roll_seed
 						else:
-							same = same and g.equip_slot == w[1] and g.rarity_id == w[2] and g.element == w[3] and g.roll_seed == w[4] and g.item == null
+							same = same and g.equip_slot == w[1] and g.rarity_id == w[2] and g.element == w[3] and g.roll_seed == w[4]
+							var gi := g.item as EquipmentItem   # step 19: rolled from the stored seed
+							var wi := EquipmentRoller.from_seed(w[4], w[1], w[2], w[3])
+							same = same and gi != null and gi.id == wi.id and gi.slot == w[1] and gi.mana_bonus == wi.mana_bonus \
+								and gi.health_bonus == wi.health_bonus and gi.stamina_bonus == wi.stamina_bonus and gi.speed_modifier == wi.speed_modifier
 					check(same, "luck %s level %d element %d seed %d: Magewar draw order" % [luck, lvl, el, s])
 	# Statistics over 10 000 level-1 Earth kills (luck 4: parts luck 4, equipment luck 2).
 	var rng := _rng(2026)

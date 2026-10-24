@@ -48,6 +48,7 @@ var cooldown_left := 0.0         ## seconds (GDScript floats are 64-bit: no drif
 var casts := 0
 var blocked := 0                 ## presses refused by the cooldown or mana
 var mana_refused := 0
+var damage_bonus := 0.0         ## step 19: worn spell_damage_bonus, added flat to each cast
 
 func _init(w: WieldableInstance = null) -> void:
 	wieldable = w
@@ -85,7 +86,7 @@ func tick(pressed: bool, held: bool, dt: float, aim: Aim, bolts: SpellBolts) -> 
 		s.speed = wieldable.projectile_speed()
 		s.range_m = wieldable.range_m()
 		s.element = wieldable.element()
-		s.damage = wieldable.damage()
+		s.damage = wieldable.damage() + damage_bonus
 		s.exclude = aim.exclude
 		s.has_visual_origin = aim.has_visual_origin
 		s.visual_origin = aim.visual_origin

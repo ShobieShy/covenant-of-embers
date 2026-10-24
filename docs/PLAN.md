@@ -360,12 +360,12 @@ Buildable rules for M1–M2. **Weapons, loot and crafting follow the Magewar des
 ### 30.3 Equipment, inventory and crafting
 - Equip slots (Bible): Staff, Wand, Hat, Clothes, Belt, Shoes, Grimoire, Potion.
   - Hat: mana 5–15, spell damage 0.5–3, mana regen 0.2–1.
-  - Clothes/Robes: health 5–20, mana 3–10, Rare+ elemental resist 5–15 %.
+  - Clothes/Robes: health 5–20, mana 3–10, elemental resist 5–15 % on any non-Arcane piece (Magewar; Arcane robes keep the template's 5 %, vs Arcane damage).
   - Belt: health 3–8, stamina/Breath 5–15.
-  - Shoes: speed ×1.02–1.10, Breath 3–10.
+  - Shoes: speed ×(1 + 0.02–0.10 × rarity multiplier) (×1.02–1.10 at Basic, up to ×1.06–1.30 at Unique), Breath 3–10.
   - Grimoire: spell damage 2–8, mana 10–25, mana regen 0.5–2.
-  - Potion: health or mana potion quick-slot.
-  All rolls × rarity multiplier.
+  - Potion: health (+30) or mana (+25) potion quick-slot, stacks of 5; refused (not consumed) when that pool is full.
+  All rolls × rarity multiplier; stats a slot doesn't roll keep the Magewar template's (rolled Shoes keep health 5). Worn totals: health/mana/Breath max, mana regen, speed (product), spell damage (flat + per cast), resist per affinity (summed, capped 60 % when a hit resolves). Step 19: scripts/loot/equipment_item.gd, equipment_roller.gd, scripts/player/equipment.gd.
 - Backpack grid (30 slots), rarity-coloured borders, compare cards with stat deltas, salvage to Scrap, shared camp stash.
 - **Crafting: Magic Assembly Station only.** Staff = Head + Exterior + Interior + Handle (+ Charm); Wand = Head + Exterior (+ Handle). Assembled rarity = floor(mean part rarity) and replaces the base's rarity. Preview without consuming, assemble consumes parts, disassemble returns them. Builds that don't fit are rejected with a message (Magewar silently drops Interior/Charm on a wand); the player picks the base (Magewar always uses a template). Assembled name "<Rarity> <Element> Staff|Wand" (Magewar). Handling (Σ part handling_bonus; Magewar never reads it) shortens the draw: 0.4 s × 100 / (100 + handling), ≥ 0.2 s. Wand Heads use 1 gem slot.
 - **Worked examples** (Magewar parts, resources/parts; test_assembly.gd):

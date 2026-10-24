@@ -9,7 +9,8 @@ extends RefCounted
 ##     element = the enemy's (else PartRoller.roll_element(rng)), PartRoller.roll(rng, ...)
 ##   then randf() < EQUIP_CHANCE (25 %): one equipment piece: slot uniform over
 ##     Hat/Clothes/Belt/Shoes, rarity = RarityTable.roll(rng, luck × 0.5), seed = rng.randi()
-##     (step 19 rolls the item from it).
+##     -> item = EquipmentRoller.from_seed(seed, slot, rarity, element) (step 19; no extra
+##     draws from rng, so the replay contract of test_pools holds).
 ## Reinterpreted (flagged): Magewar's roll_rarity_seeded uses fixed thresholds
 ## 45/25/15/8/5/2 % (+ luck × 0.05 on the roll) that disagree with its own ItemRarity drop
 ## weights 50/25/15/7/2/1; ours uses RarityTable (PLAN §30.2) for every drop. Everything is
@@ -63,6 +64,7 @@ static func roll_procedural(rng: RandomNumberGenerator, enemy_level: int, elemen
 		e.rolled_rarity_id = r.id
 		e.element = _element(rng, element)
 		e.roll_seed = rng.randi()
+		e.item = EquipmentRoller.from_seed(e.roll_seed, e.equip_slot, r.id, e.element)
 		out.append(e)
 	return out
 

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EquipmentItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/loot/equipment_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "apprentice_hat"
+display_name = "Apprentice's Pointed Hat"
+description = "A slightly bent pointed hat. Every mage needs one. Grants a small mana bonus."
+slot = 0
+rarity = "basic"
+element_affinity = 0
+health_bonus = 0.0
+mana_bonus = 10.0
+stamina_bonus = 0.0
+speed_modifier = 1.0
+spell_damage_bonus = 1.0
+elemental_resistance = 0.0
+mana_regen_bonus = 0.5

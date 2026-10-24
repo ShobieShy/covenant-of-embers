@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ConsumableItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/loot/consumable_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "mana_potion"
+display_name = "Mana Potion"
+description = "A glowing blue potion that tastes like sour berries. Restores 25 mana."
+attribute = "mana"
+amount = 25.0
+stack_size = 5
+hint = "Mana restored!"

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ConsumableItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/loot/consumable_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "health_potion"
+display_name = "Health Potion"
+description = "A crimson elixir brewed from barrier-safe herbs. Restores 30 health."
+attribute = "health"
+amount = 30.0
+stack_size = 5
+hint = "Health restored!"
