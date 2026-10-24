@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 20,
+  "next_step": 21,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -24,9 +24,10 @@
     16,
     17,
     18,
-    19
+    19,
+    20
   ],
-  "last_commit": "7ef9d04",
+  "last_commit": "86b770b",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -179,6 +180,22 @@
       "summary": "Equipment items: EquipmentItem (5 Magewar slots, full_description), ConsumableItem health/mana potions (refused when full), EquipmentRoller (Magewar ranges/order x rarity, names, seeded regenerate), Player.equipment + apply_bonuses (health/mana/Breath max, regen, speed, spell damage per cast, resist per affinity capped 60% at hit), 5 templates + 2 potions imported from Magewar, DropRoller fills equipment items. 172 tests green (9 new).",
       "plan_changes": "PLAN 30.3 fixed (Clothes resist any non-Arcane piece, Shoes speed x rarity, potions, template stats kept); step 19 Result/Fixed/Magewar check; step 20/22/24/27/30/36/38 notes (seed+slot+rarity+element codes, potion pickups, equip via Player.equip_item, level_*_bonus, cards, save via apply_bonuses). Fixed: _ready rebuilt pools dropping bonuses, stale 'until step 19' comments, test_pools checks item.",
       "commit": "7ef9d04"
+    },
+    {
+      "time": "2026-10-24T02:16:34-05:00",
+      "step": 20,
+      "type": "build",
+      "summary": "Ember Mark item codes: ItemCodes encode/decode (EM1- + Crockford base32 + CRC-16, v1 append-only index tables) for bare/assembled wieldables, rolled and hand-made parts, rolled equipment and templates, potion stacks; EmberMark result, BitStream; decode via PartRoller/EquipmentRoller.from_seed and Assembly.assemble (failing builds rejected); encode refuses unreproducible items; main.gd [codes]. 180 tests green (8 new in test_item_codes.gd: 1000 random items round-trip, golden codes, bad codes rejected).",
+      "plan_changes": [
+        "Recorded ShobieShy's decision (Oct 24 2026): gear's spell damage bonus stays and is added flat to every cast (Magewar only displays it) in BUILD_PLAN rule 5 'Kept decisions' and PLAN §30.3; verified in code (Caster.damage_bonus = Equipment.spell_damage_bonus(), added to every bolt; test_equipment 'bolt = staff + 3').",
+        "PLAN §31.5 rewritten to the real v1 payload; item level/grade/Vigil tier/consecration/gems/sandbox flag scheduled as later code versions (steps 26/27/28/36/22+).",
+        "Step 21: patches must not change ItemCodes.TABLES or seed roll ranges/order without a new code version.",
+        "Step 26: upgraded parts re-encode at the new tier; gems need a new code version.",
+        "Step 30: item cards show/copy Ember Marks, import field shows EmberMark.error.",
+        "Step 38: save items as Ember Marks, load via decode + player.equip_item + apply_bonuses; undecodable codes dropped with a warning.",
+        "Noted (no code bug found in steps 1-19): tests/run_tests.gd prints 'ok' for a test aborted by a SCRIPT ERROR (run_tests.sh still fails on the log line); script names must not shadow GDScript globals (wrap -> seal)."
+      ],
+      "commit": "86b770b"
     }
   ]
 }
