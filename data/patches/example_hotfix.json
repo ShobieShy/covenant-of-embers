@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "elements": {"strong": 1.6, "fire": {"color": "#FF4010"}},
+  "rarities": {"rare": {"drop_weight": 18}, "luck_rare_step": 2.5},
+  "drop_pools": {"midden_gnawer": {"drop_chance": 0.35, "entries": {"3": {"weight": 12}}}}
+}

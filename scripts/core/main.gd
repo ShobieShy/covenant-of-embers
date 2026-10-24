@@ -15,6 +15,11 @@ func _ready() -> void:
 	print("[main] Covenant of Embers on Godot %s, renderer %s" % [
 		Engine.get_version_info().string,
 		ProjectSettings.get_setting("rendering/renderer/rendering_method")])
+	# Step 21: hotfix balance patches from user://patches/*.json (sorted, all-or-nothing each).
+	var patch_log := BalancePatch.apply_dir("user://patches")
+	print("[patches] %d applied, %d rejected" % [BalancePatch.applied.size(), patch_log.size()])
+	for m in patch_log:
+		push_warning("[patches] " + m)
 	# The player spawns at the level's PlayerStart (feet), facing its yaw; its Head sits
 	# at PlayerStart/Eye (1.5 m).
 	var start := get_node_or_null("Level/PlayerStart") as Node3D
