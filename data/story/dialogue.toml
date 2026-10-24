@@ -77,7 +77,7 @@ id = "bob_intro"
 speaker = "Bob"
 forbids = ["bob_met"]
 sets = ["bob_met", "starter_gear_given"]
-lines = ["...Who are you? Why are you in my tree?", "Name's Bob. This is my home. You lot are squatting.", "*examines you with a glowing orb*", "Hmm. Interesting. You're not from this realm, are you?", "You're weak now. Pathetically so. But you could become something... useful.", "My only lead is a faint mana distortion at the town's landfill.", "Here. Take this. *hands you a rusty dagger and a mana potion*", "Go to the landfill. Defeat whatever lurks there. Bring back anything of Joe's.", "Don't die. You're interesting anomalies. Politics is the true monster, by the way."]
+lines = ["...Who are you? Why are you in my tree?", "Name's Bob. This is my home. You lot are squatting.", "*examines you with a glowing orb*", "Hmm. Interesting. You're not from this realm, are you?", "You're weak now. Pathetically so. But you could become something... useful.", "My only lead is a faint mana distortion at the town's landfill.", "Here. Take this. *hands you a staff, a rusty dagger and a mana potion*", "The staff is for fighting. The dagger is for knowing when to. It glows when something nasty is close.", "And a map. On bark. Don't complain.", "Association's back door opens on the landfill. Joe's been dumping through it for years. Tell the clerk I sent you.", "Go to the landfill. Defeat whatever lurks there. Bring back anything of Joe's.", "Don't die. You're interesting anomalies. Politics is the true monster, by the way."]
 
 [[choice]]
 dialogue = "bob_intro"

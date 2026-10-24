@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 118,
-  "steps_done": 93,
-  "last_commit": "f149ae0",
+  "steps_done": 94,
+  "last_commit": "fb23fc5",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1052,6 +1052,13 @@
       "step": 112,
       "type": "build",
       "summary": "LevelGate requires/locked_text + blocked hint; intro GATE_RULES (front door on permit, guard on to_landfill until filth_defeated, Landfill's Breach/town gates); ROUTE-chained world-space objective marker; inventory/skills/manual save locked until bob_met, waystone map dormant until the crystal (quit/travel still save); bot circles a snagged station; [tests] 375 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
+      "commit": "fb23fc5"
+    },
+    {
+      "time": "2026-10-24T10:42:32-05:00",
+      "step": 113,
+      "type": "build",
+      "summary": "Old Oak beat 6: arrival sets home_unlocked, moss bed -> night preset + 'That night...' banner + Bob vortex cinematic (MentorArrival once, no auto-play while the intro runs); Bob's kit = Apprentice Fire Staff (Q18), mana potion, rusty_dagger keepsake (DaggerGlow HUD tag pulses near hostiles), bark map flag, landfill_route_open; Bob's new back-door line; [tests] 377 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
       "commit": "PENDING"
     }
   ],
@@ -1148,7 +1155,8 @@
     109,
     110,
     111,
-    112
+    112,
+    113
   ],
   "deferred": [
     74,

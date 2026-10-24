@@ -187,8 +187,18 @@ static func apply_skip(f: StoryFlags, p: Player) -> void:
 
 
 static func give_starter_weapons(p: Player) -> void:
+	give_staff(p)
+	give_wand(p)
+
+
+## Bob's gift (Q18).
+static func give_staff(p: Player) -> void:
 	if p.loadout.wieldable(Loadout.Slot.STAFF) == null:
 		p.equip(WieldableInstance.load_base("apprentice_fire_staff"))
+
+
+## Joe's gift at his Landfill camp (Q21).
+static func give_wand(p: Player) -> void:
 	if p.loadout.wieldable(Loadout.Slot.WAND) == null:
 		p.equip(WieldableInstance.load_base("swift_wind_wand"))
 
@@ -214,6 +224,8 @@ func setup(m: Node, p: Player, f: StoryFlags, level: String) -> void:
 		(main.dialogue as DialogueRunner).ended.connect(_on_dialogue_ended)
 	if here == "mage_association":
 		_dress_association()
+	elif here == "old_oak":
+		_dress_oak()
 
 
 func current() -> String:
@@ -409,6 +421,8 @@ func _on_dialogue_ended(id: String) -> void:
 				_play_expulsion()
 		"clerk_grant":
 			give_grant()
+		"bob_intro":
+			give_kit()
 
 
 func give_grant() -> void:
@@ -468,6 +482,8 @@ func target_point() -> Variant:
 			n = cast.get("Clerk")
 		"welcome":
 			n = gate_to("town_square") if here == "mage_association" else gate_to("old_oak")
+		"new_home", "return_to_bob", "crystal":
+			n = target_oak()
 	return n.global_position if n else null
 
 
@@ -501,3 +517,117 @@ func _on_beat() -> void:
 	var o := objective()
 	if not o.is_empty():
 		_hint("Objective: " + o)
+
+
+# --- Step 113: beat 6, the Old Oak's first night and Bob's kit ----------------------------
+
+const NIGHT_AMBIENT := Color(0.08, 0.09, 0.18)
+const NIGHT_SKY := Color(0.02, 0.02, 0.06)
+
+var bed: Npc
+
+
+func _dress_oak() -> void:
+	main.call("_ensure_dialogue")
+	if not (main.dialogue as DialogueRunner).ended.is_connected(_on_dialogue_ended):
+		(main.dialogue as DialogueRunner).ended.connect(_on_dialogue_ended)
+	if current() == "welcome":
+		flags.set_flag("home_unlocked")
+		advance("new_home")
+	if current() == "new_home" and not flags.has(MentorArrival.FLAG):
+		bed = Npc.new("Moss bed")
+		bed.name = "MossBed"
+		bed.player = player
+		main.add_child(bed)
+		bed.global_position = player.spawn_feet + Vector3(-2.5, 0, -4)
+		bed.talked.connect(func(_s: String): rest())
+	elif current() == "new_home":
+		_bob_talks()
+
+
+func target_oak() -> Node3D:
+	match current():
+		"new_home":
+			return bed if bed and not flags.has(MentorArrival.FLAG) else main.get_node_or_null("Npc_Bob")
+		"return_to_bob", "crystal":
+			return main.get_node_or_null("Npc_Bob")
+	return null
+
+
+## The moss bed: night falls, "That night...", then Bob's vortex.
+func rest() -> bool:
+	if current() != "new_home" or flags.has(MentorArrival.FLAG) or cinematic:
+		return false
+	set_night()
+	if bed:
+		bed.queue_free()
+		bed = null
+	var hud := main.get_node_or_null("Hud")
+	if hud:
+		hud.show_banner("That night...")
+	var at := player.spawn_feet + Vector3(0, 0, -3)
+	main.add_child(MentorArrival.vortex(at))
+	cinematic = play_cinematic(
+		"bob_arrives",
+		[
+			{
+				"from": at + Vector3(0, 2.5, 6),
+				"to": at + Vector3(0, 2, 4),
+				"look": at + Vector3(0, 1.2, 0),
+				"s": 3.0,
+				"text": "That night, a surge of mana. A vortex tears open inside the Old Oak."
+			},
+			{
+				"from": at + Vector3(2.5, 1.7, 2),
+				"to": at + Vector3(1.5, 1.7, 1.5),
+				"look": at + Vector3(0, 1.6, 0),
+				"s": 3.0,
+				"text": "A tall figure steps through - silver-streaked beard, eyes like embers."
+			},
+		],
+		_bob_arrives
+	)
+	print("[intro] rest: night falls")
+	return true
+
+
+func set_night() -> void:
+	var lvl := main.get_node_or_null("Level")
+	if lvl == null:
+		return
+	var we := lvl.get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if we and we.environment:
+		we.environment = we.environment.duplicate()
+		we.environment.ambient_light_color = NIGHT_AMBIENT
+		we.environment.background_color = NIGHT_SKY
+	var sun := lvl.get_node_or_null("Sun") as DirectionalLight3D
+	if sun:
+		sun.light_energy *= 0.15
+		sun.light_color = Color(0.5, 0.55, 0.9)
+
+
+func _bob_arrives() -> void:
+	cinematic = null
+	MentorArrival.play(flags, player, null, null)
+	main.call("spawn_bob", player)
+	_bob_talks()
+
+
+func _bob_talks() -> void:
+	if not flags.has("bob_met"):
+		main.call("talk_to", "Bob")
+
+
+## Bob's kit (Q18): the staff, a mana potion (MentorArrival), the rusty dagger keepsake, the
+## bark map, and the Landfill route through the Association's back door.
+func give_kit() -> void:
+	if not active(flags) or flags.has("rusty_dagger"):
+		return
+	give_staff(player)
+	flags.set_flag("rusty_dagger")
+	flags.set_flag("bark_map")
+	flags.set_flag("landfill_route_open")
+	if main.get_node_or_null("DaggerGlow") == null:
+		main.add_child(DaggerGlow.make(player))
+	advance("back_door")
+	_hint("Bob's kit: Apprentice Fire Staff, Mana Potion, rusty dagger (glows near danger), bark map")

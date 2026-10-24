@@ -232,6 +232,8 @@ func _setup_flow(player: Player) -> void:
 	if here == "old_oak":
 		_setup_hub(player)
 	_setup_fast_travel(player, here)
+	if story_flags.has("rusty_dagger"):
+		add_child(DaggerGlow.make(player))  # step 113
 	print("[flow] level %s, gate to %s" % [here, gate.target])
 	Screenshots.attach(self, here)   # step 41: --shots <dir>
 	if OS.get_cmdline_user_args().has("--autoplay"):   # step 40
@@ -327,15 +329,24 @@ func _ensure_dialogue() -> void:
 func _setup_hub(player: Player) -> void:
 	stash = Stash.load_shared()
 	_ensure_dialogue()
-	mentor_played = MentorArrival.play(story_flags, player, dialogue, self, player.spawn_feet + Vector3(0, 0, -3))
+	if intro == null:  # step 113: the intro plays Bob's night itself (after the moss bed)
+		mentor_played = MentorArrival.play(story_flags, player, dialogue, self, player.spawn_feet + Vector3(0, 0, -3))
 	if story_flags.has(MentorArrival.FLAG):  # step 67: Bob stays in the Oak to report back to
-		var bob := Npc.new("Bob")
-		bob.name = "Npc_Bob"
-		bob.player = player
-		add_child(bob)
-		bob.global_position = player.spawn_feet + Vector3(1.5, 0, -3)
-		bob.talked.connect(talk_to)
-		npcs.append(bob)
+		spawn_bob(player)
+
+
+func spawn_bob(player: Player) -> Npc:
+	var bob := get_node_or_null("Npc_Bob") as Npc
+	if bob:
+		return bob
+	bob = Npc.new("Bob")
+	bob.name = "Npc_Bob"
+	bob.player = player
+	add_child(bob)
+	bob.global_position = player.spawn_feet + Vector3(1.5, 0, -3)
+	bob.talked.connect(talk_to)
+	npcs.append(bob)
+	return bob
 
 ## Step 68: this level's waystone (if it has a point) + the crystal's map screen.
 func _setup_fast_travel(player: Player, here: String) -> void:
