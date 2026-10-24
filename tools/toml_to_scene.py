@@ -32,6 +32,11 @@ Mapping (same rules as the archived C++ loader, archive/cpp-engine/game/world/le
   * Navigation (step 12) -> NavigationRegion3D with scripts/world/level_navigation.gd, a
     sibling of Boxes (Boxes keeps its node path): at load it bakes a NavigationMesh from
     the StaticBody3D colliders under ../Boxes, which the Gnawer paths on.
+  * Town art: a box with `hidden = true` keeps its collider (and so navigation) but its
+    Mesh is invisible; [[prop]] {name, model = "assets/...glb", position, rotation_deg,
+    scale (number or [x, y, z]), count, step} -> `count` instances of the GLB under a
+    visual-only Props node (no collision), the i-th at position + i * step. Art dresses
+    the greybox colliders, so dressing a level never changes its gameplay.
 Python stdlib only (tomllib, Python >= 3.11).
 """
 from __future__ import annotations
@@ -162,13 +167,49 @@ def _groups(groups, w: str, known: set[str], points: dict, boxes: list) -> list[
     return out_groups
 
 
+def _bool(v, what: str) -> bool:
+    if not isinstance(v, bool):
+        raise LevelError(f"{what} must be true or false")
+    return v
+
+
+def _props(items: list, out: dict) -> None:
+    seen: set[str] = set()
+    for i, pr in enumerate(items):
+        w = f"prop {i + 1}"
+        _only(pr, {"name", "model", "position", "rotation_deg", "scale", "count", "step"}, w)
+        name = str(pr.get("name", f"prop_{i + 1}"))
+        if name in seen:
+            raise LevelError(f"duplicate prop name '{name}'")
+        seen.add(name)
+        w = f"prop '{name}'"
+        model = str(_need(pr, "model", w))
+        if not model.startswith("assets/") or not model.endswith(".glb") or not (ROOT / model).is_file():
+            raise LevelError(f"{w}: no model {model} (an assets/...glb)")
+        sc = pr.get("scale", 1.0)
+        if isinstance(sc, (int, float)) and not isinstance(sc, bool):
+            sc = [sc, sc, sc]
+        sc = _vec(sc, f"{w} scale")
+        if min(sc) <= 0.0:
+            raise LevelError(f"{w}: scale must be > 0")
+        count = pr.get("count", 1)
+        if not isinstance(count, int) or isinstance(count, bool) or not 1 <= count <= 64:
+            raise LevelError(f"{w}: count must be an integer in [1, 64]")
+        out["props"].append({
+            "name": name, "model": model, "scale": sc, "count": count,
+            "position": _vec(_need(pr, "position", w), f"{w} position"),
+            "rotation_deg": _vec(pr.get("rotation_deg", [0, 0, 0]), f"{w} rotation_deg"),
+            "step": _vec(pr.get("step", [0, 0, 0]), f"{w} step"),
+        })
+
+
 def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     try:
         d = tomllib.loads(text)
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch", "materials"}, "top level")
+               "encounter", "switch", "materials", "prop"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -209,6 +250,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "encounters": [],
         "switches": [],
         "materials": {},
+        "props": [],
     }
     # Step 75: [materials] kind = "assets/<vendor>/<set>" (color/normal/roughness.jpg there),
     # uv_scale = world tiling per metre (triplanar, so boxes of any size tile evenly).
@@ -225,7 +267,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     names: set[str] = set()
     for i, b in enumerate(d.get("box", [])):
         w = f"box {i + 1}"
-        _only(b, {"name", "kind", "center", "size", "rotation_deg", "color"}, w)
+        _only(b, {"name", "kind", "center", "size", "rotation_deg", "color", "hidden"}, w)
         name = str(_need(b, "name", w))
         w = f"box '{name}'"
         if name in names:
@@ -242,6 +284,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
             "center": _vec(_need(b, "center", w), f"{w} center"),
             "rotation_deg": _vec(b.get("rotation_deg", [0, 0, 0]), f"{w} rotation_deg"),
             "color": _color(_need(b, "color", w), f"{w} color"),
+            "hidden": _bool(b.get("hidden", False), f"{w} hidden"),
         })
     if not out["boxes"]:
         raise LevelError("need at least one [[box]]")
@@ -336,6 +379,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         if not on_surface(out["boxes"], pos):
             raise LevelError(f"switch '{name}' position (feet) must lie on a box surface (within 5 cm)")
         out["switches"].append({"name": name, "opens": opens, "position": pos, "yaw_deg": float(sw.get("yaw_deg", 0.0))})
+    _props(d.get("prop", []), out)
     # Step 65: travel exits (LevelGate per exit, `to` = a GameFlow level id) and NPCs.
     for sec, key, extra in (("exit", "exits", "to"), ("npc", "npcs", "speaker")):
         seen: set[str] = set()
@@ -463,9 +507,22 @@ def to_tscn(lv: dict, source: str) -> str:
                      f'transform = {_xf(rot_yxz(b["rotation_deg"]), b["center"])}\n'
                      f'metadata/kind = "{b["kind"]}"\nmetadata/toml_index = {i}\n')
         nodes.append(f'[node name="Mesh" type="MeshInstance3D" parent="Boxes/{b["name"]}"]\n'
-                     f'mesh = SubResource("{mesh}")\nsurface_material_override/0 = SubResource("{mat}")\n')
+                     f'mesh = SubResource("{mesh}")\nsurface_material_override/0 = SubResource("{mat}")\n'
+                     + ("visible = false\n" if b["hidden"] else ""))
         nodes.append(f'[node name="Shape" type="CollisionShape3D" parent="Boxes/{b["name"]}"]\n'
                      f'shape = SubResource("{shape}")\n')
+    scenes: dict[str, str] = {}
+    if lv["props"]:
+        nodes.append('[node name="Props" type="Node3D" parent="."]\n')
+    for pr in lv["props"]:
+        sid = scenes.setdefault(pr["model"], f"{len(scenes) + 1}_glb")
+        m = rot_yxz(pr["rotation_deg"])
+        basis = [[m[r][c] * pr["scale"][c] for c in range(3)] for r in range(3)]
+        for k in range(pr["count"]):
+            pos = [pr["position"][j] + k * pr["step"][j] for j in range(3)]
+            nm = pr["name"] if pr["count"] == 1 else f'{pr["name"]}_{k + 1}'
+            nodes.append(f'[node name="{nm}" parent="Props" instance=ExtResource("{sid}")]\n'
+                         f'transform = {_xf(basis, pos)}\n')
     nodes.append('[node name="Navigation" type="NavigationRegion3D" parent="."]\n'
                  'script = ExtResource("1_nav")\nsource = NodePath("../Boxes")\n')
     nodes.append(f'[node name="PlayerStart" type="Marker3D" parent="."]\n'
@@ -521,6 +578,8 @@ def to_tscn(lv: dict, source: str) -> str:
     ext = f'[ext_resource type="Script" path="{NAV_SCRIPT}" id="1_nav"]\n'
     for path, i in exts.items():
         ext += f'[ext_resource type="Texture2D" path="res://{path}" id="{i}"]\n'
+    for path, i in scenes.items():
+        ext += f'[ext_resource type="PackedScene" path="res://{path}" id="{i}"]\n'
     return head + "\n" + ext + "\n" + "\n".join(subs) + "\n" + "\n".join(nodes)
 
 
@@ -627,6 +686,18 @@ def self_test() -> int:
     bad[box + floor + sp + enc.replace('at = "p"', 'at = "q"')] = "unknown spawn_point 'q'"
     bad[box + floor + sp + enc.replace("trigger_radius = 2", "trigger_radius = 0")] = "trigger_radius must be a number > 0"
     bad[box + floor + swt.replace('opens = "a"', 'opens = "zz"')] = "opens unknown box 'zz'"
+    fk = "assets/kenney/fantasy-town-kit/fountain-round.glb"
+    prop = f'[[prop]]\nname = "f"\nmodel = "{fk}"\nposition = [1, 0, 0]\nscale = 2\ncount = 3\nstep = [0, 0, 1]\n'
+    lp = parse_level(hdr + box.replace('color = [1, 0, 0]', 'color = [1, 0, 0]\nhidden = true') + prop)
+    sp2 = to_tscn(lp, "t.toml")
+    assert lp["props"][0]["scale"] == [2.0, 2.0, 2.0] and sp2.count('parent="Props" instance=') == 3, sp2
+    assert f'type="PackedScene" path="res://{fk}"' in sp2 and "visible = false" in sp2 and 'name="f_3"' in sp2
+    assert "Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 0, 2)" in sp2, sp2
+    bad[box + prop.replace(fk, "assets/nope.glb")] = "no model assets/nope.glb"
+    bad[box + prop.replace("scale = 2", "scale = 0")] = "scale must be > 0"
+    bad[box + prop.replace("count = 3", "count = 0")] = "count must be an integer"
+    bad[box + prop + prop] = "duplicate prop name 'f'"
+    bad[box.replace('color = [1, 0, 0]', 'color = [1, 0, 0]\nhidden = 1')] = "hidden must be true or false"
     for body, msg in bad.items():
         try:
             parse_level(hdr + body)
