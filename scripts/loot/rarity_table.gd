@@ -9,14 +9,15 @@ extends Resource
 
 const PATH := "res://resources/loot/rarities.tres"
 
-@export var rarities: Array[Rarity] = []      ## one per Rarity.IDS, any order
-@export var luck_common_step := 5.0           ## Magewar: -5 weight per luck point on Basic/Uncommon
-@export var luck_rare_step := 2.0             ## Magewar: +2 per point on Rare and above
-@export var luck_common_floor := 1.0          ## Magewar: max(1, w - luck * 5)
+@export var rarities: Array[Rarity] = []  ## one per Rarity.IDS, any order
+@export var luck_common_step := 5.0  ## Magewar: -5 weight per luck point on Basic/Uncommon
+@export var luck_rare_step := 2.0  ## Magewar: +2 per point on Rare and above
+@export var luck_common_floor := 1.0  ## Magewar: max(1, w - luck * 5)
 
-var _rows: Array[Rarity] = []                 ## indexed by Rarity.Tier
+var _rows: Array[Rarity] = []  ## indexed by Rarity.Tier
 
 static var _default: RarityTable
+
 
 ## The shared table from resources/loot/rarities.tres (loaded and validated once).
 static func load_default() -> RarityTable:
@@ -27,28 +28,35 @@ static func load_default() -> RarityTable:
 			push_error("%s: %s" % [PATH, "; ".join(errs)])
 	return _default
 
+
 func find(rarity_id: String) -> Rarity:
 	var t := Rarity.parse(rarity_id)
 	return tier(t) if t >= 0 else null
+
 
 func tier(t: int) -> Rarity:
 	_ensure_built()
 	return _rows[t] if t >= 0 and t < _rows.size() else null
 
+
 func has(rarity_id: String) -> bool:
 	return find(rarity_id) != null
+
 
 func multiplier(rarity_id: String) -> float:
 	var r := find(rarity_id)
 	return r.multiplier if r != null else 1.0
 
+
 func color(rarity_id: String) -> Color:
 	var r := find(rarity_id)
 	return r.color if r != null else Color.WHITE
 
+
 func display_name(rarity_id: String) -> String:
 	var r := find(rarity_id)
 	return r.display_name if r != null else "Unknown"
+
 
 ## Drop weights by tier after the luck shift (Magewar roll_rarity).
 func weights(luck := 0.0) -> PackedFloat64Array:
@@ -57,6 +65,7 @@ func weights(luck := 0.0) -> PackedFloat64Array:
 		var r := tier(t)
 		out.append(r.weight_with_luck(luck, luck_common_step, luck_rare_step, luck_common_floor) if r != null else 0.0)
 	return out
+
 
 ## One weighted roll = exactly one rng.randf() draw. A zero-weight tier is never chosen.
 func roll(rng: RandomNumberGenerator, luck := 0.0) -> Rarity:
@@ -76,6 +85,7 @@ func roll(rng: RandomNumberGenerator, luck := 0.0) -> Rarity:
 			return tier(t)
 	return tier(last) if last >= 0 else tier(Rarity.Tier.BASIC)
 
+
 ## Re-index `rarities` (after a patch, step 21).
 func rebuild() -> void:
 	_rows.clear()
@@ -85,9 +95,11 @@ func rebuild() -> void:
 		if t >= 0:
 			_rows[t] = r
 
+
 func _ensure_built() -> void:
 	if _rows.size() != Rarity.COUNT:
 		rebuild()
+
 
 ## Empty when usable; else one message per problem.
 func validate() -> PackedStringArray:

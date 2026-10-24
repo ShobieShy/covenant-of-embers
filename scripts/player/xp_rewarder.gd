@@ -8,15 +8,18 @@ extends Node
 const RANGE := 80.0
 
 var xp_multiplier := 1.0
-var granted := 0               ## XP handed out (all players)
+var granted := 0  ## XP handed out (all players)
 var kills_seen := 0
+
 
 func _ready() -> void:
 	GameEvents.bus().enemy_killed.connect(_on_killed)
 
+
 func _exit_tree() -> void:
 	if GameEvents.bus().enemy_killed.is_connected(_on_killed):
 		GameEvents.bus().enemy_killed.disconnect(_on_killed)
+
 
 func _on_killed(e: Enemy, _element: ElementTable.Element) -> void:
 	kills_seen += 1

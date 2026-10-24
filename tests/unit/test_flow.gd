@@ -6,10 +6,12 @@ extends TestCase
 
 const FILE := "user://test_flow_save.json"
 
+
 func _reset() -> void:
 	GameFlow.dry_run = true
 	GameFlow.save_path = FILE
 	GameFlow.last_request = ""
+
 
 func _restore() -> void:
 	GameFlow.dry_run = false
@@ -20,6 +22,7 @@ func _restore() -> void:
 	if FileAccess.file_exists(FILE):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(FILE))
 
+
 func _game(level: String, load_save: bool) -> Node:
 	GameFlow.level_id = level
 	GameFlow.load_save = load_save
@@ -28,17 +31,22 @@ func _game(level: String, load_save: bool) -> Node:
 	runner_tree.root.add_child(g)
 	return g
 
+
 func test_menu_buttons() -> void:
 	_reset()
 	var m: MainMenu = (load(GameFlow.MENU) as PackedScene).instantiate()
 	runner_tree.root.add_child(m)
 	check((m.buttons["continue"] as Button).disabled, "continue greyed without a save")
 	m.press("new_run")
-	check(GameFlow.last_request == GameFlow.GAME and GameFlow.level_id == "midden" and not GameFlow.load_save, "new run -> Midden")
+	check(
+		GameFlow.last_request == GameFlow.GAME and GameFlow.level_id == "midden" and not GameFlow.load_save,
+		"new run -> Midden"
+	)
 	m.press("settings")
 	check(m.settings_ui.visible, "settings opens")
 	m.free()
 	_restore()
+
 
 func test_midden_to_breach_and_back() -> void:
 	_reset()
@@ -49,7 +57,10 @@ func test_midden_to_breach_and_back() -> void:
 	var lvl := p.progression.level
 	check(g.gate.target == "breach", "Midden gate leads to the Breach")
 	g.gate.use()
-	check(GameFlow.last_request == GameFlow.GAME and GameFlow.level_id == "breach" and GameFlow.load_save, "travel request")
+	check(
+		GameFlow.last_request == GameFlow.GAME and GameFlow.level_id == "breach" and GameFlow.load_save,
+		"travel request"
+	)
 	check(GameFlow.has_save(), "autosaved on travel")
 	g.free()
 	var b := _game("breach", true)
@@ -67,8 +78,12 @@ func test_midden_to_breach_and_back() -> void:
 	m_continue()
 	_restore()
 
+
 func m_continue() -> void:
-	check(GameFlow.continue_run(null) and GameFlow.level_id == "midden" and GameFlow.load_save, "continue uses the save")
+	check(
+		GameFlow.continue_run(null) and GameFlow.level_id == "midden" and GameFlow.load_save, "continue uses the save"
+	)
+
 
 func test_pause_menu() -> void:
 	_reset()
@@ -86,7 +101,7 @@ func test_pause_menu() -> void:
 	check(not pm.settings_ui.visible and pm.visible, "Esc closes settings first")
 	pm.press("resume")
 	check(not pm.visible and not runner_tree.paused and not p.ui_open, "resume")
-	p.ui_open = true   # e.g. the inventory is open: Esc is its, not the pause menu's
+	p.ui_open = true  # e.g. the inventory is open: Esc is its, not the pause menu's
 	pm._unhandled_input(esc)
 	check(not pm.visible, "ignored while another screen is open")
 	p.ui_open = false

@@ -13,10 +13,12 @@ const DT := 1.0 / 60.0
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
 const NORTH := Vector3(0, 0, -1)
 
+
 func _world() -> Node3D:
 	var w := Node3D.new()
 	runner_tree.root.add_child(w)
 	return w
+
 
 func _box(parent: Node, center: Vector3, half: Vector3) -> void:
 	var b := StaticBody3D.new()
@@ -28,10 +30,12 @@ func _box(parent: Node, center: Vector3, half: Vector3) -> void:
 	b.position = center
 	parent.add_child(b)
 
+
 func _flat() -> Node3D:
 	var w := _world()
 	_box(w, Vector3(0, -0.5, 0), Vector3(40, 0.5, 40))
 	return w
+
 
 func _player(parent: Node) -> Player:
 	var p: Player = (load(PLAYER_SCENE) as PackedScene).instantiate()
@@ -40,11 +44,14 @@ func _player(parent: Node) -> Player:
 	p.spawn(Vector3.ZERO, 0.0)
 	return p
 
+
 func _run(p: Player, n: int, held: Array = [], pressed: Array = []) -> void:
 	for i in n:
 		p.tick(PlayerInput.hold(held, pressed), DT)
 
+
 # --- Dash on its own ----------------------------------------------------------------
+
 
 func test_charges_and_recharge_90_180() -> void:
 	var d := Dash.new()
@@ -75,16 +82,19 @@ func test_charges_and_recharge_90_180() -> void:
 			first = ticks
 		if d.charges == 2:
 			second = ticks
-	print("    dash charges: 2 used (dash = %d ticks), back after %d and %d ticks (90/180)" % [dash_ticks, first, second])
+	print(
+		"    dash charges: 2 used (dash = %d ticks), back after %d and %d ticks (90/180)" % [dash_ticks, first, second]
+	)
 	check(first == 90 and second == 180, "recharge 1.5 s each from the first dash (%d/%d)" % [first, second])
 	check(d.recharge_progress() == 0.0, "full: no recharge running")
-	d.set_bonus_charges(1)   # PLAN §30.8 Sandals: a 3rd charge
+	d.set_bonus_charges(1)  # PLAN §30.8 Sandals: a 3rd charge
 	check(d.max_charges() == 3 and d.charges == 2, "bonus charge slot")
 	for i in 90:
 		d.advance(DT)
 	check(d.charges == 3, "bonus charge recharges")
 	d.set_bonus_charges(0)
 	check(d.charges == 2, "bonus removed")
+
 
 func test_air_dash_unit_and_refusals() -> void:
 	var d := Dash.new()
@@ -93,22 +103,31 @@ func test_air_dash_unit_and_refusals() -> void:
 	while d.active():
 		d.advance(DT)
 	check(d.charges == 1 and not d.air_dash_available(), "air dash used")
-	check(not d.try_start(Vector3.RIGHT, false, b) and d.charges == 1 and b.value == 75.0, "2nd air dash refused, no cost")
+	check(
+		not d.try_start(Vector3.RIGHT, false, b) and d.charges == 1 and b.value == 75.0, "2nd air dash refused, no cost"
+	)
 	d.land()
 	check(d.try_start(Vector3.RIGHT, false, b), "back after landing")
 	var z := Dash.new()
-	check(not z.try_start(Vector3.ZERO, true, b) and not z.try_start(Vector3.UP, true, b) and z.dashes == 0, "zero / vertical direction refused")
+	check(
+		not z.try_start(Vector3.ZERO, true, b) and not z.try_start(Vector3.UP, true, b) and z.dashes == 0,
+		"zero / vertical direction refused"
+	)
 	var g := Dash.new()
 	check(g.try_start(NORTH, true, Breath.new()) and g.air_dash_available(), "a ground dash keeps the air dash")
 	# Breath: 24 left -> refused; back at >= 25 -> dash and the 1 s delay restarts.
 	var s := Dash.new()
 	var sb := Breath.new()
 	check(sb.spend(76.0), "24 left")
-	check(not s.try_start(NORTH, true, sb) and s.charges == 2 and s.dashes == 0 and sb.value == 24.0, "short Breath: refused, nothing spent")
+	check(
+		not s.try_start(NORTH, true, sb) and s.charges == 2 and s.dashes == 0 and sb.value == 24.0,
+		"short Breath: refused, nothing spent"
+	)
 	for i in 63:
 		sb.tick(false, DT)
 	check(sb.value >= 25.0 and s.try_start(NORTH, true, sb), "dash once 25 is back")
 	check(sb.seconds_since_use == 0.0, "spend restarted the regen delay")
+
 
 func test_iframes_60_and_144_hz() -> void:
 	for hz in [60, 144]:
@@ -129,20 +148,34 @@ func test_iframes_60_and_144_hz() -> void:
 			cov += t.advance(dt) * dt
 		check_near(cov * t.speed(), 6.0, 1e-6, "6 m @%d Hz" % hz)
 
+
 func test_from_tuning() -> void:
 	var d := Dash.from_tuning(load("res://resources/player/player_tuning.tres"))
-	check(d.distance == 6.0 and d.duration == 0.15 and d.base_charges == 2 and d.charges == 2
-		and d.breath_cost == 25.0 and d.invulnerability == 0.1 and d.recharge_seconds == 1.5
-		and d.air_dashes == 1 and is_equal_approx(d.speed(), 40.0), "PLAN §30.8 numbers")
+	check(
+		(
+			d.distance == 6.0
+			and d.duration == 0.15
+			and d.base_charges == 2
+			and d.charges == 2
+			and d.breath_cost == 25.0
+			and d.invulnerability == 0.1
+			and d.recharge_seconds == 1.5
+			and d.air_dashes == 1
+			and is_equal_approx(d.speed(), 40.0)
+		),
+		"PLAN §30.8 numbers"
+	)
+
 
 # --- Player ---------------------------------------------------------------------------
+
 
 func test_dash_6_m_in_9_ticks() -> void:
 	var w := _flat()
 	var p := _player(w)
 	_run(p, 30)
 	var s := p.feet()
-	_run(p, 1, [], [&"dash"])   # no move key: along the view (north, -Z)
+	_run(p, 1, [], [&"dash"])  # no move key: along the view (north, -Z)
 	var ticks := 1
 	check(p.dashing() and p.breath.value == 75.0, "dashing, Breath 75")
 	while p.dashing() and ticks < 100:
@@ -170,9 +203,10 @@ func test_dash_6_m_in_9_ticks() -> void:
 	check_near(q.horizontal_speed(), 4.0, 0.1, "straight back to walking")
 	w.free()
 
+
 func test_wall_stops_dash() -> void:
 	var w := _flat()
-	_box(w, Vector3(0, 1.5, -3.5), Vector3(10, 1.5, 0.5))   # south face at z -3, 3 m tall
+	_box(w, Vector3(0, 1.5, -3.5), Vector3(10, 1.5, 0.5))  # south face at z -3, 3 m tall
 	var p := _player(w)
 	_run(p, 30)
 	_run(p, 1, [], [&"dash"])
@@ -182,6 +216,7 @@ func test_wall_stops_dash() -> void:
 	check(e.z > -3.0 and e.z < -2.6, "against the face, not through it (z %.3f)" % e.z)
 	check(absf(e.x) < 1e-3 and absf(e.y) < 0.03, "no sideways / climb")
 	w.free()
+
 
 func test_air_dash_once_per_jump() -> void:
 	var w := _flat()
@@ -210,6 +245,7 @@ func test_air_dash_once_per_jump() -> void:
 	check(p.dash.dashes == 2, "the next jump has its air dash again")
 	w.free()
 
+
 func test_breath_refusal_and_exhausted() -> void:
 	var w := _flat()
 	var p := _player(w)
@@ -220,7 +256,7 @@ func test_breath_refusal_and_exhausted() -> void:
 	_run(p, 9)
 	check(p.dash.dashes == 0 and p.dash.charges == 2 and (p.feet() - a).length() < 1e-3, "refused at 20, didn't move")
 	var q := _player(w)
-	q.spawn(Vector3(0, 0, 30), 0.0)   # sprint north ~35 m on the 80 m floor
+	q.spawn(Vector3(0, 0, 30), 0.0)  # sprint north ~35 m on the 80 m floor
 	_run(q, 30)
 	var n := 0
 	while not q.breath.exhausted and n < 400:
@@ -229,13 +265,14 @@ func test_breath_refusal_and_exhausted() -> void:
 	check(q.breath.exhausted, "sprinted dry")
 	_run(q, 1, [&"forward"], [&"dash"])
 	check(q.dash.dashes == 0, "exhausted: refused")
-	_run(q, 120)   # 1 s delay + 1 s regen -> 30
+	_run(q, 120)  # 1 s delay + 1 s regen -> 30
 	var before := q.breath.value
 	_run(q, 1, [], [&"dash"])
 	print("    dash Breath: refused at 20 and exhausted, then %.2f -> %.2f" % [before, q.breath.value])
 	check(q.dash.dashes == 1 and absf(q.breath.value - (before - 25.0)) < 1e-3, "costs 25")
 	check(not q.breath.regenerating(), "the 1 s delay restarted")
 	w.free()
+
 
 func test_dash_ends_slide() -> void:
 	var w := _flat()
@@ -253,8 +290,12 @@ func test_dash_ends_slide() -> void:
 	_run(p, 8, held)
 	var moved := a.z - p.feet().z
 	_run(p, 60, held)
-	print("    dash out of a slide: %.3f m in 9 ticks, then %s at %.3f m/s, %d slide(s)" % [
-		moved, "crouched" if p.crouched else "standing", p.horizontal_speed(), p.slides])
+	print(
+		(
+			"    dash out of a slide: %.3f m in 9 ticks, then %s at %.3f m/s, %d slide(s)"
+			% [moved, "crouched" if p.crouched else "standing", p.horizontal_speed(), p.slides]
+		)
+	)
 	check_near(moved, 6.0, 0.3, "dash distance out of a slide (blend with crouch-walk)")
 	check(p.crouched and not p.sliding() and p.slides == 1, "no new slide from the dash")
 	check_near(p.horizontal_speed(), 3.0, 0.05, "crouch speed afterwards")

@@ -21,6 +21,7 @@ func find(pool_id: String) -> DropPool:
 			return p
 	return null
 
+
 ## The pool for an enemy at a level (specific before generic), or null (no pool drop).
 func pool_for(enemy_id: String, level: int) -> DropPool:
 	var generic: DropPool = null
@@ -32,6 +33,7 @@ func pool_for(enemy_id: String, level: int) -> DropPool:
 		if generic == null:
 			generic = p
 	return generic
+
 
 func validate() -> PackedStringArray:
 	var errs := PackedStringArray()

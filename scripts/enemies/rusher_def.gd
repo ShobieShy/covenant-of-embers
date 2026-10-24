@@ -9,11 +9,23 @@ extends RefCounted
 ## knockback_strength 10, knockback_duration 0.5, knockback over 10 damage. The Gnawer
 ## (Magewar's Mutant Rat: 8 / 6 / 3 / 5.5 / 3 dmg / 0.8 s) overrides them in its TOML.
 
-const KINDS: PackedStringArray = ["rusher", "tank", "boss"]   ## tank (step 13): the Heap; boss (step 34): the Warden (Enemy.BRAINS)
-const KEYS: PackedStringArray = ["kind", "detect_range", "aggro_range", "walk_speed", "sprint_speed",
-	"attack_range", "attack_damage", "attack_cooldown", "knockback_strength", "knockback_time",
-	"knockback_threshold", "turn_rate_deg", "attack_windup"]
-const PLAYER_RADIUS := 0.3     ## the bite must reach past half the body + this
+const KINDS: PackedStringArray = ["rusher", "tank", "boss"]  ## tank (step 13): the Heap; boss (step 34): the Warden (Enemy.BRAINS)
+const KEYS: PackedStringArray = [
+	"kind",
+	"detect_range",
+	"aggro_range",
+	"walk_speed",
+	"sprint_speed",
+	"attack_range",
+	"attack_damage",
+	"attack_cooldown",
+	"knockback_strength",
+	"knockback_time",
+	"knockback_threshold",
+	"turn_rate_deg",
+	"attack_windup"
+]
+const PLAYER_RADIUS := 0.3  ## the bite must reach past half the body + this
 
 ## key -> [default, min, max] (C++ readFloatIn ranges).
 const RANGES := {
@@ -28,7 +40,7 @@ const RANGES := {
 	"knockback_time": [0.5, 0.0, 5.0],
 	"knockback_threshold": [10.0, 0.0, 100000.0],
 	"turn_rate_deg": [540.0, 1.0, 3600.0],
-	"attack_windup": [0.0, 0.0, 10.0],   ## step 13: s rooted before the hit lands (0 = at once, the bite)
+	"attack_windup": [0.0, 0.0, 10.0],  ## step 13: s rooted before the hit lands (0 = at once, the bite)
 }
 
 var kind := "rusher"
@@ -45,12 +57,13 @@ var knockback_threshold := 10.0
 var turn_rate_deg := 540.0
 var attack_windup := 0.0
 
+
 ## {"def": RusherDef} or {"error": "..."} (the C++ loader's messages). `body` is the enemy's
 ## size (the attack-range check needs it). "tank" (the Heap, step 13) takes the same keys;
 ## its attack_windup roots it before the slam lands (Gnawer/rusher: 0, the bite is instant).
 static func parse(ai: Variant, body: Vector3) -> Dictionary:
 	if not (ai is Dictionary):
-		return {"error": "ai must be a table { kind = \"rusher\", ... }"}
+		return {"error": 'ai must be a table { kind = "rusher", ... }'}
 	var t: Dictionary = ai
 	for k in t:
 		if not KEYS.has(String(k)):

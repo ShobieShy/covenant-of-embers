@@ -23,10 +23,10 @@ signal died
 
 const EPS := 1e-9
 
-var base_max := 100.0              ## Cogito HealthAttribute value_max
+var base_max := 100.0  ## Cogito HealthAttribute value_max
 var shield_max := 50.0
 var shield_regen_per_sec := 25.0
-var shield_regen_delay := 3.0      ## s since the last damage
+var shield_regen_delay := 3.0  ## s since the last damage
 
 var value := 100.0
 var shield := 50.0
@@ -34,8 +34,9 @@ var max_bonus := 0.0
 var seconds_since_damage := 3.0
 var dead := false
 var hits := 0
-var shield_absorbed := 0.0         ## totals (tests, HUD)
+var shield_absorbed := 0.0  ## totals (tests, HUD)
 var health_lost := 0.0
+
 
 static func from_tuning(t: PlayerTuning) -> Health:
 	var h := Health.new()
@@ -46,18 +47,23 @@ static func from_tuning(t: PlayerTuning) -> Health:
 	h.refill()
 	return h
 
+
 func max_value() -> float:
 	return base_max + max_bonus
+
 
 func fraction() -> float:
 	var m := max_value()
 	return value / m if m > 0.0 else 0.0
 
+
 func shield_fraction() -> float:
 	return shield / shield_max if shield_max > 0.0 else 0.0
 
+
 func regenerating() -> bool:
 	return not dead and seconds_since_damage >= shield_regen_delay - 1e-7 and shield < shield_max
+
 
 ## Takes `amount` (already resolved: Damage.resolve_hit) shield first, then health.
 ## Returns the health lost.
@@ -83,23 +89,26 @@ func take(amount: float) -> float:
 		died.emit()
 	return from_health
 
+
 ## One fixed tick: the shield regenerates for the part of the tick past the delay.
 func tick(dt: float) -> void:
 	if dead:
 		return
 	var before := seconds_since_damage
 	seconds_since_damage += dt
-	var delay := shield_regen_delay - 1e-7   # 180 x (1/60 s) counts as 3 s despite rounding
+	var delay := shield_regen_delay - 1e-7  # 180 x (1/60 s) counts as 3 s despite rounding
 	var regen_time := clampf(seconds_since_damage - maxf(before, delay), 0.0, dt)
 	if regen_time > 0.0 and shield < shield_max:
 		shield = minf(shield_max, shield + shield_regen_per_sec * regen_time)
 		if shield_max - shield < EPS:
 			shield = shield_max
 
+
 ## Health Potion (step 19). Nothing while dead.
 func heal(amount: float) -> void:
 	if not dead and amount > 0.0:
 		value = minf(max_value(), value + amount)
+
 
 ## Equipment / level bonus total (Mana.set_max_bonus rules).
 func set_max_bonus(total: float) -> void:
@@ -109,6 +118,7 @@ func set_max_bonus(total: float) -> void:
 	if after > before and not dead:
 		value += after - before
 	value = minf(value, after)
+
 
 ## Respawn: full health and shield, alive again (bonuses kept).
 func refill() -> void:

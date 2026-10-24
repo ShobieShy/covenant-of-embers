@@ -36,9 +36,9 @@ extends RefCounted
 enum Kind { WIELDABLE, ASSEMBLED, PART, PART_HANDMADE, EQUIPMENT, EQUIPMENT_TEMPLATE, POTION }
 
 const PREFIX := "EM1-"
-const VERSION := 1                      ## current index-table version (written by encode)
-const ALPHABET := "0123456789ABCDEFGHJKMNPQRSTVWXYZ"   ## Crockford base32
-const GROUP := 5                        ## characters per "-" group
+const VERSION := 1  ## current index-table version (written by encode)
+const ALPHABET := "0123456789ABCDEFGHJKMNPQRSTVWXYZ"  ## Crockford base32
+const GROUP := 5  ## characters per "-" group
 const VERSION_BITS := 6
 const KIND_BITS := 3
 const FLAGS_BITS := 3
@@ -53,18 +53,33 @@ const COUNT_BITS := 7
 ## Append-only index tables per version (ids of resources/wieldables, parts, equipment,
 ## consumables). NEVER reorder or remove an entry; add a new version instead.
 const TABLES := {
-	1: {
-		"wieldables": ["apprentice_fire_staff", "earthward_battlestaff", "novice_arcane_wand",
-			"swift_wind_wand"],
-		"parts": ["basic_earth_interior", "basic_exterior", "basic_fire_head", "basic_fire_interior",
-			"basic_handle", "basic_interior", "mythic_water_exterior", "primordial_fire_head",
-			"rare_air_handle", "rare_light_charm", "rare_water_head", "uncommon_air_exterior",
-			"uncommon_dark_handle", "uncommon_earth_charm", "uncommon_fire_head", "unique_void_charm"],
-		"equipment": ["apprentice_hat", "basic_robes", "leather_belt", "novice_grimoire",
-			"traveler_shoes"],
+	1:
+	{
+		"wieldables": ["apprentice_fire_staff", "earthward_battlestaff", "novice_arcane_wand", "swift_wind_wand"],
+		"parts":
+		[
+			"basic_earth_interior",
+			"basic_exterior",
+			"basic_fire_head",
+			"basic_fire_interior",
+			"basic_handle",
+			"basic_interior",
+			"mythic_water_exterior",
+			"primordial_fire_head",
+			"rare_air_handle",
+			"rare_light_charm",
+			"rare_water_head",
+			"uncommon_air_exterior",
+			"uncommon_dark_handle",
+			"uncommon_earth_charm",
+			"uncommon_fire_head",
+			"unique_void_charm"
+		],
+		"equipment": ["apprentice_hat", "basic_robes", "leather_belt", "novice_grimoire", "traveler_shoes"],
 		"consumables": ["health_potion", "mana_potion"],
 	},
 }
+
 
 ## Bits needed for an index into a table of `n` entries (at least 1).
 static func bits_for(n: int) -> int:
@@ -73,17 +88,21 @@ static func bits_for(n: int) -> int:
 		b += 1
 	return b
 
+
 static func table(category: String, version := VERSION) -> Array:
 	return TABLES.get(version, {}).get(category, [])
+
 
 ## The Ember Mark of `item` (WieldableInstance, WieldablePart, EquipmentItem, ConsumableItem
 ## with `count`, or a LootDrop's item); "" when it can't be encoded exactly (encode_error()).
 static func encode(item: Variant, count := 1) -> String:
 	return _encode(item, count)[0]
 
+
 ## Why encode() refuses `item` ("" when it encodes).
 static func encode_error(item: Variant, count := 1) -> String:
 	return _encode(item, count)[1]
+
 
 static func _encode(item: Variant, count: int) -> Array:
 	if item is LootDrop:
@@ -111,10 +130,12 @@ static func _encode(item: Variant, count: int) -> Array:
 		return ["", err]
 	return [seal(w.to_bytes()), ""]
 
+
 static func write_header(w: BitStream, kind: int, version := VERSION, flags := 0) -> void:
 	w.write(version, VERSION_BITS)
 	w.write(kind, KIND_BITS)
 	w.write(flags, FLAGS_BITS)
+
 
 static func _write_wieldable(w: BitStream, wi: WieldableInstance) -> String:
 	if wi.def == null:
@@ -152,6 +173,7 @@ static func _write_wieldable(w: BitStream, wi: WieldableInstance) -> String:
 	w.write(tier, TIER_BITS)
 	return ""
 
+
 ## A part a code reproduces exactly: rolled = regenerates from its seed, hand-made = an
 ## unedited index-table resource.
 static func _check_part(p: WieldablePart) -> String:
@@ -170,6 +192,7 @@ static func _check_part(p: WieldablePart) -> String:
 		return "hand-made part '%s' was edited" % p.id
 	return ""
 
+
 static func _write_part_fields(w: BitStream, p: WieldablePart) -> void:
 	if p.roll_seed >= 0:
 		w.write(p.part_type, PART_TYPE_BITS)
@@ -179,6 +202,7 @@ static func _write_part_fields(w: BitStream, p: WieldablePart) -> void:
 	else:
 		var ids := table("parts")
 		w.write(ids.find(p.id), bits_for(ids.size()))
+
 
 static func _write_equipment(w: BitStream, e: EquipmentItem) -> String:
 	if e.roll_seed >= 0:
@@ -203,6 +227,7 @@ static func _write_equipment(w: BitStream, e: EquipmentItem) -> String:
 	w.write(idx, bits_for(ids.size()))
 	return ""
 
+
 static func _write_potion(w: BitStream, c: ConsumableItem, count: int) -> String:
 	var ids := table("consumables")
 	var idx := ids.find(c.id)
@@ -217,6 +242,7 @@ static func _write_potion(w: BitStream, c: ConsumableItem, count: int) -> String
 	w.write(count, COUNT_BITS)
 	return ""
 
+
 ## "EM1-" + grouped base32 of payload + CRC-16 (public so tests can craft raw payloads).
 static func seal(payload: PackedByteArray) -> String:
 	var bytes := payload.duplicate()
@@ -229,6 +255,7 @@ static func seal(payload: PackedByteArray) -> String:
 		groups.append(body.substr(i, GROUP))
 	return PREFIX + "-".join(groups)
 
+
 ## CRC-16/CCITT-FALSE (check value of "123456789" = 0x29B1).
 static func crc16(bytes: PackedByteArray) -> int:
 	var crc := 0xFFFF
@@ -239,6 +266,7 @@ static func crc16(bytes: PackedByteArray) -> int:
 			crc &= 0xFFFF
 	return crc
 
+
 static func base32_encode(bytes: PackedByteArray) -> String:
 	var s := BitStream.new()
 	s.load_bytes(bytes)
@@ -247,6 +275,7 @@ static func base32_encode(bytes: PackedByteArray) -> String:
 		var take := mini(5, s.remaining())
 		out += ALPHABET[s.read(take) << (5 - take)]
 	return out
+
 
 ## {"bytes": PackedByteArray} or {"error": String}. Case-insensitive, O = 0, I/L = 1; the
 ## leftover bits after the last whole byte must be fewer than 5 and all 0.
@@ -271,6 +300,7 @@ static func base32_decode(text: String) -> Dictionary:
 	if not s.rest_is_zero():
 		return {"error": "bad padding (truncated?)"}
 	return {"bytes": bytes}
+
 
 ## Rebuilds the item of an Ember Mark; check result.ok() / result.error.
 static func decode(code: String) -> EmberMark:
@@ -321,6 +351,7 @@ static func decode(code: String) -> EmberMark:
 	m.count = res[2]
 	return m
 
+
 ## [item, error, count]
 static func _read_item(r: BitStream, kind: int, version: int) -> Array:
 	match kind:
@@ -336,7 +367,7 @@ static func _read_item(r: BitStream, kind: int, version: int) -> Array:
 				return [null, "unknown rarity tier %d" % tier, 1]
 			var def := WieldableInstance.load_base(ids[idx]).def
 			if Rarity.IDS[tier] != def.base_rarity:
-				def = def.duplicate() as WieldableDef   # the shared base is never edited (DropEntry.make)
+				def = def.duplicate() as WieldableDef  # the shared base is never edited (DropEntry.make)
 				def.base_rarity = Rarity.IDS[tier]
 			if kind == Kind.WIELDABLE:
 				return [WieldableInstance.of(def), "", 1]
@@ -397,6 +428,7 @@ static func _read_item(r: BitStream, kind: int, version: int) -> Array:
 			return [c, "", count]
 	return [null, "unknown item kind %d" % kind, 1]
 
+
 ## [part, error]
 static func _read_part(r: BitStream, rolled: bool, version: int) -> Array:
 	if rolled:
@@ -422,10 +454,12 @@ static func _read_part(r: BitStream, rolled: bool, version: int) -> Array:
 		return [null, "unknown part index %d" % idx]
 	return [WieldablePart.load_part(ids[idx]).duplicate(), ""]
 
+
 ## Deep equality of two items: same class, every script property equal (Resources compared
 ## recursively, arrays element-wise). Used by encode() and the round-trip tests.
 static func same_item(a: Variant, b: Variant) -> bool:
 	return _values_equal(a, b)
+
 
 static func _props_equal(a: Object, b: Object, skip: Array = []) -> bool:
 	if a == null or b == null:
@@ -441,6 +475,7 @@ static func _props_equal(a: Object, b: Object, skip: Array = []) -> bool:
 		if not _values_equal(a.get(name), b.get(name)):
 			return false
 	return true
+
 
 static func _values_equal(x: Variant, y: Variant) -> bool:
 	if x is Object or y is Object:

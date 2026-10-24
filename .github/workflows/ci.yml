@@ -39,3 +39,33 @@ jobs:
         run: timeout 300 godot --headless --path . --import
       - name: Tests (levels in sync, unit tests, 2 s smoke run, asset lint)
         run: ./tools/run_tests.sh
+
+  # BUILD_PLAN step 42: GDScript lint/format + Linux/Windows exports (local equivalent:
+  # tools/lint.sh and tools/export.sh).
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "gdtoolkit==4.*"
+      - run: ./tools/lint.sh
+
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Godot ${{ env.GODOT_VERSION }} + export templates
+        run: |
+          mkdir -p ~/godot && cd ~/godot
+          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q Godot_*.zip && mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot && chmod +x godot
+          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          T=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p "$T" && unzip -q -j Godot_*_export_templates.tpz 'templates/linux_*' 'templates/windows_*' 'templates/version.txt' -d "$T"
+          echo "$HOME/godot" >> "$GITHUB_PATH"
+      - run: timeout 300 godot --headless --path . --import
+      - run: ./tools/export.sh

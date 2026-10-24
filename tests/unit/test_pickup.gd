@@ -9,6 +9,7 @@ extends TestCase
 const DT := 1.0 / 60.0
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
 
+
 func _flat() -> Node3D:
 	var w := Node3D.new()
 	w.position = Vector3.ZERO  # pickups use global == local
@@ -24,12 +25,14 @@ func _flat() -> Node3D:
 	w.add_child(b)
 	return w
 
+
 func _player(w: Node3D) -> Player:
 	var p: Player = (load(PLAYER_SCENE) as PackedScene).instantiate()
 	p.input_enabled = false
 	w.add_child(p)
 	p.spawn(w.global_position, 0.0)
 	return p
+
 
 func _part_drop() -> LootDrop:
 	var d := LootDrop.new()
@@ -43,6 +46,7 @@ func _part_drop() -> LootDrop:
 	d.rarity_id = "rare"
 	return d
 
+
 func test_walk_over_collects() -> void:
 	var w := _flat()
 	var p := _player(w)
@@ -53,16 +57,18 @@ func test_walk_over_collects() -> void:
 	var orb := LootPickup.create_mana(25, base + ahead * 2.0)
 	var dust := LootPickup.create_dust(7, base + ahead * 2.5)
 	var mp := ConsumableItem.load_item("mana_potion")
-	var pot := LootPickup.create_potion(mp, 7, base + ahead * 3.0)   # stack_size 5: 2 stay
+	var pot := LootPickup.create_potion(mp, 7, base + ahead * 3.0)  # stack_size 5: 2 stay
 	var far := LootPickup.create_dust(3, base + ahead * 20.0)
 	for n in [orb, dust, pot, far]:
 		w.add_child(n)
 	check(not is_instance_valid(orb) or orb.is_inside_tree(), "orb placed")
-	for i in 90:   # walk forward ~3.5 m
+	for i in 90:  # walk forward ~3.5 m
 		p.tick(PlayerInput.hold([&"forward"]), DT)
 		await runner_tree.physics_frame
 	check(not is_instance_valid(orb) or not orb.is_inside_tree(), "orb collected")
-	check(p.mana.value >= 65.0 - 1e-3 and p.mana.value <= 72.0, "orb restored 25 mana (+1.5 s regen): %.1f" % p.mana.value)
+	check(
+		p.mana.value >= 65.0 - 1e-3 and p.mana.value <= 72.0, "orb restored 25 mana (+1.5 s regen): %.1f" % p.mana.value
+	)
 	check(p.inventory.dust == 7, "dust 7, got %d" % p.inventory.dust)
 	check(p.equipment.potion_count == 5, "potion slot filled to 5, got %d" % p.equipment.potion_count)
 	check(is_instance_valid(pot) and pot.is_inside_tree() and pot.amount == 2, "2 potions stay on the ground")
@@ -79,6 +85,7 @@ func test_walk_over_collects() -> void:
 	check(not is_instance_valid(orb2) or not orb2.is_inside_tree(), "orb taken once mana is down")
 	w.queue_free()
 
+
 func test_interact_picks_item() -> void:
 	var w := _flat()
 	var p := _player(w)
@@ -87,7 +94,7 @@ func test_interact_picks_item() -> void:
 	var dir := p.look_direction().normalized()
 	var d := _part_drop()
 	var target := LootPickup.create(d, eye + dir * 2.0 - Vector3(0, LootPickup.GEM_SIZE * 0.5, 0))
-	var side := LootPickup.create(_part_drop(), eye + p.right_for(0.0) * 2.0)   # 90° off
+	var side := LootPickup.create(_part_drop(), eye + p.right_for(0.0) * 2.0)  # 90° off
 	var far := LootPickup.create(_part_drop(), eye + dir * 6.0)
 	for n in [target, side, far]:
 		w.add_child(n)
@@ -114,6 +121,7 @@ func test_interact_picks_item() -> void:
 	check(p.inventory.size() == Inventory.CAPACITY, "30 slots")
 	w.queue_free()
 
+
 func test_compare_card_deltas() -> void:
 	var w := _flat()
 	var p := _player(w)
@@ -132,7 +140,10 @@ func test_compare_card_deltas() -> void:
 	check(not mr["better"] and mr["delta"] < 0.0, "mana down = worse")
 	check(c.color == RarityTable.load_default().color(better.rarity), "rarity colour")
 	var part_card := CompareCard.for_item(_part_drop().item, p)
-	check(part_card.kind == "part" and part_card.rarity_id == "rare" and not part_card.row("damage_bonus")["compared"], "part card")
+	check(
+		part_card.kind == "part" and part_card.rarity_id == "rare" and not part_card.row("damage_bonus")["compared"],
+		"part card"
+	)
 	var wand := WieldableInstance.load_base("swift_wind_wand")
 	p.equip(WieldableInstance.load_base("novice_arcane_wand"))
 	var sc := CompareCard.for_item(wand, p)

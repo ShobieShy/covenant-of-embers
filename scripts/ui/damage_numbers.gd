@@ -16,48 +16,53 @@ extends Node3D
 ## ignored (spell_projectile.gd -> send_hint); numbers + in-world callouts are a plan
 ## addition (the C++ build deferred the callouts to its HUD step).
 
-const LIFETIME := 1.0        ## s
-const RISE := 0.8            ## m over the lifetime
-const FADE_START := 0.6      ## fraction of the lifetime before fading
+const LIFETIME := 1.0  ## s
+const RISE := 0.8  ## m over the lifetime
+const FADE_START := 0.6  ## fraction of the lifetime before fading
 const CRIT_SCALE := 1.5
 const STRONG_SCALE := 1.2
 const WEAK_SCALE := 0.85
-const MAX := 64              ## oldest dropped beyond this
-const DRIFT: PackedFloat64Array = [0.0, -0.12, 0.12]   ## m sideways, cycled per number
+const MAX := 64  ## oldest dropped beyond this
+const DRIFT: PackedFloat64Array = [0.0, -0.12, 0.12]  ## m sideways, cycled per number
 const FONT_SIZE := 48
-const PIXEL_SIZE := 0.004    ## m per label pixel at scale 1
+const PIXEL_SIZE := 0.004  ## m per label pixel at scale 1
 const SUPER_EFFECTIVE := "Super Effective!"
 const NOT_VERY_EFFECTIVE := "Not Very Effective..."
-const SUPER_COLOR := Color(1.0, 0.8, 0.0)       ## Magewar's callout colours
+const SUPER_COLOR := Color(1.0, 0.8, 0.0)  ## Magewar's callout colours
 const NOT_VERY_COLOR := Color(0.5, 0.5, 0.5)
 const CALLOUT_FONT_SIZE := 28
 
+
 class Number:
 	extends RefCounted
-	var world := Vector3.ZERO    ## spawn point (impact)
+	var world := Vector3.ZERO  ## spawn point (impact)
 	var amount := 0.0
-	var color := Color.WHITE     ## element colour
+	var color := Color.WHITE  ## element colour
 	var age := 0.0
 	var scale := 1.0
 	var drift_x := 0.0
-	var callout := ""            ## SUPER_EFFECTIVE / NOT_VERY_EFFECTIVE / ""
+	var callout := ""  ## SUPER_EFFECTIVE / NOT_VERY_EFFECTIVE / ""
 	var callout_color := Color.WHITE
-	var label: Label3D           ## null when not drawn (tests)
-	var callout_label: Label3D   ## child of label, null without a callout
+	var label: Label3D  ## null when not drawn (tests)
+	var callout_label: Label3D  ## child of label, null without a callout
 
-var elements: ElementTable   ## colours (default table when null)
-var auto_tick := true        ## false: the owner (tests) calls tick()
-var draw_labels := true      ## false: logic only
+
+var elements: ElementTable  ## colours (default table when null)
+var auto_tick := true  ## false: the owner (tests) calls tick()
+var draw_labels := true  ## false: logic only
 var numbers: Array[Number] = []
 var spawned := 0
+
 
 func connect_bolts(b: SpellBolts) -> void:
 	if b and not b.bolt_hit.is_connected(_on_bolt_hit):
 		b.bolt_hit.connect(_on_bolt_hit)
 
+
 func _on_bolt_hit(h: SpellBolts.Hit) -> void:
 	if h.result != null:
 		add(h.point, h.result, h.element)
+
 
 ## A number for a resolved hit at `world` (global position).
 func add(world: Vector3, r: Damage.Result, element: ElementTable.Element) -> Number:
@@ -111,9 +116,11 @@ func add(world: Vector3, r: Damage.Result, element: ElementTable.Element) -> Num
 		_place(n)
 	return n
 
+
 func _physics_process(delta: float) -> void:
 	if auto_tick:
 		tick(delta)
+
 
 func tick(dt: float) -> void:
 	for i in range(numbers.size() - 1, -1, -1):
@@ -124,9 +131,11 @@ func tick(dt: float) -> void:
 		else:
 			_place(n)
 
+
 func clear() -> void:
 	for i in range(numbers.size() - 1, -1, -1):
 		_drop(i)
+
 
 func _drop(i: int) -> void:
 	var n := numbers[i]
@@ -135,6 +144,7 @@ func _drop(i: int) -> void:
 		n.label = null
 		n.callout_label = null
 	numbers.remove_at(i)
+
 
 func _place(n: Number) -> void:
 	if n.label == null:
@@ -153,17 +163,20 @@ func _place(n: Number) -> void:
 		n.callout_label.modulate = cc
 		n.callout_label.outline_modulate = Color(0, 0, 0, c.a)
 
+
 ## Current world position (rising, drifting).
 static func position_of(n: Number) -> Vector3:
 	var t := clampf(n.age / LIFETIME, 0.0, 1.0)
 	var rise := RISE * (1.0 - (1.0 - t) * (1.0 - t))
 	return n.world + Vector3(n.drift_x * t, rise, 0.0)
 
+
 static func alpha_of(n: Number) -> float:
 	var t := clampf(n.age / LIFETIME, 0.0, 1.0)
 	if t <= FADE_START:
 		return 1.0
 	return clampf(1.0 - (t - FADE_START) / (1.0 - FADE_START), 0.0, 1.0)
+
 
 ## "15", "11.3", "7.5", "0": one decimal unless whole (rounded to 0.1); negatives show 0.
 static func format(amount: float) -> String:

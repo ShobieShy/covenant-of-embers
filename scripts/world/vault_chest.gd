@@ -14,7 +14,7 @@ const GROUP := &"vault_chests"
 const REACH := 2.0
 const PARTS := 2
 const DEFAULT_FLOOR := "rare"
-const CONSECRATE_CHANCE := 0.5   ## step 36: the equipment piece is Consecrated (Rare+ only)
+const CONSECRATE_CHANCE := 0.5  ## step 36: the equipment piece is Consecrated (Rare+ only)
 
 @export var floor_rarity := DEFAULT_FLOOR
 var locked := true
@@ -24,8 +24,9 @@ var dropper: LootDropper
 var rng := RandomNumberGenerator.new()
 var luck := 0.0
 var table: RarityTable
-var element := -1           ## -1 = roll per item; the Breach passes the boss's affinity
+var element := -1  ## -1 = roll per item; the Breach passes the boss's affinity
 var _lid: MeshInstance3D
+
 
 func _ready() -> void:
 	add_to_group(GROUP)
@@ -51,12 +52,15 @@ func _ready() -> void:
 		_lid.material_override = gm
 		add_child(_lid)
 
+
 ## Raises `id` to `floor_id` when below it.
 static func at_least(id: String, floor_id: String) -> String:
 	return floor_id if Rarity.parse(id) < Rarity.parse(floor_id) else id
 
-static func roll_contents(r: RandomNumberGenerator, floor_id := DEFAULT_FLOOR, lk := 0.0,
-		rt: RarityTable = null, el := -1) -> Array[LootDrop]:
+
+static func roll_contents(
+	r: RandomNumberGenerator, floor_id := DEFAULT_FLOOR, lk := 0.0, rt: RarityTable = null, el := -1
+) -> Array[LootDrop]:
 	var t := rt if rt != null else RarityTable.load_default()
 	var out: Array[LootDrop] = []
 	for i in PARTS:
@@ -88,11 +92,14 @@ static func roll_contents(r: RandomNumberGenerator, floor_id := DEFAULT_FLOOR, l
 	out.append(q)
 	return out
 
+
 func unlock() -> void:
 	locked = false
 
+
 func in_reach(p: Player) -> bool:
 	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
+
 
 ## Opens once (unlocked only): rolls, spawns pickups via `dropper` when set, emits opened.
 func open_chest() -> Array[LootDrop]:
@@ -108,6 +115,7 @@ func open_chest() -> Array[LootDrop]:
 		_lid.position = Vector3(0, 0.9, -0.35)
 	opened.emit(drops)
 	return drops
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if locked or is_open or player == null or player.ui_open:

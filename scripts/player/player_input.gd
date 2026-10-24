@@ -5,13 +5,29 @@ extends RefCounted
 ## can be driven deterministically.
 
 const ACTIONS: Array[StringName] = [
-	&"forward", &"back", &"left", &"right", &"jump", &"action_primary", &"action_secondary",
-	&"sprint", &"dash", &"crouch", &"interact", &"slot_1", &"slot_2", &"slot_3", &"slot_4",
-	&"quickslot_prev_wieldable", &"quickslot_next_wieldable", &"use_potion",
+	&"forward",
+	&"back",
+	&"left",
+	&"right",
+	&"jump",
+	&"action_primary",
+	&"action_secondary",
+	&"sprint",
+	&"dash",
+	&"crouch",
+	&"interact",
+	&"slot_1",
+	&"slot_2",
+	&"slot_3",
+	&"slot_4",
+	&"quickslot_prev_wieldable",
+	&"quickslot_next_wieldable",
+	&"use_potion",
 ]
 
-var held: Dictionary = {}      # StringName -> true
-var pressed: Dictionary = {}   # StringName -> true (press edge this tick; also held)
+var held: Dictionary = {}  # StringName -> true
+var pressed: Dictionary = {}  # StringName -> true (press edge this tick; also held)
+
 
 static func hold(held_actions: Array = [], pressed_actions: Array = []) -> PlayerInput:
 	var i := PlayerInput.new()
@@ -21,6 +37,7 @@ static func hold(held_actions: Array = [], pressed_actions: Array = []) -> Playe
 		i.held[StringName(a)] = true
 		i.pressed[StringName(a)] = true
 	return i
+
 
 static func from_input() -> PlayerInput:
 	var i := PlayerInput.new()
@@ -32,14 +49,18 @@ static func from_input() -> PlayerInput:
 				i.pressed[a] = true
 	return i
 
+
 func down(a: StringName) -> bool:
 	return held.has(a)
+
 
 func was_pressed(a: StringName) -> bool:
 	return pressed.has(a)
 
+
 func move_forward() -> float:
 	return (1.0 if down(&"forward") else 0.0) - (1.0 if down(&"back") else 0.0)
+
 
 func move_right() -> float:
 	return (1.0 if down(&"right") else 0.0) - (1.0 if down(&"left") else 0.0)

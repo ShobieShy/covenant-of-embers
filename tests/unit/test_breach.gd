@@ -5,6 +5,7 @@ extends TestCase
 const SCENE := "res://scenes/levels/breach.tscn"
 const TOML := "res://data/levels/breach_slice.toml"
 
+
 func _load(at: Vector3) -> Node3D:
 	var w := Node3D.new()
 	w.position = at
@@ -12,6 +13,7 @@ func _load(at: Vector3) -> Node3D:
 	var level: Node3D = (load(SCENE) as PackedScene).instantiate()
 	w.add_child(level)
 	return level
+
 
 func test_layout() -> void:
 	var d := LevelToml.load_file(TOML)
@@ -24,6 +26,7 @@ func test_layout() -> void:
 		check(level.get_node_or_null("WaveSpawns/" + n) != null, "spawn %s" % n)
 	check(level.get_node("Waves").get_child_count() == 3, "three waves (the boss last)")
 	level.free()
+
 
 func test_navmesh_and_spawns_reachable() -> void:
 	var level := _load(Vector3(3000, 0, -3000))
@@ -39,8 +42,10 @@ func test_navmesh_and_spawns_reachable() -> void:
 	for n in ["boss_dais", "west_wing", "east_wing"]:
 		var m := level.get_node("WaveSpawns/" + n) as Node3D
 		var path := NavigationServer3D.map_get_path(map, start, m.global_position, true)
-		check(path.size() > 1 and path[path.size() - 1].distance_to(m.global_position) < 0.6,
-			"%s reachable (end %s)" % [n, path[path.size() - 1] if path.size() else "none"])
+		check(
+			path.size() > 1 and path[path.size() - 1].distance_to(m.global_position) < 0.6,
+			"%s reachable (end %s)" % [n, path[path.size() - 1] if path.size() else "none"]
+		)
 	var vc := (level.get_node("WaveSpawns/vault_chest") as Node3D).global_position
 	var vp := NavigationServer3D.map_get_path(map, start, vc, true)
 	check(vp.is_empty() or vp[vp.size() - 1].distance_to(vc) > 2.0, "vault sealed by its door")

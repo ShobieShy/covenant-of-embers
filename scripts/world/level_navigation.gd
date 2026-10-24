@@ -22,6 +22,7 @@ signal baked(region: LevelNavigation)
 
 var bakes := 0
 
+
 ## A NavigationMesh tuned for the Gnawer (Magewar's rat-sized rusher): radius 0.5 m
 ## (its 0.5 x 0.8 body's half diagonal 0.47, rounded up), 0.5 m tall, 0.25 m climb, 45°.
 ## Cells match project.godot navigation/3d/default_cell_size / default_cell_height.
@@ -38,9 +39,11 @@ static func make_mesh() -> NavigationMesh:
 	nm.agent_max_slope = 45.0
 	return nm
 
+
 func _ready() -> void:
 	if bake_on_ready:
 		bake_now()
+
 
 ## Parses `source` and bakes into navigation_mesh (creating one if missing); returns
 ## the polygon count.
@@ -53,11 +56,12 @@ func bake_now() -> int:
 	var data := NavigationMeshSourceGeometryData3D.new()
 	NavigationServer3D.parse_source_geometry_data(nm, data, root)
 	NavigationServer3D.bake_from_source_geometry_data(nm, data)
-	navigation_mesh = null      # re-assign so the region pushes the new polygons
+	navigation_mesh = null  # re-assign so the region pushes the new polygons
 	navigation_mesh = nm
 	bakes += 1
 	baked.emit(self)
 	return nm.get_polygon_count()
+
 
 ## True once the navigation map has synced with this region's baked polygons on it. The
 ## server builds regions on worker threads: a few frames for a test room, ~35 physics
@@ -68,12 +72,12 @@ func map_ready() -> bool:
 		return false
 	var map := get_navigation_map()
 	if not map.is_valid() or NavigationServer3D.map_get_iteration_id(map) == 0:
-		return false   # querying before the first sync logs an error
+		return false  # querying before the first sync logs an error
 	var verts := navigation_mesh.get_vertices()
 	var poly := navigation_mesh.get_polygon(0)
 	var c := Vector3.ZERO
 	for v in poly:
 		c += verts[v]
-	var p := global_transform * (c / poly.size())   # the polygon's centre: only this region owns it
+	var p := global_transform * (c / poly.size())  # the polygon's centre: only this region owns it
 	var owner_rid := NavigationServer3D.map_get_closest_point_owner(map, p)
 	return owner_rid == get_rid()

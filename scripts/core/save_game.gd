@@ -13,6 +13,7 @@ extends RefCounted
 const VERSION := 1
 const PATH := "user://save.json"
 
+
 static func capture(p: Player, progress := {}) -> Dictionary:
 	var dead := not p.alive()
 	var eq: Array = []
@@ -29,23 +30,34 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 	return {
 		"version": VERSION,
 		"saved_at": Time.get_datetime_string_from_system(true),
-		"player": {
-			"level": p.progression.level, "xp": p.progression.xp, "xp_to_next": p.progression.xp_to_next,
-			"total_xp": p.progression.total_xp, "dust": p.inventory.dust,
+		"player":
+		{
+			"level": p.progression.level,
+			"xp": p.progression.xp,
+			"xp_to_next": p.progression.xp_to_next,
+			"total_xp": p.progression.total_xp,
+			"dust": p.inventory.dust,
 			"health": p.health.max_value() if dead else p.health.value,
 			"shield": p.health.shield_max if dead else p.health.shield,
 			"mana": p.mana.max_value() if dead else p.mana.value,
 			"breath": p.breath.max_value() if dead else p.breath.value,
 		},
-		"items": {
+		"items":
+		{
 			"staff": ItemCodes.encode(staff) if staff else "",
 			"wand": ItemCodes.encode(wand) if wand else "",
 			"equipment": eq,
-			"potion": ItemCodes.encode(p.equipment.potion, p.equipment.potion_count) if p.equipment.potion and p.equipment.potion_count > 0 else "",
+			"potion":
+			(
+				ItemCodes.encode(p.equipment.potion, p.equipment.potion_count)
+				if p.equipment.potion and p.equipment.potion_count > 0
+				else ""
+			),
 			"inventory": inv,
 		},
 		"progress": progress.duplicate(true),
 	}
+
 
 static func write(data: Dictionary, path := PATH) -> Error:
 	var f := FileAccess.open(path, FileAccess.WRITE)
@@ -53,6 +65,7 @@ static func write(data: Dictionary, path := PATH) -> Error:
 		return FileAccess.get_open_error()
 	f.store_string(JSON.stringify(data, "\t"))
 	return OK
+
 
 ## {"data": Dictionary} or {"error": String}.
 static func read(path := PATH) -> Dictionary:
@@ -68,6 +81,7 @@ static func read(path := PATH) -> Dictionary:
 		return {"error": "unsupported save version %d (this build reads %d)" % [v, VERSION]}
 	return {"data": j}
 
+
 static func _decode(code: String, want: Script, warnings: PackedStringArray, what: String) -> EmberMark:
 	if code.is_empty():
 		return null
@@ -78,6 +92,7 @@ static func _decode(code: String, want: Script, warnings: PackedStringArray, wha
 		warnings.append(msg)
 		return null
 	return m
+
 
 ## Applies `data` (from read()) to `p`; returns the warnings (dropped codes).
 static func apply(p: Player, data: Dictionary) -> PackedStringArray:

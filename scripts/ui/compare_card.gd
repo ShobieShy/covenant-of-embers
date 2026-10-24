@@ -10,9 +10,10 @@ var title := ""
 var rarity_id := ""
 var rarity_name := ""
 var color := Color.WHITE
-var kind := ""                     ## "staff" / "wand" / "part" / "hat" ...
-var rows: Array[Dictionary] = []   ## {stat, label, value, delta, better, compared}
-var compared_to := ""              ## the current item's title, "" when nothing to compare
+var kind := ""  ## "staff" / "wand" / "part" / "hat" ...
+var rows: Array[Dictionary] = []  ## {stat, label, value, delta, better, compared}
+var compared_to := ""  ## the current item's title, "" when nothing to compare
+
 
 static func for_item(item: Resource, player: Player = null) -> CompareCard:
 	var c := CompareCard.new()
@@ -49,16 +50,24 @@ static func for_item(item: Resource, player: Player = null) -> CompareCard:
 		if player != null:
 			current = player.equipment.item(e.slot)
 		var ce := current as EquipmentItem
-		for s in [["health_bonus", "Health", true], ["mana_bonus", "Mana", true],
-				["stamina_bonus", "Breath", true], ["speed_modifier", "Speed x", true],
-				["spell_damage_bonus", "Spell damage", true], ["elemental_resistance", "Resistance", true],
-				["mana_regen_bonus", "Mana regen/s", true]]:
+		for s in [
+			["health_bonus", "Health", true],
+			["mana_bonus", "Mana", true],
+			["stamina_bonus", "Breath", true],
+			["speed_modifier", "Speed x", true],
+			["spell_damage_bonus", "Spell damage", true],
+			["elemental_resistance", "Resistance", true],
+			["mana_regen_bonus", "Mana regen/s", true]
+		]:
 			c._row(s[0], s[1], float(e.get(s[0])), float(ce.get(s[0])) if ce else NAN, s[2])
 	if current != null and current != item:
-		c.compared_to = current.call("display_name") if current is WieldableInstance else String(current.get("display_name"))
+		c.compared_to = (
+			current.call("display_name") if current is WieldableInstance else String(current.get("display_name"))
+		)
 	c.rarity_name = rt.display_name(c.rarity_id)
 	c.color = rt.color(c.rarity_id)
 	return c
+
 
 func _row(stat: String, label: String, value: float, cur: float, higher_better: bool) -> void:
 	var r := {"stat": stat, "label": label, "value": value, "compared": not is_nan(cur), "delta": 0.0, "better": false}
@@ -66,6 +75,7 @@ func _row(stat: String, label: String, value: float, cur: float, higher_better: 
 		r["delta"] = value - cur
 		r["better"] = (value > cur) if higher_better else (value < cur)
 	rows.append(r)
+
 
 func row(stat: String) -> Dictionary:
 	for r in rows:

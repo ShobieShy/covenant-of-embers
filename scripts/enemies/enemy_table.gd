@@ -4,13 +4,17 @@ extends Resource
 ## resources/enemies/training_dummies.tres + gnawer.tres (step 12) + heap.tres (step 13); `from_toml_files`
 ## builds one from data/enemies/*.toml for the tests' .tres-vs-TOML comparison.
 
-const DEFAULT_PATHS: PackedStringArray = ["res://resources/enemies/training_dummies.tres",
-	"res://resources/enemies/gnawer.tres", "res://resources/enemies/heap.tres",
-	"res://resources/enemies/breach_warden.tres"]   ## step 34: the Breach mini-boss
+const DEFAULT_PATHS: PackedStringArray = [
+	"res://resources/enemies/training_dummies.tres",
+	"res://resources/enemies/gnawer.tres",
+	"res://resources/enemies/heap.tres",
+	"res://resources/enemies/breach_warden.tres"
+]  ## step 34: the Breach mini-boss
 
 @export var defs: Array[EnemyDef] = []
 
 static var _default: EnemyTable
+
 
 ## The shipped enemy types (every DEFAULT_PATHS table merged, validated once).
 static func load_default() -> EnemyTable:
@@ -27,11 +31,13 @@ static func load_default() -> EnemyTable:
 			push_error("enemy tables: %s" % "; ".join(errs))
 	return _default
 
+
 func find(id: String) -> EnemyDef:
 	for d in defs:
 		if d != null and d.id == id:
 			return d
 	return null
+
 
 func validate() -> PackedStringArray:
 	var errs := PackedStringArray()
@@ -48,6 +54,7 @@ func validate() -> PackedStringArray:
 		errs.append_array(d.validate())
 	return errs
 
+
 ## {"table": EnemyTable} or {"error": "path: ..."} from data/enemies/*.toml files.
 static func from_toml_files(paths: PackedStringArray) -> Dictionary:
 	var t := EnemyTable.new()
@@ -60,6 +67,7 @@ static func from_toml_files(paths: PackedStringArray) -> Dictionary:
 				return {"error": "%s: duplicate enemy id '%s'" % [p, d.id]}
 			t.defs.append(d)
 	return {"table": t}
+
 
 static func from_toml(doc: Dictionary, source := "toml") -> Dictionary:
 	if doc.has("error"):

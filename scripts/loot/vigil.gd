@@ -18,16 +18,19 @@ const RARE_SHIFT_PER_TIER := 0.10
 
 ## Omen pools. "rarity" = extra rare+ weight multiplier; others are hooks for later steps.
 const OMENS := {
-	"easy": [
+	"easy":
+	[
 		{"id": "ember_rain", "name": "Ember Rain", "enemy_damage": 1.10},
 		{"id": "restless", "name": "Restless Dead", "enemy_health": 1.10},
 		{"id": "gilded_ashes", "name": "Gilded Ashes", "rarity": 1.20},
 	],
-	"medium": [
+	"medium":
+	[
 		{"id": "shades_twice", "name": "Shades rise twice", "enemy_health": 1.20},
 		{"id": "hungry_dark", "name": "Hungry Dark", "enemy_damage": 1.20, "rarity": 1.10},
 	],
-	"hard": [
+	"hard":
+	[
 		{"id": "ward_regen", "name": "Wards regenerate faster", "enemy_health": 1.30},
 		{"id": "blood_moon", "name": "Blood Moon", "enemy_damage": 1.30, "rarity": 1.25},
 		{"id": "iron_vow", "name": "Iron Vow", "enemy_health": 1.40},
@@ -35,9 +38,10 @@ const OMENS := {
 }
 
 var tier := 0
-var session_seed := 0                 ## per session, stored in the save (step 33) to share a run
+var session_seed := 0  ## per session, stored in the save (step 33) to share a run
 var rerolls := 0
 var omens: Array[Dictionary] = []
+
 
 static func create(t: int, session_seed: int) -> Vigil:
 	var v := Vigil.new()
@@ -46,18 +50,25 @@ static func create(t: int, session_seed: int) -> Vigil:
 	v._draw_omens()
 	return v
 
+
 static func pools_for(t: int) -> PackedStringArray:
 	var out := PackedStringArray()
-	if t >= 1: out.append("easy")
-	if t >= 4: out.append("medium")
-	if t >= 7: out.append("hard")
-	if t >= 10: out.append("hard")
+	if t >= 1:
+		out.append("easy")
+	if t >= 4:
+		out.append("medium")
+	if t >= 7:
+		out.append("hard")
+	if t >= 10:
+		out.append("hard")
 	return out
+
 
 ## Re-roll at the Memorial Stones: a new deterministic draw from the same seed.
 func reroll() -> void:
 	rerolls += 1
 	_draw_omens()
+
 
 func _draw_omens() -> void:
 	omens.clear()
@@ -67,20 +78,25 @@ func _draw_omens() -> void:
 		var opts: Array = OMENS[pool].filter(func(o: Dictionary) -> bool: return not omens.has(o))
 		omens.append(opts[rng.randi_range(0, opts.size() - 1)])
 
+
 func _omen_product(key: String) -> float:
 	var m := 1.0
 	for o in omens:
 		m *= float(o.get(key, 1.0))
 	return m
 
+
 func enemy_health_mult() -> float:
 	return (1.0 + HEALTH_PER_TIER * tier) * _omen_product("enemy_health")
+
 
 func enemy_damage_mult() -> float:
 	return (1.0 + DAMAGE_PER_TIER * tier) * _omen_product("enemy_damage")
 
+
 func xp_mult() -> float:
 	return 1.0 + XP_PER_TIER * tier
+
 
 ## The WeightModel modifiers for one rarity tier (context {"vigil": tier}).
 func rarity_mods(rarity_tier: int) -> Array:
@@ -89,6 +105,7 @@ func rarity_mods(rarity_tier: int) -> Array:
 	if rarity_tier == Rarity.Tier.UNCOMMON:
 		return []
 	return [{"attr": "vigil", "per": RARE_SHIFT_PER_TIER * (rarity_tier - 1)}, {"mul": _omen_product("rarity")}]
+
 
 ## A copy of `base` (default: the shipped table) with Vigil-shifted drop weights.
 func table_for(base: RarityTable = null) -> RarityTable:
@@ -104,6 +121,7 @@ func table_for(base: RarityTable = null) -> RarityTable:
 		t.rarities.append(c)
 	t.rebuild()
 	return t
+
 
 func describe() -> String:
 	return "Vigil %d: %s" % [tier, ", ".join(omens.map(func(o: Dictionary) -> String: return o["name"]))]

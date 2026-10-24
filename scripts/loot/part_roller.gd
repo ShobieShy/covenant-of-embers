@@ -25,8 +25,11 @@ const E := ElementTable.Element
 
 ## Magewar PART_TEMPLATE_PATHS (resources/parts ids).
 const TEMPLATE_IDS := {
-	P.HEAD: "basic_fire_head", P.EXTERIOR: "basic_exterior", P.INTERIOR: "basic_interior",
-	P.HANDLE: "basic_handle", P.CHARM: "uncommon_earth_charm",
+	P.HEAD: "basic_fire_head",
+	P.EXTERIOR: "basic_exterior",
+	P.INTERIOR: "basic_interior",
+	P.HANDLE: "basic_handle",
+	P.CHARM: "uncommon_earth_charm",
 }
 
 ## Per type: [stat, lo, hi, scaled by the rarity multiplier], in Magewar's draw order.
@@ -35,8 +38,8 @@ const ROLLS := {
 	P.EXTERIOR: [["fire_rate_modifier", 0.7, 1.3, false]],
 	P.INTERIOR: [["damage_bonus", 2.0, 8.0, true]],
 	P.HANDLE: [["accuracy_bonus", 5.0, 20.0, true], ["handling_bonus", 2.0, 10.0, true]],
-	P.CHARM: [["damage_bonus", 0.0, 3.0, true], ["fire_rate_modifier", 0.85, 1.0, false],
-		["accuracy_bonus", 0.0, 8.0, true]],
+	P.CHARM:
+	[["damage_bonus", 0.0, 3.0, true], ["fire_rate_modifier", 0.85, 1.0, false], ["accuracy_bonus", 0.0, 8.0, true]],
 }
 ## Magewar: Rare+ Exteriors roll ×0.5–1.0 ("faster at higher rarity").
 const EXTERIOR_RARE_RATE := Vector2(0.5, 1.0)
@@ -47,19 +50,25 @@ const ELEMENT_WEIGHTS: PackedFloat64Array = [2.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.5]
 ## Magewar name ladders, indexed by rarity tier (Basic..Unique).
 const HEAD_PREFIXES: PackedStringArray = ["Rough", "Polished", "Brilliant", "Ethereal", "Ancient", "Legendary"]
 const EXTERIOR_MATERIALS: PackedStringArray = ["Oak", "Ash", "Ironwood", "Darkwood", "Starwood", "Worldtree"]
-const INTERIOR_CORES: PackedStringArray = ["Mana Core", "Arcane Conduit", "Ley Channel", "Void Heart", "Prism Core", "Soul Engine"]
+const INTERIOR_CORES: PackedStringArray = [
+	"Mana Core", "Arcane Conduit", "Ley Channel", "Void Heart", "Prism Core", "Soul Engine"
+]
 const HANDLE_WRAPS: PackedStringArray = ["Leather", "Silk", "Chain", "Rune-etched", "Crystalweave", "Dragonhide"]
 const CHARM_KINDS: PackedStringArray = ["Charm", "Talisman", "Sigil", "Ward", "Relic", "Artifact"]
 
+
 ## Rolls one part: draws exactly one seed from `rng`, then from_seed(). element < 0 = roll it.
-static func roll(rng: RandomNumberGenerator, part_type: WieldablePart.PartType, rarity_id: String,
-		element: int = -1) -> WieldablePart:
+static func roll(
+	rng: RandomNumberGenerator, part_type: WieldablePart.PartType, rarity_id: String, element: int = -1
+) -> WieldablePart:
 	return from_seed(rng.randi(), part_type, rarity_id, element)
+
 
 ## The part for (seed, type, rarity, element): same inputs, same part, on every machine.
 ## Returns null for an unknown rarity or type, or a missing template.
-static func from_seed(seed: int, part_type: WieldablePart.PartType, rarity_id: String,
-		element: int = -1) -> WieldablePart:
+static func from_seed(
+	seed: int, part_type: WieldablePart.PartType, rarity_id: String, element: int = -1
+) -> WieldablePart:
 	var tier := Rarity.parse(rarity_id)
 	if tier < 0 or not TEMPLATE_IDS.has(part_type):
 		return null
@@ -78,13 +87,23 @@ static func from_seed(seed: int, part_type: WieldablePart.PartType, rarity_id: S
 	p.gem_slots = gem_slots_for(part_type, rarity_id)
 	# Stats first (their draws don't depend on the element), so regenerate() can pass the
 	# stored element and still get the same numbers.
-	p.element = (element if element >= 0 and element < ElementTable.COUNT else roll_element(rng)) as ElementTable.Element
+	p.element = (
+		(element if element >= 0 and element < ElementTable.COUNT else roll_element(rng)) as ElementTable.Element
+	)
 	p.roll_seed = seed
 	p.display_name = name_for(part_type, rarity_id, p.element)
-	p.id = "%s_%s_%s_%08x" % [rarity_id, ElementTable.id_of(p.element),
-		WieldablePart.PART_TYPE_NAMES[part_type].to_lower(), seed & 0xFFFFFFFF]
+	p.id = (
+		"%s_%s_%s_%08x"
+		% [
+			rarity_id,
+			ElementTable.id_of(p.element),
+			WieldablePart.PART_TYPE_NAMES[part_type].to_lower(),
+			seed & 0xFFFFFFFF
+		]
+	)
 	p.description = p.full_description()
 	return p
+
 
 ## Rebuilds a rolled part from what it stores (roll_seed, type, rarity, element); null for a
 ## hand-made part (roll_seed < 0).
@@ -92,6 +111,7 @@ static func regenerate(part: WieldablePart) -> WieldablePart:
 	if part == null or part.roll_seed < 0:
 		return null
 	return from_seed(part.roll_seed, part.part_type, part.rarity, part.element)
+
 
 ## Final (multiplied) roll range of `stat` for a type/rarity; Vector2.ZERO when the type
 ## doesn't roll it.
@@ -107,12 +127,14 @@ static func stat_range(part_type: WieldablePart.PartType, rarity_id: String, sta
 		return Vector2(lo * m, hi * m)
 	return Vector2.ZERO
 
+
 ## Stats a type rolls (Magewar order).
 static func rolled_stats(part_type: WieldablePart.PartType) -> PackedStringArray:
 	var out := PackedStringArray()
 	for r in ROLLS.get(part_type, []):
 		out.append(r[0])
 	return out
+
 
 ## Magewar: Head 1 + (Rare+) + (Primordial+), max 3; every other part type 0.
 static func gem_slots_for(part_type: WieldablePart.PartType, rarity_id: String) -> int:
@@ -121,8 +143,11 @@ static func gem_slots_for(part_type: WieldablePart.PartType, rarity_id: String) 
 	var t := maxi(0, Rarity.parse(rarity_id))
 	return 1 + (1 if t >= Rarity.Tier.RARE else 0) + (1 if t >= Rarity.Tier.PRIMORDIAL else 0)
 
+
 ## One weighted element draw (one rng.randf()); weights in ElementTable order.
-static func roll_element(rng: RandomNumberGenerator, weights: PackedFloat64Array = ELEMENT_WEIGHTS) -> ElementTable.Element:
+static func roll_element(
+	rng: RandomNumberGenerator, weights: PackedFloat64Array = ELEMENT_WEIGHTS
+) -> ElementTable.Element:
 	var total := 0.0
 	for w in weights:
 		total += maxf(0.0, w)
@@ -137,6 +162,7 @@ static func roll_element(rng: RandomNumberGenerator, weights: PackedFloat64Array
 		if pick < cum:
 			return last
 	return last
+
 
 ## Magewar _generate_<type>_name.
 static func name_for(part_type: WieldablePart.PartType, rarity_id: String, element: ElementTable.Element) -> String:

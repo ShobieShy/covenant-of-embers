@@ -26,25 +26,29 @@ extends Gnawer
 const SEAM_GLOW := Color(1.0, 0.45, 0.1)
 
 var windup_left := 0.0
-var slams := 0          ## wind-ups started
-var landed := 0         ## slams that reached the target (dodged ones included)
-var whiffs := 0         ## landed out of reach
+var slams := 0  ## wind-ups started
+var landed := 0  ## slams that reached the target (dodged ones included)
+var whiffs := 0  ## landed out of reach
 var interrupted := 0
 var windup_started_tick := -1
 
+
 func setup(d: EnemyDef) -> void:
 	super.setup(d)
-	if _head_mat != null:   # the glowing core seam
+	if _head_mat != null:  # the glowing core seam
 		_head_mat.emission_enabled = true
 		_head_mat.emission = SEAM_GLOW
 		_head_mat.emission_energy_multiplier = 1.5
+
 
 func reset(xform: Variant = null) -> void:
 	super.reset(xform)
 	windup_left = 0.0
 
+
 func winding_up() -> bool:
 	return windup_left > 0.0
+
 
 func _start_attack(feet: Vector3) -> void:
 	if rusher.attack_windup <= 0.0:
@@ -55,15 +59,16 @@ func _start_attack(feet: Vector3) -> void:
 	windup_started_tick = ticks
 	slams += 1
 
+
 func _attack_tick(dt: float, next: State, dist: float, feet: Vector3) -> void:
 	if windup_left <= 0.0:
 		return
-	if next != State.ATTACK and next != State.CHASE:   # knocked back, dead, target lost
+	if next != State.ATTACK and next != State.CHASE:  # knocked back, dead, target lost
 		windup_left = 0.0
 		interrupted += 1
 		return
 	windup_left -= dt
-	if windup_left > 1e-4:   # 0.6 - 36 x 1/60 is not exactly 0 in floats
+	if windup_left > 1e-4:  # 0.6 - 36 x 1/60 is not exactly 0 in floats
 		return
 	windup_left = 0.0
 	if _target_valid() and _in_reach(dist, feet):
@@ -71,6 +76,7 @@ func _attack_tick(dt: float, next: State, dist: float, feet: Vector3) -> void:
 		_land(feet)
 	else:
 		whiffs += 1
+
 
 func _rooted() -> bool:
 	return windup_left > 0.0

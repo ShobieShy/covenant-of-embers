@@ -5,12 +5,14 @@ extends TestCase
 const PATH := "user://test_keybinds.cfg"
 const DT := 1.0 / 60.0
 
+
 func _player() -> Player:
 	var p: Player = (load("res://scenes/player/player.tscn") as PackedScene).instantiate()
 	p.input_enabled = false
 	runner_tree.root.add_child(p)
 	p.spawn(Vector3(0, 400, 2100), 0.0)
 	return p
+
 
 func test_round_trip_and_rebind() -> void:
 	var before := InputMap.action_get_events(&"jump").duplicate()
@@ -31,7 +33,10 @@ func test_round_trip_and_rebind() -> void:
 	s.aim_sensitivity = Settings.RAW_LOOK
 	check(s.save(PATH) == OK, "saved")
 	var l := Settings.load_from(PATH)
-	check(l.invert_y and l.focus_toggle and is_equal_approx(l.hip_fov, 90.0) and is_equal_approx(l.head_bob, 0.1), "options round-trip")
+	check(
+		l.invert_y and l.focus_toggle and is_equal_approx(l.hip_fov, 90.0) and is_equal_approx(l.head_bob, 0.1),
+		"options round-trip"
+	)
 	check(is_equal_approx(l.aim_sensitivity, Settings.RAW_LOOK), "sensitivity")
 	check(l.bindings.get(&"jump", []) == [{"key": KEY_J}], "binding round-trip %s" % [l.bindings])
 	# restore project defaults then re-apply the loaded file
@@ -46,6 +51,7 @@ func test_round_trip_and_rebind() -> void:
 	InputMap.load_from_project_settings()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH))
 	check(Settings.load_from("user://missing.cfg").hip_fov == 75.0, "missing file = defaults")
+
 
 func test_apply_to_player_and_toggles() -> void:
 	var p := _player()
@@ -68,6 +74,7 @@ func test_apply_to_player_and_toggles() -> void:
 	p.tick(again, DT)
 	check(not again.down(&"crouch"), "second press releases")
 	p.queue_free()
+
 
 func test_settings_ui_capture() -> void:
 	var ui := SettingsUi.new()

@@ -45,24 +45,25 @@ var dip_total_time := 0.3
 var step_lerp := 2.5
 
 var reduced_motion := false
-var bob_scale := 1.0        ## Cogito HEADBOBBLE (options slider in step 32)
-var bob := Vector2.ZERO     ## x right, y up
-var dip := 0.0              ## <= 0
-var dip_depth := 0.0        ## depth of the current/last dip
-var step := 0.0             ## step smoothing offset (y)
-var landings := 0           ## dips started
-var recoil := 0.0           ## 0..1 viewmodel kick (step 10)
+var bob_scale := 1.0  ## Cogito HEADBOBBLE (options slider in step 32)
+var bob := Vector2.ZERO  ## x right, y up
+var dip := 0.0  ## <= 0
+var dip_depth := 0.0  ## depth of the current/last dip
+var step := 0.0  ## step smoothing offset (y)
+var landings := 0  ## dips started
+var recoil := 0.0  ## 0..1 viewmodel kick (step 10)
 var recoil_kick := 0.05
 var recoil_rise := 0.012
 var recoil_seconds := 0.15
-var shake := 0.0            ## 0..1 trauma (step 10)
+var shake := 0.0  ## 0..1 trauma (step 10)
 var shake_max := 0.03
 var shake_decay := 2.0
-var shake_offset := Vector2.ZERO   ## camera offset from the shake (x right, y up)
+var shake_offset := Vector2.ZERO  ## camera offset from the shake (x right, y up)
 var recoils := 0
 var _shake_time := 0.0
 var _phase := 0.0
-var _dip_time := -1.0       ## seconds since the landing, < 0 = no dip running
+var _dip_time := -1.0  ## seconds since the landing, < 0 = no dip running
+
 
 static func from_tuning(t: PlayerTuning) -> CameraFeel:
 	var f := CameraFeel.new()
@@ -86,13 +87,16 @@ static func from_tuning(t: PlayerTuning) -> CameraFeel:
 	f.shake_decay = t.shake_decay
 	return f
 
+
 ## Eye offset after the last tick: x along the view's right, y up (bob + shake + dip + step).
 func offset() -> Vector2:
 	return bob + shake_offset + Vector2(0.0, dip + step)
 
+
 ## Viewmodel recoil offset in view space (x right, y up, +z back toward the eye).
 func recoil_offset() -> Vector3:
 	return Vector3(0.0, recoil_rise * recoil, recoil_kick * recoil)
+
 
 ## A cast's kick (0..1, added, capped at 1); ignored under reduced motion.
 func add_recoil(amount: float) -> void:
@@ -101,15 +105,17 @@ func add_recoil(amount: float) -> void:
 	recoil = minf(1.0, recoil + amount)
 	recoils += 1
 
+
 ## Screen-shake trauma (0..1, added, capped at 1); ignored under reduced motion.
 func add_shake(trauma: float) -> void:
 	if reduced_motion or trauma <= 0.0:
 		return
 	shake = minf(1.0, shake + trauma)
 
+
 func set_reduced_motion(on: bool) -> void:
 	reduced_motion = on
-	if on:   # snap: nothing may move the view
+	if on:  # snap: nothing may move the view
 		bob = Vector2.ZERO
 		dip = 0.0
 		_dip_time = -1.0
@@ -117,13 +123,16 @@ func set_reduced_motion(on: bool) -> void:
 		shake = 0.0
 		shake_offset = Vector2.ZERO
 
+
 func set_bob_scale(s: float) -> void:
 	bob_scale = maxf(0.0, s)
+
 
 ## The body moved `dy` (up > 0) in one snap (a climbed step): the camera
 ## stays put and eases after it.
 func add_step(dy: float) -> void:
 	step -= dy
+
 
 ## One fixed tick. `bobbing`: grounded, move key held, not sliding or dashing.
 ## `landed`: touched down this tick at `landing_speed` m/s (downward, positive).
@@ -158,7 +167,7 @@ func tick(bobbing: bool, gait: Gait, landed: bool, landing_speed: float, dt: flo
 			intensity = crouch_intensity
 			rate = crouch_rate
 		intensity *= bob_scale
-		_phase = fmod(_phase + rate * dt, 4.0 * PI)   # sin(phase/2) has period 4 pi
+		_phase = fmod(_phase + rate * dt, 4.0 * PI)  # sin(phase/2) has period 4 pi
 		target = Vector2(sin(_phase * 0.5) * intensity, sin(_phase) * intensity * 0.5)
 	bob = bob.lerp(target, minf(1.0, dt * lerp_speed))
 	if not bobbing and bob.length() < 1e-5:

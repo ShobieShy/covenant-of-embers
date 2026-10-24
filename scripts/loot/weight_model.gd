@@ -5,11 +5,12 @@ extends RefCounted
 ## (a live attribute: Vigil tier, player count, health %, luck ...); {"attr", "pow": k} ->
 ## k ^ context[name]. Weights are relative: probability = weight / sum. Never negative.
 
-const TIERS := {"staple": 100.0, "common": 50.0, "uncommon": 12.0, "scarce": 3.0,
-	"rare": 0.6, "precious": 0.12}   ## named weight tiers (§31.4), our own scale
+const TIERS := {"staple": 100.0, "common": 50.0, "uncommon": 12.0, "scarce": 3.0, "rare": 0.6, "precious": 0.12}  ## named weight tiers (§31.4), our own scale
+
 
 static func named(tier_name: String) -> float:
 	return TIERS.get(tier_name, 0.0)
+
 
 static func modifier(mod: Dictionary, context: Dictionary) -> float:
 	if mod.has("mul"):
@@ -21,11 +22,13 @@ static func modifier(mod: Dictionary, context: Dictionary) -> float:
 		return pow(float(mod["pow"]), v)
 	return 1.0
 
+
 static func weight(base: float, mods: Array, context := {}) -> float:
 	var w := base
 	for m in mods:
 		w *= modifier(m, context)
 	return maxf(0.0, w)
+
 
 static func probabilities(weights: PackedFloat64Array) -> PackedFloat64Array:
 	var total := 0.0

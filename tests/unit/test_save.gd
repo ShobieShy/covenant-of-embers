@@ -7,6 +7,7 @@ const FILE := "user://test_save.json"
 const S := EquipmentItem.Slot
 const E := ElementTable.Element
 
+
 func _player(w: Node3D) -> Player:
 	var p: Player = (load(PLAYER_SCENE) as PackedScene).instantiate()
 	p.input_enabled = false
@@ -14,11 +15,13 @@ func _player(w: Node3D) -> Player:
 	p.spawn(w.global_position, 0.0)
 	return p
 
+
 func _world(z: float) -> Node3D:
 	var w := Node3D.new()
 	w.position = Vector3(0, 1000, z)
 	runner_tree.root.add_child(w)
 	return w
+
 
 func test_round_trip() -> void:
 	var w := _world(3900)
@@ -41,7 +44,10 @@ func test_round_trip() -> void:
 	var b := _player(_world(4200))
 	var warn := SaveGame.apply(b, r["data"])
 	check(warn.is_empty(), "no warnings %s" % [warn])
-	check(b.progression.level == a.progression.level and b.progression.xp == a.progression.xp and b.progression.level > 1, "level/xp (%d)" % b.progression.level)
+	check(
+		b.progression.level == a.progression.level and b.progression.xp == a.progression.xp and b.progression.level > 1,
+		"level/xp (%d)" % b.progression.level
+	)
 	check(is_equal_approx(b.mana.max_value(), a.mana.max_value()), "level bonuses rebuilt")
 	check(b.inventory.items.size() == 2 and b.inventory.dust == 42, "backpack")
 	for i in 2:
@@ -51,7 +57,9 @@ func test_round_trip() -> void:
 		var y := b.equipment.item(s)
 		check((x == null and y == null) or ItemCodes.same_item(x, y), "slot %d equal" % s)
 	check(b.equipment.potion != null and b.equipment.potion_count == 2, "potion stack")
-	check(ItemCodes.same_item(a.loadout.wieldable(Loadout.Slot.STAFF), b.loadout.wieldable(Loadout.Slot.STAFF)), "staff")
+	check(
+		ItemCodes.same_item(a.loadout.wieldable(Loadout.Slot.STAFF), b.loadout.wieldable(Loadout.Slot.STAFF)), "staff"
+	)
 	check(is_equal_approx(b.health.value, a.health.value) and is_equal_approx(b.health.shield, 10.0), "health + shield")
 	check(is_equal_approx(b.mana.value, 7.0) and is_equal_approx(b.breath.value, 33.0), "mana + breath")
 	check(r["data"]["progress"]["breach_cleared"] == true, "progress kept")
@@ -61,6 +69,7 @@ func test_round_trip() -> void:
 	for n in runner_tree.root.get_children():
 		if n is Node3D and (n as Node3D).position == Vector3(0, 1000, 4200):
 			n.free()
+
 
 func test_old_version_and_bad_codes() -> void:
 	var w := _world(4500)

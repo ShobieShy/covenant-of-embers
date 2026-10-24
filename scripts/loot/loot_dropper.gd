@@ -12,28 +12,31 @@ extends Node
 
 signal drops_spawned(pickups: Array[LootPickup], enemy_id: String, at: Vector3)
 
-const SCATTER := 0.6             ## m ring radius when a kill drops several items
-const LIFT := 0.05               ## m above the corpse's feet
+const SCATTER := 0.6  ## m ring radius when a kill drops several items
+const LIFT := 0.05  ## m above the corpse's feet
 
 @export var seed_base := "covenant"
 @export var peer_id := 1
-var parent: Node3D               ## where pickups go (defaults to this node's parent)
-var luck := 0.0                  ## from the player (0 until a stat gives luck)
-var vigil: Vigil                 ## step 28: null/tier 0 = shipped weights; else a shifted copy
+var parent: Node3D  ## where pickups go (defaults to this node's parent)
+var luck := 0.0  ## from the player (0 until a stat gives luck)
+var vigil: Vigil  ## step 28: null/tier 0 = shipped weights; else a shifted copy
 var _vigil_table: RarityTable
 var _vigil_key := ""
 var rng: RandomNumberGenerator
-var spawned := 0                 ## pickups spawned (all time)
+var spawned := 0  ## pickups spawned (all time)
 var kills_seen := 0
 var kills_skipped := 0
+
 
 static func make_peer_rng(base: String, peer: int) -> RandomNumberGenerator:
 	var r := RandomNumberGenerator.new()
 	r.seed = hash("%s:%d" % [base, peer])
 	return r
 
+
 static func drops_for(enemy_id: String) -> bool:
 	return not enemy_id.ends_with("training_dummy")
+
 
 func _ready() -> void:
 	if rng == null:
@@ -44,10 +47,12 @@ func _ready() -> void:
 	if not bus.enemy_killed.is_connected(_on_enemy_killed):
 		bus.enemy_killed.connect(_on_enemy_killed)
 
+
 func _exit_tree() -> void:
 	var bus := GameEvents.bus()
 	if bus.enemy_killed.is_connected(_on_enemy_killed):
 		bus.enemy_killed.disconnect(_on_enemy_killed)
+
 
 func _on_enemy_killed(enemy: Enemy, _element: ElementTable.Element) -> void:
 	if enemy == null or enemy.def == null or parent == null:
@@ -59,6 +64,7 @@ func _on_enemy_killed(enemy: Enemy, _element: ElementTable.Element) -> void:
 	var at := parent.to_local(enemy.global_position)
 	spawn_drops(DropRoller.roll_enemy(rng, enemy.def, luck, null, rarity_table()), at, enemy.def.id)
 
+
 ## Step 28: the rarity table drops roll on (null = shipped default).
 func rarity_table() -> RarityTable:
 	if vigil == null or vigil.tier <= 0:
@@ -68,6 +74,7 @@ func rarity_table() -> RarityTable:
 		_vigil_table = vigil.table_for()
 		_vigil_key = key
 	return _vigil_table
+
 
 func spawn_drops(drops: Array[LootDrop], at: Vector3, enemy_id := "") -> Array[LootPickup]:
 	var out: Array[LootPickup] = []

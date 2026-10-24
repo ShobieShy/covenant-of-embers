@@ -24,37 +24,38 @@ extends Node3D
 
 signal wave_started(index: int, wave_id: String)
 signal wave_cleared(index: int, wave_id: String)
-signal waves_completed()
+signal waves_completed
 
 enum WaveState { WAITING, DELAY, ACTIVE, DONE }
 
-const WAVE_RING := 1.5          ## m; tools/toml_to_scene.py WAVE_RING must match
-const FREE_DELAY_TICKS := 2     ## a dead non-respawning enemy is freed this many ticks on
-const EPS := 1e-6               ## timers: n x 1/60 leaves float dust
+const WAVE_RING := 1.5  ## m; tools/toml_to_scene.py WAVE_RING must match
+const FREE_DELAY_TICKS := 2  ## a dead non-respawning enemy is freed this many ticks on
+const EPS := 1e-6  ## timers: n x 1/60 leaves float dust
 
 var auto_tick := true
 var player: Player
 var table: EnemyTable
 var level: Node
 var nav: LevelNavigation
-var waves: Array[Dictionary] = []     ## {id, delay_s, enemies: [{enemy, count, at}]}
-var trigger_center := Vector3.ZERO    ## global
+var waves: Array[Dictionary] = []  ## {id, delay_s, enemies: [{enemy, count, at}]}
+var trigger_center := Vector3.ZERO  ## global
 var trigger_radius := 0.0
 var wave_state := WaveState.WAITING
-var wave_index := -1                  ## the wave delaying / alive (-1: not triggered)
+var wave_index := -1  ## the wave delaying / alive (-1: not triggered)
 var delay_left := 0.0
 var wave_alive: Array[Enemy] = []
 var ticks := 0
-var spawned := 0                      ## enemies placed (markers + waves; not respawns)
-var kills := 0                        ## deaths seen
+var spawned := 0  ## enemies placed (markers + waves; not respawns)
+var kills := 0  ## deaths seen
 var freed := 0
 var respawns := 0
 var waves_cleared := 0
-var skipped: Array = []               ## enemy ids with no EnemyDef
-var _respawn_s := {}                  ## Enemy -> s (marker enemies that come back)
-var _home := {}                       ## Enemy -> Transform3D (its marker, local)
-var _respawning: Array[Dictionary] = []   ## {enemy, left}
-var _dying: Array[Dictionary] = []        ## {enemy, at}
+var skipped: Array = []  ## enemy ids with no EnemyDef
+var _respawn_s := {}  ## Enemy -> s (marker enemies that come back)
+var _home := {}  ## Enemy -> Transform3D (its marker, local)
+var _respawning: Array[Dictionary] = []  ## {enemy, left}
+var _dying: Array[Dictionary] = []  ## {enemy, at}
+
 
 ## Spawns the marker enemies of `level` and reads its waves. Returns the marker enemies.
 func setup(lvl: Node, p: Player, t: EnemyTable = null) -> Array[Enemy]:
@@ -75,17 +76,24 @@ func setup(lvl: Node, p: Player, t: EnemyTable = null) -> Array[Enemy]:
 	_read_waves()
 	return got
 
+
 func _read_waves() -> void:
 	waves.clear()
 	var wn := level.get_node_or_null("Waves")
 	if wn == null:
 		return
-	var origin := (level as Node3D).global_transform if level is Node3D and (level as Node3D).is_inside_tree() else Transform3D.IDENTITY
+	var origin := (
+		(level as Node3D).global_transform
+		if level is Node3D and (level as Node3D).is_inside_tree()
+		else Transform3D.IDENTITY
+	)
 	trigger_center = origin * (wn.get_meta(&"trigger_center", Vector3.ZERO) as Vector3)
 	trigger_radius = float(wn.get_meta(&"trigger_radius", 0.0))
 	for c in wn.get_children():
-		waves.append({"id": String(c.name), "delay_s": float(c.get_meta(&"delay_s", 0.0)),
-			"enemies": c.get_meta(&"enemies", [])})
+		waves.append(
+			{"id": String(c.name), "delay_s": float(c.get_meta(&"delay_s", 0.0)), "enemies": c.get_meta(&"enemies", [])}
+		)
+
 
 ## Where n wave enemies at one spawn point stand (toml_to_scene.py ring_spots): one on
 ## the point, more on a ring of WAVE_RING m, the first north (-Z) of it, clockwise seen
@@ -100,6 +108,7 @@ static func ring_spots(center: Vector3, n: int) -> Array[Vector3]:
 		out.append(center + Vector3(WAVE_RING * sin(a), 0.0, -WAVE_RING * cos(a)))
 	return out
 
+
 func alive_count() -> int:
 	var n := 0
 	for c in get_children():
@@ -107,8 +116,10 @@ func alive_count() -> int:
 			n += 1
 	return n
 
+
 func current_wave_id() -> String:
 	return String(waves[wave_index]["id"]) if wave_index >= 0 and wave_index < waves.size() else ""
+
 
 func _adopt(e: Enemy) -> void:
 	e.died.connect(_on_died)
@@ -121,6 +132,7 @@ func _adopt(e: Enemy) -> void:
 				g.attacked.connect(player.on_enemy_attack)
 	GameEvents.bus().enemy_spawned.emit(e)
 
+
 func _on_died(e: Enemy, _element: ElementTable.Element) -> void:
 	kills += 1
 	wave_alive.erase(e)
@@ -129,9 +141,11 @@ func _on_died(e: Enemy, _element: ElementTable.Element) -> void:
 	else:
 		_dying.append({"enemy": e, "at": ticks})
 
+
 func _physics_process(delta: float) -> void:
 	if auto_tick:
 		tick(delta)
+
 
 func tick(dt: float) -> void:
 	ticks += 1
@@ -163,11 +177,13 @@ func tick(dt: float) -> void:
 				GameEvents.bus().enemy_spawned.emit(e)
 	_tick_waves(dt)
 
+
 func triggered() -> bool:
 	if player == null or not player.alive() or trigger_radius <= 0.0:
 		return false
 	var d := player.global_position - trigger_center
 	return Vector2(d.x, d.z).length() <= trigger_radius and absf(d.y) <= 3.0
+
 
 func _tick_waves(dt: float) -> void:
 	if waves.is_empty():
@@ -193,12 +209,14 @@ func _tick_waves(dt: float) -> void:
 					waves_completed.emit()
 					GameEvents.bus().waves_completed.emit()
 
+
 func _begin_wave(i: int) -> void:
 	wave_index = i
 	delay_left = float(waves[i]["delay_s"])
 	wave_state = WaveState.DELAY
 	if delay_left <= EPS:
 		_spawn_wave()
+
 
 func _spawn_wave() -> void:
 	var w := waves[wave_index]
@@ -222,7 +240,7 @@ func _spawn_wave() -> void:
 			var n := int(used.get(at, 0))
 			used[at] = n + 1
 			var e := Enemy.create(d, inv * Transform3D(mx.basis, spots[n]))
-			e.name = "%s_%s_%s_%d" % [id, at, d.id, n + 1]   # unique: n counts per point
+			e.name = "%s_%s_%s_%d" % [id, at, d.id, n + 1]  # unique: n counts per point
 			add_child(e)
 			spawned += 1
 			wave_alive.append(e)

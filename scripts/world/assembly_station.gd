@@ -24,14 +24,18 @@ const REACH := 3.0
 var last_error := ""
 var crafted := 0
 
+
 func _ready() -> void:
 	add_to_group(GROUP)
+
 
 func in_reach(p: Player) -> bool:
 	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
 
+
 func allows(type: WieldableDef.Type) -> bool:
 	return can_craft_wands if type == WieldableDef.Type.WAND else can_craft_staffs
+
 
 func check(base: WieldableInstance, parts: Array) -> PackedStringArray:
 	var errs := PackedStringArray()
@@ -45,10 +49,12 @@ func check(base: WieldableInstance, parts: Array) -> PackedStringArray:
 	errs.append_array(Assembly.check(base.def, parts))
 	return errs
 
+
 func preview(base: WieldableInstance, parts: Array) -> WieldableInstance:
 	if not check(base, parts).is_empty():
 		return null
 	return Assembly.assemble(base.def, parts)
+
 
 func assemble(p: Player, base: WieldableInstance, parts: Array) -> WieldableInstance:
 	last_error = ""
@@ -70,6 +76,7 @@ func assemble(p: Player, base: WieldableInstance, parts: Array) -> WieldableInst
 	crafting_completed.emit(w)
 	GameEvents.bus().crafting_completed.emit(p, w)
 	return w
+
 
 func disassemble(p: Player, w: WieldableInstance) -> Array[WieldablePart]:
 	last_error = ""

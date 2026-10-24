@@ -20,14 +20,15 @@ const COUNT := 7
 const IDS: PackedStringArray = ["arcane", "fire", "water", "earth", "air", "light", "dark"]
 const PATH := "res://resources/magic/elements.tres"
 
-@export var strong := 1.5                        ## multiplier vs strong_against (> 1)
-@export var weak := 0.5                          ## multiplier vs weak_against ([0, 1))
-@export var elements: Array[ElementDef] = []     ## one per Element, any order
+@export var strong := 1.5  ## multiplier vs strong_against (> 1)
+@export var weak := 0.5  ## multiplier vs weak_against ([0, 1))
+@export var elements: Array[ElementDef] = []  ## one per Element, any order
 
-var _chart := PackedFloat64Array()               ## COUNT x COUNT, [attacker * COUNT + defender]
-var _rows: Array[ElementDef] = []                ## indexed by Element
+var _chart := PackedFloat64Array()  ## COUNT x COUNT, [attacker * COUNT + defender]
+var _rows: Array[ElementDef] = []  ## indexed by Element
 
 static var _default: ElementTable
+
 
 ## The shared table from resources/magic/elements.tres (loaded once).
 static func load_default() -> ElementTable:
@@ -38,12 +39,15 @@ static func load_default() -> ElementTable:
 			push_error("%s: %s" % [PATH, "; ".join(errs)])
 	return _default
 
+
 static func id_of(e: Element) -> String:
 	return IDS[e]
+
 
 ## Element for an id, or -1 when unknown ("none"/"wind" are not ids).
 static func parse(id: String) -> int:
 	return IDS.find(id)
+
 
 func effectiveness(attacker: Element, defender: Element) -> float:
 	if attacker == defender or attacker == Element.ARCANE or defender == Element.ARCANE:
@@ -51,17 +55,21 @@ func effectiveness(attacker: Element, defender: Element) -> float:
 	_ensure_built()
 	return _chart[attacker * COUNT + defender]
 
+
 func display_name(e: Element) -> String:
 	var d := def(e)
 	return d.display_name if d != null else IDS[e]
+
 
 func color(e: Element) -> Color:
 	var d := def(e)
 	return d.color if d != null else Color.WHITE
 
+
 func def(e: Element) -> ElementDef:
 	_ensure_built()
 	return _rows[e]
+
 
 ## Recomputes the chart from `elements`/`strong`/`weak` (after a patch, step 21).
 func rebuild() -> void:
@@ -84,9 +92,11 @@ func rebuild() -> void:
 			if b >= 0:
 				_chart[a * COUNT + b] = weak
 
+
 func _ensure_built() -> void:
 	if _chart.size() != COUNT * COUNT:
 		rebuild()
+
 
 ## Empty when the table is usable; else one message per problem.
 func validate() -> PackedStringArray:

@@ -32,26 +32,31 @@ signal swap_started(slot: int)
 var casters: Array[Caster] = [Caster.new(), Caster.new()]
 var active: int = Slot.STAFF
 var swap_seconds := 0.4
-var swap_left := 0.0      ## seconds left on the current draw (0 = ready)
-var draw_seconds := 0.4   ## length of the current/last draw (handling-adjusted, step 17)
+var swap_left := 0.0  ## seconds left on the current draw (0 = ready)
+var draw_seconds := 0.4  ## length of the current/last draw (handling-adjusted, step 17)
 var swaps := 0
-var swap_blocked := 0     ## fire presses refused because a swap was running
+var swap_blocked := 0  ## fire presses refused because a swap was running
+
 
 static func from_tuning(t: PlayerTuning) -> Loadout:
 	var l := Loadout.new()
 	l.swap_seconds = t.swap_seconds
 	return l
 
+
 static func slot_for(w: WieldableInstance) -> int:
 	return Slot.WAND if w != null and w.type() == WieldableDef.Type.WAND else Slot.STAFF
+
 
 ## The caster of the slot in hand.
 func caster() -> Caster:
 	return casters[active]
 
+
 ## The wieldable in `slot` (default: in hand); null = empty.
 func wieldable(slot: int = -1) -> WieldableInstance:
 	return casters[active if slot < 0 else slot].wieldable
+
 
 ## Puts `w` into the slot of its type (its cooldown is kept). With empty hands the new
 ## slot is drawn at once (no swap). Returns the slot.
@@ -59,7 +64,9 @@ func wieldable(slot: int = -1) -> WieldableInstance:
 ## swaps can't skip the draw).
 func equip(w: WieldableInstance) -> int:
 	var slot := slot_for(w)
-	var replacing_in_hand := slot == active and casters[slot].wieldable != null and w != null and casters[slot].wieldable != w
+	var replacing_in_hand := (
+		slot == active and casters[slot].wieldable != null and w != null and casters[slot].wieldable != w
+	)
 	casters[slot].equip(w)
 	if replacing_in_hand:
 		draw_seconds = w.draw_seconds(swap_seconds)
@@ -71,12 +78,15 @@ func equip(w: WieldableInstance) -> int:
 		swap_left = 0.0
 	return slot
 
+
 ## Empties `slot`.
 func unequip(slot: int) -> void:
 	casters[slot].equip(null)
 
+
 func swapping() -> bool:
 	return swap_left > 0.0
+
 
 ## Draws `slot`: false if it is already in hand (or being drawn) or empty.
 func select(slot: int) -> bool:
@@ -89,6 +99,7 @@ func select(slot: int) -> bool:
 	swap_started.emit(slot)
 	return true
 
+
 ## Mouse wheel (Magewar quickslot_prev/next_wieldable): the next non-empty slot in `dir`.
 func cycle(dir: int) -> bool:
 	var n := casters.size()
@@ -98,9 +109,11 @@ func cycle(dir: int) -> bool:
 			return select(s)
 	return false
 
+
 ## 0 at the start of a draw .. 1 when ready (viewmodel raise).
 func draw_progress() -> float:
 	return 1.0 - swap_left / draw_seconds if draw_seconds > 0.0 else 1.0
+
 
 ## One tick for everything but the cast: holstered slots cool down; a running swap counts
 ## down unless it started this tick (`started_now`). The slot in hand is cooled by its
@@ -113,6 +126,7 @@ func tick(dt: float, started_now: bool) -> void:
 		swap_left = maxf(0.0, swap_left - dt)
 		if swap_left < 1e-9:
 			swap_left = 0.0
+
 
 ## The drawn slot during a swap: its cooldown keeps running, a press is refused.
 func tick_swap(pressed: bool, dt: float) -> void:

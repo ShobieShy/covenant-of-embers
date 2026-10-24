@@ -34,21 +34,26 @@ const WAND_REQUIRED: Array[WieldablePart.PartType] = [P.HEAD, P.EXTERIOR]
 const WAND_OPTIONAL: Array[WieldablePart.PartType] = [P.HANDLE]
 const WAND_GEM_SLOTS := 1
 const MIN_DRAW_SECONDS := 0.2
-const TYPE_NAMES: PackedStringArray = ["Staff", "Wand"]   ## Magewar type_str
+const TYPE_NAMES: PackedStringArray = ["Staff", "Wand"]  ## Magewar type_str
+
 
 static func required_types(type: WieldableDef.Type) -> Array[WieldablePart.PartType]:
 	return STAFF_REQUIRED if type == WieldableDef.Type.STAFF else WAND_REQUIRED
 
+
 static func optional_types(type: WieldableDef.Type) -> Array[WieldablePart.PartType]:
 	return STAFF_OPTIONAL if type == WieldableDef.Type.STAFF else WAND_OPTIONAL
 
+
 static func allows(type: WieldableDef.Type, part_type: int) -> bool:
 	return part_type in required_types(type) or part_type in optional_types(type)
+
 
 ## Part count range: staff 4..5, wand 2..3.
 static func count_range(type: WieldableDef.Type) -> Vector2i:
 	var n := required_types(type).size()
 	return Vector2i(n, n + optional_types(type).size())
+
 
 ## Empty when `parts` make a legal build on `def`; else one message per problem.
 static func check(def: WieldableDef, parts: Array) -> PackedStringArray:
@@ -81,8 +86,10 @@ static func check(def: WieldableDef, parts: Array) -> PackedStringArray:
 		errs.append("%s takes %d-%d parts (got %d)" % [kind, r.x, r.y, parts.size()])
 	return errs
 
+
 static func can_build(def: WieldableDef, parts: Array) -> bool:
 	return check(def, parts).is_empty()
+
 
 ## Magewar _calculate_assembled_rarity: floor(mean part tier); Basic when empty. Unknown
 ## rarity ids count as Basic (check() rejects them anyway).
@@ -94,6 +101,7 @@ static func rarity_for(parts: Array) -> String:
 		var part := p as WieldablePart
 		total += maxi(0, Rarity.parse(part.rarity)) if part != null else 0
 	return Rarity.IDS[clampi(floori(float(total) / parts.size()), 0, Rarity.COUNT - 1)]
+
 
 ## A new assembled WieldableInstance (parts sorted Head..Charm, the same part objects, not
 ## copies, so disassembling returns them), or null when check() fails. Nothing is consumed:
@@ -110,12 +118,14 @@ static func assemble(def: WieldableDef, parts: Array) -> WieldableInstance:
 	w.assembled = true
 	return w
 
+
 ## The parts back out of an assembled wieldable (the step 25 station returns them).
 static func disassemble(w: WieldableInstance) -> Array[WieldablePart]:
 	var out: Array[WieldablePart] = []
 	if w != null and w.assembled:
 		out.assign(w.parts)
 	return out
+
 
 ## Draw (swap-in) time for a wieldable with `handling`: base x 100 / (100 + handling),
 ## handling below 0 counts as 0, never under MIN_DRAW_SECONDS (and never longer than base).
@@ -125,7 +135,14 @@ static func draw_seconds(base_seconds: float, handling: float) -> float:
 	var t := base_seconds * 100.0 / (100.0 + maxf(0.0, handling))
 	return clampf(t, minf(MIN_DRAW_SECONDS, base_seconds), base_seconds)
 
+
 ## Magewar's assembled name: "<Rarity> <Element> Staff|Wand".
 static func name_for(type: WieldableDef.Type, rarity_id: String, element: ElementTable.Element) -> String:
-	return "%s %s %s" % [RarityTable.load_default().display_name(rarity_id),
-		ElementTable.load_default().display_name(element), TYPE_NAMES[type]]
+	return (
+		"%s %s %s"
+		% [
+			RarityTable.load_default().display_name(rarity_id),
+			ElementTable.load_default().display_name(element),
+			TYPE_NAMES[type]
+		]
+	)

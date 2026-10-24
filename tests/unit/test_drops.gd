@@ -9,19 +9,22 @@ extends TestCase
 
 const E := ElementTable.Element
 
+
 func _world() -> Node3D:
 	var w := Node3D.new()
 	w.position = Vector3(500, 0, 500)
 	runner_tree.root.add_child(w)
 	return w
 
+
 func _enemy(id: String, at: Vector3, world: Node3D) -> Enemy:
 	var d := EnemyTable.load_default().find(id)
 	check(d != null, "enemy def " + id)
 	var e := Enemy.create(d, Transform3D(Basis.IDENTITY, at))
-	e.process_mode = Node.PROCESS_MODE_DISABLED   # no AI ticks: only the death matters
+	e.process_mode = Node.PROCESS_MODE_DISABLED  # no AI ticks: only the death matters
 	world.add_child(e)
 	return e
+
 
 func _dropper(world: Node3D, peer := 1) -> LootDropper:
 	var dr := LootDropper.new()
@@ -29,6 +32,7 @@ func _dropper(world: Node3D, peer := 1) -> LootDropper:
 	dr.seed_base = "test_drops"
 	world.add_child(dr)
 	return dr
+
 
 func test_kill_spawns_coloured_drops() -> void:
 	var w := _world()
@@ -43,10 +47,12 @@ func test_kill_spawns_coloured_drops() -> void:
 		var expect := DropRoller.roll_enemy(replay, e.def, 0.0)
 		var before := w.get_children().filter(func(n: Node) -> bool: return n is LootPickup).size()
 		check(e.apply_damage(100000.0, E.FIRE), "%s dies" % id)
-		e.apply_damage(100000.0, E.FIRE)   # hitting the corpse: no second roll
+		e.apply_damage(100000.0, E.FIRE)  # hitting the corpse: no second roll
 		var pickups: Array = w.get_children().filter(func(n: Node) -> bool: return n is LootPickup)
 		var new_ones := pickups.slice(before)
-		check(new_ones.size() == expect.size(), "kill %d: %d pickups, expected %d" % [k, new_ones.size(), expect.size()])
+		check(
+			new_ones.size() == expect.size(), "kill %d: %d pickups, expected %d" % [k, new_ones.size(), expect.size()]
+		)
 		for i in mini(new_ones.size(), expect.size()):
 			var p: LootPickup = new_ones[i]
 			var x: LootDrop = expect[i]
@@ -58,7 +64,12 @@ func test_kill_spawns_coloured_drops() -> void:
 			check(Color(bc, 1.0).is_equal_approx(c), "beam tint")
 			check(p.light.light_color.is_equal_approx(c), "light tint")
 			check(p.label.text == x.describe(), "label '%s'" % p.label.text)
-			check_near(p.beam_height(), LootPickup.BEAM_BASE + LootPickup.BEAM_PER_TIER * Rarity.parse(x.rarity_id), 1e-6, "beam height")
+			check_near(
+				p.beam_height(),
+				LootPickup.BEAM_BASE + LootPickup.BEAM_PER_TIER * Rarity.parse(x.rarity_id),
+				1e-6,
+				"beam height"
+			)
 			check(p.collision_layer == 1 << (LootPickup.PICKUP_LAYER - 1), "pickup layer")
 			check(p.is_in_group(LootPickup.GROUP), "group")
 			check(p.position.distance_to(at) <= LootDropper.SCATTER + 0.1, "near the corpse")
@@ -68,6 +79,7 @@ func test_kill_spawns_coloured_drops() -> void:
 	check(tiers_seen.size() >= 3, "several rarities seen: %s" % [tiers_seen.keys()])
 	print("    30 kills: %d pickups, tiers %s" % [dr.spawned, tiers_seen.keys()])
 	w.queue_free()
+
 
 func test_dummies_never_drop() -> void:
 	var w := _world()
@@ -82,6 +94,7 @@ func test_dummies_never_drop() -> void:
 	check(not LootDropper.drops_for("earth_training_dummy") and LootDropper.drops_for("gnawer"), "drops_for")
 	w.queue_free()
 
+
 func test_peer_streams() -> void:
 	var a := LootDropper.make_peer_rng("s", 1)
 	var b := LootDropper.make_peer_rng("s", 1)
@@ -94,6 +107,7 @@ func test_peer_streams() -> void:
 		differ = differ or x != c.randi()
 	check(same, "same peer → same stream")
 	check(differ, "different peers → different streams")
+
 
 func test_beam_grows_with_tier() -> void:
 	var prev := 0.0

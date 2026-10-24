@@ -12,14 +12,16 @@ const ATTRIBUTES: PackedStringArray = ["health", "mana"]
 @export var id := ""
 @export var display_name := ""
 @export_multiline var description := ""
-@export var attribute := "health"     ## "health" -> Health.heal, "mana" -> Mana.restore
+@export var attribute := "health"  ## "health" -> Health.heal, "mana" -> Mana.restore
 @export var amount := 0.0
 @export var stack_size := 5
-@export var hint := ""                ## Magewar hint_text_on_use
+@export var hint := ""  ## Magewar hint_text_on_use
+
 
 static func load_item(item_id: String) -> ConsumableItem:
 	var path := "%s/%s.tres" % [DIR, item_id]
 	return load(path) as ConsumableItem if ResourceLoader.exists(path) else null
+
 
 static func list_ids() -> PackedStringArray:
 	var ids := PackedStringArray()
@@ -28,6 +30,7 @@ static func list_ids() -> PackedStringArray:
 			ids.append(f.get_basename())
 	ids.sort()
 	return ids
+
 
 func validate() -> PackedStringArray:
 	var errs := PackedStringArray()
@@ -40,6 +43,7 @@ func validate() -> PackedStringArray:
 	if stack_size < 1:
 		errs.append("%s: stack_size %d < 1" % [id, stack_size])
 	return errs
+
 
 ## Applies to a player (anything with `health: Health` and `mana: Mana`). True = used.
 func use(target: Object) -> bool:
@@ -59,6 +63,7 @@ func use(target: Object) -> bool:
 			m.restore(amount)
 			return true
 	return false
+
 
 ## The refusal hint (Cogito: "health is already maxed.").
 func maxed_hint() -> String:

@@ -21,15 +21,16 @@ signal player_damaged(player: Player, result: Damage.Result)
 signal enemy_spawned(enemy: Enemy)
 signal wave_started(index: int, wave_id: String)
 signal wave_cleared(index: int, wave_id: String)
-signal waves_completed()
-signal crafting_completed(player: Player, item: WieldableInstance)   ## step 25 (Magewar station signal)
+signal waves_completed
+signal crafting_completed(player: Player, item: WieldableInstance)  ## step 25 (Magewar station signal)
 
 const AUTOLOAD := ^"/root/EventBus"
 
-var kills := 0               ## enemy_killed emitted (all time; tests use deltas)
-var player_hits := 0         ## player_damaged emitted
+var kills := 0  ## enemy_killed emitted (all time; tests use deltas)
+var player_hits := 0  ## player_damaged emitted
 
 static var _fallback: GameEvents
+
 
 ## The bus: the EventBus autoload, else a stand-in (not in the tree; signals still work).
 static func bus() -> GameEvents:
@@ -42,9 +43,11 @@ static func bus() -> GameEvents:
 		_fallback = GameEvents.new()
 	return _fallback
 
+
 func announce_kill(enemy: Enemy, element: ElementTable.Element) -> void:
 	kills += 1
 	enemy_killed.emit(enemy, element)
+
 
 func announce_player_damaged(player: Player, result: Damage.Result) -> void:
 	player_hits += 1

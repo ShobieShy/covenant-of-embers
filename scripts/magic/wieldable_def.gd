@@ -9,26 +9,28 @@ extends Resource
 ## .tres copies in assets/magewar by test_casting.gd). Parts and final stats live in
 ## WieldableInstance.
 
-enum Type { STAFF, WAND }   ## Magewar StaffWieldableItem.StaffType order
+enum Type { STAFF, WAND }  ## Magewar StaffWieldableItem.StaffType order
 
 const TYPE_IDS: PackedStringArray = ["staff", "wand"]
 ## Magewar ItemRarity.Rarity order (= Rarity.IDS; tiers in resources/loot/rarities.tres).
 const RARITY_IDS: PackedStringArray = Rarity.IDS
-const MIN_COOLDOWN := 0.1   ## Magewar get_final_fire_rate: max(0.1, rate)
+const MIN_COOLDOWN := 0.1  ## Magewar get_final_fire_rate: max(0.1, rate)
 
-@export var id := ""                          ## lower_snake_case key
-@export var display_name := ""                ## Magewar `name`
+@export var id := ""  ## lower_snake_case key
+@export var display_name := ""  ## Magewar `name`
 @export var type: Type = Type.STAFF
-@export var base_rarity := "basic"            ## RARITY_IDS
-@export var element: ElementTable.Element = ElementTable.Element.ARCANE   ## Magewar primary_element
-@export var damage := 10.0                    ## Magewar wieldable_damage (before rarity / parts)
-@export var mana_cost := 5.0                  ## per cast (step 8 spends it)
-@export var cooldown := 0.4                   ## Magewar fire_cooldown, seconds
-@export var projectile_speed := 30.0          ## m/s
-@export var range_m := 50.0                   ## Magewar wieldable_range: the bolt fizzles here
+@export var base_rarity := "basic"  ## RARITY_IDS
+@export var element: ElementTable.Element = ElementTable.Element.ARCANE  ## Magewar primary_element
+@export var damage := 10.0  ## Magewar wieldable_damage (before rarity / parts)
+@export var mana_cost := 5.0  ## per cast (step 8 spends it)
+@export var cooldown := 0.4  ## Magewar fire_cooldown, seconds
+@export var projectile_speed := 30.0  ## m/s
+@export var range_m := 50.0  ## Magewar wieldable_range: the bolt fizzles here
+
 
 static func type_of(id_str: String) -> int:
 	return TYPE_IDS.find(id_str)
+
 
 ## From a data/magic/wieldables.toml [[wieldable]] table (LevelToml); validate() afterwards.
 static func from_toml(t: Dictionary) -> WieldableDef:
@@ -44,6 +46,7 @@ static func from_toml(t: Dictionary) -> WieldableDef:
 	d.projectile_speed = float(t.get("projectile_speed", 0.0))
 	d.range_m = float(t.get("range", 0.0))
 	return d
+
 
 ## Empty when usable; else one message per problem (the C++ loader's checks: generous
 ## sanity bounds around Magewar's bases, cooldown >= Magewar's 0.1 s floor).
@@ -61,9 +64,13 @@ func validate() -> PackedStringArray:
 		errs.append("%s: unknown base_rarity '%s' (expected %s)" % [w, base_rarity, ", ".join(RARITY_IDS)])
 	if element < 0 or element >= ElementTable.COUNT:
 		errs.append("%s: unknown element %d" % [w, element])
-	for r in [["damage", damage, 0.1, 1000.0], ["mana_cost", mana_cost, 0.0, 100.0],
-			["cooldown", cooldown, MIN_COOLDOWN, 10.0], ["projectile_speed", projectile_speed, 1.0, 500.0],
-			["range", range_m, 1.0, 1000.0]]:
+	for r in [
+		["damage", damage, 0.1, 1000.0],
+		["mana_cost", mana_cost, 0.0, 100.0],
+		["cooldown", cooldown, MIN_COOLDOWN, 10.0],
+		["projectile_speed", projectile_speed, 1.0, 500.0],
+		["range", range_m, 1.0, 1000.0]
+	]:
 		var v: float = r[1]
 		if not (v >= r[2] and v <= r[3]):
 			errs.append("%s %s must be in [%s, %s] (got %s)" % [w, r[0], r[2], r[3], v])

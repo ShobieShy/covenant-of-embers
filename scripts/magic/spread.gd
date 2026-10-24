@@ -16,15 +16,18 @@ extends RefCounted
 ## returned untouched). Directions are uniform over the cone's spherical cap from a seeded
 ## RandomNumberGenerator (PCG32): same seed => same shots. Two numbers per apply().
 
+
 ## Body state for the multiplier.
 class Stance:
 	extends RefCounted
-	var focus := 0.0        ## Focus.amount()
+	var focus := 0.0  ## Focus.amount()
 	var crouched := false
 	var moving := false
 	var airborne := false
 
-	static func make(p_focus: float = 0.0, p_crouched: bool = false, p_moving: bool = false, p_airborne: bool = false) -> Stance:
+	static func make(
+		p_focus: float = 0.0, p_crouched: bool = false, p_moving: bool = false, p_airborne: bool = false
+	) -> Stance:
 		var s := Stance.new()
 		s.focus = p_focus
 		s.crouched = p_crouched
@@ -32,24 +35,27 @@ class Stance:
 		s.airborne = p_airborne
 		return s
 
-const DEFAULT_SEED := 0x434F45   ## "COE"
 
-var max_spread_deg := 4.0          ## half-angle at 0 % accuracy, hip, still
-var focus_mul := 0.35              ## fully focused
-var crouch_mul := 0.8              ## crouched on the ground (also sliding)
-var moving_mul := 1.3              ## on the ground above moving_speed
-var airborne_mul := 1.8            ## not on the ground (replaces crouch/moving)
-var moving_speed := 0.5            ## m/s horizontal
-var bloom_per_cast_deg := 1.0      ## added to max_spread_deg per cast (so x (1 - acc/100) too)
-var bloom_max_deg := 4.0           ## cap: spamming at most doubles the cone
+const DEFAULT_SEED := 0x434F45  ## "COE"
+
+var max_spread_deg := 4.0  ## half-angle at 0 % accuracy, hip, still
+var focus_mul := 0.35  ## fully focused
+var crouch_mul := 0.8  ## crouched on the ground (also sliding)
+var moving_mul := 1.3  ## on the ground above moving_speed
+var airborne_mul := 1.8  ## not on the ground (replaces crouch/moving)
+var moving_speed := 0.5  ## m/s horizontal
+var bloom_per_cast_deg := 1.0  ## added to max_spread_deg per cast (so x (1 - acc/100) too)
+var bloom_max_deg := 4.0  ## cap: spamming at most doubles the cone
 var bloom_recovery_seconds := 0.5  ## a full bloom decays to 0 in this time (linear)
 
-var bloom := 0.0                   ## degrees
-var last_cone_deg := 0.0           ## the cone used by the last apply()
+var bloom := 0.0  ## degrees
+var last_cone_deg := 0.0  ## the cone used by the last apply()
 var rng := RandomNumberGenerator.new()
+
 
 func _init(p_seed: int = DEFAULT_SEED) -> void:
 	rng.seed = p_seed
+
 
 static func from_tuning(t: PlayerTuning, p_seed: int = DEFAULT_SEED) -> Spread:
 	var s := Spread.new(p_seed)
@@ -64,6 +70,7 @@ static func from_tuning(t: PlayerTuning, p_seed: int = DEFAULT_SEED) -> Spread:
 	s.bloom_recovery_seconds = t.bloom_recovery_seconds
 	return s
 
+
 func stance_multiplier(s: Stance) -> float:
 	var focus := 1.0 + (focus_mul - 1.0) * clampf(s.focus, 0.0, 1.0)
 	var body := 1.0
@@ -76,14 +83,17 @@ func stance_multiplier(s: Stance) -> float:
 			body *= moving_mul
 	return focus * body
 
+
 ## Cone half-angle in degrees for an accuracy (clamped 0..100), stance multiplier and bloom.
 func cone_for(accuracy: float, stance_mul: float, bloom_deg: float) -> float:
 	var miss := 1.0 - clampf(accuracy, 0.0, 100.0) / 100.0
 	return (max_spread_deg + bloom_deg) * miss * stance_mul
 
+
 ## The cone right now (current bloom).
 func cone_deg(accuracy: float, s: Stance) -> float:
 	return cone_for(accuracy, stance_multiplier(s), bloom)
+
 
 ## A direction inside the cone around unit `dir`; u1, u2 in [0, 1) pick it uniformly over
 ## the spherical cap (u1 -> polar angle, u2 -> azimuth). Half-angle 0 returns dir as is.
@@ -99,6 +109,7 @@ static func cone_direction(dir: Vector3, half_angle_rad: float, u1: float, u2: f
 	var up := right.cross(dir)
 	return (dir * cos_t + (right * cos(phi) + up * sin(phi)) * sin_t).normalized()
 
+
 ## Per physics tick, before casting: bloom decays.
 func tick(dt: float) -> void:
 	if bloom <= 0.0:
@@ -108,6 +119,7 @@ func tick(dt: float) -> void:
 	if bloom < 1e-6:
 		bloom = 0.0
 
+
 ## The aim with its direction spread for this accuracy/stance (+ the current bloom).
 func apply(aim: Caster.Aim, accuracy: float, s: Stance) -> Caster.Aim:
 	last_cone_deg = cone_deg(accuracy, s)
@@ -116,6 +128,7 @@ func apply(aim: Caster.Aim, accuracy: float, s: Stance) -> Caster.Aim:
 	if last_cone_deg <= 0.0:
 		return aim
 	return Caster.Aim.make(aim.origin, cone_direction(aim.direction, deg_to_rad(last_cone_deg), u1, u2), aim.exclude)
+
 
 ## After a real cast (Caster.tick returned true): bloom grows.
 func on_cast() -> void:

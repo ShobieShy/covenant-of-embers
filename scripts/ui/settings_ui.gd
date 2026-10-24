@@ -4,15 +4,16 @@ extends CanvasLayer
 ## one row per rebindable action (click, then press a key or mouse button), and the look /
 ## accessibility options. Every change saves user://keybinds.cfg and re-applies.
 
-signal closed()
+signal closed
 
 var settings: Settings
 var player: Player
 var path := Settings.PATH
 var listening: StringName = &""
-var action_buttons := {}       ## StringName -> Button
+var action_buttons := {}  ## StringName -> Button
 var root: PanelContainer
-var controls := {}             ## option name -> Control
+var controls := {}  ## option name -> Control
+
 
 func _init() -> void:
 	layer = 4
@@ -44,8 +45,14 @@ func _init() -> void:
 		c.toggled.connect(func(v): set_option(o, v))
 		opts.add_child(c)
 		controls[o] = c
-	for o in [["hip_fov", 60.0, 110.0, 1.0], ["aim_sensitivity", 0.1, 5.0, 0.05], ["head_bob", 0.0, 1.0, 0.1],
-			["master_volume", 0.0, 1.0, 0.05], ["sfx_volume", 0.0, 1.0, 0.05], ["music_volume", 0.0, 1.0, 0.05]]:
+	for o in [
+		["hip_fov", 60.0, 110.0, 1.0],
+		["aim_sensitivity", 0.1, 5.0, 0.05],
+		["head_bob", 0.0, 1.0, 0.1],
+		["master_volume", 0.0, 1.0, 0.05],
+		["sfx_volume", 0.0, 1.0, 0.05],
+		["music_volume", 0.0, 1.0, 0.05]
+	]:
 		var l := Label.new()
 		l.text = String(o[0]).capitalize()
 		opts.add_child(l)
@@ -62,19 +69,23 @@ func _init() -> void:
 	back.pressed.connect(close)
 	opts.add_child(back)
 
+
 func setup(s: Settings, p: Player = null) -> void:
 	settings = s
 	player = p
 	refresh()
 
+
 func open() -> void:
 	visible = true
 	refresh()
+
 
 func close() -> void:
 	visible = false
 	listening = &""
 	closed.emit()
+
 
 func refresh() -> void:
 	if settings == null:
@@ -88,18 +99,22 @@ func refresh() -> void:
 		else:
 			(c as Range).set_value_no_signal(settings.get(o))
 
+
 func listen(a: StringName) -> void:
 	listening = a
 	refresh()
+
 
 func set_option(o: String, v: Variant) -> void:
 	settings.set(o, v)
 	_commit()
 
+
 func _commit() -> void:
 	settings.save(path)
 	settings.apply_to(player)
 	refresh()
+
 
 func _input(event: InputEvent) -> void:
 	if not visible or listening == &"":
@@ -111,6 +126,7 @@ func _input(event: InputEvent) -> void:
 			refresh()
 			return
 		capture(event)
+
 
 ## The key/mouse event for the action being rebound.
 func capture(e: InputEvent) -> bool:

@@ -21,12 +21,15 @@ static var dry_run := false
 static var last_request := ""
 static var requests := 0
 
+
 static func level_scene(id: String) -> String:
 	return LEVELS.get(id, LEVELS["midden"])
+
 
 ## Flow id ("midden"/"breach") of a level root's level_id meta.
 static func id_of(level: Node) -> String:
 	return LEVEL_IDS.get(String(level.get_meta("level_id", "")), "midden") if level else "midden"
+
 
 static func _change(tree: SceneTree, path: String) -> void:
 	last_request = path
@@ -36,10 +39,12 @@ static func _change(tree: SceneTree, path: String) -> void:
 	tree.paused = false
 	tree.change_scene_to_file.call_deferred(path)
 
+
 static func new_run(tree: SceneTree) -> void:
 	level_id = "midden"
 	load_save = false
 	_change(tree, GAME)
+
 
 ## Continue: the saved level, state loaded. False (nothing happens) without a valid save.
 static func continue_run(tree: SceneTree) -> bool:
@@ -53,14 +58,17 @@ static func continue_run(tree: SceneTree) -> bool:
 	_change(tree, GAME)
 	return true
 
+
 static func travel(tree: SceneTree, to_level: String) -> void:
 	level_id = to_level if LEVELS.has(to_level) else "midden"
 	load_save = true
 	_change(tree, GAME)
 
+
 static func to_menu(tree: SceneTree) -> void:
 	load_save = false
 	_change(tree, MENU)
+
 
 static func has_save() -> bool:
 	return not SaveGame.read(save_path).has("error")

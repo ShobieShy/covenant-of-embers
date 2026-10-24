@@ -13,13 +13,14 @@ var player: Player
 var root: PanelContainer
 var grid: GridContainer
 var slot_buttons: Array[Button] = []
-var worn_buttons: Array[Button] = []     ## staff, wand, then EquipmentItem.Slot order
+var worn_buttons: Array[Button] = []  ## staff, wand, then EquipmentItem.Slot order
 var card: RichTextLabel
 var code_field: LineEdit
 var status: Label
 var dust_label: Label
 var selected: Resource = null
 var last_code := ""
+
 
 func _init() -> void:
 	layer = 3
@@ -77,15 +78,18 @@ func _init() -> void:
 	status = _label("")
 	right.add_child(status)
 
+
 func bind(p: Player) -> void:
 	player = p
 	p.inventory.changed.connect(refresh)
 	p.equipment.changed.connect(func(_s): refresh())
 
+
 func _label(t: String) -> Label:
 	var l := Label.new()
 	l.text = t
 	return l
+
 
 func _button(t: String) -> Button:
 	var b := Button.new()
@@ -93,10 +97,12 @@ func _button(t: String) -> Button:
 	b.clip_text = true
 	return b
 
+
 func _worn(i: int) -> Resource:
 	if player == null:
 		return null
 	return player.loadout.wieldable(i) if i < 2 else player.equipment.item(i - 2)
+
 
 static func name_of(item: Resource) -> String:
 	if item == null:
@@ -105,13 +111,16 @@ static func name_of(item: Resource) -> String:
 		return item.call("display_name")
 	return String(item.get("display_name"))
 
+
 static func color_of(item: Resource) -> Color:
 	if item != null and item.has_method("rarity_color"):
 		return item.call("rarity_color")
 	return Color.WHITE
 
+
 func is_open() -> bool:
 	return visible
+
 
 func open() -> void:
 	visible = true
@@ -121,6 +130,7 @@ func open() -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	refresh()
 
+
 func close() -> void:
 	visible = false
 	if player:
@@ -128,11 +138,13 @@ func close() -> void:
 	if DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
+
 func toggle() -> void:
 	if visible:
 		close()
 	else:
 		open()
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(ACTION):
@@ -141,6 +153,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif visible and event.is_action_pressed(&"ui_cancel"):
 		close()
 		get_viewport().set_input_as_handled()
+
 
 func refresh() -> void:
 	if player == null:
@@ -157,10 +170,12 @@ func refresh() -> void:
 	dust_label.text = "Arcane Dust: %d" % player.inventory.dust
 	card.text = card_text(selected)
 
+
 func select(item: Resource) -> void:
 	selected = item
 	status.text = ""
 	refresh()
+
 
 ## The compare card as BBCode: title in rarity colour, rows with green/red deltas.
 func card_text(item: Resource) -> String:
@@ -179,6 +194,7 @@ func card_text(item: Resource) -> String:
 		s += "\n"
 	return s
 
+
 func equip_selected() -> bool:
 	if selected == null or player == null:
 		return false
@@ -186,6 +202,7 @@ func equip_selected() -> bool:
 	status.text = "Equipped." if ok else "Can't equip that."
 	refresh()
 	return ok
+
 
 ## Puts the selected item's Ember Mark in the code field (and the clipboard when there is one).
 func copy_selected() -> String:
@@ -198,6 +215,7 @@ func copy_selected() -> String:
 		DisplayServer.clipboard_set(last_code)
 	status.text = "Ember Mark copied."
 	return last_code
+
 
 ## Decodes `code` into the backpack; false (with the reason in `status`) on a bad code or full pack.
 func import_code(code: String) -> bool:

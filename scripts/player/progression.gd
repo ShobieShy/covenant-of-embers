@@ -15,12 +15,13 @@ const GROWTH := 1.5
 const MANA_PER_LEVEL := 5.0
 const BREATH_PER_LEVEL := 5.0
 const HEALTH_PER_LEVEL := 0.0
-const MAX_LEVEL := 50          ## enemies are 1..50 (EnemyDef.MAX_LEVEL)
+const MAX_LEVEL := 50  ## enemies are 1..50 (EnemyDef.MAX_LEVEL)
 
 var level := 1
-var xp := 0                    ## toward the next level
+var xp := 0  ## toward the next level
 var xp_to_next := START_XP_TO_NEXT
 var total_xp := 0
+
 
 ## Threshold to leave `lv` (level 1 -> 100).
 static func threshold(lv: int) -> int:
@@ -28,6 +29,7 @@ static func threshold(lv: int) -> int:
 	for i in range(1, lv):
 		t = int(t * GROWTH)
 	return t
+
 
 ## Adds XP; returns how many levels were gained.
 func add_xp(amount: int) -> int:

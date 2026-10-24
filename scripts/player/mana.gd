@@ -23,21 +23,22 @@ extends RefCounted
 ## physics tick and only the part of the tick past the delay regenerates, so timings are
 ## exact to the sub-tick at 30/60/144 Hz.
 
-signal refused(cost: float)   ## a spend() was refused (not enough mana)
+signal refused(cost: float)  ## a spend() was refused (not enough mana)
 
-const EPS := 1e-9   # snaps float drift (100 x 3/60 s regains exactly 5)
+const EPS := 1e-9  # snaps float drift (100 x 3/60 s regains exactly 5)
 
-var base_max := 100.0       ## ManaAttribute value_max (player scene)
-var regen_per_sec := 3.0    ## mana_regen_speed
-var regen_delay := 1.5      ## seconds since the last successful spend before regen
-var auto_regenerate := true ## auto_regenerate
+var base_max := 100.0  ## ManaAttribute value_max (player scene)
+var regen_per_sec := 3.0  ## mana_regen_speed
+var regen_delay := 1.5  ## seconds since the last successful spend before regen
+var auto_regenerate := true  ## auto_regenerate
 
 var value := 100.0
-var max_bonus := 0.0        ## equipment + levels (steps 19/27): total
-var regen_bonus := 0.0      ## equipment (Magewar equipment_regen_bonus): total
+var max_bonus := 0.0  ## equipment + levels (steps 19/27): total
+var regen_bonus := 0.0  ## equipment (Magewar equipment_regen_bonus): total
 var seconds_since_spend := 1.5
 var spends := 0
 var refusals := 0
+
 
 static func from_tuning(t: PlayerTuning) -> Mana:
 	var m := Mana.new()
@@ -49,23 +50,29 @@ static func from_tuning(t: PlayerTuning) -> Mana:
 	m.seconds_since_spend = m.regen_delay
 	return m
 
+
 func max_value() -> float:
 	return base_max + max_bonus
+
 
 func fraction() -> float:
 	var m := max_value()
 	return value / m if m > 0.0 else 0.0
 
+
 ## Mana/s while regenerating: base + equipment bonus, never negative.
 func regen_rate() -> float:
 	return maxf(0.0, regen_per_sec + regen_bonus)
+
 
 ## Magewar has_mana.
 func has(amount: float) -> bool:
 	return value >= amount - EPS
 
+
 func regenerating() -> bool:
 	return auto_regenerate and seconds_since_spend >= regen_delay - 1e-7 and value < max_value()
+
 
 ## One fixed tick: the time since the last spend grows; once it passes regen_delay only
 ## the part of this tick past the delay regenerates.
@@ -74,12 +81,13 @@ func tick(dt: float) -> void:
 	seconds_since_spend += dt
 	if not auto_regenerate:
 		return
-	var delay := regen_delay - 1e-7   # 90 x (1/60 s) counts as 1.5 s despite rounding
+	var delay := regen_delay - 1e-7  # 90 x (1/60 s) counts as 1.5 s despite rounding
 	var regen_time := clampf(seconds_since_spend - maxf(before, delay), 0.0, dt)
 	if regen_time > 0.0 and value < max_value():
 		value = minf(max_value(), value + regen_rate() * regen_time)
 		if max_value() - value < EPS:
 			value = max_value()
+
 
 ## Magewar spend_mana; plugged into Caster.mana_spender. false = refused: no change, the
 ## delay keeps running (a refusal must not hold regen back), `refused` is emitted.
@@ -95,6 +103,7 @@ func spend(amount: float) -> bool:
 	spends += 1
 	return true
 
+
 ## Equipment/level hook: total max bonus. Raising it adds the difference to the current
 ## value too (Magewar equip); lowering it clamps (Magewar unequip). No full refill.
 func set_max_bonus(bonus: float) -> void:
@@ -104,13 +113,16 @@ func set_max_bonus(bonus: float) -> void:
 		value += delta
 	value = clampf(value, 0.0, max_value())
 
+
 ## Equipment hook: total regen bonus (mana/s).
 func set_regen_bonus(bonus: float) -> void:
 	regen_bonus = bonus
 
+
 ## Level-up (Magewar _level_up refills).
 func refill() -> void:
 	value = max_value()
+
 
 ## Mana Potion / pickups: +amount up to the max; doesn't touch the regen delay.
 func restore(amount: float) -> void:

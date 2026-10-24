@@ -5,9 +5,9 @@ extends Node
 ## (the level's "Boxes/vault_door": hidden, collision off) and unlocks the VaultChest
 ## (step 35) it placed at WaveSpawns/vault_chest. `vault_opened` fires once.
 
-signal vault_opened()
+signal vault_opened
 
-const CHEST_SPAWN := "WaveSpawns/vault_chest"   ## step 35: the VaultChest stands here
+const CHEST_SPAWN := "WaveSpawns/vault_chest"  ## step 35: the VaultChest stands here
 
 const BOSS_ID := "breach_warden"
 const DOOR := "Boxes/vault_door"
@@ -16,6 +16,7 @@ var level: Node3D
 var open := false
 var boss_kills := 0
 var chest: VaultChest
+
 
 func setup(lv: Node3D) -> void:
 	level = lv
@@ -27,12 +28,15 @@ func setup(lv: Node3D) -> void:
 		chest.global_transform = at.global_transform
 	GameEvents.bus().enemy_killed.connect(_on_killed)
 
+
 func _exit_tree() -> void:
 	if GameEvents.bus().enemy_killed.is_connected(_on_killed):
 		GameEvents.bus().enemy_killed.disconnect(_on_killed)
 
+
 func door() -> StaticBody3D:
 	return level.get_node_or_null(DOOR) as StaticBody3D if level else null
+
 
 func _on_killed(enemy: Enemy, _element: ElementTable.Element) -> void:
 	if enemy == null or enemy.def == null or enemy.def.id != BOSS_ID:
@@ -41,6 +45,7 @@ func _on_killed(enemy: Enemy, _element: ElementTable.Element) -> void:
 	if chest:
 		chest.element = enemy.def.affinity
 	open_vault()
+
 
 func open_vault() -> void:
 	if open:

@@ -17,11 +17,13 @@ const ENRAGE_GLOW := Color(1.0, 0.15, 0.1)
 var phase := 1
 var phase_2_tick := -1
 
+
 func apply_damage(amount: float, element: ElementTable.Element, announce := true) -> bool:
 	var killed := super.apply_damage(amount, element, announce)
 	if not dead and phase == 1 and health <= max_health() * PHASE_2_AT:
 		_enrage()
 	return killed
+
 
 func _enrage() -> void:
 	phase = 2
@@ -34,6 +36,7 @@ func _enrage() -> void:
 		_head_mat.emission = ENRAGE_GLOW
 		_head_mat.emission_energy_multiplier = 3.0
 	phase_changed.emit(self, phase)
+
 
 func reset(xform: Variant = null) -> void:
 	super.reset(xform)

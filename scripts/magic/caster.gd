@@ -17,13 +17,14 @@ extends RefCounted
 ## The bolt starts at the plain eye (Player.eye_position(), not the bobbed camera) along
 ## the look, excluding the caster's body (Player.aim()).
 
+
 ## Where a cast starts.
 class Aim:
 	extends RefCounted
 	var origin := Vector3.ZERO
 	var direction := Vector3.FORWARD
 	var exclude: Array[RID] = []
-	var has_visual_origin := false   ## step 10: tracer starts at the viewmodel cast point
+	var has_visual_origin := false  ## step 10: tracer starts at the viewmodel cast point
 	var visual_origin := Vector3.ZERO
 
 	## Same aim with the tracer drawn from `p` (the ray itself stays at `origin`).
@@ -39,30 +40,35 @@ class Aim:
 		a.exclude = p_exclude
 		return a
 
-signal out_of_mana(cost: float)   ## a press refused by mana_spender (step 8 cue)
+
+signal out_of_mana(cost: float)  ## a press refused by mana_spender (step 8 cue)
 
 var wieldable: WieldableInstance
 var hold_to_repeat := false
-var mana_spender := Callable()   ## step 8: func(cost: float) -> bool
-var cooldown_left := 0.0         ## seconds (GDScript floats are 64-bit: no drift at 60 Hz)
+var mana_spender := Callable()  ## step 8: func(cost: float) -> bool
+var cooldown_left := 0.0  ## seconds (GDScript floats are 64-bit: no drift at 60 Hz)
 var casts := 0
-var blocked := 0                 ## presses refused by the cooldown or mana
+var blocked := 0  ## presses refused by the cooldown or mana
 var mana_refused := 0
-var damage_bonus := 0.0         ## step 19: worn spell_damage_bonus, added flat to each cast
-var conditional_bonus := 0.0    ## step 36: Consecration bonus while its condition holds (flat, each cast)
-var next_cast_bonus := 0.0      ## step 36: Consecration one-shot bonus, spent by the next cast
+var damage_bonus := 0.0  ## step 19: worn spell_damage_bonus, added flat to each cast
+var conditional_bonus := 0.0  ## step 36: Consecration bonus while its condition holds (flat, each cast)
+var next_cast_bonus := 0.0  ## step 36: Consecration one-shot bonus, spent by the next cast
+
 
 func _init(w: WieldableInstance = null) -> void:
 	wieldable = w
+
 
 ## Counts the cooldown down without casting (a holstered slot, or the slot being drawn
 ## during a swap: step 10's per-slot cooldown keeps running).
 func cool(dt: float) -> void:
 	cooldown_left = maxf(0.0, cooldown_left - dt)
 
+
 ## Swaps the wieldable (null = empty hands); the running cooldown is kept.
 func equip(w: WieldableInstance) -> void:
 	wieldable = w
+
 
 ## One physics tick. Returns true when a bolt was cast (spawned into `bolts` if given).
 func tick(pressed: bool, held: bool, dt: float, aim: Aim, bolts: SpellBolts) -> bool:

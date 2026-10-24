@@ -8,6 +8,7 @@ extends TestCase
 const SCENE := "res://scenes/levels/breach.tscn"
 const E := ElementTable.Element
 
+
 func test_floor_across_1000_seeds() -> void:
 	var floor_t := Rarity.parse("rare")
 	var bad := 0
@@ -36,6 +37,7 @@ func test_floor_across_1000_seeds() -> void:
 				low += 1
 	check(low == 0, "a Mythic floor holds")
 
+
 func test_chest_opens_after_boss() -> void:
 	var w := Node3D.new()
 	w.position = Vector3(0, 700, 3000)
@@ -47,7 +49,10 @@ func test_chest_opens_after_boss() -> void:
 	br.setup(level)
 	var ch := br.chest
 	check(ch != null and ch.locked, "a locked chest")
-	check(ch.global_position.distance_to((level.get_node("WaveSpawns/vault_chest") as Node3D).global_position) < 0.01, "at the vault spawn")
+	check(
+		ch.global_position.distance_to((level.get_node("WaveSpawns/vault_chest") as Node3D).global_position) < 0.01,
+		"at the vault spawn"
+	)
 	var dr := LootDropper.new()
 	dr.parent = w
 	w.add_child(dr)
@@ -55,7 +60,9 @@ func test_chest_opens_after_boss() -> void:
 	ch.dropper = dr
 	ch.rng.seed = 7
 	check(ch.open_chest().is_empty() and not ch.is_open, "won't open before the boss")
-	var b := Enemy.create(EnemyTable.load_default().find("breach_warden"), Transform3D(Basis.IDENTITY, Vector3(0, 0, -7)))
+	var b := Enemy.create(
+		EnemyTable.load_default().find("breach_warden"), Transform3D(Basis.IDENTITY, Vector3(0, 0, -7))
+	)
 	b.auto_tick = false
 	w.add_child(b)
 	var before := dr.spawned

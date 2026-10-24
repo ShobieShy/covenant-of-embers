@@ -34,22 +34,24 @@ const SOUNDS := {
 	"pickup": IFACE + "drop_002.ogg",
 }
 const UI_KEYS: PackedStringArray = ["ui_click", "kill", "wave_start", "wave_clear", "cast_fail", "equip", "pickup"]
-const LAND_MIN := 2.0          ## m/s: Cogito's min landing velocity (quiet)
-const LAND_MAX := 8.0          ## m/s: loudest
-const STEP_DIST := 2.2         ## m of grounded travel per footstep
+const LAND_MIN := 2.0  ## m/s: Cogito's min landing velocity (quiet)
+const LAND_MAX := 8.0  ## m/s: loudest
+const STEP_DIST := 2.2  ## m of grounded travel per footstep
 const POOL := 12
 
 var player: Player
 var played := {}
-var muted_output := false      ## tests: count without playing
+var muted_output := false  ## tests: count without playing
 var _streams := {}
 var _pool: Array[AudioStreamPlayer] = []
 var _last := {}
 var _step_acc := 0.0
 var _last_pos := Vector3.INF
 
+
 static func load_stream(key: String) -> AudioStream:
 	return load(SOUNDS[key]) as AudioStream if SOUNDS.has(key) else null
+
 
 ## Volumes (0..1 linear) on Master / SFX(+UI) / Music.
 static func apply_volumes(master: float, sfx: float, music: float) -> void:
@@ -58,14 +60,16 @@ static func apply_volumes(master: float, sfx: float, music: float) -> void:
 	_set_bus("UI", sfx)
 	_set_bus("Music", music)
 
+
 static func _set_bus(n: String, v: float) -> void:
 	var i := AudioServer.get_bus_index(n)
 	if i >= 0:
 		AudioServer.set_bus_volume_db(i, linear_to_db(maxf(v, 0.0001)))
 
+
 func _ready() -> void:
 	if DisplayServer.get_name() == "headless" and OS.get_cmdline_user_args().has("--autoplay"):
-		muted_output = true   # headless bot runs: no audio device, and a 3D sound alive at quit leaks
+		muted_output = true  # headless bot runs: no audio device, and a 3D sound alive at quit leaks
 	for i in POOL:
 		var p := AudioStreamPlayer.new()
 		add_child(p)
@@ -76,8 +80,9 @@ func _ready() -> void:
 	bus.wave_started.connect(func(_i, _id): play("wave_start"))
 	bus.wave_cleared.connect(func(_i, _id): play("wave_clear"))
 
+
 func _exit_tree() -> void:
-	for c in get_children():   # a sound still playing at quit would leak its playback
+	for c in get_children():  # a sound still playing at quit would leak its playback
 		if c is AudioStreamPlayer or c is AudioStreamPlayer3D:
 			c.stop()
 			c.stream = null
@@ -88,6 +93,7 @@ func _exit_tree() -> void:
 		for c in bus.get_signal_connection_list(s):
 			if c["callable"].get_object() == self:
 				bus.disconnect(s, c["callable"])
+
 
 func bind(p: Player) -> void:
 	player = p
@@ -100,12 +106,18 @@ func bind(p: Player) -> void:
 	p.pickups.collected.connect(func(_a, _b): play("pickup"))
 	_last = _snapshot()
 
+
 func _snapshot() -> Dictionary:
 	var casts := 0
 	for c in player.loadout.casters:
 		casts += c.casts
-	return {"landings": player.landings, "dashes": player.dash.dashes if player.dash else 0,
-		"casts": casts, "focus": player.focus.amount() > 0.5 if player.focus else false}
+	return {
+		"landings": player.landings,
+		"dashes": player.dash.dashes if player.dash else 0,
+		"casts": casts,
+		"focus": player.focus.amount() > 0.5 if player.focus else false
+	}
+
 
 func _physics_process(_dt: float) -> void:
 	if player == null or not is_instance_valid(player):
@@ -129,8 +141,12 @@ func _physics_process(_dt: float) -> void:
 			play("footstep", -8.0, randf_range(0.9, 1.1))
 	_last_pos = pos
 
+
 func _on_hurt(p: Player, _r: Damage.Result) -> void:
-	play("shield_break" if p.health.shield <= 0.0 and p.health.value > 0.0 and p.health.shield_absorbed > 0.0 else "hurt")
+	play(
+		"shield_break" if p.health.shield <= 0.0 and p.health.value > 0.0 and p.health.shield_absorbed > 0.0 else "hurt"
+	)
+
 
 func _on_enemy_spawned(e: Enemy) -> void:
 	if e == null:
@@ -138,17 +154,20 @@ func _on_enemy_spawned(e: Enemy) -> void:
 	e.damaged.connect(func(en: Enemy, _h): play_at("hit", en.global_position, 0.0, 1.4 if en.last_weak_point else 1.0))
 	e.died.connect(func(en: Enemy, _el): play_at("enemy_death", en.global_position))
 	if e is Gnawer:
-		e.attacked.connect(func(g: Gnawer, _b): if g is Heap: play_at("slam", g.global_position))
-		e.state_changed.connect(func(g: Gnawer, _f, to): if g is Heap and to == Gnawer.State.ATTACK: play_at("slam_windup", g.global_position, -4.0))
+		e.attacked.connect(_on_gnawer_attacked)
+		e.state_changed.connect(_on_gnawer_state)
+
 
 func _stream(key: String) -> AudioStream:
 	if not _streams.has(key):
 		_streams[key] = load_stream(key)
 	return _streams[key]
 
+
 func _count(key: String) -> bool:
 	played[key] = int(played.get(key, 0)) + 1
 	return not muted_output and _stream(key) != null
+
 
 ## A 2D (non-positional) sound.
 func play(key: String, db := 0.0, pitch := 1.0) -> void:
@@ -167,6 +186,7 @@ func play(key: String, db := 0.0, pitch := 1.0) -> void:
 	p.pitch_scale = pitch
 	p.play()
 
+
 ## A 3D sound at `at` (freed when done).
 func play_at(key: String, at: Vector3, db := 0.0, pitch := 1.0) -> void:
 	if not _count(key) or not is_inside_tree():
@@ -181,3 +201,13 @@ func play_at(key: String, at: Vector3, db := 0.0, pitch := 1.0) -> void:
 	p.global_position = at
 	p.finished.connect(p.queue_free)
 	p.play()
+
+
+func _on_gnawer_attacked(g: Gnawer, _b) -> void:
+	if g is Heap:
+		play_at("slam", g.global_position)
+
+
+func _on_gnawer_state(g: Gnawer, _from, to) -> void:
+	if g is Heap and to == Gnawer.State.ATTACK:
+		play_at("slam_windup", g.global_position, -4.0)

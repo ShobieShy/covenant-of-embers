@@ -22,7 +22,7 @@ extends RefCounted
 ##  * invulnerable(): i-frames cover every tick starting within 0.1 s of the dash start
 ##    (6 at 60 Hz); step 13's damage check reads it.
 
-const EPS := 1e-6   # 9 x (1/60 s) must end a 0.15 s dash exactly
+const EPS := 1e-6  # 9 x (1/60 s) must end a 0.15 s dash exactly
 
 var distance := 6.0
 var duration := 0.15
@@ -36,11 +36,12 @@ var charges := 2
 var bonus_charges := 0
 var dashes := 0
 var direction := Vector3.ZERO
-var _recharge := 0.0     # seconds into the current charge's recharge
+var _recharge := 0.0  # seconds into the current charge's recharge
 var _time_left := 0.0
 var _invuln_left := 0.0
 var _invuln_tick := false
 var _air_used := 0
+
 
 static func from_tuning(t: PlayerTuning) -> Dash:
 	var d := Dash.new()
@@ -54,24 +55,31 @@ static func from_tuning(t: PlayerTuning) -> Dash:
 	d.charges = d.base_charges
 	return d
 
+
 func max_charges() -> int:
 	return base_charges + bonus_charges
+
 
 func active() -> bool:
 	return _time_left > 0.0
 
+
 func invulnerable() -> bool:
 	return _invuln_tick
+
 
 func speed() -> float:
 	return distance / duration
 
+
 func air_dash_available() -> bool:
 	return _air_used < air_dashes
+
 
 ## Progress of the charge currently recharging, [0, 1) (0 when full).
 func recharge_progress() -> float:
 	return _recharge / recharge_seconds
+
 
 ## `dir`: horizontal direction (flattened and normalised here).
 func try_start(dir: Vector3, grounded: bool, breath: Breath) -> bool:
@@ -81,18 +89,19 @@ func try_start(dir: Vector3, grounded: bool, breath: Breath) -> bool:
 	if not grounded and not air_dash_available():
 		return false
 	if not breath.spend(breath_cost):
-		return false   # short (or exhausted): refused, no cost
+		return false  # short (or exhausted): refused, no cost
 	direction = flat.normalized()
 	_time_left = duration
 	_invuln_left = invulnerability
 	_invuln_tick = _invuln_left > 0.0
 	if charges == max_charges():
-		_recharge = 0.0   # the first spent charge starts the clock
+		_recharge = 0.0  # the first spent charge starts the clock
 	charges -= 1
 	if not grounded:
 		_air_used += 1
 	dashes += 1
 	return true
+
 
 ## One fixed tick (call every tick, dashing or not). Returns the covered fraction [0, 1].
 func advance(dt: float) -> float:
@@ -117,9 +126,11 @@ func advance(dt: float) -> float:
 			_recharge = 0.0
 	return covered
 
+
 ## Touched the ground: the air dash is back.
 func land() -> void:
 	_air_used = 0
+
 
 func set_bonus_charges(n: int) -> void:
 	bonus_charges = maxi(0, n)

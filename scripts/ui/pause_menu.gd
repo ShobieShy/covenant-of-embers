@@ -4,7 +4,7 @@ extends CanvasLayer
 ## frees the mouse; Resume / Settings / Save / Main menu / Quit. Ignored while another
 ## screen (inventory, station) is open: Esc closes that one first.
 
-signal save_requested()
+signal save_requested
 
 var player: Player
 var settings_ui: SettingsUi
@@ -12,6 +12,7 @@ var panel: PanelContainer
 var buttons := {}
 var status: Label
 var center: CenterContainer
+
 
 func _init() -> void:
 	layer = 3
@@ -39,9 +40,11 @@ func _init() -> void:
 	status = Label.new()
 	v.add_child(status)
 
+
 func bind(p: Player, s: SettingsUi) -> void:
 	player = p
 	settings_ui = s
+
 
 func open() -> void:
 	visible = true
@@ -52,9 +55,10 @@ func open() -> void:
 	if player:
 		player.ui_open = true
 	get_tree().paused = true
-	(buttons["resume"] as Button).grab_focus()   # keyboard/gamepad navigation
+	(buttons["resume"] as Button).grab_focus()  # keyboard/gamepad navigation
 	if DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
 
 func close() -> void:
 	visible = false
@@ -66,6 +70,7 @@ func close() -> void:
 		get_tree().paused = false
 	if DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
 
 func press(id: String) -> void:
 	match id:
@@ -85,6 +90,7 @@ func press(id: String) -> void:
 		"quit":
 			save_requested.emit()
 			get_tree().quit(0)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed(&"menu"):

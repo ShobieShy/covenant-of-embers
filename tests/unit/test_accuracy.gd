@@ -17,8 +17,10 @@ const DT := 1.0 / 60.0
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
 const PT := WieldablePart.PartType
 
+
 func _angle_deg(a: Vector3, b: Vector3) -> float:
 	return rad_to_deg(acos(clampf(a.normalized().dot(b.normalized()), -1.0, 1.0)))
+
 
 func _player_world(at: Vector3) -> Array:
 	var w := Node3D.new()
@@ -42,17 +44,23 @@ func _player_world(at: Vector3) -> Array:
 	p.bolts = bolts
 	return [w, p, bolts]
 
+
 func _run(p: Player, input: PlayerInput, n: int) -> void:
 	for i in n:
 		p.tick(input, DT)
 
+
 # --- Focus ------------------------------------------------------------------------------
+
 
 func test_focus_tween_55_at_tick_12() -> void:
 	var staff := WieldableInstance.load_base("apprentice_fire_staff")
 	var wand := WieldableInstance.load_base("swift_wind_wand")
 	var f := Focus.new()
-	check(f.fov_for(WieldableDef.Type.STAFF) == 55.0 and f.fov_for(WieldableDef.Type.WAND) == 55.0, "staff and wand 55 (Magewar: same script)")
+	check(
+		f.fov_for(WieldableDef.Type.STAFF) == 55.0 and f.fov_for(WieldableDef.Type.WAND) == 55.0,
+		"staff and wand 55 (Magewar: same script)"
+	)
 	check(f.fov == 75.0 and not f.focused and f.amount() == 0.0, "starts at the hip 75")
 	var reach := -1
 	for i in range(1, 21):
@@ -64,7 +72,12 @@ func test_focus_tween_55_at_tick_12() -> void:
 			check(f.fov > 55.0, "not yet at tick 11 (%f)" % f.fov)
 		if reach < 0 and f.fov == 55.0:
 			reach = i
-	print("    focus: staff 75 -> 55 deg in %d ticks (%.4f s) at 60 Hz, look scale %.4f" % [reach, reach * DT, f.look_scale()])
+	print(
+		(
+			"    focus: staff 75 -> 55 deg in %d ticks (%.4f s) at 60 Hz, look scale %.4f"
+			% [reach, reach * DT, f.look_scale()]
+		)
+	)
 	check(reach == 12, "55 deg exactly at tick 12 (got %d)" % reach)
 	check(f.focused and f.amount() == 1.0, "fully focused")
 	check_near(f.look_scale(), 0.6784, 1e-4, "look scale at 55")
@@ -124,6 +137,7 @@ func test_focus_tween_55_at_tick_12() -> void:
 		w2.tick(true, staff, DT)
 	check(w2.fov == 55.0, "swap to staff while focused: 55")
 
+
 func test_player_focus_camera_look_scale_and_no_mana() -> void:
 	var r := _player_world(Vector3(1300, 0, -1300))
 	var w: Node3D = r[0]
@@ -139,7 +153,9 @@ func test_player_focus_camera_look_scale_and_no_mana() -> void:
 			reach = i
 	print("    focus: player camera at 55 deg on tick %d, mana %.1f after 1 s of focus" % [reach, p.mana.value])
 	check(reach == 12, "player camera 55 at tick 12 (%d)" % reach)
-	check(p.mana.value == 100.0 and p.mana.spends == 0 and p.caster.casts == 0, "focusing costs no mana and casts nothing")
+	check(
+		p.mana.value == 100.0 and p.mana.spends == 0 and p.caster.casts == 0, "focusing costs no mana and casts nothing"
+	)
 	# Look scaled by 0.6784 while focused.
 	p.set_look(0.0, 0.0)
 	p.add_look(-100.0, 0.0)
@@ -154,16 +170,22 @@ func test_player_focus_camera_look_scale_and_no_mana() -> void:
 	check(p.camera.fov == 75.0 and not p.focus.focused, "empty hands: no focus")
 	w.free()
 
+
 # --- Accuracy + cone --------------------------------------------------------------------
+
 
 func test_accuracy_stat_magewar() -> void:
 	var w := WieldableInstance.load_base("apprentice_fire_staff")
 	check(w.accuracy() == 50.0, "Magewar base 50")
 	# Magewar parts: basic_fire_head 5, basic_handle 10, unique_void_charm 12 count; the
 	# interior's 2 and exterior's 6 don't (get_final_accuracy reads Head/Handle/Charm).
-	w.parts = [WieldablePart.make(PT.HEAD, 0.0, 1.0, 5.0), WieldablePart.make(PT.HANDLE, 0.0, 1.0, 10.0),
-		WieldablePart.make(PT.CHARM, 0.0, 1.0, 12.0), WieldablePart.make(PT.INTERIOR, 0.0, 1.0, 2.0),
-		WieldablePart.make(PT.EXTERIOR, 0.0, 1.0, 6.0)]
+	w.parts = [
+		WieldablePart.make(PT.HEAD, 0.0, 1.0, 5.0),
+		WieldablePart.make(PT.HANDLE, 0.0, 1.0, 10.0),
+		WieldablePart.make(PT.CHARM, 0.0, 1.0, 12.0),
+		WieldablePart.make(PT.INTERIOR, 0.0, 1.0, 2.0),
+		WieldablePart.make(PT.EXTERIOR, 0.0, 1.0, 6.0)
+	]
 	check(w.accuracy() == 77.0, "50 + 5 + 10 + 12 = 77 (%f)" % w.accuracy())
 	w.parts.append(WieldablePart.make(PT.HANDLE, 0.0, 1.0, 22.0))
 	w.parts.append(WieldablePart.make(PT.HEAD, 0.0, 1.0, 15.0))
@@ -171,10 +193,15 @@ func test_accuracy_stat_magewar() -> void:
 	w.parts = [WieldablePart.make(PT.CHARM, 0.0, 1.0, -80.0)]
 	check(w.accuracy() == 0.0, "-30 clamped to 0")
 
+
 func test_full_accuracy_zero_spread() -> void:
 	var sp := Spread.new()
-	var stances := [Spread.Stance.make(), Spread.Stance.make(0.0, false, true), Spread.Stance.make(0.0, false, false, true),
-		Spread.Stance.make(1.0, true, true)]
+	var stances := [
+		Spread.Stance.make(),
+		Spread.Stance.make(0.0, false, true),
+		Spread.Stance.make(0.0, false, false, true),
+		Spread.Stance.make(1.0, true, true)
+	]
 	for s in stances:
 		var m := sp.stance_multiplier(s)
 		check(sp.cone_for(100.0, m, 0.0) == 0.0 and sp.cone_for(100.0, m, sp.bloom_max_deg) == 0.0, "100 %: 0 cone")
@@ -207,17 +234,32 @@ func test_full_accuracy_zero_spread() -> void:
 		tick += 1
 	for b in bolts.live:
 		worst = maxf(worst, _angle_deg(b.spawn.direction, p.look_direction()))
-	print("    spread: 100 %% accuracy -> cone 0, %d bolts within %.6f deg of the aim (bloom %.2f)" % [bolts.live.size(), worst, p.spread.bloom])
-	check(p.caster.casts == 10 and bolts.live.size() == 10 and worst < 1e-3, "10 bolts exactly along the aim (%f)" % worst)
+	print(
+		(
+			"    spread: 100 %% accuracy -> cone 0, %d bolts within %.6f deg of the aim (bloom %.2f)"
+			% [bolts.live.size(), worst, p.spread.bloom]
+		)
+	)
+	check(
+		p.caster.casts == 10 and bolts.live.size() == 10 and worst < 1e-3, "10 bolts exactly along the aim (%f)" % worst
+	)
 	w.free()
+
 
 func test_hip_2_focused_0_7_and_stances() -> void:
 	var sp := Spread.new()
-	check(sp.focus_mul == 0.35 and sp.crouch_mul == 0.8 and sp.moving_mul == 1.3 and sp.airborne_mul == 1.8, "multipliers")
+	check(
+		sp.focus_mul == 0.35 and sp.crouch_mul == 0.8 and sp.moving_mul == 1.3 and sp.airborne_mul == 1.8, "multipliers"
+	)
 	check_near(sp.cone_for(50.0, 1.0, 0.0), 2.0, 1e-9, "50 % hip still = 4 x 0.5")
 	for acc in [0.0, 25.0, 50.0, 77.0, 99.0]:
-		for body in [Spread.Stance.make(), Spread.Stance.make(0, true), Spread.Stance.make(0, false, true),
-				Spread.Stance.make(0, true, true), Spread.Stance.make(0, false, false, true)]:
+		for body in [
+			Spread.Stance.make(),
+			Spread.Stance.make(0, true),
+			Spread.Stance.make(0, false, true),
+			Spread.Stance.make(0, true, true),
+			Spread.Stance.make(0, false, false, true)
+		]:
 			var foc := Spread.Stance.make(1.0, body.crouched, body.moving, body.airborne)
 			var hip := sp.cone_for(acc, sp.stance_multiplier(body), 1.5)
 			var ads := sp.cone_for(acc, sp.stance_multiplier(foc), 1.5)
@@ -238,12 +280,17 @@ func test_hip_2_focused_0_7_and_stances() -> void:
 	p.tick(PlayerInput.hold([], ["action_primary"]), DT)
 	check(p.caster.casts == 1, "hip cast")
 	var hip_used := p.spread.last_cone_deg
-	_run(p, PlayerInput.hold(), 60)   # cooldown + bloom gone
+	_run(p, PlayerInput.hold(), 60)  # cooldown + bloom gone
 	_run(p, PlayerInput.hold(["action_secondary"]), 12)
 	var ads_cone := p.spread.cone_deg(p.accuracy(), p.spread_stance())
 	p.tick(PlayerInput.hold(["action_secondary"], ["action_primary"]), DT)
 	var ads_used := p.spread.last_cone_deg
-	print("    spread: 50 %% accuracy hip %.3f deg, focused %.3f deg (x%.3f), casts %d" % [hip_used, ads_used, ads_used / hip_used, p.caster.casts])
+	print(
+		(
+			"    spread: 50 %% accuracy hip %.3f deg, focused %.3f deg (x%.3f), casts %d"
+			% [hip_used, ads_used, ads_used / hip_used, p.caster.casts]
+		)
+	)
 	check_near(hip_cone, 2.0, 1e-6, "player hip still 2.0")
 	check_near(hip_used, 2.0, 1e-6, "hip cast used 2.0")
 	check_near(ads_cone, 0.7, 1e-6, "player focused 0.7")
@@ -268,10 +315,17 @@ func test_hip_2_focused_0_7_and_stances() -> void:
 	s = p.spread_stance()
 	check(s.airborne, "airborne after a jump")
 	check_near(p.spread.cone_deg(50.0, s), 3.6, 1e-6, "airborne 3.6")
-	print("    spread: player walking %.2f, crouched %.2f, airborne %.2f deg" % [walk_cone, crouch_cone, p.spread.cone_deg(50.0, s)])
+	print(
+		(
+			"    spread: player walking %.2f, crouched %.2f, airborne %.2f deg"
+			% [walk_cone, crouch_cone, p.spread.cone_deg(50.0, s)]
+		)
+	)
 	w.free()
 
+
 # --- Bloom ------------------------------------------------------------------------------
+
 
 func test_bloom_clears_in_30_ticks() -> void:
 	for row in [[60, 30], [144, 72], [30, 15]]:
@@ -320,6 +374,7 @@ func test_bloom_clears_in_30_ticks() -> void:
 	print("    bloom: rapid fire %d casts in 2 s peaked at %.1f deg, recovered in %d ticks" % [c.casts, peak, rec])
 	check(c.casts >= 19 and peak == s3.bloom_max_deg and rec <= 30, "rapid fire hits the cap, clears in <= 30")
 
+
 func test_refused_press_adds_no_bloom() -> void:
 	var r := _player_world(Vector3(1600, 0, -1600))
 	var w: Node3D = r[0]
@@ -341,10 +396,17 @@ func test_refused_press_adds_no_bloom() -> void:
 	p.tick(fire, DT)
 	check(p.caster.blocked == before + 1 and p.caster.casts == 1, "cooldown refusal")
 	check_near(p.spread.bloom, 1.0 - 8.0 * DT, 1e-9, "cooldown refusal: only decay")
-	print("    bloom: %d no-mana presses -> bloom 0.00, a real cast -> 1.00, cooldown refusal -> %.3f" % [30, p.spread.bloom])
+	print(
+		(
+			"    bloom: %d no-mana presses -> bloom 0.00, a real cast -> 1.00, cooldown refusal -> %.3f"
+			% [30, p.spread.bloom]
+		)
+	)
 	w.free()
 
+
 # --- Sampling ---------------------------------------------------------------------------
+
 
 func test_cone_sampling_uniform_and_seeded() -> void:
 	var sp := Spread.new(1234)
@@ -362,7 +424,12 @@ func test_cone_sampling_uniform_and_seeded() -> void:
 		sum += a
 		mean += out.direction
 	var mean_a := sum / n
-	print("    cone: %d samples at 2.000 deg: max %.3f, mean %.3f deg (uniform ~1.333), centroid off by %.4f deg" % [n, max_a, mean_a, _angle_deg(mean, dir)])
+	print(
+		(
+			"    cone: %d samples at 2.000 deg: max %.3f, mean %.3f deg (uniform ~1.333), centroid off by %.4f deg"
+			% [n, max_a, mean_a, _angle_deg(mean, dir)]
+		)
+	)
 	check(unit, "unit directions")
 	check(max_a <= 2.0 + 1e-3 and max_a > 1.95, "fills to the edge (%f)" % max_a)
 	check(mean_a > 1.25 and mean_a < 1.42, "uniform over the cap (%f)" % mean_a)
@@ -381,7 +448,10 @@ func test_cone_sampling_uniform_and_seeded() -> void:
 	check(same and differs, "same seed = same shots, other seed differs")
 	for d in [Vector3.UP, Vector3.DOWN]:
 		for i in 100:
-			check(_angle_deg(Spread.cone_direction(d, deg_to_rad(3.0), i / 100.0, 0.37), d) <= 3.0 + 1e-3, "straight up/down inside")
+			check(
+				_angle_deg(Spread.cone_direction(d, deg_to_rad(3.0), i / 100.0, 0.37), d) <= 3.0 + 1e-3,
+				"straight up/down inside"
+			)
 	# Two players with the same seed cast the same spread bolts.
 	var dirs := []
 	for k in 2:

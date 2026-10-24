@@ -15,18 +15,19 @@ extends RefCounted
 ## (look_scale(): 0.6784 at 55 deg) so a mouse count moves the image under the crosshair
 ## by the same screen fraction at any FOV; the viewmodel keeps a fixed 75 deg (step 10).
 
-var hip_fov := 75.0       ## Camera3D fov; Magewar tweens back to 75
-var staff_fov := 55.0     ## wieldable_staff.gd ads_fov
-var wand_fov := 55.0      ## wieldable_wand.tscn: same script, no override
+var hip_fov := 75.0  ## Camera3D fov; Magewar tweens back to 75
+var staff_fov := 55.0  ## wieldable_staff.gd ads_fov
+var wand_fov := 55.0  ## wieldable_wand.tscn: same script, no override
 var tween_seconds := 0.2  ## both directions
 
-var focused := false      ## aiming with a wieldable in hand
-var fov := 75.0           ## after the last tick
+var focused := false  ## aiming with a wieldable in hand
+var fov := 75.0  ## after the last tick
 var prev_fov := 75.0
 var target_fov := 75.0
 var _from := 75.0
 var _elapsed := 0.0
-var _ads_fov := 55.0      ## focused FOV of the last wieldable (for amount())
+var _ads_fov := 55.0  ## focused FOV of the last wieldable (for amount())
+
 
 static func from_tuning(t: PlayerTuning) -> Focus:
 	var f := Focus.new()
@@ -36,6 +37,7 @@ static func from_tuning(t: PlayerTuning) -> Focus:
 	f.tween_seconds = t.focus_tween_seconds
 	f.reset()
 	return f
+
 
 ## Back to the hip FOV at once (spawn).
 func reset() -> void:
@@ -47,8 +49,10 @@ func reset() -> void:
 	_elapsed = 0.0
 	_ads_fov = staff_fov
 
+
 func fov_for(type: WieldableDef.Type) -> float:
 	return wand_fov if type == WieldableDef.Type.WAND else staff_fov
+
 
 ## One physics tick. aim_held = action_secondary held; w = the wieldable in hand (null =
 ## empty hands).
@@ -58,7 +62,7 @@ func tick(aim_held: bool, w: WieldableInstance, dt: float) -> void:
 	if w != null:
 		_ads_fov = fov_for(w.type())
 	var target := _ads_fov if focused else hip_fov
-	if target != target_fov:   # new tween from where the FOV is now (Godot tween_property)
+	if target != target_fov:  # new tween from where the FOV is now (Godot tween_property)
 		_from = fov
 		target_fov = target
 		_elapsed = 0.0
@@ -68,9 +72,11 @@ func tick(aim_held: bool, w: WieldableInstance, dt: float) -> void:
 	var k := _elapsed / tween_seconds if tween_seconds > 0.0 else 1.0
 	fov = target_fov if k >= 1.0 - 1e-9 else _from + (target_fov - _from) * k
 
+
 ## Render FOV between the last two ticks (alpha = physics interpolation fraction).
 func fov_at(alpha: float) -> float:
 	return lerpf(prev_fov, fov, alpha)
+
 
 ## 0 at the hip FOV .. 1 at the focused FOV, from the current tween position.
 func amount() -> float:
@@ -79,9 +85,11 @@ func amount() -> float:
 		return 1.0 if focused else 0.0
 	return clampf((hip_fov - fov) / span, 0.0, 1.0)
 
+
 ## Mouse look multiplier at the current FOV.
 func look_scale() -> float:
 	return look_scale_for_fov(fov, hip_fov)
+
 
 static func look_scale_for_fov(fov_deg: float, hip_deg: float = 75.0) -> float:
 	return tan(deg_to_rad(fov_deg) * 0.5) / tan(deg_to_rad(hip_deg) * 0.5)

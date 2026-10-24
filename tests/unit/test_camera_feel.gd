@@ -14,12 +14,13 @@ extends TestCase
 const DT := 1.0 / 60.0
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
 
+
 func _bob_range(f: CameraFeel, gait: CameraFeel.Gait, ticks: int) -> Dictionary:
 	var r := {"max_y": 0.0, "min_y": 0.0, "max_x": 0.0, "min_x": 0.0}
 	for i in ticks:
 		f.tick(true, gait, false, 0.0, DT)
 		if i < 60:
-			continue   # past the ease-in
+			continue  # past the ease-in
 		var o := f.offset()
 		r.max_y = maxf(r.max_y, o.y)
 		r.min_y = minf(r.min_y, o.y)
@@ -27,12 +28,17 @@ func _bob_range(f: CameraFeel, gait: CameraFeel.Gait, ticks: int) -> Dictionary:
 		r.min_x = minf(r.min_x, o.x)
 	return r
 
+
 func test_head_bob_amplitudes() -> void:
 	var w := _bob_range(CameraFeel.new(), CameraFeel.Gait.WALK, 300)
 	var s := _bob_range(CameraFeel.new(), CameraFeel.Gait.SPRINT, 300)
 	var c := _bob_range(CameraFeel.new(), CameraFeel.Gait.CROUCH, 300)
-	print("    bob walk: y %.4f..%.4f x %.4f..%.4f | sprint y %.4f..%.4f x %.4f | crouch y %.4f x %.4f" % [
-		w.min_y, w.max_y, w.min_x, w.max_x, s.min_y, s.max_y, s.max_x, c.max_y, c.max_x])
+	print(
+		(
+			"    bob walk: y %.4f..%.4f x %.4f..%.4f | sprint y %.4f..%.4f x %.4f | crouch y %.4f x %.4f"
+			% [w.min_y, w.max_y, w.min_x, w.max_x, s.min_y, s.max_y, s.max_x, c.max_y, c.max_x]
+		)
+	)
 	# Target amplitude y = I/2 (0.015 walk, 0.025 sprint, 0.04 crouch), x = I; easing trims it.
 	check(w.max_y > 0.005 and w.max_y <= 0.015 and w.min_y < -0.005 and w.min_y >= -0.015, "walk y")
 	check(w.max_x > 0.01 and w.max_x <= 0.03, "walk x")
@@ -48,6 +54,7 @@ func test_head_bob_amplitudes() -> void:
 	off.set_bob_scale(0.0)
 	var o := _bob_range(off, CameraFeel.Gait.CROUCH, 120)
 	check(o.max_x == 0.0 and o.max_y == 0.0, "bob_scale 0 = off")
+
 
 func test_landing_dip() -> void:
 	var soft := CameraFeel.new()
@@ -67,11 +74,17 @@ func test_landing_dip() -> void:
 				end_tick = i
 			f.tick(false, CameraFeel.Gait.WALK, false, 0.0, DT)
 		var expect := 0.12 * minf(1.0, (speed - 2.0) / 6.0)
-		print("    landing dip at %.1f m/s: %.4f m (%.4f) at tick %d, back by tick %d" % [speed, deepest, -expect, deepest_tick, end_tick])
+		print(
+			(
+				"    landing dip at %.1f m/s: %.4f m (%.4f) at tick %d, back by tick %d"
+				% [speed, deepest, -expect, deepest_tick, end_tick]
+			)
+		)
 		check_near(-deepest, expect, 0.002, "dip depth at %.1f m/s" % speed)
 		check(-deepest <= 0.12 + 1e-9, "max 0.12 m")
 		check(deepest_tick >= 5 and deepest_tick <= 7, "deepest ~0.1 s (%d)" % deepest_tick)
 		check(end_tick >= 17 and end_tick <= 19, "back by ~0.3 s (%d)" % end_tick)
+
 
 func test_reduced_motion_zero() -> void:
 	var f := CameraFeel.new()
@@ -88,6 +101,7 @@ func test_reduced_motion_zero() -> void:
 	check(g.offset() != Vector2.ZERO, "bobbing")
 	g.set_reduced_motion(true)
 	check(g.offset() == Vector2.ZERO, "turning it on snaps to 0")
+
 
 func test_step_smoothing_unit() -> void:
 	var f := CameraFeel.from_tuning(load("res://resources/player/player_tuning.tres"))
@@ -107,12 +121,15 @@ func test_step_smoothing_unit() -> void:
 	r.tick(false, CameraFeel.Gait.WALK, false, 0.0, DT)
 	check(r.offset().y < -0.25, "step smoothing stays on under reduced motion")
 
+
 # --- Player ---------------------------------------------------------------------------
+
 
 func _world() -> Node3D:
 	var w := Node3D.new()
 	runner_tree.root.add_child(w)
 	return w
+
 
 func _box(parent: Node, center: Vector3, half: Vector3) -> void:
 	var b := StaticBody3D.new()
@@ -124,12 +141,14 @@ func _box(parent: Node, center: Vector3, half: Vector3) -> void:
 	b.position = center
 	parent.add_child(b)
 
+
 func _player(parent: Node, feet: Vector3) -> Player:
 	var p: Player = (load(PLAYER_SCENE) as PackedScene).instantiate()
 	p.input_enabled = false
 	parent.add_child(p)
 	p.spawn(feet, 0.0)
 	return p
+
 
 func _controller(reduced: bool) -> Dictionary:
 	var w := _world()
@@ -144,7 +163,9 @@ func _controller(reduced: bool) -> Dictionary:
 			p.tick(PlayerInput.hold(t[1], t[2]), DT)
 			var d := p.camera_position() - p.eye_position()
 			seen.max_offset = maxf(seen.max_offset, d.length())
-			seen.head_eye = maxf(seen.head_eye, (d - Vector3(0, p.camera_offset().y, 0) - p.basis.x * p.camera_offset().x).length())
+			seen.head_eye = maxf(
+				seen.head_eye, (d - Vector3(0, p.camera_offset().y, 0) - p.basis.x * p.camera_offset().x).length()
+			)
 			if phase == 4:
 				seen.min_dip = minf(seen.min_dip, d.y)
 		phase += 1
@@ -153,23 +174,29 @@ func _controller(reduced: bool) -> Dictionary:
 	w.free()
 	return seen
 
+
 func test_player_bob_and_dip_reduced_motion() -> void:
 	var on := _controller(false)
 	var off := _controller(true)
-	print("    player: max camera offset %.4f m, landing at %.2f m/s dips %.4f m | reduced motion %.4f / %.4f" % [
-		on.max_offset, on.landing, on.min_dip, off.max_offset, off.min_dip])
+	print(
+		(
+			"    player: max camera offset %.4f m, landing at %.2f m/s dips %.4f m | reduced motion %.4f / %.4f"
+			% [on.max_offset, on.landing, on.min_dip, off.max_offset, off.min_dip]
+		)
+	)
 	check(on.max_offset > 0.01, "walking bobs the camera")
 	check(on.head_eye < 1e-5 and off.head_eye < 1e-5, "Head = eye + offset (x along the view's right)")
 	check(on.landing > 4.0 and on.landing < 5.2, "4.5 m/s jump lands at ~4.6 (%.3f)" % on.landing)
 	check_near(-on.min_dip, 0.12 * (on.landing - 2.0) / 6.0, 0.005, "landing dip")
 	check(off.max_offset == 0.0 and off.min_dip == 0.0, "reduced motion: camera exactly on the eye")
 
+
 func test_player_step_up_and_down_smoothed() -> void:
 	var w := _world()
 	_box(w, Vector3(0, -0.5, 0), Vector3(20, 0.5, 20))
-	_box(w, Vector3(0, 0.175, -4.0), Vector3(3, 0.175, 1.5))   # 0.35 m step, front face z -2.5
+	_box(w, Vector3(0, 0.175, -4.0), Vector3(3, 0.175, 1.5))  # 0.35 m step, front face z -2.5
 	var p := _player(w, Vector3.ZERO)
-	p.set_reduced_motion(true)   # isolate the step offset
+	p.set_reduced_motion(true)  # isolate the step offset
 	for i in 30:
 		p.tick(PlayerInput.hold(), DT)
 	var last_cam := p.camera_position().y
@@ -185,8 +212,12 @@ func test_player_step_up_and_down_smoothed() -> void:
 			climbed_tick = i
 			lowest_at_climb = p.camera_offset().y
 	var up_jump := max_jump
-	print("    step up 0.35: climbed at tick %d (rise %.3f), camera offset %.3f, max camera move %.4f m/tick" % [
-		climbed_tick, p.last_step_rise, lowest_at_climb, up_jump])
+	print(
+		(
+			"    step up 0.35: climbed at tick %d (rise %.3f), camera offset %.3f, max camera move %.4f m/tick"
+			% [climbed_tick, p.last_step_rise, lowest_at_climb, up_jump]
+		)
+	)
 	check(climbed_tick >= 0 and p.feet().y > 0.34, "climbed")
 	check(lowest_at_climb < -0.3, "camera held below after the lift")
 	check(up_jump < 0.05, "no 0.35 m camera jump in one tick (%.4f)" % up_jump)

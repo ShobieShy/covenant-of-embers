@@ -39,37 +39,40 @@ extends Node3D
 
 signal bolt_hit(hit: Hit)
 
-const TAIL := 2.5            ## m of tracer behind the bolt head
-const SKIP_NEAR := 0.6       ## m in front of the eye never drawn
-const IMPACT_LINGER := 0.2   ## s an impact's tracer stays
-const CONVERGE := 8.0        ## m: a visual origin's offset fades out over this (step 10)
-const GRAZE_RADIUS := 0.1    ## m: enemy graze sphere (step 11; 0 in a Spawn disables)
-const ENEMY_MASK := 1 << 2   ## physics layer 3 "enemy" (Enemy.ENEMY_LAYER)
+const TAIL := 2.5  ## m of tracer behind the bolt head
+const SKIP_NEAR := 0.6  ## m in front of the eye never drawn
+const IMPACT_LINGER := 0.2  ## s an impact's tracer stays
+const CONVERGE := 8.0  ## m: a visual origin's offset fades out over this (step 10)
+const GRAZE_RADIUS := 0.1  ## m: enemy graze sphere (step 11; 0 in a Spawn disables)
+const ENEMY_MASK := 1 << 2  ## physics layer 3 "enemy" (Enemy.ENEMY_LAYER)
 const MAX_PASS_THROUGH := 8  ## dead colliders skipped per bolt per tick
+
 
 ## What a cast launches.
 class Spawn:
 	extends RefCounted
 	var origin := Vector3.ZERO
-	var direction := Vector3.FORWARD          ## normalised by spawn()
-	var speed := 30.0                         ## m/s
-	var range_m := 50.0                       ## m
+	var direction := Vector3.FORWARD  ## normalised by spawn()
+	var speed := 30.0  ## m/s
+	var range_m := 50.0  ## m
 	var element: ElementTable.Element = ElementTable.Element.ARCANE
-	var damage := 0.0                         ## wieldable damage, resolved on impact
-	var exclude: Array[RID] = []              ## never hit (the caster)
+	var damage := 0.0  ## wieldable damage, resolved on impact
+	var exclude: Array[RID] = []  ## never hit (the caster)
 	var collision_mask := 0xFFFFFFFF
-	var has_visual_origin := false            ## step 10: tracer drawn from visual_origin
+	var has_visual_origin := false  ## step 10: tracer drawn from visual_origin
 	var visual_origin := Vector3.ZERO
-	var graze_radius := GRAZE_RADIUS          ## step 11: enemy graze sphere radius (0 = off)
+	var graze_radius := GRAZE_RADIUS  ## step 11: enemy graze sphere radius (0 = off)
+
 
 class Bolt:
 	extends RefCounted
 	var id := 0
 	var spawn: Spawn
-	var position := Vector3.ZERO              ## after the last tick
-	var previous := Vector3.ZERO              ## before it (tracer interpolation)
+	var position := Vector3.ZERO  ## after the last tick
+	var previous := Vector3.ZERO  ## before it (tracer interpolation)
 	var travelled := 0.0
-	var ticks := 0                            ## ticks flown; -1 = done
+	var ticks := 0  ## ticks flown; -1 = done
+
 
 class Hit:
 	extends RefCounted
@@ -78,15 +81,16 @@ class Hit:
 	var rid := RID()
 	var point := Vector3.ZERO
 	var normal := Vector3.ZERO
-	var distance := 0.0                       ## m from the spawn origin
-	var time := 0.0                           ## s from spawn
-	var tick := 0                             ## 1-based tick of flight it hit in
+	var distance := 0.0  ## m from the spawn origin
+	var time := 0.0  ## s from spawn
+	var tick := 0  ## 1-based tick of flight it hit in
 	var element: ElementTable.Element = ElementTable.Element.ARCANE
-	var damage := 0.0                         ## wieldable damage carried by the bolt
+	var damage := 0.0  ## wieldable damage carried by the bolt
 	var direction := Vector3.FORWARD
-	var result: Damage.Result                 ## set when the collider had a damage_target
-	var shape := -1                           ## step 11: shape index on the collider
-	var grazed := false                       ## step 11: the graze sphere hit, not the ray
+	var result: Damage.Result  ## set when the collider had a damage_target
+	var shape := -1  ## step 11: shape index on the collider
+	var grazed := false  ## step 11: the graze sphere hit, not the ray
+
 
 class Line:
 	extends RefCounted
@@ -94,18 +98,20 @@ class Line:
 	var b := Vector3.ZERO
 	var color := Color.WHITE
 
-var elements: ElementTable                    ## tracer colours (default table when null)
-var auto_tick := true                         ## false: the owner (tests) calls tick()
+
+var elements: ElementTable  ## tracer colours (default table when null)
+var auto_tick := true  ## false: the owner (tests) calls tick()
 var live: Array[Bolt] = []
 var spawned := 0
 var hits := 0
 var fizzled := 0
-var last_hits: Array[Hit] = []                ## hits of the last tick
+var last_hits: Array[Hit] = []  ## hits of the last tick
 
-var _impacts: Array = []                      ## [Line, ttl]
+var _impacts: Array = []  ## [Line, ttl]
 var _next_id := 1
 var _mesh: ImmediateMesh
 var _mesh_instance: MeshInstance3D
+
 
 func _ready() -> void:
 	# After the Player (default priority 0), so a bolt cast this tick moves this tick.
@@ -121,12 +127,15 @@ func _ready() -> void:
 	_mesh_instance.material_override = mat
 	add_child(_mesh_instance)
 
+
 func _physics_process(delta: float) -> void:
 	if auto_tick:
 		tick(delta)
 
+
 func _process(_delta: float) -> void:
 	_draw_tracers(Engine.get_physics_interpolation_fraction())
+
 
 func spawn(s: Spawn) -> int:
 	var b := Bolt.new()
@@ -139,6 +148,7 @@ func spawn(s: Spawn) -> int:
 	live.append(b)
 	spawned += 1
 	return b.id
+
 
 ## One physics tick: sweeps every live bolt, returns this tick's hits (also last_hits).
 func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
@@ -198,6 +208,7 @@ func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
 		bolt_hit.emit(h)
 	return last_hits
 
+
 ## The closest thing the segment from -> to hits: the ray (past colliders that pass bolts)
 ## or, if that isn't an enemy, the graze sphere's enemy contact when no farther. Returns the
 ## intersect_ray dict (+ "grazed", "along" = metres from `from`) or {}.
@@ -221,11 +232,14 @@ func _cast(space: PhysicsDirectSpaceState3D, s: Spawn, from: Vector3, to: Vector
 		return g
 	return r
 
+
 func _passes(o: Object) -> bool:
 	return is_instance_valid(o) and o.has_method(&"passes_bolts") and bool(o.call(&"passes_bolts"))
 
+
 func _is_enemy(o: Object) -> bool:
 	return o is CollisionObject3D and ((o as CollisionObject3D).collision_layer & ENEMY_MASK) != 0
+
 
 ## Sweeps a graze sphere from -> to against the enemy layer: {} or a ray-like dict at the
 ## first enemy (not passing bolts) it touches.
@@ -255,10 +269,16 @@ func _graze(space: PhysicsDirectSpaceState3D, s: Spawn, from: Vector3, to: Vecto
 			ex.append(info["rid"])
 			continue
 		return {
-			"collider": o, "rid": info["rid"], "shape": info["shape"], "position": info["point"],
-			"normal": info["normal"], "grazed": true, "along": seg.length() * m[1],
+			"collider": o,
+			"rid": info["rid"],
+			"shape": info["shape"],
+			"position": info["point"],
+			"normal": info["normal"],
+			"grazed": true,
+			"along": seg.length() * m[1],
 		}
 	return {}
+
 
 func _resolve(h: Hit) -> void:
 	if not is_instance_valid(h.collider):
@@ -271,9 +291,11 @@ func _resolve(h: Hit) -> void:
 	if t is Damage.Target:
 		h.result = Damage.resolve_hit(h.damage, h.element, t)
 
+
 func _color(e: ElementTable.Element) -> Color:
 	var t := elements if elements != null else ElementTable.load_default()
 	return t.color(e) if t != null else Color.WHITE
+
 
 ## Where the tracer of `s` is drawn at distance x along its ray (step 10 visual origin).
 static func drawn_point(s: Spawn, x: float) -> Vector3:
@@ -281,6 +303,7 @@ static func drawn_point(s: Spawn, x: float) -> Vector3:
 	if s.has_visual_origin:
 		p += (s.visual_origin - s.origin) * maxf(0.0, 1.0 - x / CONVERGE)
 	return p
+
 
 ## Tracer from max(SKIP_NEAR, d - TAIL) (0 with a visual origin) to d metres along a bolt's
 ## ray; null when empty.
@@ -294,6 +317,7 @@ func _tracer(s: Spawn, d: float) -> Line:
 	l.color = _color(s.element)
 	return l
 
+
 ## Live bolt tails (head interpolated by alpha between the last two ticks) + lingering impacts.
 func tracer_lines(alpha: float) -> Array[Line]:
 	var out: Array[Line] = []
@@ -306,6 +330,7 @@ func tracer_lines(alpha: float) -> Array[Line]:
 	for i in _impacts:
 		out.append(i[0])
 	return out
+
 
 func _draw_tracers(alpha: float) -> void:
 	if _mesh == null:

@@ -9,6 +9,7 @@ extends TestCase
 const P := WieldablePart.PartType
 const E := ElementTable.Element
 
+
 func test_salvage_dust() -> void:
 	var inv := Inventory.new()
 	var expect := 0
@@ -20,6 +21,7 @@ func test_salvage_dust() -> void:
 	check(inv.dust == expect and expect == 97, "dust %d" % inv.dust)
 	check(inv.size() == 0, "parts gone")
 	check(CraftingExtras.salvage(inv, WieldablePart.new()) != "", "not in pack")
+
 
 func test_upgrade_chain_and_cap() -> void:
 	var inv := Inventory.new()
@@ -35,7 +37,9 @@ func test_upgrade_chain_and_cap() -> void:
 		check(cost == CraftingExtras.UPGRADE_COST[t], "cost tier %d" % t)
 		check(CraftingExtras.upgrade(inv, part) == "", "upgrade from tier %d" % t)
 		spent += cost
-		check(part.rarity == Rarity.IDS[t + 1] and part.roll_seed == 4242 and part.element == E.WATER, "same seed/element")
+		check(
+			part.rarity == Rarity.IDS[t + 1] and part.roll_seed == 4242 and part.element == E.WATER, "same seed/element"
+		)
 		check(part.damage_bonus > last_dmg, "damage grows")
 		last_dmg = part.damage_bonus
 		var r := PartRoller.stat_range(P.HEAD, part.rarity, "damage_bonus")
@@ -50,17 +54,25 @@ func test_upgrade_chain_and_cap() -> void:
 	var tmpl := WieldablePart.load_part("basic_handle")
 	check(CraftingExtras.upgrade(inv, tmpl.duplicate()) != "", "hand-made refuses")
 
+
 func test_gems() -> void:
 	var inv := Inventory.new()
-	var head := PartRoller.from_seed(99, P.HEAD, "rare", E.WATER)   # 2 slots
+	var head := PartRoller.from_seed(99, P.HEAD, "rare", E.WATER)  # 2 slots
 	var g1 := ElementGem.make(E.FIRE)
 	var g2 := ElementGem.make(E.EARTH)
 	var g3 := ElementGem.make(E.AIR)
 	for g in [g1, g2, g3]:
 		inv.add(g)
 	var staff := WieldableInstance.load_base("apprentice_fire_staff")
-	var w := Assembly.assemble(staff.def, [head, PartRoller.from_seed(1, P.EXTERIOR, "rare", E.FIRE),
-		PartRoller.from_seed(2, P.INTERIOR, "rare", E.FIRE), PartRoller.from_seed(3, P.HANDLE, "rare", E.FIRE)])
+	var w := Assembly.assemble(
+		staff.def,
+		[
+			head,
+			PartRoller.from_seed(1, P.EXTERIOR, "rare", E.FIRE),
+			PartRoller.from_seed(2, P.INTERIOR, "rare", E.FIRE),
+			PartRoller.from_seed(3, P.HANDLE, "rare", E.FIRE)
+		]
+	)
 	check(w != null, "built")
 	var dmg0 := w.damage()
 	check(w.element() == E.WATER, "Head element before gems")
@@ -71,10 +83,15 @@ func test_gems() -> void:
 	check(WieldablePart.load_part(PartRoller.TEMPLATE_IDS[P.HEAD]).gems.is_empty(), "template untouched")
 	check(CraftingExtras.unsocket(inv, head, 0) == "" and inv.has(g1) and w.element() == E.EARTH, "unsocket")
 	# Wand Heads use 1 slot.
-	var wand := Assembly.assemble(WieldableInstance.load_base("swift_wind_wand").def,
-		[PartRoller.from_seed(5, P.HEAD, "primordial", E.AIR), PartRoller.from_seed(6, P.EXTERIOR, "basic", E.AIR)])
+	var wand := Assembly.assemble(
+		WieldableInstance.load_base("swift_wind_wand").def,
+		[PartRoller.from_seed(5, P.HEAD, "primordial", E.AIR), PartRoller.from_seed(6, P.EXTERIOR, "basic", E.AIR)]
+	)
 	var wh := wand.part(P.HEAD)
-	check(CraftingExtras.socket(inv, wh, g1, wand) == "" and CraftingExtras.socket(inv, wh, g3, wand) != "", "wand: 1 slot")
+	check(
+		CraftingExtras.socket(inv, wh, g1, wand) == "" and CraftingExtras.socket(inv, wh, g3, wand) != "",
+		"wand: 1 slot"
+	)
 	# Salvage returns gems.
 	inv.add(head)
 	check(CraftingExtras.salvage(inv, head) == "" and inv.has(g2), "salvage returns the gem")

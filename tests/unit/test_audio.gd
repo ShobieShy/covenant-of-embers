@@ -3,15 +3,19 @@ extends TestCase
 
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
 
+
 func test_streams_and_buses() -> void:
 	for k in GameAudio.SOUNDS:
 		check(GameAudio.load_stream(k) != null, "%s loads (%s)" % [k, GameAudio.SOUNDS[k]])
 	for b in GameAudio.BUSES:
 		check(AudioServer.get_bus_index(b) >= 0, "bus %s" % b)
 	GameAudio.apply_volumes(1.0, 0.5, 0.0)
-	check(absf(AudioServer.get_bus_volume_db(AudioServer.get_bus_index("SFX")) - linear_to_db(0.5)) < 0.01, "sfx volume")
+	check(
+		absf(AudioServer.get_bus_volume_db(AudioServer.get_bus_index("SFX")) - linear_to_db(0.5)) < 0.01, "sfx volume"
+	)
 	GameAudio.apply_volumes(1.0, 1.0, 1.0)
 	check(absf(AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Music"))) < 0.01, "music back to 0 dB")
+
 
 func test_hooks() -> void:
 	var w := Node3D.new()
@@ -39,5 +43,7 @@ func test_hooks() -> void:
 	w.add_child(e)
 	GameEvents.bus().enemy_spawned.emit(e)
 	e.apply_damage(1000.0, ElementTable.Element.FIRE)
-	check(int(a.played.get("enemy_death", 0)) == 1 and int(a.played.get("kill", 0)) >= 1, "death + kill (%s)" % [a.played])
+	check(
+		int(a.played.get("enemy_death", 0)) == 1 and int(a.played.get("kill", 0)) >= 1, "death + kill (%s)" % [a.played]
+	)
 	w.free()

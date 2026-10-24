@@ -1,6 +1,7 @@
 extends TestCase
 ## Step 31 done check: assembling through the station screen produces the item.
 
+
 func _setup() -> Array:
 	var p: Player = (load("res://scenes/player/player.tscn") as PackedScene).instantiate()
 	p.input_enabled = false
@@ -14,8 +15,10 @@ func _setup() -> Array:
 	ui.bind(p)
 	return [p, st, ui]
 
+
 func _part(id: String) -> WieldablePart:
 	return WieldablePart.load_part(id).duplicate()
+
 
 func test_assemble_via_ui() -> void:
 	var s := _setup()
@@ -37,7 +40,9 @@ func test_assemble_via_ui() -> void:
 	for i in range(1, 4):
 		ui.pick(parts[i])
 	check(ui.errors().is_empty(), "valid: %s" % ui.error_label.text)
-	check(ui.preview_text().begins_with("[") and ui.preview_text().contains("Damage:"), "preview: %s" % ui.preview_text())
+	check(
+		ui.preview_text().begins_with("[") and ui.preview_text().contains("Damage:"), "preview: %s" % ui.preview_text()
+	)
 	var w := ui.assemble()
 	check(w != null and w.assembled and p.inventory.has(w), "assembled into the pack")
 	check(p.inventory.size() == 1, "parts + base consumed")
@@ -45,7 +50,10 @@ func test_assemble_via_ui() -> void:
 	check(ui.disassemble_selected() and p.inventory.size() == 5, "disassemble returns 4 parts + base")
 	ui.close()
 	check(not p.ui_open, "close unfreezes")
-	p.queue_free(); s[1].queue_free(); ui.queue_free()
+	p.queue_free()
+	s[1].queue_free()
+	ui.queue_free()
+
 
 func test_wand_disables_interior_and_charm() -> void:
 	var s := _setup()
@@ -55,11 +63,19 @@ func test_wand_disables_interior_and_charm() -> void:
 	var wand := WieldableInstance.load_base("novice_arcane_wand")
 	p.inventory.add(wand)
 	ui.pick(wand)
-	check(ui.slot_buttons[WieldablePart.PartType.INTERIOR].disabled and ui.slot_buttons[WieldablePart.PartType.CHARM].disabled, "wand slots")
+	check(
+		(
+			ui.slot_buttons[WieldablePart.PartType.INTERIOR].disabled
+			and ui.slot_buttons[WieldablePart.PartType.CHARM].disabled
+		),
+		"wand slots"
+	)
 	check(not ui.slot_buttons[WieldablePart.PartType.HANDLE].disabled, "wand handle optional")
 	var interior := _part("basic_interior")
 	p.inventory.add(interior)
 	ui.pick(interior)
 	check(not ui.parts.has(WieldablePart.PartType.INTERIOR), "interior refused for a wand")
 	ui.close()
-	p.queue_free(); s[1].queue_free(); ui.queue_free()
+	p.queue_free()
+	s[1].queue_free()
+	ui.queue_free()

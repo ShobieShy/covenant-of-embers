@@ -11,11 +11,13 @@ const SCENE := "res://scenes/levels/breach.tscn"
 const TOML := "res://data/enemies/breach_warden.toml"
 const E := ElementTable.Element
 
+
 func _spawn(w: Node3D, id: String, feet: Vector3) -> Enemy:
 	var e := Enemy.create(EnemyTable.load_default().find(id), Transform3D(Basis.IDENTITY, feet))
 	e.auto_tick = false
 	w.add_child(e)
 	return e
+
 
 func test_tres_matches_toml() -> void:
 	var r := EnemyTable.from_toml_files([TOML])
@@ -27,8 +29,23 @@ func test_tres_matches_toml() -> void:
 	check(got != null, "shipped")
 	if got == null:
 		return
-	for k in ["display_name", "affinity", "max_health", "level", "xp_reward", "size", "color", "weak_point_offset", "weak_point_size", "ai"]:
-		check(got.get(k) == want.get(k) if k == "ai" else str(got.get(k)) == str(want.get(k)), "%s: %s vs %s" % [k, got.get(k), want.get(k)])
+	for k in [
+		"display_name",
+		"affinity",
+		"max_health",
+		"level",
+		"xp_reward",
+		"size",
+		"color",
+		"weak_point_offset",
+		"weak_point_size",
+		"ai"
+	]:
+		check(
+			got.get(k) == want.get(k) if k == "ai" else str(got.get(k)) == str(want.get(k)),
+			"%s: %s vs %s" % [k, got.get(k), want.get(k)]
+		)
+
 
 func test_phase_switch_at_half() -> void:
 	var w := Node3D.new()
@@ -55,6 +72,7 @@ func test_phase_switch_at_half() -> void:
 	b.reset()
 	check(b.phase == 1 and is_equal_approx(b.rusher.walk_speed, walk), "reset -> phase 1")
 	w.free()
+
 
 func test_death_opens_vault() -> void:
 	var w := Node3D.new()

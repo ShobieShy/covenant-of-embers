@@ -22,36 +22,41 @@ extends CharacterBody3D
 ## are kept so later systems read the same way. Knockback (> 10 damage) is the Gnawer's.
 
 signal damage_received(amount: float, direction: Vector3, point: Vector3)  ## Magewar's name
-signal damaged(enemy: Enemy, hit: SpellBolts.Hit)    ## after health changed (hit.result set)
+signal damaged(enemy: Enemy, hit: SpellBolts.Hit)  ## after health changed (hit.result set)
 signal died(enemy: Enemy, element: ElementTable.Element)
 
-const ENEMY_LAYER := 3                ## physics layer "enemy" (bit 3)
-const FLASH_TIME := 0.12              ## s of hit flash (C++ kFlashTime)
-const WEAK_POINT_BRIGHTEN := 0.35     ## weak point tint = body colour lightened by this
-const GROUP := &"enemies"             ## Magewar's group
+const ENEMY_LAYER := 3  ## physics layer "enemy" (bit 3)
+const FLASH_TIME := 0.12  ## s of hit flash (C++ kFlashTime)
+const WEAK_POINT_BRIGHTEN := 0.35  ## weak point tint = body colour lightened by this
+const GROUP := &"enemies"  ## Magewar's group
 ## ai.kind -> the Enemy subclass that runs it (loaded by path: no class cycle).
-const BRAINS := {"rusher": "res://scripts/enemies/gnawer.gd", "tank": "res://scripts/enemies/heap.gd", "boss": "res://scripts/enemies/warden.gd"}
+const BRAINS := {
+	"rusher": "res://scripts/enemies/gnawer.gd",
+	"tank": "res://scripts/enemies/heap.gd",
+	"boss": "res://scripts/enemies/warden.gd"
+}
 
 var def: EnemyDef
 var damage_target: Damage.Target
 var health := 0.0
 var dead := false
 var hits := 0
-var damage_taken := 0.0               ## health actually lost
+var damage_taken := 0.0  ## health actually lost
 var flash := 0.0
 var last_hit: SpellBolts.Hit
-var last_weak_point := false          ## the last resolved hit struck the weak point
+var last_weak_point := false  ## the last resolved hit struck the weak point
 var last_killing_element: ElementTable.Element = ElementTable.Element.ARCANE
-var deaths := 0                       ## deaths announced (a respawned dummy can die again)
+var deaths := 0  ## deaths announced (a respawned dummy can die again)
 var resets := 0
 var _death_announced := false
 
 var body_shape: CollisionShape3D
-var head_shape: CollisionShape3D      ## null without a weak point
+var head_shape: CollisionShape3D  ## null without a weak point
 var _body_mesh: MeshInstance3D
 var _head_mesh: MeshInstance3D
 var _body_mat: StandardMaterial3D
 var _head_mat: StandardMaterial3D
+
 
 ## A new enemy of type `d`, posed by `xform` (feet, yaw) in its future parent's space.
 ## Place it before add_child: Jolt ray queries see a body teleported after it entered the
@@ -67,6 +72,7 @@ static func create(d: EnemyDef, xform := Transform3D.IDENTITY) -> Enemy:
 	e.setup(d)
 	e.transform = xform
 	return e
+
 
 func setup(d: EnemyDef) -> void:
 	def = d
@@ -85,6 +91,7 @@ func setup(d: EnemyDef) -> void:
 		_head_mat = _material(d.color.lerp(Color.WHITE, WEAK_POINT_BRIGHTEN))
 		_head_mesh = _mesh("HeadMesh", d.weak_point_size, d.weak_point_offset, _head_mat)
 
+
 func _shape(n: String, sz: Vector3, at: Vector3) -> CollisionShape3D:
 	var cs := CollisionShape3D.new()
 	cs.name = n
@@ -95,10 +102,12 @@ func _shape(n: String, sz: Vector3, at: Vector3) -> CollisionShape3D:
 	add_child(cs)
 	return cs
 
+
 func _material(c: Color) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	m.albedo_color = c
 	return m
+
 
 func _mesh(n: String, sz: Vector3, at: Vector3, m: StandardMaterial3D) -> MeshInstance3D:
 	var mi := MeshInstance3D.new()
@@ -111,22 +120,28 @@ func _mesh(n: String, sz: Vector3, at: Vector3, m: StandardMaterial3D) -> MeshIn
 	add_child(mi)
 	return mi
 
+
 ## Magewar get_element(): the defender element.
 func get_element() -> ElementTable.Element:
 	return def.affinity if def else ElementTable.Element.ARCANE
 
+
 func display_name() -> String:
 	return def.display_name if def else "Enemy"
+
 
 func max_health() -> float:
 	return def.max_health if def else 0.0
 
+
 func alive() -> bool:
 	return not dead
+
 
 ## Dead enemies let bolts through (SpellBolts re-casts past them).
 func passes_bolts() -> bool:
 	return dead
+
 
 ## Which shape a ray result's shape index is (Hit.shape).
 func is_weak_point_shape(shape_index: int) -> bool:
@@ -140,10 +155,12 @@ func is_weak_point_shape(shape_index: int) -> bool:
 	var owner_id := shape_find_owner(shape_index)
 	return shape_owner_get_owner(owner_id) == head_shape
 
+
 ## SpellBolts: the Damage.Target for this hit (weak_point from the struck shape).
 func damage_target_for(h: SpellBolts.Hit) -> Damage.Target:
 	damage_target.weak_point = is_weak_point_shape(h.shape)
 	return damage_target
+
 
 ## A resolved bolt hit (SpellBolts calls this after damage_target_for + resolve_hit).
 func take_hit(h: SpellBolts.Hit) -> void:
@@ -156,6 +173,7 @@ func take_hit(h: SpellBolts.Hit) -> void:
 	damaged.emit(self, h)
 	if dead:
 		_announce_death()
+
 
 ## Lowers health by `amount` (>= 0), clamped at 0; true when this killed it. A kill is
 ## announced (`died` + EventBus.enemy_killed) at once unless `announce` is false
@@ -175,6 +193,7 @@ func apply_damage(amount: float, element: ElementTable.Element, announce := true
 		return true
 	return false
 
+
 ## Step 14: `died` and EventBus.enemy_killed, exactly once per death (reset() re-arms it).
 func _announce_death() -> void:
 	if _death_announced:
@@ -183,6 +202,7 @@ func _announce_death() -> void:
 	deaths += 1
 	died.emit(self, last_killing_element)
 	GameEvents.bus().announce_kill(self, last_killing_element)
+
 
 ## Step 14 (respawning training dummies): back to full health at `xform` (in the parent's
 ## space), visible, colliding, in the "enemies" group again; the next death is announced
@@ -217,6 +237,7 @@ func reset(xform: Variant = null) -> void:
 		_head_mat.albedo_color = def.color.lerp(Color.WHITE, WEAK_POINT_BRIGHTEN)
 	resets += 1
 
+
 func _die(element: ElementTable.Element) -> void:
 	dead = true
 	health = 0.0
@@ -230,8 +251,10 @@ func _die(element: ElementTable.Element) -> void:
 		head_shape.set_deferred(&"disabled", true)
 	visible = false
 
+
 func _physics_process(delta: float) -> void:
 	tick(delta)
+
 
 ## Hit flash: the greybox tint goes towards white for FLASH_TIME after a hit.
 func tick(dt: float) -> void:
@@ -242,7 +265,10 @@ func tick(dt: float) -> void:
 	if _body_mat:
 		_body_mat.albedo_color = def.color.lerp(Color.WHITE, 0.6 * k)
 	if _head_mat:
-		_head_mat.albedo_color = def.color.lerp(Color.WHITE, WEAK_POINT_BRIGHTEN + (1.0 - WEAK_POINT_BRIGHTEN) * 0.6 * k)
+		_head_mat.albedo_color = def.color.lerp(
+			Color.WHITE, WEAK_POINT_BRIGHTEN + (1.0 - WEAK_POINT_BRIGHTEN) * 0.6 * k
+		)
+
 
 ## Spawns one Enemy per EnemySpawns marker of `level` whose `enemy` meta is in `table`,
 ## under `parent` (posed before entering the tree). Unknown ids are skipped and returned
@@ -261,7 +287,11 @@ static func spawn_at_markers(level: Node, parent: Node3D, table: EnemyTable, ski
 		if d == null:
 			skipped.append(id)
 			continue
-		var xf := parent.global_transform.affine_inverse() * marker.global_transform if parent.is_inside_tree() and marker.is_inside_tree() else marker.transform
+		var xf := (
+			parent.global_transform.affine_inverse() * marker.global_transform
+			if parent.is_inside_tree() and marker.is_inside_tree()
+			else marker.transform
+		)
 		var e := Enemy.create(d, xf)
 		e.name = marker.name
 		parent.add_child(e)

@@ -9,10 +9,12 @@ const GEM_DAMAGE := 1.0
 
 @export var element: ElementTable.Element = ElementTable.Element.FIRE
 
+
 static func make(e: ElementTable.Element) -> ElementGem:
 	var g := ElementGem.new()
 	g.element = e
 	return g
+
 
 func display_name() -> String:
 	return "%s Gem" % ElementTable.load_default().display_name(element)

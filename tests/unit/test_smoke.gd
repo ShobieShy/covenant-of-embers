@@ -1,11 +1,14 @@
 extends TestCase
 
+
 func test_engine_is_godot_4() -> void:
 	check(Engine.get_version_info().major == 4, "Godot 4 required")
+
 
 func test_project_settings() -> void:
 	check(ProjectSettings.get_setting("rendering/renderer/rendering_method") == "forward_plus", "Forward+ renderer")
 	check(int(ProjectSettings.get_setting("physics/common/physics_ticks_per_second")) == 60, "60 Hz physics")
+
 
 func test_main_scene_instantiates() -> void:
 	var packed: PackedScene = load("res://scenes/main.tscn")
@@ -15,6 +18,7 @@ func test_main_scene_instantiates() -> void:
 	check_near(root.get_node("Player/Head/Camera3D").fov, 75.0, 0.001, "hip FOV")
 	root.free()
 
+
 func test_kenney_blaster_imports() -> void:
 	var scene: PackedScene = load("res://assets/kenney/blaster-kit/Models/GLB format/blaster-a.glb")
 	check(scene != null, "blaster-a.glb imported")
@@ -22,6 +26,7 @@ func test_kenney_blaster_imports() -> void:
 		var n := scene.instantiate()
 		check(n.find_children("*", "MeshInstance3D", true, false).size() > 0, "blaster has meshes")
 		n.free()
+
 
 func test_main_scene_loads_midden() -> void:
 	var root: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()

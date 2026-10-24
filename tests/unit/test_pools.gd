@@ -13,10 +13,12 @@ const E := ElementTable.Element
 const N := 10000
 const TOL := 0.02
 
+
 func _rng(s: int) -> RandomNumberGenerator:
 	var r := RandomNumberGenerator.new()
 	r.seed = s
 	return r
+
 
 func _entry(id: String, w: float, rarity := "") -> DropEntry:
 	var e := DropEntry.new()
@@ -24,6 +26,7 @@ func _entry(id: String, w: float, rarity := "") -> DropEntry:
 	e.weight = w
 	e.rarity = rarity
 	return e
+
 
 func _pool(id: String, entries: Array, enemies: PackedStringArray = [], lo := 1, hi := 50) -> DropPool:
 	var p := DropPool.new()
@@ -35,6 +38,7 @@ func _pool(id: String, entries: Array, enemies: PackedStringArray = [], lo := 1,
 		p.entries.append(e)
 	return p
 
+
 ## A copy of the shipped rarity table where only `tier` can roll.
 func _only_tier(tier: int) -> RarityTable:
 	var t := RarityTable.load_default().duplicate(true) as RarityTable
@@ -44,8 +48,10 @@ func _only_tier(tier: int) -> RarityTable:
 	t.rebuild()
 	return t
 
+
 func _good() -> DropPool:
 	return _pool("ok", [_entry("novice_arcane_wand", 1.0)])
+
 
 func _count(drops: Array[LootDrop], kind: LootDrop.Kind) -> int:
 	var n := 0
@@ -54,11 +60,13 @@ func _count(drops: Array[LootDrop], kind: LootDrop.Kind) -> int:
 			n += 1
 	return n
 
+
 func _describe(drops: Array[LootDrop]) -> PackedStringArray:
 	var out := PackedStringArray()
 	for d in drops:
 		out.append(d.describe())
 	return out
+
 
 func test_shipped_pools() -> void:
 	var dt := DropRoller.default_pools()
@@ -67,11 +75,16 @@ func test_shipped_pools() -> void:
 	var et := EnemyTable.load_default()
 	var gn := et.find("gnawer")
 	var hp := et.find("heap")
-	check(gn.level == 1 and hp.level == 3, "levels = Magewar mutant rat 1 / garbage golem 3 (got %d/%d)" % [gn.level, hp.level])
+	check(
+		gn.level == 1 and hp.level == 3,
+		"levels = Magewar mutant rat 1 / garbage golem 3 (got %d/%d)" % [gn.level, hp.level]
+	)
 	check(et.find("earth_training_dummy").level == 1, "dummies default to level 1")
 	check(dt.pool_for("gnawer", gn.level).id == "midden_gnawer", "Gnawer pool")
 	check(dt.pool_for("heap", hp.level).id == "midden_heap", "Heap pool")
-	check(dt.pool_for("earth_training_dummy", 1) == null, "training dummies have no pool (Magewar dummies drop nothing)")
+	check(
+		dt.pool_for("earth_training_dummy", 1) == null, "training dummies have no pool (Magewar dummies drop nothing)"
+	)
 	for p in dt.pools:
 		var sum := 0.0
 		for c in p.expected_chances():
@@ -79,11 +92,17 @@ func test_shipped_pools() -> void:
 		check_near(sum, 1.0, 1e-9, "%s chances sum" % p.id)
 		for e in p.entries:
 			var w := e.make()
-			check(w != null and w.def.validate().is_empty() and w.rarity_id() == e.rarity_id(), "%s %s makes a valid %s base" % [p.id, e.wieldable_id, e.rarity_id()])
+			check(
+				w != null and w.def.validate().is_empty() and w.rarity_id() == e.rarity_id(),
+				"%s %s makes a valid %s base" % [p.id, e.wieldable_id, e.rarity_id()]
+			)
 	# A rarity override copies the def; the shared base is untouched.
 	var rare := _entry("apprentice_fire_staff", 1.0, "rare").make()
-	check(rare.rarity_id() == "rare" and is_equal_approx(rare.damage(), 15.0), "Rare Apprentice Fire Staff: 10 x 1.5 = 15")
+	check(
+		rare.rarity_id() == "rare" and is_equal_approx(rare.damage(), 15.0), "Rare Apprentice Fire Staff: 10 x 1.5 = 15"
+	)
 	check(WieldableInstance.load_base("apprentice_fire_staff").def.base_rarity == "basic", "shared base stays Basic")
+
 
 func test_pool_rolls_within_2pct() -> void:
 	# Gnawer by hand: Basic 50 % -> novice 60 : fire 40; Uncommon 25 % plus Rare+ 25 %
@@ -109,7 +128,10 @@ func test_pool_rolls_within_2pct() -> void:
 			var worst := 0.0
 			for i in counts.size():
 				worst = maxf(worst, absf(counts[i] / float(N) - exp[i]))
-				check(absf(counts[i] / float(N) - exp[i]) <= TOL, "%s luck %s entry %d: %.4f vs %.4f" % [p.id, luck, i, counts[i] / float(N), exp[i]])
+				check(
+					absf(counts[i] / float(N) - exp[i]) <= TOL,
+					"%s luck %s entry %d: %.4f vs %.4f" % [p.id, luck, i, counts[i] / float(N), exp[i]]
+				)
 			# The rolled rarities follow RarityTable's (luck-shifted) weights.
 			var w := RarityTable.load_default().weights(luck)
 			var total := 0.0
@@ -135,6 +157,7 @@ func test_pool_rolls_within_2pct() -> void:
 	check(a.state == ref.state, "pool roll = two draws")
 	check(gp.roll(_rng(5)).entry == gp.roll(_rng(5)).entry, "same seed, same entry")
 
+
 func test_fallback_down_a_tier() -> void:
 	var p := _pool("fb", [_entry("novice_arcane_wand", 1.0), _entry("apprentice_fire_staff", 1.0, "rare")])
 	check(p.resolve_tier(Rarity.Tier.BASIC) == Rarity.Tier.BASIC, "Basic has an entry")
@@ -143,16 +166,28 @@ func test_fallback_down_a_tier() -> void:
 	check(p.resolve_tier(Rarity.Tier.MYTHIC) == Rarity.Tier.RARE, "Mythic -> Rare")
 	check(p.resolve_tier(Rarity.Tier.UNIQUE) == Rarity.Tier.RARE, "Unique -> Rare (two tiers down)")
 	var d := p.roll(_rng(1), 0.0, _only_tier(Rarity.Tier.MYTHIC))
-	check(d.rolled_rarity_id == "mythic" and d.rarity_id == "rare" and d.entry.wieldable_id == "apprentice_fire_staff"
-		and d.item.rarity_id() == "rare", "rolled Mythic, dropped the Rare entry")
+	check(
+		(
+			d.rolled_rarity_id == "mythic"
+			and d.rarity_id == "rare"
+			and d.entry.wieldable_id == "apprentice_fire_staff"
+			and d.item.rarity_id() == "rare"
+		),
+		"rolled Mythic, dropped the Rare entry"
+	)
 	check(d.rarity_color() == RarityTable.load_default().color("rare"), "beam colour = the dropped tier's")
 	d = p.roll(_rng(1), 0.0, _only_tier(Rarity.Tier.UNCOMMON))
-	check(d.rolled_rarity_id == "uncommon" and d.rarity_id == "basic" and d.entry.wieldable_id == "novice_arcane_wand", "rolled Uncommon, dropped Basic")
+	check(
+		d.rolled_rarity_id == "uncommon" and d.rarity_id == "basic" and d.entry.wieldable_id == "novice_arcane_wand",
+		"rolled Uncommon, dropped Basic"
+	)
 	# Nothing at or below: the lowest tier above.
 	var up := _pool("up", [_entry("swift_wind_wand", 1.0), _entry("earthward_battlestaff", 2.0, "mythic")])
 	check(up.resolve_tier(Rarity.Tier.BASIC) == Rarity.Tier.UNCOMMON, "Basic in an Uncommon+ pool -> Uncommon")
 	d = up.roll(_rng(3), 0.0, _only_tier(Rarity.Tier.BASIC))
-	check(d.rarity_id == "uncommon" and d.entry.wieldable_id == "swift_wind_wand", "Basic roll drops the Uncommon entry")
+	check(
+		d.rarity_id == "uncommon" and d.entry.wieldable_id == "swift_wind_wand", "Basic roll drops the Uncommon entry"
+	)
 	# Fallback chances: Gnawer-like pool rolled 10 000 times with only Mythic weight -> all Uncommon.
 	var gp := DropRoller.default_pools().find("midden_gnawer")
 	var rng := _rng(11)
@@ -165,15 +200,30 @@ func test_fallback_down_a_tier() -> void:
 			other += 1
 		elif x.entry.wieldable_id == "swift_wind_wand":
 			swift += 1
-	check(other == 0 and absf(swift / float(N) - 0.75) <= TOL, "Mythic rolls fall to Uncommon, swift 30:10 -> %.4f" % (swift / float(N)))
+	check(
+		other == 0 and absf(swift / float(N) - 0.75) <= TOL,
+		"Mythic rolls fall to Uncommon, swift 30:10 -> %.4f" % (swift / float(N))
+	)
 	# Empty pool: no entry, no draw.
 	var empty := _pool("empty", [])
 	var r := _rng(4)
 	var s := r.state
-	check(empty.resolve_tier(2) == -1 and empty.pick_entry(r, 2) == null and r.state == s, "empty pool picks nothing without drawing")
+	check(
+		empty.resolve_tier(2) == -1 and empty.pick_entry(r, 2) == null and r.state == s,
+		"empty pool picks nothing without drawing"
+	)
+
 
 func test_procedural_recipe() -> void:
-	check(DropRoller.part_count(1) == 1 and DropRoller.part_count(2) == 1 and DropRoller.part_count(3) == 2 and DropRoller.part_count(50) == 2, "1 part, +1 at level >= 3")
+	check(
+		(
+			DropRoller.part_count(1) == 1
+			and DropRoller.part_count(2) == 1
+			and DropRoller.part_count(3) == 2
+			and DropRoller.part_count(50) == 2
+		),
+		"1 part, +1 at level >= 3"
+	)
 	var rt := RarityTable.load_default()
 	# Replay Magewar's draw order by hand on a twin rng.
 	for luck in [0.0, 4.0]:
@@ -203,14 +253,35 @@ func test_procedural_recipe() -> void:
 						elif g.kind == LootDrop.Kind.PART:
 							var gp := g.item as WieldablePart
 							var wp := w[1] as WieldablePart
-							same = same and gp.id == wp.id and gp.damage_bonus == wp.damage_bonus and gp.accuracy_bonus == wp.accuracy_bonus \
-								and gp.fire_rate_modifier == wp.fire_rate_modifier and g.rarity_id == wp.rarity and g.roll_seed == wp.roll_seed
+							same = (
+								same
+								and gp.id == wp.id
+								and gp.damage_bonus == wp.damage_bonus
+								and gp.accuracy_bonus == wp.accuracy_bonus
+								and gp.fire_rate_modifier == wp.fire_rate_modifier
+								and g.rarity_id == wp.rarity
+								and g.roll_seed == wp.roll_seed
+							)
 						else:
-							same = same and g.equip_slot == w[1] and g.rarity_id == w[2] and g.element == w[3] and g.roll_seed == w[4]
-							var gi := g.item as EquipmentItem   # step 19: rolled from the stored seed
+							same = (
+								same
+								and g.equip_slot == w[1]
+								and g.rarity_id == w[2]
+								and g.element == w[3]
+								and g.roll_seed == w[4]
+							)
+							var gi := g.item as EquipmentItem  # step 19: rolled from the stored seed
 							var wi := EquipmentRoller.from_seed(w[4], w[1], w[2], w[3])
-							same = same and gi != null and gi.id == wi.id and gi.slot == w[1] and gi.mana_bonus == wi.mana_bonus \
-								and gi.health_bonus == wi.health_bonus and gi.stamina_bonus == wi.stamina_bonus and gi.speed_modifier == wi.speed_modifier
+							same = (
+								same
+								and gi != null
+								and gi.id == wi.id
+								and gi.slot == w[1]
+								and gi.mana_bonus == wi.mana_bonus
+								and gi.health_bonus == wi.health_bonus
+								and gi.stamina_bonus == wi.stamina_bonus
+								and gi.speed_modifier == wi.speed_modifier
+							)
 					check(same, "luck %s level %d element %d seed %d: Magewar draw order" % [luck, lvl, el, s])
 	# Statistics over 10 000 level-1 Earth kills (luck 4: parts luck 4, equipment luck 2).
 	var rng := _rng(2026)
@@ -237,15 +308,26 @@ func test_procedural_recipe() -> void:
 	for t in 5:
 		check(absf(types[t] / float(parts) - 0.2) <= TOL, "part type %d uniform: %.4f" % [t, types[t] / float(parts)])
 	for sl in 4:
-		check(absf(slots[sl] / float(equips) - 0.25) <= TOL, "slot %s uniform: %.4f" % [LootDrop.EQUIP_SLOTS[sl], slots[sl] / float(equips)])
+		check(
+			absf(slots[sl] / float(equips) - 0.25) <= TOL,
+			"slot %s uniform: %.4f" % [LootDrop.EQUIP_SLOTS[sl], slots[sl] / float(equips)]
+		)
 	for pair in [[part_tiers, parts, 4.0], [eq_tiers, equips, 2.0]]:
 		var w := rt.weights(pair[2])
 		var total := 0.0
 		for x in w:
 			total += x
 		for t in Rarity.COUNT:
-			check(absf(pair[0][t] / float(pair[1]) - w[t] / total) <= TOL, "luck %s tier %d: %.4f vs %.4f" % [pair[2], t, pair[0][t] / float(pair[1]), w[t] / total])
-	print("    10000 L1 kills: %d parts, %d equipment (%.3f), part tiers %s, equipment tiers %s" % [parts, equips, equips / float(N), part_tiers, eq_tiers])
+			check(
+				absf(pair[0][t] / float(pair[1]) - w[t] / total) <= TOL,
+				"luck %s tier %d: %.4f vs %.4f" % [pair[2], t, pair[0][t] / float(pair[1]), w[t] / total]
+			)
+	print(
+		(
+			"    10000 L1 kills: %d parts, %d equipment (%.3f), part tiers %s, equipment tiers %s"
+			% [parts, equips, equips / float(N), part_tiers, eq_tiers]
+		)
+	)
 	# No enemy element: Magewar element weights (Arcane 2, F/W/E/A 1, Light/Dark 0.5).
 	var els := PackedInt32Array([0, 0, 0, 0, 0, 0, 0])
 	var cnt := 0
@@ -255,14 +337,21 @@ func test_procedural_recipe() -> void:
 			els[d.element] += 1
 			cnt += 1
 	for i in ElementTable.COUNT:
-		check(absf(els[i] / float(cnt) - PartRoller.ELEMENT_WEIGHTS[i] / 7.0) <= TOL, "element %d weight: %.4f" % [i, els[i] / float(cnt)])
+		check(
+			absf(els[i] / float(cnt) - PartRoller.ELEMENT_WEIGHTS[i] / 7.0) <= TOL,
+			"element %d weight: %.4f" % [i, els[i] / float(cnt)]
+		)
 	# Rolled parts regenerate and validate; equipment waits for step 19.
 	var drops := DropRoller.roll_procedural(_rng(31), 3, E.FIRE)
 	check(drops.size() >= 2, "level 3: two parts")
 	for d in drops:
 		if d.kind == LootDrop.Kind.PART:
 			var p := d.item as WieldablePart
-			check(p.validate().is_empty() and PartRoller.regenerate(p).id == p.id and p.element == E.FIRE, "drop part valid + regenerates")
+			check(
+				p.validate().is_empty() and PartRoller.regenerate(p).id == p.id and p.element == E.FIRE,
+				"drop part valid + regenerates"
+			)
+
 
 func test_roll_kill() -> void:
 	var et := EnemyTable.load_default()
@@ -276,7 +365,10 @@ func test_roll_kill() -> void:
 		var w := _count(drops, LootDrop.Kind.WIELDABLE)
 		pool_drops += w
 		check(w <= 1 and (w == 0 or drops[0].kind == LootDrop.Kind.WIELDABLE), "pool drop first, at most one")
-	check(absf(pool_drops / float(N) - 0.3) <= TOL, "Gnawer pool drop on %.4f of kills (drop_chance 0.3)" % (pool_drops / float(N)))
+	check(
+		absf(pool_drops / float(N) - 0.3) <= TOL,
+		"Gnawer pool drop on %.4f of kills (drop_chance 0.3)" % (pool_drops / float(N))
+	)
 	for n in 200:
 		var drops := DropRoller.roll_enemy(rng, hp)
 		heap_parts += _count(drops, LootDrop.Kind.PART)
@@ -292,26 +384,50 @@ func test_roll_kill() -> void:
 	var b := _describe(DropRoller.roll_enemy(_rng(9), hp))
 	check(a == b and not a.is_empty(), "same seed, same kill drops: %s" % [a])
 
+
 func test_bad_pools_rejected() -> void:
 	check(_good().validate().is_empty(), "minimal pool valid")
-	for k in ["unknown wieldable", "bad rarity", "zero weight", "negative weight", "min > max", "level 0",
-			"level 51", "drop chance 1.5", "no entries", "duplicate entry", "bad id", "null entry"]:
+	for k in [
+		"unknown wieldable",
+		"bad rarity",
+		"zero weight",
+		"negative weight",
+		"min > max",
+		"level 0",
+		"level 51",
+		"drop chance 1.5",
+		"no entries",
+		"duplicate entry",
+		"bad id",
+		"null entry"
+	]:
 		var p := _good()
 		match k:
-			"unknown wieldable": p.entries[0].wieldable_id = "laser_rifle"
-			"bad rarity": p.entries[0].rarity = "epic"
-			"zero weight": p.entries[0].weight = 0.0
-			"negative weight": p.entries[0].weight = -2.0
+			"unknown wieldable":
+				p.entries[0].wieldable_id = "laser_rifle"
+			"bad rarity":
+				p.entries[0].rarity = "epic"
+			"zero weight":
+				p.entries[0].weight = 0.0
+			"negative weight":
+				p.entries[0].weight = -2.0
 			"min > max":
 				p.min_level = 10
 				p.max_level = 5
-			"level 0": p.min_level = 0
-			"level 51": p.max_level = 51
-			"drop chance 1.5": p.drop_chance = 1.5
-			"no entries": p.entries.clear()
-			"duplicate entry": p.entries.append(_entry("novice_arcane_wand", 2.0, "basic"))
-			"bad id": p.id = "Bad Pool"
-			"null entry": p.entries.append(null)
+			"level 0":
+				p.min_level = 0
+			"level 51":
+				p.max_level = 51
+			"drop chance 1.5":
+				p.drop_chance = 1.5
+			"no entries":
+				p.entries.clear()
+			"duplicate entry":
+				p.entries.append(_entry("novice_arcane_wand", 2.0, "basic"))
+			"bad id":
+				p.id = "Bad Pool"
+			"null entry":
+				p.entries.append(null)
 		check(not p.validate().is_empty(), "rejected: %s" % k)
 	# Same base at two rarities is fine.
 	var two := _good()
@@ -319,10 +435,16 @@ func test_bad_pools_rejected() -> void:
 	check(two.validate().is_empty(), "same base at another rarity allowed")
 	# Table: duplicate ids and overlapping bands rejected; disjoint bands / specific vs generic OK.
 	var t := DropTable.new()
-	t.pools = [_pool("a", [_entry("novice_arcane_wand", 1.0)], ["gnawer"], 1, 5), _pool("b", [_entry("swift_wind_wand", 1.0)], ["gnawer"], 6, 50),
-		_pool("any", [_entry("apprentice_fire_staff", 1.0)])]
+	t.pools = [
+		_pool("a", [_entry("novice_arcane_wand", 1.0)], ["gnawer"], 1, 5),
+		_pool("b", [_entry("swift_wind_wand", 1.0)], ["gnawer"], 6, 50),
+		_pool("any", [_entry("apprentice_fire_staff", 1.0)])
+	]
 	check(t.validate().is_empty(), "disjoint bands + a generic pool valid: %s" % [t.validate()])
-	check(t.pool_for("gnawer", 3).id == "a" and t.pool_for("gnawer", 6).id == "b" and t.pool_for("heap", 3).id == "any", "pool_for: band, then generic")
+	check(
+		t.pool_for("gnawer", 3).id == "a" and t.pool_for("gnawer", 6).id == "b" and t.pool_for("heap", 3).id == "any",
+		"pool_for: band, then generic"
+	)
 	t.pools[1].min_level = 5
 	check(not t.validate().is_empty(), "overlapping Gnawer bands rejected")
 	t.pools[1].min_level = 6
@@ -332,8 +454,11 @@ func test_bad_pools_rejected() -> void:
 	t.pools[3].enemy_ids = []
 	check(not t.validate().is_empty(), "two overlapping generic pools rejected")
 	# Enemy level key (data/enemies/*.toml): optional, whole 1..50.
-	var base := "[[enemy]]\nid = \"d\"\nname = \"D\"\naffinity = \"earth\"\nmax_health = 60\nsize = [0.7, 1.6, 0.7]\ncolor = [0.5, 0.5, 0.5]\n"
+	var base := '[[enemy]]\nid = "d"\nname = "D"\naffinity = "earth"\nmax_health = 60\nsize = [0.7, 1.6, 0.7]\ncolor = [0.5, 0.5, 0.5]\n'
 	var ok := EnemyTable.from_toml(LevelToml.parse(base + "level = 7\n"))
-	check(not ok.has("error") and (ok["table"] as EnemyTable).defs[0].level == 7, "level 7 loads (%s)" % ok.get("error", ""))
-	for bad in ["level = 0", "level = 51", "level = 2.5", "level = \"3\""]:
+	check(
+		not ok.has("error") and (ok["table"] as EnemyTable).defs[0].level == 7,
+		"level 7 loads (%s)" % ok.get("error", "")
+	)
+	for bad in ["level = 0", "level = 51", "level = 2.5", 'level = "3"']:
 		check(EnemyTable.from_toml(LevelToml.parse(base + bad + "\n")).has("error"), "rejected: %s" % bad)

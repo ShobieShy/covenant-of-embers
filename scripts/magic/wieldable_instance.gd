@@ -20,37 +20,46 @@ const BASE_ACCURACY := 50.0
 
 @export var def: WieldableDef
 @export var parts: Array[WieldablePart] = []
-@export var assembled := false   ## built by Assembly.assemble(): rarity from the parts
+@export var assembled := false  ## built by Assembly.assemble(): rarity from the parts
+
 
 static func of(p_def: WieldableDef) -> WieldableInstance:
 	var w := WieldableInstance.new()
 	w.def = p_def
 	return w
 
+
 ## Loads resources/wieldables/<id>.tres as a fresh instance (no parts).
 static func load_base(id: String) -> WieldableInstance:
 	var d := load("res://resources/wieldables/%s.tres" % id) as WieldableDef
 	return of(d) if d != null else null
 
+
 ## Magewar ItemRarity.get_multiplier (x1.0 for an unknown id).
 static func rarity_multiplier(rarity_id: String) -> float:
 	return RarityTable.load_default().multiplier(rarity_id)
 
+
 func rarity_id() -> String:
 	return Assembly.rarity_for(parts) if assembled else def.base_rarity
+
 
 func rarity() -> Rarity:
 	return Rarity.of(rarity_id())
 
+
 func rarity_color() -> Color:
 	return RarityTable.load_default().color(rarity_id())
+
 
 func type() -> WieldableDef.Type:
 	return def.type
 
+
 ## The base's name; an assembled one is Magewar's "<Rarity> <Element> Staff|Wand".
 func display_name() -> String:
 	return Assembly.name_for(def.type, rarity_id(), element()) if assembled else def.display_name
+
 
 ## The attached part of `part_type` (first one), or null.
 func part(part_type: WieldablePart.PartType) -> WieldablePart:
@@ -59,21 +68,25 @@ func part(part_type: WieldablePart.PartType) -> WieldablePart:
 			return p
 	return null
 
+
 func handling() -> float:
 	var h := 0.0
 	for p in parts:
 		h += p.handling_bonus
 	return h
 
+
 ## Swap-in time for a `base_seconds` draw (Loadout.swap_seconds), shortened by handling().
 func draw_seconds(base_seconds: float) -> float:
 	return Assembly.draw_seconds(base_seconds, handling())
+
 
 func gem_slots() -> int:
 	var head := part(WieldablePart.PartType.HEAD)
 	if head == null:
 		return 0
 	return mini(head.gem_slots, Assembly.WAND_GEM_SLOTS) if def.type == WieldableDef.Type.WAND else head.gem_slots
+
 
 func damage() -> float:
 	var bonuses := PackedFloat64Array()
@@ -82,6 +95,7 @@ func damage() -> float:
 	var r := rarity()
 	return Damage.wieldable_damage(def.damage, r.multiplier if r != null else 1.0, bonuses)
 
+
 func cooldown() -> float:
 	var rate := def.cooldown
 	for p in parts:
@@ -89,12 +103,14 @@ func cooldown() -> float:
 			rate *= p.fire_rate_modifier
 	return maxf(WieldableDef.MIN_COOLDOWN, rate)
 
+
 func accuracy() -> float:
 	var acc := BASE_ACCURACY
 	for p in parts:
 		if p.part_type in WieldablePart.ACCURACY_TYPES:
 			acc += p.accuracy_bonus
 	return clampf(acc, 0.0, 100.0)
+
 
 ## Step 26: the Head's first socketed gem wins, then the Head's element, then the base's.
 func element() -> ElementTable.Element:
@@ -106,11 +122,14 @@ func element() -> ElementTable.Element:
 			return p.element
 	return def.element
 
+
 func mana_cost() -> float:
 	return def.mana_cost
 
+
 func projectile_speed() -> float:
 	return def.projectile_speed
+
 
 func range_m() -> float:
 	return def.range_m

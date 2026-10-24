@@ -22,29 +22,33 @@ const S := EquipmentItem.Slot
 
 ## Magewar EQUIP_TEMPLATE_PATHS (resources/equipment ids).
 const TEMPLATE_IDS := {
-	S.HAT: "apprentice_hat", S.CLOTHES: "basic_robes", S.BELT: "leather_belt",
-	S.SHOES: "traveler_shoes", S.GRIMOIRE: "novice_grimoire",
+	S.HAT: "apprentice_hat",
+	S.CLOTHES: "basic_robes",
+	S.BELT: "leather_belt",
+	S.SHOES: "traveler_shoes",
+	S.GRIMOIRE: "novice_grimoire",
 }
 
 ## Per slot: [stat, lo, hi, offset] in Magewar's draw order; value = offset + roll × mult.
 const ROLLS := {
-	S.HAT: [["mana_bonus", 5.0, 15.0, 0.0], ["spell_damage_bonus", 0.5, 3.0, 0.0],
-		["mana_regen_bonus", 0.2, 1.0, 0.0]],
-	S.CLOTHES: [["health_bonus", 5.0, 20.0, 0.0], ["mana_bonus", 3.0, 10.0, 0.0],
-		["elemental_resistance", 0.05, 0.15, 0.0]],
+	S.HAT: [["mana_bonus", 5.0, 15.0, 0.0], ["spell_damage_bonus", 0.5, 3.0, 0.0], ["mana_regen_bonus", 0.2, 1.0, 0.0]],
+	S.CLOTHES:
+	[["health_bonus", 5.0, 20.0, 0.0], ["mana_bonus", 3.0, 10.0, 0.0], ["elemental_resistance", 0.05, 0.15, 0.0]],
 	S.BELT: [["health_bonus", 3.0, 8.0, 0.0], ["stamina_bonus", 5.0, 15.0, 0.0]],
 	S.SHOES: [["speed_modifier", 0.02, 0.10, 1.0], ["stamina_bonus", 3.0, 10.0, 0.0]],
-	S.GRIMOIRE: [["spell_damage_bonus", 2.0, 8.0, 0.0], ["mana_bonus", 10.0, 25.0, 0.0],
-		["mana_regen_bonus", 0.5, 2.0, 0.0]],
+	S.GRIMOIRE:
+	[["spell_damage_bonus", 2.0, 8.0, 0.0], ["mana_bonus", 10.0, 25.0, 0.0], ["mana_regen_bonus", 0.5, 2.0, 0.0]],
 }
 
 ## Magewar _generate_equip_name, by rarity tier / slot.
 const PREFIXES: PackedStringArray = ["Tattered", "Sturdy", "Enchanted", "Arcane", "Primordial", "Legendary"]
 const BASE_NAMES: PackedStringArray = ["Hat", "Robes", "Belt", "Boots", "Grimoire"]
 
+
 ## Rolls one piece: draws exactly one seed from `rng`, then from_seed(). element < 0 = roll it.
 static func roll(rng: RandomNumberGenerator, slot: int, rarity_id: String, element: int = -1) -> EquipmentItem:
 	return from_seed(rng.randi(), slot, rarity_id, element)
+
 
 ## The piece for (seed, slot, rarity, element): same inputs, same piece on every machine.
 ## Null for an unknown slot/rarity or a missing template.
@@ -61,26 +65,37 @@ static func from_seed(seed: int, slot: int, rarity_id: String, element: int = -1
 	var rolled := {}
 	for r in ROLLS[slot]:
 		rolled[r[0]] = float(r[3]) + rng.randf_range(r[1], r[2]) * mult
-	item.element_affinity = (element if element >= 0 and element < ElementTable.COUNT
-		else PartRoller.roll_element(rng)) as ElementTable.Element
+	item.element_affinity = (
+		(element if element >= 0 and element < ElementTable.COUNT else PartRoller.roll_element(rng))
+		as ElementTable.Element
+	)
 	for stat in rolled:
 		if stat == "elemental_resistance" and item.element_affinity == ElementTable.Element.ARCANE:
-			continue   # Magewar: only elemental robes roll a resistance
+			continue  # Magewar: only elemental robes roll a resistance
 		item.set(stat, rolled[stat])
 	item.slot = slot as EquipmentItem.Slot
 	item.rarity = rarity_id
 	item.roll_seed = seed
 	item.display_name = name_for(slot, rarity_id, item.element_affinity)
-	item.id = "%s_%s_%s_%08x" % [rarity_id, ElementTable.id_of(item.element_affinity),
-		EquipmentItem.SLOT_NAMES[slot].to_lower(), seed & 0xFFFFFFFF]
+	item.id = (
+		"%s_%s_%s_%08x"
+		% [
+			rarity_id,
+			ElementTable.id_of(item.element_affinity),
+			EquipmentItem.SLOT_NAMES[slot].to_lower(),
+			seed & 0xFFFFFFFF
+		]
+	)
 	item.description = item.full_description()
 	return item
+
 
 ## Rebuilds a rolled piece from what it stores; null for a template (roll_seed < 0).
 static func regenerate(item: EquipmentItem) -> EquipmentItem:
 	if item == null or item.roll_seed < 0:
 		return null
 	return from_seed(item.roll_seed, item.slot, item.rarity, item.element_affinity)
+
 
 ## Final range of `stat` for a slot/rarity (offset included); Vector2.ZERO when not rolled.
 static func stat_range(slot: int, rarity_id: String, stat: String) -> Vector2:
@@ -90,11 +105,13 @@ static func stat_range(slot: int, rarity_id: String, stat: String) -> Vector2:
 			return Vector2(r[3] + r[1] * m, r[3] + r[2] * m)
 	return Vector2.ZERO
 
+
 static func rolled_stats(slot: int) -> PackedStringArray:
 	var out := PackedStringArray()
 	for r in ROLLS.get(slot, []):
 		out.append(r[0])
 	return out
+
 
 static func name_for(slot: int, rarity_id: String, element: ElementTable.Element) -> String:
 	var t := clampi(Rarity.parse(rarity_id), 0, PREFIXES.size() - 1)

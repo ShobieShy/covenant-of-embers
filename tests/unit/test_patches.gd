@@ -6,14 +6,26 @@ extends TestCase
 
 const E := ElementTable.Element
 
+
 func _snapshot() -> Array:
 	var el := ElementTable.load_default()
 	var ra := RarityTable.load_default()
 	var dp := DropRoller.default_pools()
 	var mid := dp.find("midden_gnawer")
-	return [el.strong, el.weak, el.effectiveness(E.FIRE, E.EARTH), el.color(E.FIRE),
-		ra.find("rare").drop_weight, ra.find("rare").multiplier, ra.luck_rare_step,
-		mid.drop_chance, mid.entries[0].weight, mid.entries[0].rarity, dp]
+	return [
+		el.strong,
+		el.weak,
+		el.effectiveness(E.FIRE, E.EARTH),
+		el.color(E.FIRE),
+		ra.find("rare").drop_weight,
+		ra.find("rare").multiplier,
+		ra.luck_rare_step,
+		mid.drop_chance,
+		mid.entries[0].weight,
+		mid.entries[0].rarity,
+		dp
+	]
+
 
 func test_example_patch_applies() -> void:
 	BalancePatch.reset()
@@ -37,6 +49,7 @@ func test_example_patch_applies() -> void:
 	check_near(RarityTable.load_default().find("rare").drop_weight, 15.0, 1e-9, "reset rarity")
 	check_near(DropRoller.default_pools().find("midden_gnawer").drop_chance, 0.3, 1e-9, "reset pools")
 
+
 func test_pool_rolls_follow_patch() -> void:
 	BalancePatch.reset()
 	var p := {"version": 1, "drop_pools": {"midden_gnawer": {"drop_chance": 1.0}}}
@@ -53,6 +66,7 @@ func test_pool_rolls_follow_patch() -> void:
 	check(hits == 200, "every gnawer kill drops a pool item at chance 1.0 (got %d)" % hits)
 	BalancePatch.reset()
 
+
 func _rejected(patch: Variant, why: String) -> void:
 	var before := _snapshot()
 	var errs: PackedStringArray
@@ -67,6 +81,7 @@ func _rejected(patch: Variant, why: String) -> void:
 			check(before[i].is_equal_approx(after[i]), "%s changed field %d" % [why, i])
 		else:
 			check(before[i] == after[i], "%s changed field %d (%s -> %s)" % [why, i, before[i], after[i]])
+
 
 func test_invalid_patches_rejected() -> void:
 	BalancePatch.reset()
@@ -88,7 +103,9 @@ func test_invalid_patches_rejected() -> void:
 	_rejected({"version": 1, "drop_pools": {"midden_gnawer": {"drop_chance": 1.5}}}, "chance > 1")
 	_rejected({"version": 1, "drop_pools": {"midden_gnawer": {"entries": {"99": {"weight": 1}}}}}, "missing entry")
 	_rejected({"version": 1, "drop_pools": {"midden_gnawer": {"entries": {"0": {"weight": 0}}}}}, "zero weight")
-	_rejected({"version": 1, "drop_pools": {"midden_gnawer": {"entries": {"0": {"rarity": "epic"}}}}}, "unknown entry rarity")
+	_rejected(
+		{"version": 1, "drop_pools": {"midden_gnawer": {"entries": {"0": {"rarity": "epic"}}}}}, "unknown entry rarity"
+	)
 	_rejected({"version": 1, "drop_pools": {"midden_gnawer": {"min_level": 1.5}}}, "fractional level")
 	for locked in BalancePatch.LOCKED:
 		_rejected({"version": 1, locked: {}}, "locked section " + locked)
@@ -96,6 +113,7 @@ func test_invalid_patches_rejected() -> void:
 	_rejected({"version": 1, "elements": {"strong": 2.0}, "rarities": {"rare": {"bogus": 1}}}, "mixed good+bad")
 	check(BalancePatch.applied.is_empty(), "nothing logged")
 	BalancePatch.reset()
+
 
 func test_codes_unchanged_by_patch() -> void:
 	BalancePatch.reset()
@@ -105,8 +123,12 @@ func test_codes_unchanged_by_patch() -> void:
 	var errs := BalancePatch.apply({"version": 1, "rarities": {"rare": {"drop_weight": 1}}})
 	check(errs.is_empty(), "weight-only patch ok")
 	var after := ItemCodes.decode(code)
-	check(after.ok() and ItemCodes.same_item(before.item, after.item), "Ember Mark decodes to the same item after a weight patch")
+	check(
+		after.ok() and ItemCodes.same_item(before.item, after.item),
+		"Ember Mark decodes to the same item after a weight patch"
+	)
 	BalancePatch.reset()
+
 
 func test_apply_dir() -> void:
 	BalancePatch.reset()

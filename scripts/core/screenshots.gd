@@ -11,6 +11,7 @@ var taken := 0
 var _t := 0.0
 var _next := 1.5
 
+
 static func attach(parent: Node, name_prefix: String) -> Screenshots:
 	var args := OS.get_cmdline_user_args()
 	var i := args.find("--shots")
@@ -28,11 +29,13 @@ static func attach(parent: Node, name_prefix: String) -> Screenshots:
 	parent.add_child(s)
 	return s
 
+
 func _process(delta: float) -> void:
 	_t += delta
 	if _t >= _next:
 		_next = _t + every
 		take()
+
 
 func take(tag := "") -> String:
 	var img := get_viewport().get_texture().get_image()

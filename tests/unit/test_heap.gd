@@ -19,13 +19,17 @@ const HEAP_TOML := "res://data/enemies/heap.toml"
 const E := ElementTable.Element
 const S := Gnawer.State
 
+
 class Dummy:
 	extends Node3D
 	var inv := false
+
 	func invulnerable() -> bool:
 		return inv
+
 	func eye_position() -> Vector3:
 		return global_position + Vector3(0.0, 1.5, 0.0)
+
 
 func _world(at: Vector3, boxes: Array = []) -> Node3D:
 	var w := Node3D.new()
@@ -47,6 +51,7 @@ func _world(at: Vector3, boxes: Array = []) -> Node3D:
 	check(nav.map_ready(), "navmesh synced to the map")
 	return w
 
+
 func _box(parent: Node3D, center: Vector3, half: Vector3) -> void:
 	var b := StaticBody3D.new()
 	var cs := CollisionShape3D.new()
@@ -57,6 +62,7 @@ func _box(parent: Node3D, center: Vector3, half: Vector3) -> void:
 	b.position = center
 	parent.add_child(b)
 
+
 func _heap(w: Node3D, feet: Vector3) -> Heap:
 	var d := EnemyTable.load_default().find("heap")
 	var h := Enemy.create(d, Transform3D(Basis.IDENTITY, feet)) as Heap
@@ -65,19 +71,22 @@ func _heap(w: Node3D, feet: Vector3) -> Heap:
 	w.add_child(h)
 	return h
 
+
 func _dummy(w: Node3D, feet: Vector3) -> Dummy:
 	var t := Dummy.new()
 	t.position = feet
 	w.add_child(t)
 	return t
 
+
 func _player(w: Node3D, feet: Vector3) -> Player:
 	var p: Player = (load(PLAYER_SCENE) as PackedScene).instantiate()
 	p.input_enabled = false
-	p.position = feet   # local, placed before add_child (Jolt sees it at once)
+	p.position = feet  # local, placed before add_child (Jolt sees it at once)
 	w.add_child(p)
 	p.spawn(w.global_position + feet, 0.0)
 	return p
+
 
 func test_tres_matches_toml() -> void:
 	var r := EnemyTable.from_toml_files([HEAP_TOML])
@@ -89,20 +98,53 @@ func test_tres_matches_toml() -> void:
 	check(got != null and EnemyTable.DEFAULT_PATHS.has("res://resources/enemies/heap.tres"), "heap.tres is shipped")
 	if got == null:
 		return
-	check(got.display_name == want.display_name and got.affinity == want.affinity and got.max_health == want.max_health
-		and got.size.is_equal_approx(want.size) and got.color.is_equal_approx(want.color) and got.has_weak_point
-		and got.weak_point_offset.is_equal_approx(want.weak_point_offset)
-		and got.weak_point_size.is_equal_approx(want.weak_point_size), "heap.tres body = heap.toml")
+	check(
+		(
+			got.display_name == want.display_name
+			and got.affinity == want.affinity
+			and got.max_health == want.max_health
+			and got.size.is_equal_approx(want.size)
+			and got.color.is_equal_approx(want.color)
+			and got.has_weak_point
+			and got.weak_point_offset.is_equal_approx(want.weak_point_offset)
+			and got.weak_point_size.is_equal_approx(want.weak_point_size)
+		),
+		"heap.tres body = heap.toml"
+	)
 	check(got.ai == want.ai, "ai tables equal: %s vs %s" % [got.ai, want.ai])
 	var rd := got.rusher()
 	check(rd != null and rd.kind == "tank", "tank def parses")
 	if rd == null:
 		return
-	check(got.affinity == E.EARTH and got.max_health == 150.0 and got.size.is_equal_approx(Vector3(1.5, 2.4, 1.5)), "Earth, 150 HP, the golem's 1.5 x 2.4 x 1.5")
-	check(rd.detect_range == 10.0 and rd.aggro_range == 7.0 and rd.walk_speed == 1.2 and rd.sprint_speed == 2.5
-		and rd.attack_damage == 8.0 and rd.attack_cooldown == 2.0 and rd.knockback_strength == 15.0, "garbage golem numbers")
-	check(rd.attack_windup == 0.6 and rd.knockback_threshold == 25.0 and rd.knockback_time == 0.2 and rd.turn_rate_deg == 120.0, "tank design: 0.6 s wind-up, hard to shove, slow turn")
-	check(got.weak_point_offset.z > got.size.z * 0.5 and got.weak_point_size.x > got.weak_point_size.y * 3.0, "a wide flat seam on its back (+Z)")
+	check(
+		got.affinity == E.EARTH and got.max_health == 150.0 and got.size.is_equal_approx(Vector3(1.5, 2.4, 1.5)),
+		"Earth, 150 HP, the golem's 1.5 x 2.4 x 1.5"
+	)
+	check(
+		(
+			rd.detect_range == 10.0
+			and rd.aggro_range == 7.0
+			and rd.walk_speed == 1.2
+			and rd.sprint_speed == 2.5
+			and rd.attack_damage == 8.0
+			and rd.attack_cooldown == 2.0
+			and rd.knockback_strength == 15.0
+		),
+		"garbage golem numbers"
+	)
+	check(
+		(
+			rd.attack_windup == 0.6
+			and rd.knockback_threshold == 25.0
+			and rd.knockback_time == 0.2
+			and rd.turn_rate_deg == 120.0
+		),
+		"tank design: 0.6 s wind-up, hard to shove, slow turn"
+	)
+	check(
+		got.weak_point_offset.z > got.size.z * 0.5 and got.weak_point_size.x > got.weak_point_size.y * 3.0,
+		"a wide flat seam on its back (+Z)"
+	)
 	var dflt: RusherDef = RusherDef.parse({"kind": "rusher"}, Vector3(0.5, 0.5, 0.5))["def"]
 	check(dflt.attack_windup == 0.0, "rushers bite at once (windup 0)")
 	var h := Enemy.create(got) as Heap
@@ -113,6 +155,7 @@ func test_tres_matches_toml() -> void:
 	check(mat != null and mat.emission_enabled, "the seam glows")
 	h.free()
 
+
 func test_slow_chase() -> void:
 	var w := await _world(Vector3(3400, 0, -2400))
 	var h := _heap(w, Vector3(0, 0, 0))
@@ -122,11 +165,21 @@ func test_slow_chase() -> void:
 		var at := h.global_position
 		h.tick(DT)
 		max_step = maxf(max_step, Gnawer._flat(h.global_position - at).length())
-	print("    heap chase: %s, travelled %.3f, max step %.4f" % [h.transitions.map(func(t: Gnawer.Transition) -> String: return Gnawer.state_name(t.to)), h.travelled, max_step])
+	print(
+		(
+			"    heap chase: %s, travelled %.3f, max step %.4f"
+			% [
+				h.transitions.map(func(t: Gnawer.Transition) -> String: return Gnawer.state_name(t.to)),
+				h.travelled,
+				max_step
+			]
+		)
+	)
 	check(h.state == S.CHASE, "6.5 m (< aggro 7): chasing")
 	check(max_step <= 2.5 / 60.0 + 1e-4, "never faster than 2.5 m/s (%.4f m/tick)" % max_step)
 	check_near(h.travelled, 1.2 / 60.0 + 89.0 * 2.5 / 60.0, 0.01, "detect tick at 1.2 m/s, then 89 ticks at 2.5 m/s")
 	w.free()
+
 
 func test_slam_windup_and_cooldown() -> void:
 	var w := await _world(Vector3(3400, 0, -2200))
@@ -148,8 +201,18 @@ func test_slam_windup_and_cooldown() -> void:
 	check(slam_ticks.size() == 2 and slam_ticks[0] == start + 36, "lands 36 ticks (0.6 s) later (%s)" % [slam_ticks])
 	check(slam_ticks.size() == 2 and slam_ticks[1] == slam_ticks[0] + 120, "the next 2 s later (%s)" % [slam_ticks])
 	check(moved_in_windup < 1e-4, "planted while winding up")
-	check(h.attacks.size() == 2 and h.attacks[0].damage == 8.0 and h.attacks[0].element == E.EARTH and h.landed == 2 and h.whiffs == 0, "8 Earth slams")
+	check(
+		(
+			h.attacks.size() == 2
+			and h.attacks[0].damage == 8.0
+			and h.attacks[0].element == E.EARTH
+			and h.landed == 2
+			and h.whiffs == 0
+		),
+		"8 Earth slams"
+	)
 	w.free()
+
 
 func test_slam_hits_player_shield_dodge_and_whiff() -> void:
 	var w := await _world(Vector3(3400, 0, -2000))
@@ -184,6 +247,7 @@ func test_slam_hits_player_shield_dodge_and_whiff() -> void:
 	check(h.whiffs == whiffs + 1 and h.attacks.size() == n, "out of reach when it lands: a whiff, no attack")
 	w.free()
 
+
 func test_seam_crit_staggers_and_cancels() -> void:
 	var w := await _world(Vector3(3400, 0, -1800))
 	var h := _heap(w, Vector3(0, 0, 0))
@@ -197,13 +261,27 @@ func test_seam_crit_staggers_and_cancels() -> void:
 	await runner_tree.physics_frame
 	# From the front (-Z): the body, Fire 10 x 1.5 = 15 <= 25: no stagger.
 	var hits := _shoot(w, bolts, Vector3(0.3, 1.0, -0.9), Vector3(0, 0, 1), E.FIRE, 10.0)
-	check(hits.size() == 1 and hits[0].collider == h and is_equal_approx(hits[0].result.amount, 15.0) and not hits[0].result.crit > 1.0, "front: 15")
+	check(
+		(
+			hits.size() == 1
+			and hits[0].collider == h
+			and is_equal_approx(hits[0].result.amount, 15.0)
+			and not hits[0].result.crit > 1.0
+		),
+		"front: 15"
+	)
 	h.tick(DT)
 	check(h.knockbacks == 0 and h.winding_up(), "15: no knockback, still winding up")
 	await runner_tree.physics_frame
 	# From behind (+Z) into the seam: x2 = 30 > 25.
 	hits = _shoot(w, bolts, Vector3(0, 1.4, 4), Vector3(0, 0, -1), E.FIRE, 10.0)
-	check(hits.size() == 1 and hits[0].collider == h and is_equal_approx(hits[0].result.amount, 30.0), "the seam crit does 30 (%s)" % [hits.map(func(x: SpellBolts.Hit) -> float: return x.result.amount if x.result else -1.0)])
+	check(
+		hits.size() == 1 and hits[0].collider == h and is_equal_approx(hits[0].result.amount, 30.0),
+		(
+			"the seam crit does 30 (%s)"
+			% [hits.map(func(x: SpellBolts.Hit) -> float: return x.result.amount if x.result else -1.0)]
+		)
+	)
 	var at := h.global_position
 	var kb := 0
 	for i in 20:
@@ -218,7 +296,10 @@ func test_seam_crit_staggers_and_cancels() -> void:
 	check(h.health == 150.0 - 15.0 - 30.0, "105 HP left")
 	w.free()
 
-func _shoot(w: Node3D, bolts: SpellBolts, origin: Vector3, dir: Vector3, element: E, damage: float) -> Array[SpellBolts.Hit]:
+
+func _shoot(
+	w: Node3D, bolts: SpellBolts, origin: Vector3, dir: Vector3, element: E, damage: float
+) -> Array[SpellBolts.Hit]:
 	var s := SpellBolts.Spawn.new()
 	s.origin = w.global_position + origin
 	s.direction = dir
@@ -232,13 +313,14 @@ func _shoot(w: Node3D, bolts: SpellBolts, origin: Vector3, dir: Vector3, element
 		out.append_array(bolts.tick(DT))
 	return out
 
+
 func test_slams_kill_the_player_then_it_loses_him() -> void:
 	var w := await _world(Vector3(3400, 0, -1600))
 	var h := _heap(w, Vector3(0, 0, 0))
 	var p := _player(w, Vector3(0, 0, -1.5))
 	h.target = p
 	h.attacked.connect(p.on_enemy_attack)
-	p.health.take(140.0)   # shield 0, 10 health; the regen delay restarts
+	p.health.take(140.0)  # shield 0, 10 health; the regen delay restarts
 	var still := PlayerInput.hold([])
 	var died_at := -1
 	for i in 200:

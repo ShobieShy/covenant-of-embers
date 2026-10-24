@@ -13,16 +13,18 @@ extends Resource
 ## DropTable.pool_for() picks one.
 
 @export var id := ""
-@export var enemy_ids: PackedStringArray = []   ## EnemyDef ids; empty = generic
-@export var min_level := 1                      ## Magewar enemy_level 1..50
+@export var enemy_ids: PackedStringArray = []  ## EnemyDef ids; empty = generic
+@export var min_level := 1  ## Magewar enemy_level 1..50
 @export var max_level := 50
 @export_range(0.0, 1.0) var drop_chance := 0.3  ## Magewar enemy_base drop_chance default 0.3
 @export var entries: Array[DropEntry] = []
 
 const MAX_LEVEL := 50
 
+
 func applies_to(enemy_id: String, level: int) -> bool:
 	return level >= min_level and level <= max_level and (enemy_ids.is_empty() or enemy_ids.has(enemy_id))
+
 
 ## Entries whose rarity is tier `t`.
 func entries_of_tier(t: int) -> Array[DropEntry]:
@@ -31,6 +33,7 @@ func entries_of_tier(t: int) -> Array[DropEntry]:
 		if e != null and e.tier() == t:
 			out.append(e)
 	return out
+
 
 ## The tier a roll of `t` resolves to (fallback rule above); -1 for an empty pool.
 func resolve_tier(t: int) -> int:
@@ -41,6 +44,7 @@ func resolve_tier(t: int) -> int:
 		if not entries_of_tier(up).is_empty():
 			return up
 	return -1
+
 
 ## Weighted pick among the entries of resolve_tier(t): exactly one rng.randf() (none for an
 ## empty pool, which returns null).
@@ -59,6 +63,7 @@ func pick_entry(rng: RandomNumberGenerator, t: int) -> DropEntry:
 			return e
 	return rows[rows.size() - 1]
 
+
 ## One pool drop (ignores drop_chance; DropRoller.roll_kill applies it): two rng.randf()
 ## draws (rarity, entry). Null for an empty pool.
 func roll(rng: RandomNumberGenerator, luck := 0.0, table: RarityTable = null) -> LootDrop:
@@ -76,6 +81,7 @@ func roll(rng: RandomNumberGenerator, luck := 0.0, table: RarityTable = null) ->
 	d.pool_id = id
 	d.entry = e
 	return d
+
 
 ## Exact chance of each entry per pool roll (same order as `entries`): Σ over rolled tiers
 ## of P(tier) × weight / Σ weights of the tier it resolves to. The done check compares
@@ -102,6 +108,7 @@ func expected_chances(luck := 0.0, table: RarityTable = null) -> PackedFloat64Ar
 				out[i] += w[t] / total * entries[i].weight / tier_sum
 	return out
 
+
 ## Empty when usable; else one message per problem.
 func validate() -> PackedStringArray:
 	var errs := PackedStringArray()
@@ -109,7 +116,9 @@ func validate() -> PackedStringArray:
 	if RegEx.create_from_string("^[a-z0-9_]+$").search(id) == null:
 		errs.append("%s: id must be lower_snake_case" % tag)
 	if not (min_level >= 1 and min_level <= max_level and max_level <= MAX_LEVEL):
-		errs.append("%s: levels must satisfy 1 <= min <= max <= %d (got %d..%d)" % [tag, MAX_LEVEL, min_level, max_level])
+		errs.append(
+			"%s: levels must satisfy 1 <= min <= max <= %d (got %d..%d)" % [tag, MAX_LEVEL, min_level, max_level]
+		)
 	if not (drop_chance >= 0.0 and drop_chance <= 1.0):
 		errs.append("%s: drop_chance must be in 0..1" % tag)
 	if entries.is_empty():

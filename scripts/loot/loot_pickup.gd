@@ -7,17 +7,17 @@ extends Area3D
 ## LootDrop.describe(). It is an Area3D on PICKUP_LAYER so step 23 can detect the player
 ## walking over it / looking at it. `drop` is the LootDrop it carries.
 
-const PICKUP_LAYER := 5          ## physics layer 5 = pickups (1 world, 2 player, 3 enemies)
+const PICKUP_LAYER := 5  ## physics layer 5 = pickups (1 world, 2 player, 3 enemies)
 const GROUP := &"loot_pickups"
-const BEAM_BASE := 1.5           ## m, Basic
-const BEAM_PER_TIER := 0.5       ## m per rarity tier above Basic
+const BEAM_BASE := 1.5  ## m, Basic
+const BEAM_PER_TIER := 0.5  ## m per rarity tier above Basic
 const GEM_SIZE := 0.25
 
-enum Auto { NONE, MANA, DUST, POTION }   ## step 23: walk-over auto-collect kinds
+enum Auto { NONE, MANA, DUST, POTION }  ## step 23: walk-over auto-collect kinds
 
-var drop: LootDrop                ## the item (Interact to pick up); null for auto pickups
+var drop: LootDrop  ## the item (Interact to pick up); null for auto pickups
 var auto: Auto = Auto.NONE
-var amount := 0                   ## mana points / dust / potion count for auto pickups
+var amount := 0  ## mana points / dust / potion count for auto pickups
 var potion: ConsumableItem
 var color := Color.WHITE
 var beam: MeshInstance3D
@@ -25,23 +25,28 @@ var gem: MeshInstance3D
 var light: OmniLight3D
 var label: Label3D
 
+
 static func create(d: LootDrop, at: Vector3) -> LootPickup:
 	var p := LootPickup.new()
 	p.setup(d)
 	p.position = at
 	return p
 
+
 ## Mana orb (Magewar mana pickups): restores `n` mana on walk-over, waits while mana is full.
 static func create_mana(n: int, at: Vector3) -> LootPickup:
 	return _auto(Auto.MANA, n, null, at, Color(0.35, 0.55, 1.0), "Mana +%d" % n)
+
 
 ## Arcane Dust (step 26 salvage currency) on walk-over.
 static func create_dust(n: int, at: Vector3) -> LootPickup:
 	return _auto(Auto.DUST, n, null, at, Color(0.8, 0.6, 1.0), "Arcane Dust x%d" % n)
 
+
 ## Potions go to the quick-slot on walk-over; what does not fit stays on the ground.
 static func create_potion(item: ConsumableItem, count: int, at: Vector3) -> LootPickup:
 	return _auto(Auto.POTION, count, item, at, Color(1.0, 0.35, 0.35), "%s x%d" % [item.display_name, count])
+
 
 static func _auto(k: Auto, n: int, item: ConsumableItem, at: Vector3, c: Color, text: String) -> LootPickup:
 	var p := LootPickup.new()
@@ -52,12 +57,15 @@ static func _auto(k: Auto, n: int, item: ConsumableItem, at: Vector3, c: Color, 
 	p.position = at
 	return p
 
+
 func is_auto() -> bool:
 	return auto != Auto.NONE
+
 
 func setup(d: LootDrop) -> void:
 	drop = d
 	_build("Pickup_%s" % d.rarity_id, d.rarity_color(), d.describe())
+
 
 func _build(n: String, c: Color, text: String) -> void:
 	name = n
@@ -116,6 +124,7 @@ func _build(n: String, c: Color, text: String) -> void:
 	label.pixel_size = 0.004
 	label.position.y = GEM_SIZE + 0.35
 	add_child(label)
+
 
 func beam_height() -> float:
 	var t := Rarity.parse(drop.rarity_id) if drop else 0

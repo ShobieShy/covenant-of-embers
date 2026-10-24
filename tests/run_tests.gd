@@ -18,11 +18,13 @@ var failures := 0
 var passed := 0
 var _frames := 0
 
+
 func _physics_process(_delta: float) -> bool:
 	_frames += 1
 	if _frames == 2:
 		_run_all()
 	return false
+
 
 func _run_all() -> void:
 	var dir := DirAccess.open("res://tests/unit")

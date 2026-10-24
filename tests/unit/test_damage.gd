@@ -12,34 +12,47 @@ extends TestCase
 const E := ElementTable.Element
 const EPS := 1e-9
 
+
 ## Magewar MagicElement.get_effectiveness (scripts/magic/magic_element.gd), transcribed.
 static func _magewar(a: int, d: int) -> float:
 	if a == d or a == E.ARCANE or d == E.ARCANE:
 		return 1.0
 	match a:
 		E.FIRE:
-			if d == E.EARTH: return 1.5
-			if d == E.WATER: return 0.5
+			if d == E.EARTH:
+				return 1.5
+			if d == E.WATER:
+				return 0.5
 		E.WATER:
-			if d == E.FIRE: return 1.5
-			if d == E.AIR: return 0.5
+			if d == E.FIRE:
+				return 1.5
+			if d == E.AIR:
+				return 0.5
 		E.EARTH:
-			if d == E.AIR: return 1.5
-			if d == E.FIRE: return 0.5
+			if d == E.AIR:
+				return 1.5
+			if d == E.FIRE:
+				return 0.5
 		E.AIR:
-			if d == E.WATER: return 1.5
-			if d == E.EARTH: return 0.5
+			if d == E.WATER:
+				return 1.5
+			if d == E.EARTH:
+				return 0.5
 		E.LIGHT:
-			if d == E.DARK: return 1.5
+			if d == E.DARK:
+				return 1.5
 		E.DARK:
-			if d == E.LIGHT: return 1.5
+			if d == E.LIGHT:
+				return 1.5
 	return 1.0
+
 
 func _table() -> ElementTable:
 	var t := ElementTable.load_default()
 	check(t != null, "elements.tres loads as ElementTable")
 	check(t.validate().is_empty(), "elements.tres valid: %s" % "; ".join(t.validate()))
 	return t
+
 
 func test_full_chart_matches_magewar() -> void:
 	var t := _table()
@@ -48,9 +61,14 @@ func test_full_chart_matches_magewar() -> void:
 	for a in ElementTable.COUNT:
 		for d in ElementTable.COUNT:
 			var got := t.effectiveness(a as E, d as E)
-			check(got == _magewar(a, d), "%s -> %s: %s, Magewar %s" % [ElementTable.IDS[a], ElementTable.IDS[d], got, _magewar(a, d)])
-			if got > 1.0: strong += 1
-			if got < 1.0: weak += 1
+			check(
+				got == _magewar(a, d),
+				"%s -> %s: %s, Magewar %s" % [ElementTable.IDS[a], ElementTable.IDS[d], got, _magewar(a, d)]
+			)
+			if got > 1.0:
+				strong += 1
+			if got < 1.0:
+				weak += 1
 	check(strong == 6, "6 strong cells (4-cycle + Light/Dark both ways), got %d" % strong)
 	check(weak == 4, "4 weak cells (cycle backwards; Light/Dark never weak), got %d" % weak)
 	# The plan's words: Fire > Earth > Air > Water > Fire, Light <-> Dark.
@@ -61,16 +79,18 @@ func test_full_chart_matches_magewar() -> void:
 	check(t.effectiveness(E.FIRE, E.LIGHT) == 1.0 and t.effectiveness(E.DARK, E.AIR) == 1.0, "unrelated x1.0")
 	print("    damage: 49/49 cells = Magewar get_effectiveness (%d strong, %d weak)" % [strong, weak])
 
+
 func test_same_and_arcane_always_neutral() -> void:
 	var t := _table()
 	for e in ElementTable.COUNT:
 		check(t.effectiveness(e as E, e as E) == 1.0, "%s vs itself" % ElementTable.IDS[e])
 		check(t.effectiveness(E.ARCANE, e as E) == 1.0, "arcane -> %s" % ElementTable.IDS[e])
 		check(t.effectiveness(e as E, E.ARCANE) == 1.0, "%s -> arcane" % ElementTable.IDS[e])
-	var empty := ElementTable.new()   # no data: neutral everywhere
+	var empty := ElementTable.new()  # no data: neutral everywhere
 	for a in ElementTable.COUNT:
 		for d in ElementTable.COUNT:
 			check(empty.effectiveness(a as E, d as E) == 1.0, "empty table neutral")
+
 
 func test_names_and_colours_are_magewars() -> void:
 	var t := _table()
@@ -95,6 +115,7 @@ func test_names_and_colours_are_magewars() -> void:
 	check(ElementTable.parse("none") == -1 and ElementTable.parse("wind") == -1, "unknown ids")
 	check(t.strong == 1.5 and t.weak == 0.5, "x1.5 / x0.5")
 
+
 func test_tres_matches_cpp_elements_toml() -> void:
 	var t := _table()
 	var d := LevelToml.load_file("res://data/magic/elements.toml")
@@ -114,12 +135,14 @@ func test_tres_matches_cpp_elements_toml() -> void:
 		check(Array(def.strong_against) == row["strong_against"], "%s strong_against" % row["id"])
 		check(Array(def.weak_against) == row["weak_against"], "%s weak_against" % row["id"])
 
+
 func _bad(edit: Callable, expect: String) -> void:
 	var t: ElementTable = ElementTable.load_default().duplicate(true)
 	edit.call(t)
 	t.rebuild()
 	var errs := "; ".join(t.validate())
 	check(errs.contains(expect), "expected '%s', got '%s'" % [expect, errs])
+
 
 func test_validate_rejects_bad_tables() -> void:
 	check(ElementTable.load_default().duplicate(true).validate().is_empty(), "deep copy valid")
@@ -129,14 +152,29 @@ func test_validate_rejects_bad_tables() -> void:
 	_bad(func(t: ElementTable) -> void: t.elements[1].id = "arcane", "duplicate element 'arcane'")
 	_bad(func(t: ElementTable) -> void: t.elements[1].id = "arcane", "missing element 'fire'")
 	_bad(func(t: ElementTable) -> void: t.elements.pop_back(), "missing element 'dark'")
-	_bad(func(t: ElementTable) -> void: t.elements[1].strong_against = PackedStringArray(["wood"]), "unknown element 'wood' in strong_against")
-	_bad(func(t: ElementTable) -> void: t.elements[1].strong_against = PackedStringArray(["fire"]), "strong_against can't list itself")
-	_bad(func(t: ElementTable) -> void: t.elements[1].weak_against = PackedStringArray(["arcane"]), "weak_against can't list arcane")
-	_bad(func(t: ElementTable) -> void: t.elements[1].strong_against = PackedStringArray(["water"]), "'water' is in both")
-	_bad(func(t: ElementTable) -> void: t.elements[1].strong_against = PackedStringArray(["earth", "earth"]), "'earth' listed twice")
+	_bad(
+		func(t: ElementTable) -> void: t.elements[1].strong_against = PackedStringArray(["wood"]),
+		"unknown element 'wood' in strong_against"
+	)
+	_bad(
+		func(t: ElementTable) -> void: t.elements[1].strong_against = PackedStringArray(["fire"]),
+		"strong_against can't list itself"
+	)
+	_bad(
+		func(t: ElementTable) -> void: t.elements[1].weak_against = PackedStringArray(["arcane"]),
+		"weak_against can't list arcane"
+	)
+	_bad(
+		func(t: ElementTable) -> void: t.elements[1].strong_against = PackedStringArray(["water"]), "'water' is in both"
+	)
+	_bad(
+		func(t: ElementTable) -> void: t.elements[1].strong_against = PackedStringArray(["earth", "earth"]),
+		"'earth' listed twice"
+	)
 	_bad(func(t: ElementTable) -> void: t.elements[0].strong_against = PackedStringArray(["fire"]), "arcane is neutral")
 	_bad(func(t: ElementTable) -> void: t.elements[1].color = Color(2, 0.3, 0.1), "'fire': color must be in 0..1")
 	_bad(func(t: ElementTable) -> void: t.elements[1].display_name = "", "'fire': display_name is empty")
+
 
 func test_patched_chart_rebuilds() -> void:
 	var t: ElementTable = ElementTable.load_default().duplicate(true)
@@ -144,6 +182,7 @@ func test_patched_chart_rebuilds() -> void:
 	t.rebuild()
 	check(t.effectiveness(E.FIRE, E.EARTH) == 2.0, "patched strong x2.0")
 	check(ElementTable.load_default().effectiveness(E.FIRE, E.EARTH) == 1.5, "shared table untouched")
+
 
 func test_rarity_multiplier_and_part_bonuses() -> void:
 	# Magewar item_rarity.gd multipliers (= resources/loot/rarities.tres, test_rarity).
@@ -159,6 +198,7 @@ func test_rarity_multiplier_and_part_bonuses() -> void:
 	check_near(Damage.wieldable_damage(7.0, 1.0), 7.0, EPS, "Novice Arcane Wand")
 	check_near(Damage.wieldable_damage(6.0, 1.25), 7.5, EPS, "Swift Wind Wand")
 
+
 func test_resist_capped_at_60_percent_per_element() -> void:
 	var t := _table()
 	check(Damage.RESIST_CAP == 0.6, "cap 0.6 (kept decision, not Magewar's 0.9)")
@@ -169,7 +209,7 @@ func test_resist_capped_at_60_percent_per_element() -> void:
 	r = Damage.resolve_hit(100.0, E.FIRE, target, t)
 	check(r.resist == 0.6, "0.8 -> 0.6 (%f)" % r.resist)
 	check_near(r.amount, 40.0, EPS, "0.8 resist -> 40")
-	target.set_resist(E.FIRE, 0.9)   # Magewar's cap would let 10 through
+	target.set_resist(E.FIRE, 0.9)  # Magewar's cap would let 10 through
 	check_near(Damage.resolve_hit(100.0, E.FIRE, target, t).amount, 40.0, EPS, "0.9 -> still 0.6")
 	target.set_resist(E.FIRE, -0.5)
 	check_near(Damage.resolve_hit(100.0, E.FIRE, target, t).amount, 100.0, EPS, "negative resist -> 0")
@@ -177,6 +217,7 @@ func test_resist_capped_at_60_percent_per_element() -> void:
 	r = Damage.resolve_hit(100.0, E.WATER, target, t)
 	check(r.resist == 0.0 and absf(r.amount - 100.0) <= EPS, "fire resist doesn't stop water")
 	check(Damage.clamp_resist(0.8) == 0.6 and Damage.clamp_resist(0.3) == 0.3, "clamp_resist")
+
 
 func test_weak_point_is_x2() -> void:
 	var t := _table()
@@ -188,6 +229,7 @@ func test_weak_point_is_x2() -> void:
 	check(a.crit == 1.0 and b.crit == 2.0, "crit 1 / 2")
 	check_near(a.amount, 12.0, EPS, "body 12")
 	check_near(b.amount, 24.0, EPS, "weak point 24")
+
 
 func test_effectiveness_per_hit_vs_affinity() -> void:
 	var t := _table()
@@ -202,6 +244,7 @@ func test_effectiveness_per_hit_vs_affinity() -> void:
 	check(not n.strong() and not n.weak() and n.amount == 10.0, "earth vs earth neutral")
 	check(Damage.resolve_hit(-5.0, E.FIRE, earth, t).amount == 0.0, "negative damage never heals")
 	check_near(Damage.resolve_hit(10.0, E.FIRE, earth).amount, 15.0, EPS, "default table used when none given")
+
 
 func test_worked_example_25_2() -> void:
 	# Apprentice Fire Staff (base 10, basic x1.0) + a Head with damage_bonus 2 = 12 per bolt,

@@ -22,6 +22,7 @@ var auto_collected := 0
 var items_picked := 0
 var refused_full := 0
 
+
 func tick(p: Player, interact_pressed: bool) -> void:
 	if not p.is_inside_tree():
 		return
@@ -37,6 +38,7 @@ func tick(p: Player, interact_pressed: bool) -> void:
 	focused = look_target(p, all)
 	if interact_pressed and focused != null:
 		pick(p, focused)
+
 
 func look_target(p: Player, all: Array = []) -> LootPickup:
 	if all.is_empty() and p.is_inside_tree():
@@ -59,6 +61,7 @@ func look_target(p: Player, all: Array = []) -> LootPickup:
 			best = lp
 	return best
 
+
 ## Puts an item pickup in the backpack. False (pickup stays) when the backpack is full.
 func pick(p: Player, lp: LootPickup) -> bool:
 	if lp == null or lp.drop == null or lp.is_queued_for_deletion():
@@ -71,6 +74,7 @@ func pick(p: Player, lp: LootPickup) -> bool:
 	collected.emit(lp, "item")
 	_consume(lp)
 	return true
+
 
 func _auto(p: Player, lp: LootPickup) -> void:
 	match lp.auto:
@@ -94,10 +98,12 @@ func _auto(p: Player, lp: LootPickup) -> void:
 			elif lp.label:
 				lp.label.text = "%s x%d" % [lp.potion.display_name, lp.amount]
 
+
 func _done(lp: LootPickup, what: String) -> void:
 	auto_collected += 1
 	collected.emit(lp, what)
 	_consume(lp)
+
 
 func _consume(lp: LootPickup) -> void:
 	lp.remove_from_group(LootPickup.GROUP)

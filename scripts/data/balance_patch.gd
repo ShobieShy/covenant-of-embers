@@ -30,6 +30,7 @@ const ENTRY_KEYS := ["weight", "rarity"]
 ## Patches applied since startup (ids), newest last.
 static var applied: PackedStringArray = []
 
+
 ## Applies every *.json in `dir` in name order; returns the messages of rejected ones
 ## (a missing directory is fine: no patches).
 static func apply_dir(dir: String) -> PackedStringArray:
@@ -43,12 +44,14 @@ static func apply_dir(dir: String) -> PackedStringArray:
 			out.append_array(apply_file(dir.path_join(f)))
 	return out
 
+
 ## Reads and applies a JSON file. Empty result = applied.
 static func apply_file(path: String) -> PackedStringArray:
 	var text := FileAccess.get_file_as_string(path)
 	if text.is_empty():
 		return PackedStringArray(["%s: can't read or empty" % path])
 	return apply_json(text, path.get_file())
+
 
 static func apply_json(text: String, patch_id := "patch") -> PackedStringArray:
 	var j := JSON.new()
@@ -57,6 +60,7 @@ static func apply_json(text: String, patch_id := "patch") -> PackedStringArray:
 	if not (j.data is Dictionary):
 		return PackedStringArray(["%s: top level must be an object" % patch_id])
 	return apply(j.data, patch_id)
+
 
 static func apply(patch: Dictionary, patch_id := "patch") -> PackedStringArray:
 	var errs := PackedStringArray()
@@ -80,7 +84,15 @@ static func apply(patch: Dictionary, patch_id := "patch") -> PackedStringArray:
 				_patch_pools(dp, patch[key], errs)
 			_:
 				if LOCKED.has(key):
-					errs.append("'%s' can't be patched: it changes what existing Ember Mark codes decode to (needs a new code version)" % key)
+					(
+						errs
+						. append(
+							(
+								"'%s' can't be patched: it changes what existing Ember Mark codes decode to (needs a new code version)"
+								% key
+							)
+						)
+					)
 				else:
 					errs.append("unknown key '%s'" % key)
 	if errs.is_empty() and el != null:
@@ -109,6 +121,7 @@ static func apply(patch: Dictionary, patch_id := "patch") -> PackedStringArray:
 	applied.append(patch_id)
 	return errs
 
+
 ## Restores every patchable table from disk (tests, "reset balance").
 static func reset() -> void:
 	var el := ResourceLoader.load(ElementTable.PATH, "", ResourceLoader.CACHE_MODE_IGNORE_DEEP) as ElementTable
@@ -126,20 +139,24 @@ static func reset() -> void:
 	DropRoller._pools = null
 	applied.clear()
 
+
 static func _tag(prefix: String, errs: PackedStringArray) -> PackedStringArray:
 	var out := PackedStringArray()
 	for e in errs:
 		out.append("%s: %s" % [prefix, e])
 	return out
 
+
 static func _is_num(v: Variant) -> bool:
 	return typeof(v) == TYPE_FLOAT or typeof(v) == TYPE_INT
 
+
 static func _color(v: Variant, where: String, errs: PackedStringArray) -> Variant:
 	if typeof(v) != TYPE_STRING or not Color.html_is_valid(v):
-		errs.append("%s: color must be \"#RRGGBB\"" % where)
+		errs.append('%s: color must be "#RRGGBB"' % where)
 		return null
 	return Color.html(v)
+
 
 static func _ids(v: Variant, where: String, errs: PackedStringArray) -> Variant:
 	if not (v is Array):
@@ -152,6 +169,7 @@ static func _ids(v: Variant, where: String, errs: PackedStringArray) -> Variant:
 			return null
 		out.append(x)
 	return out
+
 
 static func _patch_elements(t: ElementTable, sec: Variant, errs: PackedStringArray) -> void:
 	if not (sec is Dictionary):
@@ -194,6 +212,7 @@ static func _patch_elements(t: ElementTable, sec: Variant, errs: PackedStringArr
 				if ids != null:
 					d.set(f, ids)
 
+
 static func _patch_rarities(t: RarityTable, sec: Variant, errs: PackedStringArray) -> void:
 	if not (sec is Dictionary):
 		errs.append("rarities: must be an object")
@@ -229,6 +248,7 @@ static func _patch_rarities(t: RarityTable, sec: Variant, errs: PackedStringArra
 			else:
 				errs.append("%s: must be a number" % w)
 
+
 static func _patch_pools(t: DropTable, sec: Variant, errs: PackedStringArray) -> void:
 	if not (sec is Dictionary):
 		errs.append("drop_pools: must be an object")
@@ -256,6 +276,7 @@ static func _patch_pools(t: DropTable, sec: Variant, errs: PackedStringArray) ->
 				if float(v[f]) != floorf(float(v[f])):
 					errs.append("%s: must be a whole number" % w)
 				p.set(f, int(v[f]))
+
 
 static func _patch_entries(p: DropPool, sec: Variant, where: String, errs: PackedStringArray) -> void:
 	if not (sec is Dictionary):

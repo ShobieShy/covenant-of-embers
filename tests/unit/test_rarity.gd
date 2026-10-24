@@ -19,18 +19,27 @@ const MAGEWAR_PARTS := "res://assets/magewar/resources/items/parts"
 
 ## PLAN §30.2 table, transcribed.
 const PLAN := [
-	["basic", "Basic", "B3B3B3", 1.0, 50.0], ["uncommon", "Uncommon", "33CC33", 1.25, 25.0],
-	["rare", "Rare", "3366FF", 1.5, 15.0], ["mythic", "Mythic", "991AE6", 2.0, 7.0],
-	["primordial", "Primordial", "FF9900", 2.75, 2.0], ["unique", "Unique", "FFD900", 3.0, 1.0],
+	["basic", "Basic", "B3B3B3", 1.0, 50.0],
+	["uncommon", "Uncommon", "33CC33", 1.25, 25.0],
+	["rare", "Rare", "3366FF", 1.5, 15.0],
+	["mythic", "Mythic", "991AE6", 2.0, 7.0],
+	["primordial", "Primordial", "FF9900", 2.75, 2.0],
+	["unique", "Unique", "FFD900", 3.0, 1.0],
 ]
 ## Magewar item_rarity.gd RARITY_COLORS, transcribed.
 const MAGEWAR_COLORS := [
-	Color(0.7, 0.7, 0.7), Color(0.2, 0.8, 0.2), Color(0.2, 0.4, 1.0),
-	Color(0.6, 0.1, 0.9), Color(1.0, 0.6, 0.0), Color(1.0, 0.85, 0.0),
+	Color(0.7, 0.7, 0.7),
+	Color(0.2, 0.8, 0.2),
+	Color(0.2, 0.4, 1.0),
+	Color(0.6, 0.1, 0.9),
+	Color(1.0, 0.6, 0.0),
+	Color(1.0, 0.85, 0.0),
 ]
+
 
 func _table() -> RarityTable:
 	return RarityTable.load_default()
+
 
 ## Magewar .tres: `key = value` lines of the [resource] section (strings unquoted).
 func _magewar_tres(path: String) -> Dictionary:
@@ -46,10 +55,12 @@ func _magewar_tres(path: String) -> Dictionary:
 			continue
 		var eq := line.find(" = ")
 		if in_res and eq > 0:
-			out[line.substr(0, eq)] = line.substr(eq + 3).strip_edges().trim_prefix("\"").trim_suffix("\"")
+			out[line.substr(0, eq)] = line.substr(eq + 3).strip_edges().trim_prefix('"').trim_suffix('"')
 	return out
 
+
 # --- Rarity table ---------------------------------------------------------------------
+
 
 func test_table_matches_plan_and_magewar() -> void:
 	var t := _table()
@@ -66,13 +77,19 @@ func test_table_matches_plan_and_magewar() -> void:
 		check(r.multiplier == row[3], "%s x%s" % [r.id, r.multiplier])
 		check(r.drop_weight == row[4], "%s weight %s" % [r.id, r.drop_weight])
 		# Magewar's floats exactly; PLAN's hex is them rounded to 8 bits (+-0.5/255).
-		check(r.color.is_equal_approx(MAGEWAR_COLORS[i]), "%s colour = Magewar %s (%s)" % [r.id, MAGEWAR_COLORS[i], r.color])
+		check(
+			r.color.is_equal_approx(MAGEWAR_COLORS[i]),
+			"%s colour = Magewar %s (%s)" % [r.id, MAGEWAR_COLORS[i], r.color]
+		)
 		var hex := Color.html(row[2])
 		for c in 3:
 			check(absf(r.color[c] - hex[c]) <= 0.5 / 255.0 + 1e-6, "%s channel %d vs #%s" % [r.id, c, row[2]])
 		check(r.color.to_html(false).to_upper() == row[2], "%s hex %s" % [r.id, r.color.to_html(false)])
-		line.append("%s #%s x%s w%d" % [r.display_name, r.color.to_html(false).to_upper(), r.multiplier, int(r.drop_weight)])
+		line.append(
+			"%s #%s x%s w%d" % [r.display_name, r.color.to_html(false).to_upper(), r.multiplier, int(r.drop_weight)]
+		)
 	print("    rarities: %s" % ", ".join(line))
+
 
 func test_ids_and_lookups() -> void:
 	var t := _table()
@@ -83,8 +100,12 @@ func test_ids_and_lookups() -> void:
 	check(Rarity.of("rare") == t.find("rare") and Rarity.of("rare").multiplier == 1.5, "Rarity.of = shared table")
 	check(t.find("legendary") == null and not t.has("legendary") and t.has("unique"), "unknown id -> null")
 	# Magewar fallbacks: get_multiplier 1.0, rarity_color WHITE, rarity_name "Unknown".
-	check(t.multiplier("legendary") == 1.0 and t.color("x") == Color.WHITE and t.display_name("x") == "Unknown", "fallbacks")
+	check(
+		t.multiplier("legendary") == 1.0 and t.color("x") == Color.WHITE and t.display_name("x") == "Unknown",
+		"fallbacks"
+	)
 	check(t.tier(-1) == null and t.tier(6) == null, "tier out of range -> null")
+
 
 func test_bad_tables_rejected() -> void:
 	var base: RarityTable = _table().duplicate(true)
@@ -100,9 +121,12 @@ func test_bad_tables_rejected() -> void:
 		[func(t: RarityTable) -> void: t.rarities[2].color = Color(1.5, 0, 0), "colour channel"],
 		[func(t: RarityTable) -> void: t.luck_rare_step = -2.0, "luck steps"],
 		[func(t: RarityTable) -> void: t.rarities.append(null), "null rarity"],
-		[func(t: RarityTable) -> void:
-			for r in t.rarities:
-				r.drop_weight = 0.0, "sum to 0"],
+		[
+			func(t: RarityTable) -> void:
+				for r in t.rarities:
+					r.drop_weight = 0.0,
+			"sum to 0"
+		],
 	]
 	for c in cases:
 		var t: RarityTable = base.duplicate(true)
@@ -114,7 +138,9 @@ func test_bad_tables_rejected() -> void:
 	check(patched.validate().is_empty() and patched.multiplier("unique") == 4.0, "patched copy x4")
 	check(_table().multiplier("unique") == 3.0, "shared table untouched")
 
+
 # --- Damage -------------------------------------------------------------------------
+
 
 func test_rarity_multiplier_drives_wieldable_damage() -> void:
 	var consts: Dictionary = (WieldableInstance as Script).get_script_constant_map()
@@ -130,7 +156,12 @@ func test_rarity_multiplier_drives_wieldable_damage() -> void:
 		check(w.rarity() == _table().tier(i), "%s instance rarity" % d.base_rarity)
 		check(w.rarity_color() == _table().tier(i).color, "%s colour" % d.base_rarity)
 		check_near(w.damage(), want[i], EPS, "Fire staff 10 as %s" % d.base_rarity)
-		check_near(WieldableInstance.rarity_multiplier(d.base_rarity) * 10.0, want[i], EPS, "rarity_multiplier %s" % d.base_rarity)
+		check_near(
+			WieldableInstance.rarity_multiplier(d.base_rarity) * 10.0,
+			want[i],
+			EPS,
+			"rarity_multiplier %s" % d.base_rarity
+		)
 		got.append(w.damage())
 	# Parts add flat after the multiplier (Magewar get_final_damage): Mythic 20 + 2 + 3.
 	var d2 := fire.duplicate() as WieldableDef
@@ -139,10 +170,15 @@ func test_rarity_multiplier_drives_wieldable_damage() -> void:
 	mw.parts.append(WieldablePart.load_part("basic_fire_head"))
 	mw.parts.append(WieldablePart.load_part("basic_interior"))
 	check_near(mw.damage(), 25.0, EPS, "mythic 20 + head 2 + interior 3")
-	check(WieldableInstance.load_base("earthward_battlestaff").rarity().display_name == "Uncommon", "Earthward is Uncommon")
+	check(
+		WieldableInstance.load_base("earthward_battlestaff").rarity().display_name == "Uncommon",
+		"Earthward is Uncommon"
+	)
 	print("    Fire staff by rarity: %s" % ", ".join(got.map(func(x: float) -> String: return String.num(x, 2))))
 
+
 # --- Rolls --------------------------------------------------------------------------
+
 
 func test_luck_weights_and_seeded_roll() -> void:
 	var t := _table()
@@ -190,7 +226,9 @@ func test_luck_weights_and_seeded_roll() -> void:
 	check(d.state == one_draw, "one roll = one randf draw")
 	print("    20000 rolls seed 1234: %s" % ", ".join(shares))
 
+
 # --- Parts --------------------------------------------------------------------------
+
 
 func test_parts_match_magewar() -> void:
 	var ids := WieldablePart.list_ids()
@@ -231,6 +269,7 @@ func test_parts_match_magewar() -> void:
 	check(by_type == [4, 3, 3, 3, 3], "per type %s" % [by_type])
 	print("    parts: 16 = Magewar, per rarity %s, per type %s" % [by_rarity, by_type])
 
+
 func test_part_helpers() -> void:
 	var head := WieldablePart.load_part("rare_water_head")
 	check(head.part_type_name() == "Head" and head.rarity_def().id == "rare", "Head / Rare")
@@ -243,7 +282,10 @@ func test_part_helpers() -> void:
 		"rare_air_handle": ["fire_rate_modifier"],
 		"mythic_water_exterior": ["accuracy_bonus"],
 		"uncommon_air_exterior": ["accuracy_bonus"],
-		"basic_handle": [], "unique_void_charm": [], "primordial_fire_head": [], "rare_light_charm": [],
+		"basic_handle": [],
+		"unique_void_charm": [],
+		"primordial_fire_head": [],
+		"rare_light_charm": [],
 	}
 	for id in ignored:
 		var got := Array(WieldablePart.load_part(id).ignored_stats())
@@ -251,13 +293,22 @@ func test_part_helpers() -> void:
 	var lone := WieldablePart.make(P.EXTERIOR)
 	lone.gem_slots = 1
 	check(Array(lone.ignored_stats()) == ["gem_slots"], "a gem slot on an Exterior is inert")
-	check(WieldablePart.make(P.EXTERIOR).gem_slots == 0 and WieldablePart.make(P.HEAD).gem_slots == 1,
-		"make(): Head 1 gem slot, non-Heads 0 (step 16 fix)")
+	check(
+		WieldablePart.make(P.EXTERIOR).gem_slots == 0 and WieldablePart.make(P.HEAD).gem_slots == 1,
+		"make(): Head 1 gem slot, non-Heads 0 (step 16 fix)"
+	)
 	var desc := head.full_description()
-	check(desc == "[Rare] Head\nElement: Water\nDamage: +6\nAccuracy: +12\nHandling: +1\nGem Slots: 2", "description:\n%s" % desc)
+	check(
+		desc == "[Rare] Head\nElement: Water\nDamage: +6\nAccuracy: +12\nHandling: +1\nGem Slots: 2",
+		"description:\n%s" % desc
+	)
 	var charm := WieldablePart.load_part("unique_void_charm").full_description()
-	check(charm == "[Unique] Charm\nElement: Dark\nDamage: +8\nFire Rate: x0.85\nAccuracy: +12\nHandling: +5", "charm:\n%s" % charm)
+	check(
+		charm == "[Unique] Charm\nElement: Dark\nDamage: +8\nFire Rate: x0.85\nAccuracy: +12\nHandling: +5",
+		"charm:\n%s" % charm
+	)
 	check(WieldablePart.load_part("basic_exterior").full_description() == "[Basic] Exterior", "plain exterior")
+
 
 func test_magewar_parts_assemble_stats() -> void:
 	var staff := WieldableInstance.load_base("apprentice_fire_staff")
@@ -271,7 +322,9 @@ func test_magewar_parts_assemble_stats() -> void:
 	check_near(staff.cooldown(), 0.36, EPS, "charm x0.9")
 	check(staff.accuracy() == 75.0, "charm +10")
 	var big := WieldableInstance.load_base("earthward_battlestaff")
-	for id in ["primordial_fire_head", "mythic_water_exterior", "basic_earth_interior", "rare_air_handle", "unique_void_charm"]:
+	for id in [
+		"primordial_fire_head", "mythic_water_exterior", "basic_earth_interior", "rare_air_handle", "unique_void_charm"
+	]:
 		big.parts.append(WieldablePart.load_part(id))
 	# Free-form part list (not Assembly.assemble): keeps the Uncommon base rarity; assembled
 	# it is Rare (floor of mean 2.8) = 46 (test_assembly worked example 3).
@@ -280,16 +333,27 @@ func test_magewar_parts_assemble_stats() -> void:
 	check_near(big.damage(), 42.5, EPS, "Earthward with top parts")
 	check_near(big.cooldown(), 0.55 * 0.55 * 0.85, EPS, "Earthward cooldown")
 	check(big.accuracy() == 99.0 and big.element() == E.FIRE, "accuracy 99, Head Fire overrides Earth")
-	print("    free-form parts: Fire staff 17.5 / %.2f s / 75 %%, Earthward %.1f / %.4f s / %.0f %%" % [staff.cooldown(), big.damage(), big.cooldown(), big.accuracy()])
+	print(
+		(
+			"    free-form parts: Fire staff 17.5 / %.2f s / 75 %%, Earthward %.1f / %.4f s / %.0f %%"
+			% [staff.cooldown(), big.damage(), big.cooldown(), big.accuracy()]
+		)
+	)
+
 
 func test_bad_parts_rejected() -> void:
 	var ok := WieldablePart.load_part("rare_water_head")
 	var cases := [
-		["id", "Bad Id", "lower_snake_case"], ["display_name", "", "name is empty"],
-		["rarity", "epic", "unknown rarity"], ["part_type", 7, "unknown part_type"],
-		["element", 9, "unknown element"], ["fire_rate_modifier", 0.0, "fire_rate_modifier must be in"],
-		["damage_bonus", 500.0, "damage_bonus must be in"], ["accuracy_bonus", -101.0, "accuracy_bonus must be in"],
-		["handling_bonus", 1000.0, "handling_bonus must be in"], ["gem_slots", 4, "gem_slots must be in"],
+		["id", "Bad Id", "lower_snake_case"],
+		["display_name", "", "name is empty"],
+		["rarity", "epic", "unknown rarity"],
+		["part_type", 7, "unknown part_type"],
+		["element", 9, "unknown element"],
+		["fire_rate_modifier", 0.0, "fire_rate_modifier must be in"],
+		["damage_bonus", 500.0, "damage_bonus must be in"],
+		["accuracy_bonus", -101.0, "accuracy_bonus must be in"],
+		["handling_bonus", 1000.0, "handling_bonus must be in"],
+		["gem_slots", 4, "gem_slots must be in"],
 	]
 	for c in cases:
 		var p := ok.duplicate() as WieldablePart

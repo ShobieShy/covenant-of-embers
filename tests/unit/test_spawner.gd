@@ -24,6 +24,7 @@ const LEVEL_SCENE := "res://scenes/levels/midden.tscn"
 const LEVEL_TOML := "res://data/levels/midden_greybox.toml"
 const E := ElementTable.Element
 
+
 func _plain_world(at: Vector3, with_nav := true) -> Node3D:
 	var w := Node3D.new()
 	w.position = at
@@ -50,6 +51,7 @@ func _plain_world(at: Vector3, with_nav := true) -> Node3D:
 		check(nav.map_ready(), "navmesh synced to the map")
 	return w
 
+
 ## The Midden at `at`, its navmesh synced, a player at `feet` (level space) and a manual
 ## EnemySpawner set up on it.
 func _midden(at: Vector3, feet: Vector3) -> Dictionary:
@@ -72,6 +74,7 @@ func _midden(at: Vector3, feet: Vector3) -> Dictionary:
 	var got := sp.setup(level, p)
 	return {"w": w, "level": level, "player": p, "spawner": sp, "got": got}
 
+
 func _player(w: Node3D, feet: Vector3) -> Player:
 	var p: Player = (load(PLAYER_SCENE) as PackedScene).instantiate()
 	p.input_enabled = false
@@ -79,13 +82,19 @@ func _player(w: Node3D, feet: Vector3) -> Player:
 	p.spawn(w.global_position + feet, 0.0)
 	return p
 
+
 func _flat(a: Vector3, b: Vector3) -> float:
 	return Vector2(a.x - b.x, a.z - b.z).length()
 
+
 func test_event_bus_autoload() -> void:
-	check(ProjectSettings.get_setting("autoload/EventBus", "") == "*res://scripts/core/event_bus.gd", "EventBus is a project autoload")
+	check(
+		ProjectSettings.get_setting("autoload/EventBus", "") == "*res://scripts/core/event_bus.gd",
+		"EventBus is a project autoload"
+	)
 	var n := runner_tree.root.get_node_or_null("EventBus")
 	check(n is GameEvents and GameEvents.bus() == n, "GameEvents.bus() is the autoload node")
+
 
 func test_kill_events_fire_once_per_death() -> void:
 	var w := await _plain_world(Vector3(4000, 0, -4000), false)
@@ -101,27 +110,47 @@ func test_kill_events_fire_once_per_death() -> void:
 	var k0 := bus.kills
 	check(not e.apply_damage(20.0, E.FIRE) and seen.is_empty(), "a hit that doesn't kill: no event")
 	check(e.apply_damage(1000.0, E.WATER), "the lethal hit kills")
-	check(seen.size() == 1 and seen[0][0] == e and seen[0][1] == E.WATER and died[0] == 1 and bus.kills == k0 + 1,
-		"one enemy_killed (this enemy, the killing Water) and one died (%d, %d)" % [seen.size(), died[0]])
-	check(not e.apply_damage(50.0, E.FIRE) and seen.size() == 1 and died[0] == 1 and e.deaths == 1, "hits on the dead: no second event")
+	check(
+		seen.size() == 1 and seen[0][0] == e and seen[0][1] == E.WATER and died[0] == 1 and bus.kills == k0 + 1,
+		"one enemy_killed (this enemy, the killing Water) and one died (%d, %d)" % [seen.size(), died[0]]
+	)
+	check(
+		not e.apply_damage(50.0, E.FIRE) and seen.size() == 1 and died[0] == 1 and e.deaths == 1,
+		"hits on the dead: no second event"
+	)
 	e.reset()
-	check(not e.dead and e.health == e.max_health() and e.is_in_group(Enemy.GROUP) and e.visible
-		and e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1) and not e.body_shape.disabled, "reset: alive, full health, colliding, in the group")
+	check(
+		(
+			not e.dead
+			and e.health == e.max_health()
+			and e.is_in_group(Enemy.GROUP)
+			and e.visible
+			and e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1)
+			and not e.body_shape.disabled
+		),
+		"reset: alive, full health, colliding, in the group"
+	)
 	e.apply_damage(1000.0, E.EARTH)
 	check(seen.size() == 2 and seen[1][1] == E.EARTH and e.deaths == 2, "after a reset its next death fires again")
 	bus.enemy_killed.disconnect(on_kill)
-	await runner_tree.process_frame   # the deferred collision calls of both deaths + the reset ran
+	await runner_tree.process_frame  # the deferred collision calls of both deaths + the reset ran
 	check(e.collision_layer == 0 and e.body_shape.disabled, "dead again: no collision after the deferred calls")
 	e.reset()
 	await runner_tree.process_frame
-	check(e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1) and not e.body_shape.disabled, "a reset survives the frame flush")
+	check(
+		e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1) and not e.body_shape.disabled,
+		"a reset survives the frame flush"
+	)
 	# A death and a reset in the same frame: the reset wins after the flush.
 	e.apply_damage(1000.0, E.FIRE)
 	e.reset()
 	await runner_tree.process_frame
-	check(e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1) and not e.body_shape.disabled and not e.head_shape.disabled,
-		"death + reset in one frame: colliding after the flush")
+	check(
+		e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1) and not e.body_shape.disabled and not e.head_shape.disabled,
+		"death + reset in one frame: colliding after the flush"
+	)
 	w.free()
+
 
 func test_player_damaged_and_spawn_protection() -> void:
 	var w := await _plain_world(Vector3(4000, 0, -3800), false)
@@ -133,7 +162,10 @@ func test_player_damaged_and_spawn_protection() -> void:
 	var still := PlayerInput.hold([])
 	p.tick(still, DT)
 	var r := p.take_enemy_hit(3.0, E.EARTH)
-	check(got.size() == 1 and got[0][0] == p and got[0][1] == r and is_equal_approx(r.amount, 3.0), "player_damaged with the hit's result")
+	check(
+		got.size() == 1 and got[0][0] == p and got[0][1] == r and is_equal_approx(r.amount, 3.0),
+		"player_damaged with the hit's result"
+	)
 	p.take_enemy_hit(1000.0, E.EARTH)
 	check(not p.alive() and got.size() == 2, "the lethal hit is announced too")
 	check(p.take_enemy_hit(5.0, E.EARTH) == null and got.size() == 2, "hits on the dead: none")
@@ -142,7 +174,10 @@ func test_player_damaged_and_spawn_protection() -> void:
 	check(p.alive() and p.respawns == 1, "respawned after 3 s")
 	check(p.invulnerable() and is_equal_approx(p.protection_left, 1.0), "1 s spawn protection")
 	var ignored := p.hits_ignored
-	check(p.take_enemy_hit(5.0, E.EARTH) == null and p.hits_ignored == ignored + 1 and got.size() == 2, "a hit during spawn protection is ignored")
+	check(
+		p.take_enemy_hit(5.0, E.EARTH) == null and p.hits_ignored == ignored + 1 and got.size() == 2,
+		"a hit during spawn protection is ignored"
+	)
 	for i in 59:
 		p.tick(still, DT)
 	check(p.invulnerable(), "still protected after 59 ticks")
@@ -151,6 +186,7 @@ func test_player_damaged_and_spawn_protection() -> void:
 	check(p.take_enemy_hit(5.0, E.EARTH) != null and got.size() == 3, "hit again (announced)")
 	bus.player_damaged.disconnect(on_hit)
 	w.free()
+
 
 func test_midden_waves_match_toml() -> void:
 	var d := LevelToml.load_file(LEVEL_TOML)
@@ -162,18 +198,38 @@ func test_midden_waves_match_toml() -> void:
 	for i in mini(tw.size(), waves.get_child_count()):
 		var n := waves.get_child(i)
 		var t: Dictionary = tw[i]
-		check(String(n.name) == t["id"] and int(n.get_meta("index")) == i and is_equal_approx(float(n.get_meta("delay_s")), float(t["delay_s"])), "wave %d id/index/delay" % i)
+		check(
+			(
+				String(n.name) == t["id"]
+				and int(n.get_meta("index")) == i
+				and is_equal_approx(float(n.get_meta("delay_s")), float(t["delay_s"]))
+			),
+			"wave %d id/index/delay" % i
+		)
 		var groups: Array = n.get_meta("enemies")
 		var tg: Array = t["enemies"]
 		check(groups.size() == tg.size(), "wave %d groups" % i)
 		var c := 0
 		for j in mini(groups.size(), tg.size()):
-			check(groups[j]["enemy"] == tg[j]["enemy"] and int(groups[j]["count"]) == int(tg[j]["count"]) and groups[j]["at"] == tg[j]["at"], "wave %d group %d" % [i, j])
+			check(
+				(
+					groups[j]["enemy"] == tg[j]["enemy"]
+					and int(groups[j]["count"]) == int(tg[j]["count"])
+					and groups[j]["at"] == tg[j]["at"]
+				),
+				"wave %d group %d" % [i, j]
+			)
 			c += int(groups[j]["count"])
 		counts.append(c)
 	check(counts == [3, 4, 3], "wave sizes 3 / 4 / 3 (%s)" % [counts])
 	var wt: Dictionary = d["waves"]
-	check((waves.get_meta("trigger_center") as Vector3).is_equal_approx(LevelToml.vec3(wt["trigger_center"])) and is_equal_approx(float(waves.get_meta("trigger_radius")), float(wt["trigger_radius"])), "trigger centre / radius")
+	check(
+		(
+			(waves.get_meta("trigger_center") as Vector3).is_equal_approx(LevelToml.vec3(wt["trigger_center"]))
+			and is_equal_approx(float(waves.get_meta("trigger_radius")), float(wt["trigger_radius"]))
+		),
+		"trigger centre / radius"
+	)
 	var pts: Array = d.get("spawn_point", [])
 	var ws := level.get_node("WaveSpawns")
 	check(pts.size() == 3 and ws.get_child_count() == 3, "3 wave spawn points")
@@ -182,8 +238,11 @@ func test_midden_waves_match_toml() -> void:
 		check(m != null and m.position.is_equal_approx(LevelToml.vec3(sp["position"])), "spawn point %s" % sp["name"])
 	var marks := level.get_node("EnemySpawns").get_children()
 	var resp := marks.map(func(m: Node) -> float: return float(m.get_meta("respawn_s", 0.0)))
-	check(resp == [3.0, 3.0, 0.0, 0.0], "the two dummies respawn after 3 s, the Gnawer and the Heap don't (%s)" % [resp])
+	check(
+		resp == [3.0, 3.0, 0.0, 0.0], "the two dummies respawn after 3 s, the Gnawer and the Heap don't (%s)" % [resp]
+	)
 	level.free()
+
 
 func test_spawner_markers_respawn_and_free() -> void:
 	var m := await _midden(Vector3(4000, 0, -3000), Vector3(0, 0, 12.5))
@@ -196,7 +255,10 @@ func test_spawner_markers_respawn_and_free() -> void:
 	var dummy: Enemy
 	for e in got:
 		if e is Gnawer:
-			check((e as Gnawer).target == p and (e as Gnawer).attacked.is_connected(p.on_enemy_attack), "%s hunts the player, its attacks hurt him" % e.name)
+			check(
+				(e as Gnawer).target == p and (e as Gnawer).attacked.is_connected(p.on_enemy_attack),
+				"%s hunts the player, its attacks hurt him" % e.name
+			)
 			if not e is Heap:
 				g = e
 		elif dummy == null:
@@ -212,10 +274,22 @@ func test_spawner_markers_respawn_and_free() -> void:
 	check(dummy.dead and bus.kills == k0 + 1 and sp.kills == 1, "dummy killed: one event")
 	for i in 179:
 		sp.tick(DT)
-	check(dummy.dead and is_instance_valid(dummy) and not dummy.is_queued_for_deletion(), "still dead after 179 ticks, not freed")
+	check(
+		dummy.dead and is_instance_valid(dummy) and not dummy.is_queued_for_deletion(),
+		"still dead after 179 ticks, not freed"
+	)
 	sp.tick(DT)
-	check(not dummy.dead and dummy.health == dummy.max_health() and dummy.is_in_group(Enemy.GROUP) and dummy.visible and sp.respawns == 1 and spawned_events[0] == 1,
-		"respawned on tick 180 at full health (%.0f)" % dummy.health)
+	check(
+		(
+			not dummy.dead
+			and dummy.health == dummy.max_health()
+			and dummy.is_in_group(Enemy.GROUP)
+			and dummy.visible
+			and sp.respawns == 1
+			and spawned_events[0] == 1
+		),
+		"respawned on tick 180 at full health (%.0f)" % dummy.health
+	)
 	check(dummy.global_transform.is_equal_approx(home), "back at its marker")
 	dummy.apply_damage(1000.0, E.FIRE)
 	check(bus.kills == k0 + 2, "it dies again: a second event")
@@ -232,6 +306,7 @@ func test_spawner_markers_respawn_and_free() -> void:
 	check(sp.wave_state == EnemySpawner.WaveState.WAITING, "no waves while the player stays at the start")
 	bus.enemy_spawned.disconnect(on_spawn)
 	(m["w"] as Node).free()
+
 
 func test_waves_in_the_midden() -> void:
 	# The player stands 3.5 m south of the mound centre: inside the 4 m trigger.
@@ -256,13 +331,21 @@ func test_waves_in_the_midden() -> void:
 		sp.tick(DT)
 	check(started.is_empty(), "nothing during the 1 s delay")
 	sp.tick(DT)
-	check(started.size() == 1 and started[0][0] == 0 and started[0][1] == "gnawer_pack" and started[0][2] == 61, "gnawer_pack after 60 ticks (%s)" % [started])
+	check(
+		started.size() == 1 and started[0][0] == 0 and started[0][1] == "gnawer_pack" and started[0][2] == 61,
+		"gnawer_pack after 60 ticks (%s)" % [started]
+	)
 	var sizes: Array = []
 	var ledge := (level.get_node("WaveSpawns/north_ledge") as Node3D).global_position
 	sizes.append(sp.wave_alive.size())
 	for e in sp.wave_alive:
-		check(e is Gnawer and not e is Heap and (e as Gnawer).target == sp.player, "%s: a Gnawer hunting the player" % e.name)
-		check(absf(_flat(e.global_position, ledge) - EnemySpawner.WAVE_RING) < 0.05, "%s on the 1.5 m ledge ring" % e.name)
+		check(
+			e is Gnawer and not e is Heap and (e as Gnawer).target == sp.player,
+			"%s: a Gnawer hunting the player" % e.name
+		)
+		check(
+			absf(_flat(e.global_position, ledge) - EnemySpawner.WAVE_RING) < 0.05, "%s on the 1.5 m ledge ring" % e.name
+		)
 	_kill_wave(sp)
 	sp.tick(DT)
 	check(cleared.size() == 1 and cleared[0][1] == "gnawer_pack", "gnawer_pack cleared")
@@ -270,7 +353,10 @@ func test_waves_in_the_midden() -> void:
 		sp.tick(DT)
 	check(started.size() == 1, "nothing during the 3 s delay")
 	sp.tick(DT)
-	check(started.size() == 2 and started[1][1] == "flank" and started[1][2] - cleared[0][2] == 180, "flank 3 s after the clear (%s)" % [started])
+	check(
+		started.size() == 2 and started[1][1] == "flank" and started[1][2] - cleared[0][2] == 180,
+		"flank 3 s after the clear (%s)" % [started]
+	)
 	sizes.append(sp.wave_alive.size())
 	var west := (level.get_node("WaveSpawns/west_flank") as Node3D).global_position
 	var east := (level.get_node("WaveSpawns/east_flank") as Node3D).global_position
@@ -298,17 +384,28 @@ func test_waves_in_the_midden() -> void:
 	_kill_wave(sp)
 	for i in 5:
 		sp.tick(DT)
-	check(completed[0] == 1 and sp.wave_state == EnemySpawner.WaveState.DONE and cleared.size() == 3, "waves_completed once after the third clear")
-	check(sizes == [3, 4, 3] and sp.spawned == 14, "wave counts 3 / 4 / 3, 14 enemies in all (%s, %d)" % [sizes, sp.spawned])
+	check(
+		completed[0] == 1 and sp.wave_state == EnemySpawner.WaveState.DONE and cleared.size() == 3,
+		"waves_completed once after the third clear"
+	)
+	check(
+		sizes == [3, 4, 3] and sp.spawned == 14,
+		"wave counts 3 / 4 / 3, 14 enemies in all (%s, %d)" % [sizes, sp.spawned]
+	)
 	check(bus.kills == k0 + 10 and sp.kills == 10, "10 kills, one event each (%d)" % (bus.kills - k0))
-	check(sp.freed == 10 and sp.alive_count() == 4, "every wave enemy freed; the 4 marker enemies remain (%d freed, %d alive)" % [sp.freed, sp.alive_count()])
+	check(
+		sp.freed == 10 and sp.alive_count() == 4,
+		"every wave enemy freed; the 4 marker enemies remain (%d freed, %d alive)" % [sp.freed, sp.alive_count()]
+	)
 	check(bus_started[0] == 3, "the bus saw 3 wave starts")
 	bus.wave_started.disconnect(on_bus_start)
 	(m["w"] as Node).free()
 
+
 func _kill_wave(sp: EnemySpawner) -> void:
 	for e in sp.wave_alive.duplicate():
 		e.apply_damage(1000.0, E.FIRE)
+
 
 ## 3 Gnawers lined up behind each other at 5 / 6.2 / 7.4 m: with separation all three get
 ## around each other and bite within 4 s; without it the back two queue out of reach.
@@ -347,11 +444,24 @@ func _pack(at: Vector3, separate: bool) -> Array:
 	for g in gs:
 		seps += g.separations
 	var out := [biters, min_gap, seps, p.hits_taken, all_at, max_y]
-	print("    pack (separation %s): %d biting, all by tick %d, closest %.2f m, highest feet %.3f m, %d steer ticks, bites %s, ends %s" % [
-		separate, biters, all_at, min_gap, max_y, seps, gs.map(func(g: Gnawer) -> int: return g.bites),
-		gs.map(func(g: Gnawer) -> String: return "(%.2f, %.2f)" % [g.position.x, g.position.z])])
+	print(
+		(
+			"    pack (separation %s): %d biting, all by tick %d, closest %.2f m, highest feet %.3f m, %d steer ticks, bites %s, ends %s"
+			% [
+				separate,
+				biters,
+				all_at,
+				min_gap,
+				max_y,
+				seps,
+				gs.map(func(g: Gnawer) -> int: return g.bites),
+				gs.map(func(g: Gnawer) -> String: return "(%.2f, %.2f)" % [g.position.x, g.position.z])
+			]
+		)
+	)
 	w.free()
 	return out
+
 
 func test_three_gnawers_separate_and_all_bite() -> void:
 	var on: Array = await _pack(Vector3(4000, 0, -1000), true)

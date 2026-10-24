@@ -6,23 +6,41 @@ extends Node
 ## Screenshots of each beat go to <dir>. Uses user://playtest_save.json, never the real save.
 
 const STEPS := [
-	[2.0, "shot", "menu"], [0.5, "key", KEY_ENTER, "new run"],
-	[4.0, "shot", "midden_start"], [0.0, "hold", KEY_W, 2.5], [0.0, "mouse_move", 400.0],
-	[1.0, "click", 6], [1.5, "shot", "midden_walked"], [0.0, "hold", KEY_D, 1.5],
-	[2.0, "key", KEY_TAB, "inventory"], [1.0, "shot", "inventory"], [0.5, "key", KEY_ESCAPE, "close inv"],
-	[1.0, "key", KEY_ESCAPE, "pause"], [1.0, "shot", "pause"],
-	[0.5, "key", KEY_DOWN, ""], [0.2, "key", KEY_DOWN, ""], [0.2, "key", KEY_DOWN, ""],
-	[0.3, "key", KEY_ENTER, "main menu"], [2.0, "shot", "menu_after_save"],
-	[0.3, "key", KEY_DOWN, ""], [0.3, "key", KEY_ENTER, "continue"], [4.0, "shot", "continued"],
-	[60.0, "shot", "stable_60s"], [0.5, "key", KEY_ESCAPE, "pause"],
-	[0.5, "key", KEY_DOWN, ""], [0.2, "key", KEY_DOWN, ""], [0.2, "key", KEY_DOWN, ""], [0.2, "key", KEY_DOWN, ""],
+	[2.0, "shot", "menu"],
+	[0.5, "key", KEY_ENTER, "new run"],
+	[4.0, "shot", "midden_start"],
+	[0.0, "hold", KEY_W, 2.5],
+	[0.0, "mouse_move", 400.0],
+	[1.0, "click", 6],
+	[1.5, "shot", "midden_walked"],
+	[0.0, "hold", KEY_D, 1.5],
+	[2.0, "key", KEY_TAB, "inventory"],
+	[1.0, "shot", "inventory"],
+	[0.5, "key", KEY_ESCAPE, "close inv"],
+	[1.0, "key", KEY_ESCAPE, "pause"],
+	[1.0, "shot", "pause"],
+	[0.5, "key", KEY_DOWN, ""],
+	[0.2, "key", KEY_DOWN, ""],
+	[0.2, "key", KEY_DOWN, ""],
+	[0.3, "key", KEY_ENTER, "main menu"],
+	[2.0, "shot", "menu_after_save"],
+	[0.3, "key", KEY_DOWN, ""],
+	[0.3, "key", KEY_ENTER, "continue"],
+	[4.0, "shot", "continued"],
+	[60.0, "shot", "stable_60s"],
+	[0.5, "key", KEY_ESCAPE, "pause"],
+	[0.5, "key", KEY_DOWN, ""],
+	[0.2, "key", KEY_DOWN, ""],
+	[0.2, "key", KEY_DOWN, ""],
+	[0.2, "key", KEY_DOWN, ""],
 	[0.3, "key", KEY_ENTER, "quit"],
 ]
 
 var dir := ""
 var _i := 0
 var _wait := 0.0
-var _holds := {}   # keycode -> seconds left
+var _holds := {}  # keycode -> seconds left
+
 
 static func attach(tree: SceneTree) -> void:
 	var args := OS.get_cmdline_user_args()
@@ -38,6 +56,7 @@ static func attach(tree: SceneTree) -> void:
 	DirAccess.make_dir_recursive_absolute(d.dir)
 	tree.root.add_child.call_deferred(d)
 	print("[ui-test] start")
+
 
 func _process(delta: float) -> void:
 	for k in _holds.keys():
@@ -57,8 +76,17 @@ func _process(delta: float) -> void:
 		"shot":
 			var img := get_viewport().get_texture().get_image()
 			var path := dir.path_join("ui_%02d_%s.png" % [_i, s[2]])
-			print("[ui-test] shot %s %s scene=%s paused=%s" % [path, error_string(img.save_png(path)),
-				get_tree().current_scene.name if get_tree().current_scene else "-", get_tree().paused])
+			print(
+				(
+					"[ui-test] shot %s %s scene=%s paused=%s"
+					% [
+						path,
+						error_string(img.save_png(path)),
+						get_tree().current_scene.name if get_tree().current_scene else "-",
+						get_tree().paused
+					]
+				)
+			)
 		"key":
 			_key(s[2], true)
 			_key(s[2], false)
@@ -82,6 +110,7 @@ func _process(delta: float) -> void:
 					b.position = get_viewport().get_visible_rect().size / 2
 					Input.parse_input_event(b)
 			print("[ui-test] clicked %d" % s[2])
+
 
 func _key(code: int, pressed: bool) -> void:
 	var e := InputEventKey.new()

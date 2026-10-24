@@ -55,16 +55,19 @@ var markers := 0
 var kill_markers := 0
 var font: Font
 
+
 ## Tick marks around the screen centre.
 class Crosshair:
 	extends Control
 	var gap := 4.0
+
 	func _draw() -> void:
 		var c := size * 0.5
 		var col := Color(1, 1, 1, 0.9)
 		for d in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]:
 			draw_line(c + d * gap, c + d * (gap + 8.0), col, 2.0)
 		draw_circle(c, 1.5, col)
+
 
 func _init() -> void:
 	layer = LAYER
@@ -111,7 +114,9 @@ func _init() -> void:
 		dr.position = Vector2(4, 44)
 		dr.size = Vector2(72, 8)
 		icon.add_child(dr)
-		slot_icons.append(icon); slot_gems.append(gem); slot_draw.append(dr)
+		slot_icons.append(icon)
+		slot_gems.append(gem)
+		slot_draw.append(dr)
 	hint_label = _label(20, root)
 	hint_label.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	hint_label.position = Vector2(-200, -160)
@@ -129,6 +134,7 @@ func _init() -> void:
 	death_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	death_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
+
 func _rect(c: Color, preset: int) -> ColorRect:
 	var r := ColorRect.new()
 	r.color = c
@@ -136,6 +142,7 @@ func _rect(c: Color, preset: int) -> ColorRect:
 	r.set_anchors_preset(preset)
 	root.add_child(r)
 	return r
+
 
 func _label(px: int, parent: Control) -> Label:
 	var l := Label.new()
@@ -147,6 +154,7 @@ func _label(px: int, parent: Control) -> Label:
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(l)
 	return l
+
 
 func _bar(c: Color, parent: Control) -> ProgressBar:
 	var b := ProgressBar.new()
@@ -163,11 +171,14 @@ func _bar(c: Color, parent: Control) -> ProgressBar:
 	parent.add_child(b)
 	return b
 
+
 static func bar_color(b: ProgressBar) -> Color:
 	return (b.get_theme_stylebox(&"fill") as StyleBoxFlat).bg_color
 
+
 func _set_bar_color(b: ProgressBar, c: Color) -> void:
 	(b.get_theme_stylebox(&"fill") as StyleBoxFlat).bg_color = c
+
 
 ## Hooks the player (and optionally the spawner for the wave counter).
 func bind(p: Player, sp: EnemySpawner = null) -> void:
@@ -185,6 +196,7 @@ func bind(p: Player, sp: EnemySpawner = null) -> void:
 	bus.waves_completed.connect(func() -> void: show_banner("The Midden is quiet"))
 	refresh(0.0)
 
+
 func _exit_tree() -> void:
 	# lambdas on the bus outlive the HUD otherwise
 	var bus := GameEvents.bus()
@@ -193,14 +205,17 @@ func _exit_tree() -> void:
 			if c["callable"].get_object() == self:
 				s.disconnect(c["callable"])
 
+
 func show_hint(text: String) -> void:
 	hint_label.text = text
 	hint_left = HINT_SECONDS
 	hint_label.modulate.a = 1.0
 
+
 func show_banner(text: String) -> void:
 	banner.text = text
 	banner_left = BANNER_SECONDS
+
 
 func _on_bolt_hit(h: SpellBolts.Hit) -> void:
 	if not (h.collider is Enemy):
@@ -220,14 +235,17 @@ func _on_bolt_hit(h: SpellBolts.Hit) -> void:
 		marker.text = "x"
 		marker.add_theme_color_override(&"font_color", Color.WHITE)
 
+
 func _process(delta: float) -> void:
 	refresh(delta)
+
 
 ## Crosshair gap in px for the current spread cone (0 at 100 % accuracy).
 func crosshair_gap() -> float:
 	var cone := player.spread.cone_deg(player.accuracy(), player.spread_stance())
 	var half_h := root.get_viewport_rect().size.y * 0.5 if root.is_inside_tree() else 450.0
 	return tan(deg_to_rad(cone)) / tan(deg_to_rad(player.camera.fov * 0.5)) * half_h
+
 
 func refresh(dt: float) -> void:
 	if player == null:
@@ -281,6 +299,7 @@ func refresh(dt: float) -> void:
 	death_overlay.visible = not player.alive()
 	if death_overlay.visible:
 		death_label.text = "You fell.\nRising in %.1f" % player.respawn_left
+
 
 func _refresh_pips() -> void:
 	var n := player.dash.max_charges()

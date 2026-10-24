@@ -8,6 +8,7 @@ extends TestCase
 
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
 
+
 func _player() -> Player:
 	var p: Player = (load(PLAYER_SCENE) as PackedScene).instantiate()
 	p.input_enabled = false
@@ -15,14 +16,17 @@ func _player() -> Player:
 	p.spawn(Vector3(0, 300, -900), 0.0)
 	return p
 
+
 func _station() -> AssemblyStation:
 	var s := AssemblyStation.new()
 	runner_tree.root.add_child(s)
 	s.global_position = Vector3(0, 300, -901)
 	return s
 
+
 func _part(id: String) -> WieldablePart:
 	return WieldablePart.load_part(id).duplicate() as WieldablePart
+
 
 func test_assemble_then_disassemble() -> void:
 	var p := _player()
@@ -58,6 +62,7 @@ func test_assemble_then_disassemble() -> void:
 	p.queue_free()
 	st.queue_free()
 
+
 func test_refusals() -> void:
 	var p := _player()
 	var st := _station()
@@ -69,7 +74,7 @@ func test_refusals() -> void:
 	p.inventory.add(ext)
 	check(st.assemble(p, base, [head, ext]) == null and st.last_error != "", "staff needs 4 parts")
 	var inner := _part("basic_interior")
-	var handle := _part("basic_handle")   # not in the pack
+	var handle := _part("basic_handle")  # not in the pack
 	p.inventory.add(inner)
 	check(st.assemble(p, base, [head, ext, inner, handle]) == null and "backpack" in st.last_error, "part not in pack")
 	p.inventory.add(handle)

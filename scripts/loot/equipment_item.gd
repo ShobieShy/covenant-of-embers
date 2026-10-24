@@ -18,30 +18,39 @@ enum Slot { HAT, CLOTHES, BELT, SHOES, GRIMOIRE }
 
 const DIR := "res://resources/equipment"
 const SLOT_COUNT := 5
-const SLOT_NAMES: PackedStringArray = ["Hat", "Clothes", "Belt", "Shoes", "Grimoire"]   ## Magewar get_slot_name
-const STATS: PackedStringArray = ["health_bonus", "mana_bonus", "stamina_bonus", "speed_modifier",
-	"spell_damage_bonus", "elemental_resistance", "mana_regen_bonus"]
+const SLOT_NAMES: PackedStringArray = ["Hat", "Clothes", "Belt", "Shoes", "Grimoire"]  ## Magewar get_slot_name
+const STATS: PackedStringArray = [
+	"health_bonus",
+	"mana_bonus",
+	"stamina_bonus",
+	"speed_modifier",
+	"spell_damage_bonus",
+	"elemental_resistance",
+	"mana_regen_bonus"
+]
 
-@export var id := ""                          ## lower_snake_case (= the Magewar file stem)
-@export var display_name := ""                ## Magewar `name`
+@export var id := ""  ## lower_snake_case (= the Magewar file stem)
+@export var display_name := ""  ## Magewar `name`
 @export_multiline var description := ""
-@export var slot: Slot = Slot.HAT             ## Magewar equip_slot
-@export var rarity := "basic"                 ## Rarity.IDS
-@export var element_affinity: ElementTable.Element = ElementTable.Element.ARCANE   ## ARCANE = Magewar NONE
+@export var slot: Slot = Slot.HAT  ## Magewar equip_slot
+@export var rarity := "basic"  ## Rarity.IDS
+@export var element_affinity: ElementTable.Element = ElementTable.Element.ARCANE  ## ARCANE = Magewar NONE
 @export var health_bonus := 0.0
 @export var mana_bonus := 0.0
-@export var stamina_bonus := 0.0              ## Breath max
-@export var speed_modifier := 1.0             ## multiplier (Shoes 1.15)
-@export var spell_damage_bonus := 0.0         ## flat, added to each cast
-@export_range(0.0, 1.0) var elemental_resistance := 0.0   ## vs element_affinity damage
-@export var mana_regen_bonus := 0.0           ## mana/s
-@export var consecration := ""                ## step 36: Consecrations.DEFS id ("" = none)
-@export var roll_seed := -1                   ## EquipmentRoller seed; -1 = template / hand-made
+@export var stamina_bonus := 0.0  ## Breath max
+@export var speed_modifier := 1.0  ## multiplier (Shoes 1.15)
+@export var spell_damage_bonus := 0.0  ## flat, added to each cast
+@export_range(0.0, 1.0) var elemental_resistance := 0.0  ## vs element_affinity damage
+@export var mana_regen_bonus := 0.0  ## mana/s
+@export var consecration := ""  ## step 36: Consecrations.DEFS id ("" = none)
+@export var roll_seed := -1  ## EquipmentRoller seed; -1 = template / hand-made
+
 
 ## resources/equipment/<id>.tres (null when missing). Shared resource: duplicate() before editing.
 static func load_item(item_id: String) -> EquipmentItem:
 	var path := "%s/%s.tres" % [DIR, item_id]
 	return load(path) as EquipmentItem if ResourceLoader.exists(path) else null
+
 
 ## Every template id under resources/equipment, sorted.
 static func list_ids() -> PackedStringArray:
@@ -52,11 +61,14 @@ static func list_ids() -> PackedStringArray:
 	ids.sort()
 	return ids
 
+
 func slot_name() -> String:
 	return SLOT_NAMES[slot] if slot >= 0 and slot < SLOT_COUNT else "Unknown"
 
+
 func rarity_color() -> Color:
 	return RarityTable.load_default().color(rarity)
+
 
 ## Problems with this item (empty = valid).
 func validate() -> PackedStringArray:
@@ -76,6 +88,7 @@ func validate() -> PackedStringArray:
 	if elemental_resistance < 0.0 or elemental_resistance > 1.0:
 		errs.append("%s: elemental_resistance %f outside 0..1" % [id, elemental_resistance])
 	return errs
+
 
 ## Magewar get_full_description layout ("[Rare] Clothes", affinity, the non-default stats),
 ## numbers without trailing zeros.
@@ -98,6 +111,7 @@ func full_description() -> String:
 	if mana_regen_bonus != 0.0:
 		lines.append("Mana Regen: +" + num(mana_regen_bonus))
 	return "\n".join(lines)
+
 
 static func num(v: float) -> String:
 	return str(int(roundf(v))) if is_equal_approx(v, roundf(v)) else String.num(v, 2)

@@ -6,6 +6,7 @@ extends TestCase
 const DT := 1.0 / 60.0
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
 
+
 func _setup() -> Array:
 	var p: Player = (load(PLAYER_SCENE) as PackedScene).instantiate()
 	p.input_enabled = false
@@ -15,6 +16,7 @@ func _setup() -> Array:
 	runner_tree.root.add_child(hud)
 	hud.bind(p)
 	return [p, hud]
+
 
 func test_bars_track_values() -> void:
 	var s := _setup()
@@ -52,7 +54,9 @@ func test_bars_track_values() -> void:
 	p.progression.add_xp(30)
 	hud.refresh(DT)
 	check(hud.level_label.text.contains("30 / 100"), "XP line '%s'" % hud.level_label.text)
-	p.queue_free(); hud.queue_free()
+	p.queue_free()
+	hud.queue_free()
+
 
 func test_layout_non_empty() -> void:
 	var s := _setup()
@@ -62,7 +66,9 @@ func test_layout_non_empty() -> void:
 		var r: Rect2 = b.get_global_rect()
 		check(r.size.x > 100.0 and r.size.y > 5.0, "bar laid out %s" % r)
 	check(hud.root.get_global_rect().size.x > 0.0, "root fills the viewport")
-	s[0].queue_free(); hud.queue_free()
+	s[0].queue_free()
+	hud.queue_free()
+
 
 func test_refused_press_shows_hint() -> void:
 	var s := _setup()
@@ -70,7 +76,7 @@ func test_refused_press_shows_hint() -> void:
 	var hud: Hud = s[1]
 	p.equip(WieldableInstance.load_base("apprentice_fire_staff"))
 	for i in 40:
-		p.tick(PlayerInput.hold(), DT)   # draw finishes
+		p.tick(PlayerInput.hold(), DT)  # draw finishes
 	p.mana.value = 0.0
 	p.tick(PlayerInput.hold(["action_primary"], ["action_primary"]), DT)
 	hud.refresh(DT)
@@ -79,4 +85,5 @@ func test_refused_press_shows_hint() -> void:
 	for i in 120:
 		hud.refresh(DT)
 	check(not hud.hint_label.visible, "hint fades after 1.5 s")
-	p.queue_free(); hud.queue_free()
+	p.queue_free()
+	hud.queue_free()

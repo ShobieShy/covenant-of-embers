@@ -12,9 +12,10 @@ extends RefCounted
 ##    stays drop-only), so Primordial is the top; hand-made template parts can't upgrade.
 ## Every call returns "" on success or the refusal text.
 
-const SALVAGE_DUST: PackedInt32Array = [1, 3, 6, 12, 25, 50]        ## by Rarity.Tier
-const UPGRADE_COST: PackedInt32Array = [5, 12, 30, 75]              ## Basic->Unc .. Mythic->Primordial
+const SALVAGE_DUST: PackedInt32Array = [1, 3, 6, 12, 25, 50]  ## by Rarity.Tier
+const UPGRADE_COST: PackedInt32Array = [5, 12, 30, 75]  ## Basic->Unc .. Mythic->Primordial
 const MAX_UPGRADE_TIER := Rarity.Tier.PRIMORDIAL
+
 
 static func head_slots(head: WieldablePart, owner: WieldableInstance = null) -> int:
 	if head == null or head.part_type != WieldablePart.PartType.HEAD:
@@ -22,6 +23,7 @@ static func head_slots(head: WieldablePart, owner: WieldableInstance = null) -> 
 	if owner != null and owner.def != null and owner.def.type == WieldableDef.Type.WAND:
 		return mini(head.gem_slots, Assembly.WAND_GEM_SLOTS)
 	return head.gem_slots
+
 
 static func socket(inv: Inventory, head: WieldablePart, gem: ElementGem, owner: WieldableInstance = null) -> String:
 	if gem == null or not inv.has(gem):
@@ -31,10 +33,11 @@ static func socket(inv: Inventory, head: WieldablePart, gem: ElementGem, owner: 
 	if head.gems.size() >= head_slots(head, owner):
 		return "No free gem slot."
 	inv.remove(gem)
-	var a: Array[ElementGem] = head.gems.duplicate()   # fresh array: never share a template's
+	var a: Array[ElementGem] = head.gems.duplicate()  # fresh array: never share a template's
 	a.append(gem)
 	head.gems = a
 	return ""
+
 
 static func unsocket(inv: Inventory, head: WieldablePart, index: int) -> String:
 	if head == null or index < 0 or index >= head.gems.size():
@@ -48,8 +51,10 @@ static func unsocket(inv: Inventory, head: WieldablePart, index: int) -> String:
 	inv.add(g)
 	return ""
 
+
 static func salvage_value(part: WieldablePart) -> int:
 	return SALVAGE_DUST[clampi(Rarity.parse(part.rarity), 0, Rarity.COUNT - 1)]
+
 
 static func salvage(inv: Inventory, part: WieldablePart) -> String:
 	if part == null or not inv.has(part):
@@ -63,10 +68,12 @@ static func salvage(inv: Inventory, part: WieldablePart) -> String:
 	inv.add_dust(salvage_value(part))
 	return ""
 
+
 ## Dust for the next tier; -1 when the part can't go higher.
 static func upgrade_cost(part: WieldablePart) -> int:
 	var t := Rarity.parse(part.rarity)
 	return UPGRADE_COST[t] if t >= 0 and t < MAX_UPGRADE_TIER else -1
+
 
 ## Upgrades `part` in place (same object, so a backpack slot or assembled wieldable keeps it).
 static func upgrade(inv: Inventory, part: WieldablePart) -> String:
@@ -79,13 +86,18 @@ static func upgrade(inv: Inventory, part: WieldablePart) -> String:
 		return "Already at the highest upgradable rarity."
 	if inv.dust < cost:
 		return "Not enough Arcane Dust (%d needed)." % cost
-	var next := PartRoller.from_seed(part.roll_seed, part.part_type, Rarity.IDS[Rarity.parse(part.rarity) + 1], part.element)
+	var next := PartRoller.from_seed(
+		part.roll_seed, part.part_type, Rarity.IDS[Rarity.parse(part.rarity) + 1], part.element
+	)
 	if next == null:
 		return "Upgrade failed."
 	inv.spend_dust(cost)
 	var gems: Array[ElementGem] = part.gems.duplicate()
 	for prop in next.get_property_list():
-		if prop["usage"] & PROPERTY_USAGE_STORAGE and prop["name"] not in ["script", "resource_path", "resource_name", "resource_local_to_scene", "gems"]:
+		if (
+			prop["usage"] & PROPERTY_USAGE_STORAGE
+			and prop["name"] not in ["script", "resource_path", "resource_name", "resource_local_to_scene", "gems"]
+		):
 			part.set(prop["name"], next.get(prop["name"]))
 	part.gems = gems
 	return ""

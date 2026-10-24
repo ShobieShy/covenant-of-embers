@@ -11,8 +11,10 @@ const REACH := 2.5
 var uses := 0
 var player: Player
 
+
 func _init(t := "breach") -> void:
 	target = t
+
 
 func _ready() -> void:
 	var box := CSGBox3D.new()
@@ -31,12 +33,15 @@ func _ready() -> void:
 	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	add_child(l)
 
+
 func in_reach(p: Player) -> bool:
 	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
+
 
 func use() -> void:
 	uses += 1
 	used.emit(target)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if player and not player.ui_open and event.is_action_pressed(&"interact") and in_reach(player):

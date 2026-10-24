@@ -9,22 +9,23 @@ extends Resource
 ## CogitoHealthAttribute child. Reinterpreted: health on the def, plus per-element
 ## resistance and a weak-point hitbox (x2), our additions to Magewar's formula (PLAN §30.1).
 
-@export var id := ""                                           ## lower_snake_case, unique
+@export var id := ""  ## lower_snake_case, unique
 @export var display_name := ""
 @export var affinity: ElementTable.Element = ElementTable.Element.ARCANE  ## defender element
-@export var max_health := 100.0                                ## 1..100000
-@export_range(1, 50) var level := 1                            ## Magewar enemy_level 1..50 (step 18 drops: +1 part at >= 3)
-@export_range(0, 10000) var xp_reward := 10                     ## step 27: Magewar enemy_base xp_reward (default 10)
-@export var size := Vector3(0.7, 1.6, 0.7)                     ## body box full extents; stands on its feet
-@export var color := Color(0.6, 0.6, 0.6)                      ## greybox tint (the weak point draws brighter)
-@export var resist: Dictionary = {}                            ## element id -> 0..1 (applied capped at 60 %)
+@export var max_health := 100.0  ## 1..100000
+@export_range(1, 50) var level := 1  ## Magewar enemy_level 1..50 (step 18 drops: +1 part at >= 3)
+@export_range(0, 10000) var xp_reward := 10  ## step 27: Magewar enemy_base xp_reward (default 10)
+@export var size := Vector3(0.7, 1.6, 0.7)  ## body box full extents; stands on its feet
+@export var color := Color(0.6, 0.6, 0.6)  ## greybox tint (the weak point draws brighter)
+@export var resist: Dictionary = {}  ## element id -> 0..1 (applied capped at 60 %)
 @export var has_weak_point := false
-@export var weak_point_offset := Vector3.ZERO                  ## box centre from the feet (yaw-rotated)
-@export var weak_point_size := Vector3(0.3, 0.3, 0.3)          ## full extents
-@export var ai: Dictionary = {}                                ## step 12: raw `ai` table (empty = a dummy; see RusherDef)
+@export var weak_point_offset := Vector3.ZERO  ## box centre from the feet (yaw-rotated)
+@export var weak_point_size := Vector3(0.3, 0.3, 0.3)  ## full extents
+@export var ai: Dictionary = {}  ## step 12: raw `ai` table (empty = a dummy; see RusherDef)
 
 const MAX_HEALTH_LIMIT := 100000.0
 const MAX_LEVEL := 50
+
 
 ## A fresh Damage.Target for this type: its affinity and (uncapped) resistances.
 func make_target() -> Damage.Target:
@@ -35,9 +36,11 @@ func make_target() -> Damage.Target:
 			t.set_resist(e as ElementTable.Element, float(resist[k]))
 	return t
 
+
 ## Resist for one element (0 when unset).
 func resist_of(e: ElementTable.Element) -> float:
 	return float(resist.get(ElementTable.id_of(e), 0.0))
+
 
 func validate() -> PackedStringArray:
 	var errs := PackedStringArray()
@@ -71,14 +74,19 @@ func validate() -> PackedStringArray:
 			errs.append("'%s': %s" % [id, r["error"]])
 	return errs
 
+
 ## The brain's tuning (null for a brainless dummy or a bad `ai` table).
 func rusher() -> RusherDef:
 	if ai.is_empty():
 		return null
 	return RusherDef.parse(ai, size).get("def") as RusherDef
 
-const KEYS: PackedStringArray = ["id", "name", "affinity", "max_health", "level", "xp_reward", "size", "color", "resist", "weak_point", "ai"]
+
+const KEYS: PackedStringArray = [
+	"id", "name", "affinity", "max_health", "level", "xp_reward", "size", "color", "resist", "weak_point", "ai"
+]
 const REQUIRED: PackedStringArray = ["id", "name", "affinity", "max_health", "size", "color"]
+
 
 ## From one data/enemies/*.toml [[enemy]] row (LevelToml). Returns {"def": EnemyDef} or
 ## {"error": "..."} with the C++ loader's checks (required keys, unknown keys, ranges).
@@ -148,6 +156,7 @@ static func from_toml(row: Dictionary) -> Dictionary:
 	if not errs.is_empty():
 		return {"error": "; ".join(errs)}
 	return {"def": d}
+
 
 static func _vec3_or_null(v: Variant) -> Variant:
 	if not (v is Array) or (v as Array).size() != 3:

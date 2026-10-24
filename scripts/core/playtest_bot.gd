@@ -9,7 +9,7 @@ extends Node
 ## stage survives the scene change (static). Fixed spread seed: runs are reproducible.
 
 const MIDDEN_KILLS := 2
-const SIM_LIMIT := 900.0      ## simulated seconds for the whole run
+const SIM_LIMIT := 900.0  ## simulated seconds for the whole run
 const STAGE_LIMIT := 300.0
 
 static var stage := "midden_walk"
@@ -24,11 +24,13 @@ var _input := PlayerInput.new()
 var _walk_start := Vector3.ZERO
 var _done := false
 
+
 static func reset_run() -> void:
 	stage = "midden_walk"
 	total_time = 0.0
 	stats = {"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0}
 	log_lines = PackedStringArray()
+
 
 func setup(m: Node, p: Player) -> void:
 	main = m
@@ -41,34 +43,51 @@ func setup(m: Node, p: Player) -> void:
 	player.died.connect(func(_p): stats["deaths"] += 1)
 	note("start %s in %s" % [stage, GameFlow.id_of(m.get_node("Level"))])
 
+
 func _exit_tree() -> void:
 	if GameEvents.bus().enemy_killed.is_connected(_on_kill):
 		GameEvents.bus().enemy_killed.disconnect(_on_kill)
 
+
 static func note(s: String) -> void:
 	log_lines.append(s)
 	print("[playtest] " + s)
+
 
 func _on_kill(e: Enemy, _el) -> void:
 	if e and e.def and not e.def.ai.is_empty():
 		stats["kills"] += 1
 		note("killed %s (%d) at %.1f s" % [e.def.id, stats["kills"], total_time])
 
+
 func _goto(s: String) -> void:
 	stage = s
 	t = 0.0
 	note("-> " + s)
+
 
 func _finish(ok: bool, why := "") -> void:
 	if _done:
 		return
 	_done = true
 	player.bot_input = Callable()
-	var summary := "%s kills %d, pickups %d, casts %d, crafted %s, saves %d, deaths %d, level %d, %.0f s simulated" % [
-		"PASS" if ok else "FAIL " + why, stats["kills"], stats["pickups"], stats["casts"], stats["crafted"],
-		stats["saves"], stats["deaths"], player.progression.level, total_time]
+	var summary := (
+		"%s kills %d, pickups %d, casts %d, crafted %s, saves %d, deaths %d, level %d, %.0f s simulated"
+		% [
+			"PASS" if ok else "FAIL " + why,
+			stats["kills"],
+			stats["pickups"],
+			stats["casts"],
+			stats["crafted"],
+			stats["saves"],
+			stats["deaths"],
+			player.progression.level,
+			total_time
+		]
+	)
 	note(summary)
 	get_tree().quit.call_deferred(0 if ok else 1)
+
 
 ## Look at `at` (yaw + pitch from the eye).
 func look_at_point(at: Vector3) -> void:
@@ -76,6 +95,7 @@ func look_at_point(at: Vector3) -> void:
 	var yaw := atan2(-d.x, -d.z)
 	var pitch := atan2(d.y, Vector2(d.x, d.z).length())
 	player.set_look(yaw, pitch)
+
 
 func nearest_enemy() -> Enemy:
 	var best: Enemy = null
@@ -90,17 +110,19 @@ func nearest_enemy() -> Enemy:
 			best = e
 	return best
 
+
 func nearest_pickup() -> Node3D:
 	var best: Node3D = null
 	var bd := 30.0
 	for n in get_tree().get_nodes_in_group(LootPickup.GROUP):
 		if (n as LootPickup).is_auto() or n.is_queued_for_deletion():
-			continue   # orbs / dust / potions collect on the way; the bot goes for items
+			continue  # orbs / dust / potions collect on the way; the bot goes for items
 		var d := (n as Node3D).global_position.distance_to(player.global_position)
 		if d < bd:
 			bd = d
 			best = n
 	return best
+
 
 ## Walk to (or fight) `e`: aim at its body centre, fire, close in beyond 10 m.
 func fight(e: Enemy) -> void:
@@ -113,10 +135,12 @@ func fight(e: Enemy) -> void:
 	else:
 		_input = PlayerInput.hold(held, ["action_primary"] if int(t * 60.0) % 2 == 0 else [])
 
+
 func walk_to(at: Vector3) -> void:
 	look_at_point(at + Vector3(0, 1.0, 0))
 	player.set_look(player.yaw, 0.0)
 	_input = PlayerInput.hold(["forward"])
+
 
 func _physics_process(delta: float) -> void:
 	if _done or player == null:
@@ -203,6 +227,7 @@ func _physics_process(delta: float) -> void:
 					return
 				_goto("breach_loot")
 
+
 ## No enemy left and the waves not done: stand in the wave trigger (the bot teleports;
 ## walking the greybox needs no testing here).
 func _enter_arena() -> void:
@@ -214,6 +239,7 @@ func _enter_arena() -> void:
 			player.global_position = sp.trigger_center + Vector3(0, 1.0, 0)
 			player.velocity = Vector3.ZERO
 			note("into the wave trigger at %s" % sp.trigger_center)
+
 
 func _craft() -> void:
 	var st: AssemblyStation = main.get_node_or_null("AssemblyStation")

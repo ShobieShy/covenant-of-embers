@@ -10,5 +10,6 @@ var kind := -1
 var version := 0
 var error := ""
 
+
 func ok() -> bool:
 	return error.is_empty() and item != null

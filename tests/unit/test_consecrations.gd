@@ -10,6 +10,7 @@ const PLAYER_SCENE := "res://scenes/player/player.tscn"
 const S := EquipmentItem.Slot
 const E := ElementTable.Element
 
+
 func _setup() -> Array:
 	var w := Node3D.new()
 	w.position = Vector3(0, 800, 3300)
@@ -20,14 +21,17 @@ func _setup() -> Array:
 	p.spawn(w.global_position, 0.0)
 	return [w, p]
 
+
 func _piece(slot: S, id: String) -> EquipmentItem:
 	var i := EquipmentRoller.from_seed(11 + slot, slot, "rare", E.FIRE)
 	i.consecration = id
 	return i
 
+
 func _tick(p: Player, n := 1) -> void:
 	for i in n:
 		p.tick(PlayerInput.new(), 1.0 / 60.0)
+
 
 func test_fleetfoot() -> void:
 	var s := _setup()
@@ -38,6 +42,7 @@ func test_fleetfoot() -> void:
 	p.unequip_item(S.SHOES)
 	check(p.dash.max_charges() == base and p.dash.charges <= base, "removed with the piece")
 	s[0].free()
+
 
 func test_kindling_and_bulwark() -> void:
 	var s := _setup()
@@ -51,7 +56,10 @@ func test_kindling_and_bulwark() -> void:
 	check(c.conditional_bonus == Consecrations.BULWARK_BONUS, "bulwark at full shield")
 	p.dash.dashes += 1
 	_tick(p)
-	check(c.next_cast_bonus == Consecrations.KINDLING_BONUS and p.consecrations.kindling_procs == 1, "a dash arms kindling")
+	check(
+		c.next_cast_bonus == Consecrations.KINDLING_BONUS and p.consecrations.kindling_procs == 1,
+		"a dash arms kindling"
+	)
 	p.health.shield = p.health.shield_max * 0.5
 	_tick(p)
 	check(c.conditional_bonus == 0.0, "no bulwark below full shield")
@@ -59,6 +67,7 @@ func test_kindling_and_bulwark() -> void:
 	p.unequip_item(S.HAT)
 	check(not p.consecrations.has("kindling"), "unequip drops it")
 	s[0].free()
+
 
 func test_reaping() -> void:
 	var s := _setup()
@@ -71,6 +80,7 @@ func test_reaping() -> void:
 	e.apply_damage(1000.0, E.FIRE)
 	check(is_equal_approx(p.mana.value, Consecrations.REAPING_MANA), "kill -> +10 mana (%s)" % p.mana.value)
 	s[0].free()
+
 
 func test_vault_rolls_consecrations() -> void:
 	var r := RandomNumberGenerator.new()

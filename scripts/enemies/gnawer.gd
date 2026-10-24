@@ -39,38 +39,41 @@ signal state_changed(gnawer: Gnawer, from: State, to: State)
 enum State { IDLE, DETECT, CHASE, ATTACK, KNOCKBACK, DEAD }
 const STATE_NAMES: PackedStringArray = ["idle", "detect", "chase", "attack", "knockback", "dead"]
 
-const ATTACK_SLACK := 0.3        ## m past attack_range before Attack drops back to Chase
-const HUNT_TIME := 5.0           ## s it keeps chasing out of detect range after a hit
-const BITE_HEIGHT := 1.2         ## max |target feet y - its feet y| for a bite
-const PLAYER_RADIUS := 0.3       ## target capsule radius (Player)
+const ATTACK_SLACK := 0.3  ## m past attack_range before Attack drops back to Chase
+const HUNT_TIME := 5.0  ## s it keeps chasing out of detect range after a hit
+const BITE_HEIGHT := 1.2  ## max |target feet y - its feet y| for a bite
+const PLAYER_RADIUS := 0.3  ## target capsule radius (Player)
 const GRAVITY := 9.8
-const STEP_UP := 0.25            ## m it can step up (C++ kStepUp)
-const NAV_SNAP := 1.0            ## a path starting farther than this from it is someone else's
-const SEPARATION_GAP := 0.35     ## step 14: m of clearance kept from other enemies' bodies
-const SEPARATION_WEIGHT := 1.5   ## how hard a neighbour bends its path
-const SEPARATION_AHEAD := 0.3    ## cos: a neighbour within ~73 deg of its heading is "ahead"
-const SEPARATION_FORWARD := 0.25 ## blocked: share of the heading kept while going around
-const SLIDE_OFF_SPEED := 4.0     ## m/s off another enemy's back
+const STEP_UP := 0.25  ## m it can step up (C++ kStepUp)
+const NAV_SNAP := 1.0  ## a path starting farther than this from it is someone else's
+const SEPARATION_GAP := 0.35  ## step 14: m of clearance kept from other enemies' bodies
+const SEPARATION_WEIGHT := 1.5  ## how hard a neighbour bends its path
+const SEPARATION_AHEAD := 0.3  ## cos: a neighbour within ~73 deg of its heading is "ahead"
+const SEPARATION_FORWARD := 0.25  ## blocked: share of the heading kept while going around
+const SLIDE_OFF_SPEED := 4.0  ## m/s off another enemy's back
+
 
 ## What it senses this tick (C++ GnawerSenses).
 class Senses:
 	extends RefCounted
 	var target_valid := false
-	var distance := 0.0          ## horizontal, feet to feet
+	var distance := 0.0  ## horizontal, feet to feet
 	var line_of_sight := false
 	var provoked := false
 	var hunting := false
 	var knockback_left := 0.0
 	var dead := false
 
+
 ## One bite (C++ EnemyAttack).
 class Bite:
 	extends RefCounted
 	var damage := 0.0
 	var element: ElementTable.Element = ElementTable.Element.EARTH
-	var from := Vector3.ZERO     ## its feet
+	var from := Vector3.ZERO  ## its feet
 	var dodged := false
 	var tick := 0
+
 
 class Transition:
 	extends RefCounted
@@ -79,10 +82,11 @@ class Transition:
 	var distance := 0.0
 	var tick := 0
 
+
 var rusher: RusherDef
 var state: State = State.IDLE
-var target: Node3D               ## the Player (feet = global_position); null = none
-var auto_tick := true            ## false in tests: tick() is called by hand
+var target: Node3D  ## the Player (feet = global_position); null = none
+var auto_tick := true  ## false in tests: tick() is called by hand
 var ticks := 0
 var attack_timer := 0.0
 var hunt_left := 0.0
@@ -90,19 +94,20 @@ var knockback_left := 0.0
 var knockback_dir := Vector3.ZERO
 var provoked := false
 var distance := 0.0
-var travelled := 0.0             ## horizontal metres moved
+var travelled := 0.0  ## horizontal metres moved
 var bites := 0
 var dodged := 0
 var knockbacks := 0
 var steps_climbed := 0
-var nav_ticks := 0               ## ticks steered by a navmesh path
-var separations := 0             ## step 14: ticks a neighbour bent its path
-var separation := true           ## step 14: crowd separation on (tests can switch it off)
-var rode := 0                    ## step 14: ticks it found itself on an enemy's back
+var nav_ticks := 0  ## ticks steered by a navmesh path
+var separations := 0  ## step 14: ticks a neighbour bent its path
+var separation := true  ## step 14: crowd separation on (tests can switch it off)
+var rode := 0  ## step 14: ticks it found itself on an enemy's back
 var transitions: Array[Transition] = []
 var attacks: Array[Bite] = []
 var nav: NavigationAgent3D
 var _vy := 0.0
+
 
 func setup(d: EnemyDef) -> void:
 	super.setup(d)
@@ -118,8 +123,10 @@ func setup(d: EnemyDef) -> void:
 	add_child(nav)
 	damaged.connect(_on_damaged)
 
+
 static func state_name(s: State) -> String:
 	return STATE_NAMES[s]
+
 
 ## C++ nextGnawerState: the state after `s` given senses `i` (one step).
 static func next_state(s: State, r: RusherDef, i: Senses) -> State:
@@ -131,7 +138,7 @@ static func next_state(s: State, r: RusherDef, i: Senses) -> State:
 		return State.IDLE
 	var dist := i.distance
 	match s:
-		State.KNOCKBACK:   # a hit always leaves it aggressive
+		State.KNOCKBACK:  # a hit always leaves it aggressive
 			return State.ATTACK if dist <= r.attack_range else State.CHASE
 		State.IDLE:
 			if i.provoked:
@@ -143,7 +150,7 @@ static func next_state(s: State, r: RusherDef, i: Senses) -> State:
 			if dist > r.detect_range or not i.line_of_sight:
 				return State.IDLE
 			return State.CHASE if dist <= r.aggro_range else State.DETECT
-		State.CHASE:   # a rusher keeps coming without sight; it gives up out of detect range
+		State.CHASE:  # a rusher keeps coming without sight; it gives up out of detect range
 			if dist > r.detect_range and not i.hunting:
 				return State.IDLE
 			return State.ATTACK if dist <= r.attack_range else State.CHASE
@@ -151,18 +158,21 @@ static func next_state(s: State, r: RusherDef, i: Senses) -> State:
 			return State.CHASE if dist > r.attack_range + ATTACK_SLACK else State.ATTACK
 	return State.DEAD
 
+
 func _physics_process(delta: float) -> void:
 	if auto_tick:
 		tick(delta)
+
 
 ## Hit flash (Enemy) + one brain tick.
 func tick(dt: float) -> void:
 	super.tick(dt)
 	think(dt)
 
+
 func think(dt: float) -> void:
 	if state == State.DEAD:
-		return   # dead enemies stop thinking
+		return  # dead enemies stop thinking
 	ticks += 1
 	var before := state
 	if dead or rusher == null:
@@ -204,14 +214,14 @@ func think(dt: float) -> void:
 			var k := mid / rusher.knockback_time if rusher.knockback_time > 0.0 else 0.0
 			push = knockback_dir * (rusher.knockback_strength * k * dt)
 			knockback_left = maxf(0.0, knockback_left - dt)
-			if knockback_left < 1e-6:   # 0.5 - 30 x (1/60) leaves ~1e-16 in doubles: 30 ticks, as in C++
+			if knockback_left < 1e-6:  # 0.5 - 30 x (1/60) leaves ~1e-16 in doubles: 30 ticks, as in C++
 				knockback_left = 0.0
 
-	_attack_tick(dt, next, s.distance, feet)   # Heap: a winding-up slam lands / is cancelled
+	_attack_tick(dt, next, s.distance, feet)  # Heap: a winding-up slam lands / is cancelled
 	# (1e-4 s slack: 0.8 - 48 x 1/60 is not exactly 0 in floats.)
 	if next == State.ATTACK and attack_timer <= 1e-4 and _in_reach(s.distance, feet):
 		_start_attack(feet)
-	if _rooted():   # Heap winding up: planted, no walk, no turn
+	if _rooted():  # Heap winding up: planted, no walk, no turn
 		walk = 0.0
 
 	var move := Vector3.ZERO
@@ -226,24 +236,30 @@ func think(dt: float) -> void:
 	_move(move + push, dt)
 	travelled += _flat(global_position - feet).length()
 
+
 func _in_reach(dist: float, feet: Vector3) -> bool:
 	return dist <= rusher.attack_range + ATTACK_SLACK and absf(target.global_position.y - feet.y) <= BITE_HEIGHT
+
 
 ## Overridden by the Heap (a wind-up); the Gnawer bites at once.
 func _start_attack(feet: Vector3) -> void:
 	_bite(feet)
 
+
 ## Per tick before the attack check (Heap: the wind-up). Gnawer: nothing.
 func _attack_tick(_dt: float, _next: State, _dist: float, _feet: Vector3) -> void:
 	pass
 
+
 func _rooted() -> bool:
 	return false
+
 
 ## The bite (cooldown starts now) + the attack.
 func _bite(feet: Vector3) -> void:
 	attack_timer = rusher.attack_cooldown
 	_land(feet)
+
 
 ## Emits one attack (dodged if the target is invulnerable now) without touching the cooldown.
 func _land(feet: Vector3) -> void:
@@ -260,6 +276,7 @@ func _land(feet: Vector3) -> void:
 	attacks.append(b)
 	attacked.emit(self, b)
 
+
 func _set_state(next: State, dist: float) -> void:
 	if next == state:
 		return
@@ -273,19 +290,23 @@ func _set_state(next: State, dist: float) -> void:
 	state = next
 	state_changed.emit(self, was, next)
 
+
 ## A dead player (step 13: Player.alive() false) is no target until he respawns.
 func _target_valid() -> bool:
 	if target == null or not is_instance_valid(target) or not target.is_inside_tree():
 		return false
 	return not target.has_method(&"alive") or bool(target.call(&"alive"))
 
+
 func _target_eye() -> Vector3:
 	if target.has_method(&"eye_position"):
 		return target.call(&"eye_position")
 	return target.global_position + Vector3(0.0, 1.5, 0.0)
 
+
 func eye_position() -> Vector3:
 	return global_position + Vector3(0.0, def.size.y * 0.8, 0.0)
+
 
 ## Line of sight from its eye to `to`, blocked by world geometry only (layer 1).
 func sees(to: Vector3) -> bool:
@@ -294,6 +315,7 @@ func sees(to: Vector3) -> bool:
 		return true
 	var q := PhysicsRayQueryParameters3D.create(from, to, 1, [get_rid()])
 	return get_world_3d().direct_space_state.intersect_ray(q).is_empty()
+
 
 ## Where to go: the next corner of the navmesh path to the target, else straight at it.
 func _steer(straight: Vector3) -> Vector3:
@@ -310,6 +332,7 @@ func _steer(straight: Vector3) -> Vector3:
 	nav_ticks += 1
 	return d.normalized()
 
+
 ## Step 14 crowd separation: Gnawers are kinematic and mask the enemy layer, so they block
 ## each other; a pack in a corridor used to queue up behind the first one, out of bite
 ## range. Every other live enemy whose body (+ SEPARATION_GAP) overlaps its own pushes it
@@ -324,7 +347,7 @@ func _separate(want: Vector3) -> Vector3:
 	var around := Vector3.ZERO
 	var me := global_position
 	var my_r := 0.5 * maxf(def.size.x, def.size.z)
-	var side := Vector3(-want.z, 0.0, want.x)   # its left
+	var side := Vector3(-want.z, 0.0, want.x)  # its left
 	for n in get_tree().get_nodes_in_group(GROUP):
 		var o := n as Enemy
 		if o == null or o == self or o.dead or o.def == null:
@@ -336,7 +359,7 @@ func _separate(want: Vector3) -> Vector3:
 			continue
 		var away := off / d if d > 1e-4 else side
 		push += away * (1.0 - d / r)
-		if -away.dot(want) > SEPARATION_AHEAD:   # the neighbour is ahead: go around it
+		if -away.dot(want) > SEPARATION_AHEAD:  # the neighbour is ahead: go around it
 			var s := side.dot(away)
 			var sgn := signf(s) if absf(s) > 1e-3 else (1.0 if (hash(String(name)) & 1) == 0 else -1.0)
 			around += side * sgn
@@ -348,8 +371,9 @@ func _separate(want: Vector3) -> Vector3:
 		out = want * SEPARATION_FORWARD + around.normalized() + push * SEPARATION_WEIGHT
 	var back := out.dot(want)
 	if back < 0.0:
-		out -= want * back   # sideways only, never away from the target
+		out -= want * back  # sideways only, never away from the target
 	return out.normalized() if out.length() > 1e-4 else want
+
 
 ## Step 14 (spawner respawns): Enemy.reset + a fresh brain (idle, no timers, no knockback).
 func reset(xform: Variant = null) -> void:
@@ -362,11 +386,13 @@ func reset(xform: Variant = null) -> void:
 	distance = 0.0
 	_vy = 0.0
 
+
 func _turn_toward(d: Vector3, max_deg: float) -> void:
 	var want := rad_to_deg(atan2(-d.x, -d.z))
 	var cur := rad_to_deg(rotation.y)
 	var diff := clampf(fposmod(want - cur + 540.0, 360.0) - 180.0, -max_deg, max_deg)
 	rotation.y = deg_to_rad(wrapf(cur + diff, -180.0, 180.0))
+
 
 ## Horizontal `delta` metres this tick (+ gravity), sliding on walls, stepping up ledges.
 func _move(delta: Vector3, dt: float) -> void:
@@ -378,6 +404,7 @@ func _move(delta: Vector3, dt: float) -> void:
 	var want := delta.length()
 	if want > 1e-5 and _flat(global_position - start).length() < 0.5 * want and is_on_wall() and not _walled_by_enemy():
 		_try_step_up(_flat(delta))
+
 
 ## Step 14 fix (step 12 bug): a Gnawer pressed into another one climbed onto its back
 ## (feet at 0.45 m) and rode it. Landing on an enemy now slides it off sideways (away
@@ -395,11 +422,13 @@ func _slide_off_enemies() -> void:
 		move_and_collide(off.normalized() * SLIDE_OFF_SPEED * get_physics_process_delta_time())
 		return
 
+
 func _walled_by_enemy() -> bool:
 	for i in get_slide_collision_count():
 		if get_slide_collision(i).get_collider() is Enemy:
 			return true
 	return false
+
 
 func _try_step_up(motion: Vector3) -> bool:
 	var up := Vector3(0.0, STEP_UP, 0.0)
@@ -412,6 +441,7 @@ func _try_step_up(motion: Vector3) -> bool:
 	move_and_collide(Vector3(0.0, -STEP_UP - 0.05, 0.0))
 	steps_climbed += 1
 	return true
+
 
 ## The push (C++ GnawerAI::onHit): provoked + hunting; over the threshold, knocked back.
 func _on_damaged(_e: Enemy, h: SpellBolts.Hit) -> void:
@@ -429,8 +459,9 @@ func _on_damaged(_e: Enemy, h: SpellBolts.Hit) -> void:
 	if d.length() < 1e-4:
 		d = Vector3(0.0, 0.0, 1.0)
 	knockback_dir = d.normalized()
-	knockback_left = rusher.knockback_time   # a new hit restarts it
+	knockback_left = rusher.knockback_time  # a new hit restarts it
 	knockbacks += 1
+
 
 static func _flat(v: Vector3) -> Vector3:
 	return Vector3(v.x, 0.0, v.z)

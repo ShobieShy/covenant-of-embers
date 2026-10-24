@@ -30,14 +30,18 @@ var _last_dashes := -1
 var _player: WeakRef
 var _bound := false
 
+
 static func describe(id: String) -> String:
 	return DEFS.get(id, "")
+
 
 static func roll(rng: RandomNumberGenerator) -> String:
 	return IDS[rng.randi_range(0, IDS.size() - 1)]
 
+
 func has(id: String) -> bool:
 	return active.has(id)
+
 
 ## Recomputed from the worn set (Player.apply_bonuses).
 func apply(p: Player) -> void:
@@ -55,6 +59,7 @@ func apply(p: Player) -> void:
 		GameEvents.bus().enemy_killed.connect(_on_killed)
 	_push(p)
 
+
 func tick(p: Player) -> void:
 	if p.dash != null:
 		if _last_dashes >= 0 and p.dash.dashes > _last_dashes and has("kindling"):
@@ -63,14 +68,18 @@ func tick(p: Player) -> void:
 		_last_dashes = p.dash.dashes
 	_push(p)
 
+
 func _push(p: Player) -> void:
-	var cond := BULWARK_BONUS if has("bulwark") and p.health != null and p.health.shield >= p.health.shield_max - 1e-6 else 0.0
+	var cond := (
+		BULWARK_BONUS if has("bulwark") and p.health != null and p.health.shield >= p.health.shield_max - 1e-6 else 0.0
+	)
 	for c in p.loadout.casters:
 		c.conditional_bonus = cond
 		if kindling_armed:
 			c.next_cast_bonus = KINDLING_BONUS
 	if kindling_armed:
 		kindling_armed = false
+
 
 func _on_killed(_enemy: Enemy, _element: ElementTable.Element) -> void:
 	var p: Player = _player.get_ref() if _player else null

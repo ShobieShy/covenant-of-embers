@@ -10,12 +10,14 @@ const DT := 1.0 / 60.0
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
 const S := EquipmentItem.Slot
 
+
 func _player() -> Player:
 	var p: Player = (load(PLAYER_SCENE) as PackedScene).instantiate()
 	p.input_enabled = false
 	runner_tree.root.add_child(p)
 	p.spawn(Vector3(0, 200, 900), 0.0)
 	return p
+
 
 func test_capacity_and_types() -> void:
 	var inv := Inventory.new()
@@ -29,6 +31,7 @@ func test_capacity_and_types() -> void:
 	check(inv.remove(part) and inv.free_slots() == 1, "remove frees a slot")
 	inv.add_dust(12)
 	check(inv.spend_dust(5) and not inv.spend_dust(8) and inv.dust == 7, "dust")
+
 
 func test_equip_unequip_updates_stats() -> void:
 	var p := _player()
@@ -54,6 +57,7 @@ func test_equip_unequip_updates_stats() -> void:
 	check(not p.equip_from_inventory(WieldablePart.new()), "parts can't be equipped")
 	p.queue_free()
 
+
 func test_wieldables_and_draw() -> void:
 	var p := _player()
 	var staff := WieldableInstance.load_base("novice_arcane_wand")
@@ -73,6 +77,7 @@ func test_wieldables_and_draw() -> void:
 	check(not p.unequip_wieldable_to_inventory(Loadout.Slot.WAND) and p.caster.wieldable == staff, "full: refused")
 	check(p.last_hint == PickupCollector.HINT_FULL, "full hint")
 	p.queue_free()
+
 
 func test_use_potion_key() -> void:
 	var p := _player()

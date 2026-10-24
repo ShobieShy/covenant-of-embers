@@ -23,8 +23,8 @@ extends Node3D
 
 const VISUAL_LAYER := 20
 const LAYER_MASK := 1 << (VISUAL_LAYER - 1)
-const STAFF_POSE := Vector3(0.33, -0.26, -0.53)   ## Magewar wieldable_staff.tscn default_position
-const WAND_POSE := Vector3(0.3, -0.24, -0.5)      ## Magewar wieldable_wand.tscn default_position
+const STAFF_POSE := Vector3(0.33, -0.26, -0.53)  ## Magewar wieldable_staff.tscn default_position
+const WAND_POSE := Vector3(0.3, -0.24, -0.5)  ## Magewar wieldable_wand.tscn default_position
 const DRAW_DROP := 0.35
 const SHAFT_COLOR := Color(0.36, 0.25, 0.15)
 
@@ -33,7 +33,7 @@ const DIMS := {WieldableDef.Type.STAFF: [0.55, 0.04, 0.07], WieldableDef.Type.WA
 
 var elements: ElementTable
 var fov := 75.0
-var shown: WieldableInstance          ## what the model shows (null = hidden)
+var shown: WieldableInstance  ## what the model shows (null = hidden)
 var shown_type: int = -1
 var shown_element: int = -1
 var pose := STAFF_POSE
@@ -41,10 +41,11 @@ var model: Node3D
 var shaft: MeshInstance3D
 var gem: MeshInstance3D
 var cast_point: Marker3D
-var render_viewport: SubViewport      ## enable_render()
+var render_viewport: SubViewport  ## enable_render()
 var render_camera: Camera3D
 var _overlay: CanvasLayer
 var _main_camera: Camera3D
+
 
 func _init() -> void:
 	name = "Viewmodel"
@@ -58,6 +59,7 @@ func _init() -> void:
 	model.add_child(cast_point)
 	visible = false
 
+
 func _mesh_instance(n: String) -> MeshInstance3D:
 	var m := MeshInstance3D.new()
 	m.name = n
@@ -66,20 +68,25 @@ func _mesh_instance(n: String) -> MeshInstance3D:
 	model.add_child(m)
 	return m
 
+
 static func pose_for(type: int) -> Vector3:
 	return WAND_POSE if type == WieldableDef.Type.WAND else STAFF_POSE
+
 
 ## Magewar ADS pose: x to the centre, y/z kept.
 static func focus_pose(p: Vector3) -> Vector3:
 	return Vector3(0.0, p.y, p.z)
 
+
 func element_color(e: int) -> Color:
 	var t := elements if elements != null else ElementTable.load_default()
 	return t.color(e) if t != null else Color.WHITE
 
+
 func gem_color() -> Color:
 	var m := gem.material_override as StandardMaterial3D
 	return m.albedo_color if m != null else Color.BLACK
+
 
 ## Shows `w` (null = empty hands); rebuilds the greybox when the type or element changes.
 func show_wieldable(w: WieldableInstance) -> void:
@@ -125,12 +132,14 @@ func show_wieldable(w: WieldableInstance) -> void:
 	gem.position = Vector3(0.0, 0.0, -0.5 * length - gr * 0.6)
 	cast_point.position = Vector3(0.0, 0.0, gem.position.z - gr - 0.02)
 
+
 ## Local position for the current pose: focus slide (amount 0..1), swap draw (0..1 done)
 ## and recoil (view-space offset).
 func pose_position(focus_amount: float, draw: float, recoil: Vector3) -> Vector3:
 	var p := pose.lerp(focus_pose(pose), clampf(focus_amount, 0.0, 1.0))
 	p.y -= DRAW_DROP * (1.0 - clampf(draw, 0.0, 1.0))
 	return p + recoil
+
 
 ## One tick: what's in hand + where it sits.
 func update_pose(w: WieldableInstance, focus_amount: float, draw: float, recoil: Vector3) -> void:
@@ -139,9 +148,11 @@ func update_pose(w: WieldableInstance, focus_amount: float, draw: float, recoil:
 	if render_camera != null and _main_camera != null:
 		render_camera.global_transform = _main_camera.global_transform
 
+
 ## Cast point in world space (the visible tracer start).
 func cast_point_position() -> Vector3:
 	return cast_point.global_position
+
 
 ## Builds the overlay: a transparent SubViewport the size of the screen whose camera (fov,
 ## only VISUAL_LAYER) follows `main_camera`; the main camera stops drawing the layer.
@@ -184,18 +195,22 @@ func enable_render(main_camera: Camera3D, size: Vector2i = Vector2i.ZERO) -> voi
 	if size == Vector2i.ZERO:
 		get_viewport().size_changed.connect(_on_size_changed)
 
+
 func _on_size_changed() -> void:
 	if render_viewport != null:
 		render_viewport.size = Vector2i(get_viewport().get_visible_rect().size)
+
 
 ## Render frames: keep the viewmodel camera on the (interpolated) main camera.
 func _process(_delta: float) -> void:
 	if render_camera != null and _main_camera != null:
 		render_camera.global_transform = _main_camera.global_transform
 
+
 ## Where the gem's centre lands in the viewmodel image (pixels) and whether it's in view.
 func gem_screen_position() -> Vector2:
 	return render_camera.unproject_position(gem.global_position) if render_camera != null else Vector2(-1, -1)
+
 
 func gem_in_view() -> bool:
 	if render_camera == null or not visible:

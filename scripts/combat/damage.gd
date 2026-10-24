@@ -15,15 +15,16 @@ extends RefCounted
 ## clamps to 90 %). Weak points (x2) are our addition: Magewar has no crits.
 ## Enemies (step 11) and the player (step 13) call resolve_hit() with their own Target.
 
-const RESIST_CAP := 0.6            ## per element, kept decision (Magewar 0.9)
-const WEAK_POINT_MULTIPLIER := 2.0 ## PLAN §30.1 crit on a weak-point hitbox
+const RESIST_CAP := 0.6  ## per element, kept decision (Magewar 0.9)
+const WEAK_POINT_MULTIPLIER := 2.0  ## PLAN §30.1 crit on a weak-point hitbox
+
 
 ## What a hit lands on.
 class Target:
 	extends RefCounted
 	var affinity: ElementTable.Element = ElementTable.Element.ARCANE  ## defender element
-	var resist := PackedFloat64Array()   ## 0..1 per incoming Element, uncapped (summed from gear)
-	var weak_point := false              ## the hit struck a weak-point hitbox
+	var resist := PackedFloat64Array()  ## 0..1 per incoming Element, uncapped (summed from gear)
+	var weak_point := false  ## the hit struck a weak-point hitbox
 
 	func _init(p_affinity: ElementTable.Element = ElementTable.Element.ARCANE) -> void:
 		affinity = p_affinity
@@ -34,34 +35,40 @@ class Target:
 		resist[e] = r
 		return self
 
+
 ## What one hit did.
 class Result:
 	extends RefCounted
-	var amount := 0.0          ## final damage dealt
-	var effectiveness := 1.0   ## 0.5 / 1.0 / 1.5 from the chart
-	var resist := 0.0          ## applied (clamped) resistance
-	var crit := 1.0            ## WEAK_POINT_MULTIPLIER on a weak point, else 1
+	var amount := 0.0  ## final damage dealt
+	var effectiveness := 1.0  ## 0.5 / 1.0 / 1.5 from the chart
+	var resist := 0.0  ## applied (clamped) resistance
+	var crit := 1.0  ## WEAK_POINT_MULTIPLIER on a weak point, else 1
 
-	func strong() -> bool:     ## Magewar "Super Effective!"
+	func strong() -> bool:  ## Magewar "Super Effective!"
 		return effectiveness > 1.0
 
-	func weak() -> bool:       ## Magewar "Not Very Effective..."
+	func weak() -> bool:  ## Magewar "Not Very Effective..."
 		return effectiveness < 1.0
 
+
 ## Magewar get_final_damage: base x rarity multiplier + the parts' flat damage bonuses.
-static func wieldable_damage(base: float, rarity_multiplier: float,
-		part_bonuses: PackedFloat64Array = PackedFloat64Array()) -> float:
+static func wieldable_damage(
+	base: float, rarity_multiplier: float, part_bonuses: PackedFloat64Array = PackedFloat64Array()
+) -> float:
 	var sum := 0.0
 	for b in part_bonuses:
 		sum += b
 	return base * rarity_multiplier + sum
 
+
 static func clamp_resist(r: float) -> float:
 	return clampf(r, 0.0, RESIST_CAP)
 
+
 ## One hit of `damage` (wieldable damage; negative counts as 0, never heals) of `element`.
-static func resolve_hit(damage: float, element: ElementTable.Element, target: Target,
-		table: ElementTable = null) -> Result:
+static func resolve_hit(
+	damage: float, element: ElementTable.Element, target: Target, table: ElementTable = null
+) -> Result:
 	var t := table if table != null else ElementTable.load_default()
 	var r := Result.new()
 	r.effectiveness = t.effectiveness(element, target.affinity)
@@ -70,12 +77,14 @@ static func resolve_hit(damage: float, element: ElementTable.Element, target: Ta
 	r.amount = maxf(0.0, damage) * r.effectiveness * (1.0 - r.resist) * r.crit
 	return r
 
+
 ## Enemy melee (step 13: Gnawer bites, Heap slams) on `target` (the player's): the same
 ## formula with no weak point (melee never crits; the target's weak_point flag is left as
 ## it was). Magewar's player resistances were never applied (get_elemental_resistance has
 ## no callers); ours apply, capped at 60 %.
-static func resolve_melee(damage: float, element: ElementTable.Element, target: Target,
-		table: ElementTable = null) -> Result:
+static func resolve_melee(
+	damage: float, element: ElementTable.Element, target: Target, table: ElementTable = null
+) -> Result:
 	var wp := target.weak_point
 	target.weak_point = false
 	var r := resolve_hit(damage, element, target, table)

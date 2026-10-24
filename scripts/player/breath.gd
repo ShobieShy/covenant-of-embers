@@ -14,18 +14,19 @@ extends RefCounted
 ## Not taken from Magewar: the jump cost and slope-dependent drain (Breath stays a
 ## sprint/dash resource).
 
-const EPS := 1e-9   # snaps float drift (300 x 20/60 drains to exactly 0)
+const EPS := 1e-9  # snaps float drift (300 x 20/60 drains to exactly 0)
 
-var base_max := 100.0      ## PLAN §30.8 base Breath
+var base_max := 100.0  ## PLAN §30.8 base Breath
 var drain_per_sec := 20.0  ## while sprinting
 var regen_per_sec := 30.0
-var regen_delay := 1.0     ## seconds since the last drain/spend before regen starts
-var resume_at := 20.0      ## after running dry, sprint needs this much back
+var regen_delay := 1.0  ## seconds since the last drain/spend before regen starts
+var resume_at := 20.0  ## after running dry, sprint needs this much back
 
 var value := 100.0
 var max_bonus := 0.0
-var exhausted := false     ## true from running dry until value >= resume_at
+var exhausted := false  ## true from running dry until value >= resume_at
 var seconds_since_use := 1.0
+
 
 static func from_tuning(t: PlayerTuning) -> Breath:
 	var b := Breath.new()
@@ -38,21 +39,27 @@ static func from_tuning(t: PlayerTuning) -> Breath:
 	b.seconds_since_use = b.regen_delay
 	return b
 
+
 func max_value() -> float:
 	return base_max + max_bonus
+
 
 func fraction() -> float:
 	var m := max_value()
 	return value / m if m > 0.0 else 0.0
 
+
 func empty() -> bool:
 	return value <= 0.0
+
 
 func can_sprint() -> bool:
 	return not exhausted and value > 0.0
 
+
 func regenerating() -> bool:
 	return seconds_since_use >= regen_delay and value < max_value()
+
 
 ## One fixed tick. `draining`: the player sprints this tick (costs drain_per_sec x dt,
 ## floored at 0). Otherwise the time since the last use grows and regen runs once it
@@ -68,7 +75,7 @@ func tick(draining: bool, dt: float) -> void:
 		return
 	var before := seconds_since_use
 	seconds_since_use += dt
-	var delay := regen_delay - 1e-7   # 60 x (1/60 s) counts as 1 s despite rounding
+	var delay := regen_delay - 1e-7  # 60 x (1/60 s) counts as 1 s despite rounding
 	var regen_time := clampf(seconds_since_use - maxf(before, delay), 0.0, dt)
 	if regen_time > 0.0:
 		value = minf(max_value(), value + regen_per_sec * regen_time)
@@ -76,6 +83,7 @@ func tick(draining: bool, dt: float) -> void:
 			value = max_value()
 	if exhausted and value >= minf(resume_at, max_value()) - EPS:
 		exhausted = false
+
 
 ## Instant cost (step 5 dash: 25). Refused (no change, delay untouched) if value < amount;
 ## otherwise restarts the regen delay.
@@ -89,11 +97,13 @@ func spend(amount: float) -> bool:
 	seconds_since_use = 0.0
 	return true
 
+
 ## Equipment / level bonus to the max. The value is clamped to the new max; raising the
 ## max does not refill.
 func set_max_bonus(bonus: float) -> void:
 	max_bonus = bonus
 	value = minf(value, max_value())
+
 
 func refill() -> void:
 	value = max_value()

@@ -1,0 +1,11 @@
+# gdtoolkit 4 lint config (BUILD_PLAN step 42). Project style: 120 columns (gdformat -l 120),
+# tests may use short/odd local names; big Player/bot state machines keep early returns.
+max-line-length: 200   # gdformat -l 120 wraps code; only long string literals/comments exceed it
+max-returns: 12
+max-public-methods: 60
+disable:
+  - class-definitions-order
+  - function-variable-name
+  - function-argument-name
+  - duplicated-load
+  - comparison-with-itself

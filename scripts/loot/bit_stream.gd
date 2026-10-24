@@ -10,10 +10,12 @@ var bits := PackedByteArray()
 var pos := 0
 var overrun := false
 
+
 ## Appends the low `width` bits of `value` (0 <= value < 2^width), most significant first.
 func write(value: int, width: int) -> void:
 	for i in range(width - 1, -1, -1):
 		bits.append((value >> i) & 1)
+
 
 ## Next `width` bits as an unsigned int (0 and `overrun` = true when not enough are left).
 func read(width: int) -> int:
@@ -27,8 +29,10 @@ func read(width: int) -> int:
 	pos += width
 	return v
 
+
 func remaining() -> int:
 	return bits.size() - pos
+
 
 ## True when every unread bit is 0.
 func rest_is_zero() -> bool:
@@ -36,6 +40,7 @@ func rest_is_zero() -> bool:
 		if bits[i] != 0:
 			return false
 	return true
+
 
 ## The bits as bytes, the last one padded with 0 bits.
 func to_bytes() -> PackedByteArray:
@@ -48,6 +53,7 @@ func to_bytes() -> PackedByteArray:
 		out.append(b)
 		i += 8
 	return out
+
 
 ## Replaces the content with `bytes` (8 bits each) and rewinds.
 func load_bytes(bytes: PackedByteArray) -> void:

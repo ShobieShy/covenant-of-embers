@@ -8,11 +8,13 @@ extends RefCounted
 ## `weak_point = { offset = [...], size = [...] }`; values may nest arrays/tables).
 ## Anything else is an error (returned as {"error": "file:line: ..."}).
 
+
 static func load_file(path: String) -> Dictionary:
 	var f := FileAccess.open(path, FileAccess.READ)
 	if f == null:
 		return {"error": "%s: cannot open" % path}
 	return parse(f.get_as_text(), path)
+
 
 static func parse(text: String, source: String = "toml") -> Dictionary:
 	var root: Dictionary = {}
@@ -54,19 +56,21 @@ static func parse(text: String, source: String = "toml") -> Dictionary:
 			current[key] = res["value"]
 	return root
 
+
 static func _strip_comment(line: String) -> String:
 	var in_str := false
 	for i in line.length():
 		var c := line[i]
-		if c == "\"":
+		if c == '"':
 			in_str = not in_str
 		elif c == "#" and not in_str:
 			return line.substr(0, i)
 	return line
 
+
 static func _value(s: String) -> Dictionary:
-	if s.begins_with("\""):
-		if s.length() < 2 or not s.ends_with("\""):
+	if s.begins_with('"'):
+		if s.length() < 2 or not s.ends_with('"'):
 			return {"error": "unterminated string"}
 		return {"value": s.substr(1, s.length() - 2)}
 	if s == "true" or s == "false":
@@ -112,6 +116,7 @@ static func _value(s: String) -> Dictionary:
 		return {"value": s.to_float()}
 	return {"error": "unsupported value '%s'" % s}
 
+
 ## Splits the inside of [ ... ] / { ... } at top-level commas (not inside nested brackets
 ## or strings); empty items (a trailing comma) are dropped. Returns [] when the brackets
 ## don't balance, else [PackedStringArray of stripped items].
@@ -122,7 +127,7 @@ static func _split_top(inner: String) -> Array:
 	var start := 0
 	for i in inner.length():
 		var c := inner[i]
-		if c == "\"":
+		if c == '"':
 			in_str = not in_str
 		elif in_str:
 			continue
@@ -144,13 +149,16 @@ static func _split_top(inner: String) -> Array:
 			out.append(it)
 	return [out]
 
+
 static func vec3(v: Variant) -> Vector3:
 	var a: Array = v
 	return Vector3(float(a[0]), float(a[1]), float(a[2]))
 
+
 static func color(v: Variant) -> Color:
 	var a: Array = v
 	return Color(float(a[0]), float(a[1]), float(a[2]))
+
 
 ## TOML box -> its Godot transform: Y-X-Z Euler (Godot default, like the C++ engine).
 static func box_transform(box: Dictionary) -> Transform3D:

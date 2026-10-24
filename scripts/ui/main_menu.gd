@@ -11,6 +11,7 @@ var settings_ui: SettingsUi
 var _seconds := -1.0
 var _elapsed := 0.0
 
+
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var bg := ColorRect.new()
@@ -37,7 +38,7 @@ func _ready() -> void:
 		b.pressed.connect(press.bind(id))
 		v.add_child(b)
 		buttons[id] = b
-	UiDriver.attach(get_tree())   # step 41: --ui-test <dir>
+	UiDriver.attach(get_tree())  # step 41: --ui-test <dir>
 	(buttons["continue"] as Button).disabled = not GameFlow.has_save()
 	settings_ui = SettingsUi.new()
 	add_child(settings_ui)
@@ -48,7 +49,7 @@ func _ready() -> void:
 	var i := args.find("--seconds")
 	if i >= 0 and i + 1 < args.size():
 		_seconds = float(args[i + 1])
-	if args.has("--autoplay"):   # step 40: the bot never touches the real save
+	if args.has("--autoplay"):  # step 40: the bot never touches the real save
 		GameFlow.save_path = "user://playtest_save.json"
 		PlaytestBot.reset_run()
 		if not args.has("--start"):
@@ -59,6 +60,7 @@ func _ready() -> void:
 		press.call_deferred("continue")
 	elif args.has("--start"):
 		press.call_deferred("new_run")
+
 
 func press(id: String) -> void:
 	match id:
@@ -71,6 +73,7 @@ func press(id: String) -> void:
 			settings_ui.open()
 		"quit":
 			get_tree().quit(0)
+
 
 func _process(delta: float) -> void:
 	_elapsed += delta

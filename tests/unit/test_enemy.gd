@@ -74,6 +74,7 @@ func _shoot(w: Node3D, bolts: SpellBolts, origin: Vector3, dir: Vector3, element
 	return out
 
 func test_toml_inline_tables() -> void:
+	# gdlint:ignore = max-line-length
 	var d := LevelToml.parse("[[enemy]]\nid = \"x\"\nresist = { air = 0.25, fire = 1 } # c\nwp = { offset = [0.0, 1.78, 0.0], size = [0.36, 0.36, 0.36], tag = \"a,b}\" }\nempty = {}\nnest = { a = { b = [1, [2, 3]] } }\n")
 	check(not d.has("error"), "inline tables parse (%s)" % d.get("error", ""))
 	if d.has("error"):
@@ -300,6 +301,7 @@ func test_damage_numbers() -> void:
 	dl.auto_tick = false
 	w.add_child(dl)
 	var n := dl.add(w.global_position + Vector3(0, 1, 0), crit, E.FIRE)
+	# gdlint:ignore = max-line-length
 	check(n.label != null and n.label.text == "30" and n.label.modulate.is_equal_approx(t.color(E.FIRE)) and n.label.billboard == BaseMaterial3D.BILLBOARD_ENABLED, "Label3D \"30\" in Fire's colour, billboarded")
 	check(n.callout_label != null and n.callout_label.text == "Super Effective!" and n.callout_label.get_parent() == n.label, "callout label under the number")
 	dl.tick(0.5)
@@ -323,6 +325,7 @@ func test_midden_markers_spawn_dummies() -> void:
 	for e in got:
 		var m := markers.get_node(NodePath(String(e.name))) as Node3D
 		check(m != null and e.global_transform.is_equal_approx(m.global_transform), "%s at its marker" % e.name)
+		# gdlint:ignore = max-line-length
 		check(e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1) and e.is_in_group(Enemy.GROUP) and e.health == e.def.max_health and e.health == (150.0 if e is Heap else (30.0 if e is Gnawer else 60.0)), "%s: enemy layer, in 'enemies', full HP (60; Gnawer 30; Heap 150)" % e.name)
 		check(e.head_shape != null and e.body_shape.position.y == e.def.size.y * 0.5, "%s stands on its feet with a head" % e.name)
 	check(ProjectSettings.get_setting("layer_names/3d_physics/layer_3") == "enemy", "physics layer 3 is named enemy")

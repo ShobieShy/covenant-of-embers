@@ -17,20 +17,23 @@ const EQUIP_SLOTS: PackedStringArray = ["hat", "clothes", "belt", "shoes", "grim
 const DROP_EQUIP_SLOTS := 4
 
 var kind: Kind = Kind.PART
-var item: Resource                 ## WieldableInstance / WieldablePart / EquipmentItem
+var item: Resource  ## WieldableInstance / WieldablePart / EquipmentItem
 var rarity_id := "basic"
 var rolled_rarity_id := "basic"
 var element: ElementTable.Element = ElementTable.Element.ARCANE
-var equip_slot := -1               ## EQUIP_SLOTS index for EQUIPMENT
-var roll_seed := -1                ## PART / EQUIPMENT: = the item's roll_seed
-var pool_id := ""                  ## WIELDABLE: the pool it came from
-var entry: DropEntry               ## WIELDABLE: the chosen row
+var equip_slot := -1  ## EQUIP_SLOTS index for EQUIPMENT
+var roll_seed := -1  ## PART / EQUIPMENT: = the item's roll_seed
+var pool_id := ""  ## WIELDABLE: the pool it came from
+var entry: DropEntry  ## WIELDABLE: the chosen row
+
 
 func rarity_color() -> Color:
 	return RarityTable.load_default().color(rarity_id)
 
+
 func equip_slot_id() -> String:
 	return EQUIP_SLOTS[equip_slot] if equip_slot >= 0 and equip_slot < EQUIP_SLOTS.size() else ""
+
 
 func describe() -> String:
 	var r := RarityTable.load_default().display_name(rarity_id)
