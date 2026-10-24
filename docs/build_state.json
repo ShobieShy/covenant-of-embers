@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 14,
+  "next_step": 15,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -18,9 +18,10 @@
     10,
     11,
     12,
-    13
+    13,
+    14
   ],
-  "last_commit": "9ea5f46",
+  "last_commit": "09e25f5",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -125,6 +126,14 @@
       "summary": "Heap AI (tank) + player health/shield: Health (100 + 50 shield, shield first, 3 s regen delay, 25/s sub-tick exact, died once), PlayerTuning Health group, Damage.resolve_melee (no crit), Player damage_target Arcane + take_enemy_hit/on_enemy_attack/take_hit ignored during dash i-frames or death, death -> 3 s frozen -> respawn at spawn with mana/breath refill (bonuses kept). Heap extends Gnawer (ai kind tank, RusherDef attack_windup): plants, 0.6 s wind-up, 8 Earth slam every 2 s, whiff out of reach, knockback only > 25 (seam crit) cancels the wind-up; heap.toml/.tres Earth 150 HP, Midden heap_4 marker; main wires attacked -> player. 127 tests green (12 new): 30/30/5 -> shield 20, 0+90, 85; regen from tick 181; 0.3 resist 3 -> 2.1; i-frame dodge then bite at tick 51 -> shield 47; dead at 0, respawn tick 180 with mana 105/105; Heap slams at 39 and 159, 50 -> 42 shield, seam crit 30 -> 1.50 m knockback, two slams kill a 10 HP player then idle.",
       "plan_changes": "Step 13 marked done with Result/Fixed/Magewar check. Fixed: Gnawer kept biting a dead target (_target_valid now checks alive()); test_gnawer's Midden test now skips the Heap subclass; test_enemy/test_level expect 4 spawns. Notes added: step 14 (spawner Heaps + attacked wiring, player_damaged from Player.hurt, optional spawn protection), 19 (Health Potion heal 30, health set_max_bonus), 27 (level-up health), 29 (health/shield bars, hurt flash, death overlay), 37 (hurt/slam/wind-up sounds), 38 (save health/shield). Magewar check: golem numbers match (Earth, 8 dmg / 2 s, detect 10, aggro 7, walk 1.2, sprint 2.5, knockback 15); Magewar golem is static (no AI/slam/seam/health) -> PLAN design; knockback reinterpreted 15 x 0.2 s above 25 dmg; Cogito health starts 80/100, no shield/regen -> ours full + shield; Magewar death reloads the scene -> respawn keeping bonuses; Magewar player resist never applied -> ours applied (60% cap); Bible silent on health/death/golem.",
       "commit": "9ea5f46"
+    },
+    {
+      "time": "2026-10-23T20:25-05:00",
+      "step": 14,
+      "type": "build",
+      "summary": "Enemy spawner + kill events: EventBus autoload (GameEvents: enemy_killed once per death with element, player_damaged, enemy_spawned, wave_started/cleared, waves_completed). Enemy.reset() (+Gnawer/Heap), _announce_death once. EnemySpawner (main 'Enemies'): marker enemies + target/attacked wiring moved from main, dead freed 2 ticks after death, dummies respawn after respawn_s 3 s, waves from level TOML ([[spawn_point]], [waves] trigger, [[wave]] enemies {enemy,count,at}, 1.5 m ring) validated by toml_to_scene.py; Midden: 3 waves (3 Gnawers; 2+2 flank; Heap+2). Gnawer separation steer (push + go-around). Player 1 s spawn protection. 134 tests green (7 new test_spawner): bus autoload, kill once per death incl. reset in same frame, player_damaged + 60-tick protection, TOML=scene waves, dummy back at tick 180 / Gnawer freed after 2 ticks, waves 3/4/3 with flank 180 ticks after clear, 10 kills=10 events, completed once; 3 lined-up Gnawers all bite by tick 91, >=1.05 m apart (control: 1 bites).",
+      "plan_changes": "Step 14 marked done with Result/Fixed/Magewar check. Fixed: Gnawers climbed onto and rode each other (step 12; hidden by hand-ticking in one frame) -> slide off enemies + no step-up onto enemies; step 13 respawn test expects spawn protection; stale step numbers in Midden TOML comments; [[enemy]] ids now checked against data/enemies. Caveat noted: multi-body movement tests must await a physics frame per tick (Jolt). Notes added: step 22 (drops from enemy_killed, after rewards per Magewar order, no dummy loot, read enemy before it is freed), 27 (XP from enemy_killed, xp_reward x multiplier to players within 80 m, no dummy XP), 29 (wave banner/enemies-left, protection tint, player_damaged flash), 33 (Breach encounters on spawner format, multi-room triggers, doors on wave signals), 34 (boss as last wave, use kill event not node), 37 (wave/kill/hurt sounds). Magewar check: no spawner/waves/event bus in Magewar; _finalize_death = party kill rewards (80 m) then _drop_loot then Filth quest bridge, node never freed -> ours announces on EventBus and subscribers do rewards/loot; freeing/respawn/waves are plan design.",
+      "commit": "09e25f5"
     }
   ]
 }
