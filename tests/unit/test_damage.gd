@@ -146,7 +146,7 @@ func test_patched_chart_rebuilds() -> void:
 	check(ElementTable.load_default().effectiveness(E.FIRE, E.EARTH) == 1.5, "shared table untouched")
 
 func test_rarity_multiplier_and_part_bonuses() -> void:
-	# Magewar item_rarity.gd multipliers (Rarity resource comes in step 15).
+	# Magewar item_rarity.gd multipliers (= resources/loot/rarities.tres, test_rarity).
 	var mults := [1.0, 1.25, 1.5, 2.0, 2.75, 3.0]
 	for m in mults:
 		check_near(Damage.wieldable_damage(10.0, m), 10.0 * m, EPS, "10 x %s" % m)

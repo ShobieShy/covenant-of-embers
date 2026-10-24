@@ -172,7 +172,7 @@ func test_bad_defs_rejected() -> void:
 	check(ok.validate().is_empty(), "base valid")
 	var cases := [
 		["id", "Bad Id", "lower_snake_case"], ["display_name", "", "name is empty"],
-		["base_rarity", "epic", "unknown base_rarity"], ["base_rarity", "rare", "no multiplier until step 15"],
+		["base_rarity", "epic", "unknown base_rarity"],
 		["cooldown", 0.05, "cooldown must be in [0.1"], ["damage", -1.0, "damage must be in"],
 		["projectile_speed", 0.0, "projectile_speed must be in"], ["range_m", 5000.0, "range must be in"],
 		["mana_cost", 101.0, "mana_cost must be in"], ["element", 9, "unknown element"], ["type", 2, "unknown type"],
@@ -182,6 +182,10 @@ func test_bad_defs_rejected() -> void:
 		d.set(c[0], c[1])
 		var errs := " | ".join(d.validate())
 		check(errs.contains(c[2]), "%s = %s -> '%s' (got '%s')" % [c[0], c[1], c[2], errs])
+	for rid in Rarity.IDS:   # step 15: every Magewar rarity has a multiplier now
+		var d := ok.duplicate() as WieldableDef
+		d.base_rarity = rid
+		check(d.validate().is_empty(), "base_rarity %s accepted" % rid)
 	var t := WieldableDef.from_toml({"id": "w", "name": "W", "type": "wand", "base_rarity": "basic", "element": "wind",
 		"damage": 5, "mana_cost": 1, "cooldown": 0.2, "projectile_speed": 40, "range": 30})
 	check(ElementTable.parse("wind") == -1 and t.element == E.ARCANE, "unknown TOML element id doesn't parse")

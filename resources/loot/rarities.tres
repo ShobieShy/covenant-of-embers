@@ -1,0 +1,59 @@
+[gd_resource type="Resource" script_class="RarityTable" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/loot/rarity_table.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/loot/rarity.gd" id="2"]
+
+[sub_resource type="Resource" id="basic"]
+script = ExtResource("2")
+id = "basic"
+display_name = "Basic"
+color = Color(0.7, 0.7, 0.7, 1)
+multiplier = 1.0
+drop_weight = 50.0
+
+[sub_resource type="Resource" id="uncommon"]
+script = ExtResource("2")
+id = "uncommon"
+display_name = "Uncommon"
+color = Color(0.2, 0.8, 0.2, 1)
+multiplier = 1.25
+drop_weight = 25.0
+
+[sub_resource type="Resource" id="rare"]
+script = ExtResource("2")
+id = "rare"
+display_name = "Rare"
+color = Color(0.2, 0.4, 1, 1)
+multiplier = 1.5
+drop_weight = 15.0
+
+[sub_resource type="Resource" id="mythic"]
+script = ExtResource("2")
+id = "mythic"
+display_name = "Mythic"
+color = Color(0.6, 0.1, 0.9, 1)
+multiplier = 2.0
+drop_weight = 7.0
+
+[sub_resource type="Resource" id="primordial"]
+script = ExtResource("2")
+id = "primordial"
+display_name = "Primordial"
+color = Color(1, 0.6, 0, 1)
+multiplier = 2.75
+drop_weight = 2.0
+
+[sub_resource type="Resource" id="unique"]
+script = ExtResource("2")
+id = "unique"
+display_name = "Unique"
+color = Color(1, 0.85, 0, 1)
+multiplier = 3.0
+drop_weight = 1.0
+
+[resource]
+script = ExtResource("1")
+rarities = Array[ExtResource("2")]([SubResource("basic"), SubResource("uncommon"), SubResource("rare"), SubResource("mythic"), SubResource("primordial"), SubResource("unique")])
+luck_common_step = 5.0
+luck_rare_step = 2.0
+luck_common_floor = 1.0

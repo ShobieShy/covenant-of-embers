@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WieldablePart" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_part.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "unique_void_charm"
+display_name = "Unique Void Charm"
+description = "A one-of-a-kind charm whispering of the Demon Lord's lair. Augments any assembled staff."
+part_type = 4
+rarity = "unique"
+element = 6
+damage_bonus = 8.0
+fire_rate_modifier = 0.85
+accuracy_bonus = 12.0
+handling_bonus = 5.0
+gem_slots = 0

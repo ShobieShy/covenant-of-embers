@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WieldablePart" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_part.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "rare_air_handle"
+display_name = "Galeweave Wrap"
+description = "Feather-light and impossibly strong. Dramatically improves handling and accuracy."
+part_type = 3
+rarity = "rare"
+element = 4
+damage_bonus = 0.0
+fire_rate_modifier = 0.85
+accuracy_bonus = 22.0
+handling_bonus = 12.0
+gem_slots = 0

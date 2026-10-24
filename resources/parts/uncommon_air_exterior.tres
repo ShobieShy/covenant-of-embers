@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WieldablePart" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_part.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "uncommon_air_exterior"
+display_name = "Windcarved Shroud"
+description = "Lightweight carved wood that accelerates projectile speed dramatically."
+part_type = 1
+rarity = "uncommon"
+element = 4
+damage_bonus = 0.0
+fire_rate_modifier = 0.65
+accuracy_bonus = 6.0
+handling_bonus = 2.0
+gem_slots = 0

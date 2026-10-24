@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WieldablePart" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_part.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "basic_handle"
+display_name = "Leather-Wrapped Handle"
+description = "A comfortable leather-wrapped grip. Good for beginners."
+part_type = 3
+rarity = "basic"
+element = 0
+damage_bonus = 0.0
+fire_rate_modifier = 1.0
+accuracy_bonus = 10.0
+handling_bonus = 5.0
+gem_slots = 0

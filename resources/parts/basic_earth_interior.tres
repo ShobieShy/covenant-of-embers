@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WieldablePart" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_part.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "basic_earth_interior"
+display_name = "Granite Mana Core"
+description = "A heavy stone core that stabilizes wild mana flows. Earth affinity."
+part_type = 2
+rarity = "basic"
+element = 3
+damage_bonus = 3.5
+fire_rate_modifier = 1.0
+accuracy_bonus = 4.0
+handling_bonus = 0.0
+gem_slots = 0

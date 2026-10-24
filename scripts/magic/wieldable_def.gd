@@ -12,9 +12,8 @@ extends Resource
 enum Type { STAFF, WAND }   ## Magewar StaffWieldableItem.StaffType order
 
 const TYPE_IDS: PackedStringArray = ["staff", "wand"]
-## Magewar ItemRarity.Rarity order. Until step 15 (Rarity resource) only basic/uncommon have
-## a multiplier (WieldableInstance.TEMP_RARITY_MULTIPLIER); validate() refuses the rest.
-const RARITY_IDS: PackedStringArray = ["basic", "uncommon", "rare", "mythic", "primordial", "unique"]
+## Magewar ItemRarity.Rarity order (= Rarity.IDS; tiers in resources/loot/rarities.tres).
+const RARITY_IDS: PackedStringArray = Rarity.IDS
 const MIN_COOLDOWN := 0.1   ## Magewar get_final_fire_rate: max(0.1, rate)
 
 @export var id := ""                          ## lower_snake_case key
@@ -60,8 +59,6 @@ func validate() -> PackedStringArray:
 		errs.append("%s: unknown type %d" % [w, type])
 	if not RARITY_IDS.has(base_rarity):
 		errs.append("%s: unknown base_rarity '%s' (expected %s)" % [w, base_rarity, ", ".join(RARITY_IDS)])
-	elif not WieldableInstance.TEMP_RARITY_MULTIPLIER.has(base_rarity):
-		errs.append("%s: base_rarity '%s' has no multiplier until step 15" % [w, base_rarity])
 	if element < 0 or element >= ElementTable.COUNT:
 		errs.append("%s: unknown element %d" % [w, element])
 	for r in [["damage", damage, 0.1, 1000.0], ["mana_cost", mana_cost, 0.0, 100.0],

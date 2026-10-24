@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WieldablePart" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_part.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "basic_fire_head"
+display_name = "Charred Crystal Head"
+description = "A staff head with a fire-attuned crystal. Glows with inner heat."
+part_type = 0
+rarity = "basic"
+element = 1
+damage_bonus = 2.0
+fire_rate_modifier = 1.0
+accuracy_bonus = 5.0
+handling_bonus = 0.0
+gem_slots = 1

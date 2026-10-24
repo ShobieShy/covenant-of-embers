@@ -51,6 +51,12 @@ func _ready() -> void:
 		print("[waves] %d wave(s) (%s), trigger r %.1f m at %s" % [spawner.waves.size(),
 			", ".join(spawner.waves.map(func(w: Dictionary) -> String: return String(w["id"]))),
 			spawner.trigger_radius, spawner.trigger_center])
+		var rt := RarityTable.load_default()
+		var staff := player.loadout.wieldable(Loadout.Slot.STAFF)
+		print("[loot] %d rarities (%s), %d Magewar parts, staff %s %s x%.2f" % [rt.rarities.size(),
+			", ".join(Array(Rarity.IDS).map(func(r: String) -> String: return "%s #%s" % [rt.display_name(r), rt.color(r).to_html(false)])),
+			WieldablePart.list_ids().size(), staff.rarity().display_name if staff else "-",
+			staff.display_name() if staff else "empty", staff.rarity().multiplier if staff else 0.0])
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])

@@ -6,6 +6,7 @@ cd "$(dirname "$0")/.."
 GODOT="${GODOT:-godot}"
 python3 tools/toml_to_scene.py --self-test
 python3 tools/toml_to_scene.py --check
+python3 tools/import_magewar_parts.py --check
 timeout 300 "$GODOT" --headless --path . --import >/dev/null 2>&1
 # Unit tests and the smoke run must also log no SCRIPT ERROR / ERROR lines: a GDScript
 # runtime error inside a test doesn't fail it by itself (step 8 fix).
