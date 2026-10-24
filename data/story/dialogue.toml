@@ -83,6 +83,18 @@ lines = ["Best potions in Eldoria! ...well, the only potions. Association taxes 
 repeats = ["Potions won't save you from a Fracture beast, but they'll help. Buy some.", "Come back when you have real loot to trade."]
 
 [[dialogue]]
+id = "tailor_hello"
+speaker = "Tailor"
+lines = ["Robes, belts, boots. Nothing fancy, but it beats what the Association gave you."]
+repeats = ["Let's see what fits.", "Gold up front, Summoned."]
+
+[[dialogue]]
+id = "runesmith_hello"
+speaker = "Runesmith"
+lines = ["Bring me a part and some Arcane Dust and I'll wake its runes up again.", "Same part, same rarity. Different luck."]
+repeats = ["Got something for the forge?"]
+
+[[dialogue]]
 id = "patron_awe"
 speaker = "Grizzled Patron"
 requires = ["filth_defeated"]

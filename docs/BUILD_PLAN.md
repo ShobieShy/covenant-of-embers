@@ -457,18 +457,21 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase J – Economy
 
-**59. Gold currency** ✅ PENDING
+**59. Gold currency** ✅ `04ed1ad`
 - Does: Gold wallet (start 50, Magewar story), enemy gold drops that auto-collect, salvage gives gold + Arcane Dust; HUD counter; saved.
 - Done: test_gold.gd: drops, auto-collect, save round-trip.
 - Q4 answered 2026-10-24: gold, start 50; Old Oak respec gets a gold price.
 - Result: PASS (338 tests passed; lint green)
-**60. Vendor framework + shop UI** ⛔ Blocked (prerequisite)
+**60. Vendor framework + shop UI** ✅ PENDING
 - Does: Vendor node with stock tables, buy/sell (sell price by rarity), shop screen with compare cards.
 - Done: test_vendor.gd: buy/sell math, can't overspend, stock restock.
-
-**61. Vendors: potions/parts, gear, re-roll** ⛔ Blocked (prerequisite)
+- Result: PASS (344 tests passed; lint green)
+- Note: The re-roll gives the part a new roll seed (all its bonuses change; type, rarity, element and gems kept) rather than one stat, so Ember Mark item codes stay valid
+**61. Vendors: potions/parts, gear, re-roll** ✅ PENDING
 - Does: Three vendors per PLAN §11 roles (consumables+basic parts, equipment, re-roll one part stat for gold+Dust).
 - Done: test_vendor.gd: each vendor's stock and re-roll keeps rarity.
+- Result: PASS (344 tests passed; lint green)
+- Note: The re-roll gives the part a new roll seed (all its bonuses change; type, rarity, element and gems kept) rather than one stat, so Ember Mark item codes stay valid
 
 ### Phase K – Story, hub and quests
 

@@ -152,6 +152,16 @@ speaker = "Potion Merchant"
 position = [-8.0, 0.0, -4.0]
 yaw_deg = 0.0
 [[npc]]
+name = "tailor"
+speaker = "Tailor"
+position = [-8.0, 0.0, 0.0]
+yaw_deg = 0.0
+[[npc]]
+name = "runesmith"
+speaker = "Runesmith"
+position = [8.0, 0.0, -4.0]
+yaw_deg = 0.0
+[[npc]]
 name = "patron"
 speaker = "Grizzled Patron"
 position = [-9.0, 0.0, 8.0]

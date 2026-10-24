@@ -12,6 +12,9 @@ var pause_menu: PauseMenu   # step 39
 var breach: Breach          # step 39: the Breach room logic when the Breach is loaded
 var gate: LevelGate         # step 39: travel gate (Midden -> Breach -> back)
 var gates: Array[LevelGate] = []  # step 65: every travel gate here (level [[exit]]s, or the defaults)
+var vendors := {}  # step 61: speaker -> Vendor
+var vendor_ui: VendorUi
+var shop_pending := ""
 var npcs: Array[Npc] = []  # step 65: level [[npc]]s
 var story_flags := StoryFlags.new()
 var dialogue: DialogueRunner
@@ -258,13 +261,42 @@ func _setup_npcs(player: Player) -> void:
 		n.player = player
 		add_child(n)
 		n.global_transform = (m as Node3D).global_transform
-		n.talked.connect(talk_to)
+		n.talked.connect(_on_npc_talked)
 		npcs.append(n)
+
+## Step 61: vendors talk first; their shop opens when that dialogue ends.
+func _on_npc_talked(speaker: String) -> void:
+	shop_pending = speaker if Vendor.for_speaker(speaker) else ""
+	if not talk_to(speaker) and shop_pending != "":
+		open_shop(shop_pending)
+		shop_pending = ""
+
+func _on_dialogue_ended(_id: String) -> void:
+	if shop_pending != "":
+		var s := shop_pending
+		shop_pending = ""
+		open_shop(s)
+
+## Step 61: one Vendor per speaker for this visit; the shop screen is made on first use.
+func open_shop(speaker: String) -> bool:
+	var player := get_node_or_null("Player") as Player
+	if player == null:
+		return false
+	if not vendors.has(speaker):
+		vendors[speaker] = Vendor.for_speaker(speaker)
+	if vendor_ui == null:
+		vendor_ui = VendorUi.new()
+		vendor_ui.name = "VendorUi"
+		add_child(vendor_ui)
+		vendor_ui.bind(player)
+	vendor_ui.open(vendors[speaker])
+	return true
 
 func _ensure_dialogue() -> void:
 	if dialogue:
 		return
 	dialogue = DialogueRunner.new(DialogueDB.load_default(), story_flags)
+	dialogue.ended.connect(_on_dialogue_ended)
 	dialogue_ui = DialogueUI.new()
 	var layer := CanvasLayer.new()
 	layer.name = "DialogueLayer"

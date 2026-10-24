@@ -353,6 +353,14 @@ metadata/speaker = "Bored Guard"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -4)
 metadata/speaker = "Potion Merchant"
 
+[node name="tailor" type="Marker3D" parent="NPCs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
+metadata/speaker = "Tailor"
+
+[node name="runesmith" type="Marker3D" parent="NPCs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -4)
+metadata/speaker = "Runesmith"
+
 [node name="patron" type="Marker3D" parent="NPCs"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -9, 0, 8)
 metadata/speaker = "Grizzled Patron"

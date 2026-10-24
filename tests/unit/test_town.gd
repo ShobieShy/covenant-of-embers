@@ -69,3 +69,20 @@ func test_npcs_talkable() -> void:
 			g.dialogue.end()
 		g.free()
 	_restore()
+
+
+func test_vendor_shop_after_talk() -> void:
+	var g := _game("town_square")
+	var tailor: Npc = null
+	for n: Npc in g.npcs:
+		if n.speaker == "Tailor":
+			tailor = n
+	check(tailor != null, "the Tailor stands in the square")
+	tailor.talk()
+	check(g.vendor_ui == null or not g.vendor_ui.visible, "talks first")
+	g.dialogue.end()
+	check(g.vendor_ui != null and g.vendor_ui.visible, "then the shop opens (step 61)")
+	check(g.vendor_ui.vendor.role == Vendor.Role.GEAR, "gear vendor")
+	g.vendor_ui.close()
+	g.free()
+	_restore()
