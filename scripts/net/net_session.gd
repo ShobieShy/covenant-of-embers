@@ -91,6 +91,7 @@ func _info(info: Dictionary) -> Dictionary:
 	d["name"] = String(d.get("name", "Player"))
 	d["ready"] = false
 	d["version"] = version()
+	d["data"] = Compat.fingerprint()  # step 90
 	return d
 
 
@@ -197,6 +198,11 @@ func _hello(info: Dictionary) -> void:
 	var why := ""
 	if String(info.get("version", "")) != version():
 		why = "version mismatch: host %s, you %s" % [version(), info.get("version", "?")]
+	elif String(info.get("data", "")) != Compat.fingerprint():
+		why = (
+			"game data mismatch (host %s, you %s): both players need the same build"
+			% [Compat.fingerprint(), info.get("data", "?")]
+		)
 	elif state != State.LOBBY:
 		why = "the game has already started"
 	elif roster.size() > NetTransport.MAX_CLIENTS:

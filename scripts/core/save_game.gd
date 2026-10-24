@@ -67,7 +67,7 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 
 
 static func write(data: Dictionary, path := PATH) -> Error:
-	return UserDir.write_atomic(path, JSON.stringify(data, "\t"))  # step 83
+	return UserDir.write_atomic(path, Compat.canonical(data))  # step 83 atomic, step 90 canonical bytes
 
 
 ## {"data": Dictionary} or {"error": String}.
