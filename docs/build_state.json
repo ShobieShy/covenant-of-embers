@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 46,
-  "last_commit": "d335141",
+  "steps_done": 47,
+  "last_commit": "c2735eb",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -475,6 +475,16 @@
         "tests": 249
       },
       "commit": "d335141"
+    },
+    {
+      "time": "2026-10-24T05:15:27-05:00",
+      "step": 48,
+      "type": "build",
+      "summary": "Bot walks navmesh paths (0 teleports), vault door removal re-bakes navmesh, crafts Rare Dark Staff from looted parts only",
+      "plan_changes": {
+        "tests": 249
+      },
+      "commit": "c2735eb"
     }
   ],
   "completed_steps": [
@@ -523,6 +533,7 @@
     44,
     45,
     46,
+    48,
     83
   ]
 }

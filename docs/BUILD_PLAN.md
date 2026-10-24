@@ -393,9 +393,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Replace the Breach blockout with built rooms per PLAN §14: entrance → 3 combat rooms → switch puzzle → mini-boss → boss arena → vault; per-room [[encounter]] blocks (deferred in step 33); level gate placed properly (step 39 flag).
 - Done: test_breach.gd: room graph connected on the navmesh, every encounter spawns and clears, vault reachable only after boss.
 
-**48. Playtest bot paths instead of teleporting**
+**48. Playtest bot paths instead of teleporting** ✅ `c2735eb`
 - Does: Bot walks to wave triggers via NavigationAgent (step 40 flag) and crafts from parts it actually looted, not supplied.
 - Done: headless playtest PASS with no teleports and no supplied parts.
+- Result: PASS (249 tests + headless playtest)
 
 **49. New Run vs existing save**
 - Does: New Run with an existing save asks to confirm overwrite (step 39 flag); multiple save slots (3).
