@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 51,
-  "last_commit": "8908ccd",
+  "steps_done": 52,
+  "last_commit": "6f8cce0",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -517,6 +517,14 @@
       "summary": "Elites: Burning/Warded/Swift/Splitting on def copies, chance 5%+4%/Vigil tier; wave spawns roll them (EnemySpawner.vigil_tier)",
       "tests": "260 tests",
       "commit": "8908ccd"
+    },
+    {
+      "time": "2026-10-24T05:32-05:00",
+      "step": 62,
+      "type": "build",
+      "summary": "StoryFlags, DialogueDB (data/story/dialogue.toml: Magewar Bob/Joe/townsfolk lines, pity->awe), DialogueRunner (flags, repeats, choices), DialogueUI",
+      "tests": "264 tests",
+      "commit": "6f8cce0"
     }
   ],
   "completed_steps": [

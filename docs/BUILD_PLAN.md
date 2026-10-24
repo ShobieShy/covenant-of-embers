@@ -468,10 +468,11 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase K – Story, hub and quests
 
-**62. Dialogue system**
+**62. Dialogue system** ✅ `6f8cce0`
 - Does: Data-driven dialogue (TOML) with lines, choices and flag conditions; dialogue UI; port Magewar npc_dialogue/npc_generic; first lines for Bob, Crazy Joe and townsfolk (pity at first, awe later).
 - Done: test_dialogue.gd: branching on flags, repeat lines.
 - Q1 answered (Magewar storyline)
+- Result: PASS (264 tests + headless playtest)
 **63. Quest system + tracker + clue log**
 - Does: Quest data (kill/collect/talk/reach), flags, rewards, on-screen tracker, Clue Log screen; saved (Magewar magewar_quest_tracker).
 - Done: test_quests.gd: objective progress, completion rewards, save round-trip.
