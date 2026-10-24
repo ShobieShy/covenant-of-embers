@@ -192,7 +192,7 @@ func card_text(item: Resource) -> String:
 		if r.compared and not is_zero_approx(r.delta):
 			s += " [color=#%s](%+.2f)[/color]" % [(BETTER if r.better else WORSE).to_html(false), r.delta]
 		s += "\n"
-	return s
+	return s + c.extra_lines()
 
 
 func equip_selected() -> bool:

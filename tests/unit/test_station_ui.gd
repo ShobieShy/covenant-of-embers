@@ -79,3 +79,24 @@ func test_wand_disables_interior_and_charm() -> void:
 	p.queue_free()
 	s[1].queue_free()
 	ui.queue_free()
+
+
+## Step 45: the station preview lists socketed gems.
+func test_preview_lists_gems() -> void:
+	var s := _setup()
+	var p: Player = s[0]
+	var ui: StationUi = s[2]
+	ui.open(s[1])
+	var head := _part("basic_fire_head")
+	head.gems = [ElementGem.make(ElementTable.Element.WATER)] as Array[ElementGem]
+	ui.set_base(WieldableInstance.load_base("apprentice_fire_staff"))
+	var parts := [head, _part("basic_exterior"), _part("basic_interior"), _part("basic_handle")]
+	for part in parts:
+		ui.set_part(part.part_type, part)
+	var t := ui.preview_text()
+	check(t.contains("Gems: ") and t.contains("Water"), "gem line: %s" % t)
+	check(t.contains("+1 damage"), "gem damage shown")
+	ui.close()
+	p.queue_free()
+	s[1].queue_free()
+	ui.queue_free()

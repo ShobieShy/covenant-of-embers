@@ -80,3 +80,28 @@ func test_ember_mark_round_trip() -> void:
 	check(not ui.import_code("garbage!!") and ui.status.text.begins_with("Bad Ember Mark"), "bad code refused")
 	p.queue_free()
 	ui.queue_free()
+
+
+## Step 45: cards list gems (element colour) and consecrations with a delta line.
+func test_card_gems_and_consecration() -> void:
+	var s := _setup()
+	var p: Player = s[0]
+	var ui: InventoryUi = s[1]
+	var head := WieldablePart.load_part("basic_fire_head").duplicate() as WieldablePart
+	head.gems = [ElementGem.make(ElementTable.Element.DARK)] as Array[ElementGem]
+	var t := ui.card_text(head)
+	var dark := ElementTable.load_default().color(ElementTable.Element.DARK).to_html(false)
+	check(t.contains("Gems: [color=#%s]Dark" % dark), "gem in element colour: %s" % t)
+	var a := _hat("rare", 3)
+	a.consecration = "reaping"
+	t = ui.card_text(a)
+	check(t.contains("Consecrated: Reaping") and t.contains("Kills restore 10 mana"), "consecration line: %s" % t)
+	p.equip_item(a)
+	var b := _hat("rare", 4)
+	b.consecration = "kindling"
+	check(ui.card_text(b).contains("(replaces Reaping)"), "replaces delta")
+	var c := _hat("rare", 5)
+	check(ui.card_text(c).contains("(loses Reaping)"), "loses delta")
+	check(not ui.card_text(_hat("rare", 6)).contains("Gems:"), "no gem line without gems")
+	p.queue_free()
+	ui.queue_free()

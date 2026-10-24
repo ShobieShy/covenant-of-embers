@@ -169,18 +169,25 @@ func preview_text() -> String:
 	if w == null:
 		return ""
 	return (
-		"[%s] %s - %s\nDamage: %.1f\nFire Rate: %.2f s\nAccuracy: %.2f\nMana Cost: %.1f\nDraw: %.2f s\nGem slots: %d"
-		% [
-			w.rarity().display_name,
-			Assembly.TYPE_NAMES[w.type()],
-			ElementTable.load_default().display_name(w.element()),
-			w.damage(),
-			w.cooldown(),
-			w.accuracy(),
-			w.mana_cost(),
-			w.draw_seconds(player.loadout.swap_seconds),
-			w.gem_slots()
-		]
+		(
+			(
+				"[%s] %s - %s\nDamage: %.1f\nFire Rate: %.2f s\nAccuracy: %.2f\nMana Cost: %.1f\nDraw: %.2f s\nGem slots: %d"
+				% [
+					w.rarity().display_name,
+					Assembly.TYPE_NAMES[w.type()],
+					ElementTable.load_default().display_name(w.element()),
+					w.damage(),
+					w.cooldown(),
+					w.accuracy(),
+					w.mana_cost(),
+					w.draw_seconds(player.loadout.swap_seconds),
+					w.gem_slots()
+				]
+			)
+			+ "\n"
+			+ CompareCard.for_item(w).extra_lines()
+		)
+		. strip_edges()
 	)
 
 
