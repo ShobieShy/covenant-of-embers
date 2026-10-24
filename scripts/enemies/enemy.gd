@@ -39,6 +39,8 @@ const BRAINS := {
 	"filth": "res://scripts/enemies/filth.gd",  # step 56
 }
 
+const ALLY_COLOR := Color(0.55, 0.2, 0.85)  ## step 52: corrupted tint
+
 var health_scale := 1.0  ## step 80: co-op enemy health multiplier
 ## Step 94: a co-op client puppet only shows predicted damage; it never dies from it (it
 ## stays at >= 1 HP, so later hits still go to the host). Only the host's kill ends it.
@@ -56,6 +58,10 @@ var last_killing_element: ElementTable.Element = ElementTable.Element.ARCANE
 var deaths := 0  ## deaths announced (a respawned dummy can die again)
 var resets := 0
 var _death_announced := false
+## Step 52 (Magewar Dark): > 0 while corrupted into the players' ally (s left). When it runs
+## out the husk crumbles (dies, announced as a Dark kill).
+var corrupted_left := 0.0
+var corruptions := 0
 
 var body_shape: CollisionShape3D
 var head_shape: CollisionShape3D  ## null without a weak point
@@ -242,6 +248,7 @@ func _announce_death() -> void:
 ## again. Called from a physics tick, not from inside a physics query callback.
 func reset(xform: Variant = null) -> void:
 	dead = false
+	corrupted_left = 0.0
 	_death_announced = false
 	health = max_health()
 	flash = 0.0
@@ -291,12 +298,20 @@ func _physics_process(delta: float) -> void:
 
 ## Hit flash: the greybox tint goes towards white for FLASH_TIME after a hit.
 func tick(dt: float) -> void:
+	if corrupted_left > 0.0:
+		corrupted_left = maxf(0.0, corrupted_left - dt)
+		if corrupted_left <= 0.0:
+			_uncorrupt()
+			return
+		if flash <= 0.0 and _body_mat:
+			_body_mat.albedo_color = def.color.lerp(ALLY_COLOR, 0.65)
 	if flash <= 0.0:
 		return
 	flash = maxf(0.0, flash - dt)
 	var k := flash / FLASH_TIME
 	if _body_mat:
-		_body_mat.albedo_color = def.color.lerp(Color.WHITE, 0.6 * k)
+		var base := def.color.lerp(ALLY_COLOR, 0.65) if corrupted_left > 0.0 else def.color
+		_body_mat.albedo_color = base.lerp(Color.WHITE, 0.6 * k)
 	if _head_mat:
 		_head_mat.albedo_color = def.color.lerp(
 			Color.WHITE, WEAK_POINT_BRIGHTEN + (1.0 - WEAK_POINT_BRIGHTEN) * 0.6 * k
@@ -330,3 +345,24 @@ static func spawn_at_markers(level: Node, parent: Node3D, table: EnemyTable, ski
 		parent.add_child(e)
 		out.append(e)
 	return out
+
+
+## Step 52: true while corrupted into an ally.
+func is_ally() -> bool:
+	return corrupted_left > 0.0 and not dead
+
+
+## Step 52: turn on the players' side for `seconds` (bosses refuse). True when it took.
+func corrupt(seconds: float) -> bool:
+	if dead or is_boss() or seconds <= 0.0:
+		return false
+	corrupted_left = seconds
+	corruptions += 1
+	return true
+
+
+## The corruption ran out: the husk crumbles.
+func _uncorrupt() -> void:
+	if _body_mat:
+		_body_mat.albedo_color = def.color
+	apply_damage(health + 1.0, ElementTable.Element.DARK)

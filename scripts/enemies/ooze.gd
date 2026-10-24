@@ -81,7 +81,7 @@ func _on_damaged(e: Enemy, h: SpellBolts.Hit) -> void:
 func _on_self_died(_e: Enemy, _el: ElementTable.Element) -> void:
 	var at := global_position
 	puddle = Puddle.new()
-	puddle.target = target
+	puddle.target = ally_target_was if ally_target_was != null else target
 	puddle.position = at if get_parent() == null else (get_parent() as Node3D).to_local(at)
 	halves.clear()
 	if generation == 0:
@@ -95,7 +95,7 @@ func _on_self_died(_e: Enemy, _el: ElementTable.Element) -> void:
 			var side := Vector3(1.0 if i == 0 else -1.0, 0.0, 0.0) * (0.5 * def.size.x + 0.3)
 			var o := Enemy.create(hd, Transform3D(Basis.IDENTITY, puddle.position + side)) as Ooze
 			o.generation = 1
-			o.target = target
+			o.target = ally_target_was if ally_target_was != null else target
 			o.auto_tick = auto_tick
 			halves.append(o)
 	if split.get_connections().is_empty():

@@ -405,21 +405,21 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase H – Magewar elements: Light and Dark (Bible: 'Light heals and has one summon, Dark corrupts enemies into summons')
 
-**50. Light heal** ✅ PENDING
+**50. Light heal** ✅ `edcdb63`
 - Does: Light spell hits heal the caster (Magewar MagicSpecialEffects: max(8, 35 % of damage)); healing numbers in green.
 - Done: test_light.gd: heal amount matches formula, clamps at max health, no heal on Arcane.
 - Q2/Q3 answered 2026-10-24: Magewar Light/Dark exactly as in the Bible.
 - Result: PASS (347 passed, lint green)
-**51. Light summon (one per caster)** ✅ PENDING
+**51. Light summon (one per caster)** ✅ `edcdb63`
 - Does: Light cast creates one follower orb (Magewar light_summon, 30 s lifetime) that fights/marks enemies; only one active per caster.
 - Done: test_light.gd: second cast while one is alive spawns none; expires at 30 s.
 - Q3 answered 2026-10-24 (Magewar Light).
 - Result: PASS (347 passed, lint green)
-**52. Dark corruption into summons** 🔜 Unblocked
+**52. Dark corruption into summons** ✅ PENDING
 - Does: Dark hit bringing an enemy ≤25 % HP rolls 40 % to corrupt it into an allied summon (Magewar MagicSpecialEffects) for 30 s; bosses immune; enemy AI gains an ally/target-enemies mode.
 - Done: test_dark.gd: threshold + injected roll, corrupted Gnawer attacks enemies, boss never corrupts, timer expiry.
 - Q2 answered 2026-10-24 (Magewar Dark).
-
+- Result: PASS (350 passed, lint green)
 **53. Status effects** 🔜 Unblocked
 - Does: Per-element on-hit statuses (e.g. Fire burn, Water slow, Earth stagger, Air chain, Light/Dark as above) with resist from gear (60 % cap applies).
 - Done: test_status.gd: ticks, durations, resist scaling, cap.

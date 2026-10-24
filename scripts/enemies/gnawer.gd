@@ -42,6 +42,7 @@ const STATE_NAMES: PackedStringArray = ["idle", "detect", "chase", "attack", "kn
 const ATTACK_SLACK := 0.3  ## m past attack_range before Attack drops back to Chase
 const HUNT_TIME := 5.0  ## s it keeps chasing out of detect range after a hit
 const BITE_HEIGHT := 1.2  ## max |target feet y - its feet y| for a bite
+const ALLY_SEEK := 20.0  ## m: step 52 corrupted ally hunts enemies this close
 const PLAYER_RADIUS := 0.3  ## target capsule radius (Player)
 const GRAVITY := 9.8
 const STEP_UP := 0.25  ## m it can step up (C++ kStepUp)
@@ -86,6 +87,8 @@ class Transition:
 var rusher: RusherDef
 var state: State = State.IDLE
 var target: Node3D  ## the Player (feet = global_position); null = none
+var ally_target_was: Node3D  ## step 52: the player target set aside while corrupted
+var ally_bites := 0  ## step 52: bites landed on enemies while corrupted
 var auto_tick := true  ## false in tests: tick() is called by hand
 var ticks := 0
 var attack_timer := 0.0
@@ -167,7 +170,31 @@ func _physics_process(delta: float) -> void:
 ## Hit flash (Enemy) + one brain tick.
 func tick(dt: float) -> void:
 	super.tick(dt)
+	if is_ally():
+		_ally_retarget()
+	elif ally_target_was != null:
+		target = ally_target_was
+		ally_target_was = null
 	think(dt)
+
+
+## Step 52: a corrupted Gnawer hunts the nearest hostile enemy within ALLY_SEEK instead.
+func _ally_retarget() -> void:
+	if ally_target_was == null and not (target is Enemy):
+		ally_target_was = target
+	var best: Enemy = null
+	var best_d := ALLY_SEEK
+	for n in get_tree().get_nodes_in_group(Enemy.GROUP):
+		var e := n as Enemy
+		if e == null or e == self or not e.alive() or e.is_ally():
+			continue
+		var d := e.global_position.distance_to(global_position)
+		if d < best_d:
+			best_d = d
+			best = e
+	target = best
+	if best != null:
+		provoked = true
 
 
 func think(dt: float) -> void:
@@ -263,6 +290,11 @@ func _bite(feet: Vector3) -> void:
 
 ## Emits one attack (dodged if the target is invulnerable now) without touching the cooldown.
 func _land(feet: Vector3) -> void:
+	if is_ally():
+		if target is Enemy:
+			(target as Enemy).apply_damage(rusher.attack_damage, def.affinity)
+			ally_bites += 1
+		return
 	var b := Bite.new()
 	b.damage = rusher.attack_damage
 	b.element = def.affinity
