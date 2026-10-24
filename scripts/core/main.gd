@@ -44,6 +44,10 @@ func _ready() -> void:
 		add_child(spawner)
 		var spawned := spawner.setup($Level, player)
 		var skipped := spawner.skipped
+		# Step 22: kills drop rarity-coloured pickups with a light beam (not dummies).
+		var dropper := LootDropper.new()
+		dropper.name = "LootDropper"
+		add_child(dropper)
 		var numbers := DamageNumbers.new()
 		numbers.name = "DamageNumbers"
 		add_child(numbers)

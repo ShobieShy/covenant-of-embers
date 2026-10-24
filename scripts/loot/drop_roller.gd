@@ -15,7 +15,7 @@ extends RefCounted
 ## 45/25/15/8/5/2 % (+ luck × 0.05 on the roll) that disagree with its own ItemRarity drop
 ## weights 50/25/15/7/2/1; ours uses RarityTable (PLAN §30.2) for every drop. Everything is
 ## drawn from the caller's rng (Magewar solo kills use rng.randomize(); co-op uses
-## make_peer_rng(hash(seed_base:peer_id)) per player, step 22).
+## LootDropper.make_peer_rng(seed_base, peer_id) per player, step 22).
 
 const EQUIP_CHANCE := 0.25          ## Magewar roll_procedural_drops
 const EQUIP_LUCK_SCALE := 0.5       ## Magewar: equipment rarity rolls with luck × 0.5
