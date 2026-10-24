@@ -483,10 +483,11 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_prologue.gd: beats fire in order, ends with home unlocked.
 - Q1 answered (Magewar storyline)
 - Result: PASS (269 tests + headless playtest)
-**65. Starting town: Eldoria square + Association**
+**65. Starting town: Eldoria square + Association** ✅ `227cf27`
 - Does: Eldoria under its arcane barrier: Town Square (markets, guards on the wards) and the Mage Association, greybox levels with exits per the Bible's Levels/Maps; townsfolk NPCs; level travel; Landfill gate just outside the barrier.
 - Done: test_town.gd: all exits link, NPCs talkable.
 - Q1 answered (Magewar storyline)
+- Result: PASS (271 tests + headless playtest)
 **66. Home Tree hub: the Old Oak**
 - Does: Hollow, dark, candle-lit Old Oak (Bible Home Tree) with moss beds, stash, Assembly Station and slots for later upgrades (Bob's lab, potion garden, portals); first night Bob arrives by teleport vortex, appraises the Summoned and gives the Landfill task + starter gear.
 - Done: test_hub.gd: stash shared, station present, mentor scene once.

@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 54,
-  "last_commit": "d3c41b5",
+  "steps_done": 55,
+  "last_commit": "227cf27",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -541,6 +541,14 @@
       "summary": "Prologue beat sequencer (Magewar titles): Joe dialogue -> expulsion -> grant (50 gold, clothes, Old Oak permit) -> reach town square -> reach Old Oak = home_unlocked; feeds the quest chain",
       "tests": "269 tests",
       "commit": "d3c41b5"
+    },
+    {
+      "time": "2026-10-24T05:41-05:00",
+      "step": 65,
+      "type": "build",
+      "summary": "town_square + mage_association greybox levels ([[exit]]/[[npc]] in toml_to_scene), Npc talkables wired to dialogue, LevelGate per exit, Landfill<->town gate; test_town.gd",
+      "tests": "271 tests",
+      "commit": "227cf27"
     }
   ],
   "completed_steps": [
