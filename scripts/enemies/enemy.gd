@@ -36,6 +36,7 @@ const BRAINS := {
 	"boss": "res://scripts/enemies/warden.gd",
 	"ranged": "res://scripts/enemies/scorchling.gd",
 	"splitter": "res://scripts/enemies/ooze.gd",
+	"filth": "res://scripts/enemies/filth.gd",  # step 56
 }
 
 var health_scale := 1.0  ## step 80: co-op enemy health multiplier
@@ -146,6 +147,11 @@ func scale_health(k: float) -> void:
 	health_scale = maxf(0.01, k)
 	if not dead:
 		health = max_health() * frac
+
+
+## Bosses (the Warden, The Filth) are immune to Dark corruption (step 52).
+func is_boss() -> bool:
+	return def != null and String(def.ai.get("kind", "")) in ["boss", "filth"]
 
 
 func alive() -> bool:

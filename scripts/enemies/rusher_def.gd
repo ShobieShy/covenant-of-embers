@@ -9,7 +9,7 @@ extends RefCounted
 ## knockback_strength 10, knockback_duration 0.5, knockback over 10 damage. The Gnawer
 ## (Magewar's Mutant Rat: 8 / 6 / 3 / 5.5 / 3 dmg / 0.8 s) overrides them in its TOML.
 
-const KINDS: PackedStringArray = ["rusher", "tank", "boss", "ranged", "splitter"]  ## tank (step 13): the Heap; boss (step 34): the Warden (Enemy.BRAINS)
+const KINDS: PackedStringArray = ["rusher", "tank", "boss", "ranged", "splitter", "filth"]  ## tank (step 13): the Heap; boss (step 34): the Warden (Enemy.BRAINS)
 const KEYS: PackedStringArray = [
 	"kind",
 	"detect_range",

@@ -466,7 +466,7 @@ metadata/index = 1
 metadata/delay_s = 3
 metadata/enemies = [{"at": "west_flank", "count": 2, "enemy": "gnawer"}, {"at": "east_flank", "count": 2, "enemy": "gnawer"}]
 
-[node name="heap_push" type="Node" parent="Waves"]
+[node name="the_filth" type="Node" parent="Waves"]
 metadata/index = 2
 metadata/delay_s = 3
-metadata/enemies = [{"at": "north_ledge", "count": 1, "enemy": "heap"}, {"at": "north_ledge", "count": 2, "enemy": "gnawer"}]
+metadata/enemies = [{"at": "north_ledge", "count": 1, "enemy": "the_filth"}]

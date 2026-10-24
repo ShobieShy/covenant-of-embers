@@ -47,6 +47,8 @@ var level_label: Label
 var hurt_flash: ColorRect
 var death_overlay: ColorRect
 var death_label: Label
+var boss_label: Label  ## step 56: boss name + phase pips
+var boss_bar: ProgressBar
 var hint_left := 0.0
 var marker_left := 0.0
 var mana_flash_left := 0.0
@@ -133,6 +135,16 @@ func _init() -> void:
 	banner.position = Vector2(-300, 60)
 	banner.size = Vector2(600, 40)
 	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var boss_box := VBoxContainer.new()
+	boss_box.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	boss_box.position = Vector2(-220, 16)
+	boss_box.custom_minimum_size = Vector2(440, 0)
+	root.add_child(boss_box)
+	boss_label = _label(18, boss_box)
+	boss_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	boss_bar = _bar(Color(0.55, 0.75, 0.2), boss_box)
+	boss_bar.custom_minimum_size = Vector2(440, 14)
+	boss_box.visible = false
 	death_overlay = _rect(Color(0, 0, 0, 0.6), Control.PRESET_FULL_RECT)
 	death_overlay.visible = false
 	death_label = _label(36, death_overlay)
@@ -301,6 +313,7 @@ func refresh(dt: float) -> void:
 	banner.visible = banner_left > 0.0 or left != ""
 	if banner_left <= 0.0 and left != "":
 		banner.text = "Wave %d/%d%s" % [spawner.wave_index + 1, spawner.waves.size(), left]
+	_refresh_boss()
 	var pr := player.progression
 	level_label.text = "Level %d   %d / %d XP" % [pr.level, pr.xp, pr.xp_to_next]
 	death_overlay.visible = not player.alive()
@@ -309,6 +322,22 @@ func refresh(dt: float) -> void:
 			death_label.text = "Down! %.0f s\nA friend standing beside you revives you." % player.downed_left
 		else:
 			death_label.text = "You fell.\nRising in %.1f" % player.respawn_left
+
+
+## Step 56: the boss bar shows the nearest living Filth that has a target (pips = phases).
+func _refresh_boss() -> void:
+	var boss: Filth = null
+	if player.is_inside_tree():
+		for n in player.get_tree().get_nodes_in_group(Enemy.GROUP):
+			var f := n as Filth
+			if f != null and f.alive() and f.target != null:
+				boss = f
+				break
+	boss_bar.get_parent().visible = boss != null
+	if boss == null:
+		return
+	boss_bar.value = boss.health / boss.max_health()
+	boss_label.text = "%s  %s" % [boss.def.display_name, "◆".repeat(boss.phase) + "◇".repeat(3 - boss.phase)]
 
 
 func _refresh_pips() -> void:

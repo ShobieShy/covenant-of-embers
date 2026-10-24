@@ -2,6 +2,7 @@ extends Node3D
 ## Entry scene. `--seconds N` (after `--`) quits after N seconds and reports
 ## frames and physics ticks, the Godot counterpart of the old `covenant --seconds`.
 
+var _boss_spawner: EnemySpawner  # step 57
 var _seconds := -1.0
 var _elapsed := 0.0
 var _frames := 0
@@ -79,6 +80,8 @@ func _ready() -> void:
 		var hud := Hud.new()
 		add_child(hud)
 		hud.bind(player, spawner)
+		_boss_spawner = spawner
+		GameEvents.bus().wave_started.connect(_on_wave_started)  # step 57: boss-door checkpoint
 		var audio := GameAudio.new()   # step 37: Kenney SFX on the SFX/UI buses
 		audio.name = "GameAudio"
 		add_child(audio)
@@ -323,6 +326,13 @@ func talk_to(speaker: String) -> bool:
 	return dialogue != null and not dialogue.active and dialogue.start(speaker)
 
 ## Step 79: the host simulates; clients mirror its enemies and send their hits.
+## Step 57: The Filth's wave moves the player's respawn point to the boss door.
+func _on_wave_started(_i: int, id: String) -> void:
+	var p := get_node_or_null("Player") as Player
+	if p != null and is_instance_valid(_boss_spawner):
+		Filth.checkpoint(p, id, _boss_spawner.trigger_center)
+
+
 func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 	coop = CoopWorld.new()
 	coop.name = "CoopWorld"

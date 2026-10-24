@@ -10,7 +10,7 @@ extends TestCase
 ##    180 ticks (3 s) and can die (and be announced) again; a dead Gnawer is freed 2
 ##    ticks after its death;
 ##  - the waves: nothing until the player stands at the mound; then gnawer_pack (3) 1 s
-##    later on the north_ledge ring, flank (2 + 2) 3 s after it is cleared, heap_push
+##    later on the north_ledge ring, flank (2 + 2) 3 s after it is cleared, the_filth (The Filth alone, steps 56-57)
 ##    (Heap + 2 Gnawers) 3 s after that, then waves_completed once; every wave enemy's
 ##    death is one enemy_killed and it is freed;
 ##  - spawn protection: 1 s (60 ticks) of ignored hits after a respawn;
@@ -222,7 +222,7 @@ func test_midden_waves_match_toml() -> void:
 			)
 			c += int(groups[j]["count"])
 		counts.append(c)
-	check(counts == [3, 4, 3], "wave sizes 3 / 4 / 3 (%s)" % [counts])
+	check(counts == [3, 4, 1], "wave sizes 3 / 4 / 1 (%s)" % [counts])
 	var wt: Dictionary = d["waves"]
 	check(
 		(
@@ -377,10 +377,10 @@ func test_waves_in_the_midden() -> void:
 	sp.tick(DT)
 	for i in 180:
 		sp.tick(DT)
-	check(started.size() == 3 and started[2][1] == "heap_push", "heap_push next")
+	check(started.size() == 3 and started[2][1] == "the_filth", "the_filth next")
 	sizes.append(sp.wave_alive.size())
-	var heaps := sp.wave_alive.filter(func(e: Enemy) -> bool: return e is Heap).size()
-	check(heaps == 1, "heap_push brings one Heap (%d)" % heaps)
+	var filths := sp.wave_alive.filter(func(e: Enemy) -> bool: return e is Filth).size()
+	check(filths == 1 and sp.wave_alive.size() == 1, "the_filth brings The Filth alone (%d)" % filths)
 	check(completed[0] == 0, "not completed while the last wave lives")
 	_kill_wave(sp)
 	for i in 5:
@@ -390,12 +390,12 @@ func test_waves_in_the_midden() -> void:
 		"waves_completed once after the third clear"
 	)
 	check(
-		sizes == [3, 4, 3] and sp.spawned == 14,
-		"wave counts 3 / 4 / 3, 14 enemies in all (%s, %d)" % [sizes, sp.spawned]
+		sizes == [3, 4, 1] and sp.spawned == 12,
+		"wave counts 3 / 4 / 1, 12 enemies in all (%s, %d)" % [sizes, sp.spawned]
 	)
-	check(bus.kills == k0 + 10 and sp.kills == 10, "10 kills, one event each (%d)" % (bus.kills - k0))
+	check(bus.kills == k0 + 8 and sp.kills == 8, "8 kills, one event each (%d)" % (bus.kills - k0))
 	check(
-		sp.freed == 10 and sp.alive_count() == 4,
+		sp.freed == 8 and sp.alive_count() == 4,
 		"every wave enemy freed; the 4 marker enemies remain (%d freed, %d alive)" % [sp.freed, sp.alive_count()]
 	)
 	check(bus_started[0] == 3, "the bus saw 3 wave starts")

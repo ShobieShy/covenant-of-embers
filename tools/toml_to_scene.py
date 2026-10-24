@@ -558,8 +558,8 @@ def self_test() -> int:
     assert NAV_SCRIPT in scene
     # Step 14: 3 wave spawn points, 3 waves in order, respawning dummies.
     assert [sp["name"] for sp in lv["spawn_points"]] == ["north_ledge", "west_flank", "east_flank"], lv["spawn_points"]
-    assert [w["id"] for w in lv["waves"]] == ["gnawer_pack", "flank", "heap_push"], lv["waves"]
-    assert [sum(g["count"] for g in w["enemies"]) for w in lv["waves"]] == [3, 4, 3]
+    assert [w["id"] for w in lv["waves"]] == ["gnawer_pack", "flank", "the_filth"], lv["waves"]
+    assert [sum(g["count"] for g in w["enemies"]) for w in lv["waves"]] == [3, 4, 1]
     assert [e["respawn_s"] for e in lv["enemies"]] == [3.0, 3.0, None, None]
     assert scene.count('parent="WaveSpawns"') == 3 and scene.count('parent="Waves"') == 3
     assert 'metadata/enemies = [{"at": "north_ledge", "count": 3, "enemy": "gnawer"}]' in scene

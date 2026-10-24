@@ -1,0 +1,19 @@
+# The Filth (BUILD_PLAN steps 56-57, Q8): the Landfill's three-phase slime boss; it replaces
+# the old Heap push wave as the Midden's ending. ai kind "filth" = scripts/enemies/filth.gd
+# (a Heap: same slam + wind-up; plus acid blobs, phase-2 regen from debris, phase-3 exposed
+# core). Magewar reference: boss_the_filth (acid, regenerates from debris; no numbers).
+# Plan design: 900 HP = three 300 HP phases; with the starter Apprentice Fire Staff (15 per
+# bolt) that's 20 bolts a phase, ~20-35 s at a realistic hit rate while dodging (Q8).
+# Earth (the Water-weak element, step 59 status: stagger). Always drops Joe's Trash.
+
+[[enemy]]
+id = "the_filth"
+name = "The Filth"
+affinity = "earth"
+max_health = 900
+level = 4
+xp_reward = 80
+size = [2.2, 2.0, 2.2]
+color = [0.35, 0.42, 0.18]
+weak_point = { offset = [0.0, 1.2, 1.12], size = [0.8, 0.4, 0.1] }   # the core
+ai = { kind = "filth", detect_range = 16.0, aggro_range = 12.0, walk_speed = 1.0, sprint_speed = 2.0, attack_range = 2.2, attack_damage = 10.0, attack_cooldown = 2.4, attack_windup = 0.7, knockback_strength = 15.0, knockback_time = 0.2, knockback_threshold = 60.0, turn_rate_deg = 90.0 }

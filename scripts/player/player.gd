@@ -149,6 +149,7 @@ var inventory := Inventory.new()  # step 23: backpack (30 slots) + Arcane Dust
 var progression := Progression.new()  # step 27: XP + level
 var skills := Skills.new()  # step 71: skill ranks (tree data in data/skills/)
 var skill_procs := SkillProcs.new()  # step 72: kill procs + capstone frenzy
+var quest_items := PackedStringArray()  # step 57: quest items (Joe's Trash), saved
 var pickups := PickupCollector.new()  # step 23: walk-over auto-collect + Interact pickup
 
 var _wheel := 0  # queued mouse-wheel cycles (+ next / - prev)

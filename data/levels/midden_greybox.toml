@@ -243,6 +243,6 @@ delay_s = 3.0
 enemies = [{ enemy = "gnawer", count = 2, at = "west_flank" }, { enemy = "gnawer", count = 2, at = "east_flank" }]
 
 [[wave]]
-id = "heap_push"
+id = "the_filth"   # steps 56-57 (Q8): The Filth replaces the old Heap push as the ending
 delay_s = 3.0
-enemies = [{ enemy = "heap", count = 1, at = "north_ledge" }, { enemy = "gnawer", count = 2, at = "north_ledge" }]
+enemies = [{ enemy = "the_filth", count = 1, at = "north_ledge" }]

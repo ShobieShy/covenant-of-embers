@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 56,
+  "next_step": 67,
   "total_steps": 107,
-  "steps_done": 78,
-  "last_commit": "22f9992",
+  "steps_done": 80,
+  "last_commit": "40246f2",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -934,6 +934,13 @@
       "step": "plan",
       "type": "plan-update",
       "summary": "Q2-Q6,Q8,Q10,Q12-Q14 answered by ShobieShy; steps 94-96 done; plan-only 97-107 added; 43 moot; 74/87 deferred."
+    },
+    {
+      "time": "2026-10-24T09:09-05:00",
+      "step": "56,57",
+      "type": "build",
+      "summary": "The Filth: 3-phase Landfill boss (filth.gd, ai kind filth, 900 HP = 3x300, acid blobs, phase-2 debris regen capped at the phase ceiling, phase-3 exposed core), replaces heap_push as the Midden's last wave; HUD boss bar + phase pips; boss-door checkpoint on wave start; always drops Joe's Trash (QuestPickup, quest id joes_discards) -> Player.quest_items (saved) + EventBus.quest_item_collected.",
+      "commit": "40246f2"
     }
   ],
   "completed_steps": [
@@ -987,6 +994,8 @@
     49,
     54,
     55,
+    56,
+    57,
     58,
     62,
     63,

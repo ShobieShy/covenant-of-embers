@@ -47,6 +47,7 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 			"shield": p.health.shield_max if dead else p.health.shield,
 			"mana": p.mana.max_value() if dead else p.mana.value,
 			"breath": p.breath.max_value() if dead else p.breath.value,
+			"quest_items": Array(p.quest_items),  # step 57
 			"skills": p.skills.to_dict(),  # step 71 (older saves: no key = no ranks)
 		},
 		"items":
@@ -132,6 +133,7 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 	var pm := _decode(String(it.get("potion", "")), ConsumableItem, warn, "potion")
 	if pm:
 		p.equipment.add_potions(pm.item as ConsumableItem, pm.count)
+	p.quest_items = PackedStringArray(pl.get("quest_items", []))
 	warn.append_array(p.skills.from_dict(pl.get("skills", {}), pr.level))
 	p.apply_bonuses()
 	p.health.value = clampf(float(pl.get("health", p.health.max_value())), 0.0, p.health.max_value())
