@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 49,
-  "last_commit": "3f56747",
+  "steps_done": 50,
+  "last_commit": "06b71ad",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -501,6 +501,14 @@
       "summary": "Scorchling (Gnawer subclass, ai kind ranged): stops ~7 m, lobs simulated embers (12 m/s, 4.5 Fire, dodgeable), backs off inside 3 m, flees under 30 % HP. Magewar scorchling numbers kept; 40 HP/range/cooldown plan design. Not yet placed in a level (step 47 places it).",
       "tests": "253 tests",
       "commit": "3f56747"
+    },
+    {
+      "time": "2026-10-24T05:26-05:00",
+      "step": 55,
+      "type": "build",
+      "summary": "Ooze brain (kind splitter): splits into 2 half-HP halves on death or Fire under 50%; slowing puddles via Player.apply_slow; spawner adopts halves into waves",
+      "tests": "257 tests",
+      "commit": "06b71ad"
     }
   ],
   "completed_steps": [

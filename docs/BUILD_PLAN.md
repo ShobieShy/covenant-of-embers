@@ -432,9 +432,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_scorchling.gd: keeps range, projectile damage, flee under 30 %.
 - Result: PASS (253 tests + headless playtest)
 
-**55. Slime / Mire ooze (splitter)**
+**55. Slime / Mire ooze (splitter)** ✅ `06b71ad`
 - Does: Slime that splits into 2 smaller slimes on death or on Fire hits, leaves slowing puddles.
 - Done: test_ooze.gd: split count/HP, puddle slow.
+- Result: PASS (257 tests + headless playtest)
 
 **56. The Filth, phases 1–2** ⏸ Needs ShobieShy
 - Does: 3-phase landfill slime boss from Magewar boss_the_filth (born from alchemical runoff + dungeon essence; spews acid blobs, absorbs attacks and regenerates from debris; phase thresholds); boss bar with phase pips; arena lock.
