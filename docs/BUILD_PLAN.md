@@ -389,7 +389,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_breach.gd: Breach has a reachable station; crafting there works.
 - Result: PASS (249 tests + headless playtest)
 
-**47. Breach layout pass (out of greybox)**
+**47. Breach layout pass (out of greybox)** ✅ `8f5df31`
 - Does: Replace the Breach blockout with built rooms per PLAN §14: entrance → 3 combat rooms → switch puzzle → mini-boss → boss arena → vault; per-room [[encounter]] blocks (deferred in step 33); level gate placed properly (step 39 flag).
 - Done: test_breach.gd: room graph connected on the navmesh, every encounter spawns and clears, vault reachable only after boss.
 
