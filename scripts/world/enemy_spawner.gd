@@ -44,6 +44,9 @@ var wave_state := WaveState.WAITING
 var wave_index := -1  ## the wave delaying / alive (-1: not triggered)
 var delay_left := 0.0
 var wave_alive: Array[Enemy] = []
+var vigil_tier := 0  ## step 58: wave enemies roll Elites affixes for this tier
+var elite_rng := RandomNumberGenerator.new()
+var elites := 0
 var ticks := 0
 var spawned := 0  ## enemies placed (markers + waves; not respawns)
 var kills := 0  ## deaths seen
@@ -252,7 +255,10 @@ func _spawn_wave() -> void:
 		for k in int(g.get("count", 1)):
 			var n := int(used.get(at, 0))
 			used[at] = n + 1
-			var e := Enemy.create(d, inv * Transform3D(mx.basis, spots[n]))
+			var affix := Elites.roll(elite_rng, vigil_tier)
+			if affix != "":
+				elites += 1
+			var e := Enemy.create(Elites.apply(d, affix), inv * Transform3D(mx.basis, spots[n]))
 			e.name = "%s_%s_%s_%d" % [id, at, d.id, n + 1]  # unique: n counts per point
 			add_child(e)
 			spawned += 1
