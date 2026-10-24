@@ -13,7 +13,8 @@ timeout 600 "$GODOT" --headless --path . --export-release Windows build/windows/
 test -s build/linux/covenant_of_embers.x86_64 && test -s build/windows/covenant_of_embers.exe
 # Step 84: Windows exe must carry the icon + version resources; Linux gets .desktop + icon.
 VERSION=$(sed -n 's/^config\/version="\(.*\)"/\1/p' project.godot)
-python3 tools/pe_resources.py build/windows/covenant_of_embers.exe --expect-version "$VERSION.0" --expect-product "Covenant of Embers"
+# PE versions are numeric, so drop a prerelease suffix: 0.1.0-prealpha -> 0.1.0.0
+python3 tools/pe_resources.py build/windows/covenant_of_embers.exe --expect-version "${VERSION%%-*}.0" --expect-product "Covenant of Embers"
 cp packaging/linux/covenant-of-embers.desktop build/linux/
 cp assets/branding/icon.png build/linux/covenant-of-embers.png
 log=$(mktemp)
