@@ -12,6 +12,7 @@ var slot_buttons: Array[Button] = []
 ## Step 49: New Run over an existing save asks first.
 var confirm: ConfirmationDialog
 var settings_ui: SettingsUi
+var coop_menu: CoopMenu  ## step 88
 var _seconds := -1.0
 var _elapsed := 0.0
 
@@ -55,9 +56,9 @@ func _ready() -> void:
 		sb.pressed.connect(select_slot.bind(n))
 		slots.add_child(sb)
 		slot_buttons.append(sb)
-	for id in ["new_run", "continue", "settings", "quit"]:
+	for id in ["new_run", "continue", "coop", "settings", "quit"]:
 		var b := Button.new()
-		b.text = id.capitalize()
+		b.text = "Co-op" if id == "coop" else id.capitalize()
 		b.custom_minimum_size = Vector2(0, 40)
 		b.pressed.connect(press.bind(id))
 		v.add_child(b)
@@ -74,6 +75,12 @@ func _ready() -> void:
 	settings_ui = SettingsUi.new()
 	add_child(settings_ui)
 	settings_ui.setup(Settings.load_from())
+	coop_menu = CoopMenu.new()
+	coop_menu.visible = false
+	add_child(coop_menu)
+	var coop_opts := Coop.parse_args(OS.get_cmdline_user_args())
+	if coop_opts["mode"] != "":  # step 88: --host / --join
+		coop_menu.auto.call_deferred(coop_opts)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	(buttons["new_run"] as Button).grab_focus.call_deferred()
 	var args := Array(OS.get_cmdline_user_args())
@@ -87,7 +94,9 @@ func _ready() -> void:
 			args.append("--start")
 	Screenshots.attach(self, "menu")
 	print("[menu] main menu, save %s" % ("found" if GameFlow.has_save() else "none"))
-	if args.has("--continue"):
+	if Coop.parse_args(OS.get_cmdline_user_args())["mode"] != "":
+		pass
+	elif args.has("--continue"):
 		press.call_deferred("continue")
 	elif args.has("--start"):  # scripted: no overwrite prompt
 		_start_new.call_deferred()
@@ -103,6 +112,8 @@ func press(id: String) -> void:
 		"continue":
 			if not GameFlow.continue_run(get_tree()):
 				GameFlow.new_run(get_tree())
+		"coop":
+			coop_menu.show()
 		"settings":
 			settings_ui.open()
 		"quit":

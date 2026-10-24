@@ -107,3 +107,81 @@ func test_steam_unavailable_headless() -> void:
 	var s := _pair()
 	check(not (s[1] as NetSession).host(t, 1, {}), "session reports steam failure")
 	s[0].queue_free()
+
+
+class FakeGateway:
+	extends RefCounted
+	var valid := true
+
+	func is_valid_gateway() -> bool:
+		return valid
+
+
+class FakeUpnp:
+	extends RefCounted
+	var discover_err := OK
+	var add_err := OK
+	var gateway := FakeGateway.new()
+	var mapped := {}
+
+	func discover(_t: int, _ttl: int, _dev: String) -> int:
+		return discover_err
+
+	func get_gateway() -> Object:
+		return gateway
+
+	func add_port_mapping(port: int, _p2: int, _d: String, _proto: String, _l: int) -> int:
+		if add_err == OK:
+			mapped[port] = true
+		return add_err
+
+	func delete_port_mapping(port: int, _proto: String) -> int:
+		mapped.erase(port)
+		return OK
+
+	func query_external_address() -> String:
+		return "203.0.113.7"
+
+
+## Step 88: UPnP opens the port when it can and says "forward it by hand" when not.
+func test_port_mapper() -> void:
+	var u := FakeUpnp.new()
+	var m := PortMapper.new(u)
+	var r := m.map(24680)
+	check(r["ok"] and r["ip"] == "203.0.113.7" and u.mapped.has(24680), "mapped")
+	m.unmap()
+	check(u.mapped.is_empty(), "unmapped")
+	u.discover_err = FAILED
+	check(not PortMapper.new(u).map(1).ok, "no router")
+	u.discover_err = OK
+	u.gateway.valid = false
+	var bad := PortMapper.new(u).map(24680)
+	check(not bad.ok and String(bad.error).contains("by hand"), "gateway refused: %s" % bad.get("error"))
+
+
+func test_coop_args() -> void:
+	var h := Coop.parse_args(PackedStringArray(["--host", "25000", "--name", "Ash"]))
+	check(h["mode"] == "host" and h["port"] == 25000 and h["name"] == "Ash", "host args")
+	var j := Coop.parse_args(PackedStringArray(["--join", "1.2.3.4:9", "--coop-players", "3"]))
+	check(j["mode"] == "join" and j["address"] == "1.2.3.4:9" and j["players"] == 3, "join args")
+	check(Coop.parse_args(PackedStringArray(["--start"]))["mode"] == "", "no coop")
+
+
+## Step 88: the co-op menu turns bad input into words and does not open a session.
+func test_coop_menu_errors() -> void:
+	var m := CoopMenu.new()
+	runner_tree.root.add_child(m)
+	m.port_edit.text = "abc"
+	m.press("host_ip")
+	check(m.status.text.contains("number"), "bad port: %s" % m.status.text)
+	m.port_edit.text = "80"
+	m.press("host_ip")
+	check(m.status.text.contains("between"), "low port")
+	m.address_edit.text = "host:notaport"
+	m.press("join_ip")
+	check(not m.status.text.is_empty() and m.session == null, "bad address: %s" % m.status.text)
+	m.press("invite_steam")
+	check(m.status.text.contains("Steam"), "invite without lobby")
+	check(m.session == null and not m.start_button.visible, "no session opened")
+	m.queue_free()
+	await runner_tree.process_frame

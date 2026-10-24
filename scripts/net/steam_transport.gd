@@ -13,6 +13,7 @@ static var initialised := false
 static var init_error := ""
 
 var singleton_name := "Steam"  ## tests point this at a missing name
+var lobby_id := 0  ## step 89: the Steam lobby this session lives in
 
 
 func _init() -> void:
@@ -94,3 +95,12 @@ func describe() -> String:
 	if not has_extension():
 		return "steam (not installed)"
 	return "steam (ready)" if available() else "steam (not started)"
+
+
+## The Steam overlay's invite dialog for the current lobby; false without one.
+func invite_dialog() -> bool:
+	if not available() or lobby_id == 0:
+		last_error = "no Steam lobby to invite to"
+		return false
+	api().call("activateGameOverlayInviteDialog", lobby_id)
+	return true
