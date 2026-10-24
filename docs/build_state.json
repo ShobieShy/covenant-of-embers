@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 38,
+  "next_step": 39,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -42,9 +42,10 @@
     34,
     35,
     36,
-    37
+    37,
+    38
   ],
-  "last_commit": "c011f3c",
+  "last_commit": "5d8d7d1",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -388,6 +389,19 @@
         "Focus cue fires when focus passes 50 pct, close to the press"
       ],
       "commit": "c011f3c"
+    },
+    {
+      "time": "2026-10-24T03:46:33-05:00",
+      "step": 38,
+      "type": "build",
+      "summary": "SaveGame: versioned JSON in user://save.json; items as Ember Mark codes; level bonuses rebuilt then values clamped; bad codes dropped with warning; wrong version rejected; dead save stores full pools. Also fixed game_audio hurt cue (health.value). 39 tests green.",
+      "plan_changes": {
+        "magewar": "Magewar saves character to disk; we keep JSON for readability",
+        "flags": [
+          "no autosave/menu hookup until step 39"
+        ]
+      },
+      "commit": "5d8d7d1"
     }
   ]
 }

@@ -330,13 +330,14 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 10 notes): equip/draw sound on `loadout.swap_started`; cast sound at `viewmodel.cast_point_position()`; a short element-coloured cast flash at the cast point (CC0/greybox, no paid assets).
 - Result: PASS (232 tests)
 
-**38. Save format, round-trip + load**
+**38. Save format, round-trip + load** ✅ `5d8d7d1`
 - Does: Versioned JSON save in user:// (player, inventory, items via Ember Mark codes, progress), load from menu.
 - Does (step 13 notes): save current health and shield too (max rebuilt from bonuses); a save while dead stores the respawn state (full).
 - Does (step 8 notes): save the current mana and Breath values; bonuses are rebuilt from equipment/level on load (not saved), then the values clamped.
 - Does (step 19 notes): on load equip the saved pieces with `player.equip_item` (or set `equipment.slots` then one `apply_bonuses()`) before restoring the saved values; `set_mana()`/`_set_health()` don't re-apply bonuses, so call `apply_bonuses()` after swapping a pool.
 - Does (step 20 notes): items = `ItemCodes.encode(item, count)` strings (inventory, equipped staff/wand, 5 equipment slots, potion stack); load = `ItemCodes.decode()` → `player.equip_item(m.item)` per piece (then one `apply_bonuses()`), loadout via `set_wieldable`; compare with `ItemCodes.same_item`. A code that fails to decode is dropped with a warning (never crash the load). The save file's own version is separate from the code version (codes carry theirs).
 - Done: test_save.gd: save→load round-trip equal, old version rejected cleanly.
+- Result: PASS (234 tests)
 
 **39. Main menu + flow**
 - Does: Main menu → Midden → Breach → back, pause menu on a `menu` action (Esc, Magewar's name; Player releases the mouse), settings.
