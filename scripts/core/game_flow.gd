@@ -17,6 +17,7 @@ const LEVEL_IDS := {"midden_greybox": "midden", "breach_slice": "breach"}
 static var level_id := "midden"
 static var load_save := false
 static var save_path := SaveGame.PATH
+static var slot := 1
 static var dry_run := false
 static var last_request := ""
 static var requests := 0
@@ -72,3 +73,13 @@ static func to_menu(tree: SceneTree) -> void:
 
 static func has_save() -> bool:
 	return not SaveGame.read(save_path).has("error")
+
+
+## Step 49: picks save slot 1..SaveGame.SLOTS; New Run / Continue / autosaves then use it.
+static func select_slot(n: int) -> void:
+	slot = clampi(n, 1, SaveGame.SLOTS)
+	save_path = SaveGame.slot_path(slot)
+
+
+static func slot_has_save(n: int) -> bool:
+	return not SaveGame.read(SaveGame.slot_path(n)).has("error")

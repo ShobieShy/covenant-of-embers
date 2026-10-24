@@ -12,6 +12,12 @@ extends RefCounted
 
 const VERSION := 1
 const PATH := "user://save.json"
+const SLOTS := 3  # step 49: slot 1 keeps the old save.json path, so existing saves stay slot 1
+
+
+static func slot_path(slot: int) -> String:
+	slot = clampi(slot, 1, SLOTS)
+	return PATH if slot == 1 else "user://save_%d.json" % slot
 
 
 static func capture(p: Player, progress := {}) -> Dictionary:

@@ -15,7 +15,7 @@ func _reset() -> void:
 
 func _restore() -> void:
 	GameFlow.dry_run = false
-	GameFlow.save_path = SaveGame.PATH
+	GameFlow.select_slot(1)
 	GameFlow.level_id = "midden"
 	GameFlow.load_save = false
 	runner_tree.paused = false
@@ -110,4 +110,34 @@ func test_pause_menu() -> void:
 	check(GameFlow.last_request == GameFlow.MENU and not runner_tree.paused, "to the main menu, unpaused")
 	check(GameFlow.has_save(), "saved on leaving")
 	g.free()
+	_restore()
+
+
+func test_new_run_confirm_and_slots() -> void:  # step 49
+	_reset()
+	SaveGame.write({"version": SaveGame.VERSION, "progress": {"level_id": "breach"}}, FILE)
+	var m: MainMenu = (load(GameFlow.MENU) as PackedScene).instantiate()
+	runner_tree.root.add_child(m)
+	GameFlow.save_path = FILE
+	m.press("new_run")
+	check(m.confirm.visible and GameFlow.last_request == "", "overwrite confirm shown, nothing started")
+	m.confirm.hide()
+	m.confirm.confirmed.emit()
+	check(GameFlow.last_request == GameFlow.GAME and not GameFlow.load_save, "confirmed -> new run")
+	var tmp := []
+	for n in range(1, SaveGame.SLOTS + 1):
+		tmp.append(SaveGame.slot_path(n))
+	check(tmp[0] == SaveGame.PATH and tmp[1] != tmp[2] and tmp[1] != tmp[0], "3 distinct slot files")
+	var p2: String = tmp[1]
+	var had := FileAccess.file_exists(p2)
+	if not had:
+		SaveGame.write({"version": SaveGame.VERSION, "progress": {"level_id": "breach"}}, p2)
+	m.select_slot(2)
+	check(GameFlow.save_path == p2 and GameFlow.slot_has_save(2), "slot 2 selected + has its save")
+	check(not (m.buttons["continue"] as Button).disabled, "continue enabled for slot 2")
+	check(GameFlow.continue_run(null) and GameFlow.level_id == "breach", "slot 2 continues its own level")
+	if not had:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(p2))
+	check(not GameFlow.slot_has_save(3) or FileAccess.file_exists(tmp[2]), "slot 3 isolated")
+	m.free()
 	_restore()
