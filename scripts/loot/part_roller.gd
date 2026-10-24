@@ -17,7 +17,7 @@ extends RefCounted
 ## Reinterpreted: every roll is seeded from the caller's RandomNumberGenerator (never the
 ## global one): roll() draws exactly one 32-bit seed from it and from_seed() rolls on a
 ## private generator, so every part stores `roll_seed` and regenerate() rebuilds it
-## identically (PLAN §30.2 deterministic generation; Ember Marks in step 39). Magewar's
+## identically (PLAN §30.2 deterministic generation; Ember Marks in step 20). Magewar's
 ## roll_element ignores its own element_weights (uniform over 7); ours uses the weights.
 
 const P := WieldablePart.PartType

@@ -273,12 +273,14 @@ func test_magewar_parts_assemble_stats() -> void:
 	var big := WieldableInstance.load_base("earthward_battlestaff")
 	for id in ["primordial_fire_head", "mythic_water_exterior", "basic_earth_interior", "rare_air_handle", "unique_void_charm"]:
 		big.parts.append(WieldablePart.load_part(id))
+	# Free-form part list (not Assembly.assemble): keeps the Uncommon base rarity; assembled
+	# it is Rare (floor of mean 2.8) = 46 (test_assembly worked example 3).
 	# 14 x 1.25 + 12 + 1.5 + 3.5 + 0 + 8; 0.55 x 0.55 x 0.85 (handle/interior rates ignored);
 	# 50 + 15 + 22 + 12 = 99 (exterior/interior accuracy ignored).
 	check_near(big.damage(), 42.5, EPS, "Earthward with top parts")
 	check_near(big.cooldown(), 0.55 * 0.55 * 0.85, EPS, "Earthward cooldown")
 	check(big.accuracy() == 99.0 and big.element() == E.FIRE, "accuracy 99, Head Fire overrides Earth")
-	print("    assembled: Fire staff 17.5 / %.2f s / 75 %%, Earthward %.1f / %.4f s / %.0f %%" % [staff.cooldown(), big.damage(), big.cooldown(), big.accuracy()])
+	print("    free-form parts: Fire staff 17.5 / %.2f s / 75 %%, Earthward %.1f / %.4f s / %.0f %%" % [staff.cooldown(), big.damage(), big.cooldown(), big.accuracy()])
 
 func test_bad_parts_rejected() -> void:
 	var ok := WieldablePart.load_part("rare_water_head")

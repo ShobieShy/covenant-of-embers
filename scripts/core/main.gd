@@ -60,6 +60,12 @@ func _ready() -> void:
 		var sample := PartRoller.from_seed(16, WieldablePart.PartType.HEAD, "rare")
 		print("[parts] rolled seed 16 rare Head: %s (%s), dmg %.2f, acc %.2f, %d gem slot(s)" % [sample.display_name,
 			sample.id, sample.damage_bonus, sample.accuracy_bonus, sample.gem_slots])
+		var built := Assembly.assemble(WieldableInstance.load_base("earthward_battlestaff").def, ["primordial_fire_head",
+			"mythic_water_exterior", "basic_earth_interior", "rare_air_handle", "unique_void_charm"].map(
+			func(id: String) -> WieldablePart: return WieldablePart.load_part(id)))
+		print("[assembly] Earthward + 5 Magewar parts: %s, dmg %.1f, %.4f s, acc %.0f %%, %d gem slot(s), draw %.3f s" % [
+			built.display_name(), built.damage(), built.cooldown(), built.accuracy(), built.gem_slots(),
+			built.draw_seconds(player.loadout.swap_seconds)])
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])

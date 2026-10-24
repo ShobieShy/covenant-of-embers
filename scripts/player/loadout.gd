@@ -18,6 +18,8 @@ extends RefCounted
 ##    animations are 0.001 s placeholders (Cogito waits for their length), so its swap is
 ##    effectively instant; 0.4 s is our (PLAN) number. Selecting during a swap retargets
 ##    and restarts the draw; selecting the slot in hand, or an empty slot, does nothing.
+##    Step 17: the draw is shortened by the drawn wieldable's handling
+##    (WieldableInstance.draw_seconds: 0.4 x 100 / (100 + handling), >= 0.2 s).
 ##  * Mana, focus and spread are the player's (shared by both slots; Player wires every
 ##    slot's mana_spender/out_of_mana). A press during a swap is not a cast attempt: no
 ##    mana check, no "Not enough mana!" cue, no spread draw, no bloom (counted in
@@ -31,6 +33,7 @@ var casters: Array[Caster] = [Caster.new(), Caster.new()]
 var active: int = Slot.STAFF
 var swap_seconds := 0.4
 var swap_left := 0.0      ## seconds left on the current draw (0 = ready)
+var draw_seconds := 0.4   ## length of the current/last draw (handling-adjusted, step 17)
 var swaps := 0
 var swap_blocked := 0     ## fire presses refused because a swap was running
 
@@ -72,7 +75,8 @@ func select(slot: int) -> bool:
 	if slot < 0 or slot >= casters.size() or slot == active or casters[slot].wieldable == null:
 		return false
 	active = slot
-	swap_left = swap_seconds
+	draw_seconds = casters[slot].wieldable.draw_seconds(swap_seconds)
+	swap_left = draw_seconds
 	swaps += 1
 	swap_started.emit(slot)
 	return true
@@ -88,7 +92,7 @@ func cycle(dir: int) -> bool:
 
 ## 0 at the start of a draw .. 1 when ready (viewmodel raise).
 func draw_progress() -> float:
-	return 1.0 - swap_left / swap_seconds if swap_seconds > 0.0 else 1.0
+	return 1.0 - swap_left / draw_seconds if draw_seconds > 0.0 else 1.0
 
 ## One tick for everything but the cast: holstered slots cool down; a running swap counts
 ## down unless it started this tick (`started_now`). The slot in hand is cooled by its
