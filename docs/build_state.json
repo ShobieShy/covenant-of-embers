@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 50,
-  "last_commit": "06b71ad",
+  "steps_done": 51,
+  "last_commit": "8908ccd",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -509,6 +509,14 @@
       "summary": "Ooze brain (kind splitter): splits into 2 half-HP halves on death or Fire under 50%; slowing puddles via Player.apply_slow; spawner adopts halves into waves",
       "tests": "257 tests",
       "commit": "06b71ad"
+    },
+    {
+      "time": "2026-10-24T05:29-05:00",
+      "step": 58,
+      "type": "build",
+      "summary": "Elites: Burning/Warded/Swift/Splitting on def copies, chance 5%+4%/Vigil tier; wave spawns roll them (EnemySpawner.vigil_tier)",
+      "tests": "260 tests",
+      "commit": "8908ccd"
     }
   ],
   "completed_steps": [

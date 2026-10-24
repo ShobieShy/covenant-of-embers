@@ -446,9 +446,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Phase 3 exposes the core weak spot; always drops the quest item 'Joe's Trash' (cracked crystals, 'trash portal' notes) plus glowing sludge and loot; checkpoint at the boss door.
 - Done: test_filth.gd: phase 3, quest drop always spawns, checkpoint respawn.
 - Q1 answered (Magewar storyline)
-**58. Elite affixes**
+**58. Elite affixes** ✅ `8908ccd`
 - Does: Elite variants (Burning, Warded, Swift, Splitting) weighted by Vigil tier (PLAN §7).
 - Done: test_elites.gd: affix rolls per Vigil, stat changes applied.
+- Result: PASS (260 tests + headless playtest)
 
 ### Phase J – Economy
 
