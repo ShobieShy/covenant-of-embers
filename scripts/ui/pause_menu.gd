@@ -11,12 +11,14 @@ var settings_ui: SettingsUi
 var panel: PanelContainer
 var buttons := {}
 var status: Label
+var center: CenterContainer
 
 func _init() -> void:
 	layer = 3
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var c := CenterContainer.new()
+	center = c
 	c.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(c)
 	panel = PanelContainer.new()
@@ -43,10 +45,14 @@ func bind(p: Player, s: SettingsUi) -> void:
 
 func open() -> void:
 	visible = true
+	# Anchors set in _init (before entering the tree) resolve against a zero rect; re-apply
+	# now so the panel sits in the middle of the real window (found in the step-41 playtest).
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	status.text = ""
 	if player:
 		player.ui_open = true
 	get_tree().paused = true
+	(buttons["resume"] as Button).grab_focus()   # keyboard/gamepad navigation
 	if DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 

@@ -188,6 +188,7 @@ func _setup_flow(player: Player) -> void:
 			load_warnings = SaveGame.apply(player, r["data"])
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
 	print("[flow] level %s, gate to %s" % [here, gate.target])
+	Screenshots.attach(self, here)   # step 41: --shots <dir>
 	if OS.get_cmdline_user_args().has("--autoplay"):   # step 40
 		var bot := PlaytestBot.new()
 		bot.name = "PlaytestBot"

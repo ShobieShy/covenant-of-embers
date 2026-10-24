@@ -13,3 +13,6 @@ CMakeUserPresets.json
 .godot/
 *.translation
 export_presets.cfg
+
+# Playtest screenshots/logs (step 41)
+playtest/

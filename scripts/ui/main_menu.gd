@@ -37,6 +37,7 @@ func _ready() -> void:
 		b.pressed.connect(press.bind(id))
 		v.add_child(b)
 		buttons[id] = b
+	UiDriver.attach(get_tree())   # step 41: --ui-test <dir>
 	(buttons["continue"] as Button).disabled = not GameFlow.has_save()
 	settings_ui = SettingsUi.new()
 	add_child(settings_ui)
@@ -52,6 +53,7 @@ func _ready() -> void:
 		PlaytestBot.reset_run()
 		if not args.has("--start"):
 			args.append("--start")
+	Screenshots.attach(self, "menu")
 	print("[menu] main menu, save %s" % ("found" if GameFlow.has_save() else "none"))
 	if args.has("--continue"):
 		press.call_deferred("continue")
