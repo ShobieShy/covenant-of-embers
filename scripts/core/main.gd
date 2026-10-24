@@ -81,6 +81,12 @@ func _ready() -> void:
 		print("[equipment] %d Magewar templates, %d potions; seed 19 %s: health %.1f, mana %.1f, resist %.0f %%; %s +%.0f mana +%.1f/s" % [
 			EquipmentItem.list_ids().size(), ConsumableItem.list_ids().size(), robes.display_name, robes.health_bonus, robes.mana_bonus,
 			robes.elemental_resistance * 100.0, grim.display_name, grim.mana_bonus, grim.mana_regen_bonus])
+		var code := ItemCodes.encode(built)
+		var back := ItemCodes.decode(code)
+		print("[codes] %s -> %s (%s, dmg %.1f); robes %s; 3 mana potions %s" % [built.display_name(), code,
+			(back.item as WieldableInstance).display_name() if back.ok() else back.error,
+			(back.item as WieldableInstance).damage() if back.ok() else 0.0, ItemCodes.encode(robes),
+			ItemCodes.encode(ConsumableItem.load_item("mana_potion"), 3)])
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])
