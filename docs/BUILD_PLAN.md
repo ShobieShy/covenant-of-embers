@@ -502,11 +502,12 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_fast_travel.gd: attune, travel, locked before tutorial end.
 - Result: PASS (275 tests + headless playtest)
 
-**69. Barriers / wild land map**
+**69. Barriers / wild land map** ✅ `6ac14b5`
 - Does: Elyria map: barrier-protected towns (Eldoria, Luminar, Willowbrook, Stonehaven) vs wild land (~60 %); areas like Whispering Woods, Shattered Peaks, Crimson Sea shown as locked; region states saved.
 - Done: test_world_map.gd: region states saved and shown.
 - Q1 answered (Magewar storyline)
 ### Phase L – Progression depth
+- Result: PASS (277 tests + headless playtest)
 
 **70. Summoned growth multiplier** ⏸ Needs ShobieShy
 - Does: Summoned gain XP ×1.5 (Magewar storyline 'growth multipliers'; PLAN Resolve catch-up as alternative).
