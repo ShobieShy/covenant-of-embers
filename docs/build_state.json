@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 30,
+  "next_step": 31,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -34,9 +34,10 @@
     26,
     27,
     28,
-    29
+    29,
+    30
   ],
-  "last_commit": "7c0a7d2",
+  "last_commit": "10f766c",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -295,6 +296,16 @@
         "Step 29 done check: headless screenshot replaced by laid-out rect checks (no renderer headless); real screenshot in the desktop playtest."
       ],
       "commit": "7c0a7d2"
+    },
+    {
+      "time": "2026-10-24T03:31:25-05:00",
+      "step": 30,
+      "type": "build",
+      "summary": "Inventory screen built. Magewar check: InventoryUI toggles on Tab and frees the mouse, same as ours; compare cards and Ember Marks are our additions (PLAN §4). 214 tests green.",
+      "plan_changes": [
+        "Step 30: Player.ui_open added (menus freeze actions and mouse look); steps 31/39 reuse it."
+      ],
+      "commit": "10f766c"
     }
   ]
 }

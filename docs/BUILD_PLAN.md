@@ -271,13 +271,14 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 10 notes): slot icons for `loadout.wieldable(Loadout.Slot.STAFF/WAND)` with the one in hand (`loadout.active`) highlighted and the draw filling from `loadout.draw_progress()`; icon tint = rarity colour (`wieldable.rarity_color()`, step 15), gem dot = element colour (same `ElementTable.color()` as the viewmodel gem). The HUD CanvasLayer must sit above the viewmodel overlay (`Viewmodel` uses CanvasLayer 1).
 - Result: PASS — 211 tests (test_hud.gd 3). scripts/ui/hud.gd = `Hud` (CanvasLayer 2, code-built, Kenney Future font): shield/health/mana (Magewar blue, flash on out_of_mana)/Breath (orange while exhausted) bars, dash pips, spread-sized crosshair hidden while focused, staff/wand slot icons (rarity tint, element gem dot, draw bar), hint label (1.5 s fade), hit/crit/kill marker, wave banner + enemies left, hurt flash, spawn-protection tint, death overlay countdown, level/XP line. main adds it. Headless has no renderer, so the 'screenshot' check is laid-out rects; the real screenshot is the desktop playtest.
 
-**30. Inventory + equipment screen**
+**30. Inventory + equipment screen** ✅ `10f766c`
 - Does: Inventory UI with rarity colours and compare cards, opened by an `inventory` action on Tab (Magewar's name/key).
 - Done: test_inventory_ui.gd: open/close, equip via UI.
 - Does (step 15 notes): names/borders tinted with `rarity_color()` (WieldableInstance, WieldablePart); part cards show `full_description()`; compare cards grey out `ignored_stats()`.
 - Does (step 19 notes): equipment cards show `EquipmentItem.full_description()` and `rarity_color()`; the panel can show over-cap resist from `player.damage_target.resist` (uncapped) with the applied value `Damage.clamp_resist(r)`; spell damage total = `player.equipment.spell_damage_bonus()`; potion quick-slot = `equipment.potion` / `potion_count`.
 - Does (step 20 notes): every item card shows its Ember Mark (`ItemCodes.encode(item, count)`, monospace, grouped "EM1-XXXXX-…") with a copy button (`DisplayServer.clipboard_set`); an "import code" field calls `ItemCodes.decode()` and shows `EmberMark.error` when it fails (offline/sandbox only until co-op validation, PLAN §31.5); hide the code when `encode()` returns "".
 - Does (step 17 notes): wieldable cards/compare deltas read the final getters (`damage()`, `cooldown()`, `accuracy()`, `element()`, `gem_slots()`, `draw_seconds(swap_seconds)`) and `display_name()` (assembled = "<Rarity> <Element> Staff|Wand").
+- Result: PASS — 214 tests (test_inventory_ui.gd 3). scripts/ui/inventory_ui.gd = `InventoryUi` (CanvasLayer 3, Tab = new `inventory` action): 30-slot backpack grid (rarity tint), worn staff/wand + 5 equipment slots, BBCode compare card (green/red deltas vs worn), Equip (swaps old back to the pack), Copy Ember Mark (field + clipboard when available), Import (bad code -> reason, potions -> potion slot). Player.ui_open freezes actions + mouse look while open; mouse shown.
 
 **31. Assembly Station UI**
 - Does: Station UI for assemble/disassemble/salvage/upgrade.
