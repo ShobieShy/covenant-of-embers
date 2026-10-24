@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 29,
+  "next_step": 30,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -33,9 +33,10 @@
     25,
     26,
     27,
-    28
+    28,
+    29
   ],
-  "last_commit": "76ccab3",
+  "last_commit": "7c0a7d2",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -284,6 +285,16 @@
       "summary": "WeightModel (base x prod(mods), constant/live-attribute mods, named tiers, probabilities). Vigil tiers 0-10 with seeded, re-rollable Omens (Easy/Medium/Hard pools: 1/2/3/4 omens), separate health/damage/XP curves, rarity shift on a COPY of RarityTable (Basic /(1+0.05t), Rare+ x(1+0.1t(r-1)) x omen) so rarities.tres is untouched and Magewar luck still stacks; LootDropper.vigil uses the shifted copy. All numbers placeholders. Magewar review: no Vigil in Magewar (our design); luck rule unchanged. 208 tests green.",
       "plan_changes": {},
       "commit": "76ccab3"
+    },
+    {
+      "time": "2026-10-24T03:28:20-05:00",
+      "step": 29,
+      "type": "build",
+      "summary": "HUD built and wired in main. Magewar check: mana colour Color(0.2,0.4,1.0) and crosshair hide on focus match mana_bar_hud / update_crosshair. 211 tests green.",
+      "plan_changes": [
+        "Step 29 done check: headless screenshot replaced by laid-out rect checks (no renderer headless); real screenshot in the desktop playtest."
+      ],
+      "commit": "7c0a7d2"
     }
   ]
 }

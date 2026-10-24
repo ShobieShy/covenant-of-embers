@@ -259,7 +259,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 ## M3 – UI, dungeon, audio, saves, playtests
 - Result: PASS — 208 tests (test_vigil.gd 4)
 
-**29. HUD**
+**29. HUD** ✅ `7c0a7d2`
 - Does: Control-based HUD: health/shield/mana/Breath bars (Breath = `player.breath.fraction()`, tinted while `exhausted`), crosshair (hidden while focused, spread-sized), slot icons with rarity colours, Kenney UI Pack.
 - Does (step 5 notes): dash charge pips from `player.dash.charges` / `max_charges()` with `recharge_progress()` filling the next one.
 - Does (step 8 notes): mana bar = `player.mana.fraction()` in Magewar's mana colour Color(0.2, 0.4, 1.0) (its mana_bar_hud), a hint label for `Player.hint` ("Not enough mana!", ~1.5 s fade; a new hint restarts it) and a short mana-bar flash on `Caster.out_of_mana`.
@@ -269,6 +269,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_hud.gd: bars track values; headless screenshot non-empty; a refused press shows "Not enough mana!".
 - Does (step 13 notes): health bar = `player.health.fraction()`, shield bar = `shield_fraction()` (pulses while `regenerating()`), a red edge flash on `Player.hurt`, and a death overlay counting `player.respawn_left` down on `Player.died` (hidden on `respawned`).
 - Does (step 10 notes): slot icons for `loadout.wieldable(Loadout.Slot.STAFF/WAND)` with the one in hand (`loadout.active`) highlighted and the draw filling from `loadout.draw_progress()`; icon tint = rarity colour (`wieldable.rarity_color()`, step 15), gem dot = element colour (same `ElementTable.color()` as the viewmodel gem). The HUD CanvasLayer must sit above the viewmodel overlay (`Viewmodel` uses CanvasLayer 1).
+- Result: PASS — 211 tests (test_hud.gd 3). scripts/ui/hud.gd = `Hud` (CanvasLayer 2, code-built, Kenney Future font): shield/health/mana (Magewar blue, flash on out_of_mana)/Breath (orange while exhausted) bars, dash pips, spread-sized crosshair hidden while focused, staff/wand slot icons (rarity tint, element gem dot, draw bar), hint label (1.5 s fade), hit/crit/kill marker, wave banner + enemies left, hurt flash, spawn-protection tint, death overlay countdown, level/XP line. main adds it. Headless has no renderer, so the 'screenshot' check is laid-out rects; the real screenshot is the desktop playtest.
 
 **30. Inventory + equipment screen**
 - Does: Inventory UI with rarity colours and compare cards, opened by an `inventory` action on Tab (Magewar's name/key).
