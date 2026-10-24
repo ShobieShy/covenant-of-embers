@@ -540,9 +540,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Replace greybox CSG with free-licensed/Magewar textures and props, Bible-style palette (step 41 palette note).
 - Done: asset licence lint OK; screenshots in playtest/; perf ≥ 60 fps on smoke.
 
-**76. Accessibility**
+**76. Accessibility** ✅ `884eeae`
 - Does: Colour-blind palettes for rarities/elements, reduced motion toggle wiring, subtitles for dialogue, hold/toggle options.
 - Done: test_settings.gd: each option saved and applied.
+- Result: PASS (281 tests + headless playtest)
 
 **77. Controller support**
 - Does: Gamepad bindings for all actions and UI navigation on every screen; rebinding for controller.

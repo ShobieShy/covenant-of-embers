@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 58,
-  "last_commit": "6ac14b5",
+  "steps_done": 59,
+  "last_commit": "884eeae",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -573,6 +573,14 @@
       "summary": "WorldMap (Elyria regions: 4 barrier towns, wild land 60 %, Whispering Woods/Shattered Peaks/Crimson Sea locked; LOCKED/KNOWN/VISITED as region:<id> flags, levels mark their region visited), WorldMapUI shown with the crystal map; test_world_map.gd",
       "tests": "277 tests",
       "commit": "6ac14b5"
+    },
+    {
+      "time": "2026-10-24T05:55-05:00",
+      "step": 76,
+      "type": "build",
+      "summary": "Colour-blind palettes (deuter/protan/tritan) for rarity+element colours, subtitles toggle + scale for dialogue, reduced motion and hold/toggle verified; test_settings.gd",
+      "tests": "281 tests",
+      "commit": "884eeae"
     }
   ],
   "completed_steps": [
