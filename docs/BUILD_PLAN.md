@@ -552,7 +552,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase N – Co-op
 
-**78. Networking foundation (ENet host/join)**
+**78. Networking foundation (ENet host/join)** ✅ `e3024d1`
 - Does: Transport abstraction (NetTransport): ENet direct-IP (always available, headless tests) and Steam P2P lobbies via GodotSteam, app id 480 for development; game runs normally when Steam/GodotSteam is missing. Host-authoritative session, lobby with ready-up; reference Magewar network_manager.
 - Done: test_net.gd: two headless ENet peers connect, ready-up, player spawn replicated; Steam transport reports unavailable without crashing.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
