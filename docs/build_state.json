@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 39,
+  "next_step": 40,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -43,9 +43,10 @@
     35,
     36,
     37,
-    38
+    38,
+    39
   ],
-  "last_commit": "5d8d7d1",
+  "last_commit": "99fe4e2",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -402,6 +403,20 @@
         ]
       },
       "commit": "5d8d7d1"
+    },
+    {
+      "time": "2026-10-24T03:49:26-05:00",
+      "step": 39,
+      "type": "build",
+      "summary": "scenes/menu.tscn is the new main scene (New Run, Continue, Settings, Quit; --start/--continue/--seconds args). GameFlow swaps the Level in main.tscn; LevelGate (F) Midden to Breach and back with autosave + load; Breach logic now added in main; PauseMenu on new menu action (Esc) pauses the tree, opens SettingsUi, saves, returns to menu. run_tests smoke now also runs --start. 40 tests green.",
+      "plan_changes": {
+        "magewar": "Magewar uses a menu action and pause menu; same naming",
+        "flags": [
+          "gate placement is greybox beside PlayerStart",
+          "New Run does not delete an old save; the next autosave overwrites it"
+        ]
+      },
+      "commit": "99fe4e2"
     }
   ]
 }

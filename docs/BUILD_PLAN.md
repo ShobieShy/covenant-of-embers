@@ -339,9 +339,10 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_save.gd: save→load round-trip equal, old version rejected cleanly.
 - Result: PASS (234 tests)
 
-**39. Main menu + flow**
+**39. Main menu + flow** ✅ `99fe4e2`
 - Does: Main menu → Midden → Breach → back, pause menu on a `menu` action (Esc, Magewar's name; Player releases the mouse), settings.
 - Done: test_flow.gd: scene transitions headless.
+- Result: PASS (237 tests)
 
 **40. Playtest pass 1 – automated**
 - Does: Scripted bot plays the slice headless (move, cast, kill, loot, craft, save).
