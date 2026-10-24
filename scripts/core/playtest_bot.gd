@@ -12,8 +12,8 @@ extends Node
 ## stage survives the scene change (static). Fixed spread seed: runs are reproducible.
 
 const MIDDEN_KILLS := 2
-const SIM_LIMIT := 900.0  ## simulated seconds for the whole run
-const STAGE_LIMIT := 300.0
+const SIM_LIMIT := 1500.0  ## simulated seconds for the whole run
+const STAGE_LIMIT := 600.0
 const REPLAN := 0.5
 
 static var stage := "midden_walk"
@@ -220,7 +220,7 @@ func _physics_process(delta: float) -> void:
 				if b and b.open:
 					_goto("breach_chest")
 				else:
-					_enter_arena()
+					_breach_route(b)
 			if stage == "midden_fight" and stats["kills"] >= MIDDEN_KILLS and e == null:
 				_goto("midden_loot")
 		"midden_loot", "breach_loot":
@@ -279,6 +279,27 @@ func _physics_process(delta: float) -> void:
 					_finish(false, "vault chest gave nothing")
 					return
 				_goto("breach_loot")
+
+
+## Step 47: clear the rooms in order, pull every lever, then on to the arena.
+func _breach_route(b: Breach) -> void:
+	if b == null:
+		_enter_arena()
+		return
+	var enc := b.next_encounter()
+	if enc:
+		if enc.wave_state == EnemySpawner.WaveState.WAITING:
+			walk_to(enc.trigger_center)
+		return
+	for sw in b.switches:
+		if not sw.is_pressed:
+			if sw.in_reach(player):
+				if sw.press():
+					note("pulled lever %s" % sw.name)
+			else:
+				walk_to(sw.global_position)
+			return
+	_enter_arena()
 
 
 ## No enemy left and the waves not done: walk into the wave trigger.

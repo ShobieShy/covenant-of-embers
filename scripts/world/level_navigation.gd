@@ -21,6 +21,7 @@ signal baked(region: LevelNavigation)
 @export var bake_on_ready := true
 
 var bakes := 0
+var _bake_iteration := -1  ## step 47: the map iteration a re-bake started on
 
 
 ## A NavigationMesh tuned for the Gnawer (Magewar's rat-sized rusher): radius 0.5 m
@@ -58,6 +59,8 @@ func bake_now() -> int:
 	NavigationServer3D.bake_from_source_geometry_data(nm, data)
 	navigation_mesh = null  # re-assign so the region pushes the new polygons
 	navigation_mesh = nm
+	var m := get_navigation_map() if is_inside_tree() else RID()
+	_bake_iteration = NavigationServer3D.map_get_iteration_id(m) if m.is_valid() else -1
 	bakes += 1
 	baked.emit(self)
 	return nm.get_polygon_count()
@@ -73,6 +76,8 @@ func map_ready() -> bool:
 	var map := get_navigation_map()
 	if not map.is_valid() or NavigationServer3D.map_get_iteration_id(map) == 0:
 		return false  # querying before the first sync logs an error
+	if NavigationServer3D.map_get_iteration_id(map) <= _bake_iteration:
+		return false  # step 47: a re-bake not yet on the map (old polygons still answer)
 	var verts := navigation_mesh.get_vertices()
 	var poly := navigation_mesh.get_polygon(0)
 	var c := Vector3.ZERO

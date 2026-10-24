@@ -7,10 +7,18 @@
 # vault door is a wall box named "vault_door"; step 35 opens it (Vault) when the boss dies.
 # Magewar has no dungeon room (its boss fights in the landfill ring); the scale follows the
 # Midden's 4 m walls and 4 m entrance.
+#
+# Step 47 layout pass (PLAN §14 room order, walking north from the entrance):
+#   entrance hall (z 69..77: start, Assembly Station, gate back to the Midden)
+#   -> room 1 "gnawer den" (z 57..69) -> room 2 "ember gallery" (z 45..57, Scorchlings)
+#   -> room 3 "mire cistern" (z 33..45, Ooze) -> switch room (z 23..33: two levers open
+#   the "switch_gate" into the corridor; they stay inert until every room encounter is
+#   cleared) -> corridor -> arena (mini-boss wave: the Heap; then the Warden boss)
+#   -> vault. Rooms are 14 x 12 m with 4 m doorways on the centre line and some cover.
 
 [level]
 id = "breach_slice"
-name = "The Breach (greybox)"
+name = "The Breach"
 
 [environment]
 sky_color = [0.16, 0.12, 0.14]
@@ -22,7 +30,7 @@ to_light = [0.3, 0.8, 0.5]
 color = [0.75, 0.6, 0.55]
 
 [player_start]
-position = [0.0, 0.0, 20.0]
+position = [0.0, 0.0, 74.0]
 yaw_deg = 0.0
 
 [[box]]
@@ -47,11 +55,41 @@ size = [1.0, 4.0, 10.0]
 color = [0.3, 0.3, 0.34]
 
 [[box]]
-name = "corridor_cap"
+name = "switch_gate"          # step 47: opened by both switch-room levers
 kind = "wall"
 center = [0.0, 2.0, 22.5]
-size = [6.0, 4.0, 1.0]
+size = [5.0, 4.0, 1.0]
+color = [0.45, 0.3, 0.6]
+
+# ---- step 47: south wing (switch room, 3 combat rooms, entrance hall) ----
+[[box]]
+name = "ground_south"
+kind = "ground"
+center = [0.0, -0.1, 50.0]
+size = [16.0, 0.2, 56.0]
+color = [0.27, 0.25, 0.23]
+
+[[box]]
+name = "wing_west"
+kind = "wall"
+center = [-7.5, 2.0, 50.0]
+size = [1.0, 4.0, 56.0]
 color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "wing_east"
+kind = "wall"
+center = [7.5, 2.0, 50.0]
+size = [1.0, 4.0, 56.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "wing_south"
+kind = "wall"
+center = [0.0, 2.0, 77.5]
+size = [16.0, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
 
 [[box]]
 name = "wall_south_west"
@@ -162,6 +200,112 @@ size = [1.5, 3.0, 1.5]
 rotation_deg = [0.0, 45.0, 0.0]
 color = [0.4, 0.36, 0.33]
 
+
+[[box]]
+name = "switch_n_w"
+kind = "wall"
+center = [-5.0, 2.0, 22.5]
+size = [5.0, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "switch_n_e"
+kind = "wall"
+center = [5.0, 2.0, 22.5]
+size = [5.0, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "room3_s_w"
+kind = "wall"
+center = [-4.75, 2.0, 33.0]
+size = [5.5, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "room3_s_e"
+kind = "wall"
+center = [4.75, 2.0, 33.0]
+size = [5.5, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "room2_s_w"
+kind = "wall"
+center = [-4.75, 2.0, 45.0]
+size = [5.5, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "room2_s_e"
+kind = "wall"
+center = [4.75, 2.0, 45.0]
+size = [5.5, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "room1_s_w"
+kind = "wall"
+center = [-4.75, 2.0, 57.0]
+size = [5.5, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "room1_s_e"
+kind = "wall"
+center = [4.75, 2.0, 57.0]
+size = [5.5, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "entrance_n_w"
+kind = "wall"
+center = [-4.75, 2.0, 69.0]
+size = [5.5, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "entrance_n_e"
+kind = "wall"
+center = [4.75, 2.0, 69.0]
+size = [5.5, 4.0, 1.0]
+color = [0.3, 0.3, 0.34]
+
+[[box]]
+name = "den_crate_w"
+kind = "crate"
+center = [-4.0, 0.6, 61.0]
+size = [1.5, 1.2, 1.5]
+color = [0.4, 0.36, 0.33]
+
+[[box]]
+name = "den_crate_e"
+kind = "crate"
+center = [4.0, 0.6, 65.0]
+size = [1.5, 1.2, 1.5]
+color = [0.4, 0.36, 0.33]
+
+[[box]]
+name = "gallery_pillar_w"
+kind = "crate"
+center = [-3.5, 0.5, 51.0]
+size = [1.5, 1.0, 1.5]
+color = [0.4, 0.36, 0.33]
+
+[[box]]
+name = "gallery_pillar_e"
+kind = "crate"
+center = [3.5, 0.5, 51.0]
+size = [1.5, 1.0, 1.5]
+color = [0.4, 0.36, 0.33]
+
+[[box]]
+name = "cistern_block"
+kind = "crate"
+center = [0.0, 0.75, 39.0]
+size = [1.5, 1.5, 1.5]
+color = [0.4, 0.36, 0.33]
+
 # Waves: crossing into the arena (feet within 4 m of its south half) starts them.
 [waves]
 trigger_center = [0.0, 0.0, 6.0]
@@ -183,8 +327,8 @@ position = [9.0, 0.0, 0.0]
 yaw_deg = 90.0
 
 [[spawn_point]]
-name = "station"              # step 46: the Assembly Station in the entrance, against the corridor's east wall
-position = [1.6, 0.0, 15.0]
+name = "station"              # step 46/47: the Assembly Station in the entrance hall, east side
+position = [4.5, 0.0, 72.0]
 yaw_deg = -90.0
 
 [[spawn_point]]
@@ -207,3 +351,59 @@ enemies = [{ enemy = "heap", count = 1, at = "boss_dais" }, { enemy = "gnawer", 
 id = "warden"
 delay_s = 4.0
 enemies = [{ enemy = "breach_warden", count = 1, at = "boss_dais" }]
+
+# ---- step 47: room encounters (each its own trigger, cleared before the levers work) ----
+[[spawn_point]]
+name = "den_north"
+position = [0.0, 0.0, 60.0]
+yaw_deg = 180.0
+
+[[spawn_point]]
+name = "gallery_west"
+position = [-4.5, 0.0, 47.5]
+yaw_deg = 180.0
+
+[[spawn_point]]
+name = "gallery_east"
+position = [4.5, 0.0, 47.5]
+yaw_deg = 180.0
+
+[[spawn_point]]
+name = "cistern_north"
+position = [0.0, 0.0, 35.5]
+yaw_deg = 180.0
+
+[[encounter]]
+id = "room1_den"
+trigger_center = [0.0, 0.0, 66.0]
+trigger_radius = 3.5
+enemies = [{ enemy = "gnawer", count = 3, at = "den_north" }]
+
+[[encounter]]
+id = "room2_gallery"
+trigger_center = [0.0, 0.0, 54.0]
+trigger_radius = 3.5
+enemies = [{ enemy = "scorchling", count = 1, at = "gallery_west" }, { enemy = "scorchling", count = 1, at = "gallery_east" }]
+
+[[encounter]]
+id = "room3_cistern"
+trigger_center = [0.0, 0.0, 42.0]
+trigger_radius = 3.5
+enemies = [{ enemy = "ooze", count = 1, at = "cistern_north" }, { enemy = "gnawer", count = 1, at = "cistern_north" }]
+
+[[switch]]
+name = "lever_west"
+opens = "switch_gate"
+position = [-6.0, 0.0, 28.0]
+yaw_deg = 90.0
+
+[[switch]]
+name = "lever_east"
+opens = "switch_gate"
+position = [6.0, 0.0, 28.0]
+yaw_deg = -90.0
+
+[[exit]]
+name = "to_midden"
+to = "midden"
+position = [-4.5, 0.0, 75.0]

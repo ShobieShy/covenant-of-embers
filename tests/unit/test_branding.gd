@@ -18,6 +18,9 @@ func test_menu_shows_version() -> void:
 func test_icons() -> void:
 	check(FileAccess.file_exists("res://assets/branding/icon.png"), "icon.png exists")
 	check(FileAccess.file_exists("res://assets/branding/icon.ico"), "icon.ico exists")
-	check(String(ProjectSettings.get_setting("application/config/icon")) == "res://assets/branding/icon.png", "project icon set")
+	check(
+		String(ProjectSettings.get_setting("application/config/icon")) == "res://assets/branding/icon.png",
+		"project icon set"
+	)
 	var ico := FileAccess.get_file_as_bytes("res://assets/branding/icon.ico")
 	check(ico.size() > 6 and ico[2] == 1 and ico[4] >= 4, "ico has >= 4 sizes")

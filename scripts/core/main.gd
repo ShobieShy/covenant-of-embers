@@ -168,7 +168,7 @@ func _setup_flow(player: Player) -> void:
 		breach = Breach.new()
 		breach.name = "Breach"
 		add_child(breach)
-		breach.setup($Level)
+		breach.setup($Level, player)
 		breach.chest.dropper = get_node_or_null("LootDropper") as LootDropper   # vault loot lands as pickups
 	_setup_exits(player, here)
 	_setup_npcs(player)
@@ -189,6 +189,8 @@ func _setup_flow(player: Player) -> void:
 		else:
 			load_warnings = SaveGame.apply(player, r["data"])
 			story_flags.from_dict((r["data"] as Dictionary).get("progress", {}).get("flags", {}))
+			if breach and (r["data"] as Dictionary).get("progress", {}).get("vault_open", false):
+				breach.restore_open()   # step 47: rooms cleared, gate + vault stay open
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
 	if here == "old_oak":
 		_setup_hub(player)

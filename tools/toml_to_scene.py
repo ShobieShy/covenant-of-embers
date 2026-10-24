@@ -135,12 +135,40 @@ def on_surface(boxes: list[dict], p: list[float], eps: float = 0.05) -> bool:
     return any(abs(surface_distance(b, p)) <= eps for b in boxes)
 
 
+def _groups(groups, w: str, known: set[str], points: dict, boxes: list) -> list[dict]:
+    if not isinstance(groups, list) or not groups:
+        raise LevelError(f"{w}: enemies must be a non-empty array of {{ enemy, count, at }}")
+    per_point: dict[str, int] = {}
+    out_groups = []
+    for g in groups:
+        if not isinstance(g, dict):
+            raise LevelError(f"{w}: enemies must be a non-empty array of {{ enemy, count, at }}")
+        _only(g, {"enemy", "count", "at"}, f"{w} enemies")
+        eid = str(_need(g, "enemy", f"{w} enemies"))
+        if eid not in known:
+            raise LevelError(f"{w}: unknown enemy '{eid}' (not in data/enemies)")
+        n = g.get("count", 1)
+        if not isinstance(n, int) or isinstance(n, bool) or not 1 <= n <= WAVE_MAX_COUNT:
+            raise LevelError(f"{w}: count must be an integer in [1, {WAVE_MAX_COUNT}]")
+        at = str(_need(g, "at", f"{w} enemies"))
+        if at not in points:
+            raise LevelError(f"{w}: unknown spawn_point '{at}'")
+        per_point[at] = per_point.get(at, 0) + n
+        out_groups.append({"enemy": eid, "count": n, "at": at})
+    for at, n in per_point.items():
+        for spot in ring_spots(points[at], n):
+            if not on_surface(boxes, spot):
+                raise LevelError(f"{w}: a spot of the {n}-enemy ring at '{at}' is off the level (no box surface within 5 cm)")
+    return out_groups
+
+
 def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     try:
         d = tomllib.loads(text)
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
-    _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc"}, "top level")
+    _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
+               "encounter", "switch"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -178,6 +206,8 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "waves": [],
         "exits": [],
         "npcs": [],
+        "encounters": [],
+        "switches": [],
     }
     names: set[str] = set()
     for i, b in enumerate(d.get("box", [])):
@@ -256,31 +286,43 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         delay = wv.get("delay_s", 0.0)
         if not isinstance(delay, (int, float)) or isinstance(delay, bool) or delay < 0:
             raise LevelError(f"{w}: delay_s must be a number >= 0")
-        groups = _need(wv, "enemies", w)
-        if not isinstance(groups, list) or not groups:
-            raise LevelError(f"{w}: enemies must be a non-empty array of {{ enemy, count, at }}")
-        per_point: dict[str, int] = {}
-        out_groups = []
-        for g in groups:
-            if not isinstance(g, dict):
-                raise LevelError(f"{w}: enemies must be a non-empty array of {{ enemy, count, at }}")
-            _only(g, {"enemy", "count", "at"}, f"{w} enemies")
-            eid = str(_need(g, "enemy", f"{w} enemies"))
-            if eid not in known:
-                raise LevelError(f"{w}: unknown enemy '{eid}' (not in data/enemies)")
-            n = g.get("count", 1)
-            if not isinstance(n, int) or isinstance(n, bool) or not 1 <= n <= WAVE_MAX_COUNT:
-                raise LevelError(f"{w}: count must be an integer in [1, {WAVE_MAX_COUNT}]")
-            at = str(_need(g, "at", f"{w} enemies"))
-            if at not in points:
-                raise LevelError(f"{w}: unknown spawn_point '{at}'")
-            per_point[at] = per_point.get(at, 0) + n
-            out_groups.append({"enemy": eid, "count": n, "at": at})
-        for at, n in per_point.items():
-            for spot in ring_spots(points[at], n):
-                if not on_surface(out["boxes"], spot):
-                    raise LevelError(f"{w}: a spot of the {n}-enemy ring at '{at}' is off the level (no box surface within 5 cm)")
+        out_groups = _groups(_need(wv, "enemies", w), w, known, points, out["boxes"])
         out["waves"].append({"id": wid, "delay_s": float(delay), "enemies": out_groups})
+    # Step 47: per-room encounters (each its own trigger + one group of enemies, run by an
+    # Encounter spawner) and switches (interact; when every switch naming a box is
+    # pressed, that box opens like the vault door).
+    for i, en in enumerate(d.get("encounter", [])):
+        w = f"encounter {i + 1}"
+        _only(en, {"id", "trigger_center", "trigger_radius", "delay_s", "enemies"}, w)
+        eid = str(_need(en, "id", w))
+        if eid in ids or any(x["id"] == eid for x in out["encounters"]):
+            raise LevelError(f"duplicate encounter id '{eid}'")
+        w = f"encounter '{eid}'"
+        r = _need(en, "trigger_radius", w)
+        if not isinstance(r, (int, float)) or isinstance(r, bool) or r <= 0:
+            raise LevelError(f"{w}: trigger_radius must be a number > 0")
+        delay = en.get("delay_s", 0.5)
+        if not isinstance(delay, (int, float)) or isinstance(delay, bool) or delay < 0:
+            raise LevelError(f"{w}: delay_s must be a number >= 0")
+        out["encounters"].append({
+            "id": eid, "trigger_center": _vec(_need(en, "trigger_center", w), f"{w} trigger_center"),
+            "trigger_radius": float(r), "delay_s": float(delay),
+            "enemies": _groups(_need(en, "enemies", w), w, known, points, out["boxes"]),
+        })
+    box_names = {b["name"] for b in out["boxes"]}
+    for i, sw in enumerate(d.get("switch", [])):
+        w = f"switch {i + 1}"
+        _only(sw, {"name", "opens", "position", "yaw_deg"}, w)
+        name = str(_need(sw, "name", w))
+        if any(x["name"] == name for x in out["switches"]):
+            raise LevelError(f"duplicate switch name '{name}'")
+        opens = str(_need(sw, "opens", w))
+        if opens not in box_names:
+            raise LevelError(f"switch '{name}': opens unknown box '{opens}'")
+        pos = _vec(_need(sw, "position", w), f"{w} position")
+        if not on_surface(out["boxes"], pos):
+            raise LevelError(f"switch '{name}' position (feet) must lie on a box surface (within 5 cm)")
+        out["switches"].append({"name": name, "opens": opens, "position": pos, "yaw_deg": float(sw.get("yaw_deg", 0.0))})
     # Step 65: travel exits (LevelGate per exit, `to` = a GameFlow level id) and NPCs.
     for sec, key, extra in (("exit", "exits", "to"), ("npc", "npcs", "speaker")):
         seen: set[str] = set()
@@ -404,6 +446,21 @@ def to_tscn(lv: dict, source: str) -> str:
             nodes.append(f'[node name="{wv["id"]}" type="Node" parent="Waves"]\n'
                          f'metadata/index = {i}\nmetadata/delay_s = {_f(wv["delay_s"])}\n'
                          f'metadata/enemies = [{groups}]\n')
+    if lv["encounters"]:
+        nodes.append('[node name="Encounters" type="Node" parent="."]\n')
+        for i, en in enumerate(lv["encounters"]):
+            groups = ", ".join('{"at": "%s", "count": %d, "enemy": "%s"}' % (g["at"], g["count"], g["enemy"])
+                               for g in en["enemies"])
+            nodes.append(f'[node name="{en["id"]}" type="Node" parent="Encounters"]\n'
+                         f'metadata/index = {i}\nmetadata/trigger_center = {_v3(en["trigger_center"])}\n'
+                         f'metadata/trigger_radius = {_f(en["trigger_radius"])}\n'
+                         f'metadata/delay_s = {_f(en["delay_s"])}\nmetadata/enemies = [{groups}]\n')
+    if lv["switches"]:
+        nodes.append('[node name="Switches" type="Node3D" parent="."]\n')
+        for x in lv["switches"]:
+            nodes.append(f'[node name="{x["name"]}" type="Marker3D" parent="Switches"]\n'
+                         f'transform = {_xf(rot_yxz([0, x["yaw_deg"], 0]), x["position"])}\n'
+                         f'metadata/opens = "{x["opens"]}"\n')
     for key, parent, extra in (("exits", "Exits", "to"), ("npcs", "NPCs", "speaker")):
         if lv[key]:
             nodes.append(f'[node name="{parent}" type="Node3D" parent="."]\n')
@@ -494,6 +551,17 @@ def self_test() -> int:
     bad[box + floor + ex + ex] = "duplicate exit name 'e'"
     bad[box + floor + ex.replace('"midden"', '""')] = "to must not be empty"
     bad[box + floor + npc.replace("[20, 0, 0]", "[20, 4, 0]")] = "npc 'n' position (feet) must lie"
+    enc = ('[[encounter]]\nid = "r1"\ntrigger_center = [20, 0, 0]\ntrigger_radius = 2\n'
+           'enemies = [{ enemy = "gnawer", count = 2, at = "p" }]\n')
+    swt = '[[switch]]\nname = "s"\nopens = "a"\nposition = [20, 0, 0]\n'
+    le = parse_level(hdr + box + floor + sp + enc + swt)
+    assert le["encounters"][0]["enemies"] == [{"enemy": "gnawer", "count": 2, "at": "p"}] and le["switches"][0]["opens"] == "a"
+    se = to_tscn(le, "t.toml")
+    assert 'parent="Encounters"' in se and 'metadata/opens = "a"' in se and 'parent="Switches"' in se
+    bad[box + floor + sp + enc + enc] = "duplicate encounter id 'r1'"
+    bad[box + floor + sp + enc.replace('at = "p"', 'at = "q"')] = "unknown spawn_point 'q'"
+    bad[box + floor + sp + enc.replace("trigger_radius = 2", "trigger_radius = 0")] = "trigger_radius must be a number > 0"
+    bad[box + floor + swt.replace('opens = "a"', 'opens = "zz"')] = "opens unknown box 'zz'"
     for body, msg in bad.items():
         try:
             parse_level(hdr + body)
