@@ -626,7 +626,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_net.gd: wrong version rejected cleanly; UPnP failure falls back without crash.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**89. Invite codes / relay (NAT traversal)**
+**89. Invite codes / relay (NAT traversal)** ✅ `707ab89`
 - Does: NAT traversal via Steam: lobbies, friends invites (overlay join / join-on-launch), Steam networking relay; direct IP + VPN documented as fallback.
 - Done: test_net.gd: lobby/invite flow against a fake Steam backend; manual Steam join with app 480 when Steam is running.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)

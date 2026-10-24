@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 71,
-  "last_commit": "ae24541",
+  "steps_done": 72,
+  "last_commit": "707ab89",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -880,6 +880,14 @@
       "summary": "Host slot holds world; clients load/save CharacterSave user://character_<name>.json (refuses non-character paths), host sends travel, clients follow; client saves on host leave",
       "tests": "test_coop_saves.gd 4 tests; 316 pass",
       "commit": "ae24541"
+    },
+    {
+      "time": "2026-10-24T07:55:12-05:00",
+      "step": 89,
+      "type": "build",
+      "summary": "LobbyBackend abstraction; SteamLobbyBackend (createLobby friends-only, overlay invite, join_requested, +connect_lobby); FakeLobbyBackend hub for tests; CoopMenu Host(Steam)/Invite go through it",
+      "tests": "test_lobby.gd 4 tests (fake invite flow, menu session over ENet-carried fake lobby); 320 pass",
+      "commit": "707ab89"
     }
   ],
   "completed_steps": [
@@ -953,6 +961,7 @@
     84,
     86,
     88,
+    89,
     91
   ]
 }
