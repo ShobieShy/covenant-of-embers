@@ -4,7 +4,7 @@ extends RefCounted
 ## Items are Ember Mark strings (ItemCodes.encode; codes carry their own version): the
 ## backpack, staff + wand, the 5 equipment slots and the potion stack. Saved values:
 ## level/XP, Arcane Dust, current health/shield/mana/Breath (a save while dead stores the
-## respawn state: full), and a free-form `progress` dictionary (level id, Breach cleared...).
+## respawn state: full), skill ranks (step 71), and a free-form `progress` dictionary (level id, Breach cleared...).
 ## Load: pieces are worn first (equipment.slots, then one apply_bonuses() with the level
 ## bonuses rebuilt from the level), then the saved values are clamped in. Bonuses are never
 ## saved. A code that fails to decode is dropped with a warning; a save of another version
@@ -47,6 +47,7 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 			"shield": p.health.shield_max if dead else p.health.shield,
 			"mana": p.mana.max_value() if dead else p.mana.value,
 			"breath": p.breath.max_value() if dead else p.breath.value,
+			"skills": p.skills.to_dict(),  # step 71 (older saves: no key = no ranks)
 		},
 		"items":
 		{
@@ -131,6 +132,7 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 	var pm := _decode(String(it.get("potion", "")), ConsumableItem, warn, "potion")
 	if pm:
 		p.equipment.add_potions(pm.item as ConsumableItem, pm.count)
+	warn.append_array(p.skills.from_dict(pl.get("skills", {}), pr.level))
 	p.apply_bonuses()
 	p.health.value = clampf(float(pl.get("health", p.health.max_value())), 0.0, p.health.max_value())
 	p.health.shield = clampf(float(pl.get("shield", p.health.shield_max)), 0.0, p.health.shield_max)

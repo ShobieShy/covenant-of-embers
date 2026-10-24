@@ -297,6 +297,16 @@ func _on_map_closed() -> void:
 func _on_fast_travel(_point: String, level: String) -> void:
 	travel(level)
 
+## Step 71: skill respec is free, and only offered at the Old Oak (a cost waits for Q4).
+func can_respec() -> bool:
+	return GameFlow.id_of($Level) == "old_oak"
+
+func respec_skills() -> int:
+	var player := get_node_or_null("Player") as Player
+	if player == null or not can_respec():
+		return -1
+	return player.respec_skills()
+
 func talk_to(speaker: String) -> bool:
 	return dialogue != null and not dialogue.active and dialogue.start(speaker)
 

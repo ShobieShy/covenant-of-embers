@@ -139,6 +139,7 @@ var level_breath_bonus := 0.0
 var potions_used := 0
 var inventory := Inventory.new()  # step 23: backpack (30 slots) + Arcane Dust
 var progression := Progression.new()  # step 27: XP + level
+var skills := Skills.new()  # step 71: skill ranks (tree data in data/skills/)
 var pickups := PickupCollector.new()  # step 23: walk-over auto-collect + Interact pickup
 
 var _wheel := 0  # queued mouse-wheel cycles (+ next / - prev)
@@ -154,6 +155,7 @@ var _collider: CollisionShape3D
 
 
 func _init() -> void:
+	skills.tree = SkillTree.default_tree()
 	if tuning == null:
 		tuning = PlayerTuning.new()
 	breath = Breath.from_tuning(tuning)
@@ -552,21 +554,37 @@ func unequip_item_to_inventory(slot: int) -> bool:
 ## Pushes the worn totals (+ level parts) into the pools, speed, resists and casters.
 ## Max raises add the difference (Health/Mana; Breath doesn't refill), removals clamp.
 func apply_bonuses() -> void:
+	var sk := skills.totals()  # step 71: skill ranks stack on top of gear + levels
 	if health != null:
-		health.set_max_bonus(equipment.health_bonus() + level_health_bonus)
+		health.set_max_bonus(equipment.health_bonus() + level_health_bonus + float(sk.get("max_health", 0.0)))
 	if mana != null:
-		mana.set_max_bonus(equipment.mana_bonus() + level_mana_bonus)
-		mana.set_regen_bonus(equipment.mana_regen_bonus())
+		mana.set_max_bonus(equipment.mana_bonus() + level_mana_bonus + float(sk.get("max_mana", 0.0)))
+		mana.set_regen_bonus(equipment.mana_regen_bonus() + float(sk.get("mana_regen", 0.0)))
 	if breath != null:
-		breath.set_max_bonus(equipment.stamina_bonus() + level_breath_bonus)
-	set_speed_multiplier(equipment.speed_multiplier())
+		breath.set_max_bonus(equipment.stamina_bonus() + level_breath_bonus + float(sk.get("max_breath", 0.0)))
+	set_speed_multiplier(equipment.speed_multiplier() * (1.0 + float(sk.get("speed_pct", 0.0)) / 100.0))
 	var res := equipment.resistances()
 	for e in ElementTable.COUNT:
-		damage_target.resist[e] = res[e]
-	var dmg := equipment.spell_damage_bonus()
+		damage_target.resist[e] = res[e] + float(sk.get("resist_all", 0.0)) / 100.0  # capped in Damage
+	var dmg := equipment.spell_damage_bonus() + float(sk.get("spell_damage", 0.0))
 	for c in loadout.casters:
 		c.damage_bonus = dmg
 	consecrations.apply(self)
+
+
+## Step 71: one skill rank (see Skills.why_not); re-applies the bonuses.
+func spend_skill(sid: String) -> bool:
+	if not skills.spend(sid, progression.level):
+		return false
+	apply_bonuses()
+	return true
+
+
+## Step 71: refund every skill point (main.gd only offers it at the Old Oak).
+func respec_skills() -> int:
+	var n := skills.respec()
+	apply_bonuses()
+	return n
 
 
 ## Drinks the quick-slot potion; a refusal (pool full / dead / empty slot) costs nothing

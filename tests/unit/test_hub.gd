@@ -75,3 +75,8 @@ func test_station_and_mentor_once() -> void:
 	check(h.story_flags.has(MentorArrival.FLAG) and not h.mentor_played, "not again after a reload")
 	h.free()
 	_cleanup()
+
+
+func test_respec_only_at_old_oak() -> void:
+	var src := FileAccess.get_file_as_string("res://scripts/core/main.gd")
+	check(src.contains("func can_respec") and src.contains('"old_oak"'), "respec gated to the Old Oak")
