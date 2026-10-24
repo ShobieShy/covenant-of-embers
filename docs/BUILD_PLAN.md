@@ -557,7 +557,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_net.gd: two headless ENet peers connect, ready-up, player spawn replicated; Steam transport reports unavailable without crashing.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**79. Replicated combat + instanced loot**
+**79. Replicated combat + instanced loot** ✅ `ae95993`
 - Does: Host simulates enemies/damage; per-player instanced loot and kill rewards (Magewar instanced_loot_service / kill_reward_service). Clients bring their own character (level, gear, skills); the world is the host's save.
 - Done: test_net.gd: each peer sees only own drops; XP/currency to all in range; client character stats come from the client save.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
