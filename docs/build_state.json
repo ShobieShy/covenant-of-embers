@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 22,
+  "next_step": 23,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -26,9 +26,10 @@
     18,
     19,
     20,
-    21
+    21,
+    22
   ],
-  "last_commit": "72ca0c0",
+  "last_commit": "1e25de7",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -208,6 +209,17 @@
         "No bugs found in earlier steps during this step."
       ],
       "commit": "72ca0c0"
+    },
+    {
+      "time": "2026-10-24T03:08:40-05:00",
+      "step": 22,
+      "type": "build",
+      "summary": "Loot drops on kill: LootDropper on EventBus.enemy_killed rolls per-peer and spawns rarity-coloured LootPickups with light beams; dummies skipped. 189 tests green.",
+      "plan_changes": [
+        "Magewar reference for step 27 checked: _level_up gives +5 max mana and +5 max stamina (Breath) with refill, xp_to_next_level starts at 100 and grows x1.5 per level, enemy xp_reward default 10; Magewar does NOT raise max health on level-up -> step 27 follows Magewar (no +10 health) unless ShobieShy wants it.",
+        "Step 23: pickups are Area3D on layer 5 (monitorable); the player-side detector needs mask bit 5."
+      ],
+      "commit": "1e25de7"
     }
   ]
 }
