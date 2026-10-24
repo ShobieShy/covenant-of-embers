@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 73,
-  "last_commit": "7ae1e9d",
+  "steps_done": 74,
+  "last_commit": "231c4f6",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -896,6 +896,14 @@
       "summary": "Canonical LF/sorted-key saves, game-data fingerprint checked on join, pinned item codes/loot",
       "tests": "324 passed",
       "commit": "7ae1e9d"
+    },
+    {
+      "time": "2026-10-24T08:00:52-05:00",
+      "step": 92,
+      "type": "build",
+      "summary": "LinkConditioner on NetSession (game-time delay, seeded unreliable loss, --net-lag/--net-loss); host/client state hashes match after scripted fight at 150 ms/2%. Own movement/casting already client-local (no extra prediction needed)",
+      "tests": "326 passed",
+      "commit": "231c4f6"
     }
   ],
   "completed_steps": [
@@ -971,6 +979,7 @@
     88,
     89,
     90,
-    91
+    91,
+    92
   ]
 }

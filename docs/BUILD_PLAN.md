@@ -641,7 +641,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_net.gd: client character persists after host quits; host world flags unchanged by clients; character file loads into any host.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**92. Desync + latency tests**
+**92. Desync + latency tests** ✅ `231c4f6`
 - Does: Headless 2–4 peer harness with simulated latency/packet loss; state hash checks for enemies, HP, loot; client prediction for own movement/casting.
 - Done: test_net_desync.gd: hashes match after a scripted fight at 150 ms/2 % loss.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
