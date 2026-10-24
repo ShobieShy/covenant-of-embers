@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 19,
+  "next_step": 20,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -23,9 +23,10 @@
     15,
     16,
     17,
-    18
+    18,
+    19
   ],
-  "last_commit": "1106bb4",
+  "last_commit": "7ef9d04",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -170,6 +171,14 @@
       "summary": "Drop pools: scripts/loot DropEntry/DropPool/DropTable/LootDrop/DropRoller + resources/loot/drop_pools.tres (midden_gnawer, midden_heap). Rarity per drop = RarityTable.roll(rng, luck), then a weighted pool entry of that rarity (fallback down a tier, then up). DropRoller.roll_procedural follows Magewar roll_procedural_drops (1 part +1 at level >= 3, uniform type, enemy element else weighted roll_element, 25% equipment spec at luck x0.5); roll_kill/roll_enemy = pool entry by drop_chance 0.3 + procedural. EnemyDef gains level (Gnawer 1, Heap 3). main prints [drops]. 163 tests green (6 new in test_pools.gd; 10k rolls within 2%, worst 1.1%).",
       "plan_changes": "PLAN 30.2 drop rule. Refined steps 19 (EquipmentRoller.from_seed fills the LootDrop equipment spec, keep one-randi contract), 20 (pool drops = base id + rarity tier), 21 (DropTable patches, loaders outside the class they return), 22 (roll_enemy, per-peer rng, skip dummies, rarity_color/describe), 27 (EnemyDef.level, add xp_reward). Fixed: Godot #86540 exit leak from DropTable static loader -> DropRoller.default_pools (latent in RarityTable/EnemyTable/ElementTable.load_default); stale step refs in training_dummies.toml/gnawer.toml. Magewar mismatches: fixed thresholds 45/25/15/8/5/2 vs RarityTable weights (kept weights, flagged); per-item loot_table chances vs one pool roll per kill; tier fallback is ours; equipment returned as a seed spec until step 19.",
       "commit": "1106bb4"
+    },
+    {
+      "time": "2026-10-24T01:16:44-05:00",
+      "step": 19,
+      "type": "build",
+      "summary": "Equipment items: EquipmentItem (5 Magewar slots, full_description), ConsumableItem health/mana potions (refused when full), EquipmentRoller (Magewar ranges/order x rarity, names, seeded regenerate), Player.equipment + apply_bonuses (health/mana/Breath max, regen, speed, spell damage per cast, resist per affinity capped 60% at hit), 5 templates + 2 potions imported from Magewar, DropRoller fills equipment items. 172 tests green (9 new).",
+      "plan_changes": "PLAN 30.3 fixed (Clothes resist any non-Arcane piece, Shoes speed x rarity, potions, template stats kept); step 19 Result/Fixed/Magewar check; step 20/22/24/27/30/36/38 notes (seed+slot+rarity+element codes, potion pickups, equip via Player.equip_item, level_*_bonus, cards, save via apply_bonuses). Fixed: _ready rebuilt pools dropping bonuses, stale 'until step 19' comments, test_pools checks item.",
+      "commit": "7ef9d04"
     }
   ]
 }
