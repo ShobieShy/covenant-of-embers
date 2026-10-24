@@ -1,0 +1,96 @@
+# Dialogue (BUILD_PLAN step 62). Lines ported from Magewar magewar/scripts/npc/
+# (npc_bob.gd, npc_crazy_joe.gd, npc_generic.gd); townsfolk pity-then-awe variants are
+# plan design. First matching entry per speaker wins (file order).
+
+[[dialogue]]
+id = "joe_summoning"
+speaker = "Crazy Joe"
+forbids = ["joe_met"]
+sets = ["joe_met", "permit_given"]
+lines = ["*mumbles incoherently* ...interdimensional echoes... forgotten gods...", "Ah! The ritual worked! You're actually here!", "I summoned you from beyond the veil! A true outsider... a real chance!", "...well, the appraisal crystal says you're 'underwhelming.' But I KNOW you have potential!", "The dungeons fractured ten years ago. Monsters everywhere. The barriers are failing.", "Unfortunately, my colleagues didn't appreciate my... initiative. They expelled me. 'Reckless,' they called it. ME! After three centuries!", "Check the landfill. Find what's causing it. Maybe it'll lead us to answers... and to the real culprits.", "Here, take these gold coins. Fifty. It's not much, but it'll keep you fed for a week.", "Oh, and they 'gave' you the Old Oak to live in. Edge of town. Big dead tree, can't miss it. Here's the residency permit."]
+
+[[dialogue]]
+id = "joe_repeat"
+speaker = "Crazy Joe"
+requires = ["joe_met"]
+lines = ["*waves arms wildly* The landfill! Go check the landfill!"]
+repeats = ["*waves arms wildly* The landfill! Go check the landfill!", "Strange mana distortions... trash portals... the answer is in the garbage!", "They think I'm crazy. But the trash SPEAKS to me!"]
+
+[[dialogue]]
+id = "bob_intro"
+speaker = "Bob"
+forbids = ["bob_met"]
+sets = ["bob_met", "starter_gear_given"]
+lines = ["...Who are you? Why are you in my tree?", "Name's Bob. This is my home. You lot are squatting.", "*examines you with a glowing orb*", "Hmm. Interesting. You're not from this realm, are you?", "You're weak now. Pathetically so. But you could become something... useful.", "My only lead is a faint mana distortion at the town's landfill.", "Here. Take this. *hands you a rusty dagger and a mana potion*", "Go to the landfill. Defeat whatever lurks there. Bring back anything of Joe's.", "Don't die. You're interesting anomalies. Politics is the true monster, by the way."]
+
+[[choice]]
+dialogue = "bob_intro"
+text = "Why should we help you?"
+sets = ["asked_bob_why"]
+reply = ["Because the Association won't. And because you've got nowhere else to sleep."]
+
+[[choice]]
+dialogue = "bob_intro"
+text = "We'll go."
+reply = ["Good. Less talking, more landfill."]
+
+[[dialogue]]
+id = "bob_after_filth"
+speaker = "Bob"
+requires = ["bob_met", "filth_defeated"]
+forbids = ["crystal_given"]
+sets = ["crystal_given"]
+lines = ["You're back. Did you find anything at the landfill?", "Hmm? You defeated The Filth? That's... surprisingly competent.", "Joe's madness has its uses. These crystals still hold resonance patterns.", "There. A Fast Travel Teleportation Crystal.", "The Fracture isn't random. Someone - or something - caused it deliberately.", "And welcome to Elyria, Summoned. Try not to break anything I can't fix."]
+
+[[dialogue]]
+id = "bob_late"
+speaker = "Bob"
+requires = ["crystal_given"]
+lines = ["The dungeons hold the answers. Five of them, scattered across the realm."]
+repeats = ["The dungeons hold the answers. Five of them, scattered across the realm.", "Talk to the townsfolk. Take their quests. You'll discover more as you go.", "I'll be here, researching. As always. Now stop bothering me."]
+
+[[dialogue]]
+id = "bob_waiting"
+speaker = "Bob"
+requires = ["bob_met"]
+lines = ["The landfill. Go there. Find Joe's trash. Don't die."]
+repeats = ["The landfill. Go there. Find Joe's trash. Don't die.", "*grumbles* Politics is the true monster..."]
+
+[[dialogue]]
+id = "guard_awe"
+speaker = "Bored Guard"
+requires = ["filth_defeated"]
+lines = ["You... came back from the landfill. With The Filth's sludge on your boots. Huh.", "Maybe the Summoned aren't a joke after all. Go on through."]
+repeats = ["Mind the gate, hero.", "Heard what you did at the dump. Respect."]
+
+[[dialogue]]
+id = "guard_pity"
+speaker = "Bored Guard"
+lines = ["Landfill's that way. DANGER sign ain't for show. But if Joe sent you... good luck, I guess.", "New 'Summoned' folk like you show up once a decade. Most don't last the first dungeon run."]
+repeats = ["Move along. Don't cause trouble near the gate.", "Report anything weird from the trash heap. We pretend to care."]
+
+[[dialogue]]
+id = "merchant_awe"
+speaker = "Potion Merchant"
+requires = ["filth_defeated"]
+lines = ["The one who beat The Filth! Please, take a look, first pick for you."]
+repeats = ["Back for more? Anything for Eldoria's newest hero.", "If you find any strange crystals or parts in the dungeons, I might buy 'em."]
+
+[[dialogue]]
+id = "merchant_pity"
+speaker = "Potion Merchant"
+lines = ["Best potions in Eldoria! ...well, the only potions. Association taxes make real imports rare.", "Heard Crazy Joe actually summoned someone this time. You the one? Don't look like much, no offense."]
+repeats = ["Potions won't save you from a Fracture beast, but they'll help. Buy some.", "Come back when you have real loot to trade."]
+
+[[dialogue]]
+id = "patron_awe"
+speaker = "Grizzled Patron"
+requires = ["filth_defeated"]
+lines = ["*hiccups* You! The trash-slayer! Drinks are on... someone else."]
+repeats = ["*raises a mug* To the Summoned!"]
+
+[[dialogue]]
+id = "patron_pity"
+speaker = "Grizzled Patron"
+lines = ["*hiccups* The Fractured Flagon's the only place left with decent ale. Everything else tastes like barrier dust.", "If you're new here... the outer dungeons started acting up again last month. Something's stirring."]
+repeats = ["Go talk to the shopkeeps if you need potions. Or don't. Your funeral.", "*burps* Stay away from the landfill, kid. Even the rats are wrong there."]
