@@ -213,11 +213,12 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_drops.gd: kill spawns drop with correct rarity colour.
 - Result: scripts/loot/loot_dropper.gd = `LootDropper` (Node; connects to GameEvents.bus().enemy_killed in _ready, disconnects on exit; reads the corpse's position/def in the handler, rolls `DropRoller.roll_enemy(rng, def, luck)`, spawns one pickup per drop in a 0.6 m ring; `make_peer_rng(seed_base, peer_id)` = seed hash("base:peer"); `drops_for(id)` false for *training_dummy; counters spawned/kills_seen/kills_skipped; `drops_spawned` signal). scripts/loot/loot_pickup.gd = `LootPickup` (Area3D on physics layer 5, group loot_pickups, monitorable only; emissive rarity-tinted gem box, unshaded translucent beam 1.5 m + 0.5 m per tier, OmniLight, billboard Label3D = LootDrop.describe(); all in LootDrop.rarity_color()). main.gd adds a LootDropper. 189 tests green (4 new in test_drops.gd: 30 Gnawer/Heap kills spawn exactly the replayed roll_enemy drops with matching colours on gem/beam/light/label, one roll per death; dummies never drop; per-peer streams; beam height per tier). Magewar check (enemy_base.gd _finalize_death/_drop_loot): rewards are granted before loot (kept as the step 27 ordering note); Magewar's solo procedural loot goes straight into the inventory and only scene items spawn in the world — ours always spawns world pickups (PLAN loot-shooter readability), collection in step 23.
 
-**23. Pickup + auto-collect**
+**23. Pickup + auto-collect** ✅ `1e63328`
 - Does: Interact pickup, auto-collect for mana/dust, compare card data.
 - Does (step 8 notes): mana orbs/potions auto-collected go through `player.mana.restore(n)` (capped, regen delay untouched); skip auto-collecting a mana orb while the pool is full.
 - Done: test_pickup.gd: walk-over collects, Interact picks item.
 - Does (step 19 notes): potion pickups go to the quick-slot via `player.equipment.add_potions(ConsumableItem.load_item(id), n)` (one kind at a time, ≤ stack 5; returns how many it took, leave the rest on the ground); drinking = `player.use_potion()` (bind a `use_potion` action here or in step 24); equipment pickups carry `LootDrop.item` (EquipmentItem).
+- Result: PASS — 192 tests green. Inventory (30 slots + Arcane Dust), PickupCollector (walk-over mana orbs/dust/potions within 1.2 m, Interact picks the looked-at item within 3 m / 12° cone, full backpack refuses with a hint), LootPickup auto kinds, CompareCard data with deltas vs the worn item.
 
 **24. Inventory and equip**
 - Does: Inventory grid model, equip to staff/wand/equipment slots.

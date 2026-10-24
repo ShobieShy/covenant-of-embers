@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 23,
+  "next_step": 24,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -27,9 +27,10 @@
     19,
     20,
     21,
-    22
+    22,
+    23
   ],
-  "last_commit": "1e25de7",
+  "last_commit": "1e63328",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -220,6 +221,17 @@
         "Step 23: pickups are Area3D on layer 5 (monitorable); the player-side detector needs mask bit 5."
       ],
       "commit": "1e25de7"
+    },
+    {
+      "time": "2026-10-24T03:13:47-05:00",
+      "step": 23,
+      "type": "build",
+      "summary": "Inventory model, PickupCollector in Player.tick, LootPickup mana/dust/potion kinds, CompareCard. Magewar review: Magewar items are Cogito interact pickups (no walk-over); auto-collect for orbs/dust/potions is our PLAN addition. Pickup detection uses distance over the loot_pickups group, not physics, so tests are deterministic. 192 tests green.",
+      "plan_changes": [
+        "Step 24: extend Inventory (already 30 slots) with equip-from-backpack / swap-back; use_potion action still unbound — bind in step 24",
+        "Step 26: PLAN §30.3 says Dust upgrades never reach Unique — cap upgrades at Primordial"
+      ],
+      "commit": "1e63328"
     }
   ]
 }
