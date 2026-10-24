@@ -379,9 +379,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_item_codes.gd: EM2 round-trip with gems+consecration, EM1 decodes unchanged, save round-trip keeps them.
 - Result: PASS (246 tests + headless playtest)
 
-**45. Item cards show gems + consecrations**
+**45. Item cards show gems + consecrations** ✅ `fee2844`
 - Does: CompareCard/inventory/station screens list socketed gems (element colour) and the consecration text and delta lines.
 - Done: test_inventory_ui.gd / test_station_ui.gd: card text includes gem + consecration lines.
+- Result: PASS (248 tests + headless playtest)
 
 **46. Assembly Station in the Breach + station polish**
 - Does: Place an AssemblyStation in the Breach entrance/hub (step 31 flag), shared station prompt; F-interact range check.

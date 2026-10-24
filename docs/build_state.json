@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 44,
-  "last_commit": "4c7a1e9",
+  "steps_done": 45,
+  "last_commit": "fee2844",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -455,6 +455,16 @@
         "tests": 246
       },
       "commit": "4c7a1e9"
+    },
+    {
+      "time": "2026-10-24T05:07:45-05:00",
+      "step": 45,
+      "type": "build",
+      "summary": "CompareCard.extra_lines(): gems in element colour (+N damage), consecration text, replaces/loses delta; inventory + station cards",
+      "plan_changes": {
+        "tests": 248
+      },
+      "commit": "fee2844"
     }
   ],
   "completed_steps": [
@@ -501,6 +511,7 @@
     41,
     42,
     44,
+    45,
     83
   ]
 }
