@@ -43,10 +43,15 @@ func _ready() -> void:
 	settings_ui.setup(Settings.load_from())
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	(buttons["new_run"] as Button).grab_focus.call_deferred()
-	var args := OS.get_cmdline_user_args()
+	var args := Array(OS.get_cmdline_user_args())
 	var i := args.find("--seconds")
 	if i >= 0 and i + 1 < args.size():
 		_seconds = float(args[i + 1])
+	if args.has("--autoplay"):   # step 40: the bot never touches the real save
+		GameFlow.save_path = "user://playtest_save.json"
+		PlaytestBot.reset_run()
+		if not args.has("--start"):
+			args.append("--start")
 	print("[menu] main menu, save %s" % ("found" if GameFlow.has_save() else "none"))
 	if args.has("--continue"):
 		press.call_deferred("continue")

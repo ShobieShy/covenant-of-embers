@@ -64,6 +64,8 @@ static func _set_bus(n: String, v: float) -> void:
 		AudioServer.set_bus_volume_db(i, linear_to_db(maxf(v, 0.0001)))
 
 func _ready() -> void:
+	if DisplayServer.get_name() == "headless" and OS.get_cmdline_user_args().has("--autoplay"):
+		muted_output = true   # headless bot runs: no audio device, and a 3D sound alive at quit leaks
 	for i in POOL:
 		var p := AudioStreamPlayer.new()
 		add_child(p)
@@ -75,6 +77,10 @@ func _ready() -> void:
 	bus.wave_cleared.connect(func(_i, _id): play("wave_clear"))
 
 func _exit_tree() -> void:
+	for c in get_children():   # a sound still playing at quit would leak its playback
+		if c is AudioStreamPlayer or c is AudioStreamPlayer3D:
+			c.stop()
+			c.stream = null
 	var bus := GameEvents.bus()
 	if bus.enemy_spawned.is_connected(_on_enemy_spawned):
 		bus.enemy_spawned.disconnect(_on_enemy_spawned)

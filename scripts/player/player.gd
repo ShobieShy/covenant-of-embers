@@ -200,6 +200,9 @@ func _ready() -> void:
 	if input_enabled and DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
+## Step 40: when valid, returns this tick's PlayerInput instead of the keyboard/mouse.
+var bot_input: Callable
+
 ## Uses `m` as the mana pool and plugs it into every slot's caster (one shared pool).
 func set_mana(m: Mana) -> void:
 	mana = m
@@ -245,6 +248,8 @@ func _physics_process(delta: float) -> void:
 	if input_enabled and ui_open:
 		_wheel = 0
 		tick(PlayerInput.hold(), delta)   # physics keeps running; no actions while a menu is up
+	elif input_enabled and bot_input.is_valid():
+		tick(bot_input.call() as PlayerInput, delta)   # step 40: the playtest bot drives
 	elif input_enabled:
 		var input := PlayerInput.from_input()
 		if _wheel > 0:
