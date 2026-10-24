@@ -8,7 +8,8 @@ const DEFAULT_PATHS: PackedStringArray = [
 	"res://resources/enemies/training_dummies.tres",
 	"res://resources/enemies/gnawer.tres",
 	"res://resources/enemies/heap.tres",
-	"res://resources/enemies/breach_warden.tres"
+	"res://resources/enemies/breach_warden.tres",
+	"res://resources/enemies/scorchling.tres",
 ]  ## step 34: the Breach mini-boss
 
 @export var defs: Array[EnemyDef] = []

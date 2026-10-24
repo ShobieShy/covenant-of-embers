@@ -1,0 +1,17 @@
+# Ember Scorchling (BUILD_PLAN step 54, PLAN Cinderkin role): ranged Fire imp that lobs
+# embers and flees when hurt. Magewar enemy_ember_scorchling.gd (read-only): Fire, level 2,
+# xp 8, contact 4.5, detection 9, aggro 7, walk 2.8, sprint 6. Plan design: 40 HP, range 7,
+# cooldown 1.6 s (Magewar 0.65 is a melee bite rate), embers 12 m/s, backs off inside 3 m,
+# flees under 30 %. ai kind "ranged" = scripts/enemies/scorchling.gd.
+
+[[enemy]]
+id = "scorchling"
+name = "Ember Scorchling"
+affinity = "fire"
+max_health = 40
+level = 2
+xp_reward = 8
+size = [0.5, 0.8, 0.5]
+color = [0.85, 0.3, 0.08]
+weak_point = { offset = [0.0, 0.7, 0.0], size = [0.3, 0.2, 0.3] }
+ai = { kind = "ranged", detect_range = 9.0, aggro_range = 7.0, walk_speed = 2.8, sprint_speed = 6.0, attack_range = 7.0, attack_damage = 4.5, attack_cooldown = 1.6, projectile_speed = 12.0, min_range = 3.0, flee_below = 0.3, knockback_strength = 10.0, knockback_time = 0.5, knockback_threshold = 10.0, turn_rate_deg = 540.0 }

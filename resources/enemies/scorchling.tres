@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="EnemyTable" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_table.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/enemies/enemy_def.gd" id="2"]
+
+[sub_resource type="Resource" id="scorchling"]
+script = ExtResource("2")
+id = "scorchling"
+display_name = "Ember Scorchling"
+affinity = 1
+max_health = 40.0
+level = 2
+xp_reward = 8
+size = Vector3(0.5, 0.8, 0.5)
+color = Color(0.85, 0.3, 0.08, 1)
+resist = {}
+has_weak_point = true
+weak_point_offset = Vector3(0, 0.7, 0)
+weak_point_size = Vector3(0.3, 0.2, 0.3)
+ai = {
+"aggro_range": 7.0,
+"attack_cooldown": 1.6,
+"attack_damage": 4.5,
+"attack_range": 7.0,
+"detect_range": 9.0,
+"flee_below": 0.3,
+"kind": "ranged",
+"knockback_strength": 10.0,
+"knockback_threshold": 10.0,
+"knockback_time": 0.5,
+"min_range": 3.0,
+"projectile_speed": 12.0,
+"sprint_speed": 6.0,
+"turn_rate_deg": 540.0,
+"walk_speed": 2.8
+}
+
+[resource]
+script = ExtResource("1")
+defs = Array[ExtResource("2")]([SubResource("scorchling")])

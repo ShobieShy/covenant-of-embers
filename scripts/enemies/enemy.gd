@@ -33,7 +33,8 @@ const GROUP := &"enemies"  ## Magewar's group
 const BRAINS := {
 	"rusher": "res://scripts/enemies/gnawer.gd",
 	"tank": "res://scripts/enemies/heap.gd",
-	"boss": "res://scripts/enemies/warden.gd"
+	"boss": "res://scripts/enemies/warden.gd",
+	"ranged": "res://scripts/enemies/scorchling.gd",
 }
 
 var def: EnemyDef
