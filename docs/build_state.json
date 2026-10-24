@@ -6,7 +6,7 @@
   "next_step": 0,
   "total_steps": 118,
   "steps_done": 99,
-  "last_commit": "0f368f4",
+  "last_commit": "478d626",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1094,7 +1094,7 @@
       "step": 118,
       "type": "build",
       "summary": "Save migration (SaveGame.intro_status/migrate_intro: clearly-past saves marked done, others asked once 'Play the new intro?'), 'Skip prologue' on New Game once any slot finished it, --skip-intro kept (--autoplay now plays the intro); bot plays beats 1-13 (full tutorial kit drop, arena ring fits boss+players, QuestLog merge fix, path-follow fix); test_save_migration.gd; [tests] 392 passed, 0 failed, playtests solo/4x/--skip-intro/co-op PASS, lint green",
-      "commit": "PENDING"
+      "commit": "478d626"
     }
   ],
   "completed_steps": [

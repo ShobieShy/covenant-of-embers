@@ -681,7 +681,7 @@ Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below;
 - Does: Host-authoritative beat messages; clients mirror gates/markers/tracker; join-during-cinematic wait card and recap card; kit/crystal granted to every player present or on late join; client character records intro_done.
 - Done: test_coop_intro.gd (loopback): client follows beats, late joiner gets kit and recap.
 
-**118. Save migration, skip prologue, intro playtest** ✅ PENDING
+**118. Save migration, skip prologue, intro playtest** ✅ `478d626`
 - Does: SaveGame.apply marks old saves intro_done (tutorial_done / filth_defeated / level>=3 / non-intro level) or offers 'Play the new intro?'; 'Skip prologue' on New Game once any slot has intro_done; playtest bot walks beats 1-13.
 - Done: test_save_migration.gd; solo + co-op playtests pass with --autoplay through the intro.
 
