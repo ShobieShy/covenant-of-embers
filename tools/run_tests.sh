@@ -30,6 +30,7 @@ PLAYTEST_SPEED=4 run_clean tools/playtest.sh  # step 96: the bot also clears the
 grep -q "^\[playtest\] PASS" "$log" || { echo "[run_tests] 4x playtest did not pass"; exit 1; }
 tools/coop_playtest.sh || { echo "[run_tests] co-op playtest did not pass"; exit 1; }  # step 93
 python3 tools/check_assets.py
+python3 tools/gen_credits.py --check
 python3 tools/check_paths.py --self-test
 python3 tools/check_paths.py
 echo "[run_tests] all green"

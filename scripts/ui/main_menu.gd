@@ -19,6 +19,7 @@ var coop_menu: CoopMenu  ## step 88
 var _seconds := -1.0
 var _elapsed := 0.0
 var creator: CharacterCreator  ## step 73 / 111
+var credits_ui: CreditsUi  ## batch_01/02 art credits
 
 
 ## "v0.1.0" from application/config/version (step 84; also stamped into the Windows exe).
@@ -61,7 +62,7 @@ func _ready() -> void:
 		slots.add_child(sb)
 		slot_buttons.append(sb)
 	_build_identity(v)  # step 73
-	for id in ["new_run", "skip_prologue", "continue", "coop", "settings", "quit"]:
+	for id in ["new_run", "skip_prologue", "continue", "coop", "settings", "credits", "quit"]:
 		var b := Button.new()
 		b.text = "Co-op" if id == "coop" else id.capitalize()
 		b.custom_minimum_size = Vector2(0, 40)
@@ -88,6 +89,8 @@ func _ready() -> void:
 	settings_ui = SettingsUi.new()
 	add_child(settings_ui)
 	settings_ui.setup(Settings.load_from())
+	credits_ui = CreditsUi.new()
+	add_child(credits_ui)
 	coop_menu = CoopMenu.new()
 	coop_menu.visible = false
 	add_child(coop_menu)
@@ -142,6 +145,8 @@ func press(id: String) -> void:
 			coop_menu.show()
 		"settings":
 			settings_ui.open()
+		"credits":
+			credits_ui.open()
 		"quit":
 			get_tree().quit(0)
 
