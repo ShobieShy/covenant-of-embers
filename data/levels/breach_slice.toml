@@ -196,3 +196,9 @@ enemies = [{ enemy = "gnawer", count = 2, at = "west_wing" }, { enemy = "gnawer"
 id = "dais_heap"
 delay_s = 3.0
 enemies = [{ enemy = "heap", count = 1, at = "boss_dais" }, { enemy = "gnawer", count = 2, at = "west_wing" }]
+
+# Step 34: the mini-boss, alone, as the last wave; its death opens the vault (Breach).
+[[wave]]
+id = "warden"
+delay_s = 4.0
+enemies = [{ enemy = "breach_warden", count = 1, at = "boss_dais" }]

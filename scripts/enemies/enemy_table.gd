@@ -5,7 +5,8 @@ extends Resource
 ## builds one from data/enemies/*.toml for the tests' .tres-vs-TOML comparison.
 
 const DEFAULT_PATHS: PackedStringArray = ["res://resources/enemies/training_dummies.tres",
-	"res://resources/enemies/gnawer.tres", "res://resources/enemies/heap.tres"]
+	"res://resources/enemies/gnawer.tres", "res://resources/enemies/heap.tres",
+	"res://resources/enemies/breach_warden.tres"]   ## step 34: the Breach mini-boss
 
 @export var defs: Array[EnemyDef] = []
 

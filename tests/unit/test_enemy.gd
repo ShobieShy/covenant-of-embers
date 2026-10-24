@@ -93,12 +93,12 @@ func test_toml_inline_tables() -> void:
 func test_tres_matches_toml() -> void:
 	var table := EnemyTable.load_default()
 	check(table.validate().is_empty(), "shipped table valid: %s" % [table.validate()])
-	var r := EnemyTable.from_toml_files([DUMMIES_TOML, GNAWER_TOML, HEAP_TOML])
+	var r := EnemyTable.from_toml_files([DUMMIES_TOML, GNAWER_TOML, HEAP_TOML, "res://data/enemies/breach_warden.toml"])
 	check(not r.has("error"), "training_dummies.toml + gnawer.toml + heap.toml load (%s)" % r.get("error", ""))
 	if r.has("error"):
 		return
 	var toml: EnemyTable = r["table"]
-	check(toml.defs.size() == 4 and table.defs.size() == 4, "two dummies + the Gnawer (step 12) + the Heap (step 13) (%d toml, %d tres)" % [toml.defs.size(), table.defs.size()])
+	check(toml.defs.size() == 5 and table.defs.size() == 5, "two dummies + Gnawer + Heap + Breach Warden (step 34) (%d toml, %d tres)" % [toml.defs.size(), table.defs.size()])
 	for want in toml.defs:
 		var got := table.find(want.id)
 		check(got != null, "%s in the .tres" % want.id)

@@ -368,3 +368,8 @@ metadata/enemies = [{"at": "west_wing", "count": 2, "enemy": "gnawer"}, {"at": "
 metadata/index = 1
 metadata/delay_s = 3
 metadata/enemies = [{"at": "boss_dais", "count": 1, "enemy": "heap"}, {"at": "west_wing", "count": 2, "enemy": "gnawer"}]
+
+[node name="warden" type="Node" parent="Waves"]
+metadata/index = 2
+metadata/delay_s = 4
+metadata/enemies = [{"at": "boss_dais", "count": 1, "enemy": "breach_warden"}]

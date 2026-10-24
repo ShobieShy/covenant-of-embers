@@ -1,0 +1,18 @@
+# Breach Warden (BUILD_PLAN step 34): the Breach's two-phase mini-boss, a bigger Dark Heap
+# guarding the vault. ai kind "boss" = scripts/enemies/warden.gd (a Heap: same slam with a
+# wind-up and a glowing seam on its back). At <= 50 % health it enrages (phase 2): walk and
+# sprint x1.5, slam cooldown x0.6, wind-up x0.6. Its death opens the vault (Breach, step 34/35).
+# Magewar has no two-phase boss (its golem has no AI loop); the numbers are plan design scaled
+# from the Heap: 400 HP, 12 damage, level 5 (step 18 drops), 60 XP.
+
+[[enemy]]
+id = "breach_warden"
+name = "Breach Warden"
+affinity = "dark"
+max_health = 400
+level = 5
+xp_reward = 60
+size = [1.8, 2.8, 1.8]
+color = [0.32, 0.22, 0.3]
+weak_point = { offset = [0.0, 1.7, 0.93], size = [1.2, 0.3, 0.1] }
+ai = { kind = "boss", detect_range = 14.0, aggro_range = 10.0, walk_speed = 1.5, sprint_speed = 3.0, attack_range = 1.9, attack_damage = 12.0, attack_cooldown = 2.0, attack_windup = 0.6, knockback_strength = 15.0, knockback_time = 0.2, knockback_threshold = 40.0, turn_rate_deg = 120.0 }

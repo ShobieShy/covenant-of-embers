@@ -22,7 +22,7 @@ func test_layout() -> void:
 		check(level.get_node_or_null("Boxes/" + n) != null, "has %s" % n)
 	for n in ["boss_dais", "west_wing", "east_wing", "vault_chest"]:
 		check(level.get_node_or_null("WaveSpawns/" + n) != null, "spawn %s" % n)
-	check(level.get_node("Waves").get_child_count() == 2, "two waves")
+	check(level.get_node("Waves").get_child_count() == 3, "three waves (the boss last)")
 	level.free()
 
 func test_navmesh_and_spawns_reachable() -> void:

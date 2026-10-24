@@ -30,7 +30,7 @@ const FLASH_TIME := 0.12              ## s of hit flash (C++ kFlashTime)
 const WEAK_POINT_BRIGHTEN := 0.35     ## weak point tint = body colour lightened by this
 const GROUP := &"enemies"             ## Magewar's group
 ## ai.kind -> the Enemy subclass that runs it (loaded by path: no class cycle).
-const BRAINS := {"rusher": "res://scripts/enemies/gnawer.gd", "tank": "res://scripts/enemies/heap.gd"}
+const BRAINS := {"rusher": "res://scripts/enemies/gnawer.gd", "tank": "res://scripts/enemies/heap.gd", "boss": "res://scripts/enemies/warden.gd"}
 
 var def: EnemyDef
 var damage_target: Damage.Target

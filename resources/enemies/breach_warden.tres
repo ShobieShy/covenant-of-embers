@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="EnemyTable" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_table.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/enemies/enemy_def.gd" id="2"]
+
+[sub_resource type="Resource" id="breach_warden"]
+script = ExtResource("2")
+id = "breach_warden"
+display_name = "Breach Warden"
+affinity = 6
+max_health = 400.0
+level = 5
+xp_reward = 60
+size = Vector3(1.8, 2.8, 1.8)
+color = Color(0.32, 0.22, 0.3, 1)
+resist = {}
+has_weak_point = true
+weak_point_offset = Vector3(0, 1.7, 0.93)
+weak_point_size = Vector3(1.2, 0.3, 0.1)
+ai = {
+"aggro_range": 10.0,
+"attack_cooldown": 2.0,
+"attack_damage": 12.0,
+"attack_range": 1.9,
+"attack_windup": 0.6,
+"detect_range": 14.0,
+"kind": "boss",
+"knockback_strength": 15.0,
+"knockback_threshold": 40.0,
+"knockback_time": 0.2,
+"sprint_speed": 3.0,
+"turn_rate_deg": 120.0,
+"walk_speed": 1.5
+}
+
+[resource]
+script = ExtResource("1")
+defs = Array[ExtResource("2")]([SubResource("breach_warden")])
