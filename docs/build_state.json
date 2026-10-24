@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 70,
+  "next_step": 73,
   "total_steps": 107,
-  "steps_done": 88,
-  "last_commit": "237008a",
+  "steps_done": 89,
+  "last_commit": "6c6948c",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -982,6 +982,13 @@
       "step": "53",
       "type": "build",
       "summary": "Status effects on enemies: Fire burn (30% over 3 s), Water slow (x0.6, 2.5 s), Earth stagger (0.4 s no move/attack), Air chain (50% to nearest within 6 m, one jump); durations scale by 1-resist (60% cap)",
+      "commit": "6c6948c"
+    },
+    {
+      "time": "2026-10-24T09:34-05:00",
+      "step": "70",
+      "type": "build",
+      "summary": "Resolve catch-up: kill XP x(1 + 0.25 per level behind the highest player near the kill, max +100%); 0 at/above; curve unchanged",
       "commit": "PENDING"
     }
   ],
@@ -1054,6 +1061,7 @@
     67,
     68,
     69,
+    70,
     71,
     72,
     75,

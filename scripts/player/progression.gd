@@ -16,6 +16,11 @@ const MANA_PER_LEVEL := 5.0
 const BREATH_PER_LEVEL := 5.0
 const HEALTH_PER_LEVEL := 0.0
 const MAX_LEVEL := 50  ## enemies are 1..50 (EnemyDef.MAX_LEVEL)
+## Step 70 (Q12: Resolve catch-up, PLAN): a character behind the expected level (the
+## highest level among players near the kill; areas carry no level yet) earns +RESOLVE_PER_LEVEL XP per level of gap, capped at
+## +RESOLVE_MAX; the bonus shrinks as the gap closes and is 0 at or above it.
+const RESOLVE_PER_LEVEL := 0.25
+const RESOLVE_MAX := 1.0
 
 var level := 1
 var xp := 0  ## toward the next level
@@ -29,6 +34,14 @@ static func threshold(lv: int) -> int:
 	for i in range(1, lv):
 		t = int(t * GROWTH)
 	return t
+
+
+## Step 70: the XP multiplier for a level-`lv` character where `expected` is the level.
+static func resolve_multiplier(lv: int, expected: int) -> float:
+	var gap := expected - lv
+	if gap <= 0:
+		return 1.0
+	return 1.0 + minf(RESOLVE_MAX, RESOLVE_PER_LEVEL * gap)
 
 
 ## Adds XP; returns how many levels were gained.

@@ -74,3 +74,33 @@ func test_kill_xp() -> void:
 	near.queue_free()
 	far.queue_free()
 	w.queue_free()
+
+
+func test_resolve_catch_up() -> void:
+	check(Progression.resolve_multiplier(5, 5) == 1.0, "no gap: no bonus")
+	check(Progression.resolve_multiplier(7, 5) == 1.0, "ahead: no bonus")
+	check(Progression.resolve_multiplier(4, 5) == 1.25, "1 level behind: +25%")
+	check(Progression.resolve_multiplier(3, 5) == 1.5, "2 behind: +50% (shrinks as it closes)")
+	check(Progression.resolve_multiplier(1, 20) == 2.0, "capped at +100%")
+	check(Progression.threshold(2) == 150, "level curve unchanged")
+	await runner_tree.process_frame  # earlier tests' rewarders are gone
+	var w := Node3D.new()
+	w.position = Vector3(5000, 0, -9000)
+	runner_tree.root.add_child(w)
+	var lead := _player(w.position)
+	var trail := _player(w.position + Vector3(2, 0, 0))
+	lead.add_xp(100 + 150 + 225)  # level 4
+	check(lead.progression.level == 4, "lead at 4")
+	var xr := XpRewarder.new()
+	w.add_child(xr)
+	var e := Enemy.create(EnemyTable.load_default().find("gnawer"), Transform3D(Basis.IDENTITY, Vector3(5, 0, 0)))
+	e.process_mode = Node.PROCESS_MODE_DISABLED
+	w.add_child(e)
+	var lead_before := lead.progression.total_xp
+	e.apply_damage(100000.0, E.FIRE)
+	check(lead.progression.total_xp - lead_before == 5, "the leader gets the plain 5")
+	check(trail.progression.total_xp == int(5 * 1.75), "trailing 3 levels: +75%% (%d)" % trail.progression.total_xp)
+	check(xr.resolve_bonus == int(5 * 1.75) - 5, "bonus counted")
+	lead.queue_free()
+	trail.queue_free()
+	w.queue_free()

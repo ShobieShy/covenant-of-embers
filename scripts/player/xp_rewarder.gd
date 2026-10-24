@@ -10,6 +10,7 @@ const RANGE := 80.0
 var xp_multiplier := 1.0
 var granted := 0  ## XP handed out (all players)
 var kills_seen := 0
+var resolve_bonus := 0  ## step 70: extra XP from Resolve catch-up
 
 
 func _ready() -> void:
@@ -28,8 +29,16 @@ func _on_killed(e: Enemy, _element: ElementTable.Element) -> void:
 	var amount := int(e.def.xp_reward * xp_multiplier)
 	if amount <= 0:
 		return
+	var near: Array[Player] = []
+	var expected := 1
 	for n in get_tree().get_nodes_in_group(Player.GROUP):
 		var p := n as Player
 		if p != null and p.is_inside_tree() and p.global_position.distance_to(e.global_position) <= RANGE:
-			p.add_xp(amount)
-			granted += amount
+			near.append(p)
+			expected = maxi(expected, p.progression.level)
+	for p in near:
+		# Step 70: Resolve catch-up against the highest level in range (the co-op party).
+		var got := int(amount * Progression.resolve_multiplier(p.progression.level, expected))
+		p.add_xp(got)
+		granted += got
+		resolve_bonus += got - amount

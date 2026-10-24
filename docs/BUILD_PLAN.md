@@ -420,7 +420,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_dark.gd: threshold + injected roll, corrupted Gnawer attacks enemies, boss never corrupts, timer expiry.
 - Q2 answered 2026-10-24 (Magewar Dark).
 - Result: PASS (350 passed, lint green)
-**53. Status effects** ✅ PENDING
+**53. Status effects** ✅ `6c6948c`
 - Does: Per-element on-hit statuses (e.g. Fire burn, Water slow, Earth stagger, Air chain, Light/Dark as above) with resist from gear (60 % cap applies).
 - Done: test_status.gd: ticks, durations, resist scaling, cap.
 - Q5 answered 2026-10-24: Fire burn, Water slow, Earth stagger, Air chain; 60 % resist cap kept.
@@ -520,11 +520,12 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 ### Phase L – Progression depth
 - Result: PASS (277 tests + headless playtest)
 
-**70. Summoned growth multiplier** 🔜 Unblocked
+**70. Summoned growth multiplier** ✅ PENDING
 - Does: Resolve catch-up: a character below the expected level for the area (or below the co-op party's highest) earns bonus XP that shrinks as the gap closes.
 - Done: test_xp.gd: bonus scales with the level gap, zero at or above it, level curve unchanged.
 - Q12 answered 2026-10-24: Resolve catch-up (PLAN), not the ×1.5 multiplier.
-
+- Result: PASS (355 passed, lint green)
+- Note: No per-area level exists yet, so solo play gets no Resolve bonus; it acts in co-op (party's highest).
 **71. Skill trees: framework** ✅ `2d52d32`
 - Does: Borderlands-style skill trees as a design pattern only (no Borderlands names/text/assets): data-driven trees in data/skills/*.toml, not tied to archetypes (Q6 open); 1 skill point per level from level 2; tiers unlock by points spent in that tree (5 per tier); ranked skills (max rank), capstone at the last tier; free respec at the Old Oak (gold cost pending Q4); points/ranks saved in the character save.
 - Done: test_skills.gd: point grant per level, tier gating by points spent, rank caps, capstone, respec refunds, save round trip.
