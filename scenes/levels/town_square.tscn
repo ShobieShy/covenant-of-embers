@@ -339,6 +339,10 @@ metadata/to = "mage_association"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 17.5)
 metadata/to = "midden"
 
+[node name="to_old_oak" type="Marker3D" parent="Exits"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 0, 14)
+metadata/to = "old_oak"
+
 [node name="NPCs" type="Node3D" parent="."]
 
 [node name="guard_gate" type="Marker3D" parent="NPCs"]

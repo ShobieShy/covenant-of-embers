@@ -13,12 +13,14 @@ const LEVELS := {
 	"breach": "res://scenes/levels/breach.tscn",
 	"town_square": "res://scenes/levels/town_square.tscn",  # step 65
 	"mage_association": "res://scenes/levels/mage_association.tscn",
+	"old_oak": "res://scenes/levels/old_oak.tscn",  # step 66
 }
 const LEVEL_IDS := {
 	"midden_greybox": "midden",
 	"breach_slice": "breach",
 	"town_square": "town_square",
 	"mage_association": "mage_association",
+	"old_oak": "old_oak",
 }
 
 static var level_id := "midden"

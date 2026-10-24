@@ -1,0 +1,123 @@
+# The Old Oak (BUILD_PLAN step 66; Bible Home Tree, Magewar old_oak/old_oak_home
+# reinterpreted): the hollow of a dead oak at the edge of Eldoria - dark and candle-lit,
+# moss beds, the stash, the Assembly Station (placed beside the start), and empty slots
+# for later upgrades (Bob's lab, potion garden, portals). Greybox.
+
+[level]
+id = "old_oak"
+name = "The Old Oak"
+
+[environment]
+sky_color = [0.05, 0.04, 0.03]
+ambient_color = [0.32, 0.24, 0.14]
+fog_density = 0.02
+
+[sun]
+to_light = [0.2, 1.0, 0.1]
+color = [1.0, 0.7, 0.4]
+
+[player_start]
+position = [0.0, 0.0, 6.0]
+yaw_deg = 0.0
+
+[[box]]
+name = "floor"
+kind = "ground"
+center = [0.0, -0.1, 0.0]
+size = [16.0, 0.2, 16.0]
+color = [0.25, 0.18, 0.1]
+[[box]]
+name = "bark_north"
+kind = "wall"
+center = [0.0, 4.0, -7.5]
+size = [16.0, 8.0, 1.0]
+color = [0.28, 0.2, 0.13]
+[[box]]
+name = "bark_south"
+kind = "wall"
+center = [0.0, 4.0, 7.5]
+size = [16.0, 8.0, 1.0]
+color = [0.28, 0.2, 0.13]
+[[box]]
+name = "bark_west"
+kind = "wall"
+center = [-7.5, 4.0, 0.0]
+size = [1.0, 8.0, 14.0]
+color = [0.28, 0.2, 0.13]
+[[box]]
+name = "bark_east"
+kind = "wall"
+center = [7.5, 4.0, 0.0]
+size = [1.0, 8.0, 14.0]
+color = [0.28, 0.2, 0.13]
+[[box]]
+name = "moss_bed_1"
+kind = "platform"
+center = [-5, 0.2, -5.0]
+size = [2.0, 0.4, 3.0]
+color = [0.25, 0.4, 0.15]
+[[box]]
+name = "moss_bed_2"
+kind = "platform"
+center = [-2.5, 0.2, -5.0]
+size = [2.0, 0.4, 3.0]
+color = [0.25, 0.4, 0.15]
+[[box]]
+name = "moss_bed_3"
+kind = "platform"
+center = [2.5, 0.2, -5.0]
+size = [2.0, 0.4, 3.0]
+color = [0.25, 0.4, 0.15]
+[[box]]
+name = "candle_1"
+kind = "crate"
+center = [-6.0, 0.5, 3.0]
+size = [0.2, 1.0, 0.2]
+color = [1.0, 0.85, 0.5]
+[[box]]
+name = "candle_2"
+kind = "crate"
+center = [6.0, 0.5, 3.0]
+size = [0.2, 1.0, 0.2]
+color = [1.0, 0.85, 0.5]
+[[box]]
+name = "candle_3"
+kind = "crate"
+center = [-6.0, 0.5, -2.0]
+size = [0.2, 1.0, 0.2]
+color = [1.0, 0.85, 0.5]
+[[box]]
+name = "candle_4"
+kind = "crate"
+center = [6.0, 0.5, -2.0]
+size = [0.2, 1.0, 0.2]
+color = [1.0, 0.85, 0.5]
+[[box]]
+name = "stash"
+kind = "crate"
+center = [5.5, 0.5, -5.5]
+size = [1.6, 1.0, 1.0]
+color = [0.45, 0.3, 0.15]
+[[box]]
+name = "slot_bobs_lab"
+kind = "platform"
+center = [-5.0, 0.05, 0.5]
+size = [2.5, 0.1, 2.5]
+color = [0.18, 0.14, 0.1]
+[[box]]
+name = "slot_potion_garden"
+kind = "platform"
+center = [0.0, 0.05, -1.5]
+size = [2.5, 0.1, 2.5]
+color = [0.18, 0.14, 0.1]
+[[box]]
+name = "slot_portals"
+kind = "platform"
+center = [5.0, 0.05, 0.5]
+size = [2.5, 0.1, 2.5]
+color = [0.18, 0.14, 0.1]
+
+[[exit]]
+name = "to_town"
+to = "town_square"
+position = [0.0, 0.0, 7.0]

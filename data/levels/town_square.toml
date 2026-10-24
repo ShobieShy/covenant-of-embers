@@ -137,6 +137,10 @@ position = [0.0, 0.0, -17.0]
 name = "to_landfill"
 to = "midden"
 position = [0.0, 0.0, 17.5]
+[[exit]]
+name = "to_old_oak"
+to = "old_oak"
+position = [17.0, 0.0, 14.0]
 [[npc]]
 name = "guard_gate"
 speaker = "Bored Guard"

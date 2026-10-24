@@ -15,6 +15,8 @@ var npcs: Array[Npc] = []  # step 65: level [[npc]]s
 var story_flags := StoryFlags.new()
 var dialogue: DialogueRunner
 var dialogue_ui: DialogueUI
+var stash: Stash  # step 66: the Old Oak's shared stash (own file, every slot)
+var mentor_played := false
 var load_warnings := PackedStringArray()
 
 func _ready() -> void:
@@ -181,7 +183,10 @@ func _setup_flow(player: Player) -> void:
 			push_warning("[save] " + String(r["error"]))
 		else:
 			load_warnings = SaveGame.apply(player, r["data"])
+			story_flags.from_dict((r["data"] as Dictionary).get("progress", {}).get("flags", {}))
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
+	if here == "old_oak":
+		_setup_hub(player)
 	print("[flow] level %s, gate to %s" % [here, gate.target])
 	Screenshots.attach(self, here)   # step 41: --shots <dir>
 	if OS.get_cmdline_user_args().has("--autoplay"):   # step 40
@@ -217,13 +222,7 @@ func _setup_npcs(player: Player) -> void:
 	var holder := $Level.get_node_or_null("NPCs")
 	if holder == null or holder.get_child_count() == 0:
 		return
-	dialogue = DialogueRunner.new(DialogueDB.load_default(), story_flags)
-	dialogue_ui = DialogueUI.new()
-	var layer := CanvasLayer.new()
-	layer.name = "DialogueLayer"
-	add_child(layer)
-	layer.add_child(dialogue_ui)
-	dialogue_ui.bind(dialogue)
+	_ensure_dialogue()
 	for m in holder.get_children():
 		var n := Npc.new(String(m.get_meta("speaker", "")))
 		n.name = "Npc_" + String(m.name)
@@ -233,16 +232,36 @@ func _setup_npcs(player: Player) -> void:
 		n.talked.connect(talk_to)
 		npcs.append(n)
 
+func _ensure_dialogue() -> void:
+	if dialogue:
+		return
+	dialogue = DialogueRunner.new(DialogueDB.load_default(), story_flags)
+	dialogue_ui = DialogueUI.new()
+	var layer := CanvasLayer.new()
+	layer.name = "DialogueLayer"
+	add_child(layer)
+	layer.add_child(dialogue_ui)
+	dialogue_ui.bind(dialogue)
+
+## Step 66: the Old Oak hub - the shared stash, and Bob's first-night arrival (once).
+func _setup_hub(player: Player) -> void:
+	stash = Stash.load_shared()
+	_ensure_dialogue()
+	mentor_played = MentorArrival.play(story_flags, player, dialogue, self, player.spawn_feet + Vector3(0, 0, -3))
+
 func talk_to(speaker: String) -> bool:
 	return dialogue != null and not dialogue.active and dialogue.start(speaker)
 
 func progress() -> Dictionary:
-	return {"level_id": GameFlow.id_of($Level), "vault_open": breach.open if breach else false}
+	return {"level_id": GameFlow.id_of($Level), "vault_open": breach.open if breach else false,
+		"flags": story_flags.to_dict()}
 
 func save_game() -> Error:
 	var player := get_node_or_null("Player") as Player
 	if player == null:
 		return ERR_UNAVAILABLE
+	if stash:
+		stash.save()
 	var err := SaveGame.write(SaveGame.capture(player, progress()), GameFlow.save_path)
 	print("[save] wrote %s: %s" % [GameFlow.save_path, error_string(err)])
 	return err
