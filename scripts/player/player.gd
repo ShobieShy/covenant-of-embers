@@ -66,6 +66,7 @@ extends CharacterBody3D
 ##    use_potion() drinks the quick-slot potion (Health +30 / Mana +25), refused when full.
 ## In game _physics_process feeds PlayerInput.from_input(); tests call tick() directly.
 
+const GROUP := &"players"      # step 27: XpRewarder finds players here
 const CHARACTER_LAYER := 2   # physics layer "character" (bit 2)
 const HINT_NOT_ENOUGH_MANA := "Not enough mana!"   # Magewar wieldable_staff.gd
 
@@ -126,6 +127,7 @@ var level_mana_bonus := 0.0
 var level_breath_bonus := 0.0
 var potions_used := 0
 var inventory := Inventory.new()          # step 23: backpack (30 slots) + Arcane Dust
+var progression := Progression.new()     # step 27: XP + level
 var pickups := PickupCollector.new()      # step 23: walk-over auto-collect + Interact pickup
 
 var _wheel := 0                 # queued mouse-wheel cycles (+ next / - prev)
@@ -153,6 +155,7 @@ func _init() -> void:
 		c.out_of_mana.connect(_on_out_of_mana)
 
 func _ready() -> void:
+	add_to_group(GROUP)
 	if tuning == null:
 		tuning = PlayerTuning.new()
 	collision_layer = 1 << (CHARACTER_LAYER - 1)
@@ -479,6 +482,20 @@ func use_potion() -> bool:
 
 ## Equipment speed hook (Magewar EquipmentItem.speed_modifier, Shoes x1.15): scales the
 ## walk/sprint/crouch targets, not the slide.
+## Step 27: kill XP; every level gained applies Magewar's +5 mana / +5 Breath and refills.
+func add_xp(amount: int) -> int:
+	var gained := progression.add_xp(amount)
+	if gained > 0:
+		level_mana_bonus += Progression.MANA_PER_LEVEL * gained
+		level_breath_bonus += Progression.BREATH_PER_LEVEL * gained
+		level_health_bonus += Progression.HEALTH_PER_LEVEL * gained
+		apply_bonuses()
+		mana.refill()
+		breath.refill()
+		if Progression.HEALTH_PER_LEVEL > 0.0:
+			health.refill()
+	return gained
+
 ## Shows a short HUD hint (Magewar/Cogito hint pop-up) and remembers it.
 func show_hint(text: String) -> void:
 	last_hint = text

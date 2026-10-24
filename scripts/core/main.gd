@@ -48,6 +48,10 @@ func _ready() -> void:
 		var dropper := LootDropper.new()
 		dropper.name = "LootDropper"
 		add_child(dropper)
+		# Step 27: kill XP to players within 80 m (Magewar kill reward service).
+		var xp := XpRewarder.new()
+		xp.name = "XpRewarder"
+		add_child(xp)
 		var numbers := DamageNumbers.new()
 		numbers.name = "DamageNumbers"
 		add_child(numbers)

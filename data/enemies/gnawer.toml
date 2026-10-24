@@ -14,6 +14,7 @@ name = "Gnawer"
 affinity = "earth"
 max_health = 30
 level = 1                     # Magewar mutant rat enemy_level (step 18 drops: +1 part at >= 3)
+xp_reward = 5                 # step 27: Magewar mutant rat xp_reward
 size = [0.5, 0.45, 0.8]       # low and long; yaw 0 faces -Z (its head end)
 color = [0.42, 0.36, 0.28]    # dun plates
 weak_point = { offset = [0.0, 0.3, -0.45], size = [0.22, 0.2, 0.16] }   # the snout

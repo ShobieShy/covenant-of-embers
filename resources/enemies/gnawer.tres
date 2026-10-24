@@ -10,6 +10,7 @@ display_name = "Gnawer"
 affinity = 3
 max_health = 30.0
 level = 1
+xp_reward = 5
 size = Vector3(0.5, 0.45, 0.8)
 color = Color(0.42, 0.36, 0.28, 1)
 resist = {}
