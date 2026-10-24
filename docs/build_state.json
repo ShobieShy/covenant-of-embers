@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 16,
+  "next_step": 17,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -20,9 +20,10 @@
     12,
     13,
     14,
-    15
+    15,
+    16
   ],
-  "last_commit": "e4c0468",
+  "last_commit": "f6d7d98",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -143,6 +144,14 @@
       "summary": "Step 15 Rarity tiers + part model (Magewar): Rarity/RarityTable resources (rarities.tres = PLAN §30.2 = Magewar ItemRarity: names, colours, multipliers, weights, luck rule, seeded roll, validate/rebuild); WieldableInstance damage uses Rarity.multiplier (temp lookup removed, all tiers valid); WieldablePart gains description, type names, ignored_stats, full_description, load_part/list_ids, validate; tools/import_magewar_parts.py imports the 16 Magewar parts to resources/parts (--check in run_tests.sh). 143 tests green (9 new in test_rarity.gd).",
       "plan_changes": "Step 16: Head gem slots 1/+1 Rare/+1 Primordial, non-Heads 0 (make() default 1 fixed there), exterior fire-rate rolls from Uncommon (Magewar), Magewar parts as reference/name source. Step 17: rarity = floor(mean part tier), wand Head kept, handling → swap speed. Step 18: RarityTable.roll(rng, luck). Step 21: patch RarityTable via copy+validate+rebuild. Step 28: Vigil via weights/luck. Step 29: rarity_color() tints. Step 30: full_description, grey out ignored_stats. Fixed: WieldableDef rejected Rare+ bases; part-type lists shared. Magewar mismatches logged: ignored stats in Magewar part data, Uncommon exterior rate, staff-only Head comment, global randf/negative weights.",
       "commit": "e4c0468"
+    },
+    {
+      "time": "2026-10-23T22:06:17-05:00",
+      "step": 16,
+      "type": "build",
+      "summary": "Step 16 Part stat rolls, gems, names: scripts/loot/part_roller.gd = PartRoller (Magewar loot_generator, seeded): roll(rng, type, rarity, element) draws one seed from the caller's rng, from_seed() rolls on a private generator (global RNG never used), regenerate() rebuilds from roll_seed/type/rarity/element; Magewar template part per type for unrolled stats, Magewar ranges x rarity multiplier (fire rates unscaled; Exterior x0.7-1.3, x0.5-1.0 at Rare+), Head gem slots 1/+1 Rare/+1 Primordial (others 0), element from caller or Magewar element_weights, Magewar name ladders, id <rarity>_<element>_<type>_<seed>, description = full_description. WieldablePart gains roll_seed; main prints [parts]. 149 tests green (6 new in test_parts.gd).",
+      "plan_changes": "PLAN §30.2: Exterior rate x0.7-1.3 below Rare (Magewar generator, not x1.0), Charm rate x0.85-1.0, template stats, element weights, Magewar name ladders. Refined step 18 (PartRoller drops, Magewar roll_procedural_drops recipe; its 45/25/15/8/5/2 rarity thresholds differ from ItemRarity weights, keep RarityTable), 19 (equipment rolls = generate_equipment_with_rng ranges/names/templates; resist on any elemental Clothes, not Rare+ only), 20 (rolled parts encode as seed+type+rarity+element), 26 (sockets = Head gem_slots; upgrade = from_seed at next tier). Fixed: make() gave non-Heads 1 gem slot; step 15 note 'exterior rate rolls from Uncommon' corrected (Magewar rolls from Basic). Magewar mismatches logged: per-part seed draw (regenerable) vs direct rng, single Rare+ exterior draw, element_weights used (Magewar's roll_element ignores them).",
+      "commit": "f6d7d98"
     }
   ]
 }
