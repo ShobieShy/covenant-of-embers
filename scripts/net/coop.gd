@@ -94,6 +94,7 @@ static func begin(tree: SceneTree) -> void:
 		if not GameFlow.continue_run(tree):
 			GameFlow.new_run(tree)
 		return
+	character = CharacterSave.path_for(String(session.local_info.get("name", default_name())))
 	var host_info: Dictionary = session.roster.get(1, {})
 	var lvl := String(host_info.get("level", "midden"))
 	GameFlow.level_id = lvl if GameFlow.LEVELS.has(lvl) else "midden"

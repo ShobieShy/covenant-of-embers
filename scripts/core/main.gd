@@ -190,7 +190,11 @@ func _setup_flow(player: Player) -> void:
 	add_child(pause_menu)
 	pause_menu.bind(player, s_ui)
 	pause_menu.save_requested.connect(save_game)
-	if GameFlow.load_save:
+	if Coop.is_client():
+		# Step 91: a client plays its own portable character, never the host's slot.
+		var cr := CharacterSave.load_into(player, Coop.character)
+		print("[character] %s: %s" % [Coop.character, cr.get("error", "loaded level %d" % player.progression.level)])
+	elif GameFlow.load_save:
 		var r := SaveGame.read(GameFlow.save_path)
 		if r.has("error"):
 			push_warning("[save] " + String(r["error"]))
@@ -328,13 +332,23 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 	frames.name = "PartyFrames"
 	add_child(frames)
 	frames.bind(coop)
+	Coop.session.message.connect(_on_coop_message)
 	if not Coop.session.ended.is_connected(_on_coop_ended):
 		Coop.session.ended.connect(_on_coop_ended)
 	print("[coop] %s, %d player(s)" % ["hosting" if coop.host else "joined", Coop.session.roster.size()])
 
 
+## Step 91: the host's travel moves everyone; clients follow with their character.
+func _on_coop_message(_from: int, kind: String, data: Dictionary) -> void:
+	if kind == "travel" and Coop.is_client():
+		save_game()
+		GameFlow.travel(get_tree(), String(data.get("to", "midden")))
+
+
 func _on_coop_ended(reason: String) -> void:
 	print("[coop] session ended: %s" % reason)
+	if coop and not coop.host:
+		save_game()  # step 91: the client keeps its character
 	Coop.end(reason)
 	GameFlow.to_menu(get_tree())
 
@@ -347,6 +361,10 @@ func save_game() -> Error:
 	var player := get_node_or_null("Player") as Player
 	if player == null:
 		return ERR_UNAVAILABLE
+	if coop and not coop.host:
+		var cerr := CharacterSave.write(player, Coop.character)  # step 91: never the host slot
+		print("[save] character %s: %s" % [Coop.character, error_string(cerr)])
+		return cerr
 	if stash:
 		stash.save()
 	var err := SaveGame.write(SaveGame.capture(player, progress()), GameFlow.save_path)
@@ -355,6 +373,11 @@ func save_game() -> Error:
 
 ## Autosave, then load `to` with the saved state.
 func travel(to: String) -> void:
+	if coop and not coop.host:
+		print("[coop] only the host can travel")  # step 91: the host's world decides
+		return
+	if coop:
+		Coop.session.send("travel", {"to": to})
 	var player := get_node_or_null("Player") as Player
 	if player:
 		var d := SaveGame.capture(player, progress())
