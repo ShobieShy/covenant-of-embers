@@ -136,23 +136,29 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 
 ## M2 – Loot, crafting, progression
 
-**15. Rarity tiers + part model (Magewar)**
+**15. Rarity tiers + part model (Magewar)** ✅ `e4c0468`
 - Does: Rarity resource (Basic #B3B3B3 ×1.0 w50, Uncommon #33CC33 ×1.25 w25, Rare #3366FF ×1.5, Mythic #991AE6 ×2.0, Primordial #FF9900 ×2.75, Unique #FFD900 ×3.0), Part types Head/Exterior/Interior/Handle/Charm, imported from assets/magewar part .tres values.
 - Does (step 6 notes): `Damage.wieldable_damage()` takes `Rarity.multiplier`; drop step 7's temporary basic/uncommon lookup.
 - Done: test_rarity.gd: colours/multipliers/weights match PLAN §30.2 and the Magewar part resources.
+- Result: scripts/loot/rarity.gd = `Rarity` (Resource: id, display_name, color, multiplier, drop_weight; `Tier` enum + `IDS` in Magewar ItemRarity order; `parse`/`id_of`/`of(id)`, `weight_with_luck`) and scripts/loot/rarity_table.gd = `RarityTable` (resources/loot/rarities.tres, `load_default()` validated once; `find`/`tier`/`has`, `multiplier` ×1.0 / `color` WHITE / `display_name` "Unknown" for unknown ids (Magewar fallbacks), `weights(luck)` = Magewar roll_rarity's luck rule (Basic/Uncommon max(1, w − 5·luck), Rare+ w + 2·luck, never below 0; steps/floor are table fields), `roll(rng, luck)` = one `randf()` per roll, zero-weight tiers never chosen; `validate()` (ids/duplicates/missing tiers, names, multiplier (0, 100] and non-decreasing by tier, weights ≥ 0 with a positive sum, colour channels, luck steps) + `rebuild()`). Colours are Magewar's floats (PLAN's hex = them to 8 bits). Items keep rarity as an id string: `WieldableDef.RARITY_IDS = Rarity.IDS`, every tier validates now; `WieldableInstance.rarity()/rarity_id()/rarity_color()`, `damage()` = `Damage.wieldable_damage(base, rarity().multiplier, part bonuses)`, `rarity_multiplier(id)` reads the table; step 7's TEMP_RARITY_MULTIPLIER is gone. WieldablePart: `description`, `PART_TYPE_NAMES`, `FIRE_RATE_TYPES` (Exterior, Charm) / `ACCURACY_TYPES` (Head, Handle, Charm) shared with WieldableInstance's getters, `load_part(id)`/`list_ids()`, `rarity_def()`/`rarity_color()`, `part_type_name()`, `ignored_stats()` (stats set on a part type Magewar's getters never read), `full_description()` (Magewar get_full_description layout, ignored stats left out), `validate()`. tools/import_magewar_parts.py (stdlib) writes resources/parts/<stem>.tres from the 16 assets/magewar part copies (rarity int → id; element ints map 1:1, NONE = Arcane); `--check` runs in run_tests.sh. main prints `[loot]`. 143 tests green (9 new in test_rarity.gd): table = PLAN §30.2 and Magewar (names, hex ±0.5/255 and exact floats, ×, weights), lookups/fallbacks, 11 bad tables rejected and the shared table untouched by a patched copy, Fire staff 10 → 10/12.5/15/20/27.5/30 by tier (+ flat parts after ×), luck 0/3/10/−2 weights, seeded 20 000 rolls deterministic and within 2 % (one randf each), 16 parts = Magewar files field by field (6/4/3/1/1/1 per rarity, 4/3/3/3/3 per type, Head gem slots = PLAN 1/+1 Rare/+1 Primordial), ignored stats, descriptions, assembled stats from real Magewar parts (Earthward + top parts 42.5 dmg / 0.257 s / 99 %), 10 bad parts rejected.
+- Fixed from earlier steps: WieldableDef refused Rare+ bases ("no multiplier until step 15"; test_casting now accepts all six); test_damage comment pointed at "step 15"; the cooldown/accuracy part-type lists were duplicated inline (now the WieldablePart consts). Found: `WieldablePart.make()` leaves `gem_slots = 1` on every part type (inert, listed by `ignored_stats()`) → step 16 rolls set 0 on non-Heads. All 134 earlier tests pass.
+- Magewar check (item_rarity.gd, staff_part_item.gd, staff_wieldable_item.gd getters, the 16 part .tres, Bible rarity list): tiers, names, colours, multipliers, drop weights and the luck rule match; part fields and the stat-per-type getters match. Mismatches: Magewar's own part data sets stats its getters ignore (fire rate on basic_fire_interior 1.1, rare_water_head 1.05, rare_air_handle 0.85; accuracy on interiors Granite 4/Blazecore 2 and exteriors Windcarved 6/Tidal 9) → kept as data, `ignored_stats()` hides them (step 30 greys them out); Magewar's Uncommon Windcarved exterior has ×0.65 while PLAN says Exterior ×1.0 below Rare → step 16 follows Magewar (exterior rate rolls from Uncommon); Magewar comments Head/Charm as "staff only" while PLAN gives wands a Head → step 17 decides (keep PLAN); Magewar roll_rarity uses the global randf and lets negative luck push Rare+ weights below 0 → ours is seeded and clamps at 0 (reinterpreted). Gem slots (Rare 2, Primordial 3) agree with PLAN.
 
 **16. Part stat rolls, gems, names**
 - Does: Seeded stat rolls per part/rarity, gem sockets, generated names.
 - Done: test_parts.gd: deterministic rolls per seed, ranges per rarity.
+- Does (step 15 notes): rolls produce `WieldablePart` resources (id, rarity id, part_type, element, stats) that pass `validate()`; Head gem slots = 1 + (Rare+) + (Primordial+) (already true of the Magewar parts), non-Heads 0 (fix `make()`'s default 1); exterior fire-rate rolls start at Uncommon (Magewar's Windcarved ×0.65) instead of PLAN's Rare+; don't roll stats a part type's getters ignore (`FIRE_RATE_TYPES`/`ACCURACY_TYPES`); the 16 Magewar parts in resources/parts (tools/import_magewar_parts.py) are the hand-made reference set and name source (`display_name`, `description`); use `rng` from the caller, never the global one.
 
 **17. Assembly rules + final stats**
 - Does: Staff 4–5 parts, wand 2–3; rarity = average of parts; cooldown × Exterior × Charm ≥ 0.1; Head element override.
 - Does (step 7 notes): the final-stat getters (damage, cooldown, accuracy, Head element) already live in `WieldableInstance` (tested in test_casting); this step adds only the part-count/slot rules, rarity averaging and §30 worked examples.
 - Done: test_assembly.gd: invalid builds rejected, worked examples from §30.
+- Does (step 15 notes): rarity = `Rarity.id_of(floor(mean of part tiers))` (`Rarity.parse(part.rarity)`), replacing `WieldableInstance.rarity_id()`'s base_rarity; multiplier from `RarityTable`; wand Head stays (PLAN; Magewar's comments say Head/Charm are staff only); `handling_bonus` → swap/draw speed; worked examples can use the Magewar parts (test_rarity's Earthward build: 42.5 / 0.257 s / 99 %).
 
 **18. Drop pools**
 - Does: Drop pools per enemy/level, weighted (the 4 base wieldables already exist as resources/wieldables/*.tres since step 7; pools reference them by id via `WieldableInstance.load_base`).
 - Done: test_pools.gd: 10 000 rolls within 2 % of weights.
+- Does (step 15 notes): rarity per drop = `RarityTable.load_default().roll(rng, luck)` (Magewar luck rule, seeded; test_rarity already checks 20 000 rolls within 2 %), then a pool entry of that rarity (fall back down a tier when a pool has none).
 
 **19. Equipment items**
 - Does: Hat/Clothes/Belt/Shoes/Grimoire/Potion with Magewar bonuses (mana, regen, stamina, speed, resist ≤ 60 %).
@@ -171,6 +177,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does: Hotfix-style JSON data patches over resources (§31).
 - Does (step 6 notes): patches may tune `ElementTable` (`strong`, `weak`, `elements[i].strong_against/weak_against`) then call `rebuild()` and must pass `validate()` (else the patch is rejected and the table left as it was).
 - Done: test_patches.gd: patch applies, invalid keys rejected.
+- Does (step 15 notes): patches may tune `RarityTable` (`rarities[i].multiplier/drop_weight/color`, `luck_*`) on a `duplicate(true)` → `validate()` → swap in + `rebuild()`; never edit the shared table in place on failure.
 
 **22. Loot drops on kill**
 - Does: enemy_killed → roll pool → spawn rarity-coloured pickup with light beam.
@@ -206,6 +213,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 **28. Weight model + Vigil plumbing**
 - Does: Vigil tiers 1–10 with Omens shifting rarity weights (§31).
 - Done: test_vigil.gd: weights shift per tier as specified.
+- Does (step 15 notes): Vigil/Omens shift weights through `RarityTable.weights(luck)`/`roll(rng, luck)` (luck input or a per-tier weight table on a copy), never by editing rarities.tres.
 
 ## M3 – UI, dungeon, audio, saves, playtests
 
@@ -218,11 +226,12 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 14 notes): wave banner from `EventBus.wave_started(index, id)` / `wave_cleared` / `waves_completed` (EnemySpawner: `wave_index`, `waves.size()`, `wave_alive.size()` for an "enemies left" counter); a spawn-protection tint while `player.protection_left > 0`; `player_damaged(player, result)` can drive the hurt flash instead of `Player.hurt`.
 - Done: test_hud.gd: bars track values; headless screenshot non-empty; a refused press shows "Not enough mana!".
 - Does (step 13 notes): health bar = `player.health.fraction()`, shield bar = `shield_fraction()` (pulses while `regenerating()`), a red edge flash on `Player.hurt`, and a death overlay counting `player.respawn_left` down on `Player.died` (hidden on `respawned`).
-- Does (step 10 notes): slot icons for `loadout.wieldable(Loadout.Slot.STAFF/WAND)` with the one in hand (`loadout.active`) highlighted and the draw filling from `loadout.draw_progress()`; icon tint = rarity colour, gem dot = element colour (same `ElementTable.color()` as the viewmodel gem). The HUD CanvasLayer must sit above the viewmodel overlay (`Viewmodel` uses CanvasLayer 1).
+- Does (step 10 notes): slot icons for `loadout.wieldable(Loadout.Slot.STAFF/WAND)` with the one in hand (`loadout.active`) highlighted and the draw filling from `loadout.draw_progress()`; icon tint = rarity colour (`wieldable.rarity_color()`, step 15), gem dot = element colour (same `ElementTable.color()` as the viewmodel gem). The HUD CanvasLayer must sit above the viewmodel overlay (`Viewmodel` uses CanvasLayer 1).
 
 **30. Inventory + equipment screen**
 - Does: Inventory UI with rarity colours and compare cards, opened by an `inventory` action on Tab (Magewar's name/key).
 - Done: test_inventory_ui.gd: open/close, equip via UI.
+- Does (step 15 notes): names/borders tinted with `rarity_color()` (WieldableInstance, WieldablePart); part cards show `full_description()`; compare cards grey out `ignored_stats()`.
 
 **31. Assembly Station UI**
 - Does: Station UI for assemble/disassemble/salvage/upgrade.

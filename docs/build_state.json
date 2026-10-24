@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 15,
+  "next_step": 16,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -19,9 +19,10 @@
     11,
     12,
     13,
-    14
+    14,
+    15
   ],
-  "last_commit": "09e25f5",
+  "last_commit": "e4c0468",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -134,6 +135,14 @@
       "summary": "Enemy spawner + kill events: EventBus autoload (GameEvents: enemy_killed once per death with element, player_damaged, enemy_spawned, wave_started/cleared, waves_completed). Enemy.reset() (+Gnawer/Heap), _announce_death once. EnemySpawner (main 'Enemies'): marker enemies + target/attacked wiring moved from main, dead freed 2 ticks after death, dummies respawn after respawn_s 3 s, waves from level TOML ([[spawn_point]], [waves] trigger, [[wave]] enemies {enemy,count,at}, 1.5 m ring) validated by toml_to_scene.py; Midden: 3 waves (3 Gnawers; 2+2 flank; Heap+2). Gnawer separation steer (push + go-around). Player 1 s spawn protection. 134 tests green (7 new test_spawner): bus autoload, kill once per death incl. reset in same frame, player_damaged + 60-tick protection, TOML=scene waves, dummy back at tick 180 / Gnawer freed after 2 ticks, waves 3/4/3 with flank 180 ticks after clear, 10 kills=10 events, completed once; 3 lined-up Gnawers all bite by tick 91, >=1.05 m apart (control: 1 bites).",
       "plan_changes": "Step 14 marked done with Result/Fixed/Magewar check. Fixed: Gnawers climbed onto and rode each other (step 12; hidden by hand-ticking in one frame) -> slide off enemies + no step-up onto enemies; step 13 respawn test expects spawn protection; stale step numbers in Midden TOML comments; [[enemy]] ids now checked against data/enemies. Caveat noted: multi-body movement tests must await a physics frame per tick (Jolt). Notes added: step 22 (drops from enemy_killed, after rewards per Magewar order, no dummy loot, read enemy before it is freed), 27 (XP from enemy_killed, xp_reward x multiplier to players within 80 m, no dummy XP), 29 (wave banner/enemies-left, protection tint, player_damaged flash), 33 (Breach encounters on spawner format, multi-room triggers, doors on wave signals), 34 (boss as last wave, use kill event not node), 37 (wave/kill/hurt sounds). Magewar check: no spawner/waves/event bus in Magewar; _finalize_death = party kill rewards (80 m) then _drop_loot then Filth quest bridge, node never freed -> ours announces on EventBus and subscribers do rewards/loot; freeing/respawn/waves are plan design.",
       "commit": "09e25f5"
+    },
+    {
+      "time": "2026-10-23T21:13:56-05:00",
+      "step": 15,
+      "type": "build",
+      "summary": "Step 15 Rarity tiers + part model (Magewar): Rarity/RarityTable resources (rarities.tres = PLAN §30.2 = Magewar ItemRarity: names, colours, multipliers, weights, luck rule, seeded roll, validate/rebuild); WieldableInstance damage uses Rarity.multiplier (temp lookup removed, all tiers valid); WieldablePart gains description, type names, ignored_stats, full_description, load_part/list_ids, validate; tools/import_magewar_parts.py imports the 16 Magewar parts to resources/parts (--check in run_tests.sh). 143 tests green (9 new in test_rarity.gd).",
+      "plan_changes": "Step 16: Head gem slots 1/+1 Rare/+1 Primordial, non-Heads 0 (make() default 1 fixed there), exterior fire-rate rolls from Uncommon (Magewar), Magewar parts as reference/name source. Step 17: rarity = floor(mean part tier), wand Head kept, handling → swap speed. Step 18: RarityTable.roll(rng, luck). Step 21: patch RarityTable via copy+validate+rebuild. Step 28: Vigil via weights/luck. Step 29: rarity_color() tints. Step 30: full_description, grey out ignored_stats. Fixed: WieldableDef rejected Rare+ bases; part-type lists shared. Magewar mismatches logged: ignored stats in Magewar part data, Uncommon exterior rate, staff-only Head comment, global randf/negative weights.",
+      "commit": "e4c0468"
     }
   ]
 }
