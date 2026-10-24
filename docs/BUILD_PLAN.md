@@ -578,9 +578,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase P – Cross-platform (Windows + Linux)
 
-**83. Per-OS paths, save dir + file safety**
+**83. Per-OS paths, save dir + file safety** ✅ `f5bd065`
 - Does: Set application/config/use_custom_user_dir + name so saves/settings land in %APPDATA%\Covenant of Embers and ~/.local/share/covenant-of-embers; atomic save (write temp then rename, works on NTFS); case-sensitive res:// path lint (Windows hides wrong-case paths, Linux export breaks).
 - Done: test_save.gd: atomic write survives interrupted temp; asset lint fails on case-mismatched paths; OS.get_user_data_dir() matches expected per OS.
+- Result: PASS (241 tests + headless playtest)
 
 **84. App icon, version + Windows metadata**
 - Does: Game icon (.png + .ico), project version shown in menu, Windows export file/product version + company fields (rcedit via Godot), Linux .desktop file + icon.
