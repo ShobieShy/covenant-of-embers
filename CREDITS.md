@@ -9,6 +9,11 @@
 | Interface Sounds | Kenney | CC0 1.0 | https://kenney.nl/assets/interface-sounds | 2026-10-22 |
 | Fantasy Town Kit 2.0 | Kenney | CC0 1.0 | https://kenney.nl/assets/fantasy-town-kit | 2026-10-24 |
 | Nature Kit 2.1 | Kenney | CC0 1.0 | https://kenney.nl/assets/nature-kit | 2026-10-24 |
+| Quaternius characters: Bob (Farmer, Adventurer) | Quaternius | CC0 1.0 | https://poly.pizza/m/7pn3R6hPvE | 2026-10-24 |
+| Quaternius characters: Clerk (Animated Woman, Business Man) | Quaternius | CC0 1.0 | https://poly.pizza/m/nIItLV9nxS | 2026-10-24 |
+| Quaternius characters: Gal (Adventurer, Hooded Adventurer) | Quaternius | CC0 1.0 | https://poly.pizza/m/ZwF0K7WBmu | 2026-10-24 |
+| Quaternius characters: Buff (King) | Quaternius | CC0 1.0 | https://poly.pizza/m/I1gTjmuK2m | 2026-10-24 |
+| "Animated Wizard" by Quaternius | Quaternius | CC BY 3.0 | https://poly.pizza/m/kttbFvCl2C | 2026-10-24 |
 | Magewar item resources | ShobieShy (Magewar) | MIT (~/game LICENSE) | local ~/game/magewar/resources | 2026-10-23 |
 | Covenant of Embers icon | Covenant of Embers project | Apache 2.0 (original) | this repository | 2026-10-24 |
 | ambientCG Ground 037 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground037 | 2026-10-24 |
@@ -19,6 +24,10 @@
 | ambientCG Paving Stones 131 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=PavingStones131 | 2026-10-24 |
 
 3D models: Kenney (www.kenney.nl) — Fantasy Town Kit, Nature Kit (CC0). Delivered by Ember Art as batch 01; the full per-file list is in docs/credits/kenney_batch_01.md.
+
+"Animated Wizard" by Quaternius, CC BY 3.0 (https://poly.pizza/m/kttbFvCl2C, https://creativecommons.org/licenses/by/3.0/) - used for Crazy Joe.
+
+Characters by Quaternius (quaternius.com), CC0. Delivered by Ember Art as batch 02; see docs/credits/quaternius_batch_02_CREDITS.md.
 
 CC0 does not require attribution; Kenney and ambientCG are credited anyway with thanks. Support: https://kenney.nl/donate
 
