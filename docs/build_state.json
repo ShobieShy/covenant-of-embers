@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 118,
-  "steps_done": 96,
-  "last_commit": "7ebfdc3",
+  "steps_done": 97,
+  "last_commit": "5fd2a91",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1073,6 +1073,13 @@
       "step": 115,
       "type": "build",
       "summary": "Landfill lessons (beats 8-10): three soft walls (yard/junk/arena) drop on gnawers_cleared/crafted_once/dark_learned; 3 scripted yard Gnawers + guaranteed Basic fire head part; Assembly Station moved to Joe's camp; Joe cameo hands over the wind wand (Q21); Light shrine heals a wounded scavenger, Dark shrine forces one conversion (MagicEffects.force_convert, tutorial_force_convert once per character); toast queue; Filth trigger held until beat 11; 'The Ashen Midden' renamed 'The Landfill' (Q25). Simplification: shrines are touched (E) rather than hit with Light/Dark bolts; [tests] 383 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
+      "commit": "5fd2a91"
+    },
+    {
+      "time": "2026-10-24T10:54:22-05:00",
+      "step": 116,
+      "type": "build",
+      "summary": "Beats 11-13: Filth reveal cinematic on the boss wave (walls + THE FILTH card, existing arena checkpoint), filth_defeated -> return_to_bob (barrier gate opens), home -> crystal beat, bob_after_filth -> crystal cinematic -> complete(): finish flags, every gate + menu open, waystone awake, 'Prologue complete' banner; [tests] 385 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
       "commit": "PENDING"
     }
   ],
@@ -1172,7 +1179,8 @@
     112,
     113,
     114,
-    115
+    115,
+    116
   ],
   "deferred": [
     74,

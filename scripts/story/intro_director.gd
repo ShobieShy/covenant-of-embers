@@ -434,6 +434,9 @@ func _on_dialogue_ended(id: String) -> void:
 			give_grant()
 		"bob_intro":
 			give_kit()
+		"bob_after_filth":
+			if current() == "crystal":
+				_play_crystal()
 
 
 func give_grant() -> void:
@@ -552,6 +555,8 @@ func _dress_oak() -> void:
 	if current() == "welcome":
 		flags.set_flag("home_unlocked")
 		advance("new_home")
+	if current() == "return_to_bob":
+		advance("crystal")  # step 116: home again - Bob's waiting
 	if current() == "new_home" and not flags.has(MentorArrival.FLAG):
 		bed = Npc.new("Moss bed")
 		bed.name = "MossBed"
@@ -702,6 +707,9 @@ func _dress_landfill() -> void:
 	if not (main.dialogue as DialogueRunner).ended.is_connected(_on_dialogue_ended):
 		(main.dialogue as DialogueRunner).ended.connect(_on_dialogue_ended)
 	var b := current()
+	if b == "filth":
+		_arm_filth()
+		return
 	if not b in ["combat", "crafting", "light_dark"]:
 		return
 	var sp := spawner()
@@ -858,6 +866,7 @@ func touch_shrine(which: String) -> void:
 		if sp and _saved_trigger > 0.0:
 			sp.trigger_radius = _saved_trigger
 		advance("filth")
+		_arm_filth()
 
 
 func _dark_lesson() -> void:
@@ -887,3 +896,86 @@ func _tick_toasts(dt: float) -> void:
 		return
 	_hint(_toasts.pop_front())
 	_toast_left = TOAST_SECONDS
+
+
+# --- Step 116: beats 11-13, the Filth, home, the crystal ----------------------------------
+
+const END_CARD := "Prologue complete"
+
+
+func _arm_filth() -> void:
+	var bus := GameEvents.bus()
+	if not bus.wave_started.is_connected(_on_wave):
+		bus.wave_started.connect(_on_wave)
+	if not flags.changed.is_connected(_on_flag):
+		flags.changed.connect(_on_flag)
+
+
+func _on_wave(_i: int, id: String) -> void:
+	if id != Filth.WAVE_ID or current() != "filth" or flags.has("filth_revealed"):
+		return
+	flags.set_flag("filth_revealed")
+	var sp := spawner()
+	var c: Vector3 = sp.trigger_center if sp else Vector3.ZERO
+	cinematic = play_cinematic(
+		"filth_reveal",
+		[
+			{
+				"from": c + Vector3(0, 2, 10),
+				"to": c + Vector3(0, 1.5, 7),
+				"look": c + Vector3(0, 1, 0),
+				"s": 2.0,
+				"text": "The arena walls grind up out of the trash."
+			},
+			{
+				"from": c + Vector3(-3, 1, 6),
+				"to": c + Vector3(-1, 0.8, 5),
+				"look": c + Vector3(0, 3, -2),
+				"s": 3.0,
+				"text": "THE FILTH"
+			},
+		]
+	)
+
+
+func _on_flag(flag: String, _v: int) -> void:
+	if flag == "filth_defeated" and current() == "filth":
+		advance("return_to_bob")
+		_hint("The barrier gate is open. Bring Joe's trash to Bob at the Old Oak")
+
+
+func _play_crystal() -> void:
+	var bob := main.get_node_or_null("Npc_Bob") as Node3D
+	var at: Vector3 = bob.global_position if bob else player.global_position
+	cinematic = play_cinematic(
+		"crystal",
+		[
+			{
+				"from": at + Vector3(2, 1.8, 2),
+				"to": at + Vector3(1, 1.6, 1.5),
+				"look": at + Vector3(0, 1.2, 0),
+				"s": 3.0,
+				"text": "Bob turns Joe's trash in his hands. It hums. It glows. It becomes a crystal."
+			},
+		],
+		complete
+	)
+
+
+## Beat 13 end: every gate and menu opens, the waystone wakes, "Prologue complete".
+func complete() -> void:
+	if flags.has(DONE):
+		return
+	finish(flags)
+	_apply_gate_rules()
+	for g in main.get("gates"):
+		g.requires = ""
+	if marker:
+		marker.visible = false
+		marker.queue_free()
+		marker = null
+	var hud := main.get_node_or_null("Hud")
+	if hud and hud.has_method("show_banner"):
+		hud.show_banner(END_CARD)
+	print("[intro] " + END_CARD)
+	beat_changed.emit("done")

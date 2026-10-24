@@ -669,11 +669,11 @@ Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below;
 - Does: Beat 7: [[exit]] to_landfill in mage_association.toml gated on landfill_route_open (set by Bob); clerk bark; town gate guarded until filth_defeated (Q20).
 - Done: test: back door locked before Bob, leads to midden after.
 
-**115. Landfill lessons: combat, crafting, Light/Dark** ✅ PENDING
+**115. Landfill lessons: combat, crafting, Light/Dark** ✅ `5fd2a91`
 - Does: Beats 8-10: TutorialHints toast queue, scripted Gnawer yard with soft wall, guaranteed part drop, Assembly Station at Joe's camp + crafted_once, Light (heal scavenger) and Dark (one forced convert) shrines gating the arena.
 - Done: test_tutorial_lessons.gd: each wall drops on its flag; forced convert happens once only.
 
-**116. Filth intro, return, crystal finale, world open**
+**116. Filth intro, return, crystal finale, world open** ✅ PENDING
 - Does: Beats 11-13: Filth reveal cinematic + arena checkpoint respawn, return route, Bob crystal cinematic, tutorial_done/fast_travel_crystal/intro_done, all gates/menus open, 'Prologue complete' end card.
 - Done: test: full chain to intro_done; fast travel usable only after; world open.
 
