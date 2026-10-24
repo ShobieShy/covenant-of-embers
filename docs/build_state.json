@@ -6,7 +6,7 @@
   "next_step": 43,
   "total_steps": 93,
   "steps_done": 61,
-  "last_commit": "ae95993",
+  "last_commit": "9153b78",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -864,6 +864,14 @@
       "summary": "CoopWorld: host simulates enemies, 20 Hz unreliable snapshots -> brainless client puppets (client spawner off), client hits predicted + sent to host, reliable kill relay, enemies hunt nearest living player, bites on RemotePlayers sent as hurt to owner, 20 Hz poses -> RemotePlayer capsules; loot/XP instanced per peer via own EventBus kill; main.gd wires it and returns to menu when session ends; 2-process headless run: 180 snaps/poses each way, 4 puppets",
       "tests": "test_coop: puppets/poses/hits/kills/hurt (310 pass)",
       "commit": "ae95993"
+    },
+    {
+      "time": "2026-10-24T07:45:17-05:00",
+      "step": 80,
+      "type": "build",
+      "summary": "Last stand 15 s, revive by teammate within 2.5 m for 3 s at 30% HP, bleed-out to respawn; enemy HP x(1+0.6(n-1)); PartyFrames",
+      "tests": "test_downed_revive_and_bleed_out, test_scaling_revive_and_party_frames; 312 pass",
+      "commit": "9153b78"
     }
   ],
   "completed_steps": [
@@ -932,6 +940,7 @@
     77,
     78,
     79,
+    80,
     83,
     84,
     86,

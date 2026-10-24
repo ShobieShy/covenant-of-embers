@@ -562,7 +562,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_net.gd: each peer sees only own drops; XP/currency to all in range; client character stats come from the client save.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**80. Co-op polish: revive + party scaling**
+**80. Co-op polish: revive + party scaling** ✅ `9153b78`
 - Does: Borderlands-style downed state: 'last stand' window to get a kill and recover, or a teammate revives (hold interact); enemy HP +60 % per extra player; party frames on HUD.
 - Done: test_net.gd: downed window, self-recover on kill, revive by teammate, scaling factor.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
