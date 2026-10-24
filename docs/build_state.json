@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 21,
+  "next_step": 22,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -25,9 +25,10 @@
     17,
     18,
     19,
-    20
+    20,
+    21
   ],
-  "last_commit": "86b770b",
+  "last_commit": "72ca0c0",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -196,6 +197,17 @@
         "Noted (no code bug found in steps 1-19): tests/run_tests.gd prints 'ok' for a test aborted by a SCRIPT ERROR (run_tests.sh still fails on the log line); script names must not shadow GDScript globals (wrap -> seal)."
       ],
       "commit": "86b770b"
+    },
+    {
+      "time": "2026-10-24T03:06:30-05:00",
+      "step": 21,
+      "type": "build",
+      "summary": "Balance patch loader: BalancePatch JSON v1 (elements/rarities/drop_pools), all-or-nothing with validate(), Ember Mark seed tables locked, user://patches applied at start. 185 tests green.",
+      "plan_changes": [
+        "Magewar has no balance patch system; reinterpreted per PLAN §31.",
+        "No bugs found in earlier steps during this step."
+      ],
+      "commit": "72ca0c0"
     }
   ]
 }
