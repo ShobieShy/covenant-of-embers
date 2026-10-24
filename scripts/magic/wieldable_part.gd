@@ -28,6 +28,7 @@ const MAX_GEM_SLOTS := 3
 @export var accuracy_bonus := 0.0             ## Head, Handle and Charm count
 @export var handling_bonus := 0.0             ## swap speed (step 17)
 @export_range(0, 3) var gem_slots := 1        ## Head only: 1 (+1 Rare+, +1 Primordial+); Magewar's default 1
+@export var gems: Array[ElementGem] = []    ## step 26: socketed gems (Head only, <= gem_slots)
 @export var roll_seed := -1                   ## PartRoller seed (step 16); -1 = hand-made part
 
 static func make(p_type: PartType, p_damage_bonus := 0.0, p_fire_rate := 1.0,

@@ -14,7 +14,7 @@ var items: Array[Resource] = []    ## dense, slot order = list order
 var dust := 0                      ## Arcane Dust
 
 static func accepts(item: Resource) -> bool:
-	return item is WieldableInstance or item is WieldablePart or item is EquipmentItem
+	return item is WieldableInstance or item is WieldablePart or item is EquipmentItem or item is ElementGem
 
 func size() -> int:
 	return items.size()

@@ -78,7 +78,7 @@ func gem_slots() -> int:
 func damage() -> float:
 	var bonuses := PackedFloat64Array()
 	for p in parts:
-		bonuses.append(p.damage_bonus)
+		bonuses.append(p.damage_bonus + ElementGem.GEM_DAMAGE * p.gems.size())
 	var r := rarity()
 	return Damage.wieldable_damage(def.damage, r.multiplier if r != null else 1.0, bonuses)
 
@@ -96,7 +96,11 @@ func accuracy() -> float:
 			acc += p.accuracy_bonus
 	return clampf(acc, 0.0, 100.0)
 
+## Step 26: the Head's first socketed gem wins, then the Head's element, then the base's.
 func element() -> ElementTable.Element:
+	var head := part(WieldablePart.PartType.HEAD)
+	if head != null and not head.gems.is_empty():
+		return head.gems[0].element
 	for p in parts:
 		if p.part_type == WieldablePart.PartType.HEAD and p.element != ElementTable.Element.ARCANE:
 			return p.element
