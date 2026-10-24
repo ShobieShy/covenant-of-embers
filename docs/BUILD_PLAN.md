@@ -646,7 +646,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_net_desync.gd: hashes match after a scripted fight at 150 ms/2 % loss.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**93. Co-op playtest**
+**93. Co-op playtest** ✅ `15e7cbc`
 - Does: Scripted 2-bot co-op run of the slice (host + client); manual session with a friend left for ShobieShy.
 - Done: co-op autoplay PASS; manual issue list pending.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)

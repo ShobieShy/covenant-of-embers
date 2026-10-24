@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 74,
-  "last_commit": "231c4f6",
+  "steps_done": 75,
+  "last_commit": "15e7cbc",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -904,6 +904,14 @@
       "summary": "LinkConditioner on NetSession (game-time delay, seeded unreliable loss, --net-lag/--net-loss); host/client state hashes match after scripted fight at 150 ms/2%. Own movement/casting already client-local (no extra prediction needed)",
       "tests": "326 passed",
       "commit": "231c4f6"
+    },
+    {
+      "time": "2026-10-24T08:09:01-05:00",
+      "step": 93,
+      "type": "build",
+      "summary": "tools/coop_playtest.sh: host bot plays slice, joiner bot follows/fights over localhost ENet, follows travel, saves character; PASS 4/4 at 0 lag (in run_tests). With 150ms/2% the host bot hit the 600 s breach_fight limit once (enemy x1.6 HP). Co-op craft skipped when loot gives no build. Manual friend session left for ShobieShy",
+      "tests": "326 passed + coop PASS",
+      "commit": "15e7cbc"
     }
   ],
   "completed_steps": [
@@ -980,6 +988,7 @@
     89,
     90,
     91,
-    92
+    92,
+    93
   ]
 }
