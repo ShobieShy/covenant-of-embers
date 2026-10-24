@@ -39,6 +39,9 @@ const BRAINS := {
 }
 
 var health_scale := 1.0  ## step 80: co-op enemy health multiplier
+## Step 94: a co-op client puppet only shows predicted damage; it never dies from it (it
+## stays at >= 1 HP, so later hits still go to the host). Only the host's kill ends it.
+var hold_death := false
 var def: EnemyDef
 var damage_target: Damage.Target
 var health := 0.0
@@ -193,6 +196,12 @@ func apply_damage(amount: float, element: ElementTable.Element, announce := true
 	if dead:
 		return false
 	var before := health
+	if hold_death and health - maxf(0.0, amount) <= 0.0:
+		health = minf(health, 1.0)
+		damage_taken += before - health
+		hits += 1
+		flash = FLASH_TIME
+		return false
 	health = maxf(0.0, health - maxf(0.0, amount))
 	damage_taken += before - health
 	hits += 1
@@ -203,6 +212,13 @@ func apply_damage(amount: float, element: ElementTable.Element, announce := true
 			_announce_death()
 		return true
 	return false
+
+
+## Step 94: the host confirmed this puppet's death (kill message or a dead snapshot).
+func confirm_kill(element: ElementTable.Element) -> void:
+	hold_death = false
+	if not dead:
+		apply_damage(health + 1.0, element)
 
 
 ## Step 14: `died` and EventBus.enemy_killed, exactly once per death (reset() re-arms it).

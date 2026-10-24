@@ -125,7 +125,15 @@ func test_puppets_poses_hits_kills_and_hurt() -> void:
 			break
 	check(pup.dead, "puppet died with the host's enemy")
 	check(GameEvents.bus().kills >= kills_before + 2, "kill announced on both peers")
-	# Dummy respawn on the host brings the puppet back.
+	# Step 94: a stale "alive" snapshot overtaken by the kill must not revive (and recount) it.
+	var pid: int = cw.puppets.keys()[0]
+	var seen := cw.kills_seen
+	cw._snap_dead[pid] = false
+	cw._apply_snapshot([[pid, pup.def.id, pup.global_position, 0.0, 5.0, pup.max_health(), false]])
+	check(pup.dead and cw.kills_seen == seen, "stale snapshot ignored (no double kill)")
+	# Dummy respawn on the host brings the puppet back (after the client saw it dead in a
+	# snapshot; step 94: a stale alive snapshot alone must not revive it).
+	await _tick_both(d, 20)
 	real.reset()
 	for i in 60:
 		await _tick_both(d)

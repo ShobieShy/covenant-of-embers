@@ -331,3 +331,17 @@ func test_midden_markers_spawn_dummies() -> void:
 		check(e.head_shape != null and e.body_shape.position.y == e.def.size.y * 0.5, "%s stands on its feet with a head" % e.name)
 	check(ProjectSettings.get_setting("layer_names/3d_physics/layer_3") == "enemy", "physics layer 3 is named enemy")
 	w.free()
+
+
+func test_hold_death_puppet() -> void:  # step 94
+	var e := Enemy.new()
+	e.setup(EnemyTable.load_default().find("gnawer"))
+	runner_tree.root.add_child(e)
+	e.hold_death = true
+	e.apply_damage(9999.0, ElementTable.Element.FIRE)
+	check(not e.dead and e.health >= 1.0, "predicted damage never kills a puppet")
+	e.apply_damage(5.0, ElementTable.Element.FIRE)
+	check(not e.dead, "still alive, hits still count")
+	e.confirm_kill(ElementTable.Element.FIRE)
+	check(e.dead, "host-confirmed kill")
+	e.queue_free()

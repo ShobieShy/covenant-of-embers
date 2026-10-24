@@ -29,6 +29,8 @@ var proxies := {}  ## peer -> RemotePlayer
 var puppets := {}  ## id -> Enemy (client)
 var by_id := {}  ## id -> Enemy (host)
 var puppet_hp := {}  ## id -> health the host last reported (client)
+var _snap_dead := {}  ## id -> true once a host snapshot showed it dead (client, step 94)
+var kills_seen := 0  ## puppet deaths counted on this client (step 94)
 var _ids := {}  ## Enemy -> id (host)
 var _wired := {}  ## Enemy -> true (attacks rerouted, death hooked)
 var _next_id := 1
@@ -270,6 +272,8 @@ func _apply_snapshot(list: Array) -> void:
 			e.setup(d)
 			e.name = "Puppet%d" % id
 			e.set_meta(&"net_id", id)
+			e.hold_death = true  # step 94: only the host kills
+			e.died.connect(func(_e, _el): kills_seen += 1)
 			add_child(e)
 			e.global_position = row[2]
 			e.damaged.connect(_on_puppet_hit)
@@ -282,10 +286,15 @@ func _apply_snapshot(list: Array) -> void:
 		puppet_hp[id] = hp
 		var host_dead := bool(row[6])
 		if host_dead and not e.dead:
-			e.apply_damage(e.health + 1.0, e.def.affinity)
-		elif not host_dead and e.dead:
-			e.reset()  # a training dummy came back on the host
+			e.confirm_kill(e.def.affinity)
+		elif not host_dead and e.dead and _snap_dead.get(id, false):
+			# A training dummy came back on the host. Step 94: only after a snapshot saw it
+			# dead; a stale "alive" snapshot overtaken by the reliable "kill" must not revive
+			# it (that counted the boss kill twice on the client).
+			e.reset()
+			e.hold_death = true
 			e.global_position = row[2]
+		_snap_dead[id] = host_dead
 		if not e.dead:
 			e.health = minf(e.health, hp) if e.health > 0.0 else hp
 	for id in puppets.keys():
@@ -295,6 +304,7 @@ func _apply_snapshot(list: Array) -> void:
 				gone.queue_free()
 			puppets.erase(id)
 			puppet_hp.erase(id)
+			_snap_dead.erase(id)
 
 
 func _on_puppet_hit(e: Enemy, h: SpellBolts.Hit) -> void:
@@ -324,7 +334,7 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 			if not host:
 				var e: Enemy = puppets.get(int(data.get("id", 0)))
 				if e and is_instance_valid(e) and not e.dead:
-					e.apply_damage(e.health + 1.0, int(data.get("el", 0)) as ElementTable.Element)
+					e.confirm_kill(int(data.get("el", 0)) as ElementTable.Element)
 		"hit":
 			if host:
 				var e: Enemy = by_id.get(int(data.get("id", 0)))
