@@ -140,6 +140,7 @@ var potions_used := 0
 var inventory := Inventory.new()  # step 23: backpack (30 slots) + Arcane Dust
 var progression := Progression.new()  # step 27: XP + level
 var skills := Skills.new()  # step 71: skill ranks (tree data in data/skills/)
+var skill_procs := SkillProcs.new()  # step 72: kill procs + capstone frenzy
 var pickups := PickupCollector.new()  # step 23: walk-over auto-collect + Interact pickup
 
 var _wheel := 0  # queued mouse-wheel cycles (+ next / - prev)
@@ -570,6 +571,7 @@ func apply_bonuses() -> void:
 	for c in loadout.casters:
 		c.damage_bonus = dmg
 	consecrations.apply(self)
+	skill_procs.bind(self)
 
 
 ## Step 71: one skill rank (see Skills.why_not); re-applies the bonuses.
@@ -653,6 +655,7 @@ func tick(input: PlayerInput, dt: float) -> void:
 		return
 	health.tick(dt)
 	consecrations.tick(self)
+	skill_procs.tick(self, dt)
 	protection_left = maxf(0.0, protection_left - dt)
 	if protection_left < 1e-6:  # 1 - 60 x 1/60 leaves float dust: exactly 60 ticks
 		protection_left = 0.0

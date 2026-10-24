@@ -34,6 +34,7 @@ const DEFAULTS := {
 	&"quickslot_next_wieldable": {"joy": JOY_BUTTON_RIGHT_SHOULDER},
 	&"use_potion": {"joy": JOY_BUTTON_Y},
 	&"inventory": {"joy": JOY_BUTTON_BACK},
+	&"skills": {"joy": JOY_BUTTON_TOUCHPAD},
 	&"menu": {"joy": JOY_BUTTON_START},
 }
 

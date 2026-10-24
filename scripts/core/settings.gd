@@ -7,7 +7,7 @@ extends RefCounted
 ## InputMap; apply_to(player) pushes the options into a spawned player.
 
 const PATH := "user://keybinds.cfg"
-const UI_ACTIONS: Array[StringName] = [&"inventory"]
+const UI_ACTIONS: Array[StringName] = [&"inventory", &"skills"]
 const BOB_PRESETS: PackedFloat64Array = [0.0, 0.1, 0.7, 1.0]  ## Cogito HEADBOBBLE
 const RAW_LOOK := 1.0 / 0.6784  ## Magewar-like raw look sensitivity
 

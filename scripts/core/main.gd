@@ -86,6 +86,11 @@ func _ready() -> void:
 		inv_ui.name = "InventoryUi"
 		add_child(inv_ui)
 		inv_ui.bind(player)
+		var sk_ui := SkillsUi.new()   # step 72: K
+		sk_ui.name = "SkillsUi"
+		sk_ui.can_respec = can_respec
+		add_child(sk_ui)
+		sk_ui.bind(player)
 		# Step 31: an Assembly Station beside the start (E opens it) + its screen.
 		# Step 46: at the level's WaveSpawns/station marker (Breach entrance), else beside the start.
 		AssemblyStation.place(self, $Level, player.spawn_feet + Vector3(2.0, 0.0, -1.0))

@@ -11,6 +11,7 @@ extends RefCounted
 ## Numbers are plan design (Magewar has no anointments). Rolled onto Rare+ vault/boss
 ## equipment (VaultChest, CONSECRATE_CHANCE); unlocks per PLAN after the first Breach warden.
 
+const BIAS_CHANCE := 0.5
 const KINDLING_BONUS := 10.0
 const BULWARK_BONUS := 5.0
 const REAPING_MANA := 10.0
@@ -35,8 +36,22 @@ static func describe(id: String) -> String:
 	return DEFS.get(id, "")
 
 
-static func roll(rng: RandomNumberGenerator) -> String:
+## Step 72: `bias` (the wearer's main skill branch consecrations) wins BIAS_CHANCE of rolls.
+static func roll(rng: RandomNumberGenerator, bias: PackedStringArray = []) -> String:
+	if not bias.is_empty() and rng.randf() < BIAS_CHANCE:
+		return bias[rng.randi_range(0, bias.size() - 1)]
 	return IDS[rng.randi_range(0, IDS.size() - 1)]
+
+
+## The consecrations of p's most-invested skill branch (empty when nothing is spent).
+static func bias_for(p: Player) -> PackedStringArray:
+	var out := PackedStringArray()
+	if p == null or p.skills.tree == null:
+		return out
+	var b := p.skills.tree.branch(p.skills.main_branch())
+	for c in b.get("consecrations", []):
+		out.append(String(c))
+	return out
 
 
 func has(id: String) -> bool:

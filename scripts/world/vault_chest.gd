@@ -59,7 +59,12 @@ static func at_least(id: String, floor_id: String) -> String:
 
 
 static func roll_contents(
-	r: RandomNumberGenerator, floor_id := DEFAULT_FLOOR, lk := 0.0, rt: RarityTable = null, el := -1
+	r: RandomNumberGenerator,
+	floor_id := DEFAULT_FLOOR,
+	lk := 0.0,
+	rt: RarityTable = null,
+	el := -1,
+	bias: PackedStringArray = [],
 ) -> Array[LootDrop]:
 	var t := rt if rt != null else RarityTable.load_default()
 	var out: Array[LootDrop] = []
@@ -88,7 +93,7 @@ static func roll_contents(
 	q.roll_seed = r.randi()
 	q.item = EquipmentRoller.from_seed(q.roll_seed, q.equip_slot, q.rarity_id, q.element)
 	if q.item != null and Rarity.parse(q.rarity_id) >= Rarity.parse("rare") and r.randf() < CONSECRATE_CHANCE:
-		(q.item as EquipmentItem).consecration = Consecrations.roll(r)
+		(q.item as EquipmentItem).consecration = Consecrations.roll(r, bias)
 	out.append(q)
 	return out
 
@@ -107,7 +112,11 @@ func open_chest() -> Array[LootDrop]:
 	if locked or is_open:
 		return none
 	is_open = true
-	var drops := roll_contents(rng, floor_rarity, luck, table, element)
+	var bias := PackedStringArray()  # step 72: tree-aware consecration weights
+	var ps := get_tree().get_nodes_in_group(Player.GROUP) if is_inside_tree() else []
+	if not ps.is_empty():
+		bias = Consecrations.bias_for(ps[0] as Player)
+	var drops := roll_contents(rng, floor_rarity, luck, table, element, bias)
 	if dropper != null and dropper.parent != null:
 		dropper.spawn_drops(drops, dropper.parent.to_local(global_position + Vector3(0, 0.2, 1.0)), "vault_chest")
 	if _lid:

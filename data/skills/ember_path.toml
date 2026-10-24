@@ -1,0 +1,136 @@
+# Placeholder skill tree (BUILD_PLAN step 72). Every name, number and effect here is a
+# placeholder: the layout (3 branches, tiers opened by points spent, ranked skills, one
+# capstone per tree) is the design; the actual skills will be rewritten once characters
+# (Q6) are decided. Effects: see SkillTree.STATS.
+
+[tree]
+id = "ember_path"
+name = "Path of Embers"
+tiers = 4
+
+[[branch]]
+id = "hearth"
+name = "Hearth"
+consecrations = ["bulwark", "fleetfoot"]
+
+[[branch]]
+id = "pyre"
+name = "Pyre"
+consecrations = ["kindling"]
+
+[[branch]]
+id = "ash"
+name = "Ash"
+consecrations = ["reaping"]
+
+# Hearth: survival
+[[skill]]
+id = "thick_bark"
+name = "Thick Bark"
+branch = "hearth"
+tier = 0
+max_rank = 5
+desc = "+10 max health per rank"
+effects = { max_health = 10 }
+
+[[skill]]
+id = "deep_lungs"
+name = "Deep Lungs"
+branch = "hearth"
+tier = 0
+max_rank = 5
+desc = "+8 max breath per rank"
+effects = { max_breath = 8 }
+
+[[skill]]
+id = "ember_skin"
+name = "Ember Skin"
+branch = "hearth"
+tier = 1
+max_rank = 5
+desc = "+3% resistance to every element per rank"
+effects = { resist_all = 3 }
+
+[[skill]]
+id = "second_wind"
+name = "Second Wind"
+branch = "hearth"
+tier = 2
+max_rank = 3
+desc = "Kills heal 4 health per rank"
+effects = { kill_health = 4 }
+
+# Pyre: damage
+[[skill]]
+id = "kindled_focus"
+name = "Kindled Focus"
+branch = "pyre"
+tier = 0
+max_rank = 5
+desc = "+1 spell damage per rank"
+effects = { spell_damage = 1 }
+
+[[skill]]
+id = "quick_step"
+name = "Quick Step"
+branch = "pyre"
+tier = 0
+max_rank = 5
+desc = "+2% move speed per rank"
+effects = { speed_pct = 2 }
+
+[[skill]]
+id = "flare"
+name = "Flare"
+branch = "pyre"
+tier = 1
+max_rank = 5
+desc = "+2 spell damage per rank"
+effects = { spell_damage = 2 }
+
+[[skill]]
+id = "wildfire"
+name = "Wildfire"
+branch = "pyre"
+tier = 3
+max_rank = 1
+capstone = true
+desc = "Capstone: each kill gives +8 spell damage for 6 s"
+effects = { kill_frenzy = 8 }
+
+# Ash: mana
+[[skill]]
+id = "still_mind"
+name = "Still Mind"
+branch = "ash"
+tier = 0
+max_rank = 5
+desc = "+8 max mana per rank"
+effects = { max_mana = 8 }
+
+[[skill]]
+id = "steady_flow"
+name = "Steady Flow"
+branch = "ash"
+tier = 0
+max_rank = 5
+desc = "+1 mana regen per rank"
+effects = { mana_regen = 1 }
+
+[[skill]]
+id = "harvest"
+name = "Harvest"
+branch = "ash"
+tier = 1
+max_rank = 3
+desc = "Kills restore 5 mana per rank"
+effects = { kill_mana = 5 }
+
+[[skill]]
+id = "ashfall"
+name = "Ashfall"
+branch = "ash"
+tier = 2
+max_rank = 5
+desc = "+12 max mana and +1 regen per rank"
+effects = { max_mana = 12, mana_regen = 1 }
