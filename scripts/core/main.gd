@@ -60,6 +60,10 @@ func _ready() -> void:
 		var hud := Hud.new()
 		add_child(hud)
 		hud.bind(player, spawner)
+		var inv_ui := InventoryUi.new()   # step 30: Tab
+		inv_ui.name = "InventoryUi"
+		add_child(inv_ui)
+		inv_ui.bind(player)
 		print("[enemies] %d spawned (%s), %d skipped (%s)" % [spawned.size(),
 			", ".join(spawned.map(func(e: Enemy) -> String: return e.def.id)), skipped.size(), ", ".join(skipped)])
 		var nav := $Level.get_node_or_null("Navigation") as LevelNavigation

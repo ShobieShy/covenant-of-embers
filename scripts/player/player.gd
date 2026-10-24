@@ -87,6 +87,7 @@ var steps_climbed := 0
 var direction := Vector3.ZERO   # smoothed move direction (Magewar `direction`)
 var speed := 4.0                # Magewar `current_speed`
 var input_enabled := true       # false in tests: no Input polling in _physics_process
+var ui_open := false            # step 30: a menu screen is up: no actions, no mouse look
 var breath: Breath              # sprint/dash pool (step 4)
 var sprinting := false
 var slide_left := 0.0           # seconds left on the slide (Magewar SlidingTimer)
@@ -210,7 +211,7 @@ func _on_out_of_mana(_cost: float) -> void:
 	hint.emit(HINT_NOT_ENOUGH_MANA)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not input_enabled:
+	if not input_enabled or ui_open:
 		return
 	var mm := event as InputEventMouseMotion
 	if mm and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
@@ -233,7 +234,10 @@ func set_spread_seed(s: int) -> void:
 	spread.rng.seed = s
 
 func _physics_process(delta: float) -> void:
-	if input_enabled:
+	if input_enabled and ui_open:
+		_wheel = 0
+		tick(PlayerInput.hold(), delta)   # physics keeps running; no actions while a menu is up
+	elif input_enabled:
 		var input := PlayerInput.from_input()
 		if _wheel > 0:
 			input.pressed[&"quickslot_next_wieldable"] = true
