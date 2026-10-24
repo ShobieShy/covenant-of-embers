@@ -362,6 +362,8 @@ func _setup_fast_travel(player: Player, here: String) -> void:
 	waystone.opened.connect(open_map)
 
 func open_map(point := "") -> void:
+	if IntroDirector.refuse(self, "map"):  # step 112: dormant until Bob's crystal
+		return
 	var player := get_node_or_null("Player") as Player
 	if player:
 		player.ui_open = true

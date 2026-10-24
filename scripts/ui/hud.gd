@@ -75,6 +75,7 @@ class Crosshair:
 func _init() -> void:
 	layer = LAYER
 	name = "Hud"
+	add_to_group(&"hud")  # step 112: IntroDirector.refuse finds it
 	font = load(FONT_PATH) as Font
 	root = Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)

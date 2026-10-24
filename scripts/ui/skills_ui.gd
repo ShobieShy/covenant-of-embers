@@ -121,7 +121,7 @@ func close() -> void:
 func toggle() -> void:
 	if visible:
 		close()
-	else:
+	elif not IntroDirector.refuse(self, "skills"):  # step 112: locked early in the intro
 		open()
 
 

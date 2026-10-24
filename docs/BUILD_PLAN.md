@@ -653,11 +653,11 @@ Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below;
 - Does: CinematicCamera (2-4 eased keyframes), Letterbox bars, HUD hide, input freeze, hold-Esc 1 s skip that still applies the beat's flags; saving off during cinematics.
 - Done: test_cinematic.gd: path finishes, skip applies flags, input restored; headless playtest skips all.
 
-**111. Summoning + appraisal character creation** ✅ PENDING
+**111. Summoning + appraisal character creation** ✅ `f149ae0`
 - Does: Beats 1-4: ritual-circle cinematic, CharacterCreator lifted out of main_menu as the appraisal-crystal readout, expulsion (Joe out the back door), the clerk grant (50 gold, clothes, permit); New Game skips the menu picker.
 - Done: test: identity applied from creator; grant flags/gold; front door opens only after the permit.
 
-**112. Gates, markers, menu locks**
+**112. Gates, markers, menu locks** ✅ PENDING
 - Does: LevelGate requires_flag + locked_text, guard-blocked town to_landfill, dormant waystone text, world-space objective marker chaining exits, inventory/skills/map/save locked until their beat.
 - Done: test_intro_gates.gd: each gate opens on its flag; markers follow the active objective.
 

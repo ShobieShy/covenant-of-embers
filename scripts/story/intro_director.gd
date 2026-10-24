@@ -83,6 +83,37 @@ const SUMMONED_SPOTS: Array[Vector3] = [Vector3(-2.0, 0.3, -8.0), Vector3(2.0, 0
 const BACK_DOOR := Vector3(0.0, 0.0, -13.5)
 const GRANT_GOLD := 50
 
+## Step 112: intro-only gate rules, level -> gate target -> [flag that opens it, locked text].
+const GATE_RULES := {
+	"mage_association": {"town_square": ["permit_given", "The Clerk has your papers. Speak to the Clerk first."]},
+	"town_square":
+	{"midden": ["filth_defeated", 'Bored Guard: "Barrier edge. Summoned don\'t go out there without say-so."']},
+	"midden":
+	{
+		"breach": ["tutorial_done", "The Breach is sealed. Bob wants you back first."],
+		"town_square":
+		["filth_defeated", "The barrier gate is barred from this side. Deal with whatever lurks here first."],
+	},
+}
+## Next gate to take from a level towards another (the intro's map: Association - Town - Oak,
+## the Landfill off the Association's back door, and its barrier gate back to town).
+const ROUTE := {
+	"mage_association": {"town_square": "town_square", "old_oak": "town_square", "midden": "midden"},
+	"town_square": {"mage_association": "mage_association", "old_oak": "old_oak", "midden": "mage_association"},
+	"old_oak": {"town_square": "town_square", "mage_association": "town_square", "midden": "town_square"},
+	"midden": {"town_square": "town_square", "old_oak": "town_square", "mage_association": "town_square"},
+}
+## Menus the intro holds back: feature -> [flag that unlocks it, why].
+const LOCKS := {
+	"inventory": ["bob_met", "Your pack is empty. (Unlocks once Bob kits you out.)"],
+	"skills": ["bob_met", "You don't know any skills yet. (Unlocks after meeting Bob.)"],
+	"save": ["bob_met", "Saving unlocks at the Old Oak. (Leaving still keeps your place.)"],
+	"map": ["fast_travel_crystal", "The waystone is dormant. Its light is out."],
+}
+
+static var live: StoryFlags  ## the running intro's flags (menus check them)
+
+var marker: Label3D
 var main: Node
 var player: Player
 var flags: StoryFlags
@@ -90,6 +121,25 @@ var here := ""
 var cast := {}  ## speaker -> Npc this director spawned
 var creator: CanvasLayer
 var cinematic: Cinematic
+
+
+## Why `feature` is locked right now ("" when it is open or no intro runs).
+static func lock_text(feature: String) -> String:
+	if not active(live) or not LOCKS.has(feature) or live.has(LOCKS[feature][0]):
+		return ""
+	return String(LOCKS[feature][1])
+
+
+## True (with a HUD hint) when the intro still holds `feature` back.
+static func refuse(n: Node, feature: String) -> bool:
+	var why := lock_text(feature)
+	if why.is_empty():
+		return false
+	var hud := n.get_tree().get_first_node_in_group(&"hud") if n.is_inside_tree() else null
+	if hud:
+		hud.show_hint(why)
+	print("[intro] locked: " + feature)
+	return true
 
 
 static func active(f: StoryFlags) -> bool:
@@ -155,6 +205,10 @@ func setup(m: Node, p: Player, f: StoryFlags, level: String) -> void:
 	flags = f
 	here = level
 	name = "IntroDirector"
+	live = f
+	_apply_gate_rules()
+	_make_marker()
+	beat_changed.connect(func(_b: String): _on_beat())
 	print("[intro] beat %s in %s" % [current(), here])
 	if main.get("dialogue"):
 		(main.dialogue as DialogueRunner).ended.connect(_on_dialogue_ended)
@@ -206,11 +260,6 @@ func _dress_association() -> void:
 		_spawn("Summoned " + Archetype.label(others[i]), SUMMONED_SPOTS[i], 0.0)
 	if flags.has("joe_expelled"):
 		_hide_joe()
-	for g in main.gates:
-		if g.target == "town_square":
-			g.requires = "permit_given"
-			g.locked_text = "The Clerk has your papers. Speak to the Clerk first."
-			g.flags = flags
 	match current():
 		"summoning":
 			player.global_position = DAIS_SPOT
@@ -376,3 +425,79 @@ func _hint(text: String) -> void:
 	if hud and hud.has_method("show_hint"):
 		hud.show_hint(text)
 	print("[intro] " + text)
+
+
+# --- Step 112: gates, objective marker ------------------------------------------------------
+
+
+func _exit_tree() -> void:
+	if live == flags:
+		live = null
+
+
+func _apply_gate_rules() -> void:
+	var rules: Dictionary = GATE_RULES.get(here, {})
+	for g in main.get("gates"):
+		if rules.has(g.target):
+			g.requires = String(rules[g.target][0])
+			g.locked_text = String(rules[g.target][1])
+			g.flags = flags
+
+
+func gate_to(target: String) -> LevelGate:
+	for g in main.get("gates"):
+		if g.target == target:
+			return g
+	return null
+
+
+## Where the objective marker points: the beat's NPC / spot here, or the next gate on the way.
+func target_point() -> Variant:
+	var b := current()
+	if b.is_empty():
+		return null
+	var dest := String(LEVEL.get(b, here))
+	if dest != here:
+		var g := gate_to(String(ROUTE.get(here, {}).get(dest, "")))
+		return g.global_position if g else null
+	var n: Node3D = null
+	match b:
+		"expulsion":
+			n = joe()
+		"grant":
+			n = cast.get("Clerk")
+		"welcome":
+			n = gate_to("town_square") if here == "mage_association" else gate_to("old_oak")
+	return n.global_position if n else null
+
+
+func _make_marker() -> void:
+	marker = Label3D.new()
+	marker.name = "ObjectiveMarker"
+	marker.text = "v"
+	marker.font_size = 96
+	marker.outline_size = 16
+	marker.modulate = Color(1.0, 0.8, 0.2)
+	marker.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	marker.no_depth_test = true
+	marker.fixed_size = true
+	marker.pixel_size = 0.0006
+	marker.visible = false
+	add_child(marker)
+
+
+func _process(_dt: float) -> void:
+	if marker == null:
+		return
+	var at: Variant = target_point()
+	marker.visible = at != null and Cinematic.playing == null
+	if at != null:
+		var bob := 0.15 * sin(Time.get_ticks_msec() * 0.004)
+		marker.global_position = (at as Vector3) + Vector3(0, 3.0 + bob, 0)
+
+
+func _on_beat() -> void:
+	_apply_gate_rules()
+	var o := objective()
+	if not o.is_empty():
+		_hint("Objective: " + o)

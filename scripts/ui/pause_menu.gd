@@ -82,6 +82,9 @@ func press(id: String) -> void:
 			if settings_ui:
 				settings_ui.open()
 		"save":
+			if IntroDirector.refuse(self, "save"):  # step 112 (quit / travel still save)
+				status.text = IntroDirector.lock_text("save")
+				return
 			save_requested.emit()
 			status.text = "Saved."
 		"main_menu":

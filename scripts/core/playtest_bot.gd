@@ -368,7 +368,10 @@ func _physics_process(delta: float) -> void:
 				_finish(false, "no station in the Breach")
 				return
 			if not st.in_reach(player) and t < 60.0 * _walk_scale():
-				walk_to(st.global_position)
+				# Snagged (loot / chest in the way): circle round the station after 15 s.
+				var k := int(t / (5.0 * _walk_scale()))
+				var off := Vector3.ZERO if t < 15.0 * _walk_scale() else Vector3(1.5, 0, 0).rotated(Vector3.UP, k * 1.7)
+				walk_to(st.global_position + off)
 			elif not st.in_reach(player):
 				_finish(false, "could not walk to the station (%.1f m)" % flat_distance(st.global_position))
 				return
