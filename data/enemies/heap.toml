@@ -1,0 +1,19 @@
+# Heap (BUILD_PLAN step 13, PLAN §7): the tank, a lumbering junk construct with a glowing
+# core seam across its back. Reinterprets Magewar's garbage golem
+# (scripts/enemies/enemy_garbage_golem.gd): Earth element, contact_damage 8,
+# attack_cooldown 2 s, detection_range 10, aggro_range 7, walk_speed 1.2, sprint_speed 2.5,
+# knockback_strength 15; the body is landfill_tutorial.tscn's Golem1 mesh (1.5 x 2.4 x 1.5).
+# Plan design (Magewar has none of it): 150 HP (ten Apprentice Fire Staff bolts, five seam
+# crits); the slam winds up 0.6 s (planted, dodgeable, cancelled by a knockback); a 25
+# knockback threshold for 0.2 s (only a seam crit staggers it, 1.5 m); 120 deg/s turn.
+# ai kind "tank" = scripts/enemies/heap.gd. Keys: see training_dummies.toml.
+
+[[enemy]]
+id = "heap"
+name = "Heap"
+affinity = "earth"
+max_health = 150
+size = [1.5, 2.4, 1.5]        # yaw 0 faces -Z; the seam is on its back (+Z)
+color = [0.36, 0.38, 0.3]     # rusted junk
+weak_point = { offset = [0.0, 1.4, 0.78], size = [1.0, 0.25, 0.1] }   # the core seam
+ai = { kind = "tank", detect_range = 10.0, aggro_range = 7.0, walk_speed = 1.2, sprint_speed = 2.5, attack_range = 1.6, attack_damage = 8.0, attack_cooldown = 2.0, attack_windup = 0.6, knockback_strength = 15.0, knockback_time = 0.2, knockback_threshold = 25.0, turn_rate_deg = 120.0 }

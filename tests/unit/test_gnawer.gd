@@ -122,6 +122,7 @@ func test_bad_ai_rejected() -> void:
 	check(not good.has("error"), "minimal rusher loads (%s)" % good.get("error", ""))
 	var cases := {
 		"ai = { kind = \"flier\" }": "unknown ai kind",
+		"ai = { kind = \"tank\", attack_cooldown = 1.0, attack_windup = 1.0 }": "attack_windup must be shorter",
 		"ai = { detect_range = 8.0 }": "missing key 'kind'",
 		"ai = { kind = \"rusher\", detect_range = 5.0, aggro_range = 6.0 }": "aggro_range must not exceed detect_range",
 		"ai = { kind = \"rusher\", attack_cooldown = -1.0 }": "attack_cooldown",
@@ -392,7 +393,7 @@ func test_midden_gnawer_bites_without_shoving() -> void:
 	var got := Enemy.spawn_at_markers(level, enemies, EnemyTable.load_default())
 	var g: Gnawer = null
 	for e in got:
-		if e is Gnawer:
+		if e is Gnawer and not e is Heap:   # (step 13: the Heap is a Gnawer subclass)
 			g = e
 	check(g != null, "the Midden's gnawer_3 marker spawns a Gnawer")
 	if g == null:

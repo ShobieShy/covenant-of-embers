@@ -185,3 +185,11 @@ yaw_deg = -20.0
 enemy = "gnawer"
 position = [-11.0, 0.0, -11.0]
 yaw_deg = -135.0   # facing the arena centre
+
+# Step 13: a Heap (data/enemies/heap.toml) in the north-east corner, mirroring the Gnawer:
+# beyond its 10 m detect range from the start and the scripted walk. Its glowing seam faces
+# the north-east wall; flank it.
+[[enemy]]
+enemy = "heap"
+position = [11.0, 0.0, -11.0]
+yaw_deg = 135.0    # facing the arena centre

@@ -65,6 +65,9 @@ const HINT_NOT_ENOUGH_MANA := "Not enough mana!"   # Magewar wieldable_staff.gd
 
 ## Short on-screen message (Magewar player_interaction_component.send_hint); step 29 HUD.
 signal hint(text: String)
+signal hurt(player: Player, result: Damage.Result)   ## step 13: a hit that landed (after resolve)
+signal died(player: Player)
+signal respawned(player: Player)
 
 @export var tuning: PlayerTuning
 
@@ -101,6 +104,15 @@ var not_enough_mana_cues := 0
 var focus: Focus                # step 9: ADS FOV tween
 var spread: Spread              # step 9: accuracy cone + bloom (seeded)
 var last_hint := ""
+var health: Health              # step 13: shield first, then health
+var damage_target := Damage.Target.new(ElementTable.Element.ARCANE)   ## bolts + enemy melee resolve on it
+var spawn_feet := Vector3.ZERO  # the last spawn() point: respawns go back there
+var spawn_yaw := 0.0
+var respawn_left := 0.0         # s until the respawn while dead
+var deaths := 0
+var respawns := 0
+var hits_taken := 0
+var hits_ignored := 0           # i-frames / dead
 
 var _wheel := 0                 # queued mouse-wheel cycles (+ next / - prev)
 var _crouched_jump := false
@@ -122,6 +134,7 @@ func _init() -> void:
 	set_mana(Mana.from_tuning(tuning))
 	focus = Focus.from_tuning(tuning)
 	spread = Spread.from_tuning(tuning)
+	_set_health(Health.from_tuning(tuning))
 	for c in loadout.casters:
 		c.out_of_mana.connect(_on_out_of_mana)
 
@@ -146,6 +159,7 @@ func _ready() -> void:
 	set_mana(Mana.from_tuning(tuning))
 	focus = Focus.from_tuning(tuning)
 	spread = Spread.from_tuning(tuning)
+	_set_health(Health.from_tuning(tuning))
 	camera.fov = focus.fov
 	loadout.swap_seconds = tuning.swap_seconds
 	viewmodel = Viewmodel.new()
@@ -210,8 +224,10 @@ func _physics_process(delta: float) -> void:
 		_wheel = 0
 		tick(input, delta)
 
-## Places the feet at `feet`, facing `yaw_rad` (pitch 0), at rest.
+## Places the feet at `feet`, facing `yaw_rad` (pitch 0), at rest; respawns return here.
 func spawn(feet: Vector3, yaw_rad: float) -> void:
+	spawn_feet = feet
+	spawn_yaw = yaw_rad
 	global_position = feet
 	velocity = Vector3.ZERO
 	direction = Vector3.ZERO
@@ -273,9 +289,72 @@ func accuracy() -> float:
 func dashing() -> bool:
 	return dash.active()
 
-## Dash i-frames (step 13's damage check reads this after the tick).
+## Dash i-frames: enemy hits are ignored while this is true (Gnawer marks the bite dodged).
 func invulnerable() -> bool:
 	return dash.invulnerable()
+
+func alive() -> bool:
+	return not health.dead
+
+func _set_health(h: Health) -> void:
+	health = h
+	health.died.connect(_on_died)
+
+## Enemy melee (Gnawer bite / Heap slam) and any other non-bolt hit: ignored during dash
+## i-frames or while dead (null); else resolved on damage_target (Arcane, resists capped
+## at 60 %, no crit) and taken shield first. No damage numbers on the player.
+func take_enemy_hit(damage: float, element: ElementTable.Element) -> Damage.Result:
+	if invulnerable() or not alive():
+		hits_ignored += 1
+		return null
+	var r := Damage.resolve_melee(damage, element, damage_target)
+	_take(r)
+	return r
+
+## Gnawer.attacked / Heap slams (main.gd connects them): dodged attacks do nothing.
+func on_enemy_attack(_from: Gnawer, bite: Gnawer.Bite) -> void:
+	if bite.dodged:
+		hits_ignored += 1
+		return
+	take_enemy_hit(bite.damage, bite.element)
+
+## A bolt (SpellBolts already resolved it on damage_target): same i-frame/dead rules.
+func take_hit(h: SpellBolts.Hit) -> void:
+	if h.result == null:
+		return
+	if invulnerable() or not alive():
+		hits_ignored += 1
+		return
+	_take(h.result)
+
+func _take(r: Damage.Result) -> void:
+	hits_taken += 1
+	health.take(r.amount)
+	hurt.emit(self, r)
+
+func _on_died() -> void:
+	deaths += 1
+	respawn_left = tuning.respawn_delay
+	slide_left = 0.0
+	sprinting = false
+	velocity = Vector3.ZERO
+	direction = Vector3.ZERO
+	died.emit(self)
+
+## Back at the last spawn point, full health/shield, mana and Breath refilled (equipment
+## and level bonuses kept), focus and slide dropped. (Jolt: ray queries see the moved
+## body only after the next physics step.)
+func respawn() -> void:
+	health.refill()
+	mana.refill()
+	breath.refill()
+	respawn_left = 0.0
+	slide_left = 0.0
+	sprinting = false
+	_set_crouched(false)
+	spawn(spawn_feet, spawn_yaw)
+	respawns += 1
+	respawned.emit(self)
 
 ## Accessibility: no head bob, no landing dip (step smoothing stays).
 func set_reduced_motion(on: bool) -> void:
@@ -301,6 +380,13 @@ func set_speed_multiplier(m: float) -> void:
 
 ## One fixed tick (dt must be the physics step: move_and_slide uses the physics delta).
 func tick(input: PlayerInput, dt: float) -> void:
+	# Dead (step 13): no input, no movement; respawn after respawn_delay.
+	if not alive():
+		respawn_left -= dt
+		if respawn_left <= 1e-7:
+			respawn()
+		return
+	health.tick(dt)
 	# Still rising from a jump: never let a stale floor contact cancel the jump.
 	if _rising and velocity.y <= 0.0:
 		_rising = false

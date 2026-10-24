@@ -199,22 +199,44 @@ func think(dt: float) -> void:
 			if knockback_left < 1e-6:   # 0.5 - 30 x (1/60) leaves ~1e-16 in doubles: 30 ticks, as in C++
 				knockback_left = 0.0
 
+	_attack_tick(dt, next, s.distance, feet)   # Heap: a winding-up slam lands / is cancelled
 	# (1e-4 s slack: 0.8 - 48 x 1/60 is not exactly 0 in floats.)
-	if next == State.ATTACK and attack_timer <= 1e-4 and s.distance <= rusher.attack_range + ATTACK_SLACK \
-			and absf(target.global_position.y - feet.y) <= BITE_HEIGHT:
-		_bite(feet)
+	if next == State.ATTACK and attack_timer <= 1e-4 and _in_reach(s.distance, feet):
+		_start_attack(feet)
+	if _rooted():   # Heap winding up: planted, no walk, no turn
+		walk = 0.0
 
 	var move := Vector3.ZERO
 	var face := dir
 	if walk > 1e-6 and s.distance > 1e-4:
 		face = _steer(dir)
 		move = face * walk
-	if next in [State.DETECT, State.CHASE, State.ATTACK] and face.length() > 1e-4:
+	if next in [State.DETECT, State.CHASE, State.ATTACK] and face.length() > 1e-4 and not _rooted():
 		_turn_toward(face, rusher.turn_rate_deg * dt)
 	_move(move + push, dt)
 	travelled += _flat(global_position - feet).length()
 
+func _in_reach(dist: float, feet: Vector3) -> bool:
+	return dist <= rusher.attack_range + ATTACK_SLACK and absf(target.global_position.y - feet.y) <= BITE_HEIGHT
+
+## Overridden by the Heap (a wind-up); the Gnawer bites at once.
+func _start_attack(feet: Vector3) -> void:
+	_bite(feet)
+
+## Per tick before the attack check (Heap: the wind-up). Gnawer: nothing.
+func _attack_tick(_dt: float, _next: State, _dist: float, _feet: Vector3) -> void:
+	pass
+
+func _rooted() -> bool:
+	return false
+
+## The bite (cooldown starts now) + the attack.
 func _bite(feet: Vector3) -> void:
+	attack_timer = rusher.attack_cooldown
+	_land(feet)
+
+## Emits one attack (dodged if the target is invulnerable now) without touching the cooldown.
+func _land(feet: Vector3) -> void:
 	var b := Bite.new()
 	b.damage = rusher.attack_damage
 	b.element = def.affinity
@@ -225,7 +247,6 @@ func _bite(feet: Vector3) -> void:
 		dodged += 1
 	else:
 		bites += 1
-	attack_timer = rusher.attack_cooldown
 	attacks.append(b)
 	attacked.emit(self, b)
 
@@ -242,8 +263,11 @@ func _set_state(next: State, dist: float) -> void:
 	state = next
 	state_changed.emit(self, was, next)
 
+## A dead player (step 13: Player.alive() false) is no target until he respawns.
 func _target_valid() -> bool:
-	return target != null and is_instance_valid(target) and target.is_inside_tree()
+	if target == null or not is_instance_valid(target) or not target.is_inside_tree():
+		return false
+	return not target.has_method(&"alive") or bool(target.call(&"alive"))
 
 func _target_eye() -> Vector3:
 	if target.has_method(&"eye_position"):

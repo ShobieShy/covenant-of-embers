@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="EnemyTable" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_table.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/enemies/enemy_def.gd" id="2"]
+
+[sub_resource type="Resource" id="heap"]
+script = ExtResource("2")
+id = "heap"
+display_name = "Heap"
+affinity = 3
+max_health = 150.0
+size = Vector3(1.5, 2.4, 1.5)
+color = Color(0.36, 0.38, 0.3, 1)
+resist = {}
+has_weak_point = true
+weak_point_offset = Vector3(0, 1.4, 0.78)
+weak_point_size = Vector3(1, 0.25, 0.1)
+ai = {
+"aggro_range": 7.0,
+"attack_cooldown": 2.0,
+"attack_damage": 8.0,
+"attack_range": 1.6,
+"attack_windup": 0.6,
+"detect_range": 10.0,
+"kind": "tank",
+"knockback_strength": 15.0,
+"knockback_threshold": 25.0,
+"knockback_time": 0.2,
+"sprint_speed": 2.5,
+"turn_rate_deg": 120.0,
+"walk_speed": 1.2
+}
+
+[resource]
+script = ExtResource("1")
+defs = Array[ExtResource("2")]([SubResource("heap")])

@@ -28,8 +28,9 @@ func _ready() -> void:
 		player.equip(WieldableInstance.load_base("swift_wind_wand"))
 		# Step 11: the level's training dummies at its EnemySpawns markers and floating
 		# damage numbers on every resolved hit. Step 12: the Gnawer spawns there too and
-		# hunts the player over the level's baked navmesh (its bites reach the player's
-		# health in step 13; here they are only counted).
+		# hunts the player over the level's baked navmesh. Step 13: the Heap (a Gnawer
+		# subclass) too; every bite/slam not dodged (dash i-frames) hits the player's
+		# shield, then health (Player.on_enemy_attack); he respawns at PlayerStart.
 		var enemies := Node3D.new()
 		enemies.name = "Enemies"
 		add_child(enemies)
@@ -38,6 +39,7 @@ func _ready() -> void:
 		for e in spawned:
 			if e is Gnawer:
 				(e as Gnawer).target = player
+				(e as Gnawer).attacked.connect(player.on_enemy_attack)
 		var numbers := DamageNumbers.new()
 		numbers.name = "DamageNumbers"
 		add_child(numbers)
@@ -69,6 +71,10 @@ func _process(delta: float) -> void:
 			print("[focus] fov %.1f, accuracy %.0f %%, hip cone %.2f deg, bloom %.2f deg" % [
 				player.focus.fov, player.accuracy(),
 				player.spread.cone_deg(player.accuracy(), player.spread_stance()), player.spread.bloom])
+			var hp := player.health
+			print("[health] health %.1f/%.0f, shield %.1f/%.0f, %d hit(s) taken, %d ignored, %d death(s), %d respawn(s)" % [
+				hp.value, hp.max_value(), hp.shield, hp.shield_max, player.hits_taken, player.hits_ignored,
+				player.deaths, player.respawns])
 			var alive := 0
 			for e in get_tree().get_nodes_in_group(Enemy.GROUP):
 				alive += 1
@@ -77,8 +83,8 @@ func _process(delta: float) -> void:
 			for g in get_tree().get_nodes_in_group(Enemy.GROUP):
 				if g is Gnawer:
 					var gn := g as Gnawer
-					print("[gnawer] %s %s at %.1f m, %d bite(s), %d dodged, %d transition(s), travelled %.1f m" % [
-						gn.name, Gnawer.state_name(gn.state), gn.distance, gn.bites, gn.dodged,
+					print("[%s] %s %s at %.1f m, %d bite(s), %d dodged, %d transition(s), travelled %.1f m" % [
+						"heap" if gn is Heap else "gnawer", gn.name, Gnawer.state_name(gn.state), gn.distance, gn.bites, gn.dodged,
 						gn.transitions.size(), gn.travelled])
 			var lo := player.loadout
 			print("[loadout] in hand %s, staff %s, wand %s, %d swap(s), viewmodel %s at %s, overlay %s" % [

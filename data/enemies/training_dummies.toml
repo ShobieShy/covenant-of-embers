@@ -15,12 +15,13 @@
 #   resist      optional { <element> = 0..1, ... } incoming-element resistance
 #               (damage x (1 - resist); applied capped at 60 %)
 #   weak_point  optional { offset = [x, y, z] centre from the feet, size = [x, y, z] }
-#               a separate hitbox taking x2 damage (the step-24 Heap seam uses the same)
+#               a separate hitbox taking x2 damage (the Heap seam uses the same)
 #   ai          optional (step 23) brain; omitted = a dummy that never moves.
-#               { kind = "rusher" (required), detect_range, aggro_range (<= detect),
+#               { kind = "rusher" | "tank" (required; tank = the Heap), detect_range, aggro_range (<= detect),
 #                 walk_speed, sprint_speed, attack_range (> half the body + 0.3),
 #                 attack_damage, attack_cooldown, knockback_strength, knockback_time,
-#                 knockback_threshold, turn_rate_deg } -- unset keys take Magewar
+#                 knockback_threshold, turn_rate_deg, attack_windup (< cooldown;
+#                 0 = instant, the tank plants and slams after it) } -- unset keys take Magewar
 #               enemy_base.gd's defaults (15 / 10 m, 2 / 4 m/s, 5 dmg per 1.5 s,
 #               knockback 10 m/s for 0.5 s on hits over 10), attack_range 1 m, 540 deg/s.
 

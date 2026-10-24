@@ -195,7 +195,7 @@ func test_enemy_spawns_from_toml() -> void:
 	var level: Node3D = (load(SCENE_PATH) as PackedScene).instantiate()
 	var spawns := level.get_node("EnemySpawns").get_children()
 	var enemies: Array = d.get("enemy", [])
-	check(spawns.size() == enemies.size() and enemies.size() == 3, "3 enemy spawns")
+	check(spawns.size() == enemies.size() and enemies.size() == 4, "4 enemy spawns (2 dummies, Gnawer, Heap)")
 	for i in mini(spawns.size(), enemies.size()):
 		var m := spawns[i] as Marker3D
 		check(m.get_meta("enemy") == enemies[i]["enemy"], "spawn %d id" % i)

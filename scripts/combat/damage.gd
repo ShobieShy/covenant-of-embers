@@ -69,3 +69,15 @@ static func resolve_hit(damage: float, element: ElementTable.Element, target: Ta
 	r.crit = WEAK_POINT_MULTIPLIER if target.weak_point else 1.0
 	r.amount = maxf(0.0, damage) * r.effectiveness * (1.0 - r.resist) * r.crit
 	return r
+
+## Enemy melee (step 13: Gnawer bites, Heap slams) on `target` (the player's): the same
+## formula with no weak point (melee never crits; the target's weak_point flag is left as
+## it was). Magewar's player resistances were never applied (get_elemental_resistance has
+## no callers); ours apply, capped at 60 %.
+static func resolve_melee(damage: float, element: ElementTable.Element, target: Target,
+		table: ElementTable = null) -> Result:
+	var wp := target.weak_point
+	target.weak_point = false
+	var r := resolve_hit(damage, element, target, table)
+	target.weak_point = wp
+	return r

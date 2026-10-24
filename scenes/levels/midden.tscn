@@ -352,3 +352,7 @@ metadata/enemy = "water_training_dummy"
 [node name="gnawer_3" type="Marker3D" parent="EnemySpawns"]
 transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, -11, 0, -11)
 metadata/enemy = "gnawer"
+
+[node name="heap_4" type="Marker3D" parent="EnemySpawns"]
+transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, 11, 0, -11)
+metadata/enemy = "heap"

@@ -9,10 +9,10 @@ extends RefCounted
 ## knockback_strength 10, knockback_duration 0.5, knockback over 10 damage. The Gnawer
 ## (Magewar's Mutant Rat: 8 / 6 / 3 / 5.5 / 3 dmg / 0.8 s) overrides them in its TOML.
 
-const KINDS: PackedStringArray = ["rusher"]
+const KINDS: PackedStringArray = ["rusher", "tank"]   ## tank (step 13): the Heap (Enemy.BRAINS)
 const KEYS: PackedStringArray = ["kind", "detect_range", "aggro_range", "walk_speed", "sprint_speed",
 	"attack_range", "attack_damage", "attack_cooldown", "knockback_strength", "knockback_time",
-	"knockback_threshold", "turn_rate_deg"]
+	"knockback_threshold", "turn_rate_deg", "attack_windup"]
 const PLAYER_RADIUS := 0.3     ## the bite must reach past half the body + this
 
 ## key -> [default, min, max] (C++ readFloatIn ranges).
@@ -28,6 +28,7 @@ const RANGES := {
 	"knockback_time": [0.5, 0.0, 5.0],
 	"knockback_threshold": [10.0, 0.0, 100000.0],
 	"turn_rate_deg": [540.0, 1.0, 3600.0],
+	"attack_windup": [0.0, 0.0, 10.0],   ## step 13: s rooted before the hit lands (0 = at once, the bite)
 }
 
 var kind := "rusher"
@@ -42,9 +43,11 @@ var knockback_strength := 10.0
 var knockback_time := 0.5
 var knockback_threshold := 10.0
 var turn_rate_deg := 540.0
+var attack_windup := 0.0
 
 ## {"def": RusherDef} or {"error": "..."} (the C++ loader's messages). `body` is the enemy's
-## size (the attack-range check needs it).
+## size (the attack-range check needs it). "tank" (the Heap, step 13) takes the same keys;
+## its attack_windup roots it before the slam lands (Gnawer/rusher: 0, the bite is instant).
 static func parse(ai: Variant, body: Vector3) -> Dictionary:
 	if not (ai is Dictionary):
 		return {"error": "ai must be a table { kind = \"rusher\", ... }"}
@@ -57,7 +60,7 @@ static func parse(ai: Variant, body: Vector3) -> Dictionary:
 	if not (t["kind"] is String):
 		return {"error": "ai kind must be a string"}
 	if not KINDS.has(String(t["kind"])):
-		return {"error": "unknown ai kind '%s' (expected rusher)" % t["kind"]}
+		return {"error": "unknown ai kind '%s' (expected rusher or tank)" % t["kind"]}
 	var r := RusherDef.new()
 	r.kind = t["kind"]
 	for k: String in RANGES:
@@ -71,6 +74,8 @@ static func parse(ai: Variant, body: Vector3) -> Dictionary:
 		r.set(k, f)
 	if r.aggro_range > r.detect_range:
 		return {"error": "ai aggro_range must not exceed detect_range"}
+	if r.attack_windup >= r.attack_cooldown:
+		return {"error": "ai attack_windup must be shorter than attack_cooldown"}
 	var contact := 0.5 * maxf(body.x, body.z) + PLAYER_RADIUS
 	if r.attack_range <= contact:
 		return {"error": "ai attack_range must exceed half the body + the 0.3 m player radius (%.2f m)" % contact}

@@ -23,6 +23,7 @@ const PLAYER_SCENE := "res://scenes/player/player.tscn"
 const LEVEL_SCENE := "res://scenes/levels/midden.tscn"
 const DUMMIES_TOML := "res://data/enemies/training_dummies.toml"
 const GNAWER_TOML := "res://data/enemies/gnawer.toml"
+const HEAP_TOML := "res://data/enemies/heap.toml"
 const E := ElementTable.Element
 const EPS := 1e-4
 
@@ -92,12 +93,12 @@ func test_toml_inline_tables() -> void:
 func test_tres_matches_toml() -> void:
 	var table := EnemyTable.load_default()
 	check(table.validate().is_empty(), "shipped table valid: %s" % [table.validate()])
-	var r := EnemyTable.from_toml_files([DUMMIES_TOML, GNAWER_TOML])
-	check(not r.has("error"), "training_dummies.toml + gnawer.toml load (%s)" % r.get("error", ""))
+	var r := EnemyTable.from_toml_files([DUMMIES_TOML, GNAWER_TOML, HEAP_TOML])
+	check(not r.has("error"), "training_dummies.toml + gnawer.toml + heap.toml load (%s)" % r.get("error", ""))
 	if r.has("error"):
 		return
 	var toml: EnemyTable = r["table"]
-	check(toml.defs.size() == 3 and table.defs.size() == 3, "two dummies + the Gnawer (step 12) (%d toml, %d tres)" % [toml.defs.size(), table.defs.size()])
+	check(toml.defs.size() == 4 and table.defs.size() == 4, "two dummies + the Gnawer (step 12) + the Heap (step 13) (%d toml, %d tres)" % [toml.defs.size(), table.defs.size()])
 	for want in toml.defs:
 		var got := table.find(want.id)
 		check(got != null, "%s in the .tres" % want.id)
@@ -314,14 +315,14 @@ func test_midden_markers_spawn_dummies() -> void:
 	w.add_child(parent)
 	var skipped: Array = []
 	var got := Enemy.spawn_at_markers(level, parent, EnemyTable.load_default(), skipped)
-	check(got.size() == 3 and skipped.is_empty(), "2 dummies + the Gnawer spawned, none skipped (step 12) (%d, %s)" % [got.size(), skipped])
-	var kinds := got.map(func(e: Enemy) -> String: return "gnawer" if e is Gnawer else "dummy")
-	check(kinds.count("gnawer") == 1 and kinds.count("dummy") == 2, "the rusher spawns as a Gnawer, the dummies as plain Enemies (%s)" % [kinds])
+	check(got.size() == 4 and skipped.is_empty(), "2 dummies + the Gnawer + the Heap spawned, none skipped (steps 12/13) (%d, %s)" % [got.size(), skipped])
+	var kinds := got.map(func(e: Enemy) -> String: return "heap" if e is Heap else ("gnawer" if e is Gnawer else "dummy"))
+	check(kinds.count("gnawer") == 1 and kinds.count("heap") == 1 and kinds.count("dummy") == 2, "the rusher spawns as a Gnawer, the tank as a Heap, the dummies as plain Enemies (%s)" % [kinds])
 	var markers := level.get_node("EnemySpawns")
 	for e in got:
 		var m := markers.get_node(NodePath(String(e.name))) as Node3D
 		check(m != null and e.global_transform.is_equal_approx(m.global_transform), "%s at its marker" % e.name)
-		check(e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1) and e.is_in_group(Enemy.GROUP) and e.health == e.def.max_health and e.health == (30.0 if e is Gnawer else 60.0), "%s: enemy layer, in 'enemies', full HP (60; Gnawer 30)" % e.name)
+		check(e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1) and e.is_in_group(Enemy.GROUP) and e.health == e.def.max_health and e.health == (150.0 if e is Heap else (30.0 if e is Gnawer else 60.0)), "%s: enemy layer, in 'enemies', full HP (60; Gnawer 30; Heap 150)" % e.name)
 		check(e.head_shape != null and e.body_shape.position.y == e.def.size.y * 0.5, "%s stands on its feet with a head" % e.name)
 	check(ProjectSettings.get_setting("layer_names/3d_physics/layer_3") == "enemy", "physics layer 3 is named enemy")
 	w.free()
