@@ -38,7 +38,7 @@ func test_each_option_saved() -> void:
 	var l := Settings.load_from(FILE)
 	for k in s._options():
 		check(l.get(k) == s.get(k), "option %s round-trips" % k)
-	check(Settings.new()._options().size() == 13, "13 options")
+	check(Settings.new()._options().size() == 16, "16 options")
 	_cleanup()
 
 

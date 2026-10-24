@@ -209,3 +209,57 @@ func test_ui_focus_chain() -> void:
 	p.queue_free()
 	if FileAccess.file_exists(PATH):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH))
+
+
+# --- step 86: per-OS input + display ---
+
+
+func test_joypad_mappings_os_agnostic() -> void:
+	for a in Gamepad.DEFAULTS:
+		var e := Settings.dict_to_event(Gamepad.DEFAULTS[a])
+		check(Gamepad.is_pad(e) and e.device == -1, "%s: SDL pad event for any device" % a)
+		if e is InputEventJoypadButton:
+			check(e.button_index >= 0 and e.button_index < JOY_BUTTON_SDL_MAX, "%s: SDL button id" % a)
+		else:
+			check(e.axis >= 0 and e.axis < JOY_AXIS_SDL_MAX, "%s: SDL axis id" % a)
+	InputMap.load_from_project_settings()
+	Gamepad.install()
+	for dev in [0, 3]:  # first pad on Linux evdev, 4th XInput slot on Windows
+		var j := InputEventJoypadButton.new()
+		j.device = dev
+		j.button_index = JOY_BUTTON_START
+		j.pressed = true
+		check(j.is_action_pressed(&"menu"), "device %d Start = menu" % dev)
+	InputMap.load_from_project_settings()
+
+
+func test_settings_expose_renderer_fallback() -> void:
+	check(ProjectSettings.get_setting("rendering/rendering_device/fallback_to_opengl3"), "GL fallback on")
+	check(ProjectSettings.get_setting("rendering/rendering_device/fallback_to_d3d12"), "D3D12 fallback on")
+	check(PlatformDisplay.renderers_for("Windows").has("d3d12"), "d3d12 offered on Windows")
+	check(not PlatformDisplay.renderers_for("Linux").has("d3d12"), "no d3d12 on Linux")
+	check(PlatformDisplay.override_text("auto") == "", "auto = no override")
+	check(PlatformDisplay.override_text("opengl3", "Linux").contains("gl_compatibility"), "GL override")
+	check(PlatformDisplay.override_text("d3d12", "Windows").contains('driver.windows="d3d12"'), "D3D12 override")
+	check(PlatformDisplay.override_text("d3d12", "Linux") == "", "d3d12 refused on Linux")
+	var dir := ProjectSettings.globalize_path("user://")
+	check(PlatformDisplay.write_override("opengl3", dir) == OK, "override written")
+	check(FileAccess.file_exists(dir.path_join("override.cfg")), "override.cfg exists")
+	check(PlatformDisplay.write_override("auto", dir) == OK, "auto removes it")
+	check(not FileAccess.file_exists(dir.path_join("override.cfg")), "override.cfg removed")
+	var s := Settings.new()
+	s.renderer = "opengl3"
+	s.window_mode = 2
+	s.ui_scale = 1.5
+	check(s.save(PATH) == OK, "saved")
+	var l := Settings.load_from(PATH)
+	check(l.renderer == "opengl3" and l.window_mode == 2 and is_equal_approx(l.ui_scale, 1.5), "display options saved")
+	l.apply_to(null)
+	check_near(runner_tree.root.content_scale_factor, 1.5, 1e-6, "ui scale applied")
+	Settings.new().apply_to(null)
+	check_near(runner_tree.root.content_scale_factor, 1.0, 1e-6, "auto scale headless = 1")
+	check(PlatformDisplay.window_mode_of(1) == DisplayServer.WINDOW_MODE_FULLSCREEN, "borderless")
+	check(PlatformDisplay.window_mode_of(2) == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN, "exclusive")
+	check_near(PlatformDisplay.auto_scale("Windows", 1.0, 144), 1.5, 1e-6, "Windows 150 % DPI")
+	check_near(PlatformDisplay.auto_scale("Linux", 2.0, 96), 2.0, 1e-6, "Wayland scale 2")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH))

@@ -230,6 +230,12 @@ func _on_out_of_mana(_cost: float) -> void:
 	hint.emit(HINT_NOT_ENOUGH_MANA)
 
 
+## Step 86: Alt+Tab / focus loss releases the mouse on every OS; a click recaptures it.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and DisplayServer.get_name() != "headless":
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not input_enabled or ui_open:
 		return

@@ -25,6 +25,9 @@ var music_volume := 1.0
 var colorblind := 0  ## step 76: Accessibility.Mode
 var subtitles := true
 var subtitle_scale := 1.0
+var renderer := "auto"  ## step 86: PlatformDisplay.RENDERERS (next launch)
+var window_mode := 0  ## PlatformDisplay.WINDOW_MODES
+var ui_scale := 0.0  ## 0 = auto (DPI)
 
 
 static func rebindable() -> Array[StringName]:
@@ -130,6 +133,9 @@ func apply_to(p: Player) -> void:
 	Accessibility.colorblind = clampi(colorblind, 0, Accessibility.MODE_NAMES.size() - 1) as Accessibility.Mode
 	Accessibility.subtitles = subtitles
 	Accessibility.subtitle_scale = subtitle_scale
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree:
+		PlatformDisplay.apply(tree.root, window_mode, ui_scale)  # step 86
 	if p == null:
 		return
 	p.invert_y = invert_y
@@ -148,6 +154,7 @@ func save(path := PATH) -> Error:
 		c.set_value("options", k, get(k))
 	for a in bindings:
 		c.set_value("bindings", String(a), bindings[a])
+	PlatformDisplay.write_override(renderer)  # step 86: no-op in the editor / headless
 	return c.save(path)
 
 
@@ -169,6 +176,10 @@ static func load_from(path := PATH) -> Settings:
 	s.head_bob = clampf(s.head_bob, 0.0, 1.0)
 	s.colorblind = clampi(int(s.colorblind), 0, Accessibility.MODE_NAMES.size() - 1)
 	s.subtitle_scale = clampf(s.subtitle_scale, 0.75, 2.0)
+	if not PlatformDisplay.RENDERERS.has(String(s.renderer)):
+		s.renderer = "auto"
+	s.window_mode = clampi(int(s.window_mode), 0, PlatformDisplay.WINDOW_MODES.size() - 1)
+	s.ui_scale = 0.0 if float(s.ui_scale) <= 0.0 else clampf(s.ui_scale, 0.75, 2.0)
 	return s
 
 
@@ -186,5 +197,8 @@ func _options() -> PackedStringArray:
 		"music_volume",
 		"colorblind",
 		"subtitles",
-		"subtitle_scale"
+		"subtitle_scale",
+		"renderer",
+		"window_mode",
+		"ui_scale"
 	]
