@@ -165,20 +165,23 @@ size = [1.2, 1.2, 1.2]
 rotation_deg = [0.0, 10.0, 0.0]
 color = [0.62, 0.43, 0.22]
 
-# Training dummies (step 22): [[enemy]] = an enemy id from data/enemies/*.toml, its feet
-# `position` (must lie on a box surface) and optional `yaw_deg`. Placed off the south
+# Training dummies (step 11): [[enemy]] = an enemy id from data/enemies/*.toml, its feet
+# `position` (must lie on a box surface), optional `yaw_deg` and optional `respawn_s`
+# (step 14: the spawner revives it at full health that long after a death). Placed off the south
 # lane so the walk-and-cast smoke test still reaches the north wall.
 [[enemy]]
 enemy = "earth_training_dummy"
 position = [-3.0, 0.0, 6.0]
 yaw_deg = 20.0
+respawn_s = 3.0
 
 [[enemy]]
 enemy = "water_training_dummy"
 position = [4.0, 0.0, 4.0]
 yaw_deg = -20.0
+respawn_s = 3.0
 
-# Step 23: a Gnawer (data/enemies/gnawer.toml) idling in the north-west corner, beyond its
+# Step 12: a Gnawer (data/enemies/gnawer.toml) idling in the north-west corner, beyond its
 # 8 m detect range from the start and the scripted walk, so the smoke tests stay as they
 # were; wander over (or shoot it) and it rushes you.
 [[enemy]]
@@ -193,3 +196,44 @@ yaw_deg = -135.0   # facing the arena centre
 enemy = "heap"
 position = [11.0, 0.0, -11.0]
 yaw_deg = 135.0    # facing the arena centre
+
+# Step 14: waves. Walking onto the midden mound (feet within trigger_radius of
+# trigger_center) starts them; each [[wave]] spawns delay_s after the previous one is
+# cleared (the first: delay_s after the trigger). `enemies` = [{ enemy, count, at }]:
+# `count` of an enemy id from data/enemies at a [[spawn_point]] (several stand on a 1.5 m
+# ring around it; every ring spot must lie on a box surface). Wave enemies are freed
+# after death; they don't respawn. The start, the scripted smoke walk and the corner
+# enemies stay outside the trigger, so the existing smoke tests are unchanged.
+[waves]
+trigger_center = [0.0, 0.0, -1.5]
+trigger_radius = 4.0
+
+[[spawn_point]]
+name = "north_ledge"          # on the scrap ledge: they pour down the ramps
+position = [0.0, 1.5, -11.5]
+yaw_deg = 180.0
+
+[[spawn_point]]
+name = "west_flank"
+position = [-11.5, 0.0, 9.0]
+yaw_deg = -90.0
+
+[[spawn_point]]
+name = "east_flank"
+position = [11.5, 0.0, 9.0]
+yaw_deg = 90.0
+
+[[wave]]
+id = "gnawer_pack"
+delay_s = 1.0
+enemies = [{ enemy = "gnawer", count = 3, at = "north_ledge" }]
+
+[[wave]]
+id = "flank"
+delay_s = 3.0
+enemies = [{ enemy = "gnawer", count = 2, at = "west_flank" }, { enemy = "gnawer", count = 2, at = "east_flank" }]
+
+[[wave]]
+id = "heap_push"
+delay_s = 3.0
+enemies = [{ enemy = "heap", count = 1, at = "north_ledge" }, { enemy = "gnawer", count = 2, at = "north_ledge" }]

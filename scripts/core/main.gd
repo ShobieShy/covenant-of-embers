@@ -31,15 +31,14 @@ func _ready() -> void:
 		# hunts the player over the level's baked navmesh. Step 13: the Heap (a Gnawer
 		# subclass) too; every bite/slam not dodged (dash i-frames) hits the player's
 		# shield, then health (Player.on_enemy_attack); he respawns at PlayerStart.
-		var enemies := Node3D.new()
-		enemies.name = "Enemies"
-		add_child(enemies)
-		var skipped: Array = []
-		var spawned := Enemy.spawn_at_markers($Level, enemies, EnemyTable.load_default(), skipped)
-		for e in spawned:
-			if e is Gnawer:
-				(e as Gnawer).target = player
-				(e as Gnawer).attacked.connect(player.on_enemy_attack)
+		# Step 14: an EnemySpawner owns them (the node keeps the old "Enemies" name): it
+		# wires target + attacks, frees the dead, respawns the dummies (3 s) and runs the
+		# level's waves once the player walks onto the midden mound.
+		var spawner := EnemySpawner.new()
+		spawner.name = "Enemies"
+		add_child(spawner)
+		var spawned := spawner.setup($Level, player)
+		var skipped := spawner.skipped
 		var numbers := DamageNumbers.new()
 		numbers.name = "DamageNumbers"
 		add_child(numbers)
@@ -49,6 +48,9 @@ func _ready() -> void:
 		var nav := $Level.get_node_or_null("Navigation") as LevelNavigation
 		print("[nav] %s navmesh: %d polygon(s), %d bake(s)" % [$Level.name,
 			nav.navigation_mesh.get_polygon_count() if nav and nav.navigation_mesh else 0, nav.bakes if nav else 0])
+		print("[waves] %d wave(s) (%s), trigger r %.1f m at %s" % [spawner.waves.size(),
+			", ".join(spawner.waves.map(func(w: Dictionary) -> String: return String(w["id"]))),
+			spawner.trigger_radius, spawner.trigger_center])
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])
@@ -86,6 +88,11 @@ func _process(delta: float) -> void:
 					print("[%s] %s %s at %.1f m, %d bite(s), %d dodged, %d transition(s), travelled %.1f m" % [
 						"heap" if gn is Heap else "gnawer", gn.name, Gnawer.state_name(gn.state), gn.distance, gn.bites, gn.dodged,
 						gn.transitions.size(), gn.travelled])
+			var sp := get_node_or_null("Enemies") as EnemySpawner
+			if sp:
+				print("[waves] state %s, wave %d/%d, %d spawned, %d kill(s), %d freed, %d respawn(s); bus %d kill(s), %d player hit(s)" % [
+					EnemySpawner.WaveState.keys()[sp.wave_state], sp.wave_index + 1, sp.waves.size(), sp.spawned,
+					sp.kills, sp.freed, sp.respawns, GameEvents.bus().kills, GameEvents.bus().player_hits])
 			var lo := player.loadout
 			print("[loadout] in hand %s, staff %s, wand %s, %d swap(s), viewmodel %s at %s, overlay %s" % [
 				"wand" if lo.active == Loadout.Slot.WAND else "staff",

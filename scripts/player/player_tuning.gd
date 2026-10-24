@@ -32,6 +32,7 @@ extends Resource
 @export var shield_regen_per_sec := 25.0  ## empty -> full in 2 s
 @export var shield_regen_delay := 3.0     ## s since the last damage
 @export var respawn_delay := 3.0          ## s dead before respawning at the start (Magewar reloads the scene)
+@export var respawn_protection := 1.0     ## step 14: s of spawn protection after a respawn (hits ignored, like dash i-frames)
 @export_group("Dash")
 @export var dash_distance := 6.0          ## m (PLAN §30.8; Magewar has no dash: our own verb)
 @export var dash_duration := 0.15         ## s (speed 40 m/s)

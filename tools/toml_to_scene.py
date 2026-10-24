@@ -21,7 +21,14 @@ Mapping (same rules as the archived C++ loader, archive/cpp-engine/game/world/le
   * [sun] -> DirectionalLight3D whose +Z basis axis is to_light (light shines along -Z).
   * [player_start] -> Marker3D PlayerStart (feet) at position, yaw_deg about +Y
     (0 = facing north, -Z), with an Eye Marker3D 1.5 m up (Magewar body 0.8 + neck 0.7).
-  * [[enemy]] -> Marker3D under EnemySpawns with metadata enemy (used from step 11).
+  * [[enemy]] -> Marker3D under EnemySpawns with metadata enemy (used from step 11) and,
+    when set, respawn_s (step 14: the spawner revives it that long after a death).
+  * Step 14 waves: [[spawn_point]] -> Marker3D under WaveSpawns (named `name`);
+    [waves] + [[wave]] -> a Waves node (metadata trigger_center / trigger_radius) with one
+    child Node per wave, in order (metadata index, delay_s, enemies = the [{enemy, count,
+    at}] list). A wave's enemies stand on a ring of WAVE_RING m around their spawn point
+    (one ring per point per wave; a single enemy stands on the point); every ring spot
+    must lie on a box surface. EnemySpawner (scripts/world/enemy_spawner.gd) runs them.
   * Navigation (step 12) -> NavigationRegion3D with scripts/world/level_navigation.gd, a
     sibling of Boxes (Boxes keeps its node path): at load it bakes a NavigationMesh from
     the StaticBody3D colliders under ../Boxes, which the Gnawer paths on.
@@ -41,6 +48,26 @@ LEVELS = {  # source TOML -> generated scene
 KINDS = ("ground", "wall", "ramp", "crate", "heap", "platform")
 EYE_HEIGHT = 1.5
 NAV_SCRIPT = "res://scripts/world/level_navigation.gd"
+WAVE_RING = 1.5          # m; EnemySpawner.WAVE_RING must match
+WAVE_MAX_COUNT = 16
+ENEMY_DIR = ROOT / "data/enemies"
+
+
+def enemy_ids() -> set[str]:
+    """Every [[enemy]] id in data/enemies/*.toml (the GDScript EnemyTable's source)."""
+    ids: set[str] = set()
+    for f in sorted(ENEMY_DIR.glob("*.toml")):
+        for e in tomllib.loads(f.read_text(encoding="utf-8")).get("enemy", []):
+            ids.add(str(e.get("id", "")))
+    return ids
+
+
+def ring_spots(center: list[float], n: int) -> list[list[float]]:
+    """Where n wave enemies at one spawn point stand (EnemySpawner.ring_spots)."""
+    if n <= 1:
+        return [list(center)]
+    return [[center[0] + WAVE_RING * math.sin(2 * math.pi * i / n), center[1],
+             center[2] - WAVE_RING * math.cos(2 * math.pi * i / n)] for i in range(n)]
 
 
 class LevelError(Exception):
@@ -104,12 +131,13 @@ def on_surface(boxes: list[dict], p: list[float], eps: float = 0.05) -> bool:
     return any(abs(surface_distance(b, p)) <= eps for b in boxes)
 
 
-def parse_level(text: str) -> dict:
+def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     try:
         d = tomllib.loads(text)
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
-    _only(d, {"level", "environment", "sun", "player_start", "box", "enemy"}, "top level")
+    _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave"}, "top level")
+    known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
             raise LevelError(f"missing [{sec}]")
@@ -140,6 +168,10 @@ def parse_level(text: str) -> dict:
         "start_yaw_deg": float(ps.get("yaw_deg", 0.0)),
         "boxes": [],
         "enemies": [],
+        "spawn_points": [],
+        "trigger_center": [0.0, 0.0, 0.0],
+        "trigger_radius": 0.0,
+        "waves": [],
     }
     names: set[str] = set()
     for i, b in enumerate(d.get("box", [])):
@@ -168,12 +200,81 @@ def parse_level(text: str) -> dict:
         raise LevelError("player_start position (feet) must lie on a box surface (within 5 cm)")
     for i, e in enumerate(d.get("enemy", [])):
         w = f"enemy {i + 1}"
-        _only(e, {"enemy", "position", "yaw_deg"}, w)
+        _only(e, {"enemy", "position", "yaw_deg", "respawn_s"}, w)
         pos = _vec(_need(e, "position", w), f"{w} position")
         if not on_surface(out["boxes"], pos):
             raise LevelError(f"{w} position (feet) must lie on a box surface (within 5 cm)")
-        out["enemies"].append({"enemy": str(_need(e, "enemy", w)), "position": pos,
-                               "yaw_deg": float(e.get("yaw_deg", 0.0))})
+        eid = str(_need(e, "enemy", w))
+        if eid not in known:
+            raise LevelError(f"{w}: unknown enemy '{eid}' (not in data/enemies)")
+        respawn = e.get("respawn_s")
+        if respawn is not None and (not isinstance(respawn, (int, float)) or isinstance(respawn, bool) or respawn <= 0):
+            raise LevelError(f"{w}: respawn_s must be a number > 0")
+        out["enemies"].append({"enemy": eid, "position": pos, "yaw_deg": float(e.get("yaw_deg", 0.0)),
+                               "respawn_s": None if respawn is None else float(respawn)})
+    # Step 14: spawn points and waves.
+    points: dict[str, list[float]] = {}
+    for i, sp in enumerate(d.get("spawn_point", [])):
+        w = f"spawn_point {i + 1}"
+        _only(sp, {"name", "position", "yaw_deg"}, w)
+        name = str(_need(sp, "name", w))
+        if name in points:
+            raise LevelError(f"duplicate spawn_point name '{name}'")
+        pos = _vec(_need(sp, "position", w), f"{w} position")
+        if not on_surface(out["boxes"], pos):
+            raise LevelError(f"spawn_point '{name}' position (feet) must lie on a box surface (within 5 cm)")
+        points[name] = pos
+        out["spawn_points"].append({"name": name, "position": pos, "yaw_deg": float(sp.get("yaw_deg", 0.0))})
+    waves = d.get("wave", [])
+    if waves and "waves" not in d:
+        raise LevelError("[[wave]] needs a [waves] trigger")
+    if "waves" in d:
+        wt = d["waves"]
+        _only(wt, {"trigger_center", "trigger_radius"}, "[waves]")
+        out["trigger_center"] = _vec(_need(wt, "trigger_center", "[waves]"), "[waves] trigger_center")
+        r = _need(wt, "trigger_radius", "[waves]")
+        if not isinstance(r, (int, float)) or isinstance(r, bool) or r <= 0:
+            raise LevelError("[waves] trigger_radius must be a number > 0")
+        out["trigger_radius"] = float(r)
+        if not waves:
+            raise LevelError("[waves] needs at least one [[wave]]")
+    ids: set[str] = set()
+    for i, wv in enumerate(waves):
+        w = f"wave {i + 1}"
+        _only(wv, {"id", "delay_s", "enemies"}, w)
+        wid = str(_need(wv, "id", w))
+        if wid in ids:
+            raise LevelError(f"duplicate wave id '{wid}'")
+        ids.add(wid)
+        w = f"wave '{wid}'"
+        delay = wv.get("delay_s", 0.0)
+        if not isinstance(delay, (int, float)) or isinstance(delay, bool) or delay < 0:
+            raise LevelError(f"{w}: delay_s must be a number >= 0")
+        groups = _need(wv, "enemies", w)
+        if not isinstance(groups, list) or not groups:
+            raise LevelError(f"{w}: enemies must be a non-empty array of {{ enemy, count, at }}")
+        per_point: dict[str, int] = {}
+        out_groups = []
+        for g in groups:
+            if not isinstance(g, dict):
+                raise LevelError(f"{w}: enemies must be a non-empty array of {{ enemy, count, at }}")
+            _only(g, {"enemy", "count", "at"}, f"{w} enemies")
+            eid = str(_need(g, "enemy", f"{w} enemies"))
+            if eid not in known:
+                raise LevelError(f"{w}: unknown enemy '{eid}' (not in data/enemies)")
+            n = g.get("count", 1)
+            if not isinstance(n, int) or isinstance(n, bool) or not 1 <= n <= WAVE_MAX_COUNT:
+                raise LevelError(f"{w}: count must be an integer in [1, {WAVE_MAX_COUNT}]")
+            at = str(_need(g, "at", f"{w} enemies"))
+            if at not in points:
+                raise LevelError(f"{w}: unknown spawn_point '{at}'")
+            per_point[at] = per_point.get(at, 0) + n
+            out_groups.append({"enemy": eid, "count": n, "at": at})
+        for at, n in per_point.items():
+            for spot in ring_spots(points[at], n):
+                if not on_surface(out["boxes"], spot):
+                    raise LevelError(f"{w}: a spot of the {n}-enemy ring at '{at}' is off the level (no box surface within 5 cm)")
+        out["waves"].append({"id": wid, "delay_s": float(delay), "enemies": out_groups})
     return out
 
 
@@ -263,7 +364,22 @@ def to_tscn(lv: dict, source: str) -> str:
     for i, e in enumerate(lv["enemies"]):
         nodes.append(f'[node name="{e["enemy"]}_{i + 1}" type="Marker3D" parent="EnemySpawns"]\n'
                      f'transform = {_xf(rot_yxz([0, e["yaw_deg"], 0]), e["position"])}\n'
-                     f'metadata/enemy = "{e["enemy"]}"\n')
+                     f'metadata/enemy = "{e["enemy"]}"\n'
+                     + (f'metadata/respawn_s = {_f(e["respawn_s"])}\n' if e["respawn_s"] is not None else ""))
+    if lv["spawn_points"] or lv["waves"]:
+        nodes.append('[node name="WaveSpawns" type="Node3D" parent="."]\n')
+        for sp in lv["spawn_points"]:
+            nodes.append(f'[node name="{sp["name"]}" type="Marker3D" parent="WaveSpawns"]\n'
+                         f'transform = {_xf(rot_yxz([0, sp["yaw_deg"], 0]), sp["position"])}\n')
+        nodes.append(f'[node name="Waves" type="Node" parent="."]\n'
+                     f'metadata/trigger_center = {_v3(lv["trigger_center"])}\n'
+                     f'metadata/trigger_radius = {_f(lv["trigger_radius"])}\n')
+        for i, wv in enumerate(lv["waves"]):
+            groups = ", ".join('{"at": "%s", "count": %d, "enemy": "%s"}' % (g["at"], g["count"], g["enemy"])
+                               for g in wv["enemies"])
+            nodes.append(f'[node name="{wv["id"]}" type="Node" parent="Waves"]\n'
+                         f'metadata/index = {i}\nmetadata/delay_s = {_f(wv["delay_s"])}\n'
+                         f'metadata/enemies = [{groups}]\n')
     head = (f"; GENERATED by tools/toml_to_scene.py from {source}. Do not edit; edit the TOML and\n"
             f"; rerun the tool (tools/run_tests.sh fails while this file is stale).\n"
             f"[gd_scene format=3]\n")
@@ -287,12 +403,32 @@ def self_test() -> int:
     assert '[node name="Navigation" type="NavigationRegion3D" parent="."]' in scene
     assert scene.index('name="Navigation"') > scene.index('parent="Boxes"')  # after the boxes it bakes
     assert NAV_SCRIPT in scene
+    # Step 14: 3 wave spawn points, 3 waves in order, respawning dummies.
+    assert [sp["name"] for sp in lv["spawn_points"]] == ["north_ledge", "west_flank", "east_flank"], lv["spawn_points"]
+    assert [w["id"] for w in lv["waves"]] == ["gnawer_pack", "flank", "heap_push"], lv["waves"]
+    assert [sum(g["count"] for g in w["enemies"]) for w in lv["waves"]] == [3, 4, 3]
+    assert [e["respawn_s"] for e in lv["enemies"]] == [3.0, 3.0, None, None]
+    assert scene.count('parent="WaveSpawns"') == 3 and scene.count('parent="Waves"') == 3
+    assert 'metadata/enemies = [{"at": "north_ledge", "count": 3, "enemy": "gnawer"}]' in scene
+    assert scene.count("metadata/respawn_s = 3") == 2
+    sq = ring_spots([0, 0, 0], 4)
+    assert all(abs(math.hypot(p[0], p[2]) - WAVE_RING) < 1e-9 for p in sq) and abs(sq[0][2] + WAVE_RING) < 1e-9
+    assert ring_spots([1, 2, 3], 1) == [[1, 2, 3]]
     m = rot_yxz([90, 90, 0])
     assert all(abs(a - b) < 1e-9 for a, b in zip(_apply(m, [0, 0, 1]), [0, -1, 0]))  # Y*X*Z, like the C++ test
     hdr = ('[level]\nid = "t"\nname = "t"\n[environment]\nsky_color = [0.1, 0.1, 0.1]\nambient_color = [0.2, 0.2, 0.2]\n'
            '[sun]\nto_light = [0, 2, 0]\ncolor = [1, 1, 1]\n[player_start]\nposition = [0, 1, 0]\nyaw_deg = 0\n')
     box = '[[box]]\nname = "a"\nkind = "crate"\ncenter = [0, 0.5, 0]\nsize = [1, 1, 1]\ncolor = [1, 0, 0]\n'
     assert parse_level(hdr + box)["to_light"] == [0.0, 1.0, 0.0]
+    floor = '[[box]]\nname = "f"\nkind = "ground"\ncenter = [20, -0.5, 0]\nsize = [10, 1, 10]\ncolor = [1, 0, 0]\n'
+    sp = '[[spawn_point]]\nname = "p"\nposition = [20, 0, 0]\n'
+    wt = '[waves]\ntrigger_center = [20, 0, 0]\ntrigger_radius = 3\n'
+    wave = '[[wave]]\nid = "w"\ndelay_s = 1\nenemies = [{ enemy = "gnawer", count = 3, at = "p" }]\n'
+    ok = parse_level(hdr + box + floor + sp + wt + wave)
+    assert ok["waves"] == [{"id": "w", "delay_s": 1.0, "enemies": [{"enemy": "gnawer", "count": 3, "at": "p"}]}], ok["waves"]
+    assert ok["trigger_radius"] == 3.0
+    good_enemy = '[[enemy]]\nenemy = "gnawer"\nposition = [20, 0, 0]\nrespawn_s = 2\n'
+    assert parse_level(hdr + box + floor + good_enemy)["enemies"][0]["respawn_s"] == 2.0
     bad = {
         box.replace("crate", "barrel"): "unknown kind 'barrel'",
         box.replace("size = [1, 1, 1]", "size = [1, 0, 1]"): "size must be > 0",
@@ -302,6 +438,21 @@ def self_test() -> int:
         box.replace("[0, 0.5, 0]", "[5, 0.5, 0]"): "must lie on a box surface",
         box + box: "duplicate box name 'a'",
         "": "need at least one [[box]]",
+        box + floor + good_enemy.replace('"gnawer"', '"griffin"'): "unknown enemy 'griffin'",
+        box + floor + good_enemy.replace("respawn_s = 2", "respawn_s = 0"): "respawn_s must be a number > 0",
+        box + floor + sp + sp: "duplicate spawn_point name 'p'",
+        box + floor + sp.replace("[20, 0, 0]", "[20, 3, 0]"): "spawn_point 'p' position (feet) must lie",
+        box + floor + sp + wave: "[[wave]] needs a [waves] trigger",
+        box + floor + sp + wt: "[waves] needs at least one [[wave]]",
+        box + floor + sp + wt.replace("= 3", "= 0"): "trigger_radius must be a number > 0",
+        box + floor + sp + wt + wave + wave: "duplicate wave id 'w'",
+        box + floor + sp + wt + wave.replace('at = "p"', 'at = "q"'): "unknown spawn_point 'q'",
+        box + floor + sp + wt + wave.replace('"gnawer"', '"griffin"'): "unknown enemy 'griffin'",
+        box + floor + sp + wt + wave.replace("count = 3", "count = 0"): "count must be an integer in [1, 16]",
+        box + floor + sp + wt + wave.replace("count = 3", "count = 2.5"): "count must be an integer",
+        box + floor + sp + wt + wave.replace("delay_s = 1", "delay_s = -1"): "delay_s must be a number >= 0",
+        box + floor + sp + wt + wave.replace("enemies = [{ enemy = \"gnawer\", count = 3, at = \"p\" }]", "enemies = []"): "enemies must be a non-empty array",
+        box + floor + sp.replace("[20, 0, 0]", "[24.5, 0, 0]") + wt + wave: "ring at 'p' is off the level",
     }
     for body, msg in bad.items():
         try:

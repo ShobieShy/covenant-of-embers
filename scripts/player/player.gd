@@ -109,6 +109,7 @@ var damage_target := Damage.Target.new(ElementTable.Element.ARCANE)   ## bolts +
 var spawn_feet := Vector3.ZERO  # the last spawn() point: respawns go back there
 var spawn_yaw := 0.0
 var respawn_left := 0.0         # s until the respawn while dead
+var protection_left := 0.0      # step 14: s of spawn protection left after a respawn
 var deaths := 0
 var respawns := 0
 var hits_taken := 0
@@ -289,9 +290,10 @@ func accuracy() -> float:
 func dashing() -> bool:
 	return dash.active()
 
-## Dash i-frames: enemy hits are ignored while this is true (Gnawer marks the bite dodged).
+## Dash i-frames or spawn protection (step 14: respawn_protection after a respawn): enemy
+## hits are ignored while this is true (Gnawer marks the bite dodged).
 func invulnerable() -> bool:
-	return dash.invulnerable()
+	return dash.invulnerable() or protection_left > 0.0
 
 func alive() -> bool:
 	return not health.dead
@@ -331,6 +333,7 @@ func _take(r: Damage.Result) -> void:
 	hits_taken += 1
 	health.take(r.amount)
 	hurt.emit(self, r)
+	GameEvents.bus().announce_player_damaged(self, r)   # step 14: EventBus.player_damaged
 
 func _on_died() -> void:
 	deaths += 1
@@ -354,6 +357,7 @@ func respawn() -> void:
 	_set_crouched(false)
 	spawn(spawn_feet, spawn_yaw)
 	respawns += 1
+	protection_left = tuning.respawn_protection
 	respawned.emit(self)
 
 ## Accessibility: no head bob, no landing dip (step smoothing stays).
@@ -387,6 +391,9 @@ func tick(input: PlayerInput, dt: float) -> void:
 			respawn()
 		return
 	health.tick(dt)
+	protection_left = maxf(0.0, protection_left - dt)
+	if protection_left < 1e-6:   # 1 - 60 x 1/60 leaves float dust: exactly 60 ticks
+		protection_left = 0.0
 	# Still rising from a jump: never let a stale floor contact cancel the jump.
 	if _rising and velocity.y <= 0.0:
 		_rising = false

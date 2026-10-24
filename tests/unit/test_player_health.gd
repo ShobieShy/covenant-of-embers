@@ -232,6 +232,9 @@ func test_death_and_respawn() -> void:
 	check(p.health.value == 100.0 and p.health.shield == 50.0, "full health and shield")
 	check(p.mana.value == 105.0 and p.mana.max_bonus == 5.0, "mana refilled, bonus kept (%.1f)" % p.mana.value)
 	check(p.breath.value == p.breath.max_value(), "Breath refilled")
+	check(p.take_enemy_hit(3.0, E.EARTH) == null and p.health.shield == 50.0, "1 s spawn protection after the respawn (step 14)")
+	for i in 60:
+		p.tick(still, DT)
 	p.take_enemy_hit(3.0, E.EARTH)
-	check(p.health.shield == 47.0, "takes hits again")
+	check(p.health.shield == 47.0, "takes hits again after it")
 	w.free()

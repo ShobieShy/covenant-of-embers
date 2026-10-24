@@ -46,6 +46,11 @@ const PLAYER_RADIUS := 0.3       ## target capsule radius (Player)
 const GRAVITY := 9.8
 const STEP_UP := 0.25            ## m it can step up (C++ kStepUp)
 const NAV_SNAP := 1.0            ## a path starting farther than this from it is someone else's
+const SEPARATION_GAP := 0.35     ## step 14: m of clearance kept from other enemies' bodies
+const SEPARATION_WEIGHT := 1.5   ## how hard a neighbour bends its path
+const SEPARATION_AHEAD := 0.3    ## cos: a neighbour within ~73 deg of its heading is "ahead"
+const SEPARATION_FORWARD := 0.25 ## blocked: share of the heading kept while going around
+const SLIDE_OFF_SPEED := 4.0     ## m/s off another enemy's back
 
 ## What it senses this tick (C++ GnawerSenses).
 class Senses:
@@ -91,6 +96,9 @@ var dodged := 0
 var knockbacks := 0
 var steps_climbed := 0
 var nav_ticks := 0               ## ticks steered by a navmesh path
+var separations := 0             ## step 14: ticks a neighbour bent its path
+var separation := true           ## step 14: crowd separation on (tests can switch it off)
+var rode := 0                    ## step 14: ticks it found itself on an enemy's back
 var transitions: Array[Transition] = []
 var attacks: Array[Bite] = []
 var nav: NavigationAgent3D
@@ -210,6 +218,8 @@ func think(dt: float) -> void:
 	var face := dir
 	if walk > 1e-6 and s.distance > 1e-4:
 		face = _steer(dir)
+		if separation:
+			face = _separate(face)
 		move = face * walk
 	if next in [State.DETECT, State.CHASE, State.ATTACK] and face.length() > 1e-4 and not _rooted():
 		_turn_toward(face, rusher.turn_rate_deg * dt)
@@ -300,6 +310,58 @@ func _steer(straight: Vector3) -> Vector3:
 	nav_ticks += 1
 	return d.normalized()
 
+## Step 14 crowd separation: Gnawers are kinematic and mask the enemy layer, so they block
+## each other; a pack in a corridor used to queue up behind the first one, out of bite
+## range. Every other live enemy whose body (+ SEPARATION_GAP) overlaps its own pushes it
+## away, scaled by the overlap; a neighbour ahead on its path also pushes it sideways (to
+## the side it already is on; dead ahead: a fixed side from its name) so it goes around.
+## The result never points back from `want` (it doesn't flee its target). Deterministic,
+## no NavigationAgent3D avoidance callback (that one answers a physics frame late).
+func _separate(want: Vector3) -> Vector3:
+	if not is_inside_tree():
+		return want
+	var push := Vector3.ZERO
+	var around := Vector3.ZERO
+	var me := global_position
+	var my_r := 0.5 * maxf(def.size.x, def.size.z)
+	var side := Vector3(-want.z, 0.0, want.x)   # its left
+	for n in get_tree().get_nodes_in_group(GROUP):
+		var o := n as Enemy
+		if o == null or o == self or o.dead or o.def == null:
+			continue
+		var off := _flat(me - o.global_position)
+		var r := my_r + 0.5 * maxf(o.def.size.x, o.def.size.z) + SEPARATION_GAP
+		var d := off.length()
+		if d >= r:
+			continue
+		var away := off / d if d > 1e-4 else side
+		push += away * (1.0 - d / r)
+		if -away.dot(want) > SEPARATION_AHEAD:   # the neighbour is ahead: go around it
+			var s := side.dot(away)
+			var sgn := signf(s) if absf(s) > 1e-3 else (1.0 if (hash(String(name)) & 1) == 0 else -1.0)
+			around += side * sgn
+	if push.length() < 1e-5 and around.length() < 1e-5:
+		return want
+	separations += 1
+	var out := want + push * SEPARATION_WEIGHT
+	if around.length() > 1e-5:
+		out = want * SEPARATION_FORWARD + around.normalized() + push * SEPARATION_WEIGHT
+	var back := out.dot(want)
+	if back < 0.0:
+		out -= want * back   # sideways only, never away from the target
+	return out.normalized() if out.length() > 1e-4 else want
+
+## Step 14 (spawner respawns): Enemy.reset + a fresh brain (idle, no timers, no knockback).
+func reset(xform: Variant = null) -> void:
+	super.reset(xform)
+	state = State.IDLE
+	attack_timer = 0.0
+	hunt_left = 0.0
+	knockback_left = 0.0
+	provoked = false
+	distance = 0.0
+	_vy = 0.0
+
 func _turn_toward(d: Vector3, max_deg: float) -> void:
 	var want := rad_to_deg(atan2(-d.x, -d.z))
 	var cur := rad_to_deg(rotation.y)
@@ -312,9 +374,32 @@ func _move(delta: Vector3, dt: float) -> void:
 	var start := global_position
 	velocity = delta / dt + Vector3(0.0, _vy, 0.0) if dt > 0.0 else Vector3.ZERO
 	move_and_slide()
+	_slide_off_enemies()
 	var want := delta.length()
-	if want > 1e-5 and _flat(global_position - start).length() < 0.5 * want and is_on_wall():
+	if want > 1e-5 and _flat(global_position - start).length() < 0.5 * want and is_on_wall() and not _walled_by_enemy():
 		_try_step_up(_flat(delta))
+
+## Step 14 fix (step 12 bug): a Gnawer pressed into another one climbed onto its back
+## (feet at 0.45 m) and rode it. Landing on an enemy now slides it off sideways (away
+## from the one below) at SLIDE_OFF_SPEED, and enemies are never stepped up onto.
+func _slide_off_enemies() -> void:
+	for i in get_slide_collision_count():
+		var c := get_slide_collision(i)
+		var o := c.get_collider() as Enemy
+		if o == null or c.get_normal().y < 0.5:
+			continue
+		var off := _flat(global_position - o.global_position)
+		if off.length() < 1e-3:
+			off = _flat(global_transform.basis.x)
+		rode += 1
+		move_and_collide(off.normalized() * SLIDE_OFF_SPEED * get_physics_process_delta_time())
+		return
+
+func _walled_by_enemy() -> bool:
+	for i in get_slide_collision_count():
+		if get_slide_collision(i).get_collider() is Enemy:
+			return true
+	return false
 
 func _try_step_up(motion: Vector3) -> bool:
 	var up := Vector3(0.0, STEP_UP, 0.0)

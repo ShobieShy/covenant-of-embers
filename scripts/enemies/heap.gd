@@ -39,6 +39,10 @@ func setup(d: EnemyDef) -> void:
 		_head_mat.emission = SEAM_GLOW
 		_head_mat.emission_energy_multiplier = 1.5
 
+func reset(xform: Variant = null) -> void:
+	super.reset(xform)
+	windup_left = 0.0
+
 func winding_up() -> bool:
 	return windup_left > 0.0
 

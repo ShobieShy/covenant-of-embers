@@ -42,6 +42,9 @@ var flash := 0.0
 var last_hit: SpellBolts.Hit
 var last_weak_point := false          ## the last resolved hit struck the weak point
 var last_killing_element: ElementTable.Element = ElementTable.Element.ARCANE
+var deaths := 0                       ## deaths announced (a respawned dummy can die again)
+var resets := 0
+var _death_announced := false
 
 var body_shape: CollisionShape3D
 var head_shape: CollisionShape3D      ## null without a weak point
@@ -148,14 +151,16 @@ func take_hit(h: SpellBolts.Hit) -> void:
 		return
 	last_hit = h
 	last_weak_point = h.result.crit > 1.0
-	apply_damage(h.result.amount, h.element)
+	apply_damage(h.result.amount, h.element, false)
 	damage_received.emit(h.result.amount, h.direction, h.point)
 	damaged.emit(self, h)
 	if dead:
-		died.emit(self, last_killing_element)
+		_announce_death()
 
-## Lowers health by `amount` (>= 0), clamped at 0; true when this killed it.
-func apply_damage(amount: float, element: ElementTable.Element) -> bool:
+## Lowers health by `amount` (>= 0), clamped at 0; true when this killed it. A kill is
+## announced (`died` + EventBus.enemy_killed) at once unless `announce` is false
+## (take_hit announces after `damaged`, so listeners see the hit before the death).
+func apply_damage(amount: float, element: ElementTable.Element, announce := true) -> bool:
 	if dead:
 		return false
 	var before := health
@@ -165,8 +170,52 @@ func apply_damage(amount: float, element: ElementTable.Element) -> bool:
 	flash = FLASH_TIME
 	if health <= 0.0:
 		_die(element)
+		if announce:
+			_announce_death()
 		return true
 	return false
+
+## Step 14: `died` and EventBus.enemy_killed, exactly once per death (reset() re-arms it).
+func _announce_death() -> void:
+	if _death_announced:
+		return
+	_death_announced = true
+	deaths += 1
+	died.emit(self, last_killing_element)
+	GameEvents.bus().announce_kill(self, last_killing_element)
+
+## Step 14 (respawning training dummies): back to full health at `xform` (in the parent's
+## space), visible, colliding, in the "enemies" group again; the next death is announced
+## again. Called from a physics tick, not from inside a physics query callback.
+func reset(xform: Variant = null) -> void:
+	dead = false
+	_death_announced = false
+	health = max_health()
+	flash = 0.0
+	last_hit = null
+	last_weak_point = false
+	damage_target = def.make_target()
+	if xform is Transform3D:
+		transform = xform
+	velocity = Vector3.ZERO
+	# Now and deferred: a death in the same frame queued deferred "collision off" calls,
+	# which run after this; the deferred "on" calls queued here run after those.
+	var layer := 1 << (ENEMY_LAYER - 1)
+	collision_layer = layer
+	set_deferred(&"collision_layer", layer)
+	body_shape.disabled = false
+	body_shape.set_deferred(&"disabled", false)
+	if head_shape:
+		head_shape.disabled = false
+		head_shape.set_deferred(&"disabled", false)
+	if not is_in_group(GROUP):
+		add_to_group(GROUP)
+	visible = true
+	if _body_mat:
+		_body_mat.albedo_color = def.color
+	if _head_mat:
+		_head_mat.albedo_color = def.color.lerp(Color.WHITE, WEAK_POINT_BRIGHTEN)
+	resets += 1
 
 func _die(element: ElementTable.Element) -> void:
 	dead = true

@@ -344,10 +344,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 [node name="earth_training_dummy_1" type="Marker3D" parent="EnemySpawns"]
 transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, -3, 0, 6)
 metadata/enemy = "earth_training_dummy"
+metadata/respawn_s = 3
 
 [node name="water_training_dummy_2" type="Marker3D" parent="EnemySpawns"]
 transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 4, 0, 4)
 metadata/enemy = "water_training_dummy"
+metadata/respawn_s = 3
 
 [node name="gnawer_3" type="Marker3D" parent="EnemySpawns"]
 transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, -11, 0, -11)
@@ -356,3 +358,33 @@ metadata/enemy = "gnawer"
 [node name="heap_4" type="Marker3D" parent="EnemySpawns"]
 transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, 11, 0, -11)
 metadata/enemy = "heap"
+
+[node name="WaveSpawns" type="Node3D" parent="."]
+
+[node name="north_ledge" type="Marker3D" parent="WaveSpawns"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.5, -11.5)
+
+[node name="west_flank" type="Marker3D" parent="WaveSpawns"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -11.5, 0, 9)
+
+[node name="east_flank" type="Marker3D" parent="WaveSpawns"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 11.5, 0, 9)
+
+[node name="Waves" type="Node" parent="."]
+metadata/trigger_center = Vector3(0, 0, -1.5)
+metadata/trigger_radius = 4
+
+[node name="gnawer_pack" type="Node" parent="Waves"]
+metadata/index = 0
+metadata/delay_s = 1
+metadata/enemies = [{"at": "north_ledge", "count": 3, "enemy": "gnawer"}]
+
+[node name="flank" type="Node" parent="Waves"]
+metadata/index = 1
+metadata/delay_s = 3
+metadata/enemies = [{"at": "west_flank", "count": 2, "enemy": "gnawer"}, {"at": "east_flank", "count": 2, "enemy": "gnawer"}]
+
+[node name="heap_push" type="Node" parent="Waves"]
+metadata/index = 2
+metadata/delay_s = 3
+metadata/enemies = [{"at": "north_ledge", "count": 1, "enemy": "heap"}, {"at": "north_ledge", "count": 2, "enemy": "gnawer"}]
