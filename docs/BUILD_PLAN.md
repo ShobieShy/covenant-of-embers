@@ -398,9 +398,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: headless playtest PASS with no teleports and no supplied parts.
 - Result: PASS (249 tests + headless playtest)
 
-**49. New Run vs existing save**
+**49. New Run vs existing save** ✅ `02c03de`
 - Does: New Run with an existing save asks to confirm overwrite (step 39 flag); multiple save slots (3).
 - Done: test_flow.gd: confirm dialog appears, slots isolated.
+- Result: PASS (250 tests + headless playtest)
 
 ### Phase H – Magewar elements: Light and Dark (Bible: 'Light heals and has one summon, Dark corrupts enemies into summons')
 

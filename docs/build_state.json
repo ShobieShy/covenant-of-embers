@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 47,
-  "last_commit": "c2735eb",
+  "steps_done": 48,
+  "last_commit": "02c03de",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -485,6 +485,14 @@
         "tests": 249
       },
       "commit": "c2735eb"
+    },
+    {
+      "time": "2026-10-24T05:19-05:00",
+      "step": 49,
+      "type": "build",
+      "summary": "3 save slots (slot 1 = legacy save.json via SaveGame.slot_path), menu slot picker, New Run over an existing save asks to overwrite (ConfirmationDialog); scripted --start skips the prompt. test_flow: confirm + slot isolation.",
+      "tests": "250 tests",
+      "commit": "02c03de"
     }
   ],
   "completed_steps": [
