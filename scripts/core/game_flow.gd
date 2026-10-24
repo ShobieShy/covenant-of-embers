@@ -32,6 +32,23 @@ static var path_override := ""
 static var dry_run := false
 static var last_request := ""
 static var requests := 0
+## Step 73: the new character's pick from the menu ({archetype, name, color}); applied to a
+## fresh run (and to a co-op client with no character file yet).
+static var new_identity := {}
+
+
+## Step 73: --archetype <id> / --char-name <name> / --color <#hex> (playtests, scripts).
+static func identity_from_args(args: PackedStringArray) -> Dictionary:
+	var out := {}
+	for i in args.size() - 1:
+		match args[i]:
+			"--archetype":
+				out["archetype"] = Archetype.valid(args[i + 1])
+			"--char-name":
+				out["name"] = args[i + 1]
+			"--color":
+				out["color"] = Color.from_string(args[i + 1], Color.WHITE)
+	return out
 
 
 static func level_scene(id: String) -> String:

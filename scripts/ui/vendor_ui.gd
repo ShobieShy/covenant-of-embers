@@ -94,7 +94,9 @@ func refresh() -> void:
 	)
 	stock_list.clear()
 	for s in vendor.stock:
-		stock_list.add_item("%s   %d Gold" % [name_of(s["item"]), s["price"]])
+		stock_list.add_item(
+			"%s   %d Gold" % [name_of(s["item"]), Archetype.discounted(int(s["price"]), player.archetype)]
+		)
 	pack_list.clear()
 	for it in player.inventory.items:
 		var extra := ""

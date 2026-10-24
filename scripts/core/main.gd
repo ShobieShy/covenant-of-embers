@@ -200,9 +200,11 @@ func _setup_flow(player: Player) -> void:
 	add_child(pause_menu)
 	pause_menu.bind(player, s_ui)
 	pause_menu.save_requested.connect(save_game)
+	var fresh := not GameFlow.load_save
 	if Coop.is_client():
 		# Step 91: a client plays its own portable character, never the host's slot.
 		var cr := CharacterSave.load_into(player, Coop.character)
+		fresh = cr.has("error")
 		print("[character] %s: %s" % [Coop.character, cr.get("error", "loaded level %d" % player.progression.level)])
 	elif GameFlow.load_save:
 		var r := SaveGame.read(GameFlow.save_path)
@@ -215,6 +217,8 @@ func _setup_flow(player: Player) -> void:
 			if breach and (r["data"] as Dictionary).get("progress", {}).get("vault_open", false):
 				breach.restore_open()   # step 47: rooms cleared, gate + vault stay open
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
+	if fresh:
+		_apply_new_identity(player)
 	_setup_quests(player, here)
 	if here == "old_oak":
 		_setup_hub(player)
@@ -521,3 +525,17 @@ func _process(delta: float) -> void:
 
 func _physics_process(_delta: float) -> void:
 	_ticks += 1
+
+
+## Step 73: a new character takes the menu's archetype / name / colour (or --archetype ...).
+func _apply_new_identity(player: Player) -> void:
+	var idn := GameFlow.new_identity.duplicate()
+	idn.merge(GameFlow.identity_from_args(OS.get_cmdline_user_args()), true)
+	if idn.is_empty():
+		return
+	var arch := String(idn.get("archetype", Archetype.DEFAULT))
+	var nm := String(idn.get("name", ""))
+	if nm.is_empty() and Coop.is_client():
+		nm = Coop.character.get_file().get_basename().trim_prefix("character_")
+	player.set_character(arch, nm, idn.get("color", null))
+	print("[character] %s the %s" % [player.character_name, Archetype.label(player.archetype)])

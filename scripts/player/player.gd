@@ -143,6 +143,9 @@ var hits_taken := 0
 var hits_ignored := 0  # i-frames / dead
 var equipment := Equipment.new()  # step 19: worn items + potion quick-slot
 var consecrations := Consecrations.new()  # step 36: worn Consecration effects
+var archetype := Archetype.DEFAULT  ## step 73: nerd / gal / buff / loli
+var character_name := "Ember"  ## step 73 customization
+var character_color := Archetype.default_color(Archetype.DEFAULT)
 var level_health_bonus := 0.0  # step 27 (level-ups) fills these; apply_bonuses() adds them
 var level_mana_bonus := 0.0
 var level_breath_bonus := 0.0
@@ -602,6 +605,9 @@ func unequip_item_to_inventory(slot: int) -> bool:
 ## Max raises add the difference (Health/Mana; Breath doesn't refill), removals clamp.
 func apply_bonuses() -> void:
 	var sk := skills.totals()  # step 71: skill ranks stack on top of gear + levels
+	var arch := Archetype.perks(archetype)  # step 73: the archetype perk stacks the same way
+	for k in arch:
+		sk[k] = float(sk.get(k, 0.0)) + float(arch[k])
 	if health != null:
 		health.set_max_bonus(equipment.health_bonus() + level_health_bonus + float(sk.get("max_health", 0.0)))
 	if mana != null:
@@ -618,6 +624,14 @@ func apply_bonuses() -> void:
 		c.damage_bonus = dmg
 	consecrations.apply(self)
 	skill_procs.bind(self)
+
+
+## Step 73: archetype + customization (name, colour); re-applies the bonuses.
+func set_character(arch: String, p_name: String, color: Variant = null) -> void:
+	archetype = Archetype.valid(arch)
+	character_name = Archetype.clean_name(p_name)
+	character_color = color if color is Color else Archetype.default_color(archetype)
+	apply_bonuses()
 
 
 ## Step 71: one skill rank (see Skills.why_not); re-applies the bonuses.

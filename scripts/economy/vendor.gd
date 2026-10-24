@@ -90,7 +90,7 @@ func buy(p: Player, i: int) -> String:
 	if i < 0 or i >= stock.size():
 		return "Nothing there."
 	var s: Dictionary = stock[i]
-	var price: int = s["price"]
+	var price := Archetype.discounted(int(s["price"]), p.archetype)  # step 73: the Gal's discount
 	if p.inventory.gold < price:
 		return "Not enough gold."
 	var item: Resource = s["item"]

@@ -520,7 +520,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 ### Phase L – Progression depth
 - Result: PASS (277 tests + headless playtest)
 
-**70. Summoned growth multiplier** ✅ PENDING
+**70. Summoned growth multiplier** ✅ `e958c5b`
 - Does: Resolve catch-up: a character below the expected level for the area (or below the co-op party's highest) earns bonus XP that shrinks as the gap closes.
 - Done: test_xp.gd: bonus scales with the level gap, zero at or above it, level curve unchanged.
 - Q12 answered 2026-10-24: Resolve catch-up (PLAN), not the ×1.5 multiplier.
@@ -536,10 +536,12 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_skills.gd + test_consecrations.gd: skill effects apply and stack with gear, consecration weights follow the invested branch.
 - Q11 answered 2026-10-24 (Borderlands-style trees, placeholders)
 
-**73. Playable archetypes** 🔜 Unblocked
+**73. Playable archetypes** ✅ PENDING
 - Does: Four archetypes with cosmetic + small perk, picked at new run (Bible Nerd/Gal/Buff/Loli; PLAN Scholar/Talker/Hauler/Scout).
 - Done: test_archetypes.gd: perk applied, saved.
 - Q6 answered 2026-10-24: Nerd/Gal/Buff/Loli plus customization (name and colour for now); the customization travels with the portable co-op character.
+- Result: PASS (361 tests green)
+- Note: Perks are placeholders (Q6 gave archetypes, not numbers). Old saves = no archetype, no perk.
 
 ### Phase M – Audio and presentation
 

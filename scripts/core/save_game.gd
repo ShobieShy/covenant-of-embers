@@ -49,6 +49,9 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 			"mana": p.mana.max_value() if dead else p.mana.value,
 			"breath": p.breath.max_value() if dead else p.breath.value,
 			"quest_items": Array(p.quest_items),  # step 57
+			"archetype": p.archetype,  # step 73 (+ customization; travels with the character)
+			"name": p.character_name,
+			"color": p.character_color.to_html(false),
 			"skills": p.skills.to_dict(),  # step 71 (older saves: no key = no ranks)
 		},
 		"items":
@@ -115,6 +118,13 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 	p.inventory.items.clear()
 	p.inventory.dust = maxi(0, int(pl.get("dust", 0)))
 	p.inventory.gold = maxi(0, int(pl.get("gold", Inventory.STARTING_GOLD)))
+	var arch := Archetype.valid(String(pl.get("archetype", Archetype.DEFAULT)))
+	var col := String(pl.get("color", ""))
+	p.archetype = arch
+	p.character_name = Archetype.clean_name(String(pl.get("name", "")))
+	p.character_color = (
+		Color.from_string(col, Archetype.default_color(arch)) if not col.is_empty() else Archetype.default_color(arch)
+	)
 	for c in it.get("inventory", []):
 		var m := _decode(String(c), null, warn, "inventory")
 		if m:

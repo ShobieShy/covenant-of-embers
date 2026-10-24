@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 73,
+  "next_step": 85,
   "total_steps": 107,
-  "steps_done": 89,
-  "last_commit": "6c6948c",
+  "steps_done": 90,
+  "last_commit": "e958c5b",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -989,6 +989,13 @@
       "step": "70",
       "type": "build",
       "summary": "Resolve catch-up: kill XP x(1 + 0.25 per level behind the highest player near the kill, max +100%); 0 at/above; curve unchanged",
+      "commit": "e958c5b"
+    },
+    {
+      "time": "2026-10-24T09:43-05:00",
+      "step": "73",
+      "type": "build",
+      "summary": "Archetypes Nerd/Gal/Buff/Loli (Archetype; perks via apply_bonuses: +15 mana / -10% vendor prices / +20 health / +8% speed) + name and colour; menu picker, --archetype/--char-name/--color; saved in the character file (portable co-op); pose 'c' paints RemotePlayer",
       "commit": "PENDING"
     }
   ],
@@ -1064,6 +1071,7 @@
     70,
     71,
     72,
+    73,
     75,
     76,
     77,

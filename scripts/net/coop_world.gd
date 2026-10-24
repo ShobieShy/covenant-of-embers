@@ -96,6 +96,12 @@ func tick(dt: float) -> void:
 
 func local_pose() -> Dictionary:
 	var d := {"p": player.global_position, "y": player.rotation.y, "n": session.local_info.get("name", "Player")}
+	var col: Variant = player.get(&"character_color")
+	if col is Color:  # step 73: the character's colour shows on the others' screens
+		d["c"] = (col as Color).to_html(false)
+	var nm: Variant = player.get(&"character_name")
+	if nm is String and not (nm as String).is_empty() and nm != "Ember":
+		d["n"] = nm
 	d["a"] = bool(player.call(&"alive")) if player.has_method(&"alive") else true
 	d["i"] = bool(player.call(&"invulnerable")) if player.has_method(&"invulnerable") else false
 	d["d"] = bool(player.get(&"downed")) if &"downed" in player else false

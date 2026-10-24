@@ -21,6 +21,8 @@ var hp_max := 1.0
 var level := 1
 var poses := 0
 var _tag: Label3D
+var color := Color(0.35, 0.6, 1.0)  ## step 73: the character colour (pose "c")
+var _mat: StandardMaterial3D
 var _placed := false
 
 
@@ -33,7 +35,8 @@ func _ready() -> void:
 	mi.mesh = cap
 	mi.position = Vector3(0, 0.9, 0)
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.35, 0.6, 1.0)
+	m.albedo_color = color
+	_mat = m
 	mi.material_override = m
 	add_child(mi)
 	_tag = Label3D.new()
@@ -53,6 +56,10 @@ func apply_pose(d: Dictionary) -> void:
 	hp_max = maxf(1.0, float(d.get("m", hp_max)))
 	level = int(d.get("l", level))
 	display_name = String(d.get("n", display_name))
+	if d.has("c"):
+		color = Color.from_string(String(d["c"]), color)
+		if _mat:
+			_mat.albedo_color = color
 	if _tag:
 		_tag.text = "%s%s" % [display_name, " (down)" if downed else ""]
 	poses += 1
