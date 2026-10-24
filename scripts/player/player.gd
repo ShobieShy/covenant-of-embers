@@ -402,6 +402,48 @@ func unequip_item(slot: int) -> EquipmentItem:
 	apply_bonuses()
 	return old
 
+## Step 24: equips a backpack item (staff/wand into its loadout slot, gear into its
+## equipment slot); whatever it replaces goes back into the backpack in its place.
+## Parts can't be equipped (they go to the Assembly Station). False = refused.
+func equip_from_inventory(item: Resource) -> bool:
+	if item == null or not inventory.has(item):
+		return false
+	var old: Resource = null
+	if item is WieldableInstance:
+		old = loadout.wieldable(Loadout.slot_for(item))
+		inventory.remove(item)
+		equip(item)
+	elif item is EquipmentItem:
+		inventory.remove(item)
+		old = equip_item(item)
+	else:
+		return false
+	if old != null:
+		inventory.add(old)
+	return true
+
+## Step 24: moves the staff/wand in loadout `slot` to the backpack; false when empty/full.
+func unequip_wieldable_to_inventory(slot: int) -> bool:
+	var w := loadout.wieldable(slot)
+	if w == null or inventory.is_full():
+		if w != null:
+			show_hint(PickupCollector.HINT_FULL)
+		return false
+	loadout.unequip(slot)
+	if viewmodel != null:
+		viewmodel.show_wieldable(caster.wieldable)
+	return inventory.add(w)
+
+## Step 24: moves the worn piece in equipment `slot` to the backpack; false when empty/full.
+func unequip_item_to_inventory(slot: int) -> bool:
+	var it := equipment.item(slot)
+	if it == null or inventory.is_full():
+		if it != null:
+			show_hint(PickupCollector.HINT_FULL)
+		return false
+	unequip_item(slot)
+	return inventory.add(it)
+
 ## Pushes the worn totals (+ level parts) into the pools, speed, resists and casters.
 ## Max raises add the difference (Health/Mana; Breath doesn't refill), removals clamp.
 func apply_bonuses() -> void:
@@ -580,6 +622,8 @@ func tick(input: PlayerInput, dt: float) -> void:
 	elif input.was_pressed(&"quickslot_prev_wieldable"):
 		started = loadout.cycle(-1)
 	loadout.tick(dt, started)
+	if input.was_pressed(&"use_potion"):   # step 24: R uses the quick-slot potion
+		use_potion()
 	# Pickups (step 23): walk-over auto-collect, then Interact on the looked-at item.
 	pickups.tick(self, input.was_pressed(&"interact"))
 	# Mana regen (step 8) before the cast, so a pool back at the cost casts this tick.

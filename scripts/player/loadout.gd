@@ -55,9 +55,17 @@ func wieldable(slot: int = -1) -> WieldableInstance:
 
 ## Puts `w` into the slot of its type (its cooldown is kept). With empty hands the new
 ## slot is drawn at once (no swap). Returns the slot.
+## Replacing the staff/wand in hand starts a draw of the new one (step 24: inventory
+## swaps can't skip the draw).
 func equip(w: WieldableInstance) -> int:
 	var slot := slot_for(w)
+	var replacing_in_hand := slot == active and casters[slot].wieldable != null and w != null and casters[slot].wieldable != w
 	casters[slot].equip(w)
+	if replacing_in_hand:
+		draw_seconds = w.draw_seconds(swap_seconds)
+		swap_left = draw_seconds
+		swaps += 1
+		swap_started.emit(slot)
 	if casters[active].wieldable == null and w != null:
 		active = slot
 		swap_left = 0.0
