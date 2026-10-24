@@ -369,10 +369,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase G – Slice follow-ups (from steps 29–42)
 
-**43. Heap time-to-kill balance** ⏸ Needs ShobieShy
+**43. Heap time-to-kill balance** ➖ Moot (Q8: The Filth replaces the Heap)
 - Does: Midden Heap took ~107 s simulated to kill with the starter staff (step 40 flag). Tune Heap HP/armour or starter Interior damage via a balance patch so Heap TTK is 20–35 s and Gnawer TTK 1–3 s; record the targets in PLAN §30.
 - Done: test_balance.gd: simulated TTK for starter staff vs Gnawer/Heap/Warden within target bands; headless playtest still PASS.
-- Needs ShobieShy: Q9 (lower Heap HP vs raise starter damage)
+- Moot: Q8 answered 2026-10-24 (The Filth replaces the Heap/wave ending), so Q9 no longer applies; the 20–35 s target moves to each Filth phase (step 56).
 
 **44. Item codes v2: gems + consecrations** ✅ `4c7a1e9`
 - Does: Bump Ember Mark code version (EM2-) to encode socketed gems and consecrations; EM1 codes still decode (migration); save files re-encode on load.
@@ -405,25 +405,25 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase H – Magewar elements: Light and Dark (Bible: 'Light heals and has one summon, Dark corrupts enemies into summons')
 
-**50. Light heal** ⏸ Needs ShobieShy
+**50. Light heal** 🔜 Unblocked
 - Does: Light spell hits heal the caster (Magewar MagicSpecialEffects: max(8, 35 % of damage)); healing numbers in green.
 - Done: test_light.gd: heal amount matches formula, clamps at max health, no heal on Arcane.
-- Needs ShobieShy: Q2/Q3 (Magewar Light/Dark vs PLAN's Redemption + Lamp companion)
+- Q2/Q3 answered 2026-10-24: Magewar Light/Dark exactly as in the Bible.
 
-**51. Light summon (one per caster)** ⏸ Needs ShobieShy
+**51. Light summon (one per caster)** 🔜 Unblocked
 - Does: Light cast creates one follower orb (Magewar light_summon, 30 s lifetime) that fights/marks enemies; only one active per caster.
 - Done: test_light.gd: second cast while one is alive spawns none; expires at 30 s.
-- Needs ShobieShy: Q3
+- Q3 answered 2026-10-24 (Magewar Light).
 
-**52. Dark corruption into summons** ⏸ Needs ShobieShy
+**52. Dark corruption into summons** 🔜 Unblocked
 - Does: Dark hit bringing an enemy ≤25 % HP rolls 40 % to corrupt it into an allied summon (Magewar MagicSpecialEffects) for 30 s; bosses immune; enemy AI gains an ally/target-enemies mode.
 - Done: test_dark.gd: threshold + injected roll, corrupted Gnawer attacks enemies, boss never corrupts, timer expiry.
-- Needs ShobieShy: Q2
+- Q2 answered 2026-10-24 (Magewar Dark).
 
-**53. Status effects** ⏸ Needs ShobieShy
+**53. Status effects** 🔜 Unblocked
 - Does: Per-element on-hit statuses (e.g. Fire burn, Water slow, Earth stagger, Air chain, Light/Dark as above) with resist from gear (60 % cap applies).
 - Done: test_status.gd: ticks, durations, resist scaling, cap.
-- Needs ShobieShy: Q5 (Magewar has no statuses; adopt PLAN §5 set?)
+- Q5 answered 2026-10-24: Fire burn, Water slow, Earth stagger, Air chain; 60 % resist cap kept.
 
 ### Phase I – Enemies and bosses
 
@@ -437,10 +437,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_ooze.gd: split count/HP, puddle slow.
 - Result: PASS (257 tests + headless playtest)
 
-**56. The Filth, phases 1–2** ⏸ Needs ShobieShy
+**56. The Filth, phases 1–2** 🔜 Unblocked
 - Does: 3-phase landfill slime boss from Magewar boss_the_filth (born from alchemical runoff + dungeon essence; spews acid blobs, absorbs attacks and regenerates from debris; phase thresholds); boss bar with phase pips; arena lock.
 - Done: test_filth.gd: phase transitions at thresholds, attack cadence per phase.
-- Needs ShobieShy: Q8 (Filth replaces or follows the current Heap/wave ending)
+- Q8 answered 2026-10-24: The Filth replaces the Heap/wave ending in the Landfill; aim 20–35 s per phase with the starter staff.
 - Q1 answered (Magewar storyline)
 **57. The Filth phase 3 + Joe's Trash drop** ⛔ Blocked (prerequisite)
 - Does: Phase 3 exposes the core weak spot; always drops the quest item 'Joe's Trash' (cracked crystals, 'trash portal' notes) plus glowing sludge and loot; checkpoint at the boss door.
@@ -453,10 +453,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase J – Economy
 
-**59. Gold currency** ⏸ Needs ShobieShy
+**59. Gold currency** 🔜 Unblocked
 - Does: Gold wallet (start 50, Magewar story), enemy gold drops that auto-collect, salvage gives gold + Arcane Dust; HUD counter; saved.
 - Done: test_gold.gd: drops, auto-collect, save round-trip.
-- Needs ShobieShy: Q4 (gold vs Tallies)
+- Q4 answered 2026-10-24: gold, start 50; Old Oak respec gets a gold price.
 
 **60. Vendor framework + shop UI** ⛔ Blocked (prerequisite)
 - Does: Vendor node with stock tables, buy/sell (sell price by rarity), shop screen with compare cards.
@@ -509,10 +509,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 ### Phase L – Progression depth
 - Result: PASS (277 tests + headless playtest)
 
-**70. Summoned growth multiplier** ⏸ Needs ShobieShy
-- Does: Summoned gain XP ×1.5 (Magewar storyline 'growth multipliers'; PLAN Resolve catch-up as alternative).
-- Done: test_xp.gd: multiplier applied, level curve unchanged.
-- Needs ShobieShy: Q12
+**70. Summoned growth multiplier** 🔜 Unblocked
+- Does: Resolve catch-up: a character below the expected level for the area (or below the co-op party's highest) earns bonus XP that shrinks as the gap closes.
+- Done: test_xp.gd: bonus scales with the level gap, zero at or above it, level curve unchanged.
+- Q12 answered 2026-10-24: Resolve catch-up (PLAN), not the ×1.5 multiplier.
 
 **71. Skill trees: framework** ✅ `2d52d32`
 - Does: Borderlands-style skill trees as a design pattern only (no Borderlands names/text/assets): data-driven trees in data/skills/*.toml, not tied to archetypes (Q6 open); 1 skill point per level from level 2; tiers unlock by points spent in that tree (5 per tier); ranked skills (max rank), capstone at the last tier; free respec at the Old Oak (gold cost pending Q4); points/ranks saved in the character save.
@@ -524,17 +524,17 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_skills.gd + test_consecrations.gd: skill effects apply and stack with gear, consecration weights follow the invested branch.
 - Q11 answered 2026-10-24 (Borderlands-style trees, placeholders)
 
-**73. Playable archetypes** ⏸ Needs ShobieShy
+**73. Playable archetypes** 🔜 Unblocked
 - Does: Four archetypes with cosmetic + small perk, picked at new run (Bible Nerd/Gal/Buff/Loli; PLAN Scholar/Talker/Hauler/Scout).
 - Done: test_archetypes.gd: perk applied, saved.
-- Needs ShobieShy: Q6
+- Q6 answered 2026-10-24: Nerd/Gal/Buff/Loli plus customization (name and colour for now); the customization travels with the portable co-op character.
 
 ### Phase M – Audio and presentation
 
-**74. Music: menu + exploration + combat** ⏸ Needs ShobieShy
+**74. Music: menu + exploration + combat** ⏭ Deferred (Q10)
 - Does: Music bus gets tracks (CC0/free-licensed or Magewar's own), crossfade explore↔combat on wave start/clear, boss stem.
 - Done: test_audio.gd: streams load, licence lint passes, crossfade on events.
-- Needs ShobieShy: Q10 (Bible's Music Overview is empty: style/source)
+- Deferred 2026-10-24 by ShobieShy (Q10: music later).
 
 **75. Art pass: Midden + Breach materials** ✅ `4ff0a82`
 - Does: Replace greybox CSG with free-licensed/Magewar textures and props, Bible-style palette (step 41 palette note).
@@ -577,19 +577,46 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Full automated run prologue→tutorial→Dungeon 1; graphical user-session run with screenshots; tools/lint.sh + export.sh green.
 - Done: run_tests + lint + export green; playtest PASS.
 
+## Phase R – Fixes and future plan (added 2026-10-24)
+
+**94. Co-op double kill** ✅ `ac8daa9`
+- Does: Client puppets hold death until the host confirms; stale alive snapshots no longer revive a dead enemy. Also covers the co-op lag timeout / dropped hit (150 ms / 2 % loss: 16/16 hits applied).
+- Done: test_coop.gd + test_enemy.gd; COOP_LAG=150 COOP_LOSS=0.02 coop playtest PASS.
+
+**95. Flaky test_player / test_spawner** ✅ `c6fdb3d`
+- Does: Elite rolls off for vigil_tier < 0 in tests (an unseeded Splitting elite changed kill counts); TEST_ONLY filter in the runner.
+- Done: 12/12 isolated runs green.
+
+**96. Bot clears the Breach at 4×** ✅ `22f9992`
+- Does: Bot fire presses use a physics tick counter; walk budgets scale with time scale; unstick; backpack-full craft fix; run_tests runs the 4× playtest.
+- Done: run_tests green incl. 4× playtest.
+
+### Plan-only (not to be built yet)
+- **97. Dungeons 2–5**: four more dungeons toward the Demon Lord, each on the Breach template with its own boss and town.
+- **98. Demon Lord's lair**: final dungeon.
+- **99. Crazy Joe fight**: boss fight per the Storyline.
+- **100. Demon Lord fight**: final boss.
+- **101. Association back door to the Landfill**: shortcut from the Mage Association.
+- **102. Small Town map**: the Bible's Small Town level.
+- **103. Storyline Landfill enemies**: mutated rats and garbage golems.
+- **104. Side quests**: Bible/Storyline side quests (e.g. Willowbrook farmer).
+- **105. Old Oak upgrades**: Bob's lab, potion garden, portals.
+- **106. Basic skills unlocked at tutorial end**.
+- **107. Rusty dagger starter gear**: open question Q17.
+
 ### Open questions (answer before the marked steps)
 - ~~**Q1 Story/setting**~~ **Answered 2026-10-24 by ShobieShy: use the Magewar storyline** (`~/game/Magewar Storyline.md`: Elyria, the Summoned, Crazy Joe, Bob, The Filth, Demon Lord); the original Ada/Caspar/Midden/Pretender story is dropped. Was: PLAN §2–21 has an original biblical-themed story (exiles, Mother Ada, Brother Caspar, the Midden, the Pretender) while weapons/loot now follow Magewar. Use Magewar's storyline (Elyria, the Summoned, Crazy Joe, Bob, The Filth, Demon Lord), keep PLAN's original story, or a mix?
-- **Q2 Dark**: Magewar's Dark corrupts enemies into summons vs PLAN's Light-based Redemption. Which?
-- **Q3 Light**: Magewar Light heal + one summon vs PLAN's Lamp companion drone?
-- **Q4 Currency**: gold (Magewar, start 50) or Tallies (PLAN)?
-- **Q5 Status effects**: Magewar has none; add PLAN-style per-element statuses (burn, slow, stagger, chain)?
-- **Q6 Archetypes**: Bible lists Nerd/Gal/Buff/Loli; PLAN has Scholar/Talker/Hauler/Scout. Which set (and keep or rename 'Loli')?
+- ~~**Q2 Dark**~~ **Answered 2026-10-24: Magewar Dark** (≤25 % HP hit, 40 % corrupt into ally for 30 s, bosses immune). Was: Magewar's Dark corrupts enemies into summons vs PLAN's Light-based Redemption. Which?
+- ~~**Q3 Light**~~ **Answered 2026-10-24: Magewar Light** (heal max(8, 35 % dmg), one summon per caster). Was: Magewar Light heal + one summon vs PLAN's Lamp companion drone?
+- ~~**Q4 Currency**~~ **Answered 2026-10-24: gold, start 50**; price the respec. Was: gold (Magewar, start 50) or Tallies (PLAN)?
+- ~~**Q5 Status effects**~~ **Answered 2026-10-24: yes** (burn/slow/stagger/chain by element, 60 % cap). Was: Magewar has none; add PLAN-style per-element statuses (burn, slow, stagger, chain)?
+- ~~**Q6 Archetypes**~~ **Answered 2026-10-24: Nerd/Gal/Buff/Loli + customization (name, colour)**, carried by the portable co-op character. Was: Bible lists Nerd/Gal/Buff/Loli; PLAN has Scholar/Talker/Hauler/Scout. Which set (and keep or rename 'Loli')?
 - ~~**Q7 Co-op timing**~~ **Answered 2026-10-24: build co-op now**, derived from Borderlands design (patterns only; no Borderlands names, text or assets), Steam peer-to-peer.
-- **Q8 Tutorial boss**: The Filth (3-phase slime) replaces the current Heap/wave ending in the Midden, or is added after it?
-- **Q9 Heap balance**: lower Heap HP or raise starter staff damage to hit ~20–35 s TTK?
-- **Q10 Music**: style and source (free CC0 tracks, Magewar's own, or commissioned later)?
+- ~~**Q8 Tutorial boss**~~ **Answered 2026-10-24: The Filth replaces the Heap/wave ending**, 20–35 s per phase. Was: The Filth (3-phase slime) replaces the current Heap/wave ending in the Midden, or is added after it?
+- ~~**Q9 Heap balance**~~ **Moot (Q8)**. Was: lower Heap HP or raise starter staff damage to hit ~20–35 s TTK?
+- ~~**Q10 Music**~~ **Answered 2026-10-24: later** (step 74 deferred). Was: style and source (free CC0 tracks, Magewar's own, or commissioned later)?
 - ~~**Q11 Skill trees**~~ **Answered 2026-10-24: Borderlands-style trees** (per character, points per level, tiers unlocked by points spent, capstone); placeholder skills, renamed later; data-driven and not tied to archetypes while Q6 is open.
-- **Q12 Growth**: Summoned ×1.5 XP multiplier (storyline) or PLAN's Resolve catch-up?
+- ~~**Q12 Growth**~~ **Answered 2026-10-24: Resolve catch-up**. Was: Summoned ×1.5 XP multiplier (storyline) or PLAN's Resolve catch-up?
 
 ## Phase P/Q – Cross-platform + co-op additions (planned 2026-10-24)
 
@@ -604,20 +631,20 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Game icon (.png + .ico), project version shown in menu, Windows export file/product version + company fields (rcedit via Godot), Linux .desktop file + icon.
 - Done: export.sh: Windows exe has icon/version resources (checked under wine or by resource dump); menu shows version string.
 
-**85. Release packaging** ⏸ Needs ShobieShy
-- Does: tools/package.sh: Linux .tar.gz (binary + .desktop + icon + LICENSE/credits incl. Magewar credit) and Windows .zip (portable, no installer); optional Inno Setup installer left as follow-up; checksums.
+**85. Release packaging** 🔜 Unblocked
+- Does: tools/package.sh: Linux AppImage (+ .tar.gz) (binary + .desktop + icon + LICENSE/credits incl. Magewar credit) and Windows .zip (portable, no installer); optional Inno Setup installer left as follow-up; checksums.
 - Done: package.sh produces both archives; unpack + run --seconds 2 green (Windows under WINE_SMOKE).
-- Needs ShobieShy: Q13 (zip only, or also a Windows installer / Steam later?)
+- Q13 answered 2026-10-24: Steam depot/build config (app id 480 placeholder, no upload), Linux AppImage, Windows zip.
 
 **86. Input and display differences per OS** ✅ `7c13e1b`
 - Does: Check XInput/SDL gamepad names on Windows vs Linux map to the same actions (step 77), mouse capture/raw input, Alt+Tab/fullscreen modes, DPI scaling, Vulkan → D3D12/OpenGL fallback renderer setting.
 - Done: test_keybinds.gd: joypad mappings OS-agnostic; settings expose renderer fallback; manual checklist in playtest/.
 - Result: PASS (287 tests + headless playtest)
 
-**87. Windows-native playtest** ⏸ Needs ShobieShy
+**87. Windows-native playtest** ⏭ Deferred (Q14: no Windows PC yet)
 - Does: Run the exported .exe on a real Windows machine (not just wine): autoplay + UI smoke, screenshots, perf; fix Windows-only bugs.
 - Done: autoplay PASS on Windows, 0 errors in log, issues list closed or deferred.
-- Needs ShobieShy: Needs a Windows PC/VM from ShobieShy (Q14)
+- Deferred 2026-10-24 (Q14): no Windows PC yet; packages built anyway and the wine smoke test stays.
 
 ### Phase Q – Co-op beyond steps 78–80
 
@@ -661,7 +688,8 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Step 49 (save slots) must use 83's per-OS dir + atomic write; build 83 before 49 or patch 49.
 
 ### Open questions (added)
-- **Q13 Packaging**: Windows zip only, or also an installer / Steam/itch page later?
-- **Q14 Windows test machine**: is there a Windows PC or VM to playtest on?
+- ~~**Q13 Packaging**~~ **Answered 2026-10-24: Steam depot config (app 480 placeholder, no upload) + Linux AppImage + Windows zip**. Was: Windows zip only, or also an installer / Steam/itch page later?
+- ~~**Q14 Windows test machine**~~ **Answered 2026-10-24: none yet**; package anyway, keep wine smoke, step 87 deferred. Was: is there a Windows PC or VM to playtest on?
 - ~~**Q15 NAT**~~ **Answered 2026-10-24: Steam P2P lobbies/invites** (GodotSteam, app id 480 for development); direct IP kept as dev/LAN fallback.
 - ~~**Q16 Co-op progress**~~ **Answered 2026-10-24: the host's save holds world/quest progress; clients join with their own character from any game**; on host leaving clients exit safely with the character saved; no host migration.
+- **Q17 Rusty dagger**: should the starter gear include the Storyline's rusty dagger (step 107)?
