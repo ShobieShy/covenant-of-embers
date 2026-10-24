@@ -69,6 +69,7 @@ func _midden(at: Vector3, feet: Vector3) -> Dictionary:
 	var p := _player(w, feet)
 	var sp := EnemySpawner.new()
 	sp.auto_tick = false
+	sp.vigil_tier = -1  # step 95: no random elites (a Splitting one made this flaky)
 	sp.name = "Enemies"
 	w.add_child(sp)
 	var got := sp.setup(level, p)

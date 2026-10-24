@@ -33,6 +33,9 @@ func _run_all() -> void:
 		if f.begins_with("test_") and f.ends_with(".gd"):
 			files.append(f)
 	files.sort()
+	var only := OS.get_environment("TEST_ONLY")  # step 95: e.g. TEST_ONLY=test_player.gd
+	if only != "":
+		files = files.filter(func(f: String) -> bool: return f in only.split(","))
 	for f in files:
 		var script := load("res://tests/unit/" + f) as GDScript
 		if script == null or not script.can_instantiate():

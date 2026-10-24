@@ -27,6 +27,8 @@ const COLORS := {
 
 
 static func chance(tier: int) -> float:
+	if tier < 0:  # step 95: tier -1 turns elites off (deterministic tests)
+		return 0.0
 	return clampf(BASE_CHANCE + PER_TIER * maxi(0, tier), 0.0, 1.0)
 
 
