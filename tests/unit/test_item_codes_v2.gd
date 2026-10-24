@@ -25,10 +25,7 @@ func test_loose_head_with_gems() -> void:
 	check(ItemCodes.encode(head).begins_with("EM2-"), "gems -> EM2")
 	var m := _rt(head)
 	var h := m.item as WieldablePart
-	check(
-		h.gems.size() == 2 and h.gems[0].element == E.FIRE and h.gems[1].element == E.DARK,
-		"gems back in order"
-	)
+	check(h.gems.size() == 2 and h.gems[0].element == E.FIRE and h.gems[1].element == E.DARK, "gems back in order")
 	check(ItemCodes.same_item(h, head), "same item")
 
 
@@ -69,17 +66,10 @@ func test_consecrated_equipment() -> void:
 func test_loose_gem_and_old_codes() -> void:
 	var m := _rt(ElementGem.make(E.LIGHT))
 	check(m.item is ElementGem and (m.item as ElementGem).element == E.LIGHT, "gem item")
-	for c in [
-		"EM1-0M08G-1G7ZX-R7FX8",
-		"EM1-0R18G-00002-CFKSR",
-		"EM1-0J042-1MB00-000AH-075AG",
-		"EM1-0W431-XQP"
-	]:
+	for c in ["EM1-0M08G-1G7ZX-R7FX8", "EM1-0R18G-00002-CFKSR", "EM1-0J042-1MB00-000AH-075AG", "EM1-0W431-XQP"]:
 		check(ItemCodes.decode(c).ok(), "golden v1 still decodes: %s" % c)
 	var good := ItemCodes.encode(EquipmentRoller.from_seed(1, S.BELT, "rare", E.FIRE))
-	check(
-		not ItemCodes.decode("EM2-" + good.substr(4)).ok(), "EM2 prefix on a flagless code rejected"
-	)
+	check(not ItemCodes.decode("EM2-" + good.substr(4)).ok(), "EM2 prefix on a flagless code rejected")
 
 
 func test_save_keeps_gems_and_consecrations() -> void:

@@ -65,8 +65,7 @@ const COUNT_BITS := 7
 const TABLES := {
 	1:
 	{
-		"wieldables":
-		["apprentice_fire_staff", "earthward_battlestaff", "novice_arcane_wand", "swift_wind_wand"],
+		"wieldables": ["apprentice_fire_staff", "earthward_battlestaff", "novice_arcane_wand", "swift_wind_wand"],
 		"parts":
 		[
 			"basic_earth_interior",
@@ -86,8 +85,7 @@ const TABLES := {
 			"uncommon_fire_head",
 			"unique_void_charm"
 		],
-		"equipment":
-		["apprentice_hat", "basic_robes", "leather_belt", "novice_grimoire", "traveler_shoes"],
+		"equipment": ["apprentice_hat", "basic_robes", "leather_belt", "novice_grimoire", "traveler_shoes"],
 		"consumables": ["health_potion", "mana_potion"],
 	},
 }

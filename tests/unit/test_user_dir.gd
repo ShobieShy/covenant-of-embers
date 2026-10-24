@@ -3,9 +3,7 @@ extends TestCase
 
 
 func test_custom_user_dir() -> void:
-	check(
-		bool(ProjectSettings.get_setting("application/config/use_custom_user_dir")), "custom dir on"
-	)
+	check(bool(ProjectSettings.get_setting("application/config/use_custom_user_dir")), "custom dir on")
 	check(
 		OS.get_user_data_dir().simplify_path() == UserDir.expected_dir().simplify_path(),
 		"user dir %s vs %s" % [OS.get_user_data_dir(), UserDir.expected_dir()]
