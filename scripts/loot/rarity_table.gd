@@ -50,7 +50,7 @@ func multiplier(rarity_id: String) -> float:
 
 func color(rarity_id: String) -> Color:
 	var r := find(rarity_id)
-	return r.color if r != null else Color.WHITE
+	return Accessibility.rarity_color(rarity_id, r.color if r != null else Color.WHITE)  # step 76
 
 
 func display_name(rarity_id: String) -> String:

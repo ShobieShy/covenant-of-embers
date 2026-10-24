@@ -63,7 +63,7 @@ func display_name(e: Element) -> String:
 
 func color(e: Element) -> Color:
 	var d := def(e)
-	return d.color if d != null else Color.WHITE
+	return Accessibility.element_color(e, d.color if d != null else Color.WHITE)  # step 76
 
 
 func def(e: Element) -> ElementDef:

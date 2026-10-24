@@ -38,6 +38,9 @@ func _on_line(sp: String, t: String) -> void:
 	visible = true
 	speaker_label.text = sp
 	text_label.text = t
+	text_label.visible = Accessibility.subtitles  # step 76
+	text_label.add_theme_font_size_override("font_size", Accessibility.font_size())
+	speaker_label.add_theme_font_size_override("font_size", Accessibility.font_size())
 	_clear_choices()
 
 

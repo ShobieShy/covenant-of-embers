@@ -39,7 +39,7 @@ func _init() -> void:
 		action_buttons[a] = b
 	var opts := VBoxContainer.new()
 	h.add_child(opts)
-	for o in ["invert_y", "focus_toggle", "crouch_toggle", "reduced_motion"]:
+	for o in ["invert_y", "focus_toggle", "crouch_toggle", "reduced_motion", "subtitles"]:
 		var c := CheckBox.new()
 		c.text = o.capitalize()
 		c.toggled.connect(func(v): set_option(o, v))
@@ -51,7 +51,8 @@ func _init() -> void:
 		["head_bob", 0.0, 1.0, 0.1],
 		["master_volume", 0.0, 1.0, 0.05],
 		["sfx_volume", 0.0, 1.0, 0.05],
-		["music_volume", 0.0, 1.0, 0.05]
+		["music_volume", 0.0, 1.0, 0.05],
+		["subtitle_scale", 0.75, 2.0, 0.25]
 	]:
 		var l := Label.new()
 		l.text = String(o[0]).capitalize()
@@ -64,6 +65,12 @@ func _init() -> void:
 		sl.value_changed.connect(func(v): set_option(o[0], v))
 		opts.add_child(sl)
 		controls[o[0]] = sl
+	var cb := OptionButton.new()  # step 76
+	for n in Accessibility.MODE_NAMES:
+		cb.add_item("Colour-blind: " + n)
+	cb.item_selected.connect(func(i): set_option("colorblind", i))
+	opts.add_child(cb)
+	controls["colorblind"] = cb
 	var back := Button.new()
 	back.text = "Back"
 	back.pressed.connect(close)
@@ -96,6 +103,8 @@ func refresh() -> void:
 		var c: Control = controls[o]
 		if c is CheckBox:
 			(c as CheckBox).set_pressed_no_signal(settings.get(o))
+		elif c is OptionButton:
+			(c as OptionButton).select(settings.get(o))
 		else:
 			(c as Range).set_value_no_signal(settings.get(o))
 

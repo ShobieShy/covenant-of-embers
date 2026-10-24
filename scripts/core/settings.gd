@@ -22,6 +22,9 @@ var aim_sensitivity := 1.0
 var master_volume := 1.0  ## step 37 buses
 var sfx_volume := 1.0
 var music_volume := 1.0
+var colorblind := 0  ## step 76: Accessibility.Mode
+var subtitles := true
+var subtitle_scale := 1.0
 
 
 static func rebindable() -> Array[StringName]:
@@ -91,6 +94,9 @@ func apply_input_map() -> void:
 
 
 func apply_to(p: Player) -> void:
+	Accessibility.colorblind = clampi(colorblind, 0, Accessibility.MODE_NAMES.size() - 1) as Accessibility.Mode
+	Accessibility.subtitles = subtitles
+	Accessibility.subtitle_scale = subtitle_scale
 	if p == null:
 		return
 	p.invert_y = invert_y
@@ -128,6 +134,8 @@ static func load_from(path := PATH) -> Settings:
 	s.hip_fov = clampf(s.hip_fov, 60.0, 110.0)
 	s.aim_sensitivity = clampf(s.aim_sensitivity, 0.1, 5.0)
 	s.head_bob = clampf(s.head_bob, 0.0, 1.0)
+	s.colorblind = clampi(int(s.colorblind), 0, Accessibility.MODE_NAMES.size() - 1)
+	s.subtitle_scale = clampf(s.subtitle_scale, 0.75, 2.0)
 	return s
 
 
@@ -142,5 +150,8 @@ func _options() -> PackedStringArray:
 		"aim_sensitivity",
 		"master_volume",
 		"sfx_volume",
-		"music_volume"
+		"music_volume",
+		"colorblind",
+		"subtitles",
+		"subtitle_scale"
 	]
