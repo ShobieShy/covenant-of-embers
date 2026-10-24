@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 43,
-  "last_commit": "f5bd065",
+  "steps_done": 44,
+  "last_commit": "4c7a1e9",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -445,6 +445,16 @@
         "tests": 241
       },
       "commit": "f5bd065"
+    },
+    {
+      "time": "2026-10-24T05:03:46-05:00",
+      "step": 44,
+      "type": "build",
+      "summary": "EM2 codes carry socketed gems, consecrations and loose gems; EM1 codes unchanged",
+      "plan_changes": {
+        "tests": 246
+      },
+      "commit": "4c7a1e9"
     }
   ],
   "completed_steps": [
@@ -490,6 +500,7 @@
     40,
     41,
     42,
+    44,
     83
   ]
 }

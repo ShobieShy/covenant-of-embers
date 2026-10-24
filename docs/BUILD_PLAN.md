@@ -374,9 +374,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_balance.gd: simulated TTK for starter staff vs Gnawer/Heap/Warden within target bands; headless playtest still PASS.
 - Needs ShobieShy: Q9 (lower Heap HP vs raise starter damage)
 
-**44. Item codes v2: gems + consecrations**
+**44. Item codes v2: gems + consecrations** ✅ `4c7a1e9`
 - Does: Bump Ember Mark code version (EM2-) to encode socketed gems and consecrations; EM1 codes still decode (migration); save files re-encode on load.
 - Done: test_item_codes.gd: EM2 round-trip with gems+consecration, EM1 decodes unchanged, save round-trip keeps them.
+- Result: PASS (246 tests + headless playtest)
 
 **45. Item cards show gems + consecrations**
 - Does: CompareCard/inventory/station screens list socketed gems (element colour) and the consecration text and delta lines.
