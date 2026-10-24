@@ -536,7 +536,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_audio.gd: streams load, licence lint passes, crossfade on events.
 - Needs ShobieShy: Q10 (Bible's Music Overview is empty: style/source)
 
-**75. Art pass: Midden + Breach materials**
+**75. Art pass: Midden + Breach materials** ✅ `4ff0a82`
 - Does: Replace greybox CSG with free-licensed/Magewar textures and props, Bible-style palette (step 41 palette note).
 - Done: asset licence lint OK; screenshots in playtest/; perf ≥ 60 fps on smoke.
 

@@ -6,7 +6,7 @@
   "next_step": 43,
   "total_steps": 93,
   "steps_done": 61,
-  "last_commit": "8f5df31",
+  "last_commit": "4ff0a82",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -613,6 +613,14 @@
       "summary": "Breach layout: 3 room encounters, 2-lever switch gate, arena mini-boss/boss, vault; bot routes it",
       "tests": "291 tests + playtest PASS",
       "commit": "8f5df31"
+    },
+    {
+      "time": "2026-10-24T06:28:57-05:00",
+      "step": 75,
+      "type": "build",
+      "summary": "Art pass: CC0 ambientCG triplanar textures (Midden, Breach)",
+      "tests": "test_level tint/normal/triplanar; toml_to_scene self-test; check_assets; 291 tests",
+      "commit": "4ff0a82"
     }
   ],
   "completed_steps": [
@@ -663,6 +671,7 @@
     46,
     47,
     48,
+    75,
     83,
     84
   ]
