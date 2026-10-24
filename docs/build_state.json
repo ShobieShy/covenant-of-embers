@@ -4,7 +4,7 @@
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
   "next_step": 43,
-  "total_steps": 82,
+  "total_steps": 93,
   "steps_done": 42,
   "last_commit": "d223d16",
   "history": [
@@ -425,6 +425,15 @@
       "summary": "Bible + Magewar Storyline + PLAN gap review; appended steps 43-82 (slice follow-ups, Light/Dark, enemies/Filth, gold/vendors, story/hub/quests, progression, audio/art/accessibility, co-op, Dungeon 1). 12 open questions for ShobieShy; marked steps wait for answers.",
       "plan_changes": [
         "total_steps 42 -> 82"
+      ]
+    },
+    {
+      "time": "2026-10-24T04:50:00-05:00",
+      "step": null,
+      "type": "plan",
+      "summary": "Added steps 83-93: cross-platform (paths/saves, icon/version, packaging, input/display, Windows playtest) and co-op extras (direct IP/UPnP, NAT/invites, Win<->Linux, co-op saves, desync tests, co-op playtest). Q13-Q16 added; overlaps with 42/49/77-82 noted.",
+      "plan_changes": [
+        "total_steps 82 -> 93"
       ]
     }
   ]

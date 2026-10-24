@@ -573,3 +573,76 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - **Q10 Music**: style and source (free CC0 tracks, Magewar's own, or commissioned later)?
 - **Q11 Skill trees**: PLAN's four Callings or a smaller Magewar-style basic-skills set?
 - **Q12 Growth**: Summoned ×1.5 XP multiplier (storyline) or PLAN's Resolve catch-up?
+
+## Phase P/Q – Cross-platform + co-op additions (planned 2026-10-24)
+
+### Phase P – Cross-platform (Windows + Linux)
+
+**83. Per-OS paths, save dir + file safety**
+- Does: Set application/config/use_custom_user_dir + name so saves/settings land in %APPDATA%\Covenant of Embers and ~/.local/share/covenant-of-embers; atomic save (write temp then rename, works on NTFS); case-sensitive res:// path lint (Windows hides wrong-case paths, Linux export breaks).
+- Done: test_save.gd: atomic write survives interrupted temp; asset lint fails on case-mismatched paths; OS.get_user_data_dir() matches expected per OS.
+
+**84. App icon, version + Windows metadata**
+- Does: Game icon (.png + .ico), project version shown in menu, Windows export file/product version + company fields (rcedit via Godot), Linux .desktop file + icon.
+- Done: export.sh: Windows exe has icon/version resources (checked under wine or by resource dump); menu shows version string.
+
+**85. Release packaging** ⏸ Needs ShobieShy
+- Does: tools/package.sh: Linux .tar.gz (binary + .desktop + icon + LICENSE/credits incl. Magewar credit) and Windows .zip (portable, no installer); optional Inno Setup installer left as follow-up; checksums.
+- Done: package.sh produces both archives; unpack + run --seconds 2 green (Windows under WINE_SMOKE).
+- Needs ShobieShy: Q13 (zip only, or also a Windows installer / Steam later?)
+
+**86. Input and display differences per OS**
+- Does: Check XInput/SDL gamepad names on Windows vs Linux map to the same actions (step 77), mouse capture/raw input, Alt+Tab/fullscreen modes, DPI scaling, Vulkan → D3D12/OpenGL fallback renderer setting.
+- Done: test_keybinds.gd: joypad mappings OS-agnostic; settings expose renderer fallback; manual checklist in playtest/.
+
+**87. Windows-native playtest** ⏸ Needs ShobieShy
+- Does: Run the exported .exe on a real Windows machine (not just wine): autoplay + UI smoke, screenshots, perf; fix Windows-only bugs.
+- Done: autoplay PASS on Windows, 0 errors in log, issues list closed or deferred.
+- Needs ShobieShy: Needs a Windows PC/VM from ShobieShy (Q14)
+
+### Phase Q – Co-op beyond steps 78–80
+
+**88. Direct IP connect + port handling** ⏸ Needs ShobieShy
+- Does: Host/Join by IP:port in the lobby UI (default UDP port, configurable), clear errors for timeout/refused/version mismatch, Windows firewall prompt note, UPnP port-mapping attempt (Godot UPNP) with fallback message.
+- Done: test_net.gd: join with wrong version is rejected cleanly; UPNP failure falls back without crash.
+- Needs ShobieShy: Q7
+
+**89. Invite codes / relay (NAT traversal)** ⏸ Needs ShobieShy
+- Does: Join without port forwarding: invite codes via a relay or Steam/Epic lobbies, or document VPN (Tailscale/ZeroTier) as the supported path.
+- Done: two peers behind NAT join by code (manual), or docs list supported path.
+- Needs ShobieShy: Q7 + Q15 (relay service / Steam vs direct IP + VPN only)
+
+**90. Cross-platform co-op (Windows ↔ Linux)** ⏸ Needs ShobieShy
+- Does: Same build version gate on both OSes; deterministic data (no float/locale/path-dependent IDs, item codes identical); Windows host + Linux client and reverse.
+- Done: test_net.gd: item codes/loot seeds identical across export targets; manual Win↔Linux session PASS.
+- Needs ShobieShy: Q7
+
+**91. Co-op saves + host leaving** ⏸ Needs ShobieShy
+- Does: Each player keeps their own character save (loot instanced); world/quest progress owned by host; on host disconnect clients return to menu with their character saved (host migration only if Q16 says so).
+- Done: test_net.gd: client character persists after host quits; progress flags merged per rule.
+- Needs ShobieShy: Q7 + Q16 (host migration or just safe exit; whose quest progress counts)
+
+**92. Desync + latency tests** ⏸ Needs ShobieShy
+- Does: Headless 2–4 peer test harness with simulated latency/packet loss; state hash checks for enemies, HP, loot; client prediction for own movement/casting.
+- Done: test_net_desync.gd: hashes match after 60 s scripted fight at 150 ms/2 % loss.
+- Needs ShobieShy: Q7
+
+**93. Co-op playtest** ⏸ Needs ShobieShy
+- Does: Scripted 2-bot co-op run of the slice (host + client, one Windows under wine/real Windows), then a manual session with a friend.
+- Done: co-op autoplay PASS, manual issue list closed or deferred.
+- Needs ShobieShy: Q7
+
+### Overlaps / conflicts with existing steps
+- Step 42 (CI breadth) already builds Linux + Windows exports and wine smoke; 84–85 extend it (icon/version/packaging) and 87 replaces wine-only checking with a real Windows run.
+- Step 77 (Controller support) overlaps 86; 86 only covers OS differences and runs after 77.
+- Step 78 (ENet host/join) overlaps 88: 78 = basic connect + lobby, 88 = IP UI, errors, version gate, UPnP. Build 88 right after 78.
+- Step 79 (instanced loot) + 91: 91 defines save ownership that 79 assumes; decide Q16 before 79.
+- Step 80 (revive + party scaling) unchanged; 92–93 test 78–80.
+- Step 82 (Playtest pass 3 + CI) should run after 87; consider moving package.sh into its CI job.
+- Step 49 (save slots) must use 83's per-OS dir + atomic write; build 83 before 49 or patch 49.
+
+### Open questions (added)
+- **Q13 Packaging**: Windows zip only, or also an installer / Steam/itch page later?
+- **Q14 Windows test machine**: is there a Windows PC or VM to playtest on?
+- **Q15 NAT**: relay/invite codes (Steam or a hosted relay) or direct IP + VPN (Tailscale/ZeroTier) only?
+- **Q16 Co-op progress**: host migration, or just safe exit; does quest progress count for clients?
