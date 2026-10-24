@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 33,
+  "next_step": 34,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -37,9 +37,10 @@
     29,
     30,
     31,
-    32
+    32,
+    33
   ],
-  "last_commit": "2184251",
+  "last_commit": "5d04e8d",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -328,6 +329,16 @@
         "Step 32: SettingsUi is not reachable in game yet; step 39 opens it from the main/pause menu. Volume values are stored now and applied to buses in step 37."
       ],
       "commit": "2184251"
+    },
+    {
+      "time": "2026-10-24T03:37:08-05:00",
+      "step": 33,
+      "type": "build",
+      "summary": "Breach slice layout. Magewar check: no dungeon room in Magewar (boss arena = landfill ring); kept its 4 m walls / 4 m entrance scale. 221 tests green.",
+      "plan_changes": [
+        "Step 33: dais is 0.2 m because the nav agent climbs 0.25 m. Single [waves] block per level is enough for this one-arena slice; [[encounter]] deferred."
+      ],
+      "commit": "5d04e8d"
     }
   ]
 }

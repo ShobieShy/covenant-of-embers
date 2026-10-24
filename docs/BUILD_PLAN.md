@@ -294,10 +294,11 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 10 notes): slot_1/slot_2 and the wheel actions `quickslot_prev_wieldable`/`quickslot_next_wieldable` are in PlayerInput.ACTIONS and rebindable (mouse-button events too); the reduced-motion option already zeroes CameraFeel recoil + shake.
 - Result: PASS — 219 tests (test_keybinds.gd 3). scripts/core/settings.gd = `Settings` (user://keybinds.cfg via ConfigFile: rebinds stored as {key}/{mouse} lists, invert-Y, hip FOV 60-110, focus/crouch hold-or-toggle, reduced motion, head bob 0-1 (Cogito presets 0/0.1/0.7/1), aim sensitivity (RAW_LOOK = 1/0.6784), volumes for step 37); scripts/ui/settings_ui.gd = `SettingsUi` (click a row, press a key/mouse button; Esc cancels; every change saves + applies). Player gained invert_y, aim_sensitivity, focus_toggle/crouch_toggle latches, set_hip_fov. main loads + applies at spawn.
 
-**33. Breach room slice: layout**
+**33. Breach room slice: layout** ✅ `5d04e8d`
 - Does: Breach room scene with entrance, arena, vault door.
 - Does (step 14 notes): Breach encounters = the Midden format: `[[spawn_point]]` markers, `[waves]` trigger (centre + radius) and `[[wave]] enemies = [{ enemy, count, at }]` (toml_to_scene.py validates ids against data/enemies, ring spots (1.5 m) on box surfaces); run them with `EnemySpawner.setup(level, player)` (main.gd). Several rooms need several triggers → extend `[waves]` to named encounters (`[[encounter]]` with its own trigger + waves) or one EnemySpawner per room; doors could close on `wave_started` and open on `waves_completed`. Spawn points must be reachable on the baked navmesh (test it).
 - Done: test_breach.gd: scene loads, navmesh baked, spawns valid.
+- Result: PASS — 221 tests (test_breach.gd 2). data/levels/breach_slice.toml -> scenes/levels/breach.tscn (root BreachSlice; toml_to_scene now names the root from the level id, Midden unchanged): south entrance corridor (4 m), 24 x 24 m arena with 4 pillars and a 0.2 m boss dais, vault room behind a 4 m `vault_door` wall box; spawn points boss_dais / west_wing / east_wing / vault_chest; 2 waves (gnawers, heap). Test: navmesh baked, arena spawns path-reachable from the start, vault sealed while the door stands.
 
 **34. Mini-boss (2 phases)**
 - Does: Two-phase mini-boss state machine.
