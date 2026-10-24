@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 60,
-  "last_commit": "9f96598",
+  "steps_done": 61,
+  "last_commit": "7c13e1b",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -589,6 +589,14 @@
       "summary": "Gamepad: SDL default pad events on every action (sticks/triggers/buttons), right-stick look, pad rebinding that keeps keyboard binds (and vice versa), pad capture in settings UI, focus_first on every menu; 4 new test_keybinds tests",
       "tests": "285 tests",
       "commit": "9f96598"
+    },
+    {
+      "time": "2026-10-24T06:04-05:00",
+      "step": 86,
+      "type": "build",
+      "summary": "PlatformDisplay: renderer choice (auto/vulkan/d3d12/opengl3) written to override.cfg, explicit fallback_to_* + hidpi, window modes, DPI-aware UI scale, Alt+Tab releases mouse; OS-agnostic SDL pad mapping test; playtest/OS_CHECKLIST.md",
+      "tests": "287 tests",
+      "commit": "7c13e1b"
     }
   ],
   "completed_steps": [

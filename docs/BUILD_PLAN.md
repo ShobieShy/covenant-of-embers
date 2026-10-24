@@ -609,9 +609,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: package.sh produces both archives; unpack + run --seconds 2 green (Windows under WINE_SMOKE).
 - Needs ShobieShy: Q13 (zip only, or also a Windows installer / Steam later?)
 
-**86. Input and display differences per OS**
+**86. Input and display differences per OS** ✅ `7c13e1b`
 - Does: Check XInput/SDL gamepad names on Windows vs Linux map to the same actions (step 77), mouse capture/raw input, Alt+Tab/fullscreen modes, DPI scaling, Vulkan → D3D12/OpenGL fallback renderer setting.
 - Done: test_keybinds.gd: joypad mappings OS-agnostic; settings expose renderer fallback; manual checklist in playtest/.
+- Result: PASS (287 tests + headless playtest)
 
 **87. Windows-native playtest** ⏸ Needs ShobieShy
 - Does: Run the exported .exe on a real Windows machine (not just wine): autoplay + UI smoke, screenshots, perf; fix Windows-only bugs.
