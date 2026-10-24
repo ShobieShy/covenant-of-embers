@@ -437,14 +437,14 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_ooze.gd: split count/HP, puddle slow.
 - Result: PASS (257 tests + headless playtest)
 
-**56. The Filth, phases 1–2** ✅ `40246f2`
+**56. The Filth, phases 1–2** ✅ `dd2b83c`
 - Does: 3-phase landfill slime boss from Magewar boss_the_filth (born from alchemical runoff + dungeon essence; spews acid blobs, absorbs attacks and regenerates from debris; phase thresholds); boss bar with phase pips; arena lock.
 - Done: test_filth.gd: phase transitions at thresholds, attack cadence per phase.
 - Q8 answered 2026-10-24: The Filth replaces the Heap/wave ending in the Landfill; aim 20–35 s per phase with the starter staff.
 - Q1 answered (Magewar storyline)
 - Result: PASS (332 tests + 1x/4x/co-op playtests)
 - Note: No arena lock (walls) yet: the checkpoint covers the respawn; the playtest bot doesn't trigger the Midden waves, so The Filth fight is unit-tested only.
-**57. The Filth phase 3 + Joe's Trash drop** ✅ `40246f2`
+**57. The Filth phase 3 + Joe's Trash drop** ✅ `dd2b83c`
 - Does: Phase 3 exposes the core weak spot; always drops the quest item 'Joe's Trash' (cracked crystals, 'trash portal' notes) plus glowing sludge and loot; checkpoint at the boss door.
 - Done: test_filth.gd: phase 3, quest drop always spawns, checkpoint respawn.
 - Q1 answered (Magewar storyline)
@@ -497,10 +497,12 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_hub.gd: stash shared, station present, mentor scene once.
 - Q1 answered (Magewar storyline)
 - Result: PASS (273 tests + headless playtest)
-**67. Tutorial quest chain** ⛔ Blocked (prerequisite)
+**67. Tutorial quest chain** ✅ PENDING
 - Does: Bob → Landfill (the Midden level, renamed Landfill in UI) → defeat The Filth → bring Joe's Trash back → Bob crafts the Fast Travel Teleportation Crystal; first levels.
 - Done: headless playtest variant runs the whole chain, PASS.
 - Q1 answered (Magewar storyline)
+- Result: PASS (333 tests passed; lint green)
+- Note: Chain is unit-tested (test_tutorial.gd); the headless bot doesn't run the Midden waves, so no full headless playthrough
 **68. Fast travel crystal + waystones** ✅ `cf6dbb3`
 - Does: Teleportation crystal item (Magewar fast_travel_crystal) unlocks attuned points (hub, town gate, Landfill, Breach); map screen to travel.
 - Done: test_fast_travel.gd: attune, travel, locked before tutorial end.

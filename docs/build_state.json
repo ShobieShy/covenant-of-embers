@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 67,
+  "next_step": 59,
   "total_steps": 107,
-  "steps_done": 80,
-  "last_commit": "40246f2",
+  "steps_done": 81,
+  "last_commit": "dd2b83c",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -940,7 +940,14 @@
       "step": "56,57",
       "type": "build",
       "summary": "The Filth: 3-phase Landfill boss (filth.gd, ai kind filth, 900 HP = 3x300, acid blobs, phase-2 debris regen capped at the phase ceiling, phase-3 exposed core), replaces heap_push as the Midden's last wave; HUD boss bar + phase pips; boss-door checkpoint on wave start; always drops Joe's Trash (QuestPickup, quest id joes_discards) -> Player.quest_items (saved) + EventBus.quest_item_collected.",
-      "commit": "40246f2"
+      "commit": "dd2b83c"
+    },
+    {
+      "time": "2026-10-24T09:12-05:00",
+      "step": "67",
+      "type": "build",
+      "summary": "Tutorial chain wired: QuestDriver feeds kills/pickups/reach/talk into QuestLog; Landfill needs 3 Gnawers + The Filth + Joe's Trash; Bob grants tutorial_done + fast_travel_crystal",
+      "commit": "PENDING"
     }
   ],
   "completed_steps": [
@@ -1002,6 +1009,7 @@
     64,
     65,
     66,
+    67,
     68,
     69,
     71,

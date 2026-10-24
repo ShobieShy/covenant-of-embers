@@ -41,16 +41,22 @@ text = "Clear the Gnawers"
 
 [[objective]]
 quest = "the_landfill"
+kind = "kill"
+target = "the_filth"
+text = "Defeat The Filth"
+
+[[objective]]
+quest = "the_landfill"
 kind = "collect"
 target = "joes_discards"
-text = "Recover Joe's discarded experiments"
+text = "Pick up Joe's Trash"
 
 [[quest]]
 id = "report_to_bob"
 title = "Report to Bob"
 auto_start_when = ["filth_defeated"]
 reward_xp = 50
-reward_flags = ["tutorial_done"]
+reward_flags = ["tutorial_done", "fast_travel_crystal"]  # step 67: Bob crafts the crystal
 reward_clue = "fracture_deliberate"
 
 [[objective]]

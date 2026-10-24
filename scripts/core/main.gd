@@ -15,6 +15,10 @@ var gates: Array[LevelGate] = []  # step 65: every travel gate here (level [[exi
 var npcs: Array[Npc] = []  # step 65: level [[npc]]s
 var story_flags := StoryFlags.new()
 var dialogue: DialogueRunner
+var quests: QuestLog  # step 67: the tutorial chain (saved in progress["quests"])
+var quest_driver: QuestDriver
+var quest_ui: QuestTrackerUI
+var _loaded_quests := {}
 var dialogue_ui: DialogueUI
 var stash: Stash  # step 66: the Old Oak's shared stash (own file, every slot)
 var mentor_played := false
@@ -204,9 +208,11 @@ func _setup_flow(player: Player) -> void:
 		else:
 			load_warnings = SaveGame.apply(player, r["data"])
 			story_flags.from_dict((r["data"] as Dictionary).get("progress", {}).get("flags", {}))
+			_loaded_quests = (r["data"] as Dictionary).get("progress", {}).get("quests", {})
 			if breach and (r["data"] as Dictionary).get("progress", {}).get("vault_open", false):
 				breach.restore_open()   # step 47: rooms cleared, gate + vault stay open
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
+	_setup_quests(player, here)
 	if here == "old_oak":
 		_setup_hub(player)
 	_setup_fast_travel(player, here)
@@ -271,6 +277,14 @@ func _setup_hub(player: Player) -> void:
 	stash = Stash.load_shared()
 	_ensure_dialogue()
 	mentor_played = MentorArrival.play(story_flags, player, dialogue, self, player.spawn_feet + Vector3(0, 0, -3))
+	if story_flags.has(MentorArrival.FLAG):  # step 67: Bob stays in the Oak to report back to
+		var bob := Npc.new("Bob")
+		bob.name = "Npc_Bob"
+		bob.player = player
+		add_child(bob)
+		bob.global_position = player.spawn_feet + Vector3(1.5, 0, -3)
+		bob.talked.connect(talk_to)
+		npcs.append(bob)
 
 ## Step 68: this level's waystone (if it has a point) + the crystal's map screen.
 func _setup_fast_travel(player: Player, here: String) -> void:
@@ -323,7 +337,29 @@ func respec_skills() -> int:
 	return player.respec_skills()
 
 func talk_to(speaker: String) -> bool:
-	return dialogue != null and not dialogue.active and dialogue.start(speaker)
+	var ok := dialogue != null and not dialogue.active and dialogue.start(speaker)
+	if ok and quest_driver:
+		quest_driver.talked(speaker)  # step 67
+	return ok
+
+
+## Step 67: the quest log (loaded from the save), its driver and the on-screen tracker;
+## entering this level counts as "reach".
+func _setup_quests(player: Player, here: String) -> void:
+	quests = QuestLog.create(story_flags)
+	quests.player = player
+	if not _loaded_quests.is_empty():
+		quests.from_dict(_loaded_quests)
+	quests.check_auto_start()
+	quest_driver = QuestDriver.make(quests)
+	add_child(quest_driver)
+	var layer := CanvasLayer.new()
+	layer.name = "QuestLayer"
+	add_child(layer)
+	quest_ui = QuestTrackerUI.new()
+	layer.add_child(quest_ui)
+	quest_ui.bind(quests)
+	quest_driver.reached(here)
 
 ## Step 79: the host simulates; clients mirror its enemies and send their hits.
 ## Step 57: The Filth's wave moves the player's respawn point to the boss door.
@@ -365,7 +401,7 @@ func _on_coop_ended(reason: String) -> void:
 
 func progress() -> Dictionary:
 	return {"level_id": GameFlow.id_of($Level), "vault_open": breach.open if breach else false,
-		"flags": story_flags.to_dict()}
+		"flags": story_flags.to_dict(), "quests": quests.to_dict() if quests else {}}
 
 func save_game() -> Error:
 	var player := get_node_or_null("Player") as Player

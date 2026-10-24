@@ -39,6 +39,7 @@ func test_progress_and_rewards() -> void:
 	q.notify("kill", "gnawer", 2)
 	check(q.tracker_text().contains("Clear the Gnawers (2/3)"), "tracker 2/3: %s" % q.tracker_text())
 	q.notify("kill", "gnawer")
+	q.notify("kill", "the_filth")  # step 67
 	q.notify("collect", "joes_discards")
 	check(q.state("the_landfill") == "done" and f.has("filth_defeated"), "landfill done")
 	check(q.state("report_to_bob") == "active", "next quest auto-starts")
