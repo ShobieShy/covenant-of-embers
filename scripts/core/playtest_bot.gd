@@ -205,10 +205,38 @@ func nearest_pickup() -> Node3D:
 
 ## Walk to (or fight) `e`: aim at its body centre, fire, close in beyond 10 m; with no clear
 ## line (a pillar in the way) walk towards it on the navmesh instead.
+## Step 96: a target that takes no hit for STALL_S while we shoot at it (seen at --time-scale 4:
+## an idle Breach wing Gnawer 8.9 m away ate 400 s of misses) gets closed in on, shooting.
+const STALL_S := 4.0
+## Step 96: physics ticks; fire-button edges alternate on this, not on int(t * 60) (at
+## --time-scale 4 that only ever saw even numbers, so the bot never re-pressed and stopped casting).
+var _tick := 0
+var _fight_target: Enemy = null
+var _fight_hits := 0
+var _fight_stall := 0.0
+
+
+## Step 96: at --time-scale N the player covers ~1/N of the ground per game second (seen:
+## 1 m/s instead of 4 at 4x), so walking budgets scale with it.
+func _walk_scale() -> float:
+	return maxf(1.0, Engine.time_scale)
+
+
 func fight(e: Enemy) -> void:
+	if e != _fight_target or e.hits != _fight_hits:
+		_fight_target = e
+		_fight_hits = e.hits
+		_fight_stall = 0.0
+	_fight_stall += get_physics_process_delta_time()
 	var aim := e.global_position + Vector3(0, e.def.size.y * 0.5, 0)
 	if not has_line_to(aim):
 		walk_to(e.global_position)
+		return
+	if Engine.time_scale > 1.0 and _fight_stall > STALL_S and flat_distance(e.global_position) > 2.0:
+		walk_to(e.global_position, ["action_primary"])
+		look_at_point(aim)
+		if _tick % 2 == 1:
+			_input = PlayerInput.hold(["forward", "action_primary"], ["action_primary"])
 		return
 	look_at_point(e.global_position + Vector3(0, e.def.size.y * 0.5, 0))
 	var held := ["action_primary"]
@@ -217,13 +245,18 @@ func fight(e: Enemy) -> void:
 	if player.mana.value < 5.0 and player.loadout.active == Loadout.Slot.STAFF:
 		_input = PlayerInput.hold(held, ["slot_2"])
 	else:
-		_input = PlayerInput.hold(held, ["action_primary"] if int(t * 60.0) % 2 == 0 else [])
+		_input = PlayerInput.hold(held, ["action_primary"] if _tick % 2 == 0 else [])
 
 
 ## Walk towards `at` along the level navmesh (straight when the map has no path).
 func has_line_to(at: Vector3) -> bool:
 	var q := PhysicsRayQueryParameters3D.create(player.eye_position(), at, 1)
 	return player.get_world_3d().direct_space_state.intersect_ray(q).is_empty()
+
+
+var _stuck_from := Vector3.ZERO
+var _stuck_s := 0.0
+var _unstick_s := 0.0
 
 
 func walk_to(at: Vector3, held: Array = []) -> void:
@@ -243,6 +276,21 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 			break
 	look_at_point(next + Vector3(0, 1.0, 0))
 	player.set_look(player.yaw, 0.0)
+	# Step 96: wedged (no 0.3 m of progress in 1.5 s): jump and sidestep for 0.6 s.
+	var dt := get_physics_process_delta_time()
+	if feet.distance_to(_stuck_from) > 0.3:
+		_stuck_from = feet
+		_stuck_s = 0.0
+	else:
+		_stuck_s += dt
+	if _stuck_s > 1.5:
+		_unstick_s = 0.6
+		_stuck_s = 0.0
+		_replan_left = 0.0
+	if _unstick_s > 0.0:
+		_unstick_s -= dt
+		_input = PlayerInput.hold(["forward", "right" if int(total_time / 3.0) % 2 == 0 else "left"] + held, ["jump"])
+		return
 	_input = PlayerInput.hold(["forward"] + held)
 
 
@@ -253,6 +301,7 @@ func flat_distance(at: Vector3) -> float:
 func _physics_process(delta: float) -> void:
 	if _done or player == null:
 		return
+	_tick += 1
 	if player.alive():
 		t += delta  # step 93: stage timers pause while down / respawning (co-op last stand)
 	total_time += delta
@@ -295,10 +344,10 @@ func _physics_process(delta: float) -> void:
 				_goto("midden_loot")
 		"midden_loot", "breach_loot":
 			var pk := nearest_pickup()
-			if pk and t < 20.0:
+			if pk and t < 20.0 * _walk_scale():
 				if pk.global_position.distance_to(player.eye_position()) < 2.5:
 					look_at_point(pk.global_position + Vector3(0, LootPickup.GEM_SIZE * 0.5, 0))
-					_input = PlayerInput.hold([], ["interact"] if int(t * 60.0) % 2 == 0 else [])
+					_input = PlayerInput.hold([], ["interact"] if _tick % 2 == 0 else [])
 				else:
 					walk_to(pk.global_position)
 			else:
@@ -312,7 +361,7 @@ func _physics_process(delta: float) -> void:
 			if st == null:
 				_finish(false, "no station in the Breach")
 				return
-			if not st.in_reach(player) and t < 60.0:
+			if not st.in_reach(player) and t < 60.0 * _walk_scale():
 				walk_to(st.global_position)
 			elif not st.in_reach(player):
 				_finish(false, "could not walk to the station (%.1f m)" % flat_distance(st.global_position))
@@ -337,9 +386,9 @@ func _physics_process(delta: float) -> void:
 				_finish(true)
 		"breach_chest":
 			var c: VaultChest = main.breach.chest
-			if not c.in_reach(player) and t < 60.0:
+			if not c.in_reach(player) and t < 60.0 * _walk_scale():
 				var front := c.global_position + c.global_transform.basis.z * 1.0
-				if flat_distance(front) < 1.0 or (t > 30.0 and flat_distance(c.global_position) < 8.0):
+				if flat_distance(front) < 1.0 or (t > 30.0 * _walk_scale() and flat_distance(c.global_position) < 8.0):
 					look_at_point(c.global_position + Vector3(0, 1.0, 0))  # last metres: straight in
 					player.set_look(player.yaw, 0.0)
 					_input = PlayerInput.hold(["forward"])
@@ -411,6 +460,12 @@ func _craft(st: AssemblyStation) -> void:
 		if not errs.is_empty():
 			tried.append("%s: %s" % [base.display_name(), errs[0]])
 			continue
+		if player.inventory.is_full():
+			# A long run can fill the backpack with parts; drop one this build won't use.
+			for it in looted:
+				if not parts.has(it):
+					player.inventory.remove(it)
+					break
 		if not player.unequip_wieldable_to_inventory(slot):
 			tried.append("%s: backpack full" % base.display_name())
 			continue
