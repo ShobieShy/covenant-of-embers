@@ -427,9 +427,10 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase I – Enemies and bosses
 
-**54. Ember Scorchling (ranged)**
+**54. Ember Scorchling (ranged)** ✅ `3f56747`
 - Does: Port Magewar enemy_ember_scorchling as a ranged Fire imp that lobs embers and flees when hurt (PLAN Cinderkin role).
 - Done: test_scorchling.gd: keeps range, projectile damage, flee under 30 %.
+- Result: PASS (253 tests + headless playtest)
 
 **55. Slime / Mire ooze (splitter)**
 - Does: Slime that splits into 2 smaller slimes on death or on Fire hits, leaves slowing puddles.

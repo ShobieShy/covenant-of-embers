@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 48,
-  "last_commit": "02c03de",
+  "steps_done": 49,
+  "last_commit": "3f56747",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -493,6 +493,14 @@
       "summary": "3 save slots (slot 1 = legacy save.json via SaveGame.slot_path), menu slot picker, New Run over an existing save asks to overwrite (ConfirmationDialog); scripted --start skips the prompt. test_flow: confirm + slot isolation.",
       "tests": "250 tests",
       "commit": "02c03de"
+    },
+    {
+      "time": "2026-10-24T05:22-05:00",
+      "step": 54,
+      "type": "build",
+      "summary": "Scorchling (Gnawer subclass, ai kind ranged): stops ~7 m, lobs simulated embers (12 m/s, 4.5 Fire, dodgeable), backs off inside 3 m, flees under 30 % HP. Magewar scorchling numbers kept; 40 HP/range/cooldown plan design. Not yet placed in a level (step 47 places it).",
+      "tests": "253 tests",
+      "commit": "3f56747"
     }
   ],
   "completed_steps": [
