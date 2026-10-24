@@ -263,6 +263,9 @@ func _physics_process(delta: float) -> void:
 	elif input_enabled and bot_input.is_valid():
 		tick(bot_input.call() as PlayerInput, delta)  # step 40: the playtest bot drives
 	elif input_enabled:
+		var stick := Gamepad.look_vector()  # step 77: right-stick look
+		if stick != Vector2.ZERO:
+			add_look_degrees(stick * Gamepad.LOOK_DEG_PER_SEC * delta)
 		var input := PlayerInput.from_input()
 		if _wheel > 0:
 			input.pressed[&"quickslot_next_wieldable"] = true
@@ -286,6 +289,11 @@ func spawn(feet: Vector3, yaw_rad: float) -> void:
 func add_look(dx_counts: float, dy_counts: float) -> void:
 	var r := deg_to_rad(tuning.look_deg_per_count) * focus.look_scale() * aim_sensitivity
 	set_look(yaw - dx_counts * r, pitch - dy_counts * r * (-1.0 if invert_y else 1.0))
+
+
+## Stick look in degrees (step 77): same focus scale / sensitivity / invert as the mouse.
+func add_look_degrees(d: Vector2) -> void:
+	add_look(d.x / tuning.look_deg_per_count, d.y / tuning.look_deg_per_count)
 
 
 func set_look(yaw_rad: float, pitch_rad: float) -> void:

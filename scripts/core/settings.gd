@@ -39,6 +39,11 @@ static func event_to_dict(e: InputEvent) -> Dictionary:
 		return {"key": int(k.physical_keycode if k.physical_keycode != 0 else k.keycode)}
 	if e is InputEventMouseButton:
 		return {"mouse": int((e as InputEventMouseButton).button_index)}
+	if e is InputEventJoypadButton:  # step 77
+		return {"joy": int((e as InputEventJoypadButton).button_index)}
+	if e is InputEventJoypadMotion:
+		var m := e as InputEventJoypadMotion
+		return {"axis": int(m.axis), "dir": 1 if m.axis_value >= 0.0 else -1}
 	return {}
 
 
@@ -51,6 +56,17 @@ static func dict_to_event(d: Dictionary) -> InputEvent:
 		var m := InputEventMouseButton.new()
 		m.button_index = int(d["mouse"])
 		return m
+	if d.has("joy"):
+		var j := InputEventJoypadButton.new()
+		j.button_index = int(d["joy"]) as JoyButton
+		j.device = -1  # any pad
+		return j
+	if d.has("axis"):
+		var x := InputEventJoypadMotion.new()
+		x.axis = int(d["axis"]) as JoyAxis
+		x.axis_value = 1.0 if int(d.get("dir", 1)) >= 0 else -1.0
+		x.device = -1
+		return x
 	return null
 
 
@@ -59,14 +75,21 @@ static func event_label(e: InputEvent) -> String:
 		return OS.get_keycode_string((e as InputEventKey).physical_keycode)
 	if e is InputEventMouseButton:
 		return "Mouse %d" % (e as InputEventMouseButton).button_index
+	if e is InputEventJoypadButton:
+		return "Pad %d" % (e as InputEventJoypadButton).button_index
+	if e is InputEventJoypadMotion:
+		var m := e as InputEventJoypadMotion
+		return "Axis %d%s" % [m.axis, "+" if m.axis_value >= 0.0 else "-"]
 	return "?"
 
 
-static func action_label(a: StringName) -> String:
+## Key/mouse labels by default; `pad` = the controller ones (step 77).
+static func action_label(a: StringName, pad := false) -> String:
 	var parts: PackedStringArray = []
 	if InputMap.has_action(a):
 		for e in InputMap.action_get_events(a):
-			parts.append(event_label(e))
+			if (e is InputEventJoypadButton or e is InputEventJoypadMotion) == pad:
+				parts.append(event_label(e))
 	return ", ".join(parts) if not parts.is_empty() else "(unbound)"
 
 
@@ -75,10 +98,19 @@ func rebind(action: StringName, e: InputEvent) -> bool:
 	var d := event_to_dict(e)
 	if d.is_empty() or not rebindable().has(action):
 		return false
-	bindings[action] = [d]
+	# step 77: a pad rebind replaces only the pad events, a key/mouse rebind only key/mouse.
+	var kept: Array = []
+	if InputMap.has_action(action):
+		for old in InputMap.action_get_events(action):
+			if Gamepad.is_pad(old) != Gamepad.is_pad(e):
+				kept.append(event_to_dict(old))
+	kept.append(d)
+	kept.sort_custom(func(x, y): return not (x.has("joy") or x.has("axis")) and (y.has("joy") or y.has("axis")))
+	bindings[action] = kept
 	if InputMap.has_action(action):
 		InputMap.action_erase_events(action)
-		InputMap.action_add_event(action, dict_to_event(d))
+		for k in kept:
+			InputMap.action_add_event(action, dict_to_event(k))
 	return true
 
 
@@ -91,6 +123,7 @@ func apply_input_map() -> void:
 			var e := dict_to_event(d)
 			if e:
 				InputMap.action_add_event(a, e)
+	Gamepad.install()  # step 77: an action saved before pads existed gets its default back
 
 
 func apply_to(p: Player) -> void:

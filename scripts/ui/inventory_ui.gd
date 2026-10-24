@@ -129,6 +129,7 @@ func open() -> void:
 	if DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	refresh()
+	Gamepad.focus_first(self)  # step 77
 
 
 func close() -> void:

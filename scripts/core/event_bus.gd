@@ -52,3 +52,7 @@ func announce_kill(enemy: Enemy, element: ElementTable.Element) -> void:
 func announce_player_damaged(player: Player, result: Damage.Result) -> void:
 	player_hits += 1
 	player_damaged.emit(player, result)
+
+
+func _ready() -> void:
+	Gamepad.install()  # step 77: default pad bindings on every action

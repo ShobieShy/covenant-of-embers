@@ -86,6 +86,7 @@ func setup(s: Settings, p: Player = null) -> void:
 func open() -> void:
 	visible = true
 	refresh()
+	Gamepad.focus_first(self)  # step 77
 
 
 func close() -> void:
@@ -99,6 +100,7 @@ func refresh() -> void:
 		return
 	for a in action_buttons:
 		action_buttons[a].text = "Press a key..." if a == listening else Settings.action_label(a)
+		action_buttons[a].tooltip_text = "Controller: " + Settings.action_label(a, true)
 	for o in controls:
 		var c: Control = controls[o]
 		if c is CheckBox:
@@ -128,7 +130,14 @@ func _commit() -> void:
 func _input(event: InputEvent) -> void:
 	if not visible or listening == &"":
 		return
-	if (event is InputEventKey or event is InputEventMouseButton) and event.is_pressed():
+	var pad_axis := event is InputEventJoypadMotion and absf((event as InputEventJoypadMotion).axis_value) > 0.6
+	if (
+		(
+			(event is InputEventKey or event is InputEventMouseButton or event is InputEventJoypadButton)
+			and event.is_pressed()
+		)
+		or pad_axis
+	):
 		get_viewport().set_input_as_handled()
 		if event is InputEventKey and (event as InputEventKey).physical_keycode == KEY_ESCAPE:
 			listening = &""

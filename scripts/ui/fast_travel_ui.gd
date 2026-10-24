@@ -47,6 +47,7 @@ func show_map(ft: FastTravel, here_point: String) -> void:
 		list.add_child(b)
 		buttons[p] = b
 	visible = true
+	Gamepad.focus_first(self)  # step 77
 
 
 func press(point: String) -> bool:
