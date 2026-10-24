@@ -60,6 +60,8 @@ func test_new_game_runs_intro() -> void:
 	check(g.intro != null and g.intro.current() == "summoning", "director runs the summoning")
 	check(p.loadout.wieldable(Loadout.Slot.STAFF) == null, "empty-handed until Bob")
 	check(GameFlow.intro_mode == "", "intro mode consumed")
+	check(g.save_game() == ERR_BUSY, "no saving mid-cinematic")
+	g.intro.cinematic.skip()
 	g.save_game()
 	g.free()
 	g = null

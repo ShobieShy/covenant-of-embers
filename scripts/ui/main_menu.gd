@@ -15,9 +15,7 @@ var settings_ui: SettingsUi
 var coop_menu: CoopMenu  ## step 88
 var _seconds := -1.0
 var _elapsed := 0.0
-var archetype_pick: OptionButton  ## step 73
-var name_edit: LineEdit
-var color_pick: ColorPickerButton
+var creator: CharacterCreator  ## step 73 / 111
 
 
 ## "v0.1.0" from application/config/version (step 84; also stamped into the Windows exe).
@@ -138,40 +136,14 @@ func _start_new() -> void:
 	GameFlow.new_run(get_tree(), GameFlow.intro_mode_from_args(OS.get_cmdline_user_args()))
 
 
-## Step 73: archetype picker + name + colour for a new run.
+## Step 73 / 111: the picker lives in CharacterCreator (the intro shows it again in-game).
 func _build_identity(v: VBoxContainer) -> void:
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	v.add_child(row)
-	archetype_pick = OptionButton.new()
-	for id in Archetype.IDS:
-		archetype_pick.add_item("%s (%s)" % [Archetype.label(id), Archetype.blurb(id)])
-	archetype_pick.item_selected.connect(_on_archetype)
-	row.add_child(archetype_pick)
-	color_pick = ColorPickerButton.new()
-	color_pick.custom_minimum_size = Vector2(40, 0)
-	color_pick.edit_alpha = false
-	color_pick.color = Archetype.default_color(Archetype.DEFAULT)
-	row.add_child(color_pick)
-	name_edit = LineEdit.new()
-	name_edit.placeholder_text = "Character name"
-	name_edit.max_length = Archetype.NAME_MAX
-	name_edit.text = "Ember"
-	v.add_child(name_edit)
-
-
-func _on_archetype(i: int) -> void:
-	color_pick.color = Archetype.default_color(Archetype.IDS[i])
+	creator = CharacterCreator.new()
+	v.add_child(creator)
 
 
 func identity() -> Dictionary:
-	if archetype_pick == null:
-		return {}
-	return {
-		"archetype": Archetype.IDS[maxi(0, archetype_pick.selected)],
-		"name": name_edit.text,
-		"color": color_pick.color,
-	}
+	return creator.identity() if creator else {}
 
 
 func select_slot(n: int) -> void:

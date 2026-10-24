@@ -259,8 +259,14 @@ func _setup_exits(player: Player, here: String) -> void:
 		add_child(g)
 		g.global_position = spots[i][1]
 		g.used.connect(travel)
+		g.blocked.connect(_on_gate_blocked)  # step 111
 		gates.append(g)
 	gate = gates[0]
+
+func _on_gate_blocked(text: String) -> void:
+	var hud := get_node_or_null("Hud")
+	if hud:
+		hud.show_hint(text)
 
 ## Step 65: level [[npc]]s become talkable Npcs wired to one DialogueRunner + DialogueUI.
 func _setup_npcs(player: Player) -> void:
@@ -547,6 +553,7 @@ func _start_intro(player: Player) -> void:
 	if mode == GameFlow.INTRO_PLAY:
 		IntroDirector.start(story_flags)
 		IntroDirector.strip_weapons(player)
+		player.inventory.gold = 0  # step 111: the Clerk hands over the 50 gold grant
 	elif mode == GameFlow.INTRO_SKIP:
 		IntroDirector.apply_skip(story_flags, player)
 

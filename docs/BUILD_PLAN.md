@@ -649,11 +649,11 @@ Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below;
 - Does: IntroDirector (scripts/story/intro_director.gd) owns the INTRO_PLAN beats 1-13 as `intro_beat:<id>` flags, drives Prologue/MentorArrival/QuestLog, emits beat_started; GameFlow.new_run starts in mage_association at beat 1; --skip-intro jumps to the end state.
 - Done: test_intro_director.gd: beats run strictly in order, flags/save round-trip, skip-intro end state matches beat 13.
 
-**110. Cinematic camera + letterbox + skip** ✅ PENDING
+**110. Cinematic camera + letterbox + skip** ✅ `46a52d8`
 - Does: CinematicCamera (2-4 eased keyframes), Letterbox bars, HUD hide, input freeze, hold-Esc 1 s skip that still applies the beat's flags; saving off during cinematics.
 - Done: test_cinematic.gd: path finishes, skip applies flags, input restored; headless playtest skips all.
 
-**111. Summoning + appraisal character creation**
+**111. Summoning + appraisal character creation** ✅ PENDING
 - Does: Beats 1-4: ritual-circle cinematic, CharacterCreator lifted out of main_menu as the appraisal-crystal readout, expulsion (Joe out the back door), the clerk grant (50 gold, clothes, permit); New Game skips the menu picker.
 - Done: test: identity applied from creator; grant flags/gold; front door opens only after the permit.
 

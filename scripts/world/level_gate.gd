@@ -4,12 +4,16 @@ extends Node3D
 ## Greybox: a glowing ember-coloured pillar with a label.
 
 signal used(target: String)
+signal blocked(text: String)  ## step 111: used while `requires` is unset
 
 const REACH := 2.5
 
 @export var target := "breach"
 var uses := 0
 var player: Player
+var requires := ""  ## step 111: a story flag that must be set before the gate works
+var locked_text := "Locked."
+var flags: StoryFlags
 
 
 func _init(t := "breach") -> void:
@@ -38,9 +42,17 @@ func in_reach(p: Player) -> bool:
 	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
 
 
-func use() -> void:
+func locked() -> bool:
+	return requires != "" and (flags == null or not flags.has(requires))
+
+
+func use() -> bool:
+	if locked():
+		blocked.emit(locked_text)
+		return false
 	uses += 1
 	used.emit(target)
+	return true
 
 
 func _unhandled_input(event: InputEvent) -> void:

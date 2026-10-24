@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 118,
-  "steps_done": 91,
-  "last_commit": "59f8e9c",
+  "steps_done": 92,
+  "last_commit": "46a52d8",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1038,6 +1038,13 @@
       "step": 110,
       "type": "build",
       "summary": "Cinematic: camera through shots, letterbox, caption, hold Esc 1 s to skip (host-only in co-op), no save/pause mid-cinematic, --shots grabs each shot; unit tests 371/371, playtests solo/4x/co-op PASS, lint green (also gdformat fix for test_intro_director)",
+      "commit": "46a52d8"
+    },
+    {
+      "time": "2026-10-24T10:35:41-05:00",
+      "step": 111,
+      "type": "build",
+      "summary": "Summoning cinematic, CharacterCreator (lifted from main_menu) as the appraisal readout, Joe's explanation + expulsion cinematic out the back door, Elder/Clerk/3 other Summoned NPCs, Clerk grant (50 gold + permit; clothes are flavour text only, no item yet), front door gated on permit_given; menu keeps the picker for skip runs and prefills the in-game creator; bot circles the Breach station when snagged; [tests] 373 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
       "commit": "PENDING"
     }
   ],
@@ -1132,7 +1139,8 @@
     93,
     108,
     109,
-    110
+    110,
+    111
   ],
   "deferred": [
     74,

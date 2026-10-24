@@ -7,7 +7,63 @@ id = "joe_summoning"
 speaker = "Crazy Joe"
 forbids = ["joe_met"]
 sets = ["joe_met"]
-lines = ["*mumbles incoherently* ...interdimensional echoes... forgotten gods...", "Ah! The ritual worked! You're actually here!", "I summoned you from beyond the veil! A true outsider... a real chance!", "...well, the appraisal crystal says you're 'underwhelming.' But I KNOW you have potential!", "The dungeons fractured ten years ago. Monsters everywhere. The barriers are failing.", "Unfortunately, my colleagues didn't appreciate my... initiative. They expelled me. 'Reckless,' they called it. ME! After three centuries!", "Check the landfill. Find what's causing it. Maybe it'll lead us to answers... and to the real culprits.", "Here, take these gold coins. Fifty. It's not much, but it'll keep you fed for a week.", "Oh, and they 'gave' you the Old Oak to live in. Edge of town. Big dead tree, can't miss it. Here's the residency permit."]
+lines = ["*mumbles incoherently* ...interdimensional echoes... forgotten gods...", "Ah! The ritual worked! You're actually here!", "I summoned you from beyond the veil! A true outsider... a real chance!", "Quick, the appraisal crystal! Let's see what you are."]
+
+# Step 111 (Q21): after the appraisal Joe explains, then the Elders march him out the back door.
+[[dialogue]]
+id = "joe_expulsion"
+speaker = "Crazy Joe"
+requires = ["identity_chosen"]
+forbids = ["joe_expelled"]
+lines = ["...well, the appraisal crystal says you're 'underwhelming.' But I KNOW you have potential!", "The dungeons fractured ten years ago. Monsters everywhere. The barriers are failing.", "Ah. The Elders. They don't appreciate my... initiative.", "Check the landfill. Find what's causing it. Maybe it'll lead us to answers... and to the real culprits."]
+
+[[dialogue]]
+id = "elder_verdict"
+speaker = "Elder"
+requires = ["joe_expelled"]
+lines = ["Joseph is expelled. 'Reckless' does not begin to cover it.", "The Summoned stay. The Association will... provide. See the Clerk."]
+repeats = ["See the Clerk, Summoned. We have nothing more to say to you.", "The back door is for staff. By order of the Elders."]
+
+[[dialogue]]
+id = "elder_hush"
+speaker = "Elder"
+lines = ["Silence. We are watching what Joseph has done."]
+
+# Step 111 (Q21): the government grant comes from a clerk.
+[[dialogue]]
+id = "clerk_grant"
+speaker = "Clerk"
+requires = ["joe_expelled"]
+forbids = ["permit_given"]
+sets = ["permit_given"]
+lines = ["Summoned? Form 7-B. Sign here. ...Or make a mark. Fine.", "By protocol: fifty gold. It's not much, but it'll keep you fed for a week.", "Rudimentary clothing, enchanted for minor durability. You're wearing it already. You're welcome.", "And residency in the Old Oak. Edge of town. Big dead tree, can't miss it. Here's the residency permit."]
+
+[[dialogue]]
+id = "clerk_idle"
+speaker = "Clerk"
+lines = ["Next! ...Oh. The front door is that way, Summoned."]
+repeats = ["Next! ...Oh. The front door is that way, Summoned.", "Forms. Always forms."]
+
+# Step 111 (Q23): in solo the other three Summoned are NPCs.
+[[dialogue]]
+id = "summoned_nerd"
+speaker = "Summoned Nerd"
+lines = ["This is just like an isekai. Except I'm level one and nobody gave me a cheat skill."]
+
+[[dialogue]]
+id = "summoned_gal"
+speaker = "Summoned Gal"
+lines = ["One second I'm at brunch, the next I'm in a wizard church. Cool. Totally cool."]
+
+[[dialogue]]
+id = "summoned_buff"
+speaker = "Summoned Buff"
+lines = ["The crystal said 'child-tier strength.' I bench two hundred. Something is wrong with that crystal."]
+
+[[dialogue]]
+id = "summoned_loli"
+speaker = "Summoned Loli"
+lines = ["I'm older than I look. Don't ask. Just... don't."]
 
 [[dialogue]]
 id = "joe_repeat"
