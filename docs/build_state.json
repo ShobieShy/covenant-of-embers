@@ -4,7 +4,7 @@
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
   "next_step": 0,
-  "total_steps": 118,
+  "total_steps": 134,
   "steps_done": 99,
   "last_commit": "478d626",
   "history": [
@@ -13,7 +13,7 @@
       "step": 1,
       "type": "engine-switch",
       "summary": "ShobieShy approved 'Yes, switch to Godot' (via Tex). C++20/Vulkan engine archived (branch archive/cpp-vulkan-engine at d07497b; files git-mv'd to archive/cpp-engine/, old plan/state in archive/cpp-engine/docs/). Old plan had steps 1-23 done of 56. New Godot plan: step 1 = Godot 4.7.2 project setup + headless test runner; steps 3-12 port the finished gameplay.",
-      "plan_changes": "BUILD_PLAN rewritten for Godot (merged UI renderer into HUD, audio engine+hookup, save format+load; removed cooker/CMake/Vulkan steps). ADR-0002 added; PLAN §23-25,27 engine parts updated.",
+      "plan_changes": "BUILD_PLAN rewritten for Godot (merged UI renderer into HUD, audio engine+hookup, save format+load; removed cooker/CMake/Vulkan steps). ADR-0002 added; PLAN \u00a723-25,27 engine parts updated.",
       "commit": "f199578"
     },
     {
@@ -124,8 +124,8 @@
       "time": "2026-10-23T21:13:56-05:00",
       "step": 15,
       "type": "build",
-      "summary": "Step 15 Rarity tiers + part model (Magewar): Rarity/RarityTable resources (rarities.tres = PLAN §30.2 = Magewar ItemRarity: names, colours, multipliers, weights, luck rule, seeded roll, validate/rebuild); WieldableInstance damage uses Rarity.multiplier (temp lookup removed, all tiers valid); WieldablePart gains description, type names, ignored_stats, full_description, load_part/list_ids, validate; tools/import_magewar_parts.py imports the 16 Magewar parts to resources/parts (--check in run_tests.sh). 143 tests green (9 new in test_rarity.gd).",
-      "plan_changes": "Step 16: Head gem slots 1/+1 Rare/+1 Primordial, non-Heads 0 (make() default 1 fixed there), exterior fire-rate rolls from Uncommon (Magewar), Magewar parts as reference/name source. Step 17: rarity = floor(mean part tier), wand Head kept, handling → swap speed. Step 18: RarityTable.roll(rng, luck). Step 21: patch RarityTable via copy+validate+rebuild. Step 28: Vigil via weights/luck. Step 29: rarity_color() tints. Step 30: full_description, grey out ignored_stats. Fixed: WieldableDef rejected Rare+ bases; part-type lists shared. Magewar mismatches logged: ignored stats in Magewar part data, Uncommon exterior rate, staff-only Head comment, global randf/negative weights.",
+      "summary": "Step 15 Rarity tiers + part model (Magewar): Rarity/RarityTable resources (rarities.tres = PLAN \u00a730.2 = Magewar ItemRarity: names, colours, multipliers, weights, luck rule, seeded roll, validate/rebuild); WieldableInstance damage uses Rarity.multiplier (temp lookup removed, all tiers valid); WieldablePart gains description, type names, ignored_stats, full_description, load_part/list_ids, validate; tools/import_magewar_parts.py imports the 16 Magewar parts to resources/parts (--check in run_tests.sh). 143 tests green (9 new in test_rarity.gd).",
+      "plan_changes": "Step 16: Head gem slots 1/+1 Rare/+1 Primordial, non-Heads 0 (make() default 1 fixed there), exterior fire-rate rolls from Uncommon (Magewar), Magewar parts as reference/name source. Step 17: rarity = floor(mean part tier), wand Head kept, handling \u2192 swap speed. Step 18: RarityTable.roll(rng, luck). Step 21: patch RarityTable via copy+validate+rebuild. Step 28: Vigil via weights/luck. Step 29: rarity_color() tints. Step 30: full_description, grey out ignored_stats. Fixed: WieldableDef rejected Rare+ bases; part-type lists shared. Magewar mismatches logged: ignored stats in Magewar part data, Uncommon exterior rate, staff-only Head comment, global randf/negative weights.",
       "commit": "e4c0468"
     },
     {
@@ -133,7 +133,7 @@
       "step": 16,
       "type": "build",
       "summary": "Step 16 Part stat rolls, gems, names: scripts/loot/part_roller.gd = PartRoller (Magewar loot_generator, seeded): roll(rng, type, rarity, element) draws one seed from the caller's rng, from_seed() rolls on a private generator (global RNG never used), regenerate() rebuilds from roll_seed/type/rarity/element; Magewar template part per type for unrolled stats, Magewar ranges x rarity multiplier (fire rates unscaled; Exterior x0.7-1.3, x0.5-1.0 at Rare+), Head gem slots 1/+1 Rare/+1 Primordial (others 0), element from caller or Magewar element_weights, Magewar name ladders, id <rarity>_<element>_<type>_<seed>, description = full_description. WieldablePart gains roll_seed; main prints [parts]. 149 tests green (6 new in test_parts.gd).",
-      "plan_changes": "PLAN §30.2: Exterior rate x0.7-1.3 below Rare (Magewar generator, not x1.0), Charm rate x0.85-1.0, template stats, element weights, Magewar name ladders. Refined step 18 (PartRoller drops, Magewar roll_procedural_drops recipe; its 45/25/15/8/5/2 rarity thresholds differ from ItemRarity weights, keep RarityTable), 19 (equipment rolls = generate_equipment_with_rng ranges/names/templates; resist on any elemental Clothes, not Rare+ only), 20 (rolled parts encode as seed+type+rarity+element), 26 (sockets = Head gem_slots; upgrade = from_seed at next tier). Fixed: make() gave non-Heads 1 gem slot; step 15 note 'exterior rate rolls from Uncommon' corrected (Magewar rolls from Basic). Magewar mismatches logged: per-part seed draw (regenerable) vs direct rng, single Rare+ exterior draw, element_weights used (Magewar's roll_element ignores them).",
+      "plan_changes": "PLAN \u00a730.2: Exterior rate x0.7-1.3 below Rare (Magewar generator, not x1.0), Charm rate x0.85-1.0, template stats, element weights, Magewar name ladders. Refined step 18 (PartRoller drops, Magewar roll_procedural_drops recipe; its 45/25/15/8/5/2 rarity thresholds differ from ItemRarity weights, keep RarityTable), 19 (equipment rolls = generate_equipment_with_rng ranges/names/templates; resist on any elemental Clothes, not Rare+ only), 20 (rolled parts encode as seed+type+rarity+element), 26 (sockets = Head gem_slots; upgrade = from_seed at next tier). Fixed: make() gave non-Heads 1 gem slot; step 15 note 'exterior rate rolls from Uncommon' corrected (Magewar rolls from Basic). Magewar mismatches logged: per-part seed draw (regenerable) vs direct rng, single Rare+ exterior draw, element_weights used (Magewar's roll_element ignores them).",
       "commit": "f6d7d98"
     },
     {
@@ -166,8 +166,8 @@
       "type": "build",
       "summary": "Ember Mark item codes: ItemCodes encode/decode (EM1- + Crockford base32 + CRC-16, v1 append-only index tables) for bare/assembled wieldables, rolled and hand-made parts, rolled equipment and templates, potion stacks; EmberMark result, BitStream; decode via PartRoller/EquipmentRoller.from_seed and Assembly.assemble (failing builds rejected); encode refuses unreproducible items; main.gd [codes]. 180 tests green (8 new in test_item_codes.gd: 1000 random items round-trip, golden codes, bad codes rejected).",
       "plan_changes": [
-        "Recorded ShobieShy's decision (Oct 24 2026): gear's spell damage bonus stays and is added flat to every cast (Magewar only displays it) in BUILD_PLAN rule 5 'Kept decisions' and PLAN §30.3; verified in code (Caster.damage_bonus = Equipment.spell_damage_bonus(), added to every bolt; test_equipment 'bolt = staff + 3').",
-        "PLAN §31.5 rewritten to the real v1 payload; item level/grade/Vigil tier/consecration/gems/sandbox flag scheduled as later code versions (steps 26/27/28/36/22+).",
+        "Recorded ShobieShy's decision (Oct 24 2026): gear's spell damage bonus stays and is added flat to every cast (Magewar only displays it) in BUILD_PLAN rule 5 'Kept decisions' and PLAN \u00a730.3; verified in code (Caster.damage_bonus = Equipment.spell_damage_bonus(), added to every bolt; test_equipment 'bolt = staff + 3').",
+        "PLAN \u00a731.5 rewritten to the real v1 payload; item level/grade/Vigil tier/consecration/gems/sandbox flag scheduled as later code versions (steps 26/27/28/36/22+).",
         "Step 21: patches must not change ItemCodes.TABLES or seed roll ranges/order without a new code version.",
         "Step 26: upgraded parts re-encode at the new tier; gems need a new code version.",
         "Step 30: item cards show/copy Ember Marks, import field shows EmberMark.error.",
@@ -182,7 +182,7 @@
       "type": "build",
       "summary": "Balance patch loader: BalancePatch JSON v1 (elements/rarities/drop_pools), all-or-nothing with validate(), Ember Mark seed tables locked, user://patches applied at start. 185 tests green.",
       "plan_changes": [
-        "Magewar has no balance patch system; reinterpreted per PLAN §31.",
+        "Magewar has no balance patch system; reinterpreted per PLAN \u00a731.",
         "No bugs found in earlier steps during this step."
       ],
       "commit": "72ca0c0"
@@ -204,8 +204,8 @@
       "type": "build",
       "summary": "Inventory model, PickupCollector in Player.tick, LootPickup mana/dust/potion kinds, CompareCard. Magewar review: Magewar items are Cogito interact pickups (no walk-over); auto-collect for orbs/dust/potions is our PLAN addition. Pickup detection uses distance over the loot_pickups group, not physics, so tests are deterministic. 192 tests green.",
       "plan_changes": [
-        "Step 24: extend Inventory (already 30 slots) with equip-from-backpack / swap-back; use_potion action still unbound — bind in step 24",
-        "Step 26: PLAN §30.3 says Dust upgrades never reach Unique — cap upgrades at Primordial"
+        "Step 24: extend Inventory (already 30 slots) with equip-from-backpack / swap-back; use_potion action still unbound \u2014 bind in step 24",
+        "Step 26: PLAN \u00a730.3 says Dust upgrades never reach Unique \u2014 cap upgrades at Primordial"
       ],
       "commit": "1e63328"
     },
@@ -213,7 +213,7 @@
       "time": "2026-10-24T03:15:09-05:00",
       "step": 24,
       "type": "build",
-      "summary": "Backpack equip/unequip for staffs, wands and gear; draw on in-hand replace; R = use potion. Magewar review: Magewar equips via Cogito inventory slots with the same swap-back behaviour; Magewar has no dedicated potion key (potions used from the inventory) — R is our choice, flag for ShobieShy. 196 tests green.",
+      "summary": "Backpack equip/unequip for staffs, wands and gear; draw on in-hand replace; R = use potion. Magewar review: Magewar equips via Cogito inventory slots with the same swap-back behaviour; Magewar has no dedicated potion key (potions used from the inventory) \u2014 R is our choice, flag for ShobieShy. 196 tests green.",
       "plan_changes": [
         "Step 25: station takes parts + chosen base from player.inventory; disassemble refuses when inventory lacks room (needs parts count free slots)"
       ],
@@ -233,9 +233,9 @@
       "time": "2026-10-24T03:18:34-05:00",
       "step": 26,
       "type": "build",
-      "summary": "Gems, salvage to Arcane Dust, Dust upgrades. Magewar review: Magewar has gem_slots but no gem item or effect, no salvage, no upgrade — all ours and flagged; numbers (gem +1 dmg, dust table, upgrade costs) are placeholders for ShobieShy to tune. Done check said 'tier cap at Unique'; PLAN §30.3 says never to Unique, so the cap is Primordial. 201 tests green.",
+      "summary": "Gems, salvage to Arcane Dust, Dust upgrades. Magewar review: Magewar has gem_slots but no gem item or effect, no salvage, no upgrade \u2014 all ours and flagged; numbers (gem +1 dmg, dust table, upgrade costs) are placeholders for ShobieShy to tune. Done check said 'tier cap at Unique'; PLAN \u00a730.3 says never to Unique, so the cap is Primordial. 201 tests green.",
       "plan_changes": [
-        "Ember Mark: socketed gems not encoded yet — add in a v2 code version (step 20 note) when saves land (step 38)",
+        "Ember Mark: socketed gems not encoded yet \u2014 add in a v2 code version (step 20 note) when saves land (step 38)",
         "Balance patch (step 21) could expose SALVAGE_DUST/UPGRADE_COST later"
       ],
       "commit": "d0c17d9"
@@ -270,7 +270,7 @@
       "time": "2026-10-24T03:31:25-05:00",
       "step": 30,
       "type": "build",
-      "summary": "Inventory screen built. Magewar check: InventoryUI toggles on Tab and frees the mouse, same as ours; compare cards and Ember Marks are our additions (PLAN §4). 214 tests green.",
+      "summary": "Inventory screen built. Magewar check: InventoryUI toggles on Tab and frees the mouse, same as ours; compare cards and Ember Marks are our additions (PLAN \u00a74). 214 tests green.",
       "plan_changes": [
         "Step 30: Player.ui_open added (menus freeze actions and mouse look); steps 31/39 reuse it."
       ],
@@ -1214,5 +1214,26 @@
       "wayland": "PASS",
       "shots": "playtest/wayland_20261024_run3/"
     }
+  ],
+  "waiting_on_user_go": [
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    134
+  ],
+  "notes": [
+    "2026-10-24: steps 119-134 (art spree A1-A8, FX spree F1-F8) planned, waiting on user go; see docs/ART_SPREE_PLAN.md, docs/FX_SPREE_PLAN.md"
   ]
 }

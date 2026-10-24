@@ -776,3 +776,34 @@ Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below;
 - Co-op two bots (`tools/coop_playtest.sh`): PASS on both host and joiner (playtest/run3_coop.log).
 - Graphical Wayland run (`--display-driver wayland --autoplay --archetype buff --char-name Shobie --color #e05a20`): PASS, "Shobie the Buff", The Filth arena walls rose; 18 screenshots + a menu shot showing the archetype/name/colour picker in playtest/wayland_20261024_run3/ (log playtest/run3_wayland.log).
 - Not tested: real Steam, real Windows (wine smoke only).
+
+## Phase T – Art spree and FX spree (planned 2026-10-24, WAITING ON USER GO)
+Details: docs/ART_SPREE_PLAN.md and docs/FX_SPREE_PLAN.md. Do not start any of these until the user says go.
+Suggested order: 127 first (lighting fixes make every art screenshot meaningful), then 119-126 interleaved with 128-134.
+
+- **Step 119 (waiting on user go)** Art A1: Nerd, Loli and real Buff models; player colour mask; remote players use archetype models.
+- **Step 120 (waiting on user go)** Art A2: Elders, guard, scavenger, vendors; other Summoned in solo cinematics.
+- **Step 121 (waiting on user go)** Art A3: Gnawer and The Filth models (3 phases + exposed core).
+- **Step 122 (waiting on user go)** Art A4: modular staff parts (Handle/Shell/Internals/Head) with sockets, wands, gems, rarity trim.
+- **Step 123 (waiting on user go)** Art A5: loot ground meshes, currency pickups, quest items, vault chest.
+- **Step 124 (waiting on user go)** Art A6: town ground fix, Association interior, hero Old Oak, Landfill dressing, sky HDRIs.
+- **Step 125 (waiting on user go)** Art A7: Breach tileset, Scorchling, Warden, mutated rats, garbage golems, ooze.
+- **Step 126 (waiting on user go)** Art A8: fantasy UI theme, fonts, item/element/status icons.
+- **Step 127 (waiting on user go)** FX F1: tonemap/sky ambient/bloom/SSAO baseline; fix washed-out ground and black night frames.
+- **Step 128 (waiting on user go)** FX F2: spell shaders for six elements, Light heal, Dark conversion aura.
+- **Step 129 (waiting on user go)** FX F3: burn/slow/stagger/chain, hit flash, dissolve death, damage numbers.
+- **Step 130 (waiting on user go)** FX F4: rarity loot beams (Bible colours), ground rings.
+- **Step 131 (waiting on user go)** FX F5: The Filth wobble, acid, regen, phase shockwaves, core.
+- **Step 132 (waiting on user go)** FX F6: fog, day/dusk/night presets, sky, water, colour grade.
+- **Step 133 (waiting on user go)** FX F7: letterbox, fades, camera polish, summoning circle, vortex, crystal, UI shaders.
+- **Step 134 (waiting on user go)** FX F8: quality presets incl. Low, perf capture script, co-op FX parity test.
+
+### Open questions (Phase T)
+- Q27 Art style: stay low-poly Kenney/Quaternius stylised (recommended), or move toward hand-painted textures?
+- Q28 CC-BY OK beyond CC0 (game-icons.net icons, some Quaternius), with in-game credits?
+- Q29 Loli design: small young-looking mage in a cloak, kept non-sexualised; confirm look (and the name for a public Steam page).
+- Q30 Show equipped gear (hats/clothes) on character models now, or later?
+- Q31 Night look: moonlit blue readable night (recommended) or very dark with lantern pools?
+- Q32 Should Light heal/Dark aura FX be visible to all players or only involved players? (recommended all)
+- Q33 Low preset target hardware: Steam Deck class?
+- Q34 Order: start with FX F1 lighting fix first (recommended) or art first?
