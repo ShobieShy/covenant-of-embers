@@ -107,6 +107,7 @@ func test_tres_matches_toml() -> void:
 		check(got.display_name == want.display_name, "%s name" % want.id)
 		check(got.affinity == want.affinity, "%s affinity" % want.id)
 		check(is_equal_approx(got.max_health, want.max_health), "%s max_health" % want.id)
+		check(got.level == want.level, "%s level %d vs %d" % [want.id, got.level, want.level])
 		check(got.size.is_equal_approx(want.size), "%s size" % want.id)
 		check(got.color.is_equal_approx(want.color), "%s color" % want.id)
 		check(got.resist == want.resist, "%s resist %s vs %s" % [want.id, got.resist, want.resist])

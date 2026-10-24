@@ -66,6 +66,14 @@ func _ready() -> void:
 		print("[assembly] Earthward + 5 Magewar parts: %s, dmg %.1f, %.4f s, acc %.0f %%, %d gem slot(s), draw %.3f s" % [
 			built.display_name(), built.damage(), built.cooldown(), built.accuracy(), built.gem_slots(),
 			built.draw_seconds(player.loadout.swap_seconds)])
+		var heap_def := EnemyTable.load_default().find("heap")
+		var drop_rng := RandomNumberGenerator.new()
+		drop_rng.seed = 18
+		var drop_names := PackedStringArray()
+		for d in DropRoller.roll_enemy(drop_rng, heap_def):
+			drop_names.append(d.describe())
+		print("[drops] %d pool(s); Heap (level %d) kill, seed 18: %s" % [DropRoller.default_pools().pools.size(),
+			heap_def.level, ", ".join(drop_names)])
 		print("[main] level %s, %d boxes, player at %s, eye %s" % [
 			$Level.get_meta("level_id", "?"), $Level.get_node("Boxes").get_child_count(),
 			player.global_position, player.camera.global_position])

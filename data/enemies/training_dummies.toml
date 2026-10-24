@@ -1,5 +1,5 @@
-# Enemy types (BUILD_PLAN step 22, PLAN §30.4): training dummies for the damage formula.
-# Loaded by game/enemies/enemy.*; placed in a level with [[enemy]] (data/levels/*.toml).
+# Enemy types (BUILD_PLAN step 11, PLAN §30.4): training dummies for the damage formula.
+# Loaded by scripts/enemies/enemy_def.gd (EnemyDef.from_toml); placed in a level with [[enemy]] (data/levels/*.toml).
 # Magewar has no enemy health values (scripts/enemies/enemy_base.gd only wires a
 # CogitoHealthAttribute), so the numbers here are plan design: 60 HP = exactly four
 # Apprentice Fire Staff bolts (10 x 1.5) on the Earth dummy.
@@ -10,13 +10,14 @@
 #   affinity    defender element for the effectiveness chart (data/magic/elements.toml):
 #               arcane | fire | water | earth | air | light | dark
 #   max_health  starting health, 1..100000
+#   level       optional Magewar enemy_level 1..50 (default 1; step 18: +1 procedural part at >= 3)
 #   size        [x, y, z] body hitbox full extents in metres; the box stands on the feet
 #   color       [r, g, b] greybox tint in 0..1 (the weak point draws brighter)
 #   resist      optional { <element> = 0..1, ... } incoming-element resistance
 #               (damage x (1 - resist); applied capped at 60 %)
 #   weak_point  optional { offset = [x, y, z] centre from the feet, size = [x, y, z] }
 #               a separate hitbox taking x2 damage (the Heap seam uses the same)
-#   ai          optional (step 23) brain; omitted = a dummy that never moves.
+#   ai          optional (step 12) brain; omitted = a dummy that never moves.
 #               { kind = "rusher" | "tank" (required; tank = the Heap), detect_range, aggro_range (<= detect),
 #                 walk_speed, sprint_speed, attack_range (> half the body + 0.3),
 #                 attack_damage, attack_cooldown, knockback_strength, knockback_time,

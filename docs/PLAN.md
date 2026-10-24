@@ -354,6 +354,7 @@ Buildable rules for M1–M2. **Weapons, loot and crafting follow the Magewar des
   - **Charm** (staff only, optional extra augment): damage 0–3, accuracy 0–8, fire-rate modifier ×0.85–1.0, element.
   - Stats a type doesn't roll come from Magewar's template part for that type (e.g. a Charm keeps handling 4); the element is the caller's (enemy/pool) or rolled with Magewar's element weights (Arcane 2, Fire/Water/Earth/Air 1, Light/Dark 0.5).
 - Names (Magewar ladders, by rarity): Head "<Rough|Polished|Brilliant|Ethereal|Ancient|Legendary> <Element> Crystal Head", Exterior "<Oak|Ash|Ironwood|Darkwood|Starwood|Worldtree> Exterior", Interior "<Element> <Mana Core|Arcane Conduit|Ley Channel|Void Heart|Prism Core|Soul Engine>", Handle "<Leather|Silk|Chain|Rune-etched|Crystalweave|Dragonhide>-Wrapped Handle", Charm "<Element> <Charm|Talisman|Sigil|Ward|Relic|Artifact>".
+- Drops (Magewar roll_procedural_drops, step 18): each kill rolls its enemy's pool once against `drop_chance` (0.3) for one weighted base wieldable of the rolled rarity (none of that rarity → the nearest lower tier, then higher), plus 1 random part (2 at enemy level ≥ 3) of a uniform part type with the enemy's element, and a 25 % chance of one Hat/Clothes/Belt/Shoes at luck × 0.5. All rarities use the table above (Magewar's procedural thresholds 45/25/15/8/5/2 % differ).
 - Deterministic generation: every item stores `seed + rarity + part ids`; the host rolls, clients regenerate identically. Stored form is an **Ember Mark** (§31.5).
 
 ### 30.3 Equipment, inventory and crafting

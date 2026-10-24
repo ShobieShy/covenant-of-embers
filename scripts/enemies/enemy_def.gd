@@ -13,6 +13,7 @@ extends Resource
 @export var display_name := ""
 @export var affinity: ElementTable.Element = ElementTable.Element.ARCANE  ## defender element
 @export var max_health := 100.0                                ## 1..100000
+@export_range(1, 50) var level := 1                            ## Magewar enemy_level 1..50 (step 18 drops: +1 part at >= 3)
 @export var size := Vector3(0.7, 1.6, 0.7)                     ## body box full extents; stands on its feet
 @export var color := Color(0.6, 0.6, 0.6)                      ## greybox tint (the weak point draws brighter)
 @export var resist: Dictionary = {}                            ## element id -> 0..1 (applied capped at 60 %)
@@ -22,6 +23,7 @@ extends Resource
 @export var ai: Dictionary = {}                                ## step 12: raw `ai` table (empty = a dummy; see RusherDef)
 
 const MAX_HEALTH_LIMIT := 100000.0
+const MAX_LEVEL := 50
 
 ## A fresh Damage.Target for this type: its affinity and (uncapped) resistances.
 func make_target() -> Damage.Target:
@@ -47,6 +49,8 @@ func validate() -> PackedStringArray:
 		errs.append("'%s': bad affinity" % id)
 	if not (max_health >= 1.0 and max_health <= MAX_HEALTH_LIMIT):
 		errs.append("'%s': max_health must be in 1..100000" % id)
+	if not (level >= 1 and level <= MAX_LEVEL):
+		errs.append("'%s': level must be in 1..%d" % [id, MAX_LEVEL])
 	if not (size.x > 0.0 and size.y > 0.0 and size.z > 0.0):
 		errs.append("'%s': size must be > 0" % id)
 	for c in [color.r, color.g, color.b]:
@@ -72,7 +76,7 @@ func rusher() -> RusherDef:
 		return null
 	return RusherDef.parse(ai, size).get("def") as RusherDef
 
-const KEYS: PackedStringArray = ["id", "name", "affinity", "max_health", "size", "color", "resist", "weak_point", "ai"]
+const KEYS: PackedStringArray = ["id", "name", "affinity", "max_health", "level", "size", "color", "resist", "weak_point", "ai"]
 const REQUIRED: PackedStringArray = ["id", "name", "affinity", "max_health", "size", "color"]
 
 ## From one data/enemies/*.toml [[enemy]] row (LevelToml). Returns {"def": EnemyDef} or
@@ -97,6 +101,11 @@ static func from_toml(row: Dictionary) -> Dictionary:
 	if not (row["max_health"] is float):
 		return {"error": "'%s': max_health must be a number" % d.id}
 	d.max_health = row["max_health"]
+	if row.has("level"):
+		var lv: Variant = row["level"]
+		if not (lv is float or lv is int) or float(lv) != floorf(float(lv)):
+			return {"error": "'%s': level must be a whole number" % d.id}
+		d.level = int(lv)
 	var sz: Variant = _vec3_or_null(row["size"])
 	var col: Variant = _vec3_or_null(row["color"])
 	if sz == null or col == null:

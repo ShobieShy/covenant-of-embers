@@ -1,0 +1,93 @@
+[gd_resource type="Resource" script_class="DropTable" load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://scripts/loot/drop_table.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/loot/drop_pool.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/loot/drop_entry.gd" id="3"]
+
+[sub_resource type="Resource" id="midden_gnawer_novice_arcane_wand"]
+script = ExtResource("3")
+wieldable_id = "novice_arcane_wand"
+weight = 60.0
+rarity = ""
+
+[sub_resource type="Resource" id="midden_gnawer_apprentice_fire_staff"]
+script = ExtResource("3")
+wieldable_id = "apprentice_fire_staff"
+weight = 40.0
+rarity = ""
+
+[sub_resource type="Resource" id="midden_gnawer_swift_wind_wand"]
+script = ExtResource("3")
+wieldable_id = "swift_wind_wand"
+weight = 30.0
+rarity = ""
+
+[sub_resource type="Resource" id="midden_gnawer_earthward_battlestaff"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 10.0
+rarity = ""
+
+[sub_resource type="Resource" id="midden_gnawer"]
+script = ExtResource("2")
+id = "midden_gnawer"
+enemy_ids = PackedStringArray("gnawer")
+min_level = 1
+max_level = 50
+drop_chance = 0.3
+entries = Array[ExtResource("3")]([SubResource("midden_gnawer_novice_arcane_wand"), SubResource("midden_gnawer_apprentice_fire_staff"), SubResource("midden_gnawer_swift_wind_wand"), SubResource("midden_gnawer_earthward_battlestaff")])
+
+[sub_resource type="Resource" id="midden_heap_apprentice_fire_staff"]
+script = ExtResource("3")
+wieldable_id = "apprentice_fire_staff"
+weight = 30.0
+rarity = ""
+
+[sub_resource type="Resource" id="midden_heap_novice_arcane_wand"]
+script = ExtResource("3")
+wieldable_id = "novice_arcane_wand"
+weight = 20.0
+rarity = ""
+
+[sub_resource type="Resource" id="midden_heap_earthward_battlestaff"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 40.0
+rarity = ""
+
+[sub_resource type="Resource" id="midden_heap_swift_wind_wand"]
+script = ExtResource("3")
+wieldable_id = "swift_wind_wand"
+weight = 20.0
+rarity = ""
+
+[sub_resource type="Resource" id="midden_heap_earthward_battlestaff_rare"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 10.0
+rarity = "rare"
+
+[sub_resource type="Resource" id="midden_heap_apprentice_fire_staff_rare"]
+script = ExtResource("3")
+wieldable_id = "apprentice_fire_staff"
+weight = 10.0
+rarity = "rare"
+
+[sub_resource type="Resource" id="midden_heap_earthward_battlestaff_mythic"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 5.0
+rarity = "mythic"
+
+[sub_resource type="Resource" id="midden_heap"]
+script = ExtResource("2")
+id = "midden_heap"
+enemy_ids = PackedStringArray("heap")
+min_level = 1
+max_level = 50
+drop_chance = 0.3
+entries = Array[ExtResource("3")]([SubResource("midden_heap_apprentice_fire_staff"), SubResource("midden_heap_novice_arcane_wand"), SubResource("midden_heap_earthward_battlestaff"), SubResource("midden_heap_swift_wind_wand"), SubResource("midden_heap_earthward_battlestaff_rare"), SubResource("midden_heap_apprentice_fire_staff_rare"), SubResource("midden_heap_earthward_battlestaff_mythic")])
+
+[resource]
+script = ExtResource("1")
+pools = Array[ExtResource("2")]([SubResource("midden_gnawer"), SubResource("midden_heap")])
