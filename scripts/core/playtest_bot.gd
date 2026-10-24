@@ -317,6 +317,12 @@ func _physics_process(delta: float) -> void:
 		"coop_follow":
 			_follow_host()
 		"midden_walk":
+			if GameFlow.id_of(main.get_node("Level")) != "midden":  # step 109: a new game starts elsewhere
+				if t > 0.5:
+					note("travel to the Landfill from %s" % GameFlow.id_of(main.get_node("Level")))
+					main.call(&"travel", "midden")
+					_done = true
+				return
 			_input = PlayerInput.hold(["forward"])
 			if t > 1.0:
 				var moved := player.global_position.distance_to(_walk_start)

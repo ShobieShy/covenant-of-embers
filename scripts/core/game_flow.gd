@@ -35,6 +35,17 @@ static var requests := 0
 ## Step 73: the new character's pick from the menu ({archetype, name, color}); applied to a
 ## fresh run (and to a co-op client with no character file yet).
 static var new_identity := {}
+## Step 109: how the next fresh game starts (consumed by main.gd): INTRO_PLAY runs the intro
+## from the Association, INTRO_SKIP starts at the Old Oak with the intro's end state.
+const INTRO_PLAY := "play"
+const INTRO_SKIP := "skip"
+static var intro_mode := ""
+
+
+## Step 109: --skip-intro on the command line skips the prologue.
+static func intro_mode_from_args(args: PackedStringArray) -> String:
+	# Until the bot plays the intro (step 118), --autoplay skips it too.
+	return INTRO_SKIP if args.has("--skip-intro") or args.has("--autoplay") else INTRO_PLAY
 
 
 ## Step 73: --archetype <id> / --char-name <name> / --color <#hex> (playtests, scripts).
@@ -69,8 +80,10 @@ static func _change(tree: SceneTree, path: String) -> void:
 	tree.change_scene_to_file.call_deferred(path)
 
 
-static func new_run(tree: SceneTree) -> void:
-	level_id = "midden"
+## Step 109: a new game starts the intro in the Mage Association (or skips it to the Old Oak).
+static func new_run(tree: SceneTree, mode := INTRO_PLAY) -> void:
+	intro_mode = mode
+	level_id = "old_oak" if mode == INTRO_SKIP else "mage_association"
 	load_save = false
 	_change(tree, GAME)
 

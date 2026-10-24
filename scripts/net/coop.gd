@@ -92,7 +92,7 @@ static func begin(tree: SceneTree) -> void:
 		return
 	if session.is_host():
 		if not GameFlow.continue_run(tree):
-			GameFlow.new_run(tree)
+			GameFlow.new_run(tree, GameFlow.intro_mode_from_args(OS.get_cmdline_user_args()))
 		return
 	character = CharacterSave.path_for(String(session.local_info.get("name", default_name())))
 	var host_info: Dictionary = session.roster.get(1, {})

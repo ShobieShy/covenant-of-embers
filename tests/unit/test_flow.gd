@@ -20,6 +20,7 @@ func _restore() -> void:
 	GameFlow.select_slot(1)
 	GameFlow.level_id = "midden"
 	GameFlow.load_save = false
+	GameFlow.intro_mode = ""
 	runner_tree.paused = false
 	for f in [FILE, FILE + ".bak", FILE + ".tmp"]:
 		if FileAccess.file_exists(f):
@@ -42,8 +43,8 @@ func test_menu_buttons() -> void:
 	check((m.buttons["continue"] as Button).disabled, "continue greyed without a save")
 	m.press("new_run")
 	check(
-		GameFlow.last_request == GameFlow.GAME and GameFlow.level_id == "midden" and not GameFlow.load_save,
-		"new run -> Midden"
+		GameFlow.last_request == GameFlow.GAME and GameFlow.level_id == "mage_association" and not GameFlow.load_save,
+		"new run -> the intro in the Association"
 	)
 	m.press("settings")
 	check(m.settings_ui.visible, "settings opens")

@@ -32,6 +32,7 @@ var world_map: WorldMap  # step 69
 var world_map_ui: WorldMapUI
 var load_warnings := PackedStringArray()
 var coop: CoopWorld  # step 79: set when a co-op session is running
+var intro: IntroDirector  # step 109: set while the intro runs
 
 func _ready() -> void:
 	var args := OS.get_cmdline_user_args()
@@ -221,6 +222,12 @@ func _setup_flow(player: Player) -> void:
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
 	if fresh:
 		_apply_new_identity(player)
+		if not Coop.is_client():
+			_start_intro(player)
+	if IntroDirector.active(story_flags):
+		intro = IntroDirector.new()
+		add_child(intro)
+		intro.setup(self, player, story_flags, here)
 	_setup_quests(player, here)
 	if here == "old_oak":
 		_setup_hub(player)
@@ -530,6 +537,16 @@ func _physics_process(_delta: float) -> void:
 
 
 ## Step 73: a new character takes the menu's archetype / name / colour (or --archetype ...).
+## Step 109: a New Game runs the intro (Bob hands over the staff later) or skips to its end state.
+func _start_intro(player: Player) -> void:
+	var mode := GameFlow.intro_mode
+	GameFlow.intro_mode = ""
+	if mode == GameFlow.INTRO_PLAY:
+		IntroDirector.start(story_flags)
+		IntroDirector.strip_weapons(player)
+	elif mode == GameFlow.INTRO_SKIP:
+		IntroDirector.apply_skip(story_flags, player)
+
 func _apply_new_identity(player: Player) -> void:
 	var idn := GameFlow.new_identity.duplicate()
 	idn.merge(GameFlow.identity_from_args(OS.get_cmdline_user_args()), true)

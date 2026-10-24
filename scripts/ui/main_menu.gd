@@ -135,7 +135,7 @@ func press(id: String) -> void:
 
 func _start_new() -> void:
 	GameFlow.new_identity = identity()
-	GameFlow.new_run(get_tree())
+	GameFlow.new_run(get_tree(), GameFlow.intro_mode_from_args(OS.get_cmdline_user_args()))
 
 
 ## Step 73: archetype picker + name + colour for a new run.

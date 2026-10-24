@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 118,
-  "steps_done": 92,
-  "last_commit": "64b42e5",
+  "steps_done": 90,
+  "last_commit": "10318a0",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1025,6 +1025,13 @@
       "type": "plan",
       "summary": "Planned linear intro/tutorial (docs/INTRO_PLAN.md): summoning + appraisal char creation, Town Square, Old Oak night/Bob, Association back door to Landfill, combat/crafting/Light-Dark lessons, Filth, crystal + world open; co-op sync; save migration. Q18-Q26 open.",
       "commit": "64b42e5"
+    },
+    {
+      "time": "2026-10-24T10:25:26-05:00",
+      "step": 109,
+      "type": "build",
+      "summary": "IntroDirector (13 beats as the intro_beat flag, forward only), New Game -> Association empty-handed, --skip-intro -> Old Oak with the end state, empty save slots stay empty; tests 373/373, lint green",
+      "commit": "PENDING"
     }
   ],
   "completed_steps": [
@@ -1116,7 +1123,8 @@
     91,
     92,
     93,
-    108
+    108,
+    109
   ],
   "deferred": [
     74,

@@ -133,6 +133,8 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 		var m := _decode(String(it.get(s, "")), WieldableInstance, warn, s)
 		if m:
 			p.loadout.equip(m.item as WieldableInstance)
+		elif it.has(s) and String(it[s]).is_empty():  # step 109: an empty hand stays empty (intro)
+			p.loadout.unequip(Loadout.Slot.STAFF if s == "staff" else Loadout.Slot.WAND)
 	var eq: Array = it.get("equipment", [])
 	for i in EquipmentItem.SLOT_COUNT:
 		p.equipment.slots[i] = null
