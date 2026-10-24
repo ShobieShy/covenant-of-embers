@@ -64,6 +64,19 @@ func _ready() -> void:
 		inv_ui.name = "InventoryUi"
 		add_child(inv_ui)
 		inv_ui.bind(player)
+		# Step 31: an Assembly Station beside the start (E opens it) + its screen.
+		var st := AssemblyStation.new()
+		st.name = "AssemblyStation"
+		var box := CSGBox3D.new()
+		box.size = Vector3(1.2, 1.0, 0.8)
+		box.position.y = 0.5
+		st.add_child(box)
+		add_child(st)
+		st.global_position = player.spawn_feet + Vector3(2.0, 0.0, -1.0)
+		var st_ui := StationUi.new()
+		st_ui.name = "StationUi"
+		add_child(st_ui)
+		st_ui.bind(player)
 		print("[enemies] %d spawned (%s), %d skipped (%s)" % [spawned.size(),
 			", ".join(spawned.map(func(e: Enemy) -> String: return e.def.id)), skipped.size(), ", ".join(skipped)])
 		var nav := $Level.get_node_or_null("Navigation") as LevelNavigation
