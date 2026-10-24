@@ -1,0 +1,11 @@
+// Linux depot (placeholder id 481 under app 480).
+"DepotBuildConfig"
+{
+	"DepotID" "481"
+	"FileMapping"
+	{
+		"LocalPath" "linux/*"
+		"DepotPath" "."
+		"recursive" "1"
+	}
+}

@@ -1,0 +1,17 @@
+// Steam app build config (BUILD_PLAN step 85). App 480 is Valve's "Spacewar" test app,
+// a PLACEHOLDER until a real app id exists (Q13). Nothing uploads this automatically:
+//   steamcmd +login <builder> +run_app_build "$PWD/packaging/steam/app_build_480.vdf" +quit
+// Run tools/package.sh first; it stages build/steam/content/{linux,windows}.
+"AppBuild"
+{
+	"AppID" "480"
+	"Desc" "Covenant of Embers (placeholder app id)"
+	"Preview" "1"
+	"ContentRoot" "../../build/steam/content/"
+	"BuildOutput" "../../build/steam/output/"
+	"Depots"
+	{
+		"481" "depot_build_481_linux.vdf"
+		"482" "depot_build_482_windows.vdf"
+	}
+}

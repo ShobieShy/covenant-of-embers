@@ -446,7 +446,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Q1 answered (Magewar storyline)
 - Result: PASS (332 tests + 1x/4x/co-op playtests)
 - Note: No arena lock (walls) yet: the checkpoint covers the respawn; the playtest bot doesn't trigger the Midden waves, so The Filth fight is unit-tested only.
-**57. The Filth phase 3 + Joe's Trash drop** ✅ PENDING
+**57. The Filth phase 3 + Joe's Trash drop** ✅ `d8cc188`
 - Does: Phase 3 exposes the core weak spot; always drops the quest item 'Joe's Trash' (cracked crystals, 'trash portal' notes) plus glowing sludge and loot; checkpoint at the boss door.
 - Done: test_filth.gd: phase 3, quest drop always spawns, checkpoint respawn.
 - Q1 answered (Magewar storyline)
@@ -647,11 +647,12 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Game icon (.png + .ico), project version shown in menu, Windows export file/product version + company fields (rcedit via Godot), Linux .desktop file + icon.
 - Done: export.sh: Windows exe has icon/version resources (checked under wine or by resource dump); menu shows version string.
 
-**85. Release packaging** 🔜 Unblocked
+**85. Release packaging** ✅ PENDING
 - Does: tools/package.sh: Linux AppImage (+ .tar.gz) (binary + .desktop + icon + LICENSE/credits incl. Magewar credit) and Windows .zip (portable, no installer); optional Inno Setup installer left as follow-up; checksums.
 - Done: package.sh produces both archives; unpack + run --seconds 2 green (Windows under WINE_SMOKE).
 - Q13 answered 2026-10-24: Steam depot/build config (app id 480 placeholder, no upload), Linux AppImage, Windows zip.
-
+- Result: PASS (package.sh green; AppImage smoke-run headless OK; wine smoke OK; 362 tests green)
+- Note: Not run on real Windows (Q14). App id 480 is a placeholder; depots 481/482 likewise.
 **86. Input and display differences per OS** ✅ `7c13e1b`
 - Does: Check XInput/SDL gamepad names on Windows vs Linux map to the same actions (step 77), mouse capture/raw input, Alt+Tab/fullscreen modes, DPI scaling, Vulkan → D3D12/OpenGL fallback renderer setting.
 - Done: test_keybinds.gd: joypad mappings OS-agnostic; settings expose renderer fallback; manual checklist in playtest/.

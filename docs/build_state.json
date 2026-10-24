@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 85,
+  "next_step": 0,
   "total_steps": 107,
-  "steps_done": 90,
-  "last_commit": "5821086",
+  "steps_done": 91,
+  "last_commit": "d8cc188",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1003,6 +1003,13 @@
       "step": "57",
       "type": "build",
       "summary": "Arena lock: ArenaLock raises 16 slag walls around the Filth wave trigger when its wave starts, drops them when the waves are done",
+      "commit": "d8cc188"
+    },
+    {
+      "time": "2026-10-24T09:49-05:00",
+      "step": "85",
+      "type": "build",
+      "summary": "tools/package.sh: export (Windows smoke-run under wine in build/wineprefix) -> Linux AppImage (appimagetool, GodotSteam .so bundled), Windows zip (exe + dlls + README + CREDITS), Steam staging + packaging/steam app_build_480.vdf with depots 481/482 (placeholder, no upload)",
       "commit": "PENDING"
     }
   ],
@@ -1087,6 +1094,7 @@
     80,
     83,
     84,
+    85,
     86,
     88,
     89,

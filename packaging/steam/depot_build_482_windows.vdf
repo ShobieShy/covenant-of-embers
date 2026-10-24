@@ -1,0 +1,11 @@
+// Windows depot (placeholder id 482 under app 480).
+"DepotBuildConfig"
+{
+	"DepotID" "482"
+	"FileMapping"
+	{
+		"LocalPath" "windows/*"
+		"DepotPath" "."
+		"recursive" "1"
+	}
+}
