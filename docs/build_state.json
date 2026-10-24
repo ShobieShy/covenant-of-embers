@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 32,
+  "next_step": 33,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -36,9 +36,10 @@
     28,
     29,
     30,
-    31
+    31,
+    32
   ],
-  "last_commit": "9c57d53",
+  "last_commit": "2184251",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -317,6 +318,16 @@
         "Step 31: an AssemblyStation (greybox CSG box) is placed by main.gd beside the Midden start; step 33 should place one in the Breach hub too if wanted."
       ],
       "commit": "9c57d53"
+    },
+    {
+      "time": "2026-10-24T03:34:53-05:00",
+      "step": 32,
+      "type": "build",
+      "summary": "Settings + rebind screen. Magewar check: Magewar has no rebinding (hard-coded InputMap); options follow the plan Cogito references. 219 tests green.",
+      "plan_changes": [
+        "Step 32: SettingsUi is not reachable in game yet; step 39 opens it from the main/pause menu. Volume values are stored now and applied to buses in step 37."
+      ],
+      "commit": "2184251"
     }
   ]
 }

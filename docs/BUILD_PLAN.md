@@ -286,12 +286,13 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 17 notes): slots by part type (Magewar assembly_station_ui); the hint/error line lists `Assembly.check()` messages (Magewar's "Need Head + Exterior + Interior + Handle for a Staff / Or Head + Exterior for a Wand"); the preview panel = Magewar get_stats_summary ("[Rarity] Staff - Element", Damage, Fire Rate, Accuracy, Mana Cost) from `Assembly.assemble` + draw time and gem slots; Charm/Interior slots disabled for a wand base.
 - Result: PASS — 216 tests (test_station_ui.gd 2). scripts/ui/station_ui.gd = `StationUi` (CanvasLayer 3, E near a station): backpack list (rarity colours), base + 5 part-type slots (Interior/Charm disabled for a wand), live preview (Magewar get_stats_summary + draw time + gem slots), error line = AssemblyStation.check(), Assemble / Disassemble / Salvage / Upgrade, clicking a gem sockets it into the chosen Head. main places a greybox AssemblyStation 2 m from the Midden start.
 
-**32. Key-bindings config**
+**32. Key-bindings config** ✅ `2184251`
 - Does: Rebind UI over the project.godot InputMap actions (PlayerInput.ACTIONS) + user://keybinds.cfg, invert-Y, hip FOV, focus hold/toggle, crouch hold/toggle (Cogito TOGGLE_CROUCH; the slide needs Crouch held, so toggle mode keeps it "held" until pressed again), Reload unbound.
 - Does (step 5 notes): accessibility in the same settings file: reduced motion (`player.set_reduced_motion`) and head bob strength 0 / 0.1 / 0.7 / 1.0 (Cogito HEADBOBBLE presets, kept as a float: `player.feel.set_bob_scale`), applied at spawn; test the round-trip.
 - Does (step 9 notes): hip FOV sets `player.focus.hip_fov` (and the camera at rest; look_scale stays relative to it); focus toggle mode feeds `focus.tick` a latched held flag; add an "aim sensitivity" multiplier on top of `focus.look_scale()` (1.0 = our tan ratio; Magewar-like raw look = 1/0.6784).
 - Done: test_keybinds.gd: save/load round-trip, rebind applies.
 - Does (step 10 notes): slot_1/slot_2 and the wheel actions `quickslot_prev_wieldable`/`quickslot_next_wieldable` are in PlayerInput.ACTIONS and rebindable (mouse-button events too); the reduced-motion option already zeroes CameraFeel recoil + shake.
+- Result: PASS — 219 tests (test_keybinds.gd 3). scripts/core/settings.gd = `Settings` (user://keybinds.cfg via ConfigFile: rebinds stored as {key}/{mouse} lists, invert-Y, hip FOV 60-110, focus/crouch hold-or-toggle, reduced motion, head bob 0-1 (Cogito presets 0/0.1/0.7/1), aim sensitivity (RAW_LOOK = 1/0.6784), volumes for step 37); scripts/ui/settings_ui.gd = `SettingsUi` (click a row, press a key/mouse button; Esc cancels; every change saves + applies). Player gained invert_y, aim_sensitivity, focus_toggle/crouch_toggle latches, set_hip_fov. main loads + applies at spawn.
 
 **33. Breach room slice: layout**
 - Does: Breach room scene with entrance, arena, vault door.
