@@ -430,16 +430,15 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Does: Slime that splits into 2 smaller slimes on death or on Fire hits, leaves slowing puddles.
 - Done: test_ooze.gd: split count/HP, puddle slow.
 
-**56. Midden tutorial boss: The Filth, phases 1–2** ⏸ Needs ShobieShy
-- Does: 3-phase landfill slime boss from Magewar boss_the_filth (phase thresholds, acid blobs, absorbs debris); boss bar with phase pips; arena lock.
+**56. The Filth, phases 1–2** ⏸ Needs ShobieShy
+- Does: 3-phase landfill slime boss from Magewar boss_the_filth (born from alchemical runoff + dungeon essence; spews acid blobs, absorbs attacks and regenerates from debris; phase thresholds); boss bar with phase pips; arena lock.
 - Done: test_filth.gd: phase transitions at thresholds, attack cadence per phase.
-- Needs ShobieShy: Q1/Q8 (Filth vs PLAN's 'The Midden' naming; replaces or adds to Heap tutorial end)
-
-**57. The Filth phase 3 + Joe's trash drop** ⏸ Needs ShobieShy
-- Does: Phase 3 core exposed; drop quest item 'Joe's Trash' (PLAN: Old Lantern Coil) + guaranteed loot; checkpoint at boss door.
+- Needs ShobieShy: Q8 (Filth replaces or follows the current Heap/wave ending)
+- Q1 answered (Magewar storyline)
+**57. The Filth phase 3 + Joe's Trash drop**
+- Does: Phase 3 exposes the core weak spot; always drops the quest item 'Joe's Trash' (cracked crystals, 'trash portal' notes) plus glowing sludge and loot; checkpoint at the boss door.
 - Done: test_filth.gd: phase 3, quest drop always spawns, checkpoint respawn.
-- Needs ShobieShy: Q1
-
+- Q1 answered (Magewar storyline)
 **58. Elite affixes**
 - Does: Elite variants (Burning, Warded, Swift, Splitting) weighted by Vigil tier (PLAN §7).
 - Done: test_elites.gd: affix rolls per Vigil, stat changes applied.
@@ -461,44 +460,38 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase K – Story, hub and quests
 
-**62. Dialogue system** ⏸ Needs ShobieShy
-- Does: Data-driven dialogue (TOML) with lines, choices, flag conditions; dialogue UI; port Magewar npc_dialogue behaviour.
+**62. Dialogue system**
+- Does: Data-driven dialogue (TOML) with lines, choices and flag conditions; dialogue UI; port Magewar npc_dialogue/npc_generic; first lines for Bob, Crazy Joe and townsfolk (pity at first, awe later).
 - Done: test_dialogue.gd: branching on flags, repeat lines.
-- Needs ShobieShy: Q1
-
+- Q1 answered (Magewar storyline)
 **63. Quest system + tracker + clue log**
 - Does: Quest data (kill/collect/talk/reach), flags, rewards, on-screen tracker, Clue Log screen; saved (Magewar magewar_quest_tracker).
 - Done: test_quests.gd: objective progress, completion rewards, save round-trip.
 
-**64. Prologue: the summoning** ⏸ Needs ShobieShy
-- Does: Opening scene in the Mage Association hall (or PLAN equivalent): summoning, expulsion of the summoner, gold + home granted; port Magewar prologue driver beats.
+**64. Prologue: the summoning**
+- Does: Mage Association grand hall in Eldoria: Crazy Joe's forbidden ritual summons the weak Summoned, the Association expels Joe, the government grants 50 gold, basic clothes and the Old Oak; port Magewar magewar_prologue_scene_driver beats (Prologue: The Summoning / Welcome to Town / A New Home).
 - Done: test_prologue.gd: beats fire in order, ends with home unlocked.
-- Needs ShobieShy: Q1
-
-**65. Starting town: square + Association** ⏸ Needs ShobieShy
-- Does: Town Square and Association greybox levels with exits per the Bible's Levels/Maps; NPCs placed; level travel.
+- Q1 answered (Magewar storyline)
+**65. Starting town: Eldoria square + Association**
+- Does: Eldoria under its arcane barrier: Town Square (markets, guards on the wards) and the Mage Association, greybox levels with exits per the Bible's Levels/Maps; townsfolk NPCs; level travel; Landfill gate just outside the barrier.
 - Done: test_town.gd: all exits link, NPCs talkable.
-- Needs ShobieShy: Q1
-
-**66. Home Tree hub** ⏸ Needs ShobieShy
-- Does: Hollow, dark, candle-lit tree hub (Bible) holding stash, Assembly Station, vendors' later slots; night visit by the mentor (Bob / PLAN's Mother Ada).
+- Q1 answered (Magewar storyline)
+**66. Home Tree hub: the Old Oak**
+- Does: Hollow, dark, candle-lit Old Oak (Bible Home Tree) with moss beds, stash, Assembly Station and slots for later upgrades (Bob's lab, potion garden, portals); first night Bob arrives by teleport vortex, appraises the Summoned and gives the Landfill task + starter gear.
 - Done: test_hub.gd: stash shared, station present, mentor scene once.
-- Needs ShobieShy: Q1
-
-**67. Tutorial quest chain** ⏸ Needs ShobieShy
-- Does: Mentor → Landfill (Midden) → defeat The Filth → bring Joe's Trash back → mentor crafts teleport crystal; first levels.
+- Q1 answered (Magewar storyline)
+**67. Tutorial quest chain**
+- Does: Bob → Landfill (the Midden level, renamed Landfill in UI) → defeat The Filth → bring Joe's Trash back → Bob crafts the Fast Travel Teleportation Crystal; first levels.
 - Done: headless playtest variant runs the whole chain, PASS.
-- Needs ShobieShy: Q1
-
+- Q1 answered (Magewar storyline)
 **68. Fast travel crystal + waystones**
 - Does: Teleportation crystal item (Magewar fast_travel_crystal) unlocks attuned points (hub, town gate, Landfill, Breach); map screen to travel.
 - Done: test_fast_travel.gd: attune, travel, locked before tutorial end.
 
-**69. Barriers / wild land map** ⏸ Needs ShobieShy
-- Does: Region map showing barrier-protected vs wild areas (Bible: ~60 % wild); progress measure (PLAN Watchfires).
+**69. Barriers / wild land map**
+- Does: Elyria map: barrier-protected towns (Eldoria, Luminar, Willowbrook, Stonehaven) vs wild land (~60 %); areas like Whispering Woods, Shattered Peaks, Crimson Sea shown as locked; region states saved.
 - Done: test_world_map.gd: region states saved and shown.
-- Needs ShobieShy: Q1
-
+- Q1 answered (Magewar storyline)
 ### Phase L – Progression depth
 
 **70. Summoned growth multiplier** ⏸ Needs ShobieShy
@@ -559,17 +552,16 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 
 ### Phase O – Content and wrap-up
 
-**81. Dungeon 1 region + town 2** ⏸ Needs ShobieShy
-- Does: Bible 'Town 2' + Dungeon 1 (first of five) built on the Breach template with its own hazard and boss.
+**81. Dungeon 1 region + Town 2**
+- Does: Bible 'Town 2' (e.g. Willowbrook: farmer side quest vs goblin raids uncovers the hidden entrance) + Dungeon 1, first of five toward the Demon Lord's lair, built on the Breach template with its own boss.
 - Done: test_dungeon1.gd: clearable, boss loot.
-- Needs ShobieShy: Q1
-
+- Q1 answered (Magewar storyline)
 **82. Playtest pass 3 + CI**
 - Does: Full automated run prologue→tutorial→Dungeon 1; graphical user-session run with screenshots; tools/lint.sh + export.sh green.
 - Done: run_tests + lint + export green; playtest PASS.
 
 ### Open questions (answer before the marked steps)
-- **Q1 Story/setting**: PLAN §2–21 has an original biblical-themed story (exiles, Mother Ada, Brother Caspar, the Midden, the Pretender) while weapons/loot now follow Magewar. Use Magewar's storyline (Elyria, the Summoned, Crazy Joe, Bob, The Filth, Demon Lord), keep PLAN's original story, or a mix?
+- ~~**Q1 Story/setting**~~ **Answered 2026-10-24 by ShobieShy: use the Magewar storyline** (`~/game/Magewar Storyline.md`: Elyria, the Summoned, Crazy Joe, Bob, The Filth, Demon Lord); the original Ada/Caspar/Midden/Pretender story is dropped. Was: PLAN §2–21 has an original biblical-themed story (exiles, Mother Ada, Brother Caspar, the Midden, the Pretender) while weapons/loot now follow Magewar. Use Magewar's storyline (Elyria, the Summoned, Crazy Joe, Bob, The Filth, Demon Lord), keep PLAN's original story, or a mix?
 - **Q2 Dark**: Magewar's Dark corrupts enemies into summons vs PLAN's Light-based Redemption. Which?
 - **Q3 Light**: Magewar Light heal + one summon vs PLAN's Lamp companion drone?
 - **Q4 Currency**: gold (Magewar, start 50) or Tallies (PLAN)?

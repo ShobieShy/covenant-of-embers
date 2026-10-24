@@ -2,6 +2,9 @@
 
 Working title. Plan only, with no code yet. A brand-new co-op Vulkan action RPG inspired by the spirit of Magewar and by biblical themes. It is not a copy or reskin of Magewar.
 
+
+> **Superseded (2026-10-24, ShobieShy):** the story, world, NPC and faction content in this plan (§2, §5 Redemption story framing, §9 bosses, §12 world, §13 Camp, §15 story/NPCs) is replaced by the Magewar storyline in `~/game/Magewar Storyline.md` and `~/game/Magewar Bible.md` (Elyria, the Summoned, Crazy Joe, Bob, the Old Oak, The Filth, five dungeons, Demon Lord). Mechanics here still apply unless BUILD_PLAN says otherwise.
+
 ## 1. Magewar material found on Luna (read-only review)
 
 - **~/game**: The main Godot 4.7 project (git, MIT license, .github issue templates but no CI workflows, docs/ = the COGITO template's Sphinx manual rather than Magewar design docs, Cogito FPS addon, no decision records). Its last commit adds a host-authoritative co-op foundation. The GDScript covers the player, quest tracker, prologue driver, kill rewards, instanced loot and network sync, plus headless logic tests.
@@ -147,6 +150,8 @@ Ten years ago the old wells and vaults broke open and the land went dark; only p
 - **Mechanics**: Each Breach has a signature hazard (flooding, wind, darkness, salt glare, heat) that ties to an essence.
 - **Rewards**: Chests per player, guaranteed Gift on first clear, boss loot.
 - **Replay**: Vigil levels with modifiers for endgame.
+
+> **Superseded (2026-10-24, ShobieShy):** the story, world, NPC and faction content in this plan (§2, §5 Redemption story framing, §9 bosses, §12 world, §13 Camp, §15 story/NPCs) is replaced by the Magewar storyline in `~/game/Magewar Storyline.md` and `~/game/Magewar Bible.md` (Elyria, the Summoned, Crazy Joe, Bob, the Old Oak, The Filth, five dungeons, Demon Lord). Mechanics here still apply unless BUILD_PLAN says otherwise.
 
 ## 15. Story, characters, NPCs and quests
 
