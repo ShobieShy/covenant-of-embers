@@ -85,7 +85,11 @@ const GRANT_GOLD := 50
 
 ## Step 112: intro-only gate rules, level -> gate target -> [flag that opens it, locked text].
 const GATE_RULES := {
-	"mage_association": {"town_square": ["permit_given", "The Clerk has your papers. Speak to the Clerk first."]},
+	"mage_association":
+	{
+		"town_square": ["permit_given", "The Clerk has your papers. Speak to the Clerk first."],
+		"midden": ["landfill_route_open", "Staff only. By order of the Elders."],
+	},
 	"town_square":
 	{"midden": ["filth_defeated", 'Bored Guard: "Barrier edge. Summoned don\'t go out there without say-so."']},
 	"midden":
@@ -226,6 +230,8 @@ func setup(m: Node, p: Player, f: StoryFlags, level: String) -> void:
 		_dress_association()
 	elif here == "old_oak":
 		_dress_oak()
+	elif here == "midden" and current() == "back_door":
+		advance("combat")  # step 114: through the back door, into the Landfill
 
 
 func current() -> String:
@@ -484,6 +490,8 @@ func target_point() -> Variant:
 			n = gate_to("town_square") if here == "mage_association" else gate_to("old_oak")
 		"new_home", "return_to_bob", "crystal":
 			n = target_oak()
+		"back_door":
+			n = gate_to("midden")
 	return n.global_position if n else null
 
 

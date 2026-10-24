@@ -38,6 +38,14 @@ forbids = ["permit_given"]
 sets = ["permit_given"]
 lines = ["Summoned? Form 7-B. Sign here. ...Or make a mark. Fine.", "By protocol: fifty gold. It's not much, but it'll keep you fed for a week.", "Rudimentary clothing, enchanted for minor durability. You're wearing it already. You're welcome.", "And residency in the Old Oak. Edge of town. Big dead tree, can't miss it. Here's the residency permit."]
 
+# Step 114: with Bob's word, the Clerk waves you through the back door.
+[[dialogue]]
+id = "clerk_backdoor"
+speaker = "Clerk"
+requires = ["landfill_route_open"]
+lines = ["Bob? ...Fine. Go. Back door, behind the dais. Mind the smell."]
+repeats = ["Back door. Behind the dais. Go."]
+
 [[dialogue]]
 id = "clerk_idle"
 speaker = "Clerk"

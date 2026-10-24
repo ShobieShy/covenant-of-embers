@@ -661,11 +661,11 @@ Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below;
 - Does: LevelGate requires_flag + locked_text, guard-blocked town to_landfill, dormant waystone text, world-space objective marker chaining exits, inventory/skills/map/save locked until their beat.
 - Done: test_intro_gates.gd: each gate opens on its flag; markers follow the active objective.
 
-**113. Old Oak night + Bob's starter kit** ✅ PENDING
+**113. Old Oak night + Bob's starter kit** ✅ `be2e8f6`
 - Does: Beat 6: moss-bed rest, night lighting preset, 'That night...' card, MentorArrival vortex cinematic; starter weapon moves from spawn to Bob (per Q18), bark map, stash, save enabled.
 - Done: test: fresh run has no weapon before Bob, has kit after; mentor plays once.
 
-**114. Association back door to the Landfill**
+**114. Association back door to the Landfill** ✅ PENDING
 - Does: Beat 7: [[exit]] to_landfill in mage_association.toml gated on landfill_route_open (set by Bob); clerk bark; town gate guarded until filth_defeated (Q20).
 - Done: test: back door locked before Bob, leads to midden after.
 

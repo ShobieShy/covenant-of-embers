@@ -96,6 +96,12 @@ color = [0.5, 0.3, 0.6]
 name = "to_town"
 to = "town_square"
 position = [0.0, 0.0, 13.0]
+
+# Step 114 (Q20): the staff-only back door behind the dais opens on the Landfill.
+[[exit]]
+name = "to_landfill"
+to = "midden"
+position = [0.0, 0.0, -13.5]
 [[npc]]
 name = "crazy_joe"
 speaker = "Crazy Joe"

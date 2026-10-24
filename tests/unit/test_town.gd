@@ -46,7 +46,10 @@ func test_all_exits_link() -> void:
 		links["town_square"].has("mage_association") and links["town_square"].has("midden"),
 		"square: Association + Landfill"
 	)
-	check(links["mage_association"] == ["town_square"], "Association leads back to the square")
+	check(
+		links["mage_association"] == ["town_square", "midden"],
+		"Association: front door to the square, back door to the Landfill (step 114)"
+	)
 	check(links["midden"].has("town_square"), "the Landfill leads back to town")
 	var g := _game("town_square")
 	check(GameFlow.id_of(g.get_node("Level")) == "town_square", "town square level id")

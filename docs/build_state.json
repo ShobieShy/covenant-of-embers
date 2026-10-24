@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 118,
-  "steps_done": 94,
-  "last_commit": "fb23fc5",
+  "steps_done": 95,
+  "last_commit": "be2e8f6",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1059,6 +1059,13 @@
       "step": 113,
       "type": "build",
       "summary": "Old Oak beat 6: arrival sets home_unlocked, moss bed -> night preset + 'That night...' banner + Bob vortex cinematic (MentorArrival once, no auto-play while the intro runs); Bob's kit = Apprentice Fire Staff (Q18), mana potion, rusty_dagger keepsake (DaggerGlow HUD tag pulses near hostiles), bark map flag, landfill_route_open; Bob's new back-door line; [tests] 377 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
+      "commit": "be2e8f6"
+    },
+    {
+      "time": "2026-10-24T10:45:44-05:00",
+      "step": 114,
+      "type": "build",
+      "summary": "Association back door (Q20): to_landfill exit behind the dais, gated on landfill_route_open ('Staff only. By order of the Elders.'), objective marker on it, Clerk 'Bob? ...Fine. Go.' bark; entering the Landfill on back_door advances to combat; [tests] 380 passed, 0 failed, playtests solo/4x/co-op PASS, lint green",
       "commit": "PENDING"
     }
   ],
@@ -1156,7 +1163,8 @@
     110,
     111,
     112,
-    113
+    113,
+    114
   ],
   "deferred": [
     74,
