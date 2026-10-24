@@ -478,10 +478,11 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_quests.gd: objective progress, completion rewards, save round-trip.
 - Result: PASS (267 tests + headless playtest)
 
-**64. Prologue: the summoning**
+**64. Prologue: the summoning** ✅ `d3c41b5`
 - Does: Mage Association grand hall in Eldoria: Crazy Joe's forbidden ritual summons the weak Summoned, the Association expels Joe, the government grants 50 gold, basic clothes and the Old Oak; port Magewar magewar_prologue_scene_driver beats (Prologue: The Summoning / Welcome to Town / A New Home).
 - Done: test_prologue.gd: beats fire in order, ends with home unlocked.
 - Q1 answered (Magewar storyline)
+- Result: PASS (269 tests + headless playtest)
 **65. Starting town: Eldoria square + Association**
 - Does: Eldoria under its arcane barrier: Town Square (markets, guards on the wards) and the Mage Association, greybox levels with exits per the Bible's Levels/Maps; townsfolk NPCs; level travel; Landfill gate just outside the barrier.
 - Done: test_town.gd: all exits link, NPCs talkable.

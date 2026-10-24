@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 53,
-  "last_commit": "77f24cc",
+  "steps_done": 54,
+  "last_commit": "d3c41b5",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -533,6 +533,14 @@
       "summary": "QuestLog (data/story/quests.toml tutorial chain; kill/collect/talk/reach in order; xp/dust/flag/clue rewards; flag auto-start; to_dict/from_dict for save progress), QuestTrackerUI tracker + Clue Log",
       "tests": "267 tests",
       "commit": "77f24cc"
+    },
+    {
+      "time": "2026-10-24T05:37-05:00",
+      "step": 64,
+      "type": "build",
+      "summary": "Prologue beat sequencer (Magewar titles): Joe dialogue -> expulsion -> grant (50 gold, clothes, Old Oak permit) -> reach town square -> reach Old Oak = home_unlocked; feeds the quest chain",
+      "tests": "269 tests",
+      "commit": "d3c41b5"
     }
   ],
   "completed_steps": [
