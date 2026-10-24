@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 72,
-  "last_commit": "707ab89",
+  "steps_done": 73,
+  "last_commit": "7ae1e9d",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -888,6 +888,14 @@
       "summary": "LobbyBackend abstraction; SteamLobbyBackend (createLobby friends-only, overlay invite, join_requested, +connect_lobby); FakeLobbyBackend hub for tests; CoopMenu Host(Steam)/Invite go through it",
       "tests": "test_lobby.gd 4 tests (fake invite flow, menu session over ENet-carried fake lobby); 320 pass",
       "commit": "707ab89"
+    },
+    {
+      "time": "2026-10-24T07:56:59-05:00",
+      "step": 90,
+      "type": "build",
+      "summary": "Canonical LF/sorted-key saves, game-data fingerprint checked on join, pinned item codes/loot",
+      "tests": "324 passed",
+      "commit": "7ae1e9d"
     }
   ],
   "completed_steps": [
@@ -962,6 +970,7 @@
     86,
     88,
     89,
+    90,
     91
   ]
 }

@@ -631,7 +631,7 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_net.gd: lobby/invite flow against a fake Steam backend; manual Steam join with app 480 when Steam is running.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
 
-**90. Cross-platform co-op (Windows ↔ Linux)**
+**90. Cross-platform co-op (Windows ↔ Linux)** ✅ `7ae1e9d`
 - Does: Same build version gate on both OSes; deterministic data (no float/locale/path-dependent IDs, item codes identical); portable character files identical across OSes; Windows host + Linux client and reverse.
 - Done: test_net.gd: item codes/loot seeds and character file bytes identical across targets; manual Win↔Linux session pending Q14.
 - Q7/Q15/Q16 answered 2026-10-24 (co-op now, Steam P2P + direct-IP fallback, host save + portable characters)
