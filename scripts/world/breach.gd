@@ -57,6 +57,18 @@ func open_vault() -> void:
 		d.collision_layer = 0
 		d.collision_mask = 0
 		d.process_mode = Node.PROCESS_MODE_DISABLED
+		for c in d.get_children():
+			if c is CollisionShape3D:
+				(c as CollisionShape3D).set_deferred(&"disabled", true)
+		# Step 48: re-bake the navmesh without the door so paths reach the vault.
+		var nav := level.get_node_or_null("Navigation") as LevelNavigation
+		if nav:
+			var parent := d.get_parent()
+			var idx := d.get_index()
+			parent.remove_child(d)
+			nav.bake_now()
+			parent.add_child(d)
+			parent.move_child(d, idx)
 	if chest:
 		chest.unlock()
 	vault_opened.emit()

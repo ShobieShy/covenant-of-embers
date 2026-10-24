@@ -2,19 +2,25 @@ class_name PlaytestBot
 extends Node
 ## Scripted playtest bot (BUILD_PLAN step 40), `--autoplay` after `--`. It plays the slice
 ## through the real Player controller (PlayerInput each physics tick, its own look/aim):
-##   Midden: walk, cast at and kill enemies, walk over their loot, craft at the Assembly
-##   Station (bot-supplied base + parts, the real station rules), save, take the gate;
-##   Breach: enter the arena, clear the waves and the Warden, open the vault chest, loot, save.
+##   Midden: walk, cast at and kill enemies, walk over their loot, save, take the gate;
+##   Breach: walk into the arena, clear the waves and the Warden, walk to and open the vault
+##   chest, loot, walk back to the entrance Assembly Station and craft from parts it looted
+##   (its own starting staff/wand as the base), save.
+## Step 48: it never teleports; every walk follows the level navmesh (NavigationServer3D
+## paths, re-planned every REPLAN s) and `teleports` stays 0.
 ## Prints "[playtest] PASS ..." and quits 0, or "[playtest] FAIL <why>" and quits 1. The
 ## stage survives the scene change (static). Fixed spread seed: runs are reproducible.
 
 const MIDDEN_KILLS := 2
 const SIM_LIMIT := 900.0  ## simulated seconds for the whole run
 const STAGE_LIMIT := 300.0
+const REPLAN := 0.5
 
 static var stage := "midden_walk"
 static var total_time := 0.0
-static var stats := {"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0}
+static var stats := {
+	"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0, "teleports": 0, "looted_parts": 0
+}
 static var log_lines := PackedStringArray()
 
 var main: Node
@@ -23,12 +29,17 @@ var t := 0.0
 var _input := PlayerInput.new()
 var _walk_start := Vector3.ZERO
 var _done := false
+var _path := PackedVector3Array()
+var _path_goal := Vector3.INF
+var _replan_left := 0.0
 
 
 static func reset_run() -> void:
 	stage = "midden_walk"
 	total_time = 0.0
-	stats = {"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0}
+	stats = {
+		"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0, "teleports": 0, "looted_parts": 0
+	}
 	log_lines = PackedStringArray()
 
 
@@ -72,7 +83,7 @@ func _finish(ok: bool, why := "") -> void:
 	_done = true
 	player.bot_input = Callable()
 	var summary := (
-		"%s kills %d, pickups %d, casts %d, crafted %s, saves %d, deaths %d, level %d, %.0f s simulated"
+		"%s kills %d, pickups %d, casts %d, crafted %s, saves %d, deaths %d, teleports %d, level %d, %.0f s simulated"
 		% [
 			"PASS" if ok else "FAIL " + why,
 			stats["kills"],
@@ -81,6 +92,7 @@ func _finish(ok: bool, why := "") -> void:
 			stats["crafted"],
 			stats["saves"],
 			stats["deaths"],
+			stats["teleports"],
 			player.progression.level,
 			total_time
 		]
@@ -124,8 +136,13 @@ func nearest_pickup() -> Node3D:
 	return best
 
 
-## Walk to (or fight) `e`: aim at its body centre, fire, close in beyond 10 m.
+## Walk to (or fight) `e`: aim at its body centre, fire, close in beyond 10 m; with no clear
+## line (a pillar in the way) walk towards it on the navmesh instead.
 func fight(e: Enemy) -> void:
+	var aim := e.global_position + Vector3(0, e.def.size.y * 0.5, 0)
+	if not has_line_to(aim):
+		walk_to(e.global_position)
+		return
 	look_at_point(e.global_position + Vector3(0, e.def.size.y * 0.5, 0))
 	var held := ["action_primary"]
 	if e.global_position.distance_to(player.global_position) > 10.0:
@@ -136,10 +153,34 @@ func fight(e: Enemy) -> void:
 		_input = PlayerInput.hold(held, ["action_primary"] if int(t * 60.0) % 2 == 0 else [])
 
 
-func walk_to(at: Vector3) -> void:
-	look_at_point(at + Vector3(0, 1.0, 0))
+## Walk towards `at` along the level navmesh (straight when the map has no path).
+func has_line_to(at: Vector3) -> bool:
+	var q := PhysicsRayQueryParameters3D.create(player.eye_position(), at, 1)
+	return player.get_world_3d().direct_space_state.intersect_ray(q).is_empty()
+
+
+func walk_to(at: Vector3, held: Array = []) -> void:
+	_replan_left -= get_physics_process_delta_time()
+	if _replan_left <= 0.0 or _path_goal.distance_to(at) > 0.5:
+		_replan_left = REPLAN
+		_path_goal = at
+		_path = PackedVector3Array()
+		var nav := main.get_node_or_null("Level/Navigation") as LevelNavigation
+		if nav and nav.map_ready():
+			_path = NavigationServer3D.map_get_path(nav.get_navigation_map(), player.global_position, at, true)
+	var next := at
+	var feet := player.global_position
+	for wp in _path:
+		if Vector2(wp.x - feet.x, wp.z - feet.z).length() > 0.6:
+			next = wp
+			break
+	look_at_point(next + Vector3(0, 1.0, 0))
 	player.set_look(player.yaw, 0.0)
-	_input = PlayerInput.hold(["forward"])
+	_input = PlayerInput.hold(["forward"] + held)
+
+
+func flat_distance(at: Vector3) -> float:
+	return Vector2(at.x - player.global_position.x, at.z - player.global_position.z).length()
 
 
 func _physics_process(delta: float) -> void:
@@ -195,10 +236,21 @@ func _physics_process(delta: float) -> void:
 				if stage == "breach_loot" and stats["pickups"] == 0:
 					_finish(false, "picked up none of the vault loot")
 					return
-				_goto("midden_craft" if stage == "midden_loot" else "breach_save")
-		"midden_craft":
-			_craft()
-			_goto("midden_save")
+				_goto("midden_save" if stage == "midden_loot" else "breach_craft")
+		"breach_craft":
+			var st: AssemblyStation = main.get_node_or_null("AssemblyStation")
+			if st == null:
+				_finish(false, "no station in the Breach")
+				return
+			if not st.in_reach(player) and t < 60.0:
+				walk_to(st.global_position)
+			elif not st.in_reach(player):
+				_finish(false, "could not walk to the station (%.1f m)" % flat_distance(st.global_position))
+				return
+			else:
+				_craft(st)
+				if not _done:
+					_goto("breach_save")
 		"midden_save", "breach_save":
 			if main.save_game() != OK or not GameFlow.has_save():
 				_finish(false, "save failed")
@@ -215,11 +267,12 @@ func _physics_process(delta: float) -> void:
 				_finish(true)
 		"breach_chest":
 			var c: VaultChest = main.breach.chest
-			if c.global_position.distance_to(player.global_position) > 1.8 and t < 30.0:
-				walk_to(c.global_position)
+			if not c.in_reach(player) and t < 40.0:
+				walk_to(c.global_position + c.global_transform.basis.z * 1.0)
+			elif not c.in_reach(player):
+				_finish(false, "could not walk to the vault chest (%.1f m)" % flat_distance(c.global_position))
+				return
 			else:
-				if not c.in_reach(player):
-					player.global_position = c.global_position + Vector3(0, 0.2, 1.0)
 				var drops := c.open_chest()
 				note("vault chest opened: %d drop(s)" % drops.size())
 				if drops.is_empty():
@@ -228,33 +281,53 @@ func _physics_process(delta: float) -> void:
 				_goto("breach_loot")
 
 
-## No enemy left and the waves not done: stand in the wave trigger (the bot teleports;
-## walking the greybox needs no testing here).
+## No enemy left and the waves not done: walk into the wave trigger.
 func _enter_arena() -> void:
 	var sp := main.get_node_or_null("Enemies") as EnemySpawner
 	if sp == null:
 		return
-	if not sp.triggered() and t > 0.5:
-		if player.global_position.distance_to(sp.trigger_center) > sp.trigger_radius * 0.5:
-			player.global_position = sp.trigger_center + Vector3(0, 1.0, 0)
-			player.velocity = Vector3.ZERO
-			note("into the wave trigger at %s" % sp.trigger_center)
+	if not sp.triggered() and flat_distance(sp.trigger_center) > sp.trigger_radius * 0.5:
+		walk_to(sp.trigger_center)
 
 
-func _craft() -> void:
-	var st: AssemblyStation = main.get_node_or_null("AssemblyStation")
-	var base := WieldableInstance.load_base("earthward_battlestaff")
-	var parts: Array = []
-	for id in ["primordial_fire_head", "mythic_water_exterior", "basic_earth_interior", "rare_air_handle"]:
-		parts.append(WieldablePart.load_part(id))
-	player.inventory.add(base)
-	for prt in parts:
-		player.inventory.add(prt)
-	var built := st.assemble(player, base, parts) if st else null
-	if built == null:
-		_finish(false, "craft refused: %s" % (st.last_error if st else "no station"))
+## Craft at `st` from looted parts only: the bot's own bare staff/wand (moved to the backpack)
+## as the base, the best-rarity looted part per slot. Fails when the loot can't make a build.
+func _craft(st: AssemblyStation) -> void:
+	var looted: Array[WieldablePart] = []
+	for it in player.inventory.items:
+		if it is WieldablePart:
+			looted.append(it)
+	stats["looted_parts"] = looted.size()
+	looted.sort_custom(func(a, b): return Rarity.parse(a.rarity) > Rarity.parse(b.rarity))
+	var tried := PackedStringArray()
+	for slot in [Loadout.Slot.STAFF, Loadout.Slot.WAND]:
+		var base := player.loadout.wieldable(slot)
+		if base == null or base.assembled:
+			continue
+		var parts: Array = []
+		var used := {}
+		for prt in looted:
+			if Assembly.allows(base.type(), prt.part_type) and not used.has(prt.part_type):
+				used[prt.part_type] = true
+				parts.append(prt)
+		var errs := st.check(base, parts)
+		if not errs.is_empty():
+			tried.append("%s: %s" % [base.display_name(), errs[0]])
+			continue
+		if not player.unequip_wieldable_to_inventory(slot):
+			tried.append("%s: backpack full" % base.display_name())
+			continue
+		var built := st.assemble(player, base, parts)
+		if built == null:
+			_finish(false, "craft refused: %s" % st.last_error)
+			return
+		stats["crafted"] = built.display_name()
+		player.equip_from_inventory(built)
+		note(
+			(
+				"crafted + equipped %s from %d looted part(s) (dmg %.1f)"
+				% [built.display_name(), parts.size(), built.damage()]
+			)
+		)
 		return
-	stats["crafted"] = built.display_name()
-	player.inventory.remove(built)
-	player.equip(built)
-	note("crafted + equipped %s (dmg %.1f)" % [built.display_name(), built.damage()])
+	_finish(false, "looted parts make no build (%d part(s); %s)" % [looted.size(), "; ".join(tried)])
