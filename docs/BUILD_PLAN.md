@@ -760,17 +760,17 @@ Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below;
 - ~~**Q14 Windows test machine**~~ **Answered 2026-10-24: none yet**; package anyway, keep wine smoke, step 87 deferred. Was: is there a Windows PC or VM to playtest on?
 - ~~**Q15 NAT**~~ **Answered 2026-10-24: Steam P2P lobbies/invites** (GodotSteam, app id 480 for development); direct IP kept as dev/LAN fallback.
 - ~~**Q16 Co-op progress**~~ **Answered 2026-10-24: the host's save holds world/quest progress; clients join with their own character from any game**; on host leaving clients exit safely with the character saved; no host migration.
-- **Q17 Rusty dagger**: should the starter gear include the Storyline's rusty dagger (step 107)?
+- ~~**Q17 Rusty dagger**: should the starter gear include the Storyline's rusty dagger (step 107)?~~ **Answered 2026-10-24: Bob hands over the staff; the rusty dagger is a keepsake key item that glows when enemies are near.**
 
-- **Q18 Starter weapon**: should the fire staff/wind wand still be given at spawn, or only by Bob (step 113)? Rusty dagger as glowing key item (recommended), wand reskin, or real melee (Q17)?
-- **Q19 Cinematic skip**: skippable on the first playthrough (recommended yes)?
-- **Q20 Landfill route**: confirm the Association back door as the intro route, and keep the town gate guarded until the Filth dies (step 114)?
-- **Q21 Joe/clerk**: does Joe give the grant, or a new clerk NPC? Joe cameo in the Landfill?
-- **Q22 Co-op skip**: host-only or majority vote (step 117)?
-- **Q23 Other Summoned in solo**: show the other three as NPCs in cinematics, or absent?
-- **Q24 Tutorial enemies**: Gnawers now, or wait for plan-only step 103 rats/golems (step 115)?
-- **Q25 Skip prologue**: offer it on later New Games (recommended), or always play?
-- **Q26 Name**: rename the visible 'Ashen Midden' to 'The Landfill'?
+- ~~**Q18 Starter weapon**: should the fire staff/wind wand still be given at spawn, or only by Bob (step 113)? Rusty dagger as glowing key item (recommended), wand reskin, or real melee (Q17)?~~ **Answered 2026-10-24: Bob hands over the fire staff (nothing at spawn); the rusty dagger is the glowing keepsake key item.**
+- ~~**Q19 Cinematic skip**: skippable on the first playthrough (recommended yes)?~~ **Answered 2026-10-24: Yes: cinematics are skippable even on the first playthrough.**
+- ~~**Q20 Landfill route**: confirm the Association back door as the intro route, and keep the town gate guarded until the Filth dies (step 114)?~~ **Answered 2026-10-24: Yes: the Association back door is the intro route; the town gate stays guarded until the Filth is beaten.**
+- ~~**Q21 Joe/clerk**: does Joe give the grant, or a new clerk NPC? Joe cameo in the Landfill?~~ **Answered 2026-10-24: A clerk gives the grant; Joe makes a cameo in the Landfill.**
+- ~~**Q22 Co-op skip**: host-only or majority vote (step 117)?~~ **Answered 2026-10-24: Host-only skip in co-op.**
+- ~~**Q23 Other Summoned in solo**: show the other three as NPCs in cinematics, or absent?~~ **Answered 2026-10-24: In solo the other three Summoned appear as NPCs.**
+- ~~**Q24 Tutorial enemies**: Gnawers now, or wait for plan-only step 103 rats/golems (step 115)?~~ **Answered 2026-10-24: The current Gnawers.**
+- ~~**Q25 Skip prologue**: offer it on later New Games (recommended), or always play?~~ **Answered 2026-10-24: Offer 'Skip prologue' on later New Games.**
+- ~~**Q26 Name**: rename the visible 'Ashen Midden' to 'The Landfill'?~~ **Answered 2026-10-24: Rename 'The Ashen Midden' to 'The Landfill' everywhere player-facing.**
 ### Playtest run 3 (2026-10-24, after steps 50-85)
 - Solo bot (`tools/playtest.sh`): PASS - 26 kills, 2 saves, 2 deaths, level 3, 424 s simulated (playtest/run3_solo.log).
 - Co-op two bots (`tools/coop_playtest.sh`): PASS on both host and joiner (playtest/run3_coop.log).
