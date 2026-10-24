@@ -1,4 +1,4 @@
-# The Ashen Midden - greybox arena (old C++ BUILD_PLAN step 12; Godot BUILD_PLAN step 2).
+# The Landfill (formerly "The Ashen Midden", Q25) - greybox arena (old C++ BUILD_PLAN step 12; Godot BUILD_PLAN step 2).
 # Source of truth for scenes/levels/midden.tscn: edit here, then run tools/toml_to_scene.py
 # (tools/run_tests.sh fails while the scene is stale). Also read by scripts/world/level_toml.gd.
 #
@@ -16,7 +16,7 @@
 
 [level]
 id = "midden_greybox"
-name = "The Ashen Midden (greybox)"
+name = "The Landfill (greybox)"
 
 [materials]                  # step 75 art pass: CC0 ambientCG sets, tinted by each box colour
 ground = "assets/ambientcg/Ground037"

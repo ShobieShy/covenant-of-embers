@@ -193,7 +193,7 @@ size = Vector3(1.2, 1.2, 1.2)
 
 [node name="Midden" type="Node3D"]
 metadata/level_id = "midden_greybox"
-metadata/level_name = "The Ashen Midden (greybox)"
+metadata/level_name = "The Landfill (greybox)"
 metadata/source = "res://data/levels/midden_greybox.toml"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]

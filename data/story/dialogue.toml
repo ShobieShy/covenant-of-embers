@@ -73,6 +73,23 @@ id = "summoned_loli"
 speaker = "Summoned Loli"
 lines = ["I'm older than I look. Don't ask. Just... don't."]
 
+# Step 115 (Q21): Joe's cameo at his Landfill camp - he hands over the wind wand.
+[[dialogue]]
+id = "joe_landfill"
+speaker = "Crazy Joe"
+requires = ["joe_expelled", "landfill_route_open"]
+forbids = ["joe_wand_given"]
+sets = ["joe_wand_given"]
+lines = ["You! Summoned! They threw you out too? Ha! Welcome to the real Association.", "Here - a wind wand. Fell out of a portal last week. Swap to it when the staff runs dry.", "The rats bite. The parts don't. Fit what you find at my bench!"]
+
+[[dialogue]]
+id = "joe_landfill_repeat"
+speaker = "Crazy Joe"
+requires = ["joe_wand_given"]
+forbids = ["filth_defeated"]
+lines = ["The bench, Summoned! Parts go IN the staff!"]
+repeats = ["The bench, Summoned! Parts go IN the staff!", "Something big lives under the mound. Something... filthy."]
+
 [[dialogue]]
 id = "joe_repeat"
 speaker = "Crazy Joe"

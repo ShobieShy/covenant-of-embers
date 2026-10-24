@@ -230,8 +230,10 @@ func setup(m: Node, p: Player, f: StoryFlags, level: String) -> void:
 		_dress_association()
 	elif here == "old_oak":
 		_dress_oak()
-	elif here == "midden" and current() == "back_door":
-		advance("combat")  # step 114: through the back door, into the Landfill
+	elif here == "midden":
+		if current() == "back_door":
+			advance("combat")  # step 114: through the back door, into the Landfill
+		_dress_landfill()
 
 
 func current() -> String:
@@ -422,6 +424,9 @@ func _after_expulsion() -> void:
 ## Beat 4 ends when the Clerk's grant dialogue does.
 func _on_dialogue_ended(id: String) -> void:
 	match id:
+		"joe_landfill":
+			give_wand(player)
+			_hint("Crazy Joe's wind wand: swap with 2 / the mouse wheel")
 		"joe_expulsion":
 			if current() == "expulsion":
 				_play_expulsion()
@@ -492,6 +497,10 @@ func target_point() -> Variant:
 			n = target_oak()
 		"back_door":
 			n = gate_to("midden")
+		"crafting":
+			n = station()
+		"light_dark":
+			n = shrines.get("Dark shrine" if flags.has("light_learned") else "Light shrine")
 	return n.global_position if n else null
 
 
@@ -510,7 +519,8 @@ func _make_marker() -> void:
 	add_child(marker)
 
 
-func _process(_dt: float) -> void:
+func _process(dt: float) -> void:
+	_tick_toasts(dt)
 	if marker == null:
 		return
 	var at: Variant = target_point()
@@ -639,3 +649,241 @@ func give_kit() -> void:
 		main.add_child(DaggerGlow.make(player))
 	advance("back_door")
 	_hint("Bob's kit: Apprentice Fire Staff, Mana Potion, rusty dagger (glows near danger), bark map")
+
+
+# --- Step 115: beats 8-10, the Landfill lessons ------------------------------------------
+
+const YARD_GNAWERS: Array[Vector3] = [Vector3(-8, 0, 10.5), Vector3(8, 0, 10.5), Vector3(-4, 0, 10)]
+const CAMP := Vector3(5.0, 0.0, 7.0)  ## Joe's dump camp: his bench (the Assembly Station)
+const JOE_CAMP := Vector3(7.0, 0.0, 7.5)
+const LIGHT_SHRINE := Vector3(-5.0, 0.0, 4.0)
+const DARK_SHRINE := Vector3(5.0, 0.0, 4.0)
+const TUTORIAL_PART := "basic_fire_head"
+## Soft walls across the Landfill: name -> [z, flag that drops it].
+const WALLS := {
+	"YardWall": [9.0, "gnawers_cleared"],
+	"JunkWall": [5.5, "crafted_once"],
+	"ArenaWall": [2.5, "dark_learned"],
+}
+const TOASTS := {
+	"combat":
+	[
+		"Cast: left mouse",
+		"Dash: Shift (dodges bites)",
+		"Mana: watch the blue bar; Q drinks Bob's potion",
+		"Two weapons? 1 / 2 or the mouse wheel swaps",
+	],
+	"crafting":
+	[
+		"Pick up the part (E), then E at Joe's bench",
+		"Drag the part into your staff; the card shows the change",
+	],
+	"light_dark":
+	[
+		"Light heals allies and hits enemies a little softer",
+		"Dark sometimes turns an enemy to your side",
+	],
+}
+const TOAST_SECONDS := 4.0
+
+var yard: Array[Enemy] = []
+var yard_kills := 0
+var walls := {}  ## name -> StaticBody3D
+var shrines := {}  ## speaker -> Npc
+var dark_gnawer: Enemy
+var part_pickup: LootPickup
+var _saved_trigger := -1.0
+var _toasts: Array[String] = []
+var _toast_left := 0.0
+
+
+func _dress_landfill() -> void:
+	main.call("_ensure_dialogue")
+	if not (main.dialogue as DialogueRunner).ended.is_connected(_on_dialogue_ended):
+		(main.dialogue as DialogueRunner).ended.connect(_on_dialogue_ended)
+	var b := current()
+	if not b in ["combat", "crafting", "light_dark"]:
+		return
+	var sp := spawner()
+	if sp and sp.trigger_radius > 0.0:
+		_saved_trigger = sp.trigger_radius  # the Filth's mound stays quiet until beat 11
+		sp.trigger_radius = 0.0
+	for w in WALLS:
+		if not flags.has(String(WALLS[w][1])):
+			walls[w] = _wall(w, float(WALLS[w][0]))
+	var st := station()
+	if st:
+		st.global_position = CAMP
+	if not flags.has("joe_wand_given"):
+		_spawn("Crazy Joe", JOE_CAMP, -120.0)
+	if not GameEvents.bus().crafting_completed.is_connected(_on_crafted):
+		GameEvents.bus().crafting_completed.connect(_on_crafted)
+	match b:
+		"combat":
+			_start_yard()
+		"crafting":
+			_drop_part(Vector3(0, 0, 10.5))
+		"light_dark":
+			_make_shrines()
+	_queue_toasts(b)
+
+
+func spawner() -> EnemySpawner:
+	return main.get_node_or_null("Enemies") as EnemySpawner
+
+
+func station() -> AssemblyStation:
+	for c in main.get_children():
+		if c is AssemblyStation:
+			return c
+	return null
+
+
+func wall_up(w: String) -> bool:
+	return walls.has(w) and is_instance_valid(walls[w])
+
+
+func _wall(n: String, z: float) -> StaticBody3D:
+	var body := StaticBody3D.new()
+	body.name = n
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(29.0, 4.0, 0.6)
+	shape.shape = box
+	body.add_child(shape)
+	var mesh := MeshInstance3D.new()
+	var bm := BoxMesh.new()
+	bm.size = Vector3(29.0, 1.2, 0.6)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.35, 0.28, 0.2)
+	bm.material = mat
+	mesh.mesh = bm
+	mesh.position.y = -1.4
+	body.add_child(mesh)
+	main.add_child(body)
+	body.global_position = Vector3(0.0, 2.0, z)
+	return body
+
+
+func _drop_wall(w: String) -> void:
+	if wall_up(w):
+		(walls[w] as Node).queue_free()
+	walls.erase(w)
+
+
+func _start_yard() -> void:
+	var sp := spawner()
+	var d := sp.table.find("gnawer") if sp else null
+	if d == null:
+		return
+	for at in YARD_GNAWERS:
+		var e := Enemy.create(d, Transform3D(Basis(), at))
+		e.name = "YardGnawer%d" % (yard.size() + 1)
+		sp.add_child(e)
+		sp.call("_adopt", e)
+		e.died.connect(func(dead: Enemy, _el: ElementTable.Element): _on_yard_kill(dead))
+		yard.append(e)
+	_hint("Objective: Clear the Gnawers (0/%d)" % yard.size())
+
+
+func _on_yard_kill(e: Enemy) -> void:
+	yard_kills += 1
+	_hint("Objective: Clear the Gnawers (%d/%d)" % [yard_kills, YARD_GNAWERS.size()])
+	if yard_kills < YARD_GNAWERS.size() or current() != "combat":
+		return
+	flags.set_flag("gnawers_cleared")
+	_drop_wall("YardWall")
+	_drop_part(e.global_position)
+	advance("crafting")
+	_queue_toasts("crafting")
+
+
+## The guaranteed first part (beat 8): a Basic fire head, Interact to pick up.
+func _drop_part(at: Vector3) -> void:
+	var part := WieldablePart.load_part(TUTORIAL_PART)
+	if part == null:
+		return
+	var d := LootDrop.new()
+	d.kind = LootDrop.Kind.PART
+	d.item = part.duplicate()
+	d.rarity_id = "basic"
+	d.rolled_rarity_id = "basic"
+	d.element = part.element
+	part_pickup = LootPickup.create(d, Vector3(at.x, 0.4, at.z))
+	main.add_child(part_pickup)
+
+
+func _on_crafted(_p: Player, _w: WieldableInstance) -> void:
+	if flags.has("crafted_once"):
+		return
+	flags.set_flag("crafted_once")
+	_drop_wall("JunkWall")
+	if current() == "crafting":
+		advance("light_dark")
+		_make_shrines()
+		_queue_toasts("light_dark")
+
+
+func _make_shrines() -> void:
+	if not shrines.is_empty():
+		return
+	for spec in [["Light shrine", LIGHT_SHRINE], ["Dark shrine", DARK_SHRINE]]:
+		var n := Npc.new(String(spec[0]))
+		n.name = String(spec[0]).replace(" ", "")
+		n.player = player
+		main.add_child(n)
+		n.global_position = spec[1]
+		n.talked.connect(touch_shrine)
+		shrines[spec[0]] = n
+	if not flags.has("light_learned"):
+		var s := _spawn("Wounded scavenger", LIGHT_SHRINE + Vector3(-1.5, 0, 0.5), 90.0)
+		s.rotation_degrees.z = 70.0  # slumped against the heap
+
+
+## Beat 10: either order. Light heals the scavenger; Dark forces one Gnawer conversion.
+func touch_shrine(which: String) -> void:
+	if which == "Light shrine" and not flags.has("light_learned"):
+		flags.set_flag("light_learned")
+		MagicEffects.light_heals += 1
+		player.health.heal(player.health.max_value())
+		var s: Npc = cast.get("Wounded scavenger")
+		if s:
+			s.rotation_degrees.z = 0.0
+		_hint("Light washes over the scavenger. He stands. (Light heals allies; enemies take a little less.)")
+	elif which == "Dark shrine" and not flags.has("dark_learned"):
+		_dark_lesson()
+	if flags.has("light_learned") and flags.has("dark_learned") and current() == "light_dark":
+		_drop_wall("ArenaWall")
+		var sp := spawner()
+		if sp and _saved_trigger > 0.0:
+			sp.trigger_radius = _saved_trigger
+		advance("filth")
+
+
+func _dark_lesson() -> void:
+	var sp := spawner()
+	var d := sp.table.find("gnawer") if sp else null
+	if d:
+		dark_gnawer = Enemy.create(d, Transform3D(Basis(), DARK_SHRINE + Vector3(1.5, 0, -1.0)))
+		dark_gnawer.name = "ShrineGnawer"
+		sp.add_child(dark_gnawer)
+		sp.call("_adopt", dark_gnawer)
+		if not flags.has("tutorial_force_convert"):
+			flags.set_flag("tutorial_force_convert")  # once per character
+			MagicEffects.force_convert = true
+		MagicEffects.try_corrupt(dark_gnawer, 0.0)
+	flags.set_flag("dark_learned")
+	_hint("The Gnawer's eyes go dark: it fights for you now. (Normally ~1%. Dark parts raise it.)")
+
+
+func _queue_toasts(b: String) -> void:
+	for t in TOASTS.get(b, []):
+		_toasts.append(String(t))
+
+
+func _tick_toasts(dt: float) -> void:
+	_toast_left -= dt
+	if _toasts.is_empty() or _toast_left > 0.0 or Cinematic.playing != null:
+		return
+	_hint(_toasts.pop_front())
+	_toast_left = TOAST_SECONDS

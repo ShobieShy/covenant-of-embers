@@ -665,11 +665,11 @@ Design: docs/INTRO_PLAN.md (beats 1-13). Open questions Q18-Q26 there and below;
 - Does: Beat 6: moss-bed rest, night lighting preset, 'That night...' card, MentorArrival vortex cinematic; starter weapon moves from spawn to Bob (per Q18), bark map, stash, save enabled.
 - Done: test: fresh run has no weapon before Bob, has kit after; mentor plays once.
 
-**114. Association back door to the Landfill** ✅ PENDING
+**114. Association back door to the Landfill** ✅ `7ebfdc3`
 - Does: Beat 7: [[exit]] to_landfill in mage_association.toml gated on landfill_route_open (set by Bob); clerk bark; town gate guarded until filth_defeated (Q20).
 - Done: test: back door locked before Bob, leads to midden after.
 
-**115. Landfill lessons: combat, crafting, Light/Dark**
+**115. Landfill lessons: combat, crafting, Light/Dark** ✅ PENDING
 - Does: Beats 8-10: TutorialHints toast queue, scripted Gnawer yard with soft wall, guaranteed part drop, Assembly Station at Joe's camp + crafted_once, Light (heal scavenger) and Dark (one forced convert) shrines gating the arena.
 - Done: test_tutorial_lessons.gd: each wall drops on its flag; forced convert happens once only.
 

@@ -45,6 +45,7 @@ const CHAIN_FRACTION := 0.5
 static var light_heals := 0
 static var chains := 0
 static var corruptions := 0
+static var force_convert := false  ## step 115: the tutorial's next Dark roll always turns
 static var dark_roll := Callable()  ## tests: func() -> float in [0, 1)
 static var summons_made := 0
 static var ally_heals := 0
@@ -190,6 +191,9 @@ static func try_corrupt(e: Enemy, bonus: float) -> bool:
 	if e == null or not e.alive() or e.is_boss() or not (e is Gnawer) or e.is_ally():
 		return false
 	var roll := float(dark_roll.call()) if dark_roll.is_valid() else randf()
+	if force_convert:
+		force_convert = false
+		roll = 0.0
 	if roll >= dark_chance(bonus):
 		return false
 	if e.corrupt(DARK_SECONDS):

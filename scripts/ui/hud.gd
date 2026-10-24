@@ -212,7 +212,7 @@ func bind(p: Player, sp: EnemySpawner = null) -> void:
 	var bus := GameEvents.bus()
 	bus.wave_started.connect(func(i: int, id: String) -> void: show_banner("Wave %d: %s" % [i + 1, id.capitalize()]))
 	bus.wave_cleared.connect(func(i: int, _id: String) -> void: show_banner("Wave %d cleared" % (i + 1)))
-	bus.waves_completed.connect(func() -> void: show_banner("The Midden is quiet"))
+	bus.waves_completed.connect(func() -> void: show_banner("The Landfill is quiet"))
 	refresh(0.0)
 
 
