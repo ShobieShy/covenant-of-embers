@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 43,
   "total_steps": 93,
-  "steps_done": 55,
-  "last_commit": "227cf27",
+  "steps_done": 56,
+  "last_commit": "d6c13fb",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -549,6 +549,14 @@
       "summary": "town_square + mage_association greybox levels ([[exit]]/[[npc]] in toml_to_scene), Npc talkables wired to dialogue, LevelGate per exit, Landfill<->town gate; test_town.gd",
       "tests": "271 tests",
       "commit": "227cf27"
+    },
+    {
+      "time": "2026-10-24T05:44-05:00",
+      "step": 66,
+      "type": "build",
+      "summary": "old_oak greybox level (moss beds, candles, stash, upgrade slots, exit to town; town exit to it), shared Stash (user://stash.json, ItemCodes), MentorArrival (Bob vortex + bob_intro + mana potion, once via bob_arrived), story flags saved in progress; test_hub.gd",
+      "tests": "273 tests",
+      "commit": "d6c13fb"
     }
   ],
   "completed_steps": [

@@ -488,10 +488,11 @@ Steps marked **Needs ShobieShy** wait for his answer to the listed open question
 - Done: test_town.gd: all exits link, NPCs talkable.
 - Q1 answered (Magewar storyline)
 - Result: PASS (271 tests + headless playtest)
-**66. Home Tree hub: the Old Oak**
+**66. Home Tree hub: the Old Oak** ✅ `d6c13fb`
 - Does: Hollow, dark, candle-lit Old Oak (Bible Home Tree) with moss beds, stash, Assembly Station and slots for later upgrades (Bob's lab, potion garden, portals); first night Bob arrives by teleport vortex, appraises the Summoned and gives the Landfill task + starter gear.
 - Done: test_hub.gd: stash shared, station present, mentor scene once.
 - Q1 answered (Magewar storyline)
+- Result: PASS (273 tests + headless playtest)
 **67. Tutorial quest chain**
 - Does: Bob → Landfill (the Midden level, renamed Landfill in UI) → defeat The Filth → bring Joe's Trash back → Bob crafts the Fast Travel Teleportation Crystal; first levels.
 - Done: headless playtest variant runs the whole chain, PASS.
