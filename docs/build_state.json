@@ -920,6 +920,14 @@
       "summary": "Needs a real Windows machine (Q14); not available",
       "tests": "-",
       "commit": "c882ae3"
+    },
+    {
+      "time": "2026-10-24T08:09:01-05:00",
+      "step": 73,
+      "type": "skip",
+      "summary": "Waiting on ShobieShy's answer to Q6",
+      "tests": "-",
+      "commit": "202edd8"
     }
   ],
   "completed_steps": [
