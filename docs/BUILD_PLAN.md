@@ -240,7 +240,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Does (step 20 notes): an upgraded rolled part re-encodes at its new tier for free (tier is in the code); socketed gems and salvage state aren't in Ember Mark v1 → add them in a new code version (new table entries for gems + a defined header flag), keeping v1 codes decodable as "no gems".
 - Result: PASS — 201 tests green. ElementGem (first socketed gem sets the element, +1 flat dmg per gem; wand Heads 1 slot), CraftingExtras.socket/unsocket/salvage/upgrade. Salvage Dust by tier 1/3/6/12/25/50; upgrade cost 5/12/30/75 Dust per tier, same seed + relative roll, capped at Primordial (PLAN §30.3: never to Unique).
 
-**27. XP curve and levels**
+**27. XP curve and levels** ✅ `0fd8839`
 - Does: XP from kills, level-ups (+5 max mana/Breath + refill).
 - Does (step 4 notes): level-up Breath = +5 to the level part of `Breath.set_max_bonus` (kept separate from equipment so unequipping doesn't eat it) then `refill()` (Magewar `_level_up`).
 - Does (step 8 notes): level-up mana = +5 to the level part of `Mana.set_max_bonus` then `refill()` (Magewar `_level_up`: `value_max += 5`, full).
@@ -249,6 +249,7 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_xp.gd: curve values, level-up hooks (Breath 105/105 and Mana 105/105 after a level, from 40 mana).
 - Does (step 19 notes): the level parts already exist: set `player.level_health_bonus` / `level_mana_bonus` / `level_breath_bonus`, call `player.apply_bonuses()`, then refill (equipment totals are added there).
 - Does (step 13 notes): level-up health = +10 to the level part of `Health.set_max_bonus` then `health.refill()` (Magewar `_level_up` raises max health and heals); check the Magewar number before choosing 10.
+- Result: PASS — 204 tests (test_xp.gd 3)
 
 **28. Weight model + Vigil plumbing**
 - Does: Vigil tiers 1–10 with Omens shifting rarity weights (§31).

@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 27,
+  "next_step": 28,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -31,9 +31,10 @@
     23,
     24,
     25,
-    26
+    26,
+    27
   ],
-  "last_commit": "d0c17d9",
+  "last_commit": "0fd8839",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -266,6 +267,14 @@
         "Balance patch (step 21) could expose SALVAGE_DUST/UPGRADE_COST later"
       ],
       "commit": "d0c17d9"
+    },
+    {
+      "time": "2026-10-24T03:21:23-05:00",
+      "step": 27,
+      "type": "build",
+      "summary": "Progression (100 XP, x1.5 int per level, multi-level loop, cap 50); Player.add_xp gives Magewar +5 mana / +5 Breath per level and refills (no health, as Magewar); XpRewarder grants EnemyDef.xp_reward (Gnawer 5, Heap 15, default 10) to players within 80 m on enemy_killed, dummies none. Magewar review: matches add_xp/_level_up and kill reward service; gold not granted yet. 204 tests green.",
+      "plan_changes": {},
+      "commit": "0fd8839"
     }
   ]
 }
