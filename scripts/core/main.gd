@@ -17,6 +17,9 @@ var dialogue: DialogueRunner
 var dialogue_ui: DialogueUI
 var stash: Stash  # step 66: the Old Oak's shared stash (own file, every slot)
 var mentor_played := false
+var fast_travel: FastTravel  # step 68
+var waystone: Waystone
+var travel_ui: FastTravelUI
 var load_warnings := PackedStringArray()
 
 func _ready() -> void:
@@ -187,6 +190,7 @@ func _setup_flow(player: Player) -> void:
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
 	if here == "old_oak":
 		_setup_hub(player)
+	_setup_fast_travel(player, here)
 	print("[flow] level %s, gate to %s" % [here, gate.target])
 	Screenshots.attach(self, here)   # step 41: --shots <dir>
 	if OS.get_cmdline_user_args().has("--autoplay"):   # step 40
@@ -248,6 +252,40 @@ func _setup_hub(player: Player) -> void:
 	stash = Stash.load_shared()
 	_ensure_dialogue()
 	mentor_played = MentorArrival.play(story_flags, player, dialogue, self, player.spawn_feet + Vector3(0, 0, -3))
+
+## Step 68: this level's waystone (if it has a point) + the crystal's map screen.
+func _setup_fast_travel(player: Player, here: String) -> void:
+	fast_travel = FastTravel.new(story_flags)
+	fast_travel.traveled.connect(_on_fast_travel)
+	var layer := CanvasLayer.new()
+	layer.name = "TravelLayer"
+	add_child(layer)
+	travel_ui = FastTravelUI.new()
+	layer.add_child(travel_ui)
+	travel_ui.closed.connect(_on_map_closed)
+	var point := String(FastTravel.LEVEL_POINT.get(here, ""))
+	if point.is_empty():
+		return
+	waystone = Waystone.new(point, fast_travel)
+	waystone.name = "Waystone"
+	waystone.player = player
+	add_child(waystone)
+	waystone.global_position = player.spawn_feet + Vector3(0.0, 0.0, -2.5)
+	waystone.opened.connect(open_map)
+
+func open_map(point := "") -> void:
+	var player := get_node_or_null("Player") as Player
+	if player:
+		player.ui_open = true
+	travel_ui.show_map(fast_travel, point)
+
+func _on_map_closed() -> void:
+	var player := get_node_or_null("Player") as Player
+	if player:
+		player.ui_open = false
+
+func _on_fast_travel(_point: String, level: String) -> void:
+	travel(level)
 
 func talk_to(speaker: String) -> bool:
 	return dialogue != null and not dialogue.active and dialogue.start(speaker)
