@@ -18,5 +18,13 @@
 
 CC0 does not require attribution; Kenney and ambientCG are credited anyway with thanks. Support: https://kenney.nl/donate
 
+## Libraries
+| Name | Author | License | Source | Added |
+|---|---|---|---|---|
+| GodotSteam GDExtension 4.23.2 (addons/godotsteam) | GodotSteam contributors (Gramps) | MIT (addons/godotsteam/license.md) | https://codeberg.org/godotsteam/godotsteam | 2026-10-24 |
+| Steamworks SDK redistributables (libsteam_api.so, steam_api64.dll, bundled with GodotSteam) | Valve Corporation | Steamworks SDK Access Agreement (redistributable) | https://partner.steamgames.com/ | 2026-10-24 |
+
+Development uses Steam's public test app id 480 (steam_appid.txt); Steam is optional and only started when Steam co-op is chosen.
+
 ## Engine
 Built with Godot Engine 4.7.2 (MIT, https://godotengine.org/license), Jolt Physics module (MIT).
