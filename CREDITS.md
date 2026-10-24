@@ -7,6 +7,8 @@
 | UI Pack | Kenney | CC0 1.0 | https://kenney.nl/assets/ui-pack | 2026-10-22 |
 | Impact Sounds | Kenney | CC0 1.0 | https://kenney.nl/assets/impact-sounds | 2026-10-22 |
 | Interface Sounds | Kenney | CC0 1.0 | https://kenney.nl/assets/interface-sounds | 2026-10-22 |
+| Fantasy Town Kit 2.0 | Kenney | CC0 1.0 | https://kenney.nl/assets/fantasy-town-kit | 2026-10-24 |
+| Nature Kit 2.1 | Kenney | CC0 1.0 | https://kenney.nl/assets/nature-kit | 2026-10-24 |
 | Magewar item resources | ShobieShy (Magewar) | MIT (~/game LICENSE) | local ~/game/magewar/resources | 2026-10-23 |
 | Covenant of Embers icon | Covenant of Embers project | Apache 2.0 (original) | this repository | 2026-10-24 |
 | ambientCG Ground 037 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground037 | 2026-10-24 |
@@ -15,6 +17,8 @@
 | ambientCG Wood 049 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Wood049 | 2026-10-24 |
 | ambientCG Metal 032 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Metal032 | 2026-10-24 |
 | ambientCG Paving Stones 131 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=PavingStones131 | 2026-10-24 |
+
+3D models: Kenney (www.kenney.nl) — Fantasy Town Kit, Nature Kit (CC0). Delivered by Ember Art as batch 01; the full per-file list is in docs/credits/kenney_batch_01.md.
 
 CC0 does not require attribution; Kenney and ambientCG are credited anyway with thanks. Support: https://kenney.nl/donate
 

@@ -18,3 +18,6 @@ playtest/
 
 # Release/packaging output (step 84)
 dist/
+
+# Raw art deliveries (imported copies live under assets/)
+incoming_art/
