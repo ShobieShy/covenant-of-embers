@@ -16,6 +16,8 @@ signal crafting_completed(item: WieldableInstance)
 
 const GROUP := &"assembly_stations"
 const REACH := 3.0
+const MARKER := "WaveSpawns/station"  ## step 46: a level's station spot (else beside the start)
+const PROMPT := "[E] %s"
 
 @export var station_name := "Magic Assembly Station"
 @export var can_craft_staffs := true
@@ -23,6 +25,34 @@ const REACH := 3.0
 
 var last_error := ""
 var crafted := 0
+
+
+## Step 46: a station with its block mesh, placed at the level's MARKER when it has one,
+## else at `fallback` (Midden: beside the start).
+static func place(parent: Node, level: Node, fallback: Vector3) -> AssemblyStation:
+	var st := AssemblyStation.new()
+	st.name = "AssemblyStation"
+	var box := CSGBox3D.new()
+	box.size = Vector3(1.2, 1.0, 0.8)
+	box.position.y = 0.5
+	st.add_child(box)
+	parent.add_child(st)
+	var at := level.get_node_or_null(MARKER) as Node3D if level else null
+	if at:
+		st.global_transform = at.global_transform
+	else:
+		st.global_position = fallback
+	return st
+
+
+## The shared station prompt for whichever station is in reach ("" when none).
+static func prompt_for(p: Player) -> String:
+	if p == null or p.ui_open or not p.is_inside_tree():
+		return ""
+	for s in p.get_tree().get_nodes_in_group(GROUP):
+		if (s as AssemblyStation).in_reach(p):
+			return PROMPT % (s as AssemblyStation).station_name
+	return ""
 
 
 func _ready() -> void:

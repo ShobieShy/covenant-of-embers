@@ -183,6 +183,11 @@ position = [9.0, 0.0, 0.0]
 yaw_deg = 90.0
 
 [[spawn_point]]
+name = "station"              # step 46: the Assembly Station in the entrance, against the corridor's east wall
+position = [1.6, 0.0, 15.0]
+yaw_deg = -90.0
+
+[[spawn_point]]
 name = "vault_chest"          # inside the vault (behind the door); step 35's chest
 position = [0.0, 0.0, -18.0]
 yaw_deg = 180.0

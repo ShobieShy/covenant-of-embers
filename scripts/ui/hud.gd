@@ -40,6 +40,7 @@ var slot_icons: Array[ColorRect] = []
 var slot_gems: Array[ColorRect] = []
 var slot_draw: Array[ProgressBar] = []
 var hint_label: Label
+var prompt_label: Label  ## step 46: the shared "[E] station" prompt
 var marker: Label
 var banner: Label
 var level_label: Label
@@ -117,6 +118,11 @@ func _init() -> void:
 		slot_icons.append(icon)
 		slot_gems.append(gem)
 		slot_draw.append(dr)
+	prompt_label = _label(18, root)
+	prompt_label.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	prompt_label.position = Vector2(-200, -200)
+	prompt_label.size = Vector2(400, 30)
+	prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint_label = _label(20, root)
 	hint_label.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	hint_label.position = Vector2(-200, -160)
@@ -258,6 +264,7 @@ func refresh(dt: float) -> void:
 	mana_flash_left = maxf(0.0, mana_flash_left - dt)
 	_set_bar_color(mana_bar, MANA_COLOR.lerp(Color.WHITE, 0.7) if mana_flash_left > 0.0 else MANA_COLOR)
 	breath_bar.value = player.breath.fraction()
+	prompt_label.text = AssemblyStation.prompt_for(player)
 	_set_bar_color(breath_bar, BREATH_EXHAUSTED if player.breath.exhausted else BREATH_COLOR)
 	_refresh_pips()
 	crosshair.visible = not player.focus.focused and player.alive()
