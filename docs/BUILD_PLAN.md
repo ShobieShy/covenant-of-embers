@@ -300,10 +300,11 @@ Goal: a **minimal playable vertical slice**: walk a greybox Midden, fight Gnawer
 - Done: test_breach.gd: scene loads, navmesh baked, spawns valid.
 - Result: PASS — 221 tests (test_breach.gd 2). data/levels/breach_slice.toml -> scenes/levels/breach.tscn (root BreachSlice; toml_to_scene now names the root from the level id, Midden unchanged): south entrance corridor (4 m), 24 x 24 m arena with 4 pillars and a 0.2 m boss dais, vault room behind a 4 m `vault_door` wall box; spawn points boss_dais / west_wing / east_wing / vault_chest; 2 waves (gnawers, heap). Test: navmesh baked, arena spawns path-reachable from the start, vault sealed while the door stands.
 
-**34. Mini-boss (2 phases)**
+**34. Mini-boss (2 phases)** ✅ `9fada1e`
 - Does: Two-phase mini-boss state machine.
 - Does (step 14 notes): spawn the boss as the last `[[wave]]` of the Breach encounter (one enemy, `count = 1`) so `waves_completed` / its `enemy_killed` opens the vault; the boss must not be freed before the vault logic reads it (EnemySpawner frees non-respawning dead after 2 ticks — use the kill event, not the node).
 - Done: test_boss.gd: phase switch at 50 %, death opens vault.
+- Result: PASS (224 tests)
 
 **35. Vault + guaranteed boss loot**
 - Does: Vault chest with guaranteed rarity floor.

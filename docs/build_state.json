@@ -3,7 +3,7 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 34,
+  "next_step": 35,
   "total_steps": 42,
   "steps_done": [
     1,
@@ -38,9 +38,10 @@
     30,
     31,
     32,
-    33
+    33,
+    34
   ],
-  "last_commit": "5d04e8d",
+  "last_commit": "9fada1e",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -339,6 +340,17 @@
         "Step 33: dais is 0.2 m because the nav agent climbs 0.25 m. Single [waves] block per level is enough for this one-arena slice; [[encounter]] deferred."
       ],
       "commit": "5d04e8d"
+    },
+    {
+      "time": "2026-10-24T03:39:32-05:00",
+      "step": 34,
+      "type": "build",
+      "summary": "Breach Warden (ai kind boss, Warden extends Heap): enrages at 50 pct (x1.5 speed, x0.6 slam tempo, phase_changed); last Breach wave; Breach node opens vault_door on its enemy_killed 224 tests green.",
+      "plan_changes": [
+        "Warden numbers (400 HP, 12 dmg, Dark) are plan design scaled from the Heap; Magewar has no two-phase boss",
+        "Breach node is not yet added by main; step 35/39 wires it when the Breach is playable"
+      ],
+      "commit": "9fada1e"
     }
   ]
 }
