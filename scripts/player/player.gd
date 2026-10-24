@@ -130,6 +130,7 @@ var respawns := 0
 var hits_taken := 0
 var hits_ignored := 0           # i-frames / dead
 var equipment := Equipment.new()   # step 19: worn items + potion quick-slot
+var consecrations := Consecrations.new()   # step 36: worn Consecration effects
 var level_health_bonus := 0.0   # step 27 (level-ups) fills these; apply_bonuses() adds them
 var level_mana_bonus := 0.0
 var level_breath_bonus := 0.0
@@ -498,6 +499,7 @@ func apply_bonuses() -> void:
 	var dmg := equipment.spell_damage_bonus()
 	for c in loadout.casters:
 		c.damage_bonus = dmg
+	consecrations.apply(self)
 
 ## Drinks the quick-slot potion; a refusal (pool full / dead / empty slot) costs nothing
 ## and hints "<attribute> is already maxed." like Cogito.
@@ -548,6 +550,7 @@ func tick(input: PlayerInput, dt: float) -> void:
 			respawn()
 		return
 	health.tick(dt)
+	consecrations.tick(self)
 	protection_left = maxf(0.0, protection_left - dt)
 	if protection_left < 1e-6:   # 1 - 60 x 1/60 leaves float dust: exactly 60 ticks
 		protection_left = 0.0

@@ -14,6 +14,7 @@ const GROUP := &"vault_chests"
 const REACH := 2.0
 const PARTS := 2
 const DEFAULT_FLOOR := "rare"
+const CONSECRATE_CHANCE := 0.5   ## step 36: the equipment piece is Consecrated (Rare+ only)
 
 @export var floor_rarity := DEFAULT_FLOOR
 var locked := true
@@ -82,6 +83,8 @@ static func roll_contents(r: RandomNumberGenerator, floor_id := DEFAULT_FLOOR, l
 	q.element = DropRoller._element(r, el)
 	q.roll_seed = r.randi()
 	q.item = EquipmentRoller.from_seed(q.roll_seed, q.equip_slot, q.rarity_id, q.element)
+	if q.item != null and Rarity.parse(q.rarity_id) >= Rarity.parse("rare") and r.randf() < CONSECRATE_CHANCE:
+		(q.item as EquipmentItem).consecration = Consecrations.roll(r)
 	out.append(q)
 	return out
 

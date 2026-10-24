@@ -35,6 +35,7 @@ const STATS: PackedStringArray = ["health_bonus", "mana_bonus", "stamina_bonus",
 @export var spell_damage_bonus := 0.0         ## flat, added to each cast
 @export_range(0.0, 1.0) var elemental_resistance := 0.0   ## vs element_affinity damage
 @export var mana_regen_bonus := 0.0           ## mana/s
+@export var consecration := ""                ## step 36: Consecrations.DEFS id ("" = none)
 @export var roll_seed := -1                   ## EquipmentRoller seed; -1 = template / hand-made
 
 ## resources/equipment/<id>.tres (null when missing). Shared resource: duplicate() before editing.

@@ -49,6 +49,8 @@ var casts := 0
 var blocked := 0                 ## presses refused by the cooldown or mana
 var mana_refused := 0
 var damage_bonus := 0.0         ## step 19: worn spell_damage_bonus, added flat to each cast
+var conditional_bonus := 0.0    ## step 36: Consecration bonus while its condition holds (flat, each cast)
+var next_cast_bonus := 0.0      ## step 36: Consecration one-shot bonus, spent by the next cast
 
 func _init(w: WieldableInstance = null) -> void:
 	wieldable = w
@@ -86,7 +88,8 @@ func tick(pressed: bool, held: bool, dt: float, aim: Aim, bolts: SpellBolts) -> 
 		s.speed = wieldable.projectile_speed()
 		s.range_m = wieldable.range_m()
 		s.element = wieldable.element()
-		s.damage = wieldable.damage() + damage_bonus
+		s.damage = wieldable.damage() + damage_bonus + conditional_bonus + next_cast_bonus
+		next_cast_bonus = 0.0
 		s.exclude = aim.exclude
 		s.has_visual_origin = aim.has_visual_origin
 		s.visual_origin = aim.visual_origin
