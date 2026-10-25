@@ -327,6 +327,9 @@ func _die(element: ElementTable.Element) -> void:
 	body_shape.set_deferred(&"disabled", true)
 	if head_shape:
 		head_shape.set_deferred(&"disabled", true)
+	if is_inside_tree() and def:
+		var et := ElementTable.load_default()
+		StatusFX.death(get_parent(), global_position, def.size, def.color, et.color(element) if et else Color.WHITE)
 	visible = false
 
 
@@ -338,6 +341,13 @@ func _physics_process(delta: float) -> void:
 func tick(dt: float) -> void:
 	_status_tick(dt)
 	_sync_overlay()
+	StatusFX.sync(
+		self,
+		def.size if def else Vector3.ONE,
+		burn_left > 0.0 and not dead,
+		slow_left > 0.0 and not dead,
+		stagger_left > 0.0 and not dead
+	)
 	SpellFX.sync_aura(self, 0.0 if dead else corrupted_left, 0.6 + (def.size.x * 0.5 if def else 0.4))
 	if corrupted_left > 0.0 and not dead:
 		corrupted_left = maxf(0.0, corrupted_left - dt)

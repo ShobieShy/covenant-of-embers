@@ -252,5 +252,6 @@ static func chain(h: SpellBolts.Hit) -> Enemy:
 	var r := Damage.resolve_hit(CHAIN_FRACTION * h.damage, ElementTable.Element.AIR, best.damage_target)
 	best.damage_target.weak_point = wp
 	best.apply_damage(r.amount, ElementTable.Element.AIR)
+	StatusFX.chain_arc(src.get_parent(), src.global_position + Vector3.UP, best.global_position + Vector3.UP)
 	chains += 1
 	return best

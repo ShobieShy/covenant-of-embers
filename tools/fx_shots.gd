@@ -49,6 +49,25 @@ func _initialize() -> void:
 	fx.heal_motes(Vector3(-1.0, 0.0, -3.0))
 	cam.look_at_from_position(Vector3(0, 2.0, 0.0), Vector3(0, 0.3, -3.0))
 	await _shot(out + "/fx_heal_aura.png", 30)
+	host.queue_free()
+	# 4 (step 129): burn / slow / stagger, a chain arc and a death dissolve
+	var sz := Vector3(0.7, 1.4, 0.7)
+	for i in 3:
+		var n := Node3D.new()
+		lvl.add_child(n)
+		n.position = Vector3(-2.0 + i * 1.6, 0.0, -3.0)
+		var box := MeshInstance3D.new()
+		var bm := BoxMesh.new()
+		bm.size = sz
+		box.mesh = bm
+		box.position.y = sz.y * 0.5
+		n.add_child(box)
+		StatusFX.sync(n, sz, i == 0, i == 1, i == 2)
+	cam.look_at_from_position(Vector3(0, 2.0, 1.0), Vector3(0, 0.8, -3.0))
+	await _shot(out + "/fx_status.png", 40)
+	StatusFX.chain_arc(lvl, Vector3(-2, 1, -3), Vector3(1.2, 1, -3))
+	StatusFX.death(lvl, Vector3(2.6, 0, -3), sz, Color(0.4, 0.5, 0.3), Color(1.0, 0.35, 0.08))
+	await _shot(out + "/fx_chain_death.png", 22)
 	quit()
 
 
