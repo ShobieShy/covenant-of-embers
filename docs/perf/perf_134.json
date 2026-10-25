@@ -1,0 +1,65 @@
+[
+  {
+    "avg_ms": 0.60299,
+    "fps": 1658.40229522878,
+    "level": "midden",
+    "low1_fps": 627.352572145546,
+    "preset": "Low"
+  },
+  {
+    "avg_ms": 0.644163333333334,
+    "fps": 1552.40130608696,
+    "level": "breach",
+    "low1_fps": 574.712643678161,
+    "preset": "Low"
+  },
+  {
+    "avg_ms": 0.643883333333334,
+    "fps": 1553.07638547356,
+    "level": "town_square",
+    "low1_fps": 588.581518540318,
+    "preset": "Low"
+  },
+  {
+    "avg_ms": 0.773603333333334,
+    "fps": 1292.65213438412,
+    "level": "midden",
+    "low1_fps": 579.038795599305,
+    "preset": "Medium"
+  },
+  {
+    "avg_ms": 0.766093333333333,
+    "fps": 1305.32398141219,
+    "level": "breach",
+    "low1_fps": 606.428138265616,
+    "preset": "Medium"
+  },
+  {
+    "avg_ms": 0.84759,
+    "fps": 1179.81571278566,
+    "level": "town_square",
+    "low1_fps": 575.043128234618,
+    "preset": "Medium"
+  },
+  {
+    "avg_ms": 0.893226666666667,
+    "fps": 1119.53666109386,
+    "level": "midden",
+    "low1_fps": 515.463917525773,
+    "preset": "High"
+  },
+  {
+    "avg_ms": 0.916536666666666,
+    "fps": 1091.0638235968,
+    "level": "breach",
+    "low1_fps": 501.756146512795,
+    "preset": "High"
+  },
+  {
+    "avg_ms": 0.867313333333333,
+    "fps": 1152.98584902035,
+    "level": "town_square",
+    "low1_fps": 558.971492453885,
+    "preset": "High"
+  }
+]

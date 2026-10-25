@@ -44,7 +44,7 @@ static func _toggle(e: Node3D, n: String, on: bool, make: Callable) -> void:
 
 static func _particles(amount: int, life: float, c: Color, size: float) -> CPUParticles3D:
 	var p := CPUParticles3D.new()
-	p.amount = amount
+	p.amount = QualityPresets.particle_amount(amount)  # step 134
 	p.lifetime = life
 	var g := Gradient.new()
 	g.set_color(0, Color(c.lerp(Color.WHITE, 0.3), 0.9))

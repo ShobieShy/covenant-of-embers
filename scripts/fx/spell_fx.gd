@@ -90,7 +90,7 @@ func visible_heads() -> int:
 
 ## One-shot impact burst; returns it (null when over the cap).
 func impact(at: Vector3, normal: Vector3, e: ElementTable.Element) -> CPUParticles3D:
-	if bursts >= MAX_BURSTS or not is_inside_tree():
+	if bursts >= mini(MAX_BURSTS, QualityPresets.burst_cap()) or not is_inside_tree():
 		return null
 	var cfg: Array = BURST.get(e, [10, 0.4, 2.0, 0.0, 0.05, 90.0])
 	var c := color(e)
@@ -165,7 +165,7 @@ func _on_healed(pl: Player, _amount: float) -> void:
 
 ## Light heal: rising green-gold motes + a ring at the feet.
 func heal_motes(at: Vector3) -> CPUParticles3D:
-	if bursts >= MAX_BURSTS or not is_inside_tree():
+	if bursts >= mini(MAX_BURSTS, QualityPresets.burst_cap()) or not is_inside_tree():
 		return null
 	var p := _burst([20, 1.1, 1.2, 1.6, 0.05, 25.0], HEAL_COLOR.lerp(LIGHT_GOLD, 0.35), Vector3.UP)
 	p.name = "HealMotes"

@@ -28,6 +28,7 @@ var subtitle_scale := 1.0
 var renderer := "auto"  ## step 86: PlatformDisplay.RENDERERS (next launch)
 var window_mode := 0  ## PlatformDisplay.WINDOW_MODES
 var ui_scale := 0.0  ## 0 = auto (DPI)
+var quality := -1  ## step 134: QualityPresets.Level, -1 = auto (Low on Steam Deck)
 
 
 static func rebindable() -> Array[StringName]:
@@ -136,6 +137,10 @@ func apply_to(p: Player) -> void:
 	var tree := Engine.get_main_loop() as SceneTree
 	if tree:
 		PlatformDisplay.apply(tree.root, window_mode, ui_scale)  # step 86
+		QualityPresets.level = QualityPresets.resolve(quality)  # step 134
+		QualityPresets.apply_engine()
+		var cur := tree.current_scene.get_node_or_null(^"Level") if tree.current_scene else null
+		QualityPresets.apply_level(cur)
 	if p == null:
 		return
 	p.invert_y = invert_y
@@ -179,6 +184,7 @@ static func load_from(path := PATH) -> Settings:
 	if not PlatformDisplay.RENDERERS.has(String(s.renderer)):
 		s.renderer = "auto"
 	s.window_mode = clampi(int(s.window_mode), 0, PlatformDisplay.WINDOW_MODES.size() - 1)
+	s.quality = clampi(int(s.quality), -1, 2)
 	s.ui_scale = 0.0 if float(s.ui_scale) <= 0.0 else clampf(s.ui_scale, 0.75, 2.0)
 	return s
 
@@ -200,5 +206,6 @@ func _options() -> PackedStringArray:
 		"subtitle_scale",
 		"renderer",
 		"window_mode",
-		"ui_scale"
+		"ui_scale",
+		"quality"
 	]

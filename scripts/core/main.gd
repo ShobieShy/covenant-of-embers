@@ -180,6 +180,7 @@ func _swap_level(id: String) -> void:
 	lv.name = "Level"
 	add_child(lv)
 	move_child(lv, 0)
+	QualityPresets.apply_level(lv)  # step 134
 
 ## Step 39: Breach logic, the travel gate, the pause menu (+ its settings screen), and the
 ## save load when the flow asks for it.

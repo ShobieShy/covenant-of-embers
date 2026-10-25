@@ -42,6 +42,10 @@ const BRAINS := {
 const BURN_TICK := 0.5  ## s between burn damage ticks (step 53)
 const ALLY_COLOR := Color(0.55, 0.2, 0.85)  ## step 52: corrupted tint
 
+const FX_BURN := 1
+const FX_SLOW := 2
+const FX_STAGGER := 4
+var net_fx := 0  ## step 134: host status bits on a co-op puppet
 var health_scale := 1.0  ## step 80: co-op enemy health multiplier
 ## Step 94: a co-op client puppet only shows predicted damage; it never dies from it (it
 ## stays at >= 1 HP, so later hits still go to the host). Only the host's kill ends it.
@@ -337,16 +341,26 @@ func _physics_process(delta: float) -> void:
 	tick(delta)
 
 
+## Step 134 (FX F8): status FX bits, sent in the co-op snapshot so every peer sees them.
+func fx_flags() -> int:
+	return (
+		(FX_BURN if burn_left > 0.0 else 0)
+		| (FX_SLOW if slow_left > 0.0 else 0)
+		| (FX_STAGGER if stagger_left > 0.0 else 0)
+	)
+
+
 ## Hit flash: the greybox tint goes towards white for FLASH_TIME after a hit.
 func tick(dt: float) -> void:
 	_status_tick(dt)
 	_sync_overlay()
+	var f := fx_flags() | net_fx  # step 134: a co-op puppet shows the host's statuses
 	StatusFX.sync(
 		self,
 		def.size if def else Vector3.ONE,
-		burn_left > 0.0 and not dead,
-		slow_left > 0.0 and not dead,
-		stagger_left > 0.0 and not dead
+		f & FX_BURN != 0 and not dead,
+		f & FX_SLOW != 0 and not dead,
+		f & FX_STAGGER != 0 and not dead
 	)
 	SpellFX.sync_aura(self, 0.0 if dead else corrupted_left, 0.6 + (def.size.x * 0.5 if def else 0.4))
 	if corrupted_left > 0.0 and not dead:

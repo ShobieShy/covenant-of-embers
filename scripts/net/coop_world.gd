@@ -257,11 +257,24 @@ func send_snapshot() -> void:
 	for e in host_enemies():
 		if list.size() >= MAX_ENEMIES:
 			break
-		list.append(
-			[enemy_id(e), e.def.id, e.global_position, e.rotation.y, e.health, e.max_health(), e.dead, e.is_ally()]
-		)
+		list.append(snap_row(e))
 	snaps_sent += 1
 	session.send("snap", {"e": list}, 0, false)
+
+
+## One snapshot row; [8] = Enemy.fx_flags() (step 134: status FX parity on clients).
+func snap_row(e: Enemy) -> Array:
+	return [
+		enemy_id(e),
+		e.def.id,
+		e.global_position,
+		e.rotation.y,
+		e.health,
+		e.max_health(),
+		e.dead,
+		e.is_ally(),
+		e.fx_flags()
+	]
 
 
 func _on_host_died(e: Enemy, element: ElementTable.Element) -> void:
@@ -315,6 +328,7 @@ func _apply_snapshot(list: Array) -> void:
 			# step 108: the host's ally flag (the puppet never times out on its own)
 			var ally := row.size() > 7 and bool(row[7])
 			e.corrupted_left = PUPPET_ALLY_SECONDS if ally else 0.0
+			e.net_fx = int(row[8]) if row.size() > 8 else 0
 	for id in puppets.keys():
 		if not seen.has(id):
 			var gone: Enemy = puppets[id]

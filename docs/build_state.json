@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 114,
+  "steps_done": 115,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1200,6 +1200,13 @@
       "type": "build",
       "summary": "FX F7: cinematic letterbox slide + fades, summoning circle, vortex swirl, trash crystal, HUD bar shine",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-25T00:54:39-05:00",
+      "step": 134,
+      "type": "build",
+      "summary": "FX F8: QualityPresets Low(Steam Deck)/Medium/High + settings option, particle/burst caps, perf capture (docs/perf_134.md), co-op status-FX parity via snapshot fx bits",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1316,7 +1323,8 @@
     130,
     131,
     132,
-    133
+    133,
+    134
   ],
   "deferred": [
     74,
@@ -1335,9 +1343,7 @@
       "shots": "playtest/wayland_20261024_run3/"
     }
   ],
-  "waiting_on_user_go": [
-    134
-  ],
+  "waiting_on_user_go": [],
   "notes": [
     "2026-10-24: steps 119-134 (art spree A1-A8, FX spree F1-F8) planned, waiting on user go; see docs/ART_SPREE_PLAN.md, docs/FX_SPREE_PLAN.md",
     "2026-10-24: Q27-Q34 answered (low-poly, CC-BY credited in-game, Loli small witch normal attire, gear visible now, moonlit night, Light/Dark FX for all, Low=Steam Deck, F1 first)"

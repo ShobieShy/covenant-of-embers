@@ -78,6 +78,13 @@ func _init() -> void:
 	wm.item_selected.connect(func(i): set_option("window_mode", i))
 	opts.add_child(wm)
 	controls["window_mode"] = wm
+	var q := OptionButton.new()  # step 134
+	q.add_item("Graphics: Auto")
+	for n in QualityPresets.NAMES:
+		q.add_item("Graphics: " + n)
+	q.item_selected.connect(func(i): set_option("quality", i - 1))
+	opts.add_child(q)
+	controls["quality"] = q
 	var rd := OptionButton.new()
 	for n in PlatformDisplay.renderers_for(OS.get_name()):
 		rd.add_item("Renderer: " + n + " (restart)")
@@ -120,6 +127,8 @@ func refresh() -> void:
 			(c as CheckBox).set_pressed_no_signal(settings.get(o))
 		elif c is OptionButton and o == "renderer":
 			(c as OptionButton).select(maxi(0, PlatformDisplay.renderers_for(OS.get_name()).find(settings.renderer)))
+		elif c is OptionButton and o == "quality":
+			(c as OptionButton).select(int(settings.quality) + 1)
 		elif c is OptionButton:
 			(c as OptionButton).select(settings.get(o))
 		else:
