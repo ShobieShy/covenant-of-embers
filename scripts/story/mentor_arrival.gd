@@ -47,4 +47,5 @@ static func vortex(at: Vector3) -> Node3D:
 	v.material = m
 	v.rotation_degrees.x = 90.0
 	v.position = at + Vector3(0, 1.2, 0)
+	RitualFX.dress_vortex(v)  # step 133 (FX F7)
 	return v

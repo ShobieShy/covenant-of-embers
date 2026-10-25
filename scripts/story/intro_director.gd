@@ -320,6 +320,8 @@ func _hide_joe() -> void:
 
 func _play_summoning() -> void:
 	var dais := Vector3(0, 1.2, -10)
+	var circle := RitualFX.summoning_circle(DAIS_SPOT)  # step 133 (FX F7)
+	main.add_child(circle)
 	cinematic = play_cinematic(
 		"summoning",
 		[
@@ -347,6 +349,7 @@ func _play_summoning() -> void:
 		],
 		_after_summoning
 	)
+	cinematic.finished.connect(func(_i, _s): circle.queue_free())
 
 
 func _after_summoning() -> void:
@@ -958,6 +961,8 @@ func _on_flag(flag: String, _v: int) -> void:
 func _play_crystal() -> void:
 	var bob := main.get_node_or_null("Npc_Bob") as Node3D
 	var at: Vector3 = bob.global_position if bob else player.global_position
+	var gem := RitualFX.crystal(at + Vector3(0, 1.4, 0.4))  # step 133 (FX F7)
+	main.add_child(gem)
 	cinematic = play_cinematic(
 		"crystal",
 		[
@@ -971,6 +976,7 @@ func _play_crystal() -> void:
 		],
 		complete
 	)
+	cinematic.finished.connect(func(_i, _s): gem.queue_free())
 
 
 ## Beat 13 end: every gate and menu opens, the waystone wakes, "Prologue complete".

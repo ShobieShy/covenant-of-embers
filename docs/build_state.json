@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 113,
+  "steps_done": 114,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1193,6 +1193,13 @@
       "type": "build",
       "summary": "FX F6: volumetric haze (Landfill/Breach), per-area grade, TimeOfDay day/dusk/night presets; water shader deferred",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-25T00:48:24-05:00",
+      "step": 133,
+      "type": "build",
+      "summary": "FX F7: cinematic letterbox slide + fades, summoning circle, vortex swirl, trash crystal, HUD bar shine",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1308,7 +1315,8 @@
     129,
     130,
     131,
-    132
+    132,
+    133
   ],
   "deferred": [
     74,
@@ -1328,7 +1336,6 @@
     }
   ],
   "waiting_on_user_go": [
-    133,
     134
   ],
   "notes": [

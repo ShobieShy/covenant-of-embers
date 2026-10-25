@@ -11,6 +11,8 @@ signal finished(id: String, skipped: bool)
 
 const SKIP_HOLD := 1.0
 const BAR := 0.12  ## letterbox height (viewport fraction)
+const BAR_IN := 0.5  ## step 133: letterbox slide-in seconds
+const FADE := 0.4  ## step 133: fade from black at the start, to black before the end
 
 static var playing: Cinematic = null
 
@@ -27,6 +29,9 @@ var hint: Label
 var shooter: Screenshots
 var _shot_taken := false
 var _layer: CanvasLayer
+var bars: Array[ColorRect] = []
+var fade: ColorRect
+var elapsed := 0.0
 
 
 static func make(cid: String, list: Array, p: Player) -> Cinematic:
@@ -56,6 +61,14 @@ func _ready() -> void:
 		bar.anchor_bottom = BAR if top else 1.0
 		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_layer.add_child(bar)
+		bars.append(bar)
+	fade = ColorRect.new()
+	fade.name = "Fade"
+	fade.color = Color.BLACK
+	fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_layer.add_child(fade)
+	_animate(0.0)
 	caption = _label(28, 1.0 - BAR - 0.1, HORIZONTAL_ALIGNMENT_CENTER)
 	hint = _label(14, 1.0 - BAR * 0.5, HORIZONTAL_ALIGNMENT_RIGHT)
 	hint.text = "Hold Esc to skip" if can_skip else "The host can skip"
@@ -115,6 +128,8 @@ func _process(delta: float) -> void:
 		hint.text = "Hold Esc to skip"
 	var dur := maxf(0.1, float(shots[shot].get("s", 3.0)))
 	shot_t += delta
+	elapsed += delta
+	_animate(dur)
 	_place(minf(1.0, shot_t / dur))
 	if not _shot_taken and shot_t >= dur * 0.5:
 		_shot_taken = true
@@ -122,6 +137,20 @@ func _process(delta: float) -> void:
 			shooter.take("cine_%s_%d" % [id, shot])
 	if shot_t >= dur:
 		_next_shot()
+
+
+## Step 133 (FX F7): letterbox bars slide in over BAR_IN s; fade from black over the first FADE s
+## and to black over the last FADE s of the final shot.
+func _animate(dur: float) -> void:
+	var k := smoothstep(0.0, 1.0, clampf(elapsed / BAR_IN, 0.0, 1.0)) * BAR
+	if bars.size() == 2:
+		bars[0].anchor_bottom = k
+		bars[1].anchor_top = 1.0 - k
+	var a := 1.0 - clampf(elapsed / FADE, 0.0, 1.0)
+	if shot == shots.size() - 1 and dur > FADE * 2.0:
+		a = maxf(a, clampf((shot_t - (dur - FADE)) / FADE, 0.0, 1.0))
+	if fade:
+		fade.color.a = a
 
 
 ## Ends now (flags still apply). False when this peer may not skip.

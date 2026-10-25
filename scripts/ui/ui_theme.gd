@@ -93,3 +93,4 @@ static func frame_bar(b: ProgressBar) -> void:
 	f.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	f.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	b.add_child(f)
+	RitualFX.bar_shine(b)  # step 133 (FX F7)
