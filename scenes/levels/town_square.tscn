@@ -31,7 +31,7 @@
 [ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/tree-crooked.glb" id="23_glb"]
 [ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-block.glb" id="24_glb"]
 [ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/windmill.glb" id="25_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_oak.glb" id="26_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/old_oak/OldOak_Giant.glb" id="26_glb"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -683,7 +683,7 @@ transform = Transform3D(3, 0, 0, 0, 6, 0, 0, 0, 3, -27, 0, -22)
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -27, 5.5, -20.4)
 
 [node name="old_oak" parent="Props" instance=ExtResource("26_glb")]
-transform = Transform3D(7.250462, 0, 3.380946, 0, 8, 0, -3.380946, 0, 7.250462, 26, 0, 14)
+transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 29, 0, 14)
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
 script = ExtResource("1_nav")

@@ -521,7 +521,7 @@ rotation_deg = [0.0, 0.0, 0.0]
 scale = 3
 [[prop]]
 name = "old_oak"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [26, 0, 14]
+model = "assets/original/old_oak/OldOak_Giant.glb"
+position = [29, 0, 14]
 rotation_deg = [0.0, 25.0, 0.0]
-scale = 8
+scale = 1.0

@@ -11,7 +11,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LICENSE_NAMES = {"CC0-1.0": "CC0 1.0", "CC-BY-3.0": "CC BY 3.0", "CC-BY-4.0": "CC BY 4.0"}
 # Exact attribution strings the licensors / art lead asked for (CC-BY needs one).
-ATTRIBUTION = {"crazy_joe": '"Animated Wizard" by Quaternius, CC BY 3.0'}
+ATTRIBUTION = {
+    "crazy_joe": '"Animated Wizard" by Quaternius, CC BY 3.0',
+    "elders": '"Animated Wizard" by Quaternius (Elders, recoloured), CC BY 3.0 - https://poly.pizza/m/kttbFvCl2C',
+}
 
 
 def q(s: str) -> str:

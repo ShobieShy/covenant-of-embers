@@ -132,3 +132,24 @@ author = "Quaternius"
 license = "CC BY 3.0"
 source = "https://poly.pizza/m/kttbFvCl2C"
 line = "\"Animated Wizard\" by Quaternius, CC BY 3.0"
+
+[[credit]]
+name = "\"Animated Wizard\" by Quaternius (Elders, recoloured)"
+author = "Quaternius"
+license = "CC BY 3.0"
+source = "https://poly.pizza/m/kttbFvCl2C"
+line = "\"Animated Wizard\" by Quaternius (Elders, recoloured), CC BY 3.0 - https://poly.pizza/m/kttbFvCl2C"
+
+[[credit]]
+name = "KayKit Adventurers (Mage, rig animations, props)"
+author = "Kay Lousberg"
+license = "CC0 1.0"
+source = "https://kaylousberg.itch.io/kaykit-adventurers"
+line = "KayKit Adventurers (Mage, rig animations, props) by Kay Lousberg, CC0 1.0"
+
+[[credit]]
+name = "Old Oak (giant)"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "incoming_art/batch_03_priority/old_oak (original work, built in Blender for this project)"
+line = "Old Oak (giant) by Covenant of Embers project, CC0 1.0"

@@ -14,6 +14,9 @@
 | Quaternius characters: Gal (Adventurer, Hooded Adventurer) | Quaternius | CC0 1.0 | https://poly.pizza/m/ZwF0K7WBmu | 2026-10-24 |
 | Quaternius characters: Buff (King) | Quaternius | CC0 1.0 | https://poly.pizza/m/I1gTjmuK2m | 2026-10-24 |
 | "Animated Wizard" by Quaternius | Quaternius | CC BY 3.0 | https://poly.pizza/m/kttbFvCl2C | 2026-10-24 |
+| "Animated Wizard" by Quaternius (Elders, recoloured) | Quaternius | CC BY 3.0 | https://poly.pizza/m/kttbFvCl2C | 2026-10-24 |
+| KayKit Adventurers (Mage, rig animations, props) | Kay Lousberg | CC0 1.0 | https://kaylousberg.itch.io/kaykit-adventurers | 2026-10-24 |
+| Old Oak (giant) | Covenant of Embers project | CC0 1.0 | original work | 2026-10-24 |
 | Magewar item resources | ShobieShy (Magewar) | MIT (~/game LICENSE) | local ~/game/magewar/resources | 2026-10-23 |
 | Covenant of Embers icon | Covenant of Embers project | Apache 2.0 (original) | this repository | 2026-10-24 |
 | ambientCG Ground 037 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground037 | 2026-10-24 |
@@ -25,7 +28,7 @@
 
 3D models: Kenney (www.kenney.nl) — Fantasy Town Kit, Nature Kit (CC0). Delivered by Ember Art as batch 01; the full per-file list is in docs/credits/kenney_batch_01.md.
 
-"Animated Wizard" by Quaternius, CC BY 3.0 (https://poly.pizza/m/kttbFvCl2C, https://creativecommons.org/licenses/by/3.0/) - used for Crazy Joe.
+"Animated Wizard" by Quaternius, CC BY 3.0 (https://poly.pizza/m/kttbFvCl2C, https://creativecommons.org/licenses/by/3.0/) - used for Crazy Joe and the Elders (recoloured).
 
 Characters by Quaternius (quaternius.com), CC0. Delivered by Ember Art as batch 02; see docs/credits/quaternius_batch_02_CREDITS.md.
 
