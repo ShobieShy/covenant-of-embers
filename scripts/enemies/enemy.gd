@@ -78,6 +78,8 @@ var head_shape: CollisionShape3D  ## null without a weak point
 var _body_mesh: MeshInstance3D
 var _head_mesh: MeshInstance3D
 var _body_mat: StandardMaterial3D
+var model: CharacterModel  ## step 121: rigged body (EnemyModels), or null = greybox box
+var _overlay: StandardMaterial3D
 var _head_mat: StandardMaterial3D
 
 
@@ -113,6 +115,31 @@ func setup(d: EnemyDef) -> void:
 		head_shape = _shape("Head", d.weak_point_size, d.weak_point_offset)
 		_head_mat = _material(d.color.lerp(Color.WHITE, WEAK_POINT_BRIGHTEN))
 		_head_mesh = _mesh("HeadMesh", d.weak_point_size, d.weak_point_offset, _head_mat)
+	_attach_model()
+
+
+## Step 121: swap the greybox mesh for the batch_04 model; tints go to an overlay.
+func _attach_model() -> void:
+	model = EnemyModels.make(def.id, def.size.y)
+	if model == null:
+		return
+	add_child(model)
+	_body_mesh.visible = false
+	if _head_mesh:
+		_head_mesh.visible = false
+	_overlay = StandardMaterial3D.new()
+	_overlay.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_overlay.albedo_color = Color(1, 1, 1, 0)
+	for mi in model.find_children("*", "MeshInstance3D", true, false):
+		(mi as MeshInstance3D).material_overlay = _overlay
+
+
+func _sync_overlay() -> void:
+	if _overlay == null:
+		return
+	var c := _body_mat.albedo_color
+	_overlay.albedo_color = Color(c.r, c.g, c.b, 0.0 if c.is_equal_approx(def.color) else 0.55)
 
 
 func _shape(n: String, sz: Vector3, at: Vector3) -> CollisionShape3D:
@@ -310,6 +337,7 @@ func _physics_process(delta: float) -> void:
 ## Hit flash: the greybox tint goes towards white for FLASH_TIME after a hit.
 func tick(dt: float) -> void:
 	_status_tick(dt)
+	_sync_overlay()
 	if corrupted_left > 0.0 and not dead:
 		corrupted_left = maxf(0.0, corrupted_left - dt)
 		if corrupted_left <= 0.0:

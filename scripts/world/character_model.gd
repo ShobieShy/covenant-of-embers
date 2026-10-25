@@ -30,8 +30,8 @@ const HEIGHTS := {"Witch_Mage_1p3m.glb": 1.3, "Nerd_Scholar.glb": 1.6}
 const KAYKIT_ANIMS := [
 	"res://assets/kaykit/anims/Rig_Medium_General.glb", "res://assets/kaykit/anims/Rig_Medium_MovementBasic.glb"
 ]
-const IDLE := ["Idle_Neutral", "Idle", "kaykit/Idle_A"]
-const WALK := ["Walk", "kaykit/Walking_A"]
+const IDLE := ["Idle_Neutral", "Idle", "kaykit/Idle_A", "Rat_Idle", "Slime_Idle"]
+const WALK := ["Walk", "kaykit/Walking_A", "Rat_Run", "Slime_Walk"]
 
 var anim: AnimationPlayer
 var _last := Vector3.INF
@@ -57,6 +57,11 @@ static func for_archetype(id: String) -> String:
 
 ## A ready model node, or null when the path is empty / fails to load (caller keeps its placeholder).
 static func make(path: String) -> CharacterModel:
+	return make_sized(path, float(HEIGHTS.get(path.get_file(), HEIGHT)))
+
+
+## Like make() with an explicit height (enemies fit their collision box).
+static func make_sized(path: String, height: float) -> CharacterModel:
 	if path.is_empty() or not ResourceLoader.exists(path):
 		return null
 	var ps := load(path) as PackedScene
@@ -67,7 +72,7 @@ static func make(path: String) -> CharacterModel:
 	var inst := ps.instantiate() as Node3D
 	inst.rotation.y = PI  # Quaternius faces +Z; Godot's forward is -Z
 	cm.add_child(inst)
-	cm._fit(inst, float(HEIGHTS.get(path.get_file(), HEIGHT)))
+	cm._fit(inst, height)
 	cm.anim = cm.find_child("AnimationPlayer", true, false) as AnimationPlayer
 	if cm.anim == null and inst.get_node_or_null("Rig_Medium/Skeleton3D") != null:
 		cm.anim = _kaykit_player(inst)
@@ -103,6 +108,16 @@ func _fit(inst: Node3D, height: float = HEIGHT) -> void:
 	for mi in inst.find_children("*", "MeshInstance3D", true, false):
 		var m := mi as MeshInstance3D
 		var a: AABB = _local_xform(inst, m) * m.get_aabb()
+		# Skinned mesh: vertices are already in armature units; the armature's own scale (x100 in
+		# some Quaternius exports) is baked into the bones, so skip it or the fit shrinks to nothing.
+		if m.get_parent() is Skeleton3D and m.get_parent().get_parent() is Node3D:
+			var arm := m.get_parent().get_parent() as Node3D
+			if arm != inst and not arm.scale.is_equal_approx(Vector3.ONE):
+				a = (
+					_local_xform(inst, arm.get_parent() as Node3D) * m.get_aabb()
+					if arm.get_parent() != inst
+					else m.get_aabb()
+				)
 		box = a if first else box.merge(a)
 		first = false
 	if first or box.size.y <= 0.001:
@@ -126,8 +141,8 @@ func _play(names: Array) -> void:
 	if anim == null:
 		return
 	for n in names:
-		for full in [String(n), "CharacterArmature|" + String(n)]:
-			if anim.has_animation(full):
+		for full in anim.get_animation_list():
+			if full == n or String(full).get_slice("|", 1) == n:
 				var a := anim.get_animation(full)
 				a.loop_mode = Animation.LOOP_LINEAR
 				anim.play(full, 0.2)

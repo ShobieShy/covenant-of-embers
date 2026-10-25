@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 101,
+  "steps_done": 102,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1109,6 +1109,13 @@
       "type": "build",
       "summary": "Art A1 (batch_03): Loli = KayKit witch 1.3 m, Nerd = KayKit scholar 1.6 m, Rig_Medium anim libraries attached at runtime (kaykit/Idle_A, Walking_A); remote co-op players use them. Also pulled forward: Elders (3 recoloured Quaternius wizards, CC BY credited in-game) for A2, giant CC0 Old Oak (14 m, 18 m crown) in town + hub for A6. Buff still King placeholder, colour mask not done. tools/model_shots.gd; 399 tests green, lint green. Shots playtest/art_a_batch03/",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-24T23:48:08-05:00",
+      "step": 121,
+      "type": "build",
+      "summary": "Art A3 (batch_04, CC0 Quaternius): EnemyModels maps gnawer->mutated rat, ooze->Filth Sludge, the_filth->Filth Brute, heap/breach_warden->garbage golems (Idle/Walk/Slam import OK); greybox box kept as collider, hit/convert tint via overlay; CharacterModel._fit skips x100 armature scale on skinned meshes (rats/slimes were shrinking to invisible); tools/enemy_shots.gd; 399 tests green, playtests solo/4x/co-op PASS, lint green. Shots playtest/art_a3_enemies/",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1212,7 +1219,8 @@
     117,
     118,
     127,
-    119
+    119,
+    121
   ],
   "deferred": [
     74,
@@ -1233,7 +1241,6 @@
   ],
   "waiting_on_user_go": [
     120,
-    121,
     122,
     123,
     124,

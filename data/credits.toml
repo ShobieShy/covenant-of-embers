@@ -153,3 +153,10 @@ author = "Covenant of Embers project"
 license = "CC0 1.0"
 source = "incoming_art/batch_03_priority/old_oak (original work, built in Blender for this project)"
 line = "Old Oak (giant) by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
+name = "Quaternius enemies (Rat, Slime, Slime Enemy, Goleling, trash props; recoloured, garbage golems kitbashed)"
+author = "Quaternius"
+license = "CC0 1.0"
+source = "https://poly.pizza/u/Quaternius"
+line = "Quaternius enemies (Rat, Slime, Slime Enemy, Goleling, trash props; recoloured, garbage golems kitbashed) by Quaternius, CC0 1.0"
