@@ -27,13 +27,9 @@ static func version_string() -> String:
 	return "v" + String(ProjectSettings.get_setting("application/config/version", "0.0.0"))
 
 
-## "Pre-Alpha 0.1" for 0.1.0-prealpha (the menu's release name), else the plain version.
+## "Pre-Alpha 0.1.1" for 0.1.1-prealpha (the menu's release name; VersionInfo parses the suffix).
 static func release_name() -> String:
-	var v := String(ProjectSettings.get_setting("application/config/version", "0.0.0"))
-	if v.ends_with("-prealpha"):
-		var n := v.trim_suffix("-prealpha").split(".")
-		return "Pre-Alpha %s.%s" % [n[0], n[1] if n.size() > 1 else "0"]
-	return "v" + v
+	return VersionInfo.release_name(VersionInfo.current())
 
 
 func _ready() -> void:
