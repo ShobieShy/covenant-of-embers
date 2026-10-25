@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 110,
+  "steps_done": 111,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1172,6 +1172,13 @@
       "type": "build",
       "summary": "FX F3: burn flames, frost flakes, stagger stars, Air chain arcs, dissolve death shell + puff (StatusFX, driven by replicated enemy state)",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-25T00:36:07-05:00",
+      "step": 130,
+      "type": "build",
+      "summary": "FX F4: shader loot beams (scroll, soft edges, tier pulse, Primordial swirl, in-shader close fade) + ground rings with Unique rune ticks",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1284,7 +1291,8 @@
     124,
     125,
     128,
-    129
+    129,
+    130
   ],
   "deferred": [
     74,
@@ -1304,7 +1312,6 @@
     }
   ],
   "waiting_on_user_go": [
-    130,
     131,
     132,
     133,

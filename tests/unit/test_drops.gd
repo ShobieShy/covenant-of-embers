@@ -67,7 +67,7 @@ func test_kill_spawns_coloured_drops() -> void:
 			var c := rt.color(x.rarity_id)
 			check(p.color.is_equal_approx(c), "pickup colour = rarity colour")
 			check((p.gem.material_override as StandardMaterial3D).albedo_color.is_equal_approx(c), "gem tint")
-			var bc := (p.beam.material_override as StandardMaterial3D).albedo_color
+			var bc: Color = (p.beam.material_override as ShaderMaterial).get_shader_parameter(&"beam_color")
 			check(Color(bc, 1.0).is_equal_approx(c), "beam tint")
 			check(p.light.light_color.is_equal_approx(c), "light tint")
 			check(p.label.text == x.describe(), "label '%s'" % p.label.text)

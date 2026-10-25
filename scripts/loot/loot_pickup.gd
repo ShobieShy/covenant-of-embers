@@ -14,6 +14,10 @@ const BEAM_PER_TIER := 0.5  ## m per rarity tier above Basic
 const BEAM_FADE_NEAR := 0.6  ## m from the camera: beam fully faded
 const BEAM_FADE_FAR := 3.0  ## m: beam at full strength beyond this
 const GEM_SIZE := 0.25
+const BEAM_SHADER := preload("res://shaders/fx/loot_beam.gdshader")  ## step 130
+const RING_SHADER := preload("res://shaders/fx/loot_ring.gdshader")  ## step 130
+const SWIRL_TIER := 4  ## Primordial and up: swirling bands
+const RUNE_TIER := 5  ## Unique: rotating rune ticks in the ground ring
 const PROP_SCALE := 1.6  ## step 123: ground props read at ~10 m
 
 enum Auto { NONE, MANA, DUST, POTION, GOLD }  ## step 23: walk-over auto-collect kinds
@@ -24,6 +28,7 @@ var amount := 0  ## mana points / dust / potion count for auto pickups
 var potion: ConsumableItem
 var color := Color.WHITE
 var beam: MeshInstance3D
+var ring: MeshInstance3D  ## step 130: ground ring
 var gem: MeshInstance3D  ## rarity glow pad (step 123; was the gem box)
 var prop: Node3D  ## step 123 ground prop (LootMeshes)
 var light: OmniLight3D
@@ -114,23 +119,41 @@ func _build(n: String, c: Color, text: String, kind := "") -> void:
 	add_child(prop)
 	beam = MeshInstance3D.new()
 	beam.name = "Beam"
+	var t := Rarity.parse(drop.rarity_id) if drop else 0
 	var cm := CylinderMesh.new()
-	cm.top_radius = 0.03
-	cm.bottom_radius = 0.06
+	cm.top_radius = 0.05 + 0.01 * maxi(t, 0)
+	cm.bottom_radius = 0.09 + 0.015 * maxi(t, 0)
 	cm.height = beam_height()
+	cm.radial_segments = 12
+	cm.rings = 1
+	cm.cap_top = false
+	cm.cap_bottom = false
 	beam.mesh = cm
 	beam.position.y = cm.height * 0.5
-	var mm := StandardMaterial3D.new()
-	mm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mm.albedo_color = Color(color, 0.55)
-	# Up close the beam filled the screen: fade it out inside BEAM_FADE_FAR, gone at BEAM_FADE_NEAR.
-	mm.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_ALPHA
-	mm.distance_fade_min_distance = BEAM_FADE_NEAR
-	mm.distance_fade_max_distance = BEAM_FADE_FAR
+	# Step 130: shader beam (loot_beam.gdshader); the close fade lives in the shader now.
+	var mm := ShaderMaterial.new()
+	mm.shader = BEAM_SHADER
+	mm.set_shader_parameter(&"beam_color", color)
+	mm.set_shader_parameter(&"tier", float(maxi(t, 0)))
+	mm.set_shader_parameter(&"swirl", 1.0 if t >= SWIRL_TIER else 0.0)
+	mm.set_shader_parameter(&"fade_near", BEAM_FADE_NEAR)
+	mm.set_shader_parameter(&"fade_far", BEAM_FADE_FAR)
 	beam.material_override = mm
 	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(beam)
+	ring = MeshInstance3D.new()
+	ring.name = "Ring"
+	var pm := PlaneMesh.new()
+	pm.size = Vector2.ONE * (0.9 + 0.1 * maxi(t, 0))
+	ring.mesh = pm
+	ring.position.y = 0.025
+	var rm := ShaderMaterial.new()
+	rm.shader = RING_SHADER
+	rm.set_shader_parameter(&"ring_color", color)
+	rm.set_shader_parameter(&"runes", 1.0 if t >= RUNE_TIER else 0.0)
+	ring.material_override = rm
+	ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(ring)
 	light = OmniLight3D.new()
 	light.name = "Light"
 	light.light_color = color
