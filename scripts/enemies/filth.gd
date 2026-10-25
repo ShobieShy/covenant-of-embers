@@ -54,6 +54,14 @@ var since_hit := 0.0
 var regenerated := 0.0
 var trash: QuestPickup
 
+var fx: FilthFX  ## step 131: wobble, acid, regen motes, shockwaves, core pulse
+
+
+func setup(d: EnemyDef) -> void:
+	super.setup(d)
+	if fx == null:
+		fx = FilthFX.attach(self)
+
 
 func is_boss() -> bool:
 	return true

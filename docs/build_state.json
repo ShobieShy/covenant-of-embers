@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 111,
+  "steps_done": 112,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1179,6 +1179,13 @@
       "type": "build",
       "summary": "FX F4: shader loot beams (scroll, soft edges, tier pulse, Primordial swirl, in-shader close fade) + ground rings with Unique rune ticks",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-25T00:41:24-05:00",
+      "step": 131,
+      "type": "build",
+      "summary": "FX F5: The Filth wobble, acid blob/pool shader, regen motes, phase shockwaves + dust, pulsing exposed core light",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1292,7 +1299,8 @@
     125,
     128,
     129,
-    130
+    130,
+    131
   ],
   "deferred": [
     74,
@@ -1312,7 +1320,6 @@
     }
   ],
   "waiting_on_user_go": [
-    131,
     132,
     133,
     134
