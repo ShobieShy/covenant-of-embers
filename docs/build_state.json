@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 103,
+  "steps_done": 104,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1123,6 +1123,13 @@
       "type": "build",
       "summary": "UI art: Kenney pixel-ui (CC0) theme, 9-slice panels/buttons, framed HUD bars, cursors",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-24T23:58:52-05:00",
+      "step": 120,
+      "type": "build",
+      "summary": "Intro/town NPC models (scavenger, guard, patron, merchants, tailor) with tints; fixed 121 fit regression that blew batch_02 humanoids up 400x; model scale tests",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1228,7 +1235,8 @@
     127,
     119,
     121,
-    126
+    126,
+    120
   ],
   "deferred": [
     74,
@@ -1248,7 +1256,6 @@
     }
   ],
   "waiting_on_user_go": [
-    120,
     122,
     123,
     124,

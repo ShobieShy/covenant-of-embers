@@ -18,7 +18,7 @@ func _init(s := "") -> void:
 
 
 func _ready() -> void:
-	var model := CharacterModel.make(CharacterModel.for_speaker(speaker))  # batch_02 art
+	var model := CharacterModel.make_for_speaker(speaker)  # batch_02 art
 	if model:
 		add_child(model)
 	else:

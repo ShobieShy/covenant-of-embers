@@ -18,6 +18,21 @@ const SPEAKERS := {
 	"Elder": "elders/Elder_crimson.glb",
 	"Elder Green": "elders/Elder_green.glb",
 	"Elder Ash": "elders/Elder_ash.glb",
+	# step 120 (A2): the rest of the intro / town cast, reusing batch_02 bodies with tints
+	"Wounded scavenger": "gal/Hooded_Adventurer.glb",
+	"Bored Guard": "bob/Adventurer_male.glb",
+	"Grizzled Patron": "bob/Farmer.glb",
+	"Potion Merchant": "clerk/Animated_Woman_casual.glb",
+	"Runesmith": "clerk/Business_Man.glb",
+	"Tailor": "clerk/Animated_Woman_casual.glb",
+}
+## Speaker tints (alpha-blended overlay) so reused bodies read as different people.
+const TINTS := {
+	"Wounded scavenger": Color(0.45, 0.35, 0.25, 0.18),
+	"Bored Guard": Color(0.35, 0.4, 0.55, 0.18),
+	"Grizzled Patron": Color(0.3, 0.25, 0.2, 0.18),
+	"Runesmith": Color(0.5, 0.3, 0.7, 0.18),
+	"Tailor": Color(0.8, 0.3, 0.45, 0.18),
 }
 const ARCHETYPES := {
 	"gal": "gal/Adventurer_female.glb",
@@ -56,6 +71,19 @@ static func for_archetype(id: String) -> String:
 
 
 ## A ready model node, or null when the path is empty / fails to load (caller keeps its placeholder).
+## for_speaker + make + the speaker's tint (if any).
+static func make_for_speaker(speaker: String) -> CharacterModel:
+	var cm := make(for_speaker(speaker))
+	if cm and TINTS.has(speaker):
+		var m := StandardMaterial3D.new()
+		m.albedo_color = TINTS[speaker]
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		for mi in cm.find_children("*", "MeshInstance3D", true, false):
+			(mi as MeshInstance3D).material_overlay = m
+	return cm
+
+
 static func make(path: String) -> CharacterModel:
 	return make_sized(path, float(HEIGHTS.get(path.get_file(), HEIGHT)))
 
@@ -108,11 +136,12 @@ func _fit(inst: Node3D, height: float = HEIGHT) -> void:
 	for mi in inst.find_children("*", "MeshInstance3D", true, false):
 		var m := mi as MeshInstance3D
 		var a: AABB = _local_xform(inst, m) * m.get_aabb()
-		# Skinned mesh: vertices are already in armature units; the armature's own scale (x100 in
-		# some Quaternius exports) is baked into the bones, so skip it or the fit shrinks to nothing.
+		# Skinned mesh: some exports (batch_04 rats/slimes) keep vertices in metres AND scale the
+		# armature x100, so the naive box is tens of metres - then skip the armature scale. Batch_02
+		# humanoids store cm-sized vertices under the same x100 armature, so they keep it.
 		if m.get_parent() is Skeleton3D and m.get_parent().get_parent() is Node3D:
 			var arm := m.get_parent().get_parent() as Node3D
-			if arm != inst and not arm.scale.is_equal_approx(Vector3.ONE):
+			if arm != inst and not arm.scale.is_equal_approx(Vector3.ONE) and a.size.y > 20.0:
 				a = (
 					_local_xform(inst, arm.get_parent() as Node3D) * m.get_aabb()
 					if arm.get_parent() != inst

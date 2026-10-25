@@ -13,6 +13,9 @@ const CAST := [
 	"Summoned Nerd",
 	"Bob"
 ]
+const NPCS := [
+	"Elder", "Clerk", "Wounded scavenger", "Bored Guard", "Grizzled Patron", "Potion Merchant", "Runesmith", "Tailor"
+]
 
 
 func _initialize() -> void:
@@ -23,19 +26,21 @@ func _initialize() -> void:
 	root.add_child(lvl)
 	var x := -4.0
 	var walking := []
-	for s: String in CAST:
-		var m := CharacterModel.make(CharacterModel.for_speaker(s))
+	var cast: Array = NPCS if "npcs" in OS.get_cmdline_user_args() else CAST
+	for s: String in cast:
+		var m := CharacterModel.make_for_speaker(s)
 		if m == null:
 			push_error("no model for " + s)
 		else:
 			lvl.add_child(m)
-			m.position = Vector3(x, 0, 0)
+			m.position = Vector3(x, 0, 0) + (Vector3(0.5, 0, 5) if cast == NPCS else Vector3.ZERO)
 			m.rotation.y = PI
 			walking.append(m)
 		x += 1.0
 	var cam := Camera3D.new()
 	lvl.add_child(cam)
-	cam.look_at_from_position(Vector3(0, 1.4, 5.5), Vector3(0, 0.9, 0))
+	var zo := 5.0 if cast == NPCS else 0.0
+	cam.look_at_from_position(Vector3(0, 1.4, 5.5 + zo), Vector3(0, 0.9, zo))
 	cam.current = true
 	for _f in 30:
 		await process_frame
