@@ -32,6 +32,9 @@ sky_color = [0.40, 0.35, 0.25]      # Magewar sky_horizon_color; also the clear 
 ambient_color = [0.28, 0.24, 0.16]  # Magewar ambient (0.35, 0.3, 0.2) hue, brighter (no GI/sky light here)
 fog_density = 0.006                 # exp(-density * distance) toward sky_color (Magewar volumetric 0.02; lighter so the far wall still reads)
 sky = true                          # step 124 (Art A6): procedural sky
+volumetric_fog = 0.03                # step 132 (FX F6): green-brown Landfill haze (off on Low)
+fog_albedo = [0.55, 0.6, 0.35]
+grade = [1.0, 1.08, 0.92]          # step 132: brightness, contrast, saturation
 
 [sun]
 to_light = [0.354, 0.707, 0.612]    # Magewar SicklyLight basis Z: high, slightly east, behind the player start

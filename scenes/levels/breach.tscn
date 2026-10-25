@@ -55,13 +55,19 @@ glow_intensity = 0.6
 glow_bloom = 0.05
 glow_hdr_threshold = 1.0
 adjustment_enabled = true
-adjustment_contrast = 1.05
-adjustment_saturation = 1.1
+adjustment_brightness = 0.97
+adjustment_contrast = 1.12
+adjustment_saturation = 0.88
 fog_enabled = true
 fog_mode = 0
 fog_light_color = Color(0.436627, 0.381092, 0.410021, 1)
 fog_density = 0.01
 fog_sky_affect = 0.0
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.025
+volumetric_fog_albedo = Color(0.735357, 0.701411, 0.797738, 1)
+volumetric_fog_length = 48.0
+volumetric_fog_sky_affect = 0.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_1"]
 size = Vector3(30, 0.2, 48)

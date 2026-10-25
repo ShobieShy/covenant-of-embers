@@ -16,6 +16,7 @@ sky_color = [0.45, 0.55, 0.75]
 ambient_color = [0.45, 0.45, 0.5]
 fog_density = 0.005
 sky = true                          # step 124 (Art A6): procedural sky
+grade = [1.03, 1.05, 1.12]          # step 132 (FX F6): warm, lively town
 
 [sun]
 to_light = [0.4, 0.8, 0.3]

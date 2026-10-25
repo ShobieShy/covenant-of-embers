@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 112,
+  "steps_done": 113,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1186,6 +1186,13 @@
       "type": "build",
       "summary": "FX F5: The Filth wobble, acid blob/pool shader, regen motes, phase shockwaves + dust, pulsing exposed core light",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-25T00:44:40-05:00",
+      "step": 132,
+      "type": "build",
+      "summary": "FX F6: volumetric haze (Landfill/Breach), per-area grade, TimeOfDay day/dusk/night presets; water shader deferred",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1300,7 +1307,8 @@
     128,
     129,
     130,
-    131
+    131,
+    132
   ],
   "deferred": [
     74,
@@ -1320,7 +1328,6 @@
     }
   ],
   "waiting_on_user_go": [
-    132,
     133,
     134
   ],

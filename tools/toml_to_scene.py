@@ -217,7 +217,13 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     lv = d["level"]
     _only(lv, {"id", "name"}, "[level]")
     env = d["environment"]
-    _only(env, {"sky_color", "ambient_color", "fog_density", "sky"}, "[environment]")
+    _only(env, {"sky_color", "ambient_color", "fog_density", "sky", "volumetric_fog", "fog_albedo", "grade"}, "[environment]")
+    vfog = float(env.get("volumetric_fog", 0.0))
+    if not 0.0 <= vfog <= 0.2:
+        raise LevelError("volumetric_fog must be in [0, 0.2]")
+    grade = [float(x) for x in env.get("grade", [1.0, 1.05, 1.1])]
+    if len(grade) != 3 or not all(0.5 <= x <= 1.5 for x in grade):
+        raise LevelError("grade must be [brightness, contrast, saturation], each in [0.5, 1.5]")
     fog = float(env.get("fog_density", 0.0))
     if not 0.0 <= fog <= 1.0:
         raise LevelError("fog_density must be in [0, 1]")
@@ -236,6 +242,9 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "ambient_color": _color(_need(env, "ambient_color", "[environment]"), "ambient_color"),
         "fog_density": fog,
         "sky": bool(env.get("sky", False)),
+        "volumetric_fog": vfog,
+        "fog_albedo": _color(env.get("fog_albedo", [1.0, 1.0, 1.0]), "fog_albedo"),
+        "grade": grade,
         "to_light": [x / ln for x in tl],
         "sun_color": _color(_need(sun, "color", "[sun]"), "sun color"),
         "start_position": _vec(_need(ps, "position", "[player_start]"), "player_start position"),
@@ -511,14 +520,23 @@ def to_tscn(lv: dict, source: str) -> str:
         "glow_bloom = 0.05",
         "glow_hdr_threshold = 1.0",
         "adjustment_enabled = true",
-        "adjustment_contrast = 1.05",
-        "adjustment_saturation = 1.1",
+        # Step 132 (FX F6): per-area colour grade from [environment] grade.
+        f"adjustment_brightness = {_f(lv['grade'][0])}",
+        f"adjustment_contrast = {_f(lv['grade'][1])}",
+        f"adjustment_saturation = {_f(lv['grade'][2])}",
         f"fog_enabled = {'true' if lv['fog_density'] > 0 else 'false'}",
         "fog_mode = 0",
         f"fog_light_color = {_color_str(lv['sky_color'])}",
         f"fog_density = {_f(lv['fog_density'])}",
         "fog_sky_affect = 0.0",
-    ]))
+    ] + ([
+        # Step 132 (FX F6): volumetric haze (Landfill, Breach); QualityPresets turns it off on Low.
+        "volumetric_fog_enabled = true",
+        f"volumetric_fog_density = {_f(lv['volumetric_fog'])}",
+        f"volumetric_fog_albedo = {_color_str(lv['fog_albedo'])}",
+        "volumetric_fog_length = 48.0",
+        "volumetric_fog_sky_affect = 0.0",
+    ] if lv["volumetric_fog"] > 0 else [])))
     nodes: list[str] = []
     root = "Midden" if lv["id"].startswith("midden") else "".join(w.capitalize() for w in lv["id"].split("_"))
     nodes.append(f'[node name="{root}" type="Node3D"]\nmetadata/level_id = "{lv["id"]}"\n'
