@@ -36,6 +36,8 @@ var fov := 75.0
 var shown: WieldableInstance  ## what the model shows (null = hidden)
 var shown_type: int = -1
 var shown_element: int = -1
+var shown_key := ""  ## step 122: type/element/part ids/gems -> rebuild the StaffKit when it changes
+var kit: Node3D
 var pose := STAFF_POSE
 var model: Node3D
 var shaft: MeshInstance3D
@@ -96,8 +98,10 @@ func show_wieldable(w: WieldableInstance) -> void:
 		return
 	var t := int(w.type())
 	var e := int(w.element())
-	if t == shown_type and e == shown_element:
+	var key := _key(w)
+	if t == shown_type and e == shown_element and key == shown_key:
 		return
+	shown_key = key
 	shown_type = t
 	shown_element = e
 	pose = pose_for(t)
@@ -131,6 +135,18 @@ func show_wieldable(w: WieldableInstance) -> void:
 	gem.material_override = gm
 	gem.position = Vector3(0.0, 0.0, -0.5 * length - gr * 0.6)
 	cast_point.position = Vector3(0.0, 0.0, gem.position.z - gr - 0.02)
+	if kit != null:
+		kit.free()
+	kit = StaffKit.build(w, length, r, gr, element_color(e), LAYER_MASK)
+	model.add_child(kit)
+
+
+func _key(w: WieldableInstance) -> String:
+	var k := "%d/%d/%s" % [int(w.type()), int(w.element()), w.rarity_id()]
+	for p in w.parts:
+		if p != null:
+			k += "/" + p.id + ":" + str(p.gems.size())
+	return k
 
 
 ## Local position for the current pose: focus slide (amount 0..1), swap draw (0..1 done)

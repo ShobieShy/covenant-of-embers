@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 104,
+  "steps_done": 105,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1130,6 +1130,13 @@
       "type": "build",
       "summary": "Intro/town NPC models (scavenger, guard, patron, merchants, tailor) with tints; fixed 121 fit regression that blew batch_02 humanoids up 400x; model scale tests",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-25T00:03:50-05:00",
+      "step": 122,
+      "type": "build",
+      "summary": "Procedural modular staff/wand kit (handle/shell/core/head prongs/socket gems/charm, rarity trim), <1k tris",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1236,7 +1243,8 @@
     119,
     121,
     126,
-    120
+    120,
+    122
   ],
   "deferred": [
     74,
@@ -1256,7 +1264,6 @@
     }
   ],
   "waiting_on_user_go": [
-    122,
     123,
     124,
     125,
