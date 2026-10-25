@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 105,
+  "steps_done": 106,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1137,6 +1137,13 @@
       "type": "build",
       "summary": "Procedural modular staff/wand kit (handle/shell/core/head prongs/socket gems/charm, rarity trim), <1k tris",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-25T00:09:22-05:00",
+      "step": 123,
+      "type": "build",
+      "summary": "Loot ground props: LootMeshes per-kind props on rarity pads, trash bag for Joe's discards",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1244,7 +1251,8 @@
     121,
     126,
     120,
-    122
+    122,
+    123
   ],
   "deferred": [
     74,
@@ -1264,7 +1272,6 @@
     }
   ],
   "waiting_on_user_go": [
-    123,
     124,
     125,
     128,

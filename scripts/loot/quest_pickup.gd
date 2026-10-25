@@ -24,17 +24,18 @@ static func make(id: String, nm: String) -> QuestPickup:
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	var mi := MeshInstance3D.new()
-	var bm := BoxMesh.new()
-	bm.size = Vector3(0.4, 0.4, 0.4)
-	mi.mesh = bm
-	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.7, 0.55, 0.9)
-	m.emission_enabled = true
-	m.emission = Color(0.7, 0.4, 1.0)
-	mi.material_override = m
-	mi.position.y = 0.3
-	add_child(mi)
+	# Step 123: a real prop (Joe's Trash = Quaternius trash bag) plus a soft quest glow.
+	add_child(
+		LootMeshes.prop_for(
+			"trash" if item_id.contains("trash") or item_id.contains("discard") else "", Color(0.7, 0.4, 1.0)
+		)
+	)
+	var l := OmniLight3D.new()
+	l.light_color = Color(0.7, 0.4, 1.0)
+	l.omni_range = 2.0
+	l.light_energy = 1.2
+	l.position.y = 0.6
+	add_child(l)
 
 
 func _physics_process(_dt: float) -> void:

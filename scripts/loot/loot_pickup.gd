@@ -14,6 +14,7 @@ const BEAM_PER_TIER := 0.5  ## m per rarity tier above Basic
 const BEAM_FADE_NEAR := 0.6  ## m from the camera: beam fully faded
 const BEAM_FADE_FAR := 3.0  ## m: beam at full strength beyond this
 const GEM_SIZE := 0.25
+const PROP_SCALE := 1.6  ## step 123: ground props read at ~10 m
 
 enum Auto { NONE, MANA, DUST, POTION, GOLD }  ## step 23: walk-over auto-collect kinds
 
@@ -23,7 +24,8 @@ var amount := 0  ## mana points / dust / potion count for auto pickups
 var potion: ConsumableItem
 var color := Color.WHITE
 var beam: MeshInstance3D
-var gem: MeshInstance3D
+var gem: MeshInstance3D  ## rarity glow pad (step 123; was the gem box)
+var prop: Node3D  ## step 123 ground prop (LootMeshes)
 var light: OmniLight3D
 var label: Label3D
 
@@ -60,7 +62,7 @@ static func _auto(k: Auto, n: int, item: ConsumableItem, at: Vector3, c: Color, 
 	p.auto = k
 	p.amount = n
 	p.potion = item
-	p._build("Pickup_%s" % Auto.keys()[k].to_lower(), c, text)
+	p._build("Pickup_%s" % Auto.keys()[k].to_lower(), c, text, String(Auto.keys()[k]).to_lower())
 	p.position = at
 	return p
 
@@ -71,10 +73,11 @@ func is_auto() -> bool:
 
 func setup(d: LootDrop) -> void:
 	drop = d
-	_build("Pickup_%s" % d.rarity_id, d.rarity_color(), d.describe())
+	_build("Pickup_%s" % d.rarity_id, d.rarity_color(), d.describe(), LootMeshes.kind_for(d))
 
 
-func _build(n: String, c: Color, text: String) -> void:
+## Step 123: `kind` picks the LootMeshes ground prop; the rarity "gem" becomes a glowing pad under it.
+func _build(n: String, c: Color, text: String, kind := "") -> void:
 	name = n
 	color = c
 	collision_layer = 1 << (PICKUP_LAYER - 1)
@@ -90,17 +93,25 @@ func _build(n: String, c: Color, text: String) -> void:
 	add_child(cs)
 	gem = MeshInstance3D.new()
 	gem.name = "Gem"
-	var bm := BoxMesh.new()
-	bm.size = Vector3.ONE * GEM_SIZE
+	var bm := CylinderMesh.new()
+	bm.top_radius = GEM_SIZE
+	bm.bottom_radius = GEM_SIZE * 1.15
+	bm.height = 0.02
+	bm.radial_segments = 12
+	bm.rings = 1
 	gem.mesh = bm
-	gem.position.y = GEM_SIZE * 0.5
+	gem.position.y = 0.01
 	var gm := StandardMaterial3D.new()
 	gm.albedo_color = color
 	gm.emission_enabled = true
 	gm.emission = color
-	gm.emission_energy_multiplier = 1.5
+	gm.emission_energy_multiplier = 0.5
 	gem.material_override = gm
 	add_child(gem)
+	prop = LootMeshes.prop_for(kind, color)
+	prop.position.y = 0.02
+	prop.scale = Vector3.ONE * PROP_SCALE
+	add_child(prop)
 	beam = MeshInstance3D.new()
 	beam.name = "Beam"
 	var cm := CylinderMesh.new()
@@ -133,7 +144,7 @@ func _build(n: String, c: Color, text: String) -> void:
 	label.modulate = color
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.pixel_size = 0.004
-	label.position.y = GEM_SIZE + 0.35
+	label.position.y = 0.75
 	add_child(label)
 
 
