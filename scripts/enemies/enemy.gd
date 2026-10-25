@@ -338,6 +338,7 @@ func _physics_process(delta: float) -> void:
 func tick(dt: float) -> void:
 	_status_tick(dt)
 	_sync_overlay()
+	SpellFX.sync_aura(self, 0.0 if dead else corrupted_left, 0.6 + (def.size.x * 0.5 if def else 0.4))
 	if corrupted_left > 0.0 and not dead:
 		corrupted_left = maxf(0.0, corrupted_left - dt)
 		if corrupted_left <= 0.0:

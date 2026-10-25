@@ -115,6 +115,7 @@ var _impacts: Array = []  ## [Line, ttl]
 var _next_id := 1
 var _mesh: ImmediateMesh
 var _mesh_instance: MeshInstance3D
+var fx: SpellFX  ## step 128: bolt heads, impact bursts, heal motes
 
 
 func _ready() -> void:
@@ -130,6 +131,10 @@ func _ready() -> void:
 	mat.vertex_color_use_as_albedo = true
 	_mesh_instance.material_override = mat
 	add_child(_mesh_instance)
+	fx = SpellFX.new()
+	fx.name = "SpellFX"
+	fx.elements = elements
+	add_child(fx)
 
 
 func _physics_process(delta: float) -> void:
@@ -195,6 +200,8 @@ func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
 			h.dark_bonus = s.dark_bonus
 			_resolve(h)
 			last_hits.append(h)
+			if fx:
+				fx.impact(h.point, h.normal, h.element)
 			hits += 1
 			var l := _tracer(s, h.distance)
 			if l != null:
@@ -341,10 +348,27 @@ func tracer_lines(alpha: float) -> Array[Line]:
 	return out
 
 
+## Step 128: [drawn head position, element] per live bolt (past SKIP_NEAR unless it has a
+## visual origin, so the head never sits in the camera).
+func bolt_heads(alpha: float) -> Array:
+	var out := []
+	for b in live:
+		if b.ticks < 0:
+			continue
+		var d_prev := b.previous.distance_to(b.spawn.origin)
+		var d := d_prev + (b.travelled - d_prev) * clampf(alpha, 0.0, 1.0)
+		if d < SKIP_NEAR and not b.spawn.has_visual_origin:
+			continue
+		out.append([drawn_point(b.spawn, d), b.spawn.element])
+	return out
+
+
 func _draw_tracers(alpha: float) -> void:
 	if _mesh == null:
 		return
 	_mesh.clear_surfaces()
+	if fx:
+		fx.update_heads(bolt_heads(alpha))
 	var lines := tracer_lines(alpha)
 	if lines.is_empty():
 		return

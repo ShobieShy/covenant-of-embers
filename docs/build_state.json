@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 108,
+  "steps_done": 109,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1158,6 +1158,13 @@
       "type": "build",
       "summary": "Art A7: Scorchling procedural fire-imp body, Warden rune eyes, gnawer rat variants, Breach dressed (pillar caps, rubble, broken walls, lanterns, trash)",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-25T00:29:21-05:00",
+      "step": 128,
+      "type": "build",
+      "summary": "FX F2: shared bolt shader heads, per-element CPU impact bursts, Light heal motes, Dark conversion aura (replicated via corrupted_left)",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1268,7 +1275,8 @@
     122,
     123,
     124,
-    125
+    125,
+    128
   ],
   "deferred": [
     74,
@@ -1288,7 +1296,6 @@
     }
   ],
   "waiting_on_user_go": [
-    128,
     129,
     130,
     131,
