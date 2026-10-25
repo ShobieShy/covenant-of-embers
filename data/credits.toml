@@ -160,3 +160,10 @@ author = "Quaternius"
 license = "CC0 1.0"
 source = "https://poly.pizza/u/Quaternius"
 line = "Quaternius enemies (Rat, Slime, Slime Enemy, Goleling, trash props; recoloured, garbage golems kitbashed) by Quaternius, CC0 1.0"
+
+[[credit]]
+name = "Kenney Pixel UI Pack, Fantasy UI Borders, Tiny Dungeon icons, Cursor Pixel Pack, Kenney Fonts"
+author = "Kenney"
+license = "CC0 1.0"
+source = "https://kenney.nl/assets/pixel-ui-pack"
+line = "Kenney Pixel UI Pack, Fantasy UI Borders, Tiny Dungeon icons, Cursor Pixel Pack, Kenney Fonts by Kenney, CC0 1.0"

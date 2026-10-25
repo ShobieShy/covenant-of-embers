@@ -188,6 +188,7 @@ func _bar(c: Color, parent: Control) -> ProgressBar:
 	b.add_theme_stylebox_override(&"background", bg)
 	b.add_theme_stylebox_override(&"fill", fg)
 	parent.add_child(b)
+	UiTheme.frame_bar(b)  # step 126
 	return b
 
 

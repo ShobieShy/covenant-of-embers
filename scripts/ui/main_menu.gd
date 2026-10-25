@@ -37,6 +37,7 @@ static func release_name() -> String:
 
 
 func _ready() -> void:
+	UiTheme.apply(get_tree().root)  # step 126: pixel fantasy UI
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var bg := ColorRect.new()
 	bg.color = Color(0.08, 0.05, 0.04)

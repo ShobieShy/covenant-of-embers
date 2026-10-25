@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 102,
+  "steps_done": 103,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1116,6 +1116,13 @@
       "type": "build",
       "summary": "Art A3 (batch_04, CC0 Quaternius): EnemyModels maps gnawer->mutated rat, ooze->Filth Sludge, the_filth->Filth Brute, heap/breach_warden->garbage golems (Idle/Walk/Slam import OK); greybox box kept as collider, hit/convert tint via overlay; CharacterModel._fit skips x100 armature scale on skinned meshes (rats/slimes were shrinking to invisible); tools/enemy_shots.gd; 399 tests green, playtests solo/4x/co-op PASS, lint green. Shots playtest/art_a3_enemies/",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-24T23:52:16-05:00",
+      "step": 126,
+      "type": "build",
+      "summary": "UI art: Kenney pixel-ui (CC0) theme, 9-slice panels/buttons, framed HUD bars, cursors",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1220,7 +1227,8 @@
     118,
     127,
     119,
-    121
+    121,
+    126
   ],
   "deferred": [
     74,
@@ -1245,7 +1253,6 @@
     123,
     124,
     125,
-    126,
     128,
     129,
     130,
