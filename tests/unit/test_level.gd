@@ -98,6 +98,8 @@ func test_box_sizes_rotations_colours() -> void:
 			var s := c.linear_to_srgb()
 			var m := maxf(maxf(s.r, s.g), maxf(s.b, 1e-4))
 			var t := Vector3(0.5 + 0.5 * s.r / m, 0.5 + 0.5 * s.g / m, 0.5 + 0.5 * s.b / m)
+			if b["kind"] == "ground":
+				t *= 0.72  # Step 127 GROUND_TINT
 			var a := mat.albedo_color
 			check(Vector3(a.r, a.g, a.b).distance_to(t) < 2e-3, "%s tint (TOML hue)" % n.name)
 			check(mat.normal_enabled and mat.normal_texture != null, "%s normal map" % n.name)

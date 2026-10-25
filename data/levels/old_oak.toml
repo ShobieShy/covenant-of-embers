@@ -7,6 +7,10 @@
 id = "old_oak"
 name = "The Old Oak"
 
+[materials]                  # step 127 (FX F1): textured CC0 ground so it reads under AgX
+ground = "assets/ambientcg/Ground037"
+uv_scale = 0.4
+
 [environment]
 sky_color = [0.05, 0.04, 0.03]
 ambient_color = [0.32, 0.24, 0.14]

@@ -62,3 +62,17 @@ func test_dagger_glow_range() -> void:
 	var d := DaggerGlow.make(null)
 	check(d.nearest() == INF, "nothing near without a player")
 	d.free()
+
+
+## Step 127: the night preset is moonlit and readable, not black.
+func test_night_preset_is_readable() -> void:
+	var level: Node3D = (load("res://scenes/levels/old_oak.tscn") as PackedScene).instantiate()
+	NightPreset.apply(level, Vector3.ZERO)
+	var env := (level.get_node("WorldEnvironment") as WorldEnvironment).environment
+	var sun := level.get_node("Sun") as DirectionalLight3D
+	check(sun.light_energy >= 0.3, "moonlight energy >= 0.3")
+	check(sun.light_color.b > sun.light_color.r, "moonlight is blue")
+	check(env.ambient_light_color.get_luminance() * env.ambient_light_energy > 0.15, "night ambient readable")
+	check(env.tonemap_mode != Environment.TONE_MAPPER_LINEAR, "filmic tonemap")
+	check(level.get_node_or_null("NightLantern") is OmniLight3D, "warm lantern fill")
+	level.free()

@@ -12,6 +12,8 @@ const VIEWS := [
 	["mage_association", Vector3(7, 4, -12), Vector3(-6, 1, 6)],
 	["old_oak", Vector3(0, 1.7, 6), Vector3(0, 2, -6)],
 	["old_oak", Vector3(-5, 2.5, 5), Vector3(4, 4, -4)],
+	["old_oak", Vector3(0, 1.7, 6), Vector3(0, 2, -6), "night"],
+	["town_square", Vector3(0, 1.7, 15), Vector3(0, 2, -10), "night"],
 ]
 
 
@@ -23,6 +25,8 @@ func _initialize() -> void:
 	for v: Array in VIEWS:
 		var lvl: Node3D = (load("res://scenes/levels/%s.tscn" % v[0]) as PackedScene).instantiate()
 		root.add_child(lvl)
+		if v.size() > 3 and v[3] == "night":
+			NightPreset.apply(lvl, v[1] - Vector3(0, 1.4, 2))
 		var cam := Camera3D.new()
 		lvl.add_child(cam)
 		cam.look_at_from_position(v[1], v[2])
@@ -30,7 +34,7 @@ func _initialize() -> void:
 		for _f in 8:
 			await process_frame
 		await RenderingServer.frame_post_draw
-		root.get_texture().get_image().save_png("%s/%02d_%s.png" % [out, i, v[0]])
+		root.get_texture().get_image().save_png("%s/%02d_%s%s.png" % [out, i, v[0], "_night" if v.size() > 3 else ""])
 		lvl.queue_free()
 		await process_frame
 		i += 1

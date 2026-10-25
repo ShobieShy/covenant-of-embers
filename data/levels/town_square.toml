@@ -7,6 +7,10 @@
 id = "town_square"
 name = "Eldoria - Town Square"
 
+[materials]                  # step 127 (FX F1): textured CC0 ground so it reads under AgX
+ground = "assets/ambientcg/PavingStones131"
+uv_scale = 0.4
+
 [environment]
 sky_color = [0.45, 0.55, 0.75]
 ambient_color = [0.45, 0.45, 0.5]

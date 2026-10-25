@@ -439,8 +439,11 @@ def _tint(c: list[float]) -> list[float]:
     return [0.5 + 0.5 * x / m for x in c]
 
 
-def _textured(color: list[float], tex: str, uv: float, ext_id) -> str:
-    t = _tint([_srgb(x) for x in color])
+GROUND_TINT = 0.72  # Step 127: darker ground tint so pale paving doesn't wash out under AgX
+
+
+def _textured(color: list[float], tex: str, uv: float, ext_id, scale: float = 1.0) -> str:
+    t = [x * scale for x in _tint([_srgb(x) for x in color])]
     return "\n".join([
         "albedo_color = Color(%s, 1)" % ", ".join(_f(x) for x in t),
         f'albedo_texture = ExtResource("{ext_id(tex + "/color.jpg")}")',
@@ -478,7 +481,22 @@ def to_tscn(lv: dict, source: str) -> str:
         f"background_color = {_color_str(lv['sky_color'])}",
         "ambient_light_source = 2",
         f"ambient_light_color = {_color_str(lv['ambient_color'])}",
-        "tonemap_mode = 0",
+        # Step 127 (FX F1): filmic tonemap + dimmer flat ambient so the sun shapes the ground,
+        # SSAO for contact, glow for emissives, slight contrast/saturation lift.
+        "ambient_light_energy = 0.45",
+        "tonemap_mode = 4",
+        "tonemap_exposure = 1.0",
+        "tonemap_white = 6.0",
+        "ssao_enabled = true",
+        "ssao_radius = 1.5",
+        "ssao_intensity = 1.6",
+        "glow_enabled = true",
+        "glow_intensity = 0.6",
+        "glow_bloom = 0.05",
+        "glow_hdr_threshold = 1.0",
+        "adjustment_enabled = true",
+        "adjustment_contrast = 1.05",
+        "adjustment_saturation = 1.1",
         f"fog_enabled = {'true' if lv['fog_density'] > 0 else 'false'}",
         "fog_mode = 0",
         f"fog_light_color = {_color_str(lv['sky_color'])}",
@@ -492,7 +510,7 @@ def to_tscn(lv: dict, source: str) -> str:
     nodes.append(f'[node name="WorldEnvironment" type="WorldEnvironment" parent="."]\nenvironment = SubResource("{env}")\n')
     nodes.append(f'[node name="Sun" type="DirectionalLight3D" parent="."]\n'
                  f'transform = {_xf(sun_basis(lv["to_light"]), [0, 10, 0])}\n'
-                 f'light_color = {_color_str(lv["sun_color"])}\nshadow_enabled = true\n')
+                 f'light_color = {_color_str(lv["sun_color"])}\nlight_energy = 1.3\nshadow_enabled = true\n')
     nodes.append('[node name="Boxes" type="Node3D" parent="."]\n')
     for i, b in enumerate(lv["boxes"]):
         sk = tuple(b["size"])
@@ -500,7 +518,9 @@ def to_tscn(lv: dict, source: str) -> str:
         shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
         tex = lv.get("materials", {}).get(b["kind"])
         if tex:
-            mat = sub("StandardMaterial3D", (tuple(b["color"]), tex), _textured(b["color"], tex, lv["uv_scale"], ext_id))
+            gs = GROUND_TINT if b["kind"] == "ground" else 1.0
+            mat = sub("StandardMaterial3D", (tuple(b["color"]), tex, gs),
+                      _textured(b["color"], tex, lv["uv_scale"], ext_id, gs))
         else:
             mat = sub("StandardMaterial3D", tuple(b["color"]), f"albedo_color = {_color_str(b['color'])}")
         nodes.append(f'[node name="{b["name"]}" type="StaticBody3D" parent="Boxes"]\n'

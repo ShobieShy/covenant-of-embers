@@ -542,9 +542,6 @@ func _on_beat() -> void:
 
 # --- Step 113: beat 6, the Old Oak's first night and Bob's kit ----------------------------
 
-const NIGHT_AMBIENT := Color(0.08, 0.09, 0.18)
-const NIGHT_SKY := Color(0.02, 0.02, 0.06)
-
 var bed: Npc
 
 
@@ -618,15 +615,10 @@ func set_night() -> void:
 	var lvl := main.get_node_or_null("Level")
 	if lvl == null:
 		return
-	var we := lvl.get_node_or_null("WorldEnvironment") as WorldEnvironment
-	if we and we.environment:
-		we.environment = we.environment.duplicate()
-		we.environment.ambient_light_color = NIGHT_AMBIENT
-		we.environment.background_color = NIGHT_SKY
-	var sun := lvl.get_node_or_null("Sun") as DirectionalLight3D
-	if sun:
-		sun.light_energy *= 0.15
-		sun.light_color = Color(0.5, 0.55, 0.9)
+	var anchor := Vector3(0, 0.3, 0)
+	if player:
+		anchor = player.global_position
+	NightPreset.apply(lvl, anchor)
 
 
 func _bob_arrives() -> void:
