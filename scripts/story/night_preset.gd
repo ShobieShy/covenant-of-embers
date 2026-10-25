@@ -19,6 +19,7 @@ static func apply(lvl: Node, anchor: Vector3) -> void:
 		var env := we.environment.duplicate() as Environment
 		env.ambient_light_color = NIGHT_AMBIENT
 		env.ambient_light_energy = NIGHT_AMBIENT_ENERGY
+		env.background_mode = Environment.BG_COLOR  # step 124: night drops the day sky
 		env.background_color = NIGHT_SKY
 		env.fog_light_color = NIGHT_SKY
 		env.tonemap_exposure = 1.25

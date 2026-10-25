@@ -16,8 +16,20 @@
 [ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/roughness.jpg" id="12_tex"]
 [ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/normal.jpg" id="13_tex"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
+sky_top_color = Color(0.088, 0.078, 0.147, 1)
+sky_horizon_color = Color(0.436627, 0.381092, 0.410021, 1)
+ground_bottom_color = Color(0.307485, 0.278409, 0.278409, 1)
+ground_horizon_color = Color(0.436627, 0.381092, 0.410021, 1)
+sky_curve = 0.12
+sun_angle_max = 20.0
+
+[sub_resource type="Sky" id="Sky_1"]
+sky_material = SubResource("ProceduralSkyMaterial_1")
+
 [sub_resource type="Environment" id="Environment_1"]
-background_mode = 1
+background_mode = 2
+sky = SubResource("Sky_1")
 background_color = Color(0.436627, 0.381092, 0.410021, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.506386, 0.461356, 0.461356, 1)

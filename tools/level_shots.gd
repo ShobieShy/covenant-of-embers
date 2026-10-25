@@ -14,6 +14,10 @@ const VIEWS := [
 	["old_oak", Vector3(-5, 2.5, 5), Vector3(4, 4, -4)],
 	["old_oak", Vector3(0, 1.7, 6), Vector3(0, 2, -6), "night"],
 	["town_square", Vector3(0, 1.7, 15), Vector3(0, 2, -10), "night"],
+	["midden", Vector3(0, 1.7, 12.5), Vector3(0, 1, -6)],
+	["midden", Vector3(-10, 5, 10), Vector3(6, 0, -6)],
+	["mage_association", Vector3(-3, 1.7, 8), Vector3(-8, 0.8, 2)],
+	["breach", Vector3(0, 1.7, 0), Vector3(0, 6, -20)],
 ]
 
 

@@ -33,6 +33,7 @@ uv_scale = 0.4
 sky_color = [0.16, 0.12, 0.14]
 ambient_color = [0.22, 0.18, 0.18]
 fog_density = 0.01
+sky = true                          # step 124 (Art A6): procedural sky
 
 [sun]
 to_light = [0.3, 0.8, 0.5]

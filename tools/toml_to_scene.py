@@ -184,8 +184,8 @@ def _props(items: list, out: dict) -> None:
         seen.add(name)
         w = f"prop '{name}'"
         model = str(_need(pr, "model", w))
-        if not model.startswith("assets/") or not model.endswith(".glb") or not (ROOT / model).is_file():
-            raise LevelError(f"{w}: no model {model} (an assets/...glb)")
+        if not model.startswith("assets/") or not model.endswith((".glb", ".gltf")) or not (ROOT / model).is_file():
+            raise LevelError(f"{w}: no model {model} (an assets/...glb or .gltf)")
         sc = pr.get("scale", 1.0)
         if isinstance(sc, (int, float)) and not isinstance(sc, bool):
             sc = [sc, sc, sc]
@@ -217,7 +217,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     lv = d["level"]
     _only(lv, {"id", "name"}, "[level]")
     env = d["environment"]
-    _only(env, {"sky_color", "ambient_color", "fog_density"}, "[environment]")
+    _only(env, {"sky_color", "ambient_color", "fog_density", "sky"}, "[environment]")
     fog = float(env.get("fog_density", 0.0))
     if not 0.0 <= fog <= 1.0:
         raise LevelError("fog_density must be in [0, 1]")
@@ -235,6 +235,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "sky_color": _color(_need(env, "sky_color", "[environment]"), "sky_color"),
         "ambient_color": _color(_need(env, "ambient_color", "[environment]"), "ambient_color"),
         "fog_density": fog,
+        "sky": bool(env.get("sky", False)),
         "to_light": [x / ln for x in tl],
         "sun_color": _color(_need(sun, "color", "[sun]"), "sun color"),
         "start_position": _vec(_need(ps, "position", "[player_start]"), "player_start position"),
@@ -476,8 +477,23 @@ def to_tscn(lv: dict, source: str) -> str:
             subs.append(f'[sub_resource type="{kind}" id="{ids[k]}"]\n{body}\n')
         return ids[k]
 
-    env = sub("Environment", 0, "\n".join([
-        "background_mode = 1",
+    sky_lines: list[str] = []
+    if lv.get("sky"):
+        # Step 124 (Art A6): stylised procedural sky (horizon = sky_color) instead of an HDRI:
+        # matches the low-poly palette, costs nothing on the Steam Deck, and keeps flat ambient.
+        sc = lv["sky_color"]
+        top = [round(sc[0] * 0.55, 3), round(sc[1] * 0.65, 3), round(min(1.0, sc[2] * 1.05), 3)]
+        smat = sub("ProceduralSkyMaterial", 0, "\n".join([
+            f"sky_top_color = Color({top[0]}, {top[1]}, {top[2]}, 1)",
+            f"sky_horizon_color = {_color_str(sc)}",
+            f"ground_bottom_color = {_color_str([c * 0.35 for c in lv['ambient_color']])}",
+            f"ground_horizon_color = {_color_str(sc)}",
+            "sky_curve = 0.12",
+            "sun_angle_max = 20.0",
+        ]))
+        skyr = sub("Sky", 0, f'sky_material = SubResource("{smat}")')
+        sky_lines = ["background_mode = 2", f'sky = SubResource("{skyr}")']
+    env = sub("Environment", 0, "\n".join(sky_lines or ["background_mode = 1"]) + "\n" + "\n".join([
         f"background_color = {_color_str(lv['sky_color'])}",
         "ambient_light_source = 2",
         f"ambient_light_color = {_color_str(lv['ambient_color'])}",

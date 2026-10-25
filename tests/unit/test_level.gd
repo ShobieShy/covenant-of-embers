@@ -116,7 +116,13 @@ func test_environment_palette_fog_sun() -> void:
 	var env := (level.get_node("WorldEnvironment") as WorldEnvironment).environment
 	var sky := LevelToml.color(d["environment"]["sky_color"])
 	var amb := LevelToml.color(d["environment"]["ambient_color"])
-	check(env.background_mode == Environment.BG_COLOR, "clear colour background")
+	# Step 124: a level with `sky = true` draws a procedural sky whose horizon is sky_color.
+	var has_sky: bool = d["environment"].get("sky", false)
+	check(env.background_mode == (Environment.BG_SKY if has_sky else Environment.BG_COLOR), "background mode")
+	if has_sky:
+		var sm := env.sky.sky_material as ProceduralSkyMaterial
+		var hz := sm.sky_horizon_color
+		check(hz.is_equal_approx(sky) or _close(hz.srgb_to_linear(), sky), "sky horizon = sky_color")
 	check(
 		(
 			env.background_color.srgb_to_linear().is_equal_approx(sky)

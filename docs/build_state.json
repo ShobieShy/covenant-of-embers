@@ -5,7 +5,7 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 134,
-  "steps_done": 106,
+  "steps_done": 107,
   "last_commit": "03687d8",
   "history": [
     {
@@ -1144,6 +1144,13 @@
       "type": "build",
       "summary": "Loot ground props: LootMeshes per-kind props on rarity pads, trash bag for Joe's discards",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-25T00:17:34-05:00",
+      "step": 124,
+      "type": "build",
+      "summary": "Environments pass 2: procedural skies (town/landfill/breach), darker town cobble, Association reading benches + spellbooks, Landfill trash dressing; props accept .gltf",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1252,7 +1259,8 @@
     126,
     120,
     122,
-    123
+    123,
+    124
   ],
   "deferred": [
     74,
@@ -1272,7 +1280,6 @@
     }
   ],
   "waiting_on_user_go": [
-    124,
     125,
     128,
     129,
