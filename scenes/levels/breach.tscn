@@ -15,6 +15,16 @@
 [ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/color.jpg" id="11_tex"]
 [ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/roughness.jpg" id="12_tex"]
 [ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/normal.jpg" id="13_tex"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/pillar-stone.glb" id="1_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-large.glb" id="2_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-wide.glb" id="3_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-small.glb" id="4_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-broken.glb" id="5_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/lantern.glb" id="6_glb"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trash_Bags.glb" id="7_glb"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trash_Bag.glb" id="8_glb"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Can_Broken.glb" id="9_glb"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trashcan.glb" id="10_glb"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_top_color = Color(0.088, 0.078, 0.147, 1)
@@ -711,6 +721,98 @@ surface_material_override/0 = SubResource("StandardMaterial3D_7")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/cistern_block"]
 shape = SubResource("BoxShape3D_16")
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="pillar_cap_1" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(6.5, 0, 0, 0, 3.2, 0, 0, 0, 6.5, -6, 0, -4)
+
+[node name="pillar_cap_2" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(6.5, 0, 0, 0, 3.2, 0, 0, 0, 6.5, 6, 0, -4)
+
+[node name="pillar_cap_3" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(6.5, 0, 0, 0, 3.2, 0, 0, 0, 6.5, -6, 0, 5)
+
+[node name="pillar_cap_4" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(6.5, 0, 0, 0, 3.2, 0, 0, 0, 6.5, 6, 0, 5)
+
+[node name="rubble_1" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -11.4, 0, -10.8)
+
+[node name="rubble_2" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.1, 0, 1.905256, 0, 2.2, 0, -1.905256, 0, 1.1, 11.2, 0, 10.6)
+
+[node name="rubble_3" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(2.255262, 0, 0.820848, 0, 2.4, 0, -0.820848, 0, 2.255262, -11.6, 0, 8)
+
+[node name="rubble_4" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(0.347296, 0, 1.969616, 0, 2, 0, -1.969616, 0, 0.347296, 10.8, 0, -8.5)
+
+[node name="rubble_5" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1.385641, 0, 0.8, 0, 1.6, 0, -0.8, 0, 1.385641, -6.4, 0, 28.5)
+
+[node name="rubble_6" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(-1.072462, 0, 0.899903, 0, 1.4, 0, -0.899903, 0, -1.072462, 6.5, 0, 35.5)
+
+[node name="rubble_7" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(1.969616, 0, 0.347296, 0, 2, 0, -0.347296, 0, 1.969616, -6.4, 0, 47.5)
+
+[node name="rubble_8" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(-1.503508, 0, -0.547232, 0, 1.6, 0, 0.547232, 0, -1.503508, 6.3, 0, 59.5)
+
+[node name="rubble_9" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(0, 0, 1.3, 0, 1.3, 0, -1.3, 0, 0, -6.2, 0, 66.5)
+
+[node name="rubble_10" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(1.131371, 0, 1.131371, 0, 1.6, 0, -1.131371, 0, 1.131371, 2, 0, -11.6)
+
+[node name="broken_wall_1" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(1, 0, 0, 0, 3, 0, 0, 0, 3, -11.95, 0, -6)
+
+[node name="broken_wall_2" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(-1, 0, 0, 0, 3, 0, 0, 0, -3, 11.95, 0, 2)
+
+[node name="broken_wall_3" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(1, 0, 0, 0, 3, 0, 0, 0, 3, -6.95, 0, 40)
+
+[node name="broken_wall_4" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(-1, 0, 0, 0, 3, 0, 0, 0, -3, 6.95, 0, 62)
+
+[node name="breach_lantern_1" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, -11.6, 0, -11.6)
+
+[node name="breach_lantern_2" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 11.6, 0, -11.6)
+
+[node name="breach_lantern_3" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, -6.6, 0, 70)
+
+[node name="breach_lantern_4" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 6.6, 0, 70)
+
+[node name="breach_lantern_5" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, -6.6, 0, 46)
+
+[node name="breach_lantern_6" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 6.6, 0, 34)
+
+[node name="breach_trash_1" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(4.228617, 0, 1.539091, 0, 4.5, 0, -1.539091, 0, 4.228617, -5.8, 0, 63.5)
+
+[node name="breach_trash_2" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.368081, 0, 3.75877, 0, 4, 0, -3.75877, 0, 1.368081, 5.6, 0, 60)
+
+[node name="breach_trash_3" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(2.8, 0, 0, 0, 2.8, 0, 0, 0, 2.8, 5.9, 0, 49)
+
+[node name="breach_trash_4" parent="Props" instance=ExtResource("10_glb")]
+transform = Transform3D(0.952628, 0, 0.55, 0, 1.1, 0, -0.55, 0, 0.952628, -5.7, 0, 37)
+
+[node name="breach_trash_5" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(-2.1, 0, 3.637307, 0, 4.2, 0, -3.637307, 0, -2.1, 5.5, 0, 41.5)
+
+[node name="breach_trash_6" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-3.75877, 0, -1.368081, 0, 4, 0, 1.368081, 0, -3.75877, -10.5, 0, 2.5)
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
 script = ExtResource("1_nav")

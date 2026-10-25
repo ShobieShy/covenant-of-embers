@@ -178,8 +178,32 @@ def midden() -> tuple[set[str], str]:
     return set(), "".join(p)
 
 
+def breach() -> tuple[set[str], str]:
+    """Step 125 (Art A7): Breach tileset pass - stone pillar caps, rubble, broken wall chunks,
+    dim lanterns and seeped-in Landfill trash. Decorative only (no colliders)."""
+    p = []
+    for i, (x, z) in enumerate(((-6, -4), (6, -4), (-6, 5), (6, 5))):
+        p.append(prop(f"pillar_cap_{i + 1}", TOWN + "pillar-stone.glb", (x, 0, z), 0.0, (6.5, 3.2, 6.5)))
+    rubble = ((-11.4, -10.8, "rock-large", 0, 2.0), (11.2, 10.6, "rock-wide", 60, 2.2), (-11.6, 8.0, "rock-small", 20, 2.4),
+              (10.8, -8.5, "rock-small", 80, 2.0), (-6.4, 28.5, "rock-wide", 30, 1.6), (6.5, 35.5, "rock-large", 140, 1.4),
+              (-6.4, 47.5, "rock-small", 10, 2.0), (6.3, 59.5, "rock-wide", 200, 1.6), (-6.2, 66.5, "rock-large", 90, 1.3),
+              (2.0, -11.6, "rock-small", 45, 1.6))
+    for i, (x, z, m, r, sc) in enumerate(rubble):
+        p.append(prop(f"rubble_{i + 1}", TOWN + f"{m}.glb", (x, 0, z), float(r), sc))
+    for i, (x, z, r) in enumerate(((-11.95, -6.0, 0.0), (11.95, 2.0, 180.0), (-6.95, 40.0, 0.0), (6.95, 62.0, 180.0))):
+        p.append(prop(f"broken_wall_{i + 1}", TOWN + "wall-broken.glb", (x, 0, z), r, (1.0, 3.0, 3.0)))
+    for i, (x, z) in enumerate(((-11.6, -11.6), (11.6, -11.6), (-6.6, 70.0), (6.6, 70.0), (-6.6, 46.0), (6.6, 34.0))):
+        p.append(prop(f"breach_lantern_{i + 1}", TOWN + "lantern.glb", (x, 0, z), 0.0, 1.4))
+    junk = ((-5.8, 63.5, "Trash_Bags", 20, 4.5), (5.6, 60.0, "Trash_Bag", 70, 4.0), (5.9, 49.0, "Can_Broken", 0, 2.8),
+            (-5.7, 37.0, "Trashcan", 30, 1.1), (5.5, 41.5, "Trash_Bags", 120, 4.2), (-10.5, 2.5, "Trash_Bag", 200, 4.0))
+    for i, (x, z, m, r, sc) in enumerate(junk):
+        p.append(prop(f"breach_trash_{i + 1}", TRASH + f"{m}.glb", (x, 0, z), float(r), sc))
+    return set(), "".join(p)
+
+
 FILES = {"data/levels/town_square.toml": town, "data/levels/mage_association.toml": hall,
-         "data/levels/old_oak.toml": oak, "data/levels/midden_greybox.toml": midden}
+         "data/levels/old_oak.toml": oak, "data/levels/midden_greybox.toml": midden,
+         "data/levels/breach_slice.toml": breach}
 
 
 def render(text: str, hide: set[str], block: str) -> str:

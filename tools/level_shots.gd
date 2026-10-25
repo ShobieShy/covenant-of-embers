@@ -18,6 +18,8 @@ const VIEWS := [
 	["midden", Vector3(-10, 5, 10), Vector3(6, 0, -6)],
 	["mage_association", Vector3(-3, 1.7, 8), Vector3(-8, 0.8, 2)],
 	["breach", Vector3(0, 1.7, 0), Vector3(0, 6, -20)],
+	["breach", Vector3(-8, 4, 10), Vector3(4, 0, -6)],
+	["breach", Vector3(0, 1.7, 72), Vector3(0, 1, 50)],
 ]
 
 

@@ -2,8 +2,8 @@ extends SceneTree
 ## Art review: each enemy model rendered alone in the Town Square, one PNG per enemy.
 ## godot --display-driver wayland --path . -s tools/enemy_shots.gd -- <out_dir>
 
-const IDS := ["gnawer", "ooze", "heap", "breach_warden", "the_filth"]
-const HEIGHTS := [0.6, 1.0, 2.2, 2.6, 3.5]
+const IDS := ["gnawer", "ooze", "heap", "breach_warden", "the_filth", "scorchling"]
+const HEIGHTS := [0.6, 1.0, 2.2, 2.6, 3.5, 0.8]
 
 
 func _initialize() -> void:
