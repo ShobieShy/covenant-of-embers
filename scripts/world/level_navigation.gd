@@ -127,14 +127,25 @@ func tile_keys(box_bounds: AABB) -> Array[Vector2i]:
 
 ## Hash of everything a tile bake reads: box geometry, terrain bytes, the tile set.
 func source_hash(data: NavigationMeshSourceGeometryData3D, tz: TerrainZone, keys: Array[Vector2i]) -> int:
-	# Step 161: vertices rounded to 1 cm, so float noise from a parent offset (tests park
-	# the game at z -9000) still matches the offline cache.
-	var v := data.get_vertices()
-	var q := PackedInt32Array()
-	q.resize(v.size())
-	for i in v.size():
-		q[i] = roundi(v[i] * 100.0)
-	return hash([q, data.get_indices(), tz.content_hash(), keys, TILE])
+	# Step 161: the box part is hashed from the colliders' level-local transforms and
+	# shapes (exact, offset-free), not the parsed global vertices: a level parked off-origin
+	# (tests use z -9000) gets ulp noise in those and missed its offline cache.
+	var parts: Array = [data.get_vertices().size(), data.get_indices()]
+	var root := get_node_or_null(source)
+	if root != null:
+		_local_shapes(root, Transform3D.IDENTITY, parts, true)
+	return hash([parts, tz.content_hash(), keys, TILE])
+
+
+func _local_shapes(n: Node, xf: Transform3D, out: Array, is_root := false) -> void:
+	var here := xf
+	if not is_root and n is Node3D:
+		here = xf * (n as Node3D).transform
+	if n is CollisionShape3D and (n as CollisionShape3D).shape is BoxShape3D:
+		out.append([here, ((n as CollisionShape3D).shape as BoxShape3D).size])
+	for c in n.get_children():
+		if c is Node3D:
+			_local_shapes(c, here, out)
 
 
 func cache_path() -> String:
@@ -270,10 +281,9 @@ func _tiles_ready() -> bool:
 			var c := Vector3.ZERO
 			for v in nm.get_polygon(0):
 				c += verts[v]
-			return (
-				NavigationServer3D.map_get_closest_point_owner(map, t.global_transform * (c / nm.get_polygon(0).size()))
-				== t.get_rid()
-			)
+			# Step 161: on the map (a neighbour tile's overlapping border may own the point).
+			var q: Vector3 = t.global_transform * (c / nm.get_polygon(0).size())
+			return NavigationServer3D.map_get_closest_point(map, q).distance_to(q) < 0.3
 	return false
 
 

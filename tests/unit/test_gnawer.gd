@@ -518,9 +518,8 @@ func test_midden_gnawer_bites_without_shoving() -> void:
 		nav != null and nav.bakes == 1 and (not nav.tiles.is_empty() or nav.navigation_mesh.get_polygon_count() > 0),
 		"the Midden bakes its navmesh at load"
 	)
-	for i in 120:
-		if nav.map_ready():
-			break
+	var t0 := Time.get_ticks_msec()  # step 161: 100 cached tiles take real seconds to sync
+	while not nav.map_ready() and Time.get_ticks_msec() - t0 < 20000:
 		await runner_tree.physics_frame
 	check(nav.map_ready(), "Midden navmesh synced")
 	var enemies := Node3D.new()
