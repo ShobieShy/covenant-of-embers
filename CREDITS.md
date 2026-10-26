@@ -28,6 +28,9 @@
 | ambientCG Wood 049 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Wood049 | 2026-10-24 |
 | ambientCG Metal 032 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Metal032 | 2026-10-24 |
 | ambientCG Paving Stones 131 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=PavingStones131 | 2026-10-24 |
+| ambientCG Grass 004 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Grass004 | 2026-10-26 |
+| ambientCG Gravel 022 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Gravel022 | 2026-10-26 |
+| ambientCG Ground 054 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground054 | 2026-10-26 |
 
 3D models: Kenney (www.kenney.nl) — Fantasy Town Kit, Nature Kit (CC0). Delivered by Ember Art as batch 01; the full per-file list is in docs/credits/kenney_batch_01.md.
 
@@ -43,6 +46,7 @@ CC0 does not require attribution; Kenney and ambientCG are credited anyway with 
 | Name | Author | License | Source | Added |
 |---|---|---|---|---|
 | GodotSteam GDExtension 4.23.2 (addons/godotsteam) | GodotSteam contributors (Gramps) | MIT (addons/godotsteam/license.md) | https://codeberg.org/godotsteam/godotsteam | 2026-10-24 |
+| Terrain3D 1.0.2-stable GDExtension (addons/terrain_3d) | Cory Petkovsek, Roope Palmroos and contributors (TokisanGames) | MIT (addons/terrain_3d/LICENSE.txt) | https://github.com/TokisanGames/Terrain3D | 2026-10-26 |
 | Steamworks SDK redistributables (libsteam_api.so, steam_api64.dll, bundled with GodotSteam) | Valve Corporation | Steamworks SDK Access Agreement (redistributable) | https://partner.steamgames.com/ | 2026-10-24 |
 
 Development uses Steam's public test app id 480 (steam_appid.txt); Steam is optional and only started when Steam co-op is chosen.

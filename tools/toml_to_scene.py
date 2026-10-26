@@ -56,6 +56,7 @@ LEVELS = {  # source TOML -> generated scene
 }
 KINDS = ("ground", "wall", "ramp", "crate", "heap", "platform")
 EYE_HEIGHT = 1.5
+TERRAIN_SCRIPT = "res://scripts/world/terrain_zone.gd"
 NAV_SCRIPT = "res://scripts/world/level_navigation.gd"
 WAVE_RING = 1.5          # m; EnemySpawner.WAVE_RING must match
 WAVE_MAX_COUNT = 16
@@ -209,7 +210,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch", "materials", "prop"}, "top level")
+               "encounter", "switch", "materials", "prop", "terrain"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -390,6 +391,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
             raise LevelError(f"switch '{name}' position (feet) must lie on a box surface (within 5 cm)")
         out["switches"].append({"name": name, "opens": opens, "position": pos, "yaw_deg": float(sw.get("yaw_deg", 0.0))})
     _props(d.get("prop", []), out)
+    out["terrain"] = _terrain(d["terrain"], out["boxes"]) if "terrain" in d else None
     # Step 65: travel exits (LevelGate per exit, `to` = a GameFlow level id) and NPCs.
     for sec, key, extra in (("exit", "exits", "to"), ("npc", "npcs", "speaker")):
         seen: set[str] = set()
@@ -408,6 +410,54 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
                 raise LevelError(f"{sec} '{name}' position (feet) must lie on a box surface (within 5 cm)")
             out[key].append({"name": name, extra: val, "position": pos, "yaw_deg": float(x.get("yaw_deg", 0.0))})
     return out
+
+
+TERRAIN_KEYS = {"size", "center", "height", "seed", "spacing", "rim", "map_version", "layers", "pad_margin", "blend"}
+
+
+def _num(t: dict, k: str, default: float, lo: float, hi: float) -> float:
+    v = t.get(k, default)
+    if not isinstance(v, (int, float)) or isinstance(v, bool) or not lo <= v <= hi:
+        raise LevelError(f"[terrain] {k} must be a number in [{lo}, {hi}]")
+    return float(v)
+
+
+def _terrain(t: dict, boxes: list[dict]) -> dict:
+    """Step 152 (Phase W1): an open-zone heightfield (scripts/world/terrain_zone.gd).
+    Pads = every `ground` box footprint (+ pad_margin), so the greybox stays flat."""
+    _only(t, TERRAIN_KEYS, "[terrain]")
+    size = _vec(_need(t, "size", "[terrain]"), "[terrain] size", 2)
+    if not all(32 <= x <= 2048 for x in size):
+        raise LevelError("[terrain] size must be 32..2048 m per side")
+    center = _vec(t.get("center", [0, 0]), "[terrain] center", 2)
+    layers = t.get("layers", ["Grass004", "Rock030", "Gravel022"])
+    if not isinstance(layers, list) or not 1 <= len(layers) <= 8:
+        raise LevelError("[terrain] layers must be a list of 1-8 ambientCG ids")
+    for x in layers:
+        if not (ROOT / "assets/ambientcg" / str(x) / "terrain_alb_ht.png").is_file():
+            raise LevelError(f"[terrain] layer {x}: no assets/ambientcg/{x}/terrain_alb_ht.png "
+                             "(run tools/pack_terrain_textures.py)")
+    margin = _num(t, "pad_margin", 2.0, 0.0, 64.0)
+    pads = []
+    for b in boxes:
+        if b["kind"] != "ground":
+            continue
+        hx, hz = b["size"][0] / 2 + margin, b["size"][2] / 2 + margin
+        pads.append([b["center"][0] - hx, b["center"][2] - hz, 2 * hx, 2 * hz])
+        for c in (b["center"][0] - hx, b["center"][0] + hx):
+            for z in (b["center"][2] - hz, b["center"][2] + hz):
+                if not (abs(c - center[0]) < size[0] / 2 - 24 and abs(z - center[1]) < size[1] / 2 - 24):
+                    raise LevelError(f"[terrain] ground box '{b['name']}' must sit 24 m inside the zone edge")
+    mv = t.get("map_version", 1)
+    if not isinstance(mv, int) or isinstance(mv, bool) or mv < 1:
+        raise LevelError("[terrain] map_version must be an integer >= 1")
+    seed = t.get("seed", 1)
+    if not isinstance(seed, int) or isinstance(seed, bool):
+        raise LevelError("[terrain] seed must be an integer")
+    return {"size": size, "center": center, "height": _num(t, "height", 10.0, 0.0, 120.0), "seed": seed,
+            "spacing": _num(t, "spacing", 1.0, 0.25, 4.0), "rim": _num(t, "rim", 16.0, 0.0, 80.0),
+            "blend": _num(t, "blend", 14.0, 1.0, 100.0), "map_version": mv, "layers": [str(x) for x in layers],
+            "pads": pads}
 
 
 # ---------------------------------------------------------------- .tscn writer
@@ -565,6 +615,17 @@ def to_tscn(lv: dict, source: str) -> str:
                      + ("visible = false\n" if b["hidden"] else ""))
         nodes.append(f'[node name="Shape" type="CollisionShape3D" parent="Boxes/{b["name"]}"]\n'
                      f'shape = SubResource("{shape}")\n')
+    tr = lv.get("terrain")
+    if tr:
+        pads = ", ".join("Rect2(%s)" % ", ".join(_f(x) for x in p) for p in tr["pads"])
+        layers = ", ".join(f'"{x}"' for x in tr["layers"])
+        nodes.append(f'[node name="Terrain" type="Node3D" parent="."]\nscript = ExtResource("1_terrain")\n'
+                     f'size = Vector2({_f(tr["size"][0])}, {_f(tr["size"][1])})\n'
+                     f'center = Vector2({_f(tr["center"][0])}, {_f(tr["center"][1])})\n'
+                     f'height = {_f(tr["height"])}\nnoise_seed = {tr["seed"]}\nspacing = {_f(tr["spacing"])}\n'
+                     f'rim = {_f(tr["rim"])}\nmap_version = {tr["map_version"]}\n'
+                     f'layers = PackedStringArray({layers})\npads = Array[Rect2]([{pads}])\n'
+                     f'blend = {_f(tr["blend"])}\n')
     scenes: dict[str, str] = {}
     if lv["props"]:
         nodes.append('[node name="Props" type="Node3D" parent="."]\n')
@@ -630,6 +691,8 @@ def to_tscn(lv: dict, source: str) -> str:
             f"; rerun the tool (tools/run_tests.sh fails while this file is stale).\n"
             f"[gd_scene format=3]\n")
     ext = f'[ext_resource type="Script" path="{NAV_SCRIPT}" id="1_nav"]\n'
+    if tr:
+        ext += f'[ext_resource type="Script" path="{TERRAIN_SCRIPT}" id="1_terrain"]\n'
     for path, i in exts.items():
         ext += f'[ext_resource type="Texture2D" path="res://{path}" id="{i}"]\n'
     for path, i in scenes.items():
@@ -755,6 +818,20 @@ def self_test() -> int:
     for body, msg in bad.items():
         try:
             parse_level(hdr + body)
+        except LevelError as e:
+            assert msg in str(e), (msg, str(e))
+        else:
+            raise AssertionError(f"expected error: {msg}")
+    # Step 152: [terrain] -> a TerrainZone node with one pad per ground box.
+    tz = parse_level(good + '\n[terrain]\nsize = [400, 400]\nheight = 12\nseed = 7\n')
+    assert tz["terrain"]["pads"] and tz["terrain"]["seed"] == 7, tz["terrain"]
+    sc = to_tscn(tz, "x.toml")
+    assert 'script = ExtResource("1_terrain")' in sc and "pads = Array[Rect2]([Rect2(" in sc
+    assert sc.index('name="Terrain"') < sc.index('name="Navigation"')
+    for bad, msg in (('size = [10, 10]', "size must be"), ('size = [400, 400]\nlayers = ["Nope"]', "layer Nope"),
+                     ('size = [400, 400]\nwhat = 1', "unknown"), ('size = [60, 60]', "24 m inside")):
+        try:
+            parse_level(good + "\n[terrain]\n" + bad + "\n")
         except LevelError as e:
             assert msg in str(e), (msg, str(e))
         else:

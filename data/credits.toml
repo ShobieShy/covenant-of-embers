@@ -174,3 +174,24 @@ author = "Covenant of Embers project"
 license = "CC0 1.0"
 source = "original (this repository, drawn by tools/gen_brand_logos.py)"
 line = "Brand logos by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Grass 004"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Grass004"
+line = "ambientCG Grass 004 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Gravel 022"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Gravel022"
+line = "ambientCG Gravel 022 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Ground 054"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Ground054"
+line = "ambientCG Ground 054 by Lennart Demes, CC0 1.0"

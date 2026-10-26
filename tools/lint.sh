@@ -6,7 +6,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 FORMAT_SKIP=(scripts/core/main.gd tests/unit/test_enemy.gd tests/unit/test_item_codes.gd)
-mapfile -t ALL < <(git ls-files '*.gd' | grep -v '^archive/')
+mapfile -t ALL < <(git ls-files '*.gd' | grep -v -e '^archive/' -e '^addons/')
 FMT=()
 for f in "${ALL[@]}"; do
 	skip=0

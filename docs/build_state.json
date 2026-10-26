@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 152,
+  "next_step": 153,
   "total_steps": 166,
-  "steps_done": 132,
-  "last_commit": "4750f31",
+  "steps_done": 133,
+  "last_commit": "6d02855",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1352,6 +1352,10 @@
     {
       "date": "2026-10-26",
       "note": "Step 151 done: DPS gains at 20 pts 1.00-1.46 (direct damage only)"
+    },
+    {
+      "date": "2026-10-26",
+      "note": "Step 152 done: Vendored Terrain3D 1.0.2 (MIT, linux+windows x86_64), 3 new ambientCG CC0 sets + packed layers, TerrainZone (noise heights, flat pads, rim, region-snapped import, FULL_GAME collision, fallback camera, nav faces from height_at), [terrain] in toml_to_scene. 516 tests green. Faceted low-poly shader override deferred."
     }
   ],
   "completed_steps": [
@@ -1486,7 +1490,8 @@
     148,
     149,
     150,
-    151
+    151,
+    152
   ],
   "deferred": [
     74,
@@ -1506,11 +1511,6 @@
     }
   ],
   "waiting_on_user_go": [
-    {
-      "step": 152,
-      "name": "Terrain W1: Terrain3D v1.0.2 vendor + TOML terrain pipeline + low-poly shader",
-      "plan": "docs/TERRAIN_MAPS_PLAN.md"
-    },
     {
       "step": 153,
       "name": "Terrain W2: streaming, LOD, occlusion, perf flythrough",

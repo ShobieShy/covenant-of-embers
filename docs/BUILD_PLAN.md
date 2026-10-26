@@ -870,7 +870,8 @@ Details: docs/ELEMENT_TREES_PLAN.md (request t67u). User answers t70u: structure
 ## Phase W – Terrain maps at zone scale (planned 2026-10-26, WAITING ON USER GO)
 Full plan: docs/TERRAIN_MAPS_PLAN.md. Optional step 166 (Ashen Wilds) only if Q5 is yes.
 
-- **Step 152 (waiting on user go)** Terrain W1: Terrain3D v1.0.2 vendor + TOML terrain pipeline + low-poly shader.
+- **Step 152 (done 2026-10-26)** Terrain W1: Terrain3D v1.0.2 vendor + TOML terrain pipeline + low-poly shader.
+  - Result: Vendored Terrain3D 1.0.2 (MIT, linux+windows x86_64), 3 new ambientCG CC0 sets + packed layers, TerrainZone (noise heights, flat pads, rim, region-snapped import, FULL_GAME collision, fallback camera, nav faces from height_at), [terrain] in toml_to_scene. 516 tests green. Faceted low-poly shader override deferred.
 - **Step 153 (waiting on user go)** Terrain W2: streaming, LOD, occlusion, perf flythrough.
 - **Step 154 (waiting on user go)** Terrain W3: chunked offline navmesh, camp leash, bot route graph.
 - **Step 155 (waiting on user go)** Terrain W4: map_version/anchor saves + co-op terrain hash, interest mgmt, join-at-waystone.

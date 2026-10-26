@@ -19,6 +19,10 @@ signal baked(region: LevelNavigation)
 ## global group, so test worlds and levels never bake each other's geometry).
 @export var source: NodePath = ^"../Boxes"
 @export var bake_on_ready := true
+## Step 152: an optional TerrainZone whose faces near the Boxes join the bake.
+@export var terrain: NodePath = ^"../Terrain"
+
+const TERRAIN_NAV_MARGIN := 12.0
 
 var bakes := 0
 var _bake_iteration := -1  ## step 47: the map iteration a re-bake started on
@@ -56,6 +60,10 @@ func bake_now() -> int:
 	var nm := navigation_mesh if navigation_mesh != null else make_mesh()
 	var data := NavigationMeshSourceGeometryData3D.new()
 	NavigationServer3D.parse_source_geometry_data(nm, data, root)
+	var tz := get_node_or_null(terrain) as TerrainZone
+	if tz != null and data.has_data():
+		# Step 152: terrain around the greybox pads (TERRAIN_MAPS_PLAN section 9 chunks it later).
+		tz.add_nav_faces(data, data.get_bounds().grow(TERRAIN_NAV_MARGIN))
 	NavigationServer3D.bake_from_source_geometry_data(nm, data)
 	navigation_mesh = null  # re-assign so the region pushes the new polygons
 	navigation_mesh = nm
