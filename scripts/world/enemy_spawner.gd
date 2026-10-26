@@ -90,17 +90,20 @@ func _read_camps() -> void:
 	var h := level.get_node_or_null("Camps") if level else null
 	for c in h.get_children() if h else []:
 		var n := c as Node3D
-		camps.append(
-			{
-				"name": String(n.name),
-				"center": n.global_position if n.is_inside_tree() else n.position,
-				"radius": float(n.get_meta(&"radius", 4.0)),
-				"respawn_s": float(n.get_meta(&"respawn_s", 600.0)),
-				"enemies": n.get_meta(&"enemies", []),
-				"alive": [] as Array[Enemy],
-				"wait": 0.0,
-				"spawned": 0,
-			}
+		(
+			camps
+			. append(
+				{
+					"name": String(n.name),
+					"center": n.global_position if n.is_inside_tree() else n.position,
+					"radius": float(n.get_meta(&"radius", 4.0)),
+					"respawn_s": float(n.get_meta(&"respawn_s", 600.0)),
+					"enemies": n.get_meta(&"enemies", []),
+					"alive": [] as Array[Enemy],
+					"wait": 0.0,
+					"spawned": 0,
+				}
+			)
 		)
 
 

@@ -43,8 +43,16 @@ func test_camp_wakes_and_respawns() -> void:
 	var sp := EnemySpawner.new()
 	sp.table = EnemyTable.load_default()
 	runner_tree.root.add_child(sp)
-	var c := {"name": "t", "center": Vector3(0, 0, 0), "radius": 4.0, "respawn_s": 5.0,
-		"enemies": [{"enemy": "gnawer", "count": 3}], "alive": [] as Array[Enemy], "wait": 0.0, "spawned": 0}
+	var c := {
+		"name": "t",
+		"center": Vector3(0, 0, 0),
+		"radius": 4.0,
+		"respawn_s": 5.0,
+		"enemies": [{"enemy": "gnawer", "count": 3}],
+		"alive": [] as Array[Enemy],
+		"wait": 0.0,
+		"spawned": 0
+	}
 	var got := sp.spawn_camp(c)
 	check(got.size() == 3 and sp.camp_spawns == 1, "camp spawns its pack")
 	check(got[0].has_meta(CampLeash.HOME), "camp members are leashed home")

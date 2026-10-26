@@ -20,7 +20,9 @@ static func lever_group(anchor: String) -> String:
 	return s.substr(0, i) if i > 0 else s
 
 
-static func setup_levers(holder: Node, level: Node3D, here: String, player: Player, flags: StoryFlags) -> Array[BreachSwitch]:
+static func setup_levers(
+	holder: Node, level: Node3D, here: String, player: Player, flags: StoryFlags
+) -> Array[BreachSwitch]:
 	var out: Array[BreachSwitch] = []
 	var h := level.get_node_or_null(^"Anchors") if level else null
 	if h == null:

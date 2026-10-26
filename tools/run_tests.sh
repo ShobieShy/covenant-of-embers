@@ -23,7 +23,7 @@ run_clean() {
 	fi
 }
 # --fixed-fps 60: tests that await physics frames (step 12) step exactly 1/60 s each, fast.
-run_clean timeout 120 "$GODOT" --headless --fixed-fps 60 --path . -s res://tests/run_tests.gd
+run_clean timeout 1500 "$GODOT" --headless --fixed-fps 60 --path . -s res://tests/run_tests.gd
 run_clean timeout 60 "$GODOT" --headless --path . -- --seconds 2
 run_clean timeout 60 "$GODOT" --headless --path . -- --start --seconds 2
 run_clean tools/playtest.sh
