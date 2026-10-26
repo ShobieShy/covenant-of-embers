@@ -858,3 +858,24 @@ Details: docs/ELEMENT_TREES_PLAN.md (request t67u). User answers t70u: structure
 - Q54 Add Soaked and Hex marks? Default yes (T3/capstone only).
 - Q55 Eclipse may bypass the 15% Dark cap (once / 20 s, no bosses)? Default yes.
 - Q56 Co-op PROTOCOL 3? Default yes.
+
+## Phase W – Terrain maps at zone scale (planned 2026-10-26, WAITING ON USER GO)
+Full plan: docs/TERRAIN_MAPS_PLAN.md. Optional step 166 (Ashen Wilds) only if Q5 is yes.
+
+- **Step 152 (waiting on user go)** Terrain W1: Terrain3D v1.0.2 vendor + TOML terrain pipeline + low-poly shader.
+- **Step 153 (waiting on user go)** Terrain W2: streaming, LOD, occlusion, perf flythrough.
+- **Step 154 (waiting on user go)** Terrain W3: chunked offline navmesh, camp leash, bot route graph.
+- **Step 155 (waiting on user go)** Terrain W4: map_version/anchor saves + co-op terrain hash, interest mgmt, join-at-waystone.
+- **Step 156 (waiting on user go)** Terrain W5: intro gates (requires_flag), beat anchors.
+- **Step 157 (waiting on user go)** Terrain W6: Old Oak grove 160 m.
+- **Step 158 (waiting on user go)** Terrain W7: Eldoria town 240 m.
+- **Step 159 (waiting on user go)** Terrain W8: Mage Association interior 60x90 m, 3 floors.
+- **Step 160 (waiting on user go)** Terrain W9: Landfill part 1 (terrain, tutorial funnel, Joe's camp, Filth arena).
+- **Step 161 (waiting on user go)** Terrain W10: Landfill part 2 (10 POIs, camps, chests, vault, waystones, residue).
+- **Step 162 (waiting on user go)** Terrain W11: Breach 220x320 m (crater, 6 rooms/2 levels, 3 levers).
+- **Step 163 (waiting on user go)** Terrain W12: Ember Art pass (landmarks, chests, waystones, skyline, map paintings).
+- **Step 164 (waiting on user go)** Terrain W13: bot zone sweeps, co-op bot, Deck Low perf pass.
+- **Step 165 (waiting on user go)** Terrain W14: docs + camp/loot balance.
+
+### Questions (Phase W)
+See docs/TERRAIN_MAPS_PLAN.md section 15 (Q1-Q12, defaults in bold).

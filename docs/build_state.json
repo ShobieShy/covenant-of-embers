@@ -4,7 +4,7 @@
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
   "next_step": 0,
-  "total_steps": 151,
+  "total_steps": 165,
   "steps_done": 124,
   "last_commit": "106f5ef",
   "history": [
@@ -1312,6 +1312,10 @@
       "type": "plan",
       "summary": "t70u answers for Phase V: element trees uncapped, 21 skills per tree, one exclusive element capstone (locks the others until respec), other questions default; steps 144-151 still waiting on user go",
       "commit": "(this commit)"
+    },
+    {
+      "date": "2026-10-26",
+      "note": "Phase W terrain maps planned (steps 152-165), waiting on user go"
     }
   ],
   "completed_steps": [
@@ -1505,6 +1509,76 @@
       "name": "Element trees V8 balance + bot + docs",
       "plan": "docs/ELEMENT_TREES_PLAN.md",
       "answers": "t70u"
+    },
+    {
+      "step": 152,
+      "name": "Terrain W1: Terrain3D v1.0.2 vendor + TOML terrain pipeline + low-poly shader",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 153,
+      "name": "Terrain W2: streaming, LOD, occlusion, perf flythrough",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 154,
+      "name": "Terrain W3: chunked offline navmesh, camp leash, bot route graph",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 155,
+      "name": "Terrain W4: map_version/anchor saves + co-op terrain hash, interest mgmt, join-at-waystone",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 156,
+      "name": "Terrain W5: intro gates (requires_flag), beat anchors",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 157,
+      "name": "Terrain W6: Old Oak grove 160 m",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 158,
+      "name": "Terrain W7: Eldoria town 240 m",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 159,
+      "name": "Terrain W8: Mage Association interior 60x90 m, 3 floors",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 160,
+      "name": "Terrain W9: Landfill part 1 (terrain, tutorial funnel, Joe's camp, Filth arena)",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 161,
+      "name": "Terrain W10: Landfill part 2 (10 POIs, camps, chests, vault, waystones, residue)",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 162,
+      "name": "Terrain W11: Breach 220x320 m (crater, 6 rooms/2 levels, 3 levers)",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 163,
+      "name": "Terrain W12: Ember Art pass (landmarks, chests, waystones, skyline, map paintings)",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 164,
+      "name": "Terrain W13: bot zone sweeps, co-op bot, Deck Low perf pass",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 165,
+      "name": "Terrain W14: docs + camp/loot balance",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
     }
   ],
   "notes": [
