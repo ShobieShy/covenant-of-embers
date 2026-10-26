@@ -8,6 +8,8 @@ const DIR := "res://assets/kenney/pixel-ui/"
 const SCALE := 2  # whole-number pixel scale for 9-slice corners
 const GOLD := Color(0.95, 0.8, 0.45)
 const PARCHMENT := Color(0.92, 0.85, 0.7)
+const SLOT := &"SlotButton"  ## Button variation: 24 px inventory slot art, 4 px 9-slice margin
+const SLOT_MARGIN := 4
 
 
 static func tex(rel: String) -> Texture2D:
@@ -61,15 +63,36 @@ static func get_theme() -> Theme:
 	t.set_stylebox(&"slider", &"HSlider", box("bars_sliders/slider_track.png", 2, Color.WHITE, 3))
 	t.set_icon(&"grabber", &"HSlider", tex("bars_sliders/slider_grabber.png"))
 	t.set_icon(&"grabber_highlight", &"HSlider", tex("bars_sliders/slider_grabber_hover.png"))
+	# Item slots (t60u): inventory_slot*.png, 4 px corners, x2 scale keeps the border crisp.
+	t.set_type_variation(SLOT, &"Button")
+	var slot_dir := "inventory/inventory_slot"
+	t.set_stylebox(&"normal", SLOT, box(slot_dir + ".png", SLOT_MARGIN, Color.WHITE, 6))
+	t.set_stylebox(&"hover", SLOT, box(slot_dir + "_selected.png", SLOT_MARGIN, Color(1, 1, 1, 0.8), 6))
+	t.set_stylebox(&"pressed", SLOT, box(slot_dir + "_selected.png", SLOT_MARGIN, Color.WHITE, 6))
+	t.set_stylebox(&"focus", SLOT, box(slot_dir + "_selected.png", SLOT_MARGIN, GOLD, 6))
+	t.set_stylebox(&"disabled", SLOT, box(slot_dir + "_disabled.png", SLOT_MARGIN, Color.WHITE, 6))
+	t.set_stylebox(&"normal", &"RichTextLabel", StyleBoxEmpty.new())
+	t.set_color(&"default_color", &"RichTextLabel", PARCHMENT)
+	for f in [&"normal_font", &"bold_font", &"italics_font", &"bold_italics_font"]:
+		t.set_font(f, &"RichTextLabel", t.default_font)
+	t.set_font_size(&"bold_font_size", &"RichTextLabel", 32)
 	t.set_color(&"font_color", &"Label", PARCHMENT)
 	t.set_color(&"font_outline_color", &"Label", Color(0.08, 0.05, 0.03))
 	return t
 
 
 ## Whole UI: theme, Nearest filtering for 2D, pixel cursors (hotspots per HANDOFF.md).
+## t60u: Controls under a CanvasLayer (every in-game screen) don't inherit the Window theme,
+## so the pixel theme is also merged into ThemeDB's default theme, the fallback for all of them.
 static func apply(win: Window) -> void:
 	if win.theme == null:  # no static cache: a static Theme leaks RIDs at exit
 		win.theme = get_theme()
+	var d := ThemeDB.get_default_theme()
+	if not d.has_meta(&"pixel"):
+		d.set_meta(&"pixel", true)
+		d.merge_with(win.theme)
+		d.default_font = win.theme.default_font
+		d.default_font_size = win.theme.default_font_size
 	win.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	if DisplayServer.get_name() != "headless":
 		Input.set_custom_mouse_cursor(tex("cursors/cursor_pointer.png"), Input.CURSOR_ARROW, Vector2(0, 0))

@@ -35,6 +35,7 @@ var coop: CoopWorld  # step 79: set when a co-op session is running
 var intro: IntroDirector  # step 109: set while the intro runs
 
 func _ready() -> void:
+	UiTheme.apply(get_tree().root)  # t60u: in-game screens too, even when main runs without the menu
 	var args := OS.get_cmdline_user_args()
 	var i := args.find("--seconds")
 	if i >= 0 and i + 1 < args.size():

@@ -56,7 +56,7 @@ func test_options_applied() -> void:
 	check(p.feel.reduced_motion, "reduced motion wired")
 	check(p.focus_toggle and p.crouch_toggle and p.invert_y, "toggles wired")
 	check(Accessibility.colorblind == Accessibility.Mode.DEUTERANOPIA, "palette mode applied")
-	check(not Accessibility.subtitles and Accessibility.font_size() == 32, "subtitles applied")
+	check(not Accessibility.subtitles and Accessibility.font_size() == Accessibility.BASE_FONT * 2, "subtitles applied")
 	p.queue_free()
 	_cleanup()
 
@@ -88,7 +88,7 @@ func test_dialogue_subtitles() -> void:
 	Accessibility.subtitle_scale = 1.5
 	ui._on_line("Bob", "Hello")
 	check(not ui.text_label.visible, "subtitles off hides line")
-	check(ui.text_label.get_theme_font_size("font_size") == 24, "scale applied")
+	check(ui.text_label.get_theme_font_size("font_size") == roundi(Accessibility.BASE_FONT * 1.5), "scale applied")
 	Accessibility.subtitles = true
 	ui._on_line("Bob", "Hello")
 	check(ui.text_label.visible, "subtitles on shows line")

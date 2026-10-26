@@ -11,7 +11,7 @@ extends RefCounted
 enum Mode { OFF, DEUTERANOPIA, PROTANOPIA, TRITANOPIA }
 
 const MODE_NAMES: PackedStringArray = ["Off", "Deuteranopia", "Protanopia", "Tritanopia"]
-const BASE_FONT := 16
+const BASE_FONT := 32  # Kenney Pixel 16 px at the theme's x2 scale (t60u)
 ## Rarity order = Rarity.IDS (basic, uncommon, rare, mythic, primordial, unique).
 const RARITY_RG := [
 	Color(0.9, 0.9, 0.9),
