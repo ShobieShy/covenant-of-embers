@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 147,
+  "next_step": 148,
   "total_steps": 166,
-  "steps_done": 127,
-  "last_commit": "f16c99c",
+  "steps_done": 128,
+  "last_commit": "80cae36",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1332,6 +1332,10 @@
     {
       "date": "2026-10-26",
       "note": "Step 146 done: FireMode.skill_mult/skill_add (brand element's tree, wands x wand_scale). Heat: heat per cast, decay, vent/overheat time, Red Line hot damage (>=70% heat), crystal reload fraction (floor 35%). Charge: charge time, extra chain jumps/range. Explosive: radius, blast damage, speed. Spin: spin-up time. Burst: ramp. Precision orb: radius/damage. 496 unit tests green."
+    },
+    {
+      "date": "2026-10-26",
+      "note": "Step 147 done: Enemy soaked_left/hex_left timers (cleared with statuses). mark_seconds applies Soaked (Water) or Hex (other trees). vs_status_pct (target has the element's status), mark_pct (target marked), vs_mark_status_pct (Tremor stagger / Conductive chain on Soaked). test_element_marks. 499 unit tests green."
     }
   ],
   "completed_steps": [
@@ -1461,7 +1465,8 @@
     143,
     144,
     145,
-    146
+    146,
+    147
   ],
   "deferred": [
     74,
@@ -1481,12 +1486,6 @@
     }
   ],
   "waiting_on_user_go": [
-    {
-      "step": 147,
-      "name": "Element trees V4 marks + T1-T3 conditionals",
-      "plan": "docs/ELEMENT_TREES_PLAN.md",
-      "answers": "t70u"
-    },
     {
       "step": 148,
       "name": "Element trees V5 capstones + T4 runtime skills",

@@ -142,17 +142,52 @@ static func on_hit(h: SpellBolts.Hit) -> void:
 		ElementTable.Element.AIR:
 			chain(h)
 	var md := ElementSkillMods.of_hit(h)
+	mark(h.collider as Enemy, h.element, md)
 	if h.element == ElementTable.Element.AIR and int(ElementSkillMods.value(md, "chain_jumps")) > 0:
 		chain_n(h, int(ElementSkillMods.value(md, "chain_jumps")), _chain_range(md), _chain_fraction(md))
 	if h.spawn != null and h.spawn.chain_targets > 0:  # step 138: Sigil Sauer full charge
 		chain_n(h, h.spawn.chain_targets, h.spawn.chain_range, h.spawn.chain_fraction)
 
 
-## Step 145: weak-point bonus on a bolt with element-skill mods (conditional bonuses: step 147).
-static func apply_skill_hit(h: SpellBolts.Hit, weak_point: bool, _target: Object) -> void:
+## Step 145/147: weak-point and conditional bonuses on a bolt with element-skill mods:
+## vs_status_pct (target has the element's status), mark_pct (target has the element's mark).
+static func apply_skill_hit(h: SpellBolts.Hit, weak_point: bool, target: Object) -> void:
 	var md := ElementSkillMods.of_hit(h)
+	if md.is_empty():
+		return
 	if weak_point and md.has("weakpoint_pct"):
 		h.result.amount *= ElementSkillMods.mult(md, "weakpoint_pct")
+	h.result.amount *= conditional_mult(md, h.element, target as Enemy)
+
+
+## Step 147: the conditional damage multiplier of `md` against `e` (1.0 without a match).
+static func conditional_mult(md: Dictionary, element: int, e: Enemy) -> float:
+	if e == null:
+		return 1.0
+	var k := 1.0
+	if md.has("vs_status_pct") and e.has_status_of(element):
+		k *= ElementSkillMods.mult(md, "vs_status_pct")
+	if md.has("mark_pct") and e.has_mark_of(element):
+		k *= ElementSkillMods.mult(md, "mark_pct")
+	return k
+
+
+## Step 147: apply the tree's mark (Water: Soaked, others: Hex) for mark_seconds.
+static func mark(e: Enemy, element: int, md: Dictionary) -> void:
+	var secs := ElementSkillMods.value(md, "mark_seconds")
+	if e == null or secs <= 0.0 or not e.alive():
+		return
+	if element == ElementTable.Element.WATER:
+		e.soaked_left = maxf(e.soaked_left, secs)
+	else:
+		e.hex_left = maxf(e.hex_left, secs)
+
+
+## Step 147 (Tremor, Conductive): status strength x(1 + vs_mark_status_pct) on a Soaked enemy.
+static func soaked_mult(md: Dictionary, e: Enemy) -> float:
+	if e == null or e.soaked_left <= 0.0:
+		return 1.0
+	return ElementSkillMods.mult(md, "vs_mark_status_pct")
 
 
 static func _chain_range(md: Dictionary) -> float:
@@ -263,7 +298,8 @@ static func stagger(h: SpellBolts.Hit) -> void:
 	var e := h.collider as Enemy
 	if e == null or not e.alive():
 		return
-	var secs := STAGGER_SECONDS + ElementSkillMods.value(ElementSkillMods.of_hit(h), "status_seconds")
+	var md := ElementSkillMods.of_hit(h)
+	var secs := (STAGGER_SECONDS + ElementSkillMods.value(md, "status_seconds")) * soaked_mult(md, e)
 	e.stagger_left = maxf(e.stagger_left, secs * _scale(h))
 
 
@@ -273,7 +309,9 @@ static func chain(h: SpellBolts.Hit) -> Enemy:
 	if src == null:
 		return null
 	var md := ElementSkillMods.of_hit(h)
-	return chain_from(src, _chain_fraction(md) * h.damage, ElementTable.Element.AIR, _chain_range(md), [])
+	return chain_from(
+		src, _chain_fraction(md) * soaked_mult(md, src) * h.damage, ElementTable.Element.AIR, _chain_range(md), []
+	)
 
 
 ## Step 138 (Sigil Sauer): up to `n` jumps, each from the last enemy struck to the nearest

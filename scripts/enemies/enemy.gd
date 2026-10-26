@@ -74,6 +74,9 @@ var burn_damage := 0.0  ## total burn damage dealt
 var slow_left := 0.0
 var slow_factor := 1.0
 var stagger_left := 0.0
+## Step 147 marks (element trees): Soaked (Water) and Hex (Dark/Arcane/Light), plain timers.
+var soaked_left := 0.0
+var hex_left := 0.0
 var _burn_acc := 0.0
 var corruptions := 0
 
@@ -440,6 +443,23 @@ func move_scale() -> float:
 	return slow_factor if slow_left > 0.0 else 1.0
 
 
+## Step 147: the element's own status is on this enemy (burn/slow/stagger; any status for the rest).
+func has_status_of(element: int) -> bool:
+	match element:
+		ElementTable.Element.FIRE:
+			return burn_left > 0.0
+		ElementTable.Element.WATER:
+			return slow_left > 0.0
+		ElementTable.Element.EARTH:
+			return stagger_left > 0.0
+	return burn_left > 0.0 or slow_left > 0.0 or stagger_left > 0.0 or soaked_left > 0.0 or hex_left > 0.0
+
+
+## Step 147: the mark an element's tree applies (Water: Soaked, others: Hex) is on this enemy.
+func has_mark_of(element: int) -> bool:
+	return soaked_left > 0.0 if element == ElementTable.Element.WATER else hex_left > 0.0
+
+
 func staggered() -> bool:
 	return stagger_left > 0.0
 
@@ -450,6 +470,8 @@ func clear_statuses() -> void:
 	slow_left = 0.0
 	slow_factor = 1.0
 	stagger_left = 0.0
+	soaked_left = 0.0
+	hex_left = 0.0
 	_burn_acc = 0.0
 
 
@@ -457,6 +479,8 @@ func clear_statuses() -> void:
 func _status_tick(dt: float) -> void:
 	slow_left = maxf(0.0, slow_left - dt)
 	stagger_left = maxf(0.0, stagger_left - dt)
+	soaked_left = maxf(0.0, soaked_left - dt)
+	hex_left = maxf(0.0, hex_left - dt)
 	if burn_left <= 0.0 or dead:
 		return
 	var step := minf(dt, burn_left)
