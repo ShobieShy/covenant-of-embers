@@ -9,6 +9,7 @@ func _world(k: int) -> Node3D:
 	var w := Node3D.new()
 	w.position = Vector3(-9000, 0, -9000 - 300 * k)
 	runner_tree.root.add_child(w)
+	_worlds.append(w)
 	return w
 
 
@@ -34,9 +35,14 @@ func _hit(e: Enemy, el: E, dmg: float, md: Dictionary) -> SpellBolts.Hit:
 
 
 var _t := 0.0
+var _worlds: Array = []
 
 
 func _setup() -> void:
+	for w in _worlds:
+		if is_instance_valid(w):
+			w.free()
+	_worlds.clear()
 	Capstones.reset()
 	_t = 100.0
 	Capstones.clock = func() -> float: return _t
@@ -175,3 +181,9 @@ func test_dawnchorus_cooldown() -> void:
 	m.after_cast()
 	m.after_cast()
 	check(Capstones.count("dawnchorus") == 1, "8 s cooldown (got %s)" % [Capstones.count("dawnchorus")])
+
+
+func test_zz_cleanup() -> void:
+	_setup()
+	_teardown()
+	check(_worlds.is_empty(), "worlds freed")

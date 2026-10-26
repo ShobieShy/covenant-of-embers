@@ -421,6 +421,11 @@ func test_ray_hits_player_on_character_layer() -> void:
 	)
 	check(ProjectSettings.get_setting("layer_names/3d_physics/layer_2") == "character", "layer 2 named")
 	var q := PhysicsRayQueryParameters3D.create(Vector3(0, 1, 5), Vector3(0, 1, -5), 0xFFFFFFFF)
+	var others: Array[RID] = []  # a player another test left queued for deletion at the origin
+	for o in runner_tree.get_nodes_in_group(Player.GROUP):
+		if o != p:
+			others.append((o as Player).get_rid())
+	q.exclude = others
 	var hit := p.get_world_3d().direct_space_state.intersect_ray(q)
 	check(not hit.is_empty() and hit["collider"] == p, "chest-height ray hits the player")
 	if not hit.is_empty():
