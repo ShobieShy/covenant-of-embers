@@ -624,6 +624,7 @@ func apply_bonuses() -> void:
 	for c in loadout.casters:
 		c.damage_bonus = dmg
 		c.skills = skills  # step 145: element-tree mods
+		c.owner_node = self
 	consecrations.apply(self)
 	skill_procs.bind(self)
 

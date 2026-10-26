@@ -100,6 +100,8 @@ func tick(dt: float, _held: bool, _pressed: bool, _in_hand: bool) -> void:
 func reload(_out: Array) -> bool:
 	if overheated or venting or heat <= 0.0:
 		return false
+	if skill_add("capstone") > 0.0 and heat >= Capstones.BACKDRAFT_HEAT:  # step 148
+		Capstones.backdraft(caster(), heat)
 	venting = true
 	emit(&"vent", heat)
 	_crystal_reload(heat * _vent_s())

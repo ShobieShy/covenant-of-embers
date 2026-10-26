@@ -63,6 +63,7 @@ var mana_refused := 0
 var damage_bonus := 0.0  ## step 19: worn spell_damage_bonus, added flat to each cast
 var conditional_bonus := 0.0  ## step 36: Consecration bonus while its condition holds (flat, each cast)
 var next_cast_bonus := 0.0  ## step 36: Consecration one-shot bonus, spent by the next cast
+var owner_node: Node3D  ## step 148: the Player (capstone areas centre on it)
 var skills: Skills  ## step 145: element-tree mods (ElementSkillMods), set by Player
 var mode: FireMode  ## step 136: rebuilt when the wieldable's brand or type changes
 var _was_held := false
@@ -202,6 +203,13 @@ func _apply_mods(s: SpellBolts.Spawn) -> void:
 	if md.is_empty():
 		return
 	s.mods = md
+	if s.element == ElementTable.Element.ARCANE and Capstones.has(md):  # step 148 Convergence
+		s.mods = md.duplicate()
+		var conv: Array = []
+		for el in ElementTable.COUNT:
+			if skills.el_spent(ElementTable.id_of(el)) > 0:
+				conv.append(el)
+		s.mods["conv"] = conv
 	s.damage *= ElementSkillMods.mult(md, "damage_pct")
 	s.range_m *= ElementSkillMods.mult(md, "range_pct", 0.1)
 	s.dark_bonus += ElementSkillMods.value(md, "turn_chance") / 100.0

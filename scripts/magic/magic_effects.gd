@@ -147,6 +147,7 @@ static func on_hit(h: SpellBolts.Hit) -> void:
 		chain_n(h, int(ElementSkillMods.value(md, "chain_jumps")), _chain_range(md), _chain_fraction(md))
 	if h.spawn != null and h.spawn.chain_targets > 0:  # step 138: Sigil Sauer full charge
 		chain_n(h, h.spawn.chain_targets, h.spawn.chain_range, h.spawn.chain_fraction)
+	Capstones.on_hit(h)  # step 148
 
 
 ## Step 145/147: weak-point and conditional bonuses on a bolt with element-skill mods:
@@ -390,6 +391,7 @@ static func blast(h: SpellBolts.Hit, tree: SceneTree) -> int:
 			e.stagger_left = maxf(e.stagger_left, STAGGER_SECONDS * (1.0 - Damage.clamp_resist(r.resist)))
 		if s.is_orb:
 			try_corrupt(e, h.dark_bonus)
+	n += Capstones.fault_line(h, tree)  # step 148
 	blasts += n
 	if n > 0 or s.is_orb:
 		StatusFX.blast(tree.current_scene, h.point, s.blast_radius, h.element)

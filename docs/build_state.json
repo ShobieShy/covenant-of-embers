@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 148,
+  "next_step": 149,
   "total_steps": 166,
-  "steps_done": 128,
-  "last_commit": "80cae36",
+  "steps_done": 129,
+  "last_commit": "58bbc95",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1336,6 +1336,10 @@
     {
       "date": "2026-10-26",
       "note": "Step 147 done: Enemy soaked_left/hex_left timers (cleared with statuses). mark_seconds applies Soaked (Water) or Hex (other trees). vs_status_pct (target has the element's status), mark_pct (target marked), vs_mark_status_pct (Tremor stagger / Conductive chain on Soaked). test_element_marks. 499 unit tests green."
+    },
+    {
+      "date": "2026-10-26",
+      "note": "Step 148 done: scripts/magic/capstones.gd: Convergence (every 5th Arcane hit applies each invested tree's status), Backdraft (vent >=80% heat: 4 m burst 120%, burn reset), Tidal Hold (full charge freezes 1.2 s; bosses slowed x0.4), Fault Line (every 4th boulder splits into 3 x40% staggering blasts), Cyclone (2 s full spin: next bolt chains to all within 6 m at 35%, 6 s cd), Dawnchorus (full burst heals players within 6 m 15% max, 8 s cd), Eclipse (crit on Hexed <30% turns it ignoring the cap, 20 s cd, no bosses). T4 skills stay on generic stat effects (rough edge). test_capstones. "
     }
   ],
   "completed_steps": [
@@ -1466,7 +1470,8 @@
     144,
     145,
     146,
-    147
+    147,
+    148
   ],
   "deferred": [
     74,
@@ -1486,12 +1491,6 @@
     }
   ],
   "waiting_on_user_go": [
-    {
-      "step": 148,
-      "name": "Element trees V5 capstones + T4 runtime skills",
-      "plan": "docs/ELEMENT_TREES_PLAN.md",
-      "answers": "t70u"
-    },
     {
       "step": 149,
       "name": "Element trees V6 skills UI tabs + locked-capstone look",

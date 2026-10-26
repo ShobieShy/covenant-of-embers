@@ -14,6 +14,7 @@ var gap_left := 0.0
 var due := 0
 var ramp := 0.0  ## accuracy points
 var since_bolt := 99.0
+var dawn_cd := 0.0  ## step 148 Dawnchorus cooldown
 
 
 func id() -> StringName:
@@ -51,10 +52,14 @@ func after_cast() -> void:
 		queued = count() - 1
 		gap_left = raw("burst_gap", 0.07)
 		emit(&"burst", count())
+		if count() >= 3 and skill_add("capstone") > 0.0 and dawn_cd <= 0.0:  # step 148 Dawnchorus
+			dawn_cd = Capstones.DAWN_COOLDOWN
+			Capstones.dawnchorus(caster())
 
 
 func tick(dt: float, _held: bool, _pressed: bool, in_hand: bool) -> void:
 	since_bolt += dt
+	dawn_cd = maxf(0.0, dawn_cd - dt)
 	if since_bolt > raw("ramp_window", 0.6):
 		ramp = 0.0
 	if not in_hand:
