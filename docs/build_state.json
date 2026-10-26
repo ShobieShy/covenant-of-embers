@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 149,
+  "next_step": 150,
   "total_steps": 166,
-  "steps_done": 129,
-  "last_commit": "58bbc95",
+  "steps_done": 130,
+  "last_commit": "25cf478",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1340,6 +1340,10 @@
     {
       "date": "2026-10-26",
       "note": "Step 148 done: scripts/magic/capstones.gd: Convergence (every 5th Arcane hit applies each invested tree's status), Backdraft (vent >=80% heat: 4 m burst 120%, burn reset), Tidal Hold (full charge freezes 1.2 s; bosses slowed x0.4), Fault Line (every 4th boulder splits into 3 x40% staggering blasts), Cyclone (2 s full spin: next bolt chains to all within 6 m at 35%, 6 s cd), Dawnchorus (full burst heals players within 6 m 15% max, 8 s cd), Eclipse (crit on Hexed <30% turns it ignoring the cap, 20 s cd, no bosses). T4 skills stay on generic stat effects (rough edge). test_capstones. "
+    },
+    {
+      "date": "2026-10-26",
+      "note": "Step 149 done: SkillsUi gains Core + 7 element tabs (LB/RB), 5x4 grid + capstone per tree, card line, gold frame + crown on the owned capstone, padlock/grey/tooltip on locked ones, tab badges, take-confirm dialog (A/B). tools/skills_shots.gd. 510 tests green (2 new in test_skills_ui_elements.gd)."
     }
   ],
   "completed_steps": [
@@ -1471,7 +1475,8 @@
     145,
     146,
     147,
-    148
+    148,
+    149
   ],
   "deferred": [
     74,
@@ -1491,12 +1496,6 @@
     }
   ],
   "waiting_on_user_go": [
-    {
-      "step": 149,
-      "name": "Element trees V6 skills UI tabs + locked-capstone look",
-      "plan": "docs/ELEMENT_TREES_PLAN.md",
-      "answers": "t70u"
-    },
     {
       "step": 150,
       "name": "Element trees V7 co-op sync + PROTOCOL 3",
