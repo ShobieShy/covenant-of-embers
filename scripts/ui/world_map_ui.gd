@@ -32,10 +32,19 @@ func show_map(m: WorldMap) -> void:
 	var texts := m.lines()
 	var i := 0
 	for id in WorldMap.REGIONS:
+		var row := HBoxContainer.new()
+		var pic := TextureRect.new()  # step 163: the region's painting (placeholder until Ember Art)
+		pic.name = "Painting"
+		pic.texture = EmberArt.texture("map_" + String(id))
+		pic.custom_minimum_size = Vector2(48, 28)
+		pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		pic.modulate = COLORS[m.state(id)]
+		row.add_child(pic)
 		var l := Label.new()
 		l.text = texts[i]
 		l.add_theme_color_override(&"font_color", COLORS[m.state(id)])
-		rows.add_child(l)
+		row.add_child(l)
+		rows.add_child(row)
 		labels[id] = l
 		i += 1
 	visible = true

@@ -20,15 +20,21 @@ func _init(p := "", ft: FastTravel = null) -> void:
 
 func _ready() -> void:
 	Interaction.register(self, 1.0, 0.5)
+	var variant := EmberArt.waystone_variant(point)  # step 163: 4 variants
+	var art := EmberArt.model("waystone_" + variant)
+	if art:
+		add_child(art)
 	var c := CSGCylinder3D.new()
+	c.visible = art == null
 	c.radius = 0.25
 	c.height = 1.6
-	c.sides = 6
+	c.sides = [6, 4, 8, 3][EmberArt.WAYSTONE.keys().find(variant)]
 	c.position.y = 0.8
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.3, 0.8, 1.0)
+	var tint: Color = EmberArt.WAYSTONE[variant]
+	m.albedo_color = tint
 	m.emission_enabled = true
-	m.emission = Color(0.2, 0.7, 1.0)
+	m.emission = tint * 0.8
 	c.material = m
 	add_child(c)
 	var l := Label3D.new()

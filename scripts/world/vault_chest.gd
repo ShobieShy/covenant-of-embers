@@ -31,14 +31,19 @@ var _lid: MeshInstance3D
 func _ready() -> void:
 	Interaction.register(self, 0.5, 0.6)
 	add_to_group(GROUP)
-	if get_child_count() == 0:
+	var tier := String(get_meta(&"tier", "normal"))
+	var art := EmberArt.model("chest_" + tier) if get_child_count() == 0 else null  # step 163
+	if art:
+		add_child(art)
+	elif get_child_count() == 0:
+		var tint: Array = EmberArt.chest_colors(tier)
 		var body := MeshInstance3D.new()
 		var bm := BoxMesh.new()
 		bm.size = Vector3(1.2, 0.6, 0.7)
 		body.mesh = bm
 		body.position.y = 0.3
 		var m := StandardMaterial3D.new()
-		m.albedo_color = Color(0.45, 0.3, 0.15)
+		m.albedo_color = tint[0]
 		body.material_override = m
 		add_child(body)
 		_lid = MeshInstance3D.new()
@@ -47,9 +52,9 @@ func _ready() -> void:
 		_lid.mesh = lm
 		_lid.position.y = 0.68
 		var gm := StandardMaterial3D.new()
-		gm.albedo_color = Color(0.85, 0.65, 0.2)
+		gm.albedo_color = tint[1]
 		gm.emission_enabled = true
-		gm.emission = Color(1.0, 0.6, 0.2)
+		gm.emission = (tint[1] as Color) * 0.9
 		_lid.material_override = gm
 		add_child(_lid)
 

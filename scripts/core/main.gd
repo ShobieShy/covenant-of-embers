@@ -196,6 +196,7 @@ func _setup_flow(player: Player) -> void:
 	_setup_exits(player, here)
 	_setup_npcs(player)
 	ZoneChests.setup(self, $Level, here, player, story_flags, get_node_or_null("LootDropper") as LootDropper)  # step 158
+	EmberArt.dress($Level, here)  # step 163: decals, skyline, landmark art slots
 	var s_ui := SettingsUi.new()
 	s_ui.name = "SettingsUi"
 	s_ui.process_mode = Node.PROCESS_MODE_ALWAYS
