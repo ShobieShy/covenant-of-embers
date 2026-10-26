@@ -48,7 +48,10 @@ func test_toml_reader() -> void:
 func test_seventeen_boxes_kinds_match_toml() -> void:
 	var d := _toml()
 	var boxes := _boxes(d)
-	check(boxes.size() == 17, "TOML has 17 boxes (got %d)" % boxes.size())
+	var arena := boxes.filter(
+		func(b: Dictionary) -> bool: return absf(b["center"][0]) <= 20.0 and absf(b["center"][2]) <= 20.0
+	)
+	check(arena.size() == 17, "the arena keeps its 17 greybox boxes (got %d); step 160 adds the zone" % arena.size())
 	var level: Node3D = (load(SCENE_PATH) as PackedScene).instantiate()
 	var nodes := level.get_node("Boxes").get_children()
 	check(nodes.size() == boxes.size(), "scene has %d boxes, TOML %d" % [nodes.size(), boxes.size()])
@@ -62,7 +65,13 @@ func test_seventeen_boxes_kinds_match_toml() -> void:
 		got[k] = int(got.get(k, 0)) + 1
 	check(want == got, "kind counts: TOML %s scene %s" % [want, got])
 	# Expected counts from the C++ step-12 level: 1 ground, 5 walls, 1 platform, 2 ramps, 3 heaps, 5 crates.
-	check(want == {"ground": 1, "wall": 5, "platform": 1, "ramp": 2, "heap": 3, "crate": 5}, "Midden layout %s" % want)
+	var arena_kinds: Dictionary = {}
+	for b in arena:
+		arena_kinds[b["kind"]] = int(arena_kinds.get(b["kind"], 0)) + 1
+	check(
+		arena_kinds == {"ground": 1, "wall": 5, "platform": 1, "ramp": 2, "heap": 3, "crate": 5},
+		"arena layout %s" % arena_kinds
+	)
 	for i in boxes.size():
 		var n := level.get_node_or_null("Boxes/" + str(boxes[i]["name"]))
 		check(
@@ -243,7 +252,8 @@ func test_walls_and_open_sky() -> void:
 		check_near((hit["position"] as Vector3).z, -14.0, 0.01, "north wall inner face")
 	check(_ray(level, Vector3(0, 10, 0), Vector3(0, 100, 0)).is_empty(), "open sky above the arena")
 	var gap := _ray(level, Vector3(0, 1.5, 12.5), Vector3(0, 1.5, 30))
-	check(gap.is_empty(), "4 m south entrance is open behind the start")
+	# Step 160: the south gap now holds the arena_exit FlagGate until tutorial_done.
+	check(gap.is_empty() or gap["collider"] is FlagGate, "4 m south entrance: open but for the tutorial gate")
 	level.free()
 
 

@@ -515,7 +515,7 @@ func test_midden_gnawer_bites_without_shoving() -> void:
 	w.add_child(level)
 	var nav := level.get_node("Navigation") as LevelNavigation
 	check(
-		nav != null and nav.bakes == 1 and nav.navigation_mesh.get_polygon_count() > 0,
+		nav != null and nav.bakes == 1 and (not nav.tiles.is_empty() or nav.navigation_mesh.get_polygon_count() > 0),
 		"the Midden bakes its navmesh at load"
 	)
 	for i in 120:

@@ -263,7 +263,10 @@ func _tiles_ready() -> bool:
 			var c := Vector3.ZERO
 			for v in nm.get_polygon(0):
 				c += verts[v]
-			return NavigationServer3D.map_get_closest_point_owner(map, c / nm.get_polygon(0).size()) == t.get_rid()
+			return (
+				NavigationServer3D.map_get_closest_point_owner(map, t.global_transform * (c / nm.get_polygon(0).size()))
+				== t.get_rid()
+			)
 	return false
 
 

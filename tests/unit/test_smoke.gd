@@ -32,5 +32,5 @@ func test_main_scene_loads_midden() -> void:
 	var root: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
 	var level := root.get_node_or_null("Level")
 	check(level != null and level.get_meta("level_id", "") == "midden_greybox", "main instances the Midden")
-	check(level != null and level.get_node("Boxes").get_child_count() == 17, "17 boxes in main")
+	check(level != null and level.get_node("Boxes").get_child_count() >= 17, "the 17 arena boxes (+ zone) in main")
 	root.free()

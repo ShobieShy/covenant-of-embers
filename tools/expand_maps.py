@@ -259,8 +259,46 @@ def association() -> Map:
     return m
 
 
+TRASH = "assets/quaternius/enemies/props/Trash_Bags.glb"
+JUNK = [0.36, 0.31, 0.26]
+
+
+def landfill_part1(m: Map) -> None:
+    """160 W9: the 40x40 greybox stays at the north end as the sealed Filth arena (beats 8-11
+    run inside it, unchanged); its south gap opens on tutorial_done onto the entrance funnel
+    and Joe's dump camp (landfill_camp waystone)."""
+    m.gate("arena_exit", [0, 1.5, 15.2], [4.4, 3, 0.5], "Joe says: not yet, kid. Finish what is in the pit.")
+    # Entrance funnel: a walled 6 m lane, 60 m south, kinked once.
+    m.path("funnel", (0, 22), (0, 70), 6, JUNK)
+    for i, z in enumerate(range(22, 70, 8)):
+        for sx in (-1, 1):
+            m.box(f"funnel_heap_{'w' if sx < 0 else 'e'}{i + 1}", "heap", [sx * (5.5 + (i % 3)), 1.4 + (i % 2), z + 4],
+                  [3, 2.8 + 2 * (i % 2), 7], JUNK)
+    m.anchor("funnel_mouth", [0, 0, 24], 180.0)
+    # Joe's dump camp: a cleared pad, shacks, a fire, the waystone.
+    m.pad("dump_camp", 0, 92, 36, 30, [0.4, 0.34, 0.27])
+    for i, (x, z, sx, sz) in enumerate(((-12, 84, 6, 5), (12, 84, 6, 5), (-12, 101, 7, 5))):
+        m.box(f"camp_shack_{i + 1}", "wall", [x, 1.5, z], [sx, 3, sz], [0.44, 0.33, 0.22])
+    m.box("camp_fire", "heap", [0, 0.3, 92], [1.6, 0.6, 1.6], [0.5, 0.2, 0.1])
+    for i, (x, z) in enumerate(((-6, 80), (7, 104), (15, 98), (-16, 92))):
+        m.prop(f"camp_trash_{i + 1}", TRASH, [x, 0, z], 61.0 * i, 4.0, poi="dump_camp")
+    m.chest("camp_chest", [12, 0, 102], "normal")
+    m.anchor("dump_camp", [0, 0, 88], 180.0)
+    m.waystone("landfill_camp", [4, 0, 92], 0.0)
+    m.poi("dump_camp", [0, 0, 92], 25)
+    m.poi("filth_arena", [0, 0, 0], 22)
+
+
+def landfill() -> Map:
+    """160-161 W9-W10 the Landfill, 700x600 m (Q3): arena at the north end, the zone south of it."""
+    m = Map({"size": [700, 600], "center": [0, 240], "height": 18.0, "seed": 160, "rim": 30.0, "blend": 20.0,
+             "map_version": 2, "layers": ["Ground054", "Ground037", "Rock030", "Grass004"]})
+    landfill_part1(m)
+    return m
+
+
 MAPS = {"data/levels/old_oak.toml": old_oak, "data/levels/town_square.toml": town,
-        "data/levels/mage_association.toml": association}
+        "data/levels/mage_association.toml": association, "data/levels/midden_greybox.toml": landfill}
 
 
 def apply(path: Path, block: str) -> str:

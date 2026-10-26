@@ -43,7 +43,11 @@ static func find(level: Node, id: String) -> Node3D:
 
 static func waystone(level: Node) -> Node3D:
 	var h := level.get_node_or_null(^"Waystones") if level else null
-	return h.get_child(0) as Node3D if h and h.get_child_count() > 0 else null
+	if h == null or h.get_child_count() == 0:
+		return null
+	# Step 160: a zone with extra waystones (landfill_camp) spawns at its primary point only.
+	var p := h.get_node_or_null(NodePath(String(FastTravel.LEVEL_POINT.get(GameFlow.id_of(level), ""))))
+	return p as Node3D
 
 
 static func beat_anchor(level: Node, beat: String) -> Node3D:
