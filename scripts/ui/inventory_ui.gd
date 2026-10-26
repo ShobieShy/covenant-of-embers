@@ -4,10 +4,14 @@ extends CanvasLayer
 ## grid (rarity-tinted), worn equipment + staff/wand slots, a compare card for the selected
 ## item (green/red deltas vs what's worn), Equip, Ember Mark copy, and Ember Mark import.
 ## Opening sets player.ui_open (no actions, no mouse look) and shows the mouse.
+## t74u: Trash (button, Delete/X over a slot, pad Y) with a confirm for Rare+ and a
+## quantity for potions; Junk marks (sold together at vendors). Quest items and worn
+## gear can't be trashed. Only the bound (local) player's inventory is ever touched.
 
 const ACTION := &"inventory"
 const BETTER := Color(0.35, 0.9, 0.35)
 const WORSE := Color(0.95, 0.35, 0.3)
+const TRASH_ACTION := &"inventory_trash"
 
 var player: Player
 var root: PanelContainer
@@ -18,7 +22,16 @@ var card: RichTextLabel
 var code_field: LineEdit
 var status: Label
 var dust_label: Label
-var selected: Resource = null
+var selected: Variant = null  ## a Resource, or a quest item id (String)
+var hovered: Variant = null
+var trash_button: Button
+var junk_button: Button
+var qty: SpinBox
+var confirm_row: VBoxContainer
+var confirm_label: Label
+var potion_button: Button
+var quest_box: VBoxContainer
+var pending_trash: Variant = null
 var last_code := ""
 
 
@@ -44,6 +57,8 @@ func _init() -> void:
 		b.theme_type_variation = UiTheme.SLOT
 		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		b.pressed.connect(func(): select(player.inventory.at(i) if player else null))
+		b.mouse_entered.connect(func(): hovered = player.inventory.at(i) if player else null)
+		b.mouse_exited.connect(func(): hovered = null)
 		grid.add_child(b)
 		slot_buttons.append(b)
 	dust_label = _label("")
@@ -56,8 +71,18 @@ func _init() -> void:
 		b.custom_minimum_size = Vector2(250, 44)
 		b.theme_type_variation = UiTheme.SLOT
 		b.pressed.connect(func(): select(_worn(i)))
+		b.mouse_entered.connect(func(): hovered = _worn(i))
+		b.mouse_exited.connect(func(): hovered = null)
 		mid.add_child(b)
 		worn_buttons.append(b)
+	potion_button = _button("")
+	potion_button.custom_minimum_size = Vector2(250, 44)
+	potion_button.theme_type_variation = UiTheme.SLOT
+	potion_button.pressed.connect(func(): select(player.equipment.potion if player else null))
+	mid.add_child(potion_button)
+	mid.add_child(_label("Quest items"))
+	quest_box = VBoxContainer.new()
+	mid.add_child(quest_box)
 	var right := VBoxContainer.new()
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	h.add_child(right)
@@ -72,6 +97,39 @@ func _init() -> void:
 	var uq := _button("Unequip")  # t60u: every worn slot, staff and wand included
 	uq.pressed.connect(unequip_selected)
 	right.add_child(uq)
+	var th := HBoxContainer.new()
+	right.add_child(th)
+	trash_button = _button("Trash")
+	trash_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	trash_button.pressed.connect(func(): request_trash(selected))
+	th.add_child(trash_button)
+	qty = SpinBox.new()
+	qty.min_value = 1
+	qty.max_value = 1
+	qty.tooltip_text = "How many to trash"
+	qty.custom_minimum_size = Vector2(80, 0)
+	th.add_child(qty)
+	junk_button = _button("Mark junk")
+	junk_button.custom_minimum_size = Vector2(120, 0)
+	junk_button.pressed.connect(toggle_junk)
+	th.add_child(junk_button)
+	confirm_row = VBoxContainer.new()
+	confirm_row.visible = false
+	right.add_child(confirm_row)
+	confirm_label = _label("")
+	confirm_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	confirm_label.modulate = WORSE
+	confirm_row.add_child(confirm_label)
+	var yn := HBoxContainer.new()
+	confirm_row.add_child(yn)
+	var yes := _button("Trash it")
+	yes.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	yes.pressed.connect(confirm_trash)
+	yn.add_child(yes)
+	var no := _button("Keep")
+	no.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	no.pressed.connect(cancel_trash)
+	yn.add_child(no)
 	var cp := _button("Copy Ember Mark")
 	cp.pressed.connect(copy_selected)
 	right.add_child(cp)
@@ -85,7 +143,21 @@ func _init() -> void:
 	right.add_child(status)
 
 
+static func ensure_trash_action() -> void:
+	if InputMap.has_action(TRASH_ACTION):
+		return
+	InputMap.add_action(TRASH_ACTION)
+	for k in [KEY_DELETE, KEY_X]:
+		var e := InputEventKey.new()
+		e.physical_keycode = k
+		InputMap.action_add_event(TRASH_ACTION, e)
+	var j := InputEventJoypadButton.new()
+	j.button_index = JOY_BUTTON_Y
+	InputMap.action_add_event(TRASH_ACTION, j)
+
+
 func bind(p: Player) -> void:
+	ensure_trash_action()
 	player = p
 	p.inventory.changed.connect(refresh)
 	p.equipment.changed.connect(func(_s): refresh())
@@ -110,16 +182,18 @@ func _worn(i: int) -> Resource:
 	return player.loadout.wieldable(i) if i < 2 else player.equipment.item(i - 2)
 
 
-static func name_of(item: Resource) -> String:
+static func name_of(item: Variant) -> String:
 	if item == null:
 		return ""
+	if item is String:
+		return String(item).capitalize()
 	if item.has_method("display_name"):
 		return item.call("display_name")
 	return String(item.get("display_name"))
 
 
-static func color_of(item: Resource) -> Color:
-	if item != null and item.has_method("rarity_color"):
+static func color_of(item: Variant) -> Color:
+	if item is Resource and item.has_method("rarity_color"):
 		return item.call("rarity_color")
 	return Color.WHITE
 
@@ -158,7 +232,22 @@ func _unhandled_input(event: InputEvent) -> void:
 		toggle()
 		get_viewport().set_input_as_handled()
 	elif visible and event.is_action_pressed(&"ui_cancel"):
-		close()
+		if pending_trash != null:
+			cancel_trash()
+		else:
+			close()
+		get_viewport().set_input_as_handled()
+	elif visible and InputMap.has_action(TRASH_ACTION) and event.is_action_pressed(TRASH_ACTION):
+		if code_field.has_focus():
+			return  # typing an X into the Ember Mark field
+		var target: Variant = hovered if hovered != null else selected
+		if target == null:
+			var f := get_viewport().gui_get_focus_owner()
+			var i := slot_buttons.find(f)
+			target = player.inventory.at(i) if player and i >= 0 else null
+		if target != null:
+			select(target)
+			request_trash(target)
 		get_viewport().set_input_as_handled()
 
 
@@ -177,19 +266,91 @@ func refresh() -> void:
 		worn_buttons[i].modulate = color_of(it) if it else Color(1, 1, 1, 0.6)
 		ItemIcons.dress(worn_buttons[i], it)
 	dust_label.text = "Arcane Dust: %d" % player.inventory.dust
+	for i in slot_buttons.size():
+		var it := player.inventory.at(i)
+		if it and player.inventory.is_junk(it):
+			slot_buttons[i].modulate = slot_buttons[i].modulate.darkened(0.55)
+			slot_buttons[i].tooltip_text += " (junk)"
+	var pot := player.equipment.potion
+	potion_button.text = ("Potions: %s x%d" % [name_of(pot), player.equipment.potion_count] if pot else "Potions: -")
+	for c in quest_box.get_children():
+		c.queue_free()
+	for q in player.quest_items:
+		var qb := _button(name_of(q))
+		qb.custom_minimum_size = Vector2(250, 32)
+		qb.pressed.connect(func(): select(q))
+		quest_box.add_child(qb)
+	var is_pot: bool = selected is ConsumableItem
+	qty.visible = is_pot
+	qty.max_value = maxi(1, player.equipment.potion_count) if is_pot else 1
+	junk_button.disabled = not (selected is Resource and player.inventory.has(selected))
+	junk_button.text = ("Unmark junk" if selected is Resource and player.inventory.is_junk(selected) else "Mark junk")
+	trash_button.disabled = selected == null
 	card.text = card_text(selected)
 
 
-func select(item: Resource) -> void:
+func select(item: Variant) -> void:
 	selected = item
 	status.text = ""
+	cancel_trash()
 	refresh()
 
 
+## Trash flow: Rare+ asks first (confirm_row), everything else goes straight away.
+## Returns true when the item was destroyed now.
+func request_trash(item: Variant) -> bool:
+	if player == null or item == null:
+		status.text = "Nothing selected."
+		return false
+	if item is Resource and ItemTrash.needs_confirm(item) and player.inventory.has(item):
+		pending_trash = item
+		confirm_label.text = "Trash %s for good?" % name_of(item)
+		confirm_row.visible = true
+		return false
+	return _do_trash(item)
+
+
+func confirm_trash() -> bool:
+	var it: Variant = pending_trash
+	cancel_trash()
+	return _do_trash(it) if it != null else false
+
+
+func cancel_trash() -> void:
+	pending_trash = null
+	if confirm_row:
+		confirm_row.visible = false
+
+
+func _do_trash(item: Variant) -> bool:
+	var n := int(qty.value) if item is ConsumableItem else 1
+	var label := name_of(item)
+	var err := player.trash_item(item, n)
+	status.text = err if not err.is_empty() else "Trashed %s." % label
+	if err.is_empty():
+		if not (item is ConsumableItem and player.equipment.potion == item):
+			selected = null
+		hovered = null
+	refresh()
+	return err.is_empty()
+
+
+func toggle_junk() -> bool:
+	if player == null or not (selected is Resource):
+		return false
+	var on := not player.inventory.is_junk(selected)
+	var ok := player.inventory.set_junk(selected, on)
+	status.text = (("Marked as junk." if on else "Unmarked.") if ok else "Only backpack items can be junk.")
+	refresh()
+	return ok
+
+
 ## The compare card as BBCode: title in rarity colour, rows with green/red deltas.
-func card_text(item: Resource) -> String:
+func card_text(item: Variant) -> String:
 	if item == null:
 		return "[i]Select an item[/i]"
+	if item is String:
+		return "[b]%s[/b]\nQuest item (can't be trashed)" % name_of(item)
 	if not (item is WieldableInstance or item is WieldablePart or item is EquipmentItem):
 		return "[b]%s[/b]" % name_of(item)
 	var c := CompareCard.for_item(item, player)
@@ -199,13 +360,13 @@ func card_text(item: Resource) -> String:
 	for r in c.rows:
 		s += "%s: %s" % [r.label, snapped(r.value, 0.01)]
 		if r.compared and not is_zero_approx(r.delta):
-			s += " [color=#%s](%+.2f)[/color]" % [(BETTER if r.better else WORSE).to_html(false), r.delta]
+			s += (" [color=#%s](%+.2f)[/color]" % [(BETTER if r.better else WORSE).to_html(false), r.delta])
 		s += "\n"
 	return s + c.extra_lines()
 
 
 func equip_selected() -> bool:
-	if selected == null or player == null:
+	if not (selected is Resource) or player == null:
 		return false
 	var ok := player.equip_from_inventory(selected)
 	status.text = "Equipped." if ok else "Can't equip that."
@@ -215,7 +376,7 @@ func equip_selected() -> bool:
 
 ## t60u: moves the selected worn staff/wand/gear piece into the backpack (refused when full).
 func unequip_selected() -> bool:
-	if selected == null or player == null:
+	if not (selected is Resource) or player == null:
 		return false
 	var ok := false
 	var worn := false
@@ -234,9 +395,9 @@ func unequip_selected() -> bool:
 
 ## Puts the selected item's Ember Mark in the code field (and the clipboard when there is one).
 func copy_selected() -> String:
-	last_code = ItemCodes.encode(selected) if selected else ""
+	last_code = ItemCodes.encode(selected) if selected is Resource else ""
 	if last_code.is_empty():
-		status.text = ItemCodes.encode_error(selected) if selected else "Nothing selected."
+		status.text = (ItemCodes.encode_error(selected) if selected is Resource else "Nothing selected.")
 		return ""
 	code_field.text = last_code
 	if DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):

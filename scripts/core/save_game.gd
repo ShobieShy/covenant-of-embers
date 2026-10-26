@@ -27,9 +27,12 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 		var it := p.equipment.item(i)
 		eq.append(ItemCodes.encode(it) if it else "")
 	var inv: Array = []
+	var junk: Array = []  # t74u: indices into "inventory" of junk-marked items
 	for it in p.inventory.items:
 		var c := ItemCodes.encode(it)
 		if not c.is_empty():
+			if p.inventory.is_junk(it):
+				junk.append(inv.size())
 			inv.append(c)
 	var staff := p.loadout.wieldable(Loadout.Slot.STAFF)
 	var wand := p.loadout.wieldable(Loadout.Slot.WAND)
@@ -66,6 +69,7 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 				else ""
 			),
 			"inventory": inv,
+			"junk": junk,
 		},
 		"progress": progress.duplicate(true),
 	}
@@ -206,10 +210,13 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 	p.character_color = (
 		Color.from_string(col, Archetype.default_color(arch)) if not col.is_empty() else Archetype.default_color(arch)
 	)
+	var junk_idx: Array = it.get("junk", [])  # t74u; absent in older saves
+	var n := 0
 	for c in it.get("inventory", []):
 		var m := _decode(String(c), null, warn, "inventory")
-		if m:
-			p.inventory.add(m.item)
+		if m and p.inventory.add(m.item) and junk_idx.has(n):
+			p.inventory.set_junk(m.item, true)
+		n += 1
 	for s in ["staff", "wand"]:
 		var m := _decode(String(it.get(s, "")), WieldableInstance, warn, s)
 		if m:

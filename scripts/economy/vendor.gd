@@ -116,6 +116,17 @@ func sell(inv: Inventory, item: Resource) -> String:
 	return ""
 
 
+## t74u: sells every junk-marked backpack item; returns the gold earned (0 when none).
+func sell_junk(inv: Inventory) -> int:
+	var earned := 0
+	for it in inv.junk_items():
+		var price := sell_price(it)
+		if inv.remove(it):
+			earned += price
+	inv.add_gold(earned)
+	return earned
+
+
 ## Runesmith: new roll for a rolled loose part; "" on success. `seed_rng` draws the new seed.
 func reroll(inv: Inventory, part: WieldablePart, seed_rng: RandomNumberGenerator) -> String:
 	if role != Role.REROLL:

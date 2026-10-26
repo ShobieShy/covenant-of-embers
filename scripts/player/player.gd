@@ -592,6 +592,11 @@ func unequip_wieldable_to_inventory(slot: int) -> bool:
 
 
 ## Step 24: moves the worn piece in equipment `slot` to the backpack; false when empty/full.
+## t74u: see ItemTrash (quest items refused, worn gear must be unequipped first).
+func trash_item(item: Variant, count: int = 1) -> String:
+	return ItemTrash.trash(self, item, count)
+
+
 func unequip_item_to_inventory(slot: int) -> bool:
 	var it := equipment.item(slot)
 	if it == null or inventory.is_full():

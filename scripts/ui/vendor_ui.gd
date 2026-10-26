@@ -41,7 +41,13 @@ func _init() -> void:
 	v.add_child(compare)
 	var b := HBoxContainer.new()
 	v.add_child(b)
-	for pair in [["Buy", buy_selected], ["Sell", sell_selected], ["Re-roll", reroll_selected], ["Close", close]]:
+	for pair in [
+		["Buy", buy_selected],
+		["Sell", sell_selected],
+		["Sell all junk", sell_junk],
+		["Re-roll", reroll_selected],
+		["Close", close]
+	]:
 		var btn := Button.new()
 		btn.text = pair[0]
 		btn.pressed.connect(pair[1])
@@ -144,6 +150,18 @@ func buy_selected() -> bool:
 
 func sell_selected() -> bool:
 	return _done(vendor.sell(player.inventory, player.inventory.at(_selected(pack_list))), "Sold.")
+
+
+## t74u: sells every item marked as junk in the inventory screen.
+func sell_junk() -> bool:
+	var n := player.inventory.junk_items().size()
+	if n == 0:
+		status.text = "Nothing marked as junk."
+		return false
+	var g := vendor.sell_junk(player.inventory)
+	status.text = "Sold %d junk item(s) for %d gold." % [n, g]
+	refresh()
+	return true
 
 
 func reroll_selected() -> bool:
