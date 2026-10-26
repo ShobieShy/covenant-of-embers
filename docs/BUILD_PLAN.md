@@ -876,6 +876,7 @@ Full plan: docs/TERRAIN_MAPS_PLAN.md. Optional step 166 (Ashen Wilds) only if Q5
 - **Step 163 (waiting on user go)** Terrain W12: Ember Art pass (landmarks, chests, waystones, skyline, map paintings).
 - **Step 164 (waiting on user go)** Terrain W13: bot zone sweeps, co-op bot, Deck Low perf pass.
 - **Step 165 (waiting on user go)** Terrain W14: docs + camp/loot balance.
+- **Step 166 (waiting on user go, optional)** Terrain W15: Ashen Wilds 900 m zone.
 
 ### Questions (Phase W)
-See docs/TERRAIN_MAPS_PLAN.md section 15 (Q1-Q12, defaults in bold).
+Answered 2026-10-26: Q1-Q6 and Q8-Q12 take the defaults (Terrain3D 1.0.2; faceted 1 m terrain; sizes as planned; Association stays interior; Ashen Wilds stays optional step 166; camps respawn on reload or after 10 min; Filth residue yes; chest counts and waystones as planned; no hard co-op leash, 150 m replication; old saves spawn at an anchor). Q7: keep the Low budget targets, real Steam Deck check DEFERRED until the user allows it. Steps 152-166 stay waiting on user go.

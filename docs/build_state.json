@@ -4,7 +4,7 @@
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
   "next_step": 0,
-  "total_steps": 165,
+  "total_steps": 166,
   "steps_done": 124,
   "last_commit": "106f5ef",
   "history": [
@@ -1316,6 +1316,10 @@
     {
       "date": "2026-10-26",
       "note": "Phase W terrain maps planned (steps 152-165), waiting on user go"
+    },
+    {
+      "date": "2026-10-26",
+      "note": "Phase W questions answered: defaults except Q7 (real Steam Deck check deferred, budgets kept); steps 152-166 still waiting on user go"
     }
   ],
   "completed_steps": [
@@ -1578,6 +1582,11 @@
     {
       "step": 165,
       "name": "Terrain W14: docs + camp/loot balance",
+      "plan": "docs/TERRAIN_MAPS_PLAN.md"
+    },
+    {
+      "step": 166,
+      "name": "Terrain W15 (optional): Ashen Wilds 900 m zone",
       "plan": "docs/TERRAIN_MAPS_PLAN.md"
     }
   ],

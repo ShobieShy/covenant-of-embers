@@ -1,6 +1,6 @@
 # Terrain maps plan: every map grows to looter-shooter zone scale (Phase W)
 
-Planned 2026-10-26. **PLAN ONLY, WAITING ON USER GO.** Steps 152-165 in BUILD_PLAN.md.
+Planned 2026-10-26. **PLAN ONLY, WAITING ON USER GO.** Questions answered 2026-10-26 (defaults; Q7 Deck check deferred). Steps 152-166 in BUILD_PLAN.md.
 Design patterns only (zone sizes, loop structure, POI density). No Borderlands/Wonderlands content, names, layouts or assets.
 
 ## 1. Where the maps are today (survey)
@@ -131,7 +131,7 @@ Hub towns are smaller (150-300 m), and dungeons are linear 200-400 m runs. We ma
 | VRAM | ≤ 1.5 GB |
 | Zone load | ≤ 8 s |
 
-- The `perf_capture.gd` run adds a flythrough route per zone. Fail when the Low p95 is over 2x the desktop baseline (the Deck itself is still unverified, Q7).
+- The `perf_capture.gd` run adds a flythrough route per zone. Fail when the Low p95 is over 2x the desktop baseline. A real-Deck check is deferred (Q7) until the user allows it.
 
 ## 9. Navmesh for enemies
 - Replace the whole-level bake with **chunked navmesh**: one NavigationRegion3D per 64 m tile around each camp and path. The source geometry is Terrain3D plus the collision of the props in that tile.
@@ -212,14 +212,14 @@ Hub towns are smaller (150-300 m), and dungeons are linear 200-400 m runs. We ma
 - **165 W14 Docs + balance:** camp density, loot per zone, CREDITS, PLAN/README.
 - *(Optional, Q5)* **166 W15 Ashen Wilds (900 m):** first post-tutorial zone.
 
-## 15. Open questions (defaults in bold)
+## 15. Questions (answered 2026-10-26, t72u: all defaults accepted except Q7, see below)
 - Q1 Terrain tech: **Terrain3D v1.0.2 now, 1.1 when the project moves to Godot 4.8** (alt: HTerrain or custom).
 - Q2 Look: **faceted flat-shaded terrain at 1 m spacing** (alt: smooth terrain + low-poly props).
 - Q3 Zone scale: **Landfill 700x600 m, town 240 m, Oak 160 m, Breach 220x320 m, Association 60x90 m** (alt: 50% larger/smaller).
 - Q4 The Association stays an interior: **yes**.
 - Q5 New zone (Ashen Wilds) in this phase: **no, planned as optional step 166**.
 - Q6 Camp respawn: **on zone reload or after 10 min away**.
-- Q7 Steam Deck budgets: **use the section 8 numbers and verify on a real Deck before release** (still unverified).
+- Q7 Steam Deck budgets: **ANSWERED: keep the section 8 targets; the real-Deck check is DEFERRED** until the user allows it (no longer a release requirement for now).
 - Q8 Filth residue after the boss: **yes, elite variants + purple decals**.
 - Q9 Chest counts: **Landfill 20 + 2 hidden + 1 vault, scaled down for hubs**.
 - Q10 Fast-travel count: **Landfill 3, town 2, Oak 1, Breach 1**.
