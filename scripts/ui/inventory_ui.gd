@@ -27,8 +27,8 @@ func _init() -> void:
 	visible = false
 	root = PanelContainer.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	root.custom_minimum_size = Vector2(900, 560)
-	root.position = Vector2(-450, -280)
+	root.custom_minimum_size = Vector2(1000, 560)
+	root.position = Vector2(-500, -280)
 	add_child(root)
 	var h := HBoxContainer.new()
 	root.add_child(h)
@@ -40,7 +40,9 @@ func _init() -> void:
 	left.add_child(grid)
 	for i in Inventory.CAPACITY:
 		var b := _button("")
-		b.custom_minimum_size = Vector2(72, 44)
+		b.custom_minimum_size = Vector2(64, 64)  # icon-only slot; the name is the tooltip + card title
+		b.theme_type_variation = UiTheme.SLOT
+		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		b.pressed.connect(func(): select(player.inventory.at(i) if player else null))
 		grid.add_child(b)
 		slot_buttons.append(b)
@@ -51,7 +53,8 @@ func _init() -> void:
 	mid.add_child(_label("Worn"))
 	for i in 2 + EquipmentItem.SLOT_COUNT:
 		var b := _button("")
-		b.custom_minimum_size = Vector2(170, 36)
+		b.custom_minimum_size = Vector2(250, 44)
+		b.theme_type_variation = UiTheme.SLOT
 		b.pressed.connect(func(): select(_worn(i)))
 		mid.add_child(b)
 		worn_buttons.append(b)
@@ -164,13 +167,15 @@ func refresh() -> void:
 		return
 	for i in slot_buttons.size():
 		var it := player.inventory.at(i)
-		slot_buttons[i].text = name_of(it)
+		slot_buttons[i].tooltip_text = name_of(it)
+		ItemIcons.dress(slot_buttons[i], it)
 		slot_buttons[i].modulate = color_of(it) if it else Color(1, 1, 1, 0.4)
 	for i in worn_buttons.size():
 		var it := _worn(i)
 		var label: String = ["Staff", "Wand"][i] if i < 2 else EquipmentItem.SLOT_NAMES[i - 2]
 		worn_buttons[i].text = "%s: %s" % [label, name_of(it) if it else "-"]
 		worn_buttons[i].modulate = color_of(it) if it else Color(1, 1, 1, 0.6)
+		ItemIcons.dress(worn_buttons[i], it)
 	dust_label.text = "Arcane Dust: %d" % player.inventory.dust
 	card.text = card_text(selected)
 

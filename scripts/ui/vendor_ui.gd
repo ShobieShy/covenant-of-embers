@@ -94,16 +94,21 @@ func refresh() -> void:
 	)
 	stock_list.clear()
 	for s in vendor.stock:
-		stock_list.add_item(
-			"%s   %d Gold" % [name_of(s["item"]), Archetype.discounted(int(s["price"]), player.archetype)]
+		var si := stock_list.add_item(
+			"%s   %d Gold" % [name_of(s["item"]), Archetype.discounted(int(s["price"]), player.archetype)],
+			ItemIcons.for_item(s["item"])
 		)
+		stock_list.set_item_icon_modulate(si, ItemIcons.tint_for(s["item"]))
 	pack_list.clear()
 	for it in player.inventory.items:
 		var extra := ""
 		if vendor.role == Vendor.Role.REROLL and it is WieldablePart:
 			var c := Vendor.reroll_cost(it)
 			extra = "   re-roll %d Gold + %d Dust" % [c["gold"], c["dust"]]
-		pack_list.add_item("%s   sells %d%s" % [name_of(it), Vendor.sell_price(it), extra])
+		var pi := pack_list.add_item(
+			"%s   sells %d%s" % [name_of(it), Vendor.sell_price(it), extra], ItemIcons.for_item(it)
+		)
+		pack_list.set_item_icon_modulate(pi, ItemIcons.tint_for(it))
 	reroll_button.visible = vendor.role == Vendor.Role.REROLL
 
 

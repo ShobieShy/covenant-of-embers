@@ -46,7 +46,10 @@ func test_equip_and_compare() -> void:
 	p.inventory.add(a)
 	p.inventory.add(b)
 	ui.open()
-	check(ui.slot_buttons[0].text == a.display_name, "grid shows items")
+	check(
+		ui.slot_buttons[0].tooltip_text == a.display_name and ui.slot_buttons[0].icon != null,
+		"grid shows items (icon + tooltip)"
+	)
 	check(ui.slot_buttons[1].modulate.is_equal_approx(b.rarity_color()), "rarity tint")
 	ui.select(a)
 	check(ui.equip_selected(), "equip")

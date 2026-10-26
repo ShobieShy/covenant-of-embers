@@ -37,17 +37,24 @@ func _init() -> void:
 	var h := HBoxContainer.new()
 	root.add_child(h)
 	list = ItemList.new()
+	list.fixed_icon_size = Vector2i(32, 32)
+	list.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	list.custom_minimum_size = Vector2(300, 480)
 	list.item_selected.connect(func(i): pick(player.inventory.at(i)))
 	h.add_child(list)
 	var mid := VBoxContainer.new()
 	h.add_child(mid)
 	base_button = Button.new()
+	base_button.theme_type_variation = UiTheme.SLOT
+	base_button.custom_minimum_size = Vector2(300, 44)
+	base_button.clip_text = true
 	base_button.pressed.connect(func(): set_base(null))
 	mid.add_child(base_button)
 	for t in [P.HEAD, P.EXTERIOR, P.INTERIOR, P.HANDLE, P.CHARM]:
 		var b := Button.new()
-		b.custom_minimum_size = Vector2(240, 34)
+		b.custom_minimum_size = Vector2(300, 44)
+		b.clip_text = true
+		b.theme_type_variation = UiTheme.SLOT
 		b.pressed.connect(func(): set_part(t, null))  # click a filled slot to empty it
 		mid.add_child(b)
 		slot_buttons[t] = b
@@ -233,13 +240,16 @@ func refresh() -> void:
 		return
 	list.clear()
 	for it in player.inventory.items:
-		var i := list.add_item(InventoryUi.name_of(it))
+		var i := list.add_item(InventoryUi.name_of(it), ItemIcons.for_item(it))
+		list.set_item_icon_modulate(i, ItemIcons.tint_for(it))
 		list.set_item_custom_fg_color(i, InventoryUi.color_of(it))
 	base_button.text = "Base: %s" % (base.display_name() if base else "(pick a bare staff/wand)")
+	ItemIcons.dress(base_button, base)
 	for t in slot_buttons:
 		var b: Button = slot_buttons[t]
 		var ok := base == null or Assembly.allows(base.type(), t)
 		b.disabled = not ok
+		ItemIcons.dress(b, parts.get(t))
 		b.text = (
 			"%s: %s"
 			% [WieldablePart.PART_TYPE_NAMES[t], parts[t].display_name if parts.has(t) else ("-" if ok else "n/a")]
