@@ -105,3 +105,30 @@ func test_card_gems_and_consecration() -> void:
 	check(not ui.card_text(_hat("rare", 6)).contains("Gems:"), "no gem line without gems")
 	p.queue_free()
 	ui.queue_free()
+
+
+## t60u: every worn slot can be unequipped, the staff and wand included.
+func test_unequip_everything() -> void:
+	var s := _setup()
+	var p: Player = s[0]
+	var ui: InventoryUi = s[1]
+	p.equip(WieldableInstance.load_base("apprentice_fire_staff"))
+	p.equip(WieldableInstance.load_base("swift_wind_wand"))
+	p.equip_item(_hat("basic", 3))
+	var worn: Array = []
+	for i in 2 + EquipmentItem.SLOT_COUNT:
+		if ui._worn(i):
+			worn.append(ui._worn(i))
+	check(worn.size() >= 3, "staff, wand and a hat worn")
+	var before := p.inventory.size()
+	for it in worn:
+		ui.select(it)
+		check(ui.unequip_selected(), "unequipped %s" % InventoryUi.name_of(it))
+		check(p.inventory.has(it), "in the backpack")
+	check(p.loadout.wieldable(0) == null and p.loadout.wieldable(1) == null, "hands empty")
+	check(p.inventory.size() == before + worn.size(), "nothing lost or duplicated")
+	ui.select(worn[0])
+	check(not ui.unequip_selected(), "a backpack item can't be unequipped")
+	check(ui.equip_selected() and p.loadout.wieldable(0) == worn[0], "re-equip works")
+	p.queue_free()
+	ui.queue_free()

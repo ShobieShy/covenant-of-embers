@@ -66,9 +66,19 @@ func test_forgiving_aim_on_big_targets() -> void:
 
 
 func test_every_interactable_registers() -> void:
-	var nodes: Array[Node3D] = [Npc.new("A"), LevelGate.new("breach"), AssemblyStation.new(), VaultChest.new(), BreachSwitch.new(), Waystone.new("old_oak")]
+	var nodes: Array[Node3D] = [
+		Npc.new("A"),
+		LevelGate.new("breach"),
+		AssemblyStation.new(),
+		VaultChest.new(),
+		BreachSwitch.new(),
+		Waystone.new("old_oak")
+	]
 	for n in nodes:
 		runner_tree.root.add_child(n)
-		check(n.is_in_group(Interaction.GROUP) and n.has_method("interact_prompt"), "%s is an interactable" % n.get_class())
+		check(
+			n.is_in_group(Interaction.GROUP) and n.has_method("interact_prompt"),
+			"%s is an interactable" % n.get_class()
+		)
 	for n in nodes:
 		n.free()

@@ -20,6 +20,10 @@ var base_button: Button
 var preview_label: Label
 var error_label: Label
 var status: Label
+## t60u: the staff/wand that was in hand when the station opened, moved into the backpack as
+## the base; `auto_item` follows it through Assemble/Disassemble and goes back in hand on close.
+var auto_slot := -1
+var auto_item: WieldableInstance
 
 
 func _init() -> void:
@@ -83,14 +87,46 @@ func open(s: AssemblyStation) -> void:
 	player.ui_open = true
 	if DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	auto_load_held()
 	refresh()
 	Gamepad.focus_first(self)  # step 77
+
+
+## t60u: the weapon in hand goes into the station as the base to modify (a bare one fills
+## the base slot; an assembled one is selected for Disassemble, which then refills the
+## slots). It only moves between hand and backpack, so nothing can be lost or duplicated.
+func auto_load_held() -> bool:
+	auto_slot = -1
+	auto_item = null
+	var held := player.loadout.wieldable() if player else null
+	if held == null or (station and not station.allows(held.type())):
+		return false
+	var slot := player.loadout.active
+	if not player.unequip_wieldable_to_inventory(slot):
+		status.text = "Backpack full: make room to put your %s on the station." % held.display_name()
+		return false
+	auto_slot = slot
+	auto_item = held
+	pick(held)
+	if held.assembled:
+		status.text = "%s loaded. Disassemble it to swap parts." % held.display_name()
+	return true
+
+
+## The auto-loaded weapon (or what it was built into) goes back in hand if that slot is free.
+func _return_held() -> void:
+	if auto_slot >= 0 and auto_item and player and player.inventory.has(auto_item):
+		if player.loadout.wieldable(Loadout.slot_for(auto_item)) == null:
+			player.equip_from_inventory(auto_item)
+	auto_slot = -1
+	auto_item = null
 
 
 func close() -> void:
 	visible = false
 	base = null
 	parts.clear()
+	_return_held()
 	if player:
 		player.ui_open = false
 	if DisplayServer.get_name() != "headless":
@@ -220,6 +256,8 @@ func assemble() -> WieldableInstance:
 		status.text = station.last_error
 	else:
 		status.text = "Assembled %s." % w.display_name()
+		if auto_item and auto_item == base:
+			auto_item = w  # the newly built staff goes back in hand on close
 		base = null
 		parts.clear()
 		selected = w
@@ -231,6 +269,15 @@ func disassemble_selected() -> bool:
 	var w := selected as WieldableInstance
 	var out := station.disassemble(player, w) if station else []
 	status.text = "Disassembled." if not out.is_empty() else (station.last_error if station else "")
+	if not out.is_empty():
+		# t60u: keep modifying: the bare base and its old parts fill the slots.
+		var bare := player.inventory.items[player.inventory.items.size() - 1] as WieldableInstance
+		if auto_item == w:
+			auto_item = bare
+		set_base(bare)
+		for prt in out:
+			set_part(prt.part_type, prt)
+		selected = bare
 	refresh()
 	return not out.is_empty()
 

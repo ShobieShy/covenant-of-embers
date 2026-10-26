@@ -66,6 +66,9 @@ func _init() -> void:
 	var eq := _button("Equip")
 	eq.pressed.connect(equip_selected)
 	right.add_child(eq)
+	var uq := _button("Unequip")  # t60u: every worn slot, staff and wand included
+	uq.pressed.connect(unequip_selected)
+	right.add_child(uq)
 	var cp := _button("Copy Ember Mark")
 	cp.pressed.connect(copy_selected)
 	right.add_child(cp)
@@ -201,6 +204,25 @@ func equip_selected() -> bool:
 		return false
 	var ok := player.equip_from_inventory(selected)
 	status.text = "Equipped." if ok else "Can't equip that."
+	refresh()
+	return ok
+
+
+## t60u: moves the selected worn staff/wand/gear piece into the backpack (refused when full).
+func unequip_selected() -> bool:
+	if selected == null or player == null:
+		return false
+	var ok := false
+	var worn := false
+	for slot in [Loadout.Slot.STAFF, Loadout.Slot.WAND]:
+		if player.loadout.wieldable(slot) == selected:
+			worn = true
+			ok = player.unequip_wieldable_to_inventory(slot)
+	for slot in EquipmentItem.SLOT_COUNT:
+		if not worn and player.equipment.item(slot) == selected:
+			worn = true
+			ok = player.unequip_item_to_inventory(slot)
+	status.text = "Unequipped." if ok else ("Backpack full." if worn else "That isn't worn.")
 	refresh()
 	return ok
 

@@ -493,15 +493,37 @@ func _craft(st: AssemblyStation) -> void:
 				if not parts.has(it):
 					player.inventory.remove(it)
 					break
-		if not player.unequip_wieldable_to_inventory(slot):
-			tried.append("%s: backpack full" % base.display_name())
-			continue
-		var built := st.assemble(player, base, parts)
-		if built == null:
-			_finish(false, "craft refused: %s" % st.last_error)
-			return
+		var built: WieldableInstance = null
+		var ui := main.get_node_or_null("StationUi") as StationUi
+		if ui and ui.player == player:
+			# t60u: like a player: draw it, open the station (the held staff auto-loads as the
+			# base), fit the parts, Assemble, close (the new staff goes back in hand).
+			player.loadout.select(slot)
+			player.loadout.active = slot
+			ui.open(st)
+			if ui.base != base:
+				ui.close()
+				tried.append("%s: not auto-loaded (%s)" % [base.display_name(), ui.status.text])
+				continue
+			for prt in parts:
+				ui.pick(prt)
+			built = ui.assemble()
+			var why_not := ui.status.text
+			ui.close()
+			if built == null or player.loadout.wieldable(slot) != built:
+				_finish(false, "station UI craft refused: %s" % why_not)
+				return
+			note("station UI: %s auto-loaded as the base" % base.display_name())
+		else:
+			if not player.unequip_wieldable_to_inventory(slot):
+				tried.append("%s: backpack full" % base.display_name())
+				continue
+			built = st.assemble(player, base, parts)
+			if built == null:
+				_finish(false, "craft refused: %s" % st.last_error)
+				return
+			player.equip_from_inventory(built)
 		stats["crafted"] = built.display_name()
-		player.equip_from_inventory(built)
 		note(
 			(
 				"crafted + equipped %s from %d looted part(s) (dmg %.1f)"
