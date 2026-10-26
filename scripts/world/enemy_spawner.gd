@@ -58,6 +58,10 @@ var _respawn_s := {}  ## Enemy -> s (marker enemies that come back)
 var _home := {}  ## Enemy -> Transform3D (its marker, local)
 var _respawning: Array[Dictionary] = []  ## {enemy, left}
 var _dying: Array[Dictionary] = []  ## {enemy, at}
+## Step 161: zone camps (Level/Camps): {name, center (global), radius, respawn_s, enemies,
+## alive: Array[Enemy], wait (s until it may respawn), spawned (times)}.
+var camps: Array[Dictionary] = []
+var camp_spawns := 0
 
 
 ## Spawns the marker enemies of `level` and reads its waves. Returns the marker enemies.
@@ -77,7 +81,89 @@ func setup(lvl: Node, p: Player, t: EnemyTable = null) -> Array[Enemy]:
 			_home[e] = e.transform
 		_adopt(e)
 	_read_waves()
+	_read_camps()
 	return got
+
+
+func _read_camps() -> void:
+	camps.clear()
+	var h := level.get_node_or_null("Camps") if level else null
+	for c in h.get_children() if h else []:
+		var n := c as Node3D
+		camps.append(
+			{
+				"name": String(n.name),
+				"center": n.global_position if n.is_inside_tree() else n.position,
+				"radius": float(n.get_meta(&"radius", 4.0)),
+				"respawn_s": float(n.get_meta(&"respawn_s", 120.0)),
+				"enemies": n.get_meta(&"enemies", []),
+				"alive": [] as Array[Enemy],
+				"wait": 0.0,
+				"spawned": 0,
+			}
+		)
+
+
+## Step 161: the players a camp can see (local + co-op teammates).
+func _players() -> Array:
+	var out: Array = []
+	if player != null and player.alive():
+		out.append(player)
+	if is_inside_tree():
+		for r in get_tree().get_nodes_in_group(RemotePlayer.GROUP):
+			if r.alive():
+				out.append(r)
+	return out
+
+
+## Step 161: a cleared camp waits respawn_s, then repopulates once a player is within
+## CampLeash.ACTIVATE m; pulled members snap home (CampLeash.enforce).
+func _tick_camps(dt: float) -> void:
+	if camps.is_empty():
+		return
+	var ps: Array = _players() if ticks % 15 == 0 else []
+	for c in camps:
+		var alive: Array = c["alive"]
+		for i in range(alive.size() - 1, -1, -1):
+			var e := alive[i] as Enemy
+			if not is_instance_valid(e) or e.is_queued_for_deletion() or not e.alive():
+				alive.remove_at(i)
+		if alive.is_empty() and int(c["spawned"]) > 0 and float(c["wait"]) <= 0.0 and c.get("cleared") != true:
+			c["wait"] = float(c["respawn_s"])
+			c["cleared"] = true
+		c["wait"] = maxf(0.0, float(c["wait"]) - dt)
+		if not alive.is_empty():
+			CampLeash.enforce(alive)
+		elif float(c["wait"]) <= 0.0 and not ps.is_empty() and CampLeash.camp_active(c["center"], ps):
+			spawn_camp(c)
+
+
+func spawn_camp(c: Dictionary) -> Array[Enemy]:
+	var out: Array[Enemy] = []
+	var total := 0
+	for g in c["enemies"]:
+		total += int(g.get("count", 1))
+	var spots := ring_spots(c["center"], total)
+	var inv := global_transform.affine_inverse() if is_inside_tree() else Transform3D.IDENTITY
+	var n := 0
+	for g in c["enemies"]:
+		var d := table.find(String(g["enemy"]))
+		if d == null:
+			skipped.append("%s@%s" % [g["enemy"], c["name"]])
+			continue
+		for k in int(g.get("count", 1)):
+			var e := Enemy.create(d, inv * Transform3D(Basis(), spots[n]))
+			e.name = "camp_%s_%s_%d_%d" % [c["name"], d.id, int(c["spawned"]) + 1, n + 1]
+			n += 1
+			add_child(e)
+			CampLeash.home(e, spots[n - 1])
+			_adopt(e)
+			out.append(e)
+	(c["alive"] as Array).append_array(out)
+	c["spawned"] = int(c["spawned"]) + 1
+	c["cleared"] = false
+	camp_spawns += 1
+	return out
 
 
 func _read_waves() -> void:
@@ -192,6 +278,7 @@ func tick(dt: float) -> void:
 				respawns += 1
 				GameEvents.bus().enemy_spawned.emit(e)
 	_tick_waves(dt)
+	_tick_camps(dt)
 
 
 ## Step 155: any player triggers it, the local one or a co-op teammate (RemotePlayer).

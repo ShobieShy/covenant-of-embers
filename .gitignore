@@ -21,3 +21,4 @@ dist/
 
 # Raw art deliveries (imported copies live under assets/)
 incoming_art/
+tools/__pycache__/

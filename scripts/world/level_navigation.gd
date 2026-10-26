@@ -127,7 +127,14 @@ func tile_keys(box_bounds: AABB) -> Array[Vector2i]:
 
 ## Hash of everything a tile bake reads: box geometry, terrain bytes, the tile set.
 func source_hash(data: NavigationMeshSourceGeometryData3D, tz: TerrainZone, keys: Array[Vector2i]) -> int:
-	return hash([data.get_vertices(), data.get_indices(), tz.content_hash(), keys, TILE])
+	# Step 161: vertices rounded to 1 cm, so float noise from a parent offset (tests park
+	# the game at z -9000) still matches the offline cache.
+	var v := data.get_vertices()
+	var q := PackedInt32Array()
+	q.resize(v.size())
+	for i in v.size():
+		q[i] = roundi(v[i] * 100.0)
+	return hash([q, data.get_indices(), tz.content_hash(), keys, TILE])
 
 
 func cache_path() -> String:

@@ -101,6 +101,11 @@ class Map:
         s += "snap = true\n" if snap else ""
         self.out.append(s)
 
+    def camp(self, name, center, enemies, respawn=180.0, radius=4.0):
+        en = ", ".join(f'{{enemy = "{e}", count = {n}}}' for e, n in enemies)
+        self.out.append(f'[[camp]]\nname = "{name}"\ncenter = {v(center)}\nradius = {radius}\n'
+                        f'respawn_s = {respawn}\nenemies = [{en}]\n')
+
     def gate(self, name, center, size, reason="Bob said to stick to the path.", flag="tutorial_done"):
         self.out.append(f'[[gate]]\nname = "{name}"\ncenter = {v(center)}\nsize = {v(size)}\n'
                         f'requires_flag = "{flag}"\nreason = "{reason}"\n')
@@ -289,11 +294,86 @@ def landfill_part1(m: Map) -> None:
     m.poi("filth_arena", [0, 0, 0], 22)
 
 
+def landfill_part2(m: Map) -> None:
+    """161 W10: the open Landfill. A 60 m junk mountain at the centre, 10 POIs in a ring,
+    8 respawning camps, 20 chests (2 hidden, 1 lever vault), the Overlook waystone, 2 Breach
+    portal anchors. Camps sit >= 130 m from the arena so the intro never wakes them."""
+    # Junk mountain: 6 stacked heap tiers, 60 m tall, centre (0, 300).
+    for i in range(6):
+        s = 70 - 11 * i
+        m.box(f"junk_mountain_{i + 1}", "heap", [0, 5 + 10 * i, 300], [s, 10, s * 0.9], JUNK, rot=[0, 17 * i, 0])
+    m.pad("mountain_ring", 0, 300, 110, 100, [0.36, 0.31, 0.25])
+    m.path("trunk", (0, 92), (0, 250), 8, DIRT)
+    pois = [("gnawer_warren", -150, 180), ("scrap_bridge", 150, 180), ("toxic_pools", -200, 300),
+            ("crane_yard", 200, 300), ("compactor_pit", -150, 430), ("burned_shacks", 150, 430),
+            ("sunken_tip", 0, 470), ("heap_graveyard", -260, 450), ("joes_old_stash", 260, 450)]
+    for name, x, z in pois:
+        m.pad(name, x, z, 44, 40, [0.37, 0.32, 0.26])
+        m.path(name + "_road", (0, 250 if z < 300 else 350), (x, z), 6, DIRT)
+        m.poi(name, [x, 0, z], 22)
+    m.path("south_road", (0, 350), (0, 450), 6, DIRT)
+    # Per-POI geometry.
+    for i in range(5):
+        m.box(f"warren_mound_{i + 1}", "heap", [-150 + 9 * math.cos(i * 1.25), 1.5, 180 + 9 * math.sin(i * 1.25)], [5, 3, 5], JUNK)
+    for sx in (-1, 1):
+        m.box(f"bridge_tower_{'w' if sx < 0 else 'e'}", "wall", [150 + 12 * sx, 3, 180], [6, 6, 6], [0.4, 0.36, 0.32])
+    m.box("scrap_bridge_span", "platform", [150, 6.2, 180], [18, 0.4, 3], [0.45, 0.38, 0.3])
+    m.stairs("bridge_steps", 162, 186, 6, 8, (0.0, 1.0))
+    for i, (x, z) in enumerate(((-206, 292), (-194, 310), (-210, 312))):
+        m.box(f"toxic_pool_{i + 1}", "platform", [x, 0.05, z], [8, 0.1, 6], [0.45, 0.85, 0.3])
+    for i, (x, z) in enumerate(((190, 290), (210, 312))):
+        m.box(f"crane_{i + 1}", "wall", [x, 7, z], [2, 14, 2], [0.6, 0.45, 0.2])
+        m.box(f"crane_{i + 1}_arm", "platform", [x + 4, 14.2, z], [10, 0.4, 2], [0.6, 0.45, 0.2])
+    m.stairs("crane_steps", 192, 296, 14, 12, (0.0, 1.2))
+    for sx, sz in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        m.box(f"compactor_wall_{sx}_{sz}", "wall", [-150 + 14 * sx, 2, 430 + 14 * sz],
+              [2 if sx else 26, 4, 2 if sz else 26], [0.42, 0.42, 0.44])
+    for i, (x, z) in enumerate(((140, 420), (160, 424), (148, 440), (162, 442))):
+        m.box(f"burned_shack_{i + 1}", "wall", [x, 1.25, z], [5, 2.5, 4], [0.18, 0.15, 0.13])
+    m.wall("sunken_wall_w", [-8, 2, 470], [2, 4, 18])
+    m.wall("sunken_wall_e", [8, 2, 470], [2, 4, 18])
+    m.box("sunken_roof", "platform", [0, 4.2, 472], [18, 0.4, 14], [0.3, 0.27, 0.22])
+    for i in range(6):
+        m.box(f"graveyard_heap_{i + 1}", "heap", [-270 + 7 * (i % 3), 1.2, 442 + 9 * (i // 3)], [4, 2.4, 4], JUNK)
+    m.wall("stash_vault_back", [260, 2, 462], [10, 4, 2])
+    # Overlook: a perch on the mountain's south-east flank, its own waystone.
+    m.pad("overlook_road", 40, 250, 30, 6)
+    m.box("overlook_deck", "platform", [60, 12, 250], [10, 0.4, 10], [0.45, 0.38, 0.3])
+    m.stairs("overlook_steps", 60, 262, 12, 10, (0.0, 1.2))
+    m.waystone("landfill_overlook", [60, 12.2, 250], 180.0)
+    m.poi("overlook", [60, 12, 250], 12)
+    # 8 camps (respawn 3 min).
+    camps = [("warren", -150, 186, [("gnawer", 4)]), ("bridge", 146, 172, [("gnawer", 3)]),
+             ("toxic", -200, 300, [("ooze", 3)]), ("crane", 200, 300, [("scorchling", 3)]),
+             ("compactor", -150, 430, [("heap", 1), ("gnawer", 2)]), ("shacks", 150, 432, [("scorchling", 4)]),
+             ("sunken", 0, 466, [("ooze", 2), ("gnawer", 2)]), ("graveyard", -260, 456, [("heap", 2)])]
+    for name, x, z, en in camps:
+        m.camp(name, [x, 0, z], en)
+    # 20 normal chests, 2 hidden, 1 vault behind 3 levers.
+    spots = [(-160, 170), (-140, 194), (140, 190), (150, 180, 6.4), (-212, 288), (-190, 316), (204, 300, 14.4),
+             (214, 318), (-158, 420), (-140, 440), (138, 430), (164, 418), (-4, 476), (6, 462), (-266, 440),
+             (-250, 462), (250, 440), (36, 300), (-36, 300), (0, 240)]
+    for i, s in enumerate(spots):
+        m.chest(f"landfill_chest_{i + 1}", [s[0], s[2] if len(s) > 2 else 0, s[1]], "normal")
+    m.chest("hidden_mountain_top", [0, 60, 300], "hidden")
+    m.chest("hidden_sunken_roof", [0, 4.4, 474], "hidden")
+    m.chest("joes_stash_vault", [260, 0, 458], "vault", flag="levers_joes_stash", yaw=180.0)
+    for i, (x, z) in enumerate(((250, 446), (270, 446), (260, 438))):
+        m.anchor(f"lever_joes_stash_{i + 1}", [x, 0, z], 0.0)
+    # Breach portals (the Breach entrance) and Filth residue spots (Ember Art decals, 163).
+    m.anchor("breach_portal_1", [-60, 0, 500], 0.0)
+    m.anchor("breach_portal_2", [60, 0, 500], 0.0)
+    m.pad("portal_field", 0, 500, 140, 10)
+    for i, (x, z) in enumerate(((-30, 140), (30, 200), (-80, 360), (90, 380))):
+        m.anchor(f"filth_residue_{i + 1}", [x, 0, z], 0.0)
+
+
 def landfill() -> Map:
     """160-161 W9-W10 the Landfill, 700x600 m (Q3): arena at the north end, the zone south of it."""
     m = Map({"size": [700, 600], "center": [0, 240], "height": 18.0, "seed": 160, "rim": 30.0, "blend": 20.0,
              "map_version": 2, "layers": ["Ground054", "Ground037", "Rock030", "Grass004"]})
     landfill_part1(m)
+    landfill_part2(m)
     return m
 
 

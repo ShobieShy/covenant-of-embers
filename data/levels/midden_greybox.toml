@@ -457,6 +457,1014 @@ radius = 25
 name = "filth_arena"
 center = [0.0, 0.0, 0.0]
 radius = 22
+
+[[box]]
+name = "junk_mountain_1"
+kind = "heap"
+center = [0.0, 5.0, 300.0]
+size = [70.0, 10.0, 63.0]
+color = [0.36, 0.31, 0.26]
+rotation_deg = [0.0, 0.0, 0.0]
+
+[[box]]
+name = "junk_mountain_2"
+kind = "heap"
+center = [0.0, 15.0, 300.0]
+size = [59.0, 10.0, 53.1]
+color = [0.36, 0.31, 0.26]
+rotation_deg = [0.0, 17.0, 0.0]
+
+[[box]]
+name = "junk_mountain_3"
+kind = "heap"
+center = [0.0, 25.0, 300.0]
+size = [48.0, 10.0, 43.2]
+color = [0.36, 0.31, 0.26]
+rotation_deg = [0.0, 34.0, 0.0]
+
+[[box]]
+name = "junk_mountain_4"
+kind = "heap"
+center = [0.0, 35.0, 300.0]
+size = [37.0, 10.0, 33.3]
+color = [0.36, 0.31, 0.26]
+rotation_deg = [0.0, 51.0, 0.0]
+
+[[box]]
+name = "junk_mountain_5"
+kind = "heap"
+center = [0.0, 45.0, 300.0]
+size = [26.0, 10.0, 23.4]
+color = [0.36, 0.31, 0.26]
+rotation_deg = [0.0, 68.0, 0.0]
+
+[[box]]
+name = "junk_mountain_6"
+kind = "heap"
+center = [0.0, 55.0, 300.0]
+size = [15.0, 10.0, 13.5]
+color = [0.36, 0.31, 0.26]
+rotation_deg = [0.0, 85.0, 0.0]
+
+[[box]]
+name = "mountain_ring"
+kind = "ground"
+center = [0.0, -0.1, 300.0]
+size = [110.0, 0.2, 100.0]
+color = [0.36, 0.31, 0.25]
+
+[[box]]
+name = "trunk_z"
+kind = "ground"
+center = [0.0, -0.1, 171.0]
+size = [8.0, 0.2, 166.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "gnawer_warren"
+kind = "ground"
+center = [-150.0, -0.1, 180.0]
+size = [44.0, 0.2, 40.0]
+color = [0.37, 0.32, 0.26]
+
+[[box]]
+name = "gnawer_warren_road_x"
+kind = "ground"
+center = [-75.0, -0.1, 250.0]
+size = [156.0, 0.2, 6.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "gnawer_warren_road_z"
+kind = "ground"
+center = [-150.0, -0.1, 215.0]
+size = [6.0, 0.2, 76.0]
+color = [0.33, 0.27, 0.2]
+
+[[poi]]
+name = "gnawer_warren"
+center = [-150.0, 0.0, 180.0]
+radius = 22
+
+[[box]]
+name = "scrap_bridge"
+kind = "ground"
+center = [150.0, -0.1, 180.0]
+size = [44.0, 0.2, 40.0]
+color = [0.37, 0.32, 0.26]
+
+[[box]]
+name = "scrap_bridge_road_x"
+kind = "ground"
+center = [75.0, -0.1, 250.0]
+size = [156.0, 0.2, 6.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "scrap_bridge_road_z"
+kind = "ground"
+center = [150.0, -0.1, 215.0]
+size = [6.0, 0.2, 76.0]
+color = [0.33, 0.27, 0.2]
+
+[[poi]]
+name = "scrap_bridge"
+center = [150.0, 0.0, 180.0]
+radius = 22
+
+[[box]]
+name = "toxic_pools"
+kind = "ground"
+center = [-200.0, -0.1, 300.0]
+size = [44.0, 0.2, 40.0]
+color = [0.37, 0.32, 0.26]
+
+[[box]]
+name = "toxic_pools_road_x"
+kind = "ground"
+center = [-100.0, -0.1, 350.0]
+size = [206.0, 0.2, 6.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "toxic_pools_road_z"
+kind = "ground"
+center = [-200.0, -0.1, 325.0]
+size = [6.0, 0.2, 56.0]
+color = [0.33, 0.27, 0.2]
+
+[[poi]]
+name = "toxic_pools"
+center = [-200.0, 0.0, 300.0]
+radius = 22
+
+[[box]]
+name = "crane_yard"
+kind = "ground"
+center = [200.0, -0.1, 300.0]
+size = [44.0, 0.2, 40.0]
+color = [0.37, 0.32, 0.26]
+
+[[box]]
+name = "crane_yard_road_x"
+kind = "ground"
+center = [100.0, -0.1, 350.0]
+size = [206.0, 0.2, 6.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_yard_road_z"
+kind = "ground"
+center = [200.0, -0.1, 325.0]
+size = [6.0, 0.2, 56.0]
+color = [0.33, 0.27, 0.2]
+
+[[poi]]
+name = "crane_yard"
+center = [200.0, 0.0, 300.0]
+radius = 22
+
+[[box]]
+name = "compactor_pit"
+kind = "ground"
+center = [-150.0, -0.1, 430.0]
+size = [44.0, 0.2, 40.0]
+color = [0.37, 0.32, 0.26]
+
+[[box]]
+name = "compactor_pit_road_x"
+kind = "ground"
+center = [-75.0, -0.1, 350.0]
+size = [156.0, 0.2, 6.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "compactor_pit_road_z"
+kind = "ground"
+center = [-150.0, -0.1, 390.0]
+size = [6.0, 0.2, 86.0]
+color = [0.33, 0.27, 0.2]
+
+[[poi]]
+name = "compactor_pit"
+center = [-150.0, 0.0, 430.0]
+radius = 22
+
+[[box]]
+name = "burned_shacks"
+kind = "ground"
+center = [150.0, -0.1, 430.0]
+size = [44.0, 0.2, 40.0]
+color = [0.37, 0.32, 0.26]
+
+[[box]]
+name = "burned_shacks_road_x"
+kind = "ground"
+center = [75.0, -0.1, 350.0]
+size = [156.0, 0.2, 6.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "burned_shacks_road_z"
+kind = "ground"
+center = [150.0, -0.1, 390.0]
+size = [6.0, 0.2, 86.0]
+color = [0.33, 0.27, 0.2]
+
+[[poi]]
+name = "burned_shacks"
+center = [150.0, 0.0, 430.0]
+radius = 22
+
+[[box]]
+name = "sunken_tip"
+kind = "ground"
+center = [0.0, -0.1, 470.0]
+size = [44.0, 0.2, 40.0]
+color = [0.37, 0.32, 0.26]
+
+[[box]]
+name = "sunken_tip_road_z"
+kind = "ground"
+center = [0.0, -0.1, 410.0]
+size = [6.0, 0.2, 126.0]
+color = [0.33, 0.27, 0.2]
+
+[[poi]]
+name = "sunken_tip"
+center = [0.0, 0.0, 470.0]
+radius = 22
+
+[[box]]
+name = "heap_graveyard"
+kind = "ground"
+center = [-260.0, -0.1, 450.0]
+size = [44.0, 0.2, 40.0]
+color = [0.37, 0.32, 0.26]
+
+[[box]]
+name = "heap_graveyard_road_x"
+kind = "ground"
+center = [-130.0, -0.1, 350.0]
+size = [266.0, 0.2, 6.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "heap_graveyard_road_z"
+kind = "ground"
+center = [-260.0, -0.1, 400.0]
+size = [6.0, 0.2, 106.0]
+color = [0.33, 0.27, 0.2]
+
+[[poi]]
+name = "heap_graveyard"
+center = [-260.0, 0.0, 450.0]
+radius = 22
+
+[[box]]
+name = "joes_old_stash"
+kind = "ground"
+center = [260.0, -0.1, 450.0]
+size = [44.0, 0.2, 40.0]
+color = [0.37, 0.32, 0.26]
+
+[[box]]
+name = "joes_old_stash_road_x"
+kind = "ground"
+center = [130.0, -0.1, 350.0]
+size = [266.0, 0.2, 6.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "joes_old_stash_road_z"
+kind = "ground"
+center = [260.0, -0.1, 400.0]
+size = [6.0, 0.2, 106.0]
+color = [0.33, 0.27, 0.2]
+
+[[poi]]
+name = "joes_old_stash"
+center = [260.0, 0.0, 450.0]
+radius = 22
+
+[[box]]
+name = "south_road_z"
+kind = "ground"
+center = [0.0, -0.1, 400.0]
+size = [6.0, 0.2, 106.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "warren_mound_1"
+kind = "heap"
+center = [-141.0, 1.5, 180.0]
+size = [5.0, 3.0, 5.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "warren_mound_2"
+kind = "heap"
+center = [-147.162, 1.5, 188.541]
+size = [5.0, 3.0, 5.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "warren_mound_3"
+kind = "heap"
+center = [-157.21, 1.5, 185.386]
+size = [5.0, 3.0, 5.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "warren_mound_4"
+kind = "heap"
+center = [-157.385, 1.5, 174.856]
+size = [5.0, 3.0, 5.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "warren_mound_5"
+kind = "heap"
+center = [-147.447, 1.5, 171.37]
+size = [5.0, 3.0, 5.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "bridge_tower_w"
+kind = "wall"
+center = [138.0, 3.0, 180.0]
+size = [6.0, 6.0, 6.0]
+color = [0.4, 0.36, 0.32]
+
+[[box]]
+name = "bridge_tower_e"
+kind = "wall"
+center = [162.0, 3.0, 180.0]
+size = [6.0, 6.0, 6.0]
+color = [0.4, 0.36, 0.32]
+
+[[box]]
+name = "scrap_bridge_span"
+kind = "platform"
+center = [150.0, 6.2, 180.0]
+size = [18.0, 0.4, 3.0]
+color = [0.45, 0.38, 0.3]
+
+[[box]]
+name = "bridge_steps_1"
+kind = "platform"
+center = [162.0, 0.55, 186.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "bridge_steps_2"
+kind = "platform"
+center = [162.0, 1.3, 187.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "bridge_steps_3"
+kind = "platform"
+center = [162.0, 2.05, 188.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "bridge_steps_4"
+kind = "platform"
+center = [162.0, 2.8, 189.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "bridge_steps_5"
+kind = "platform"
+center = [162.0, 3.55, 190.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "bridge_steps_6"
+kind = "platform"
+center = [162.0, 4.3, 191.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "bridge_steps_7"
+kind = "platform"
+center = [162.0, 5.05, 192.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "bridge_steps_8"
+kind = "platform"
+center = [162.0, 5.8, 193.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "toxic_pool_1"
+kind = "platform"
+center = [-206.0, 0.05, 292.0]
+size = [8.0, 0.1, 6.0]
+color = [0.45, 0.85, 0.3]
+
+[[box]]
+name = "toxic_pool_2"
+kind = "platform"
+center = [-194.0, 0.05, 310.0]
+size = [8.0, 0.1, 6.0]
+color = [0.45, 0.85, 0.3]
+
+[[box]]
+name = "toxic_pool_3"
+kind = "platform"
+center = [-210.0, 0.05, 312.0]
+size = [8.0, 0.1, 6.0]
+color = [0.45, 0.85, 0.3]
+
+[[box]]
+name = "crane_1"
+kind = "wall"
+center = [190.0, 7.0, 290.0]
+size = [2.0, 14.0, 2.0]
+color = [0.6, 0.45, 0.2]
+
+[[box]]
+name = "crane_1_arm"
+kind = "platform"
+center = [194.0, 14.2, 290.0]
+size = [10.0, 0.4, 2.0]
+color = [0.6, 0.45, 0.2]
+
+[[box]]
+name = "crane_2"
+kind = "wall"
+center = [210.0, 7.0, 312.0]
+size = [2.0, 14.0, 2.0]
+color = [0.6, 0.45, 0.2]
+
+[[box]]
+name = "crane_2_arm"
+kind = "platform"
+center = [214.0, 14.2, 312.0]
+size = [10.0, 0.4, 2.0]
+color = [0.6, 0.45, 0.2]
+
+[[box]]
+name = "crane_steps_1"
+kind = "platform"
+center = [192.0, 0.967, 296.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_2"
+kind = "platform"
+center = [192.0, 2.133, 297.2]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_3"
+kind = "platform"
+center = [192.0, 3.3, 298.4]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_4"
+kind = "platform"
+center = [192.0, 4.467, 299.6]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_5"
+kind = "platform"
+center = [192.0, 5.633, 300.8]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_6"
+kind = "platform"
+center = [192.0, 6.8, 302.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_7"
+kind = "platform"
+center = [192.0, 7.967, 303.2]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_8"
+kind = "platform"
+center = [192.0, 9.133, 304.4]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_9"
+kind = "platform"
+center = [192.0, 10.3, 305.6]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_10"
+kind = "platform"
+center = [192.0, 11.467, 306.8]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_11"
+kind = "platform"
+center = [192.0, 12.633, 308.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "crane_steps_12"
+kind = "platform"
+center = [192.0, 13.8, 309.2]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "compactor_wall_-1_0"
+kind = "wall"
+center = [-164.0, 2.0, 430.0]
+size = [2.0, 4.0, 26.0]
+color = [0.42, 0.42, 0.44]
+
+[[box]]
+name = "compactor_wall_1_0"
+kind = "wall"
+center = [-136.0, 2.0, 430.0]
+size = [2.0, 4.0, 26.0]
+color = [0.42, 0.42, 0.44]
+
+[[box]]
+name = "compactor_wall_0_-1"
+kind = "wall"
+center = [-150.0, 2.0, 416.0]
+size = [26.0, 4.0, 2.0]
+color = [0.42, 0.42, 0.44]
+
+[[box]]
+name = "compactor_wall_0_1"
+kind = "wall"
+center = [-150.0, 2.0, 444.0]
+size = [26.0, 4.0, 2.0]
+color = [0.42, 0.42, 0.44]
+
+[[box]]
+name = "burned_shack_1"
+kind = "wall"
+center = [140.0, 1.25, 420.0]
+size = [5.0, 2.5, 4.0]
+color = [0.18, 0.15, 0.13]
+
+[[box]]
+name = "burned_shack_2"
+kind = "wall"
+center = [160.0, 1.25, 424.0]
+size = [5.0, 2.5, 4.0]
+color = [0.18, 0.15, 0.13]
+
+[[box]]
+name = "burned_shack_3"
+kind = "wall"
+center = [148.0, 1.25, 440.0]
+size = [5.0, 2.5, 4.0]
+color = [0.18, 0.15, 0.13]
+
+[[box]]
+name = "burned_shack_4"
+kind = "wall"
+center = [162.0, 1.25, 442.0]
+size = [5.0, 2.5, 4.0]
+color = [0.18, 0.15, 0.13]
+
+[[box]]
+name = "sunken_wall_w"
+kind = "wall"
+center = [-8.0, 2.0, 470.0]
+size = [2.0, 4.0, 18.0]
+color = [0.42, 0.4, 0.38]
+
+[[box]]
+name = "sunken_wall_e"
+kind = "wall"
+center = [8.0, 2.0, 470.0]
+size = [2.0, 4.0, 18.0]
+color = [0.42, 0.4, 0.38]
+
+[[box]]
+name = "sunken_roof"
+kind = "platform"
+center = [0.0, 4.2, 472.0]
+size = [18.0, 0.4, 14.0]
+color = [0.3, 0.27, 0.22]
+
+[[box]]
+name = "graveyard_heap_1"
+kind = "heap"
+center = [-270.0, 1.2, 442.0]
+size = [4.0, 2.4, 4.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "graveyard_heap_2"
+kind = "heap"
+center = [-263.0, 1.2, 442.0]
+size = [4.0, 2.4, 4.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "graveyard_heap_3"
+kind = "heap"
+center = [-256.0, 1.2, 442.0]
+size = [4.0, 2.4, 4.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "graveyard_heap_4"
+kind = "heap"
+center = [-270.0, 1.2, 451.0]
+size = [4.0, 2.4, 4.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "graveyard_heap_5"
+kind = "heap"
+center = [-263.0, 1.2, 451.0]
+size = [4.0, 2.4, 4.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "graveyard_heap_6"
+kind = "heap"
+center = [-256.0, 1.2, 451.0]
+size = [4.0, 2.4, 4.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "stash_vault_back"
+kind = "wall"
+center = [260.0, 2.0, 462.0]
+size = [10.0, 4.0, 2.0]
+color = [0.42, 0.4, 0.38]
+
+[[box]]
+name = "overlook_road"
+kind = "ground"
+center = [40.0, -0.1, 250.0]
+size = [30.0, 0.2, 6.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "overlook_deck"
+kind = "platform"
+center = [60.0, 12.0, 250.0]
+size = [10.0, 0.4, 10.0]
+color = [0.45, 0.38, 0.3]
+
+[[box]]
+name = "overlook_steps_1"
+kind = "platform"
+center = [60.0, 1.0, 262.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "overlook_steps_2"
+kind = "platform"
+center = [60.0, 2.2, 263.2]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "overlook_steps_3"
+kind = "platform"
+center = [60.0, 3.4, 264.4]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "overlook_steps_4"
+kind = "platform"
+center = [60.0, 4.6, 265.6]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "overlook_steps_5"
+kind = "platform"
+center = [60.0, 5.8, 266.8]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "overlook_steps_6"
+kind = "platform"
+center = [60.0, 7.0, 268.0]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "overlook_steps_7"
+kind = "platform"
+center = [60.0, 8.2, 269.2]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "overlook_steps_8"
+kind = "platform"
+center = [60.0, 9.4, 270.4]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "overlook_steps_9"
+kind = "platform"
+center = [60.0, 10.6, 271.6]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[box]]
+name = "overlook_steps_10"
+kind = "platform"
+center = [60.0, 11.8, 272.8]
+size = [3.0, 0.4, 3.0]
+color = [0.33, 0.27, 0.2]
+
+[[waystone]]
+point = "landfill_overlook"
+position = [60.0, 12.2, 250.0]
+yaw_deg = 180.0
+
+[[poi]]
+name = "overlook"
+center = [60.0, 12.0, 250.0]
+radius = 12
+
+[[camp]]
+name = "warren"
+center = [-150.0, 0.0, 186.0]
+radius = 4.0
+respawn_s = 180.0
+enemies = [{enemy = "gnawer", count = 4}]
+
+[[camp]]
+name = "bridge"
+center = [146.0, 0.0, 172.0]
+radius = 4.0
+respawn_s = 180.0
+enemies = [{enemy = "gnawer", count = 3}]
+
+[[camp]]
+name = "toxic"
+center = [-200.0, 0.0, 300.0]
+radius = 4.0
+respawn_s = 180.0
+enemies = [{enemy = "ooze", count = 3}]
+
+[[camp]]
+name = "crane"
+center = [200.0, 0.0, 300.0]
+radius = 4.0
+respawn_s = 180.0
+enemies = [{enemy = "scorchling", count = 3}]
+
+[[camp]]
+name = "compactor"
+center = [-150.0, 0.0, 430.0]
+radius = 4.0
+respawn_s = 180.0
+enemies = [{enemy = "heap", count = 1}, {enemy = "gnawer", count = 2}]
+
+[[camp]]
+name = "shacks"
+center = [150.0, 0.0, 432.0]
+radius = 4.0
+respawn_s = 180.0
+enemies = [{enemy = "scorchling", count = 4}]
+
+[[camp]]
+name = "sunken"
+center = [0.0, 0.0, 466.0]
+radius = 4.0
+respawn_s = 180.0
+enemies = [{enemy = "ooze", count = 2}, {enemy = "gnawer", count = 2}]
+
+[[camp]]
+name = "graveyard"
+center = [-260.0, 0.0, 456.0]
+radius = 4.0
+respawn_s = 180.0
+enemies = [{enemy = "heap", count = 2}]
+
+[[chest]]
+name = "landfill_chest_1"
+position = [-160.0, 0.0, 170.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_2"
+position = [-140.0, 0.0, 194.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_3"
+position = [140.0, 0.0, 190.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_4"
+position = [150.0, 6.4, 180.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_5"
+position = [-212.0, 0.0, 288.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_6"
+position = [-190.0, 0.0, 316.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_7"
+position = [204.0, 14.4, 300.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_8"
+position = [214.0, 0.0, 318.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_9"
+position = [-158.0, 0.0, 420.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_10"
+position = [-140.0, 0.0, 440.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_11"
+position = [138.0, 0.0, 430.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_12"
+position = [164.0, 0.0, 418.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_13"
+position = [-4.0, 0.0, 476.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_14"
+position = [6.0, 0.0, 462.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_15"
+position = [-266.0, 0.0, 440.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_16"
+position = [-250.0, 0.0, 462.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_17"
+position = [250.0, 0.0, 440.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_18"
+position = [36.0, 0.0, 300.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_19"
+position = [-36.0, 0.0, 300.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "landfill_chest_20"
+position = [0.0, 0.0, 240.0]
+yaw_deg = 0.0
+tier = "normal"
+
+[[chest]]
+name = "hidden_mountain_top"
+position = [0.0, 60.0, 300.0]
+yaw_deg = 0.0
+tier = "hidden"
+
+[[chest]]
+name = "hidden_sunken_roof"
+position = [0.0, 4.4, 474.0]
+yaw_deg = 0.0
+tier = "hidden"
+
+[[chest]]
+name = "joes_stash_vault"
+position = [260.0, 0.0, 458.0]
+yaw_deg = 180.0
+tier = "vault"
+requires_flag = "levers_joes_stash"
+
+[[anchor]]
+name = "lever_joes_stash_1"
+position = [250.0, 0.0, 446.0]
+yaw_deg = 0.0
+
+[[anchor]]
+name = "lever_joes_stash_2"
+position = [270.0, 0.0, 446.0]
+yaw_deg = 0.0
+
+[[anchor]]
+name = "lever_joes_stash_3"
+position = [260.0, 0.0, 438.0]
+yaw_deg = 0.0
+
+[[anchor]]
+name = "breach_portal_1"
+position = [-60.0, 0.0, 500.0]
+yaw_deg = 0.0
+
+[[anchor]]
+name = "breach_portal_2"
+position = [60.0, 0.0, 500.0]
+yaw_deg = 0.0
+
+[[box]]
+name = "portal_field"
+kind = "ground"
+center = [0.0, -0.1, 500.0]
+size = [140.0, 0.2, 10.0]
+color = [0.33, 0.27, 0.2]
+
+[[anchor]]
+name = "filth_residue_1"
+position = [-30.0, 0.0, 140.0]
+yaw_deg = 0.0
+
+[[anchor]]
+name = "filth_residue_2"
+position = [30.0, 0.0, 200.0]
+yaw_deg = 0.0
+
+[[anchor]]
+name = "filth_residue_3"
+position = [-80.0, 0.0, 360.0]
+yaw_deg = 0.0
+
+[[anchor]]
+name = "filth_residue_4"
+position = [90.0, 0.0, 380.0]
+yaw_deg = 0.0
 # ---- EXPAND_END ----
 
 # ---- DRESS_BEGIN (generated by tools/dress_levels.py; edit that, not this) ----

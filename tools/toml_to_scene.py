@@ -285,13 +285,36 @@ def _chests(items: list, out: dict) -> None:
                               "snap": _bool(c.get("snap", False), f"{w} snap")})
 
 
+def _camps(items: list, out: dict, known: set[str]) -> None:
+    """Step 161: [[camp]] name, center (feet), radius (ring m), respawn_s, enemies = [{enemy,
+    count}]: a respawning pack that wakes when a player is near (EnemySpawner camps)."""
+    for i, c in enumerate(items):
+        w = f"camp {i + 1}"
+        _only(c, {"name", "center", "radius", "respawn_s", "enemies"}, w)
+        name = str(_need(c, "name", w))
+        if not re.fullmatch(r"[a-z0-9_]+", name) or any(x["name"] == name for x in out["camps"]):
+            raise LevelError(f"{w}: name must be unique snake_case")
+        groups = []
+        for g in _need(c, "enemies", w):
+            eid = str(g.get("enemy", ""))
+            if eid not in known:
+                raise LevelError(f"camp '{name}': unknown enemy '{eid}' (not in data/enemies)")
+            n = int(g.get("count", 1))
+            if not 1 <= n <= 8:
+                raise LevelError(f"camp '{name}': count must be 1..8")
+            groups.append({"enemy": eid, "count": n})
+        out["camps"].append({"name": name, "center": _vec(_need(c, "center", w), f"{w} center"),
+                             "radius": float(c.get("radius", 4.0)), "respawn_s": float(c.get("respawn_s", 120.0)),
+                             "enemies": groups})
+
+
 def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     try:
         d = tomllib.loads(text)
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate", "chest"}, "top level")
+               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate", "chest", "camp"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -348,6 +371,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "waystones": [],
         "gates": [],
         "chests": [],
+        "camps": [],
     }
     # Step 75: [materials] kind = "assets/<vendor>/<set>" (color/normal/roughness.jpg there),
     # uv_scale = world tiling per metre (triplanar, so boxes of any size tile evenly).
@@ -480,6 +504,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     _anchors(d, out)
     _gates(d.get("gate", []), out)
     _chests(d.get("chest", []), out)
+    _camps(d.get("camp", []), out, known)
     _props(d.get("prop", []), out)
     out["terrain"] = _terrain(d["terrain"], out["boxes"]) if "terrain" in d else None
     # Step 65: travel exits (LevelGate per exit, `to` = a GameFlow level id) and NPCs.
@@ -750,6 +775,16 @@ def to_tscn(lv: dict, source: str) -> str:
                              f'metadata/yaw_deg = {_f(a["yaw_deg"])}\n'
                              + (f'metadata/beat = "{a["beat"]}"\n' if a["beat"] else "")
                              + ('metadata/snap = true\n' if a["snap"] else ""))
+    if lv.get("camps"):
+        nodes.append('[node name="Camps" type="Node3D" parent="."]\n')
+        for c in lv["camps"]:
+            x, y, z = c["center"]
+            en = ", ".join('{"count": %d, "enemy": "%s"}' % (g["count"], g["enemy"]) for g in c["enemies"])
+            nodes.append(f'[node name="{c["name"]}" type="Node3D" parent="Camps"]\n'
+                         f'transform = {_xf(rot_yxz([0, 0, 0]), c["center"])}\n'
+                         f'metadata/center = Vector3({_f(x)}, {_f(y)}, {_f(z)})\n'
+                         f'metadata/radius = {_f(c["radius"])}\nmetadata/respawn_s = {_f(c["respawn_s"])}\n'
+                         f'metadata/enemies = [{en}]\n')
     if lv.get("chests"):
         nodes.append('[node name="Chests" type="Node3D" parent="."]\n')
         for c in lv["chests"]:
@@ -839,6 +874,8 @@ def _swap_materials(text: str, block: str) -> str:
 
 def self_test() -> int:
     good = (Path(ROOT / "data/levels/midden_greybox.toml")).read_text(encoding="utf-8")
+    # Step 160: the self-tests use the greybox arena (no zone block, no [terrain]).
+    good = re.sub(r"# ---- EXPAND_BEGIN.*?EXPAND_END[^\n]*\n", "", good, flags=re.S)
     lv = parse_level(good)
     assert len(lv["boxes"]) == 17, len(lv["boxes"])
     assert lv["materials"]["wall"] == "assets/ambientcg/Rock030", lv["materials"]
@@ -959,6 +996,10 @@ def self_test() -> int:
             assert msg in str(e), (msg, str(e))
         else:
             raise AssertionError(f"expected error: {msg}")
+    # Step 161: [[camp]] -> Camps/<name> with center / enemies metadata.
+    pk = to_tscn(parse_level(hdr + box + '[[camp]]\nname = "k1"\ncenter = [1, 0, 2]\n'
+                             'enemies = [{enemy = "gnawer", count = 3}]\n', {"gnawer"}), "k.toml")
+    assert 'parent="Camps"' in pk and '"enemy": "gnawer"' in pk and "metadata/center = Vector3(" in pk, pk
     # Step 158: [[chest]] -> Chests/<name> markers with a tier.
     pc = to_tscn(parse_level(hdr + box + '[[chest]]\nname = "c1"\nposition = [0, 0, 0]\ntier = "vault"\n'
                              'requires_flag = "lever_3"\n'), "c.toml")
