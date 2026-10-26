@@ -38,6 +38,7 @@ var _snap_left := 0.0
 var snaps_sent := 0
 var snaps_seen := 0
 var hits_sent := 0
+var brand_hits_sent := 0  ## step 142: chain/blast/orb hits on puppets forwarded
 var hits_applied := 0
 var heals_sent := 0  ## step 108
 var heals_taken := 0
@@ -85,6 +86,7 @@ func tick(dt: float) -> void:
 	if host:
 		_wire_and_target()
 	_tick_revive(dt)
+	_flush_puppet_hits()
 	for pr: RemotePlayer in proxies.values():
 		pr.smooth(dt)
 	if not host:
@@ -118,7 +120,21 @@ func local_pose() -> Dictionary:
 	var pr: Variant = player.get(&"progression")
 	if pr != null:
 		d["l"] = int(pr.get(&"level"))
+	var fx := brand_fx_of(player)
+	if not fx.is_empty():  # step 142: the held brand's FX state (bits, meter, colour)
+		d["bf"] = fx
 	return d
+
+
+## Step 142: [bits, meter (2 dp), colour html] of `p`'s held FireMode; [] = unbranded/none.
+static func brand_fx_of(p: Node) -> Array:
+	var c: Variant = p.get(&"caster") if p != null else null
+	if not (c is Caster):
+		return []
+	var m := (c as Caster).fire_mode()
+	if m == null or m.brand == null:
+		return []
+	return [m.fx_bits(), snappedf(maxf(0.0, m.meter()), 0.01), m.brand.color.to_html(false)]
 
 
 func send_pose() -> void:
@@ -351,6 +367,23 @@ func send_hit(e: Enemy, amount: float, element: ElementTable.Element, dark_bonus
 	hits_sent += 1
 	var d := {"id": int(e.get_meta(&"net_id", 0)), "amt": amount, "el": int(element), "db": dark_bonus}
 	session.send("hit", d, 1)
+
+
+## Step 142: chain jumps, blasts and cursed-orb hits our bolts dealt to our puppets (queued
+## by MagicEffects._hurt) go to the host as ordinary "hit"s. Rows for other worlds' puppets
+## stay queued (in-process tests run two worlds); freed enemies are dropped.
+func _flush_puppet_hits() -> void:
+	var keep: Array = []
+	for row in MagicEffects.puppet_hits:
+		var e: Variant = row[0]
+		if not is_instance_valid(e):
+			continue
+		if not host and puppets.values().has(e):
+			brand_hits_sent += 1
+			send_hit(e as Enemy, float(row[1]), row[2] as ElementTable.Element)
+		else:
+			keep.append(row)
+	MagicEffects.puppet_hits = keep.slice(maxi(0, keep.size() - 256))
 
 
 ## Step 108: our Light bolt healed `peer`'s player; its owner applies it.

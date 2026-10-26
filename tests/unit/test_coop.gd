@@ -272,3 +272,44 @@ func test_light_heal_and_dark_convert() -> void:
 	(d["h"] as NetSession).leave()
 	(d["root"] as Node).queue_free()
 	await runner_tree.process_frame
+
+
+## Step 142 (Brands B8): PROTOCOL 2; the pose carries the held brand's FX (bits, meter,
+## colour) and the RemotePlayer shows it; a client's blast/chain damage on a puppet
+## (MagicEffects._hurt) reaches the host's real enemy as a "hit".
+func test_brand_fx_and_blast_hits() -> void:
+	check(NetSession.PROTOCOL == 2, "protocol 2 (brands)")
+	check(NetSession.version().ends_with("/p2"), "older builds can't join")
+	var d := await _coop_pair()
+	var table := EnemyTable.load_default()
+	var real := Enemy.new()
+	real.setup(table.find("earth_training_dummy"))
+	(d["henemies"] as Node).add_child(real)
+	real.global_position = Vector3(5, 0, -4)
+	var hw: CoopWorld = d["hw"]
+	var cw: CoopWorld = d["cw"]
+	hw.setup(d["h"], d["hp"], d["henemies"], table)
+	cw.setup(d["c"], d["cp"], d["cenemies"], table)
+	var cid := (d["c"] as NetSession).my_id()
+	for i in 120:
+		await _tick_both(d)
+		if cw.puppets.size() == 1 and hw.proxies.has(cid) and cw.proxies.has(1):
+			break
+	var rp: RemotePlayer = hw.proxies[cid]
+	rp.apply_pose({"p": Vector3(3, 0, 0), "bf": [BrandFX.BIT_HOT | BrandFX.BIT_VENT, 1.0, "ff7326"]})
+	check(rp.brand_fx != null and rp.brand_fx.bits == 3 and rp.brand_fx.puffs == 1, "remote heat + vent steam")
+	rp.apply_pose({"p": Vector3(3, 0, 0)})
+	check(rp.brand_fx.bits == 0 and not rp.brand_fx.glow.visible, "no bf = unbranded")
+	check(CoopWorld.brand_fx_of(d["cp"]).is_empty(), "no caster: nothing sent")
+	var pup: Enemy = cw.puppets.values()[0]
+	var before := real.health
+	MagicEffects._hurt(pup, 4.0, ElementTable.Element.EARTH)
+	await _tick_both(d, 2)
+	check(await _wait(func(): return real.health < before), "blast hit reaches the host")
+	await _tick_both(d, 2)
+	check(cw.brand_hits_sent == 1 and hw.brand_hits_sent == 0, "sent once, by the client")
+	check(MagicEffects.puppet_hits.is_empty(), "queue drained")
+	(d["c"] as NetSession).leave()
+	(d["h"] as NetSession).leave()
+	(d["root"] as Node).queue_free()
+	await runner_tree.process_frame

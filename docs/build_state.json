@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 143,
-  "steps_done": 122,
-  "last_commit": "c03cd68",
+  "steps_done": 123,
+  "last_commit": "8c49dac",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1277,6 +1277,13 @@
       "type": "build",
       "summary": "Brands B7: BrandFX on the staff Head (heat glow + light, vent steam, charge glow, spin ring; quality-capped particles; driven by fx bits for co-op), bigger orb/boulder bolt heads, brand SFX from Kenney CC0 packs (overheat, vent, charge full/release, blast, crit, spin, burst, toggle, orb), credits note; tests/unit/test_brand_fx.gd",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T13:57:00-05:00",
+      "step": 142,
+      "type": "build",
+      "summary": "Brands B8: co-op PROTOCOL 2, pose brand FX on RemotePlayer, puppet blast/chain/orb hits forwarded to host",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1401,7 +1408,8 @@
     138,
     139,
     140,
-    141
+    141,
+    142
   ],
   "deferred": [
     74,
@@ -1421,7 +1429,6 @@
     }
   ],
   "waiting_on_user_go": [
-    142,
     143
   ],
   "notes": [

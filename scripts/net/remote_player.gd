@@ -31,6 +31,7 @@ var _placed := false
 var archetype := ""  ## pose "k": batch_02 player model for gal / buff
 var _body: Node3D
 var _model: CharacterModel
+var brand_fx: BrandFX  ## step 142: the other player's staff-brand FX (pose "bf")
 
 
 func _ready() -> void:
@@ -80,6 +81,7 @@ func apply_pose(d: Dictionary) -> void:
 		color = Color.from_string(String(d["c"]), color)
 		if _mat:
 			_mat.albedo_color = color
+	_apply_brand(d.get("bf", []))
 	if d.has("k") and String(d["k"]) != archetype:
 		_set_archetype(String(d["k"]))
 	if _tag:
@@ -89,6 +91,19 @@ func apply_pose(d: Dictionary) -> void:
 		_placed = true
 		global_position = target_pos
 		rotation.y = target_yaw
+
+
+## Step 142: [bits, meter, colour html] -> BrandFX at the staff hand ([] = nothing branded).
+func _apply_brand(bf: Variant) -> void:
+	if brand_fx == null:
+		brand_fx = BrandFX.new()
+		brand_fx.position = Vector3(0.35, 1.35, -0.35)
+		add_child(brand_fx)
+	if bf is Array and (bf as Array).size() >= 3:
+		var a := bf as Array
+		brand_fx.apply(int(a[0]), float(a[1]), Color.from_string(String(a[2]), Color.WHITE))
+	else:
+		brand_fx.apply(0, 0.0, Color.WHITE)
 
 
 func _set_archetype(id: String) -> void:
