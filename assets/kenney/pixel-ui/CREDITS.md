@@ -9,6 +9,6 @@ Everything is CC0 1.0, so no credit line is required. Optional: "UI art by Kenne
 | icons/items/, spritesheets/tiny_dungeon_tilemap_packed.png | https://kenney.nl/assets/tiny-dungeon | Kenney | CC0 |
 | cursors/cursor_*.png, spritesheets/cursor_tilemap_packed.png | https://kenney.nl/assets/cursor-pixel-pack | Kenney | CC0 |
 | fonts/*.ttf | https://kenney.nl/assets/kenney-fonts | Kenney | CC0 (fonts/Kenney_Fonts_License.txt) |
-| bars_sliders/*, inventory/*, icons/spells_elements/* | Original pixel art drawn for Covenant of Embers | Project-made | CC0 |
+| bars_sliders/*, inventory/*, icons/spells_elements/*, icons/gear/* (hat, robe, belt, shoes, grimoire, gem) | Original pixel art drawn for Covenant of Embers | Project-made | CC0 |
 
 The license files are in licenses/ and alongside each asset folder.
