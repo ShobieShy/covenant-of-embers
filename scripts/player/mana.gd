@@ -104,6 +104,19 @@ func spend(amount: float) -> bool:
 	return true
 
 
+## t69u: a Pyrowning crystal reload takes `fraction` of MAX mana, or whatever is left; it
+## never refuses (the reload always finishes). Returns the amount taken.
+func drain_fraction(fraction: float) -> float:
+	var amount := minf(value, maxf(0.0, fraction) * max_value())
+	if amount <= 0.0:
+		return 0.0
+	value = maxf(0.0, value - amount)
+	if value < EPS:
+		value = 0.0
+	seconds_since_spend = 0.0
+	return amount
+
+
 ## Equipment/level hook: total max bonus. Raising it adds the difference to the current
 ## value too (Magewar equip); lowering it clamps (Magewar unequip). No full refill.
 func set_max_bonus(bonus: float) -> void:

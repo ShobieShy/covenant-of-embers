@@ -30,6 +30,31 @@ func test_fx_from_bits() -> void:
 	fx.queue_free()
 
 
+func test_crystal_reload_fx() -> void:
+	var fx := BrandFX.new()
+	runner_tree.root.add_child(fx)
+	fx.apply(BrandFX.BIT_VENT, 1.0, Color.RED, 0.1)
+	check(fx.crystal.visible and fx.reloads == 1 and fx.crystal.position.length() > 0.0, "ejecting")
+	fx.apply(BrandFX.BIT_VENT, 0.5, Color.RED, 0.9)
+	check(fx.crystal.visible and fx.crystal.position == Vector3.ZERO and fx.reloads == 1, "re-forming")
+	fx.apply(0, 0.0, Color.RED, -1.0)
+	check(not fx.crystal.visible, "done")
+	fx.apply(BrandFX.BIT_VENT, 1.0, Color.RED, 0.0)
+	check(fx.reloads == 2, "second reload")
+	# Co-op: the pose carries the progress and a remote proxy plays it.
+	var heat := FireMode.for_wieldable(_staff(ElementTable.Element.FIRE)) as HeatMode
+	heat.overheated = true
+	heat.reload_len = 1.0
+	heat.reload_left = 0.5
+	check(is_equal_approx(heat.fx_progress(), 0.5), "mode progress")
+	var rp := RemotePlayer.new()
+	runner_tree.root.add_child(rp)
+	rp._apply_brand([heat.fx_bits(), 1.0, "ff7020", 0.5])
+	check(rp.brand_fx.crystal.visible and rp.brand_fx.reloads == 1, "remote sees the reload")
+	rp.queue_free()
+	fx.queue_free()
+
+
 func test_fx_follows_mode() -> void:
 	var fx := BrandFX.new()
 	var heat := FireMode.for_wieldable(_staff(ElementTable.Element.FIRE))

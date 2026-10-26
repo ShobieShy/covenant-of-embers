@@ -5,12 +5,21 @@ extends FireMode
 ## for `overheat_seconds` (Q4: lockout only, no self-burn; Q3: no mana at all). R vents:
 ## dumps the heat over `vent_seconds` (no casting meanwhile). Holding repeats.
 ## Wands (Q46): the cooldown cut and heat per cast scale toward neutral by wand_scale.
+## t69u crystal reload: casts and held fire never cost or need mana. Each overheat and each
+## R vent is a "crystal reload" (the core is ejected and re-crystallizes over the lockout /
+## vent time): it takes `reload_mana_frac` (0.5) of MAX mana, or whatever is left, and always
+## finishes. Wands scale the fraction toward 0 by wand_scale. Emits &"crystal_reload"
+## (value = its length in seconds); fx_progress() drives BrandFX's crystal animation.
 
 var heat := 0.0  ## 0..1
 var overheated := false
 var venting := false
 var lock_left := 0.0
 var since_cast := 99.0
+var reload_len := 0.0  ## t69u: seconds of the crystal reload in progress
+var reload_left := 0.0
+var crystal_reloads := 0
+var mana_drained := 0.0  ## total taken by crystal reloads (tests)
 
 
 func id() -> StringName:
@@ -45,10 +54,12 @@ func after_cast() -> void:
 		overheated = true
 		lock_left = raw("overheat_seconds", 2.0)
 		emit(&"overheated", 1.0)
+		_crystal_reload(lock_left)
 
 
 func tick(dt: float, _held: bool, _pressed: bool, _in_hand: bool) -> void:
 	since_cast += dt
+	reload_left = maxf(0.0, reload_left - dt)
 	var before := heat
 	if overheated:
 		lock_left -= dt
@@ -73,7 +84,24 @@ func reload(_out: Array) -> bool:
 		return false
 	venting = true
 	emit(&"vent", heat)
+	_crystal_reload(heat * raw("vent_seconds", 1.0))
 	return true
+
+
+func _crystal_reload(seconds: float) -> void:
+	reload_len = maxf(seconds, 1e-3)
+	reload_left = reload_len
+	crystal_reloads += 1
+	mana_drained += drain_mana(param("reload_mana_frac", 0.0))
+	emit(&"crystal_reload", reload_len)
+
+
+func reload_progress() -> float:
+	return clampf(1.0 - reload_left / reload_len, 0.0, 1.0) if reload_left > 0.0 else -1.0
+
+
+func fx_progress() -> float:
+	return reload_progress() if overheated or venting else -1.0
 
 
 func meter() -> float:

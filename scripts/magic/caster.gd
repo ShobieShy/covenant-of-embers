@@ -54,6 +54,8 @@ signal brand_event(kind: StringName, value: float)
 var wieldable: WieldableInstance
 var hold_to_repeat := false
 var mana_spender := Callable()  ## step 8: func(cost: float) -> bool
+## t69u: func(fraction_of_max: float) -> float taken; never refuses (Pyrowning crystal reload).
+var mana_drain := Callable()
 var cooldown_left := 0.0  ## seconds (GDScript floats are 64-bit: no drift at 60 Hz)
 var casts := 0
 var blocked := 0  ## presses refused by the cooldown or mana

@@ -10,9 +10,9 @@ short_name = "Pyrowning"
 element = 1
 fire_mode = 1
 color = Color(1, 0.45, 0.15, 1)
-tagline = "Runs hot. Never asks for mana."
+tagline = "Runs hot. Free to fire; every fresh crystal costs half your mana."
 logo_path = "res://assets/original/brands/pyrowning_arms.png"
-mode_line = "Heat: no mana per cast; overheats, R vents"
+mode_line = "Heat: no mana per cast; overheat or R swaps the crystal (50% max mana)"
 wand_scale = 0.6
 params = {
 "cooldown_mult": 0.8,
@@ -21,5 +21,6 @@ params = {
 "vent_delay": 0.4,
 "overheat_seconds": 1.2,
 "vent_seconds": 1.0,
-"damage_mult": 1.0
+"damage_mult": 1.0,
+"reload_mana_frac": 0.5
 }

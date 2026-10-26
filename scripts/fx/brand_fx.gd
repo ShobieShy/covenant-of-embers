@@ -7,6 +7,9 @@ extends Node3D
 ##    puff on the rising edge and white wisps while it lasts;
 ##  - bit 4 charging: a glow sphere + light growing with the charge (brand colour);
 ##  - bit 8 spinning: a ring around the Head turning faster with spin-up.
+##  - t69u crystal reload (progress 0..1, co-op "bf" 4th value): the old core crystal is
+##    ejected (pops out, spins, greys and shrinks) then a frosty new one re-crystallizes and
+##    warms to the brand colour, over the lockout/vent time.
 ## Particle counts follow QualityPresets (step 134). All procedural (no texture assets).
 
 const HOT := Color(1.0, 0.35, 0.08)
@@ -25,6 +28,10 @@ var bits := 0
 var meter := 0.0
 var color := Color.WHITE
 var puffs := 0  ## steam puffs started (tests)
+var crystal: MeshInstance3D  ## t69u: the core being swapped
+var progress := -1.0  ## crystal reload 0..1, -1 = none
+var reloads := 0  ## crystal reloads started (tests)
+var _crystal_mat: StandardMaterial3D
 var _glow_mat: StandardMaterial3D
 var _ring_mat: StandardMaterial3D
 
@@ -76,7 +83,20 @@ func _init(mask := 1) -> void:
 	qm.albedo_texture = SpellFX.soft_dot()
 	q.material = qm
 	steam.mesh = q
-	for n in [glow, ring, light, steam]:
+	_crystal_mat = StandardMaterial3D.new()
+	_crystal_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_crystal_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	crystal = MeshInstance3D.new()
+	var cm := CylinderMesh.new()  # a hexagonal bipyramid-ish shard
+	cm.top_radius = 0.0
+	cm.bottom_radius = 0.035
+	cm.height = 0.11
+	cm.radial_segments = 6
+	cm.rings = 1
+	crystal.mesh = cm
+	crystal.material_override = _crystal_mat
+	crystal.visible = false
+	for n in [glow, ring, light, steam, crystal]:
 		add_child(n)
 		if n is VisualInstance3D:
 			(n as VisualInstance3D).layers = mask
@@ -100,12 +120,13 @@ func show_mode(m: FireMode) -> void:
 	if m == null or m.brand == null:
 		apply(0, 0.0, Color.WHITE)
 	else:
-		apply(m.fx_bits(), maxf(0.0, m.meter()), m.brand.color)
+		apply(m.fx_bits(), maxf(0.0, m.meter()), m.brand.color, m.fx_progress())
 
 
 ## The whole look from replicable data; `value` is the 0..1 meter.
-func apply(fx_bits: int, value: float, brand_color: Color) -> void:
+func apply(fx_bits: int, value: float, brand_color: Color, reload_progress := -1.0) -> void:
 	var was_venting := (bits & BIT_VENT) != 0
+	_crystal(reload_progress if (fx_bits & BIT_VENT) != 0 else -1.0, brand_color)
 	bits = fx_bits
 	meter = clampf(value, 0.0, 1.0)
 	color = brand_color
@@ -129,6 +150,30 @@ func apply(fx_bits: int, value: float, brand_color: Color) -> void:
 		puffs += 1
 		steam.restart()
 	steam.emitting = venting
+
+
+## t69u: eject (p < 0.35) then re-crystallize; p < 0 hides it.
+func _crystal(p: float, brand_color: Color) -> void:
+	if p >= 0.0 and progress < 0.0:
+		reloads += 1
+	progress = p
+	crystal.visible = p >= 0.0
+	if p < 0.0:
+		return
+	if p < 0.35:
+		var k := p / 0.35
+		crystal.position = Vector3(0.09, 0.16, 0.04) * k + Vector3(0, -0.2, 0) * k * k
+		crystal.rotation = Vector3(k * 6.0, k * 9.0, 0.0)
+		crystal.scale = Vector3.ONE * lerpf(1.0, 0.5, k)
+		var g := HOT.lerp(Color(0.35, 0.33, 0.32), k)
+		_crystal_mat.albedo_color = Color(g.r, g.g, g.b, 1.0 - k)
+	else:
+		var k := ease((p - 0.35) / 0.65, 0.4)
+		crystal.position = Vector3.ZERO
+		crystal.rotation = Vector3(0.0, (1.0 - k) * 4.0, 0.0)
+		crystal.scale = Vector3.ONE * maxf(0.01, k)
+		var c := Color(0.75, 0.9, 1.0).lerp(brand_color, k)
+		_crystal_mat.albedo_color = Color(c.r, c.g, c.b, 0.5 + 0.5 * k)
 
 
 func _process(dt: float) -> void:

@@ -134,7 +134,11 @@ static func brand_fx_of(p: Node) -> Array:
 	var m := (c as Caster).fire_mode()
 	if m == null or m.brand == null:
 		return []
-	return [m.fx_bits(), snappedf(maxf(0.0, m.meter()), 0.01), m.brand.color.to_html(false)]
+	var out := [m.fx_bits(), snappedf(maxf(0.0, m.meter()), 0.01), m.brand.color.to_html(false)]
+	var pr := m.fx_progress()
+	if pr >= 0.0:  # t69u: crystal reload progress (older protocol-2 peers ignore it)
+		out.append(snappedf(pr, 0.01))
+	return out
 
 
 func send_pose() -> void:

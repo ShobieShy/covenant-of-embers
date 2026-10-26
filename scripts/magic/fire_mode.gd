@@ -156,6 +156,19 @@ func fx_bits() -> int:
 	return 0
 
 
+## t69u: 0..1 progress of a crystal reload in progress (co-op "bf" 4th value), -1 = none.
+func fx_progress() -> float:
+	return -1.0
+
+
+## t69u: takes `fraction` of the owner's MAX mana through Caster.mana_drain (never blocks).
+func drain_mana(fraction: float) -> float:
+	var c := caster()
+	if c == null or fraction <= 0.0 or not c.mana_drain.is_valid():
+		return 0.0
+	return float(c.mana_drain.call(fraction))
+
+
 func emit(kind: StringName, value := 0.0) -> void:
 	var c := caster()
 	if c != null:

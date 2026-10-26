@@ -35,6 +35,8 @@ const SOUNDS := {
 	# step 141 (Brands B7): brand fire-mode sounds, same Kenney CC0 packs
 	"brand_overheat": IFACE + "error_006.ogg",
 	"brand_vent": IFACE + "scratch_004.ogg",
+	"brand_crystal_eject": IMPACT + "impactGlass_light_000.ogg",  # t69u
+	"brand_crystal_set": IFACE + "glass_002.ogg",
 	"brand_charge_full": IFACE + "maximize_005.ogg",
 	"brand_charge_release": IFACE + "glass_005.ogg",
 	"brand_blast": IMPACT + "impactMining_002.ogg",
@@ -169,6 +171,10 @@ func _on_brand_event(kind: StringName, value: float) -> void:
 			play("brand_overheat")
 		&"vent":
 			play("brand_vent", -2.0)
+		&"crystal_reload":  # t69u: the core pops out; the click when it re-forms is "vented"
+			play("brand_crystal_eject", -4.0, 1.3)
+		&"vented":
+			play("brand_crystal_set", -6.0, 1.6)
 		&"charge":
 			if value >= 0.95 and not _charge_full:
 				play("brand_charge_full", -6.0)

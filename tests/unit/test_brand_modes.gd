@@ -109,11 +109,56 @@ func test_heat_decay_and_vent() -> void:
 	check(m.heat < h2, "cools while holstered")
 
 
+## t68u/t69u: casts never touch mana; each crystal reload (overheat or R vent) takes exactly
+## reload_mana_frac (50 %) of MAX mana, or what is left, and always finishes.
+func test_heat_crystal_reload_mana() -> void:
+	var c: Caster = Caster.new(branded(E.FIRE))
+	var mana := Mana.new()
+	c.mana_spender = mana.spend
+	c.mana_drain = mana.drain_fraction
+	var m := c.fire_mode() as HeatMode
+	var events := []
+	c.brand_event.connect(func(k, v): events.append([k, v]))
+	var full := mana.value
+	check(full > 0.0 and is_equal_approx(m.param("reload_mana_frac", 0.0), 0.5), "brand param 0.5")
+	var t := 0
+	while not m.overheated and t < 600:
+		c.tick(false, true, DT, null, null)
+		if not m.overheated:
+			check(is_equal_approx(mana.value, full), "no mana change before the reload")
+		t += 1
+	check(m.overheated, "overheated")
+	check(
+		is_equal_approx(full - mana.value, 0.5 * mana.max_value()),
+		"overheat took 50%% max (%.1f)" % (full - mana.value)
+	)
+	var reload_ev := events.filter(func(e): return e[0] == &"crystal_reload")
+	check(reload_ev.size() == 1 and absf(reload_ev[0][1] - m.raw("overheat_seconds", 2.0)) < 1e-6, "event on overheat")
+	var after := mana.value
+	var saw_mid := false
+	while m.overheated:
+		c.tick(false, false, DT, null, null)
+		if m.fx_progress() > 0.3 and m.fx_progress() < 0.7:
+			saw_mid = true
+	check(saw_mid and m.fx_progress() < 0.0, "reload progress runs 0..1 then clears")
+	check(mana.value >= after, "no further drain during the lockout")
+	# Low mana: R vent takes what is left and still vents.
+	mana.value = 10.0
+	c.tick(true, true, DT, null, null)
+	check(c.reload(null, null) and m.venting, "R vent starts on low mana")
+	check(mana.value == 0.0 and m.crystal_reloads == 2, "took the remaining 10")
+	check(events.filter(func(e): return e[0] == &"crystal_reload").size() == 2, "event on vent")
+	_idle(c, int(m.raw("vent_seconds", 1.0) / DT) + 2)
+	check(not m.venting and m.heat == 0.0, "vent finished with 0 mana")
+	check(c.tick(true, true, DT, null, null), "casts again at 0 mana")
+
+
 func test_heat_wand_lighter() -> void:
 	var staff := _caster(branded(E.FIRE))[0].fire_mode() as HeatMode
 	var wand := _caster(branded(E.FIRE, true))[0].fire_mode() as HeatMode
 	check(wand.is_wand and wand.param("heat_per_cast", 0.0) < staff.param("heat_per_cast", 0.0), "wand heat lighter")
 	check(wand.cooldown_mult() > staff.cooldown_mult() and wand.cooldown_mult() < 1.0, "wand cooldown cut scaled")
+	check(is_equal_approx(wand.param("reload_mana_frac", 0.0), 0.3), "wand reload costs 30%% max")
 
 
 func test_spin_mode() -> void:

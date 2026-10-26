@@ -104,7 +104,8 @@ func _apply_brand(bf: Variant) -> void:
 		add_child(brand_fx)
 	if bf is Array and (bf as Array).size() >= 3:
 		var a := bf as Array
-		brand_fx.apply(int(a[0]), float(a[1]), Color.from_string(String(a[2]), Color.WHITE))
+		var pr := float(a[3]) if a.size() >= 4 else -1.0
+		brand_fx.apply(int(a[0]), float(a[1]), Color.from_string(String(a[2]), Color.WHITE), pr)
 	else:
 		brand_fx.apply(0, 0.0, Color.WHITE)
 

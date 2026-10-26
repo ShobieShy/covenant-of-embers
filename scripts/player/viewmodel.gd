@@ -171,6 +171,9 @@ func update_pose(w: WieldableInstance, focus_amount: float, draw: float, recoil:
 ## Step 141: the held brand's FX (heat glow/steam, charge glow, spin ring).
 func update_brand(m: FireMode) -> void:
 	brand_fx.show_mode(m)
+	# t69u: the crystal reload rolls the staff over to the eject port and back.
+	var p := brand_fx.progress
+	model.rotation = Vector3(0.25, 0.0, 0.55) * sin(PI * p) if p >= 0.0 else Vector3.ZERO
 
 
 ## Cast point in world space (the visible tracer start).

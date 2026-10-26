@@ -231,6 +231,7 @@ func set_mana(m: Mana) -> void:
 	mana = m
 	for c in loadout.casters:
 		c.mana_spender = mana.spend
+		c.mana_drain = mana.drain_fraction  # t69u: Pyrowning crystal reloads
 
 
 ## Puts a staff/wand into its slot (Loadout.equip); with empty hands it is drawn at once.
