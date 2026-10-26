@@ -218,6 +218,8 @@ static func _skyline(holder: Node3D, tz: TerrainZone) -> void:
 ## Simple collision: a trimesh from each landmark's LOD0 (or its only mesh); a convex hull for
 ## the small props (waystones, chests) so the interaction reach still works round them.
 static func _collide(m: Node3D, id: String) -> void:
+	if id == "association_spire":  ## backdrop behind the Association back door; a trimesh blocks the exit
+		return
 	var small := id.begins_with("waystone_") or id.begins_with("chest_")
 	var meshes := m.find_children("*", "MeshInstance3D", true, false)
 	var lod0 := meshes.filter(
