@@ -61,9 +61,8 @@ func _midden(at: Vector3, feet: Vector3) -> Dictionary:
 	var level: Node3D = (load(LEVEL_SCENE) as PackedScene).instantiate()
 	w.add_child(level)
 	var nav := level.get_node("Navigation") as LevelNavigation
-	for i in 120:
-		if nav.map_ready():
-			break
+	var t0 := Time.get_ticks_msec()  # step 161: 100 cached tiles take real seconds to sync
+	while not nav.map_ready() and Time.get_ticks_msec() - t0 < 20000:
 		await runner_tree.physics_frame
 	check(nav.map_ready(), "Midden navmesh synced")
 	var p := _player(w, feet)

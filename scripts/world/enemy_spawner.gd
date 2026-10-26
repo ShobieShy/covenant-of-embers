@@ -95,7 +95,7 @@ func _read_camps() -> void:
 				"name": String(n.name),
 				"center": n.global_position if n.is_inside_tree() else n.position,
 				"radius": float(n.get_meta(&"radius", 4.0)),
-				"respawn_s": float(n.get_meta(&"respawn_s", 120.0)),
+				"respawn_s": float(n.get_meta(&"respawn_s", 600.0)),
 				"enemies": n.get_meta(&"enemies", []),
 				"alive": [] as Array[Enemy],
 				"wait": 0.0,
@@ -131,10 +131,15 @@ func _tick_camps(dt: float) -> void:
 		if alive.is_empty() and int(c["spawned"]) > 0 and float(c["wait"]) <= 0.0 and c.get("cleared") != true:
 			c["wait"] = float(c["respawn_s"])
 			c["cleared"] = true
-		c["wait"] = maxf(0.0, float(c["wait"]) - dt)
+		# Q6: a cleared camp counts down only while every player is away (CampLeash.ACTIVATE);
+		# a zone reload re-reads the camps, so it is full again.
+		if ticks % 15 == 0:
+			c["near"] = not ps.is_empty() and CampLeash.camp_active(c["center"], ps)
+		if c.get("near") != true:
+			c["wait"] = maxf(0.0, float(c["wait"]) - dt)
 		if not alive.is_empty():
 			CampLeash.enforce(alive)
-		elif float(c["wait"]) <= 0.0 and not ps.is_empty() and CampLeash.camp_active(c["center"], ps):
+		elif float(c["wait"]) <= 0.0 and ticks % 15 == 0 and c.get("near") == true:
 			spawn_camp(c)
 
 

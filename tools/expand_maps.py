@@ -101,7 +101,7 @@ class Map:
         s += "snap = true\n" if snap else ""
         self.out.append(s)
 
-    def camp(self, name, center, enemies, respawn=180.0, radius=4.0):
+    def camp(self, name, center, enemies, respawn=600.0, radius=4.0):
         en = ", ".join(f'{{enemy = "{e}", count = {n}}}' for e, n in enemies)
         self.out.append(f'[[camp]]\nname = "{name}"\ncenter = {v(center)}\nradius = {radius}\n'
                         f'respawn_s = {respawn}\nenemies = [{en}]\n')
@@ -342,7 +342,7 @@ def landfill_part2(m: Map) -> None:
     m.stairs("overlook_steps", 60, 262, 12, 10, (0.0, 1.2))
     m.waystone("landfill_overlook", [60, 12.2, 250], 180.0)
     m.poi("overlook", [60, 12, 250], 12)
-    # 8 camps (respawn 3 min).
+    # 8 camps (Q6: respawn after 10 min away, or on zone reload).
     camps = [("warren", -150, 186, [("gnawer", 4)]), ("bridge", 146, 172, [("gnawer", 3)]),
              ("toxic", -200, 300, [("ooze", 3)]), ("crane", 200, 300, [("scorchling", 3)]),
              ("compactor", -150, 430, [("heap", 1), ("gnawer", 2)]), ("shacks", 150, 432, [("scorchling", 4)]),

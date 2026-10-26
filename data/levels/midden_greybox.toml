@@ -1223,56 +1223,56 @@ radius = 12
 name = "warren"
 center = [-150.0, 0.0, 186.0]
 radius = 4.0
-respawn_s = 180.0
+respawn_s = 600.0
 enemies = [{enemy = "gnawer", count = 4}]
 
 [[camp]]
 name = "bridge"
 center = [146.0, 0.0, 172.0]
 radius = 4.0
-respawn_s = 180.0
+respawn_s = 600.0
 enemies = [{enemy = "gnawer", count = 3}]
 
 [[camp]]
 name = "toxic"
 center = [-200.0, 0.0, 300.0]
 radius = 4.0
-respawn_s = 180.0
+respawn_s = 600.0
 enemies = [{enemy = "ooze", count = 3}]
 
 [[camp]]
 name = "crane"
 center = [200.0, 0.0, 300.0]
 radius = 4.0
-respawn_s = 180.0
+respawn_s = 600.0
 enemies = [{enemy = "scorchling", count = 3}]
 
 [[camp]]
 name = "compactor"
 center = [-150.0, 0.0, 430.0]
 radius = 4.0
-respawn_s = 180.0
+respawn_s = 600.0
 enemies = [{enemy = "heap", count = 1}, {enemy = "gnawer", count = 2}]
 
 [[camp]]
 name = "shacks"
 center = [150.0, 0.0, 432.0]
 radius = 4.0
-respawn_s = 180.0
+respawn_s = 600.0
 enemies = [{enemy = "scorchling", count = 4}]
 
 [[camp]]
 name = "sunken"
 center = [0.0, 0.0, 466.0]
 radius = 4.0
-respawn_s = 180.0
+respawn_s = 600.0
 enemies = [{enemy = "ooze", count = 2}, {enemy = "gnawer", count = 2}]
 
 [[camp]]
 name = "graveyard"
 center = [-260.0, 0.0, 456.0]
 radius = 4.0
-respawn_s = 180.0
+respawn_s = 600.0
 enemies = [{enemy = "heap", count = 2}]
 
 [[chest]]

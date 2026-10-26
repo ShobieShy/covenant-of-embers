@@ -2563,56 +2563,56 @@ metadata/yaw_deg = 180
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 186)
 metadata/center = Vector3(-150, 0, 186)
 metadata/radius = 4
-metadata/respawn_s = 180
+metadata/respawn_s = 600
 metadata/enemies = [{"count": 4, "enemy": "gnawer"}]
 
 [node name="bridge" type="Node3D" parent="Camps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 146, 0, 172)
 metadata/center = Vector3(146, 0, 172)
 metadata/radius = 4
-metadata/respawn_s = 180
+metadata/respawn_s = 600
 metadata/enemies = [{"count": 3, "enemy": "gnawer"}]
 
 [node name="toxic" type="Node3D" parent="Camps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -200, 0, 300)
 metadata/center = Vector3(-200, 0, 300)
 metadata/radius = 4
-metadata/respawn_s = 180
+metadata/respawn_s = 600
 metadata/enemies = [{"count": 3, "enemy": "ooze"}]
 
 [node name="crane" type="Node3D" parent="Camps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 200, 0, 300)
 metadata/center = Vector3(200, 0, 300)
 metadata/radius = 4
-metadata/respawn_s = 180
+metadata/respawn_s = 600
 metadata/enemies = [{"count": 3, "enemy": "scorchling"}]
 
 [node name="compactor" type="Node3D" parent="Camps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 430)
 metadata/center = Vector3(-150, 0, 430)
 metadata/radius = 4
-metadata/respawn_s = 180
+metadata/respawn_s = 600
 metadata/enemies = [{"count": 1, "enemy": "heap"}, {"count": 2, "enemy": "gnawer"}]
 
 [node name="shacks" type="Node3D" parent="Camps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 432)
 metadata/center = Vector3(150, 0, 432)
 metadata/radius = 4
-metadata/respawn_s = 180
+metadata/respawn_s = 600
 metadata/enemies = [{"count": 4, "enemy": "scorchling"}]
 
 [node name="sunken" type="Node3D" parent="Camps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 466)
 metadata/center = Vector3(0, 0, 466)
 metadata/radius = 4
-metadata/respawn_s = 180
+metadata/respawn_s = 600
 metadata/enemies = [{"count": 2, "enemy": "ooze"}, {"count": 2, "enemy": "gnawer"}]
 
 [node name="graveyard" type="Node3D" parent="Camps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -260, 0, 456)
 metadata/center = Vector3(-260, 0, 456)
 metadata/radius = 4
-metadata/respawn_s = 180
+metadata/respawn_s = 600
 metadata/enemies = [{"count": 2, "enemy": "heap"}]
 
 [node name="Chests" type="Node3D" parent="."]
