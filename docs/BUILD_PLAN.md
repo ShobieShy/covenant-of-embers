@@ -852,7 +852,8 @@ Details: docs/ELEMENT_TREES_PLAN.md (request t67u). User answers t70u: structure
   - Result: SkillsUi gains Core + 7 element tabs (LB/RB), 5x4 grid + capstone per tree, card line, gold frame + crown on the owned capstone, padlock/grey/tooltip on locked ones, tab badges, take-confirm dialog (A/B). tools/skills_shots.gd. 510 tests green (2 new in test_skills_ui_elements.gd).
 - **Step 150 (done 2026-10-26)** Element trees V7: co-op status-mod sync, capstone hits/heals, PROTOCOL 3.
   - Result: Client 'hit' carries 'sm' (ElementSkillMods.net_status: status_seconds/pct/damage_pct, mark_seconds, vs_mark_status_pct); host sanitises/clamps and applies burn/slow/stagger + Soaked/Hex (MagicEffects.net_status). Capstone area hits already use the _hurt puppet path; Dawnchorus uses 'heal'. PROTOCOL 3. 511 tests green; coop playtest PASS.
-- **Step 151 (waiting on user go)** Element trees V8: balance (DPS harness with skills, BalancePatch), bot spends element points, docs.
+- **Step 151 (done 2026-10-26)** Element trees V8: balance (DPS harness with skills, BalancePatch), bot spends element points, docs.
+  - Result: DPS gains at 20 pts 1.00-1.46 (direct damage only)
 
 ### Questions (Phase V) — answered t70u (Q48 uncapped; the rest take their defaults)
 - Q47 Structure (a)/(b)/(c)? Default (b) Core + 7 element trees.

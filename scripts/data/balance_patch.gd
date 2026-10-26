@@ -18,7 +18,10 @@ extends RefCounted
 ##               "<rarity id>": {"multiplier": 1.5, "drop_weight": 15, "color": "#RRGGBB"}},
 ##  "drop_pools": {"<pool id>": {"drop_chance": 0.3, "min_level": 1, "max_level": 50,
 ##                 "entries": {"<index>": {"weight": 1.0, "rarity": "rare"}}}},
-##  "brands": {"<brand id>": {"wand_scale": 0.6, "params": {"<existing param>": 1.2}}}}
+##  "brands": {"<brand id>": {"wand_scale": 0.6, "params": {"<existing param>": 1.2}}},
+##  "skills": {"<element tree id>": {"<skill id>": {"<existing effect>": 2.5}}}}
+## Step 151: skill effects patch the cached element SkillTrees in place (per-rank values; only
+## effects the skill already has, any finite number; reset() reloads the trees from disk).
 ## Step 143: brand params patch the shared Brand resources in place (FireModes read them
 ## live); only params the brand already has, as non-negative numbers.
 
@@ -73,6 +76,7 @@ static func apply(patch: Dictionary, patch_id := "patch") -> PackedStringArray:
 	var ra: RarityTable = null
 	var dp: DropTable = null
 	var br := {}  ## brand id -> {wand_scale?, params}
+	var sk := {}  ## step 151: tree id -> {skill id -> {effect: value}}
 	for key in patch:
 		match key:
 			"version":
@@ -88,6 +92,8 @@ static func apply(patch: Dictionary, patch_id := "patch") -> PackedStringArray:
 				_patch_pools(dp, patch[key], errs)
 			"brands":
 				br = _patch_brands(patch[key], errs)
+			"skills":
+				sk = _patch_skills(patch[key], errs)
 			_:
 				if LOCKED.has(key):
 					(
@@ -130,6 +136,11 @@ static func apply(patch: Dictionary, patch_id := "patch") -> PackedStringArray:
 			b.wand_scale = float(br[id]["wand_scale"])
 		for k in br[id]["params"]:
 			b.params[k] = float(br[id]["params"][k])
+	for eid in sk:
+		var t := SkillTree.element_tree(eid)
+		for sid in sk[eid]:
+			for k in sk[eid][sid]:
+				t.skills[sid]["effects"][k] = float(sk[eid][sid][k])
 	applied.append(patch_id)
 	return errs
 
@@ -157,7 +168,45 @@ static func reset() -> void:
 		if disk != null:
 			b.params = disk.params.duplicate()
 			b.wand_scale = disk.wand_scale
+	SkillTree._elements.clear()  # step 151: element trees reload from disk
 	applied.clear()
+
+
+## Step 151: validates the "skills" section; returns {tree: {skill: {effect: value}}} to apply.
+static func _patch_skills(sec: Variant, errs: PackedStringArray) -> Dictionary:
+	var out := {}
+	if not (sec is Dictionary):
+		errs.append("skills: must be an object")
+		return out
+	for el in sec:
+		var t := SkillTree.element_tree(String(el))
+		if t == null:
+			errs.append("skills.%s: unknown element tree" % el)
+			continue
+		if not (sec[el] is Dictionary):
+			errs.append("skills.%s: must be an object" % el)
+			continue
+		out[String(el)] = {}
+		for sid in sec[el]:
+			var where := "skills.%s.%s" % [el, sid]
+			var s := t.skill(String(sid))
+			if s.is_empty():
+				errs.append("%s: unknown skill" % where)
+				continue
+			if not (sec[el][sid] is Dictionary):
+				errs.append("%s: must be an object" % where)
+				continue
+			var row := {}
+			for k in sec[el][sid]:
+				var v: Variant = sec[el][sid][k]
+				if not s["effects"].has(k):
+					errs.append("%s.%s: the skill has no such effect" % [where, k])
+				elif not _is_num(v) or is_nan(float(v)) or is_inf(float(v)):
+					errs.append("%s.%s: must be a number" % [where, k])
+				else:
+					row[String(k)] = float(v)
+			out[String(el)][String(sid)] = row
+	return out
 
 
 ## Step 143: validates the "brands" section; returns {id: {wand_scale?, params}} to apply.

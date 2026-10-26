@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 151,
+  "next_step": 152,
   "total_steps": 166,
-  "steps_done": 131,
-  "last_commit": "f052201",
+  "steps_done": 132,
+  "last_commit": "4750f31",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1348,6 +1348,10 @@
     {
       "date": "2026-10-26",
       "note": "Step 150 done: Client 'hit' carries 'sm' (ElementSkillMods.net_status: status_seconds/pct/damage_pct, mark_seconds, vs_mark_status_pct); host sanitises/clamps and applies burn/slow/stagger + Soaked/Hex (MagicEffects.net_status). Capstone area hits already use the _hurt puppet path; Dawnchorus uses 'heal'. PROTOCOL 3. 511 tests green; coop playtest PASS."
+    },
+    {
+      "date": "2026-10-26",
+      "note": "Step 151 done: DPS gains at 20 pts 1.00-1.46 (direct damage only)"
     }
   ],
   "completed_steps": [
@@ -1481,7 +1485,8 @@
     147,
     148,
     149,
-    150
+    150,
+    151
   ],
   "deferred": [
     74,
@@ -1501,12 +1506,6 @@
     }
   ],
   "waiting_on_user_go": [
-    {
-      "step": 151,
-      "name": "Element trees V8 balance + bot + docs",
-      "plan": "docs/ELEMENT_TREES_PLAN.md",
-      "answers": "t70u"
-    },
     {
       "step": 152,
       "name": "Terrain W1: Terrain3D v1.0.2 vendor + TOML terrain pipeline + low-poly shader",

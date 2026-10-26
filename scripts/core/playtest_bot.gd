@@ -25,6 +25,7 @@ static var log_lines := PackedStringArray()
 static var coop_started := false
 static var brand_turn := 0  ## step 143: next brand in the staff rotation
 static var brands_used := PackedStringArray()
+static var trees_used := PackedStringArray()  ## step 151: skill trees the bot spent points in
 static var coop_totals := {"hits_sent": 0, "hits_applied": 0, "snaps_seen": 0, "poses_seen": 0}  ## step 93: the menu wiped the bot files once
 
 var main: Node
@@ -47,6 +48,7 @@ static func reset_run() -> void:
 	log_lines = PackedStringArray()
 	brand_turn = 0
 	brands_used = PackedStringArray()
+	trees_used = PackedStringArray()
 	intro_beats = PackedStringArray()
 
 
@@ -57,6 +59,7 @@ func setup(m: Node, p: Player) -> void:
 	player.bot_input = func() -> PlayerInput: return _input
 	_walk_start = player.global_position
 	GameEvents.bus().enemy_killed.connect(_on_kill)
+	player.progression.leveled_up.connect(func(_l): spend_points())  # step 151
 	player.pickups.collected.connect(func(_pk, _w): stats["pickups"] += 1)
 	player.died.connect(func(_p): stats["deaths"] += 1)
 	if Coop.is_client():  # step 93: the joiner follows the host and fights its enemies
@@ -88,7 +91,44 @@ func next_brand() -> void:
 	player.loadout.select(Loadout.Slot.STAFF)
 	if not brands_used.has(b.id):
 		brands_used.append(b.id)
+	spend_points()
 	note("brand staff: %s (%s)" % [b.display_name, b.fire_mode_name()])
+
+
+## Step 151: spends free skill points, Core first up to CORE_POINTS, then the held brand's element tree.
+const CORE_POINTS := 10
+
+
+func spend_points() -> void:
+	var sk := player.skills
+	var lv := player.progression.level
+	var guard := 64
+	while sk.available(lv) > 0 and guard > 0:
+		guard -= 1
+		var spent := false
+		if sk.core_spent() < CORE_POINTS and sk.tree != null:
+			for sid in sk.tree.skills:
+				if sk.why_not(sid, lv).is_empty() and player.spend_skill(sid):
+					spent = true
+					_used("core")
+					break
+		if not spent:
+			var w := player.loadout.wieldable()
+			var el := ElementTable.id_of(w.element()) if w != null else "arcane"
+			var t := SkillTree.element_tree(el)
+			if t != null:
+				for sid in t.skills:
+					if sk.el_why_not(el, sid, lv).is_empty() and player.spend_element_skill(el, sid):
+						spent = true
+						_used(el)
+						break
+		if not spent:
+			return
+
+
+static func _used(tree: String) -> void:
+	if not trees_used.has(tree):
+		trees_used.append(tree)
 
 
 func _exit_tree() -> void:
@@ -124,7 +164,7 @@ func _finish(ok: bool, why := "") -> void:
 	_done = true
 	player.bot_input = Callable()
 	var summary := (
-		"%s kills %d, pickups %d, casts %d, crafted %s, saves %d, deaths %d, teleports %d, level %d, %.0f s simulated, brands %s"
+		"%s kills %d, pickups %d, casts %d, crafted %s, saves %d, deaths %d, teleports %d, level %d, %.0f s simulated, brands %s, trees %s"
 		% [
 			"PASS" if ok else "FAIL " + why,
 			stats["kills"],
@@ -137,6 +177,7 @@ func _finish(ok: bool, why := "") -> void:
 			player.progression.level,
 			total_time,
 			",".join(brands_used),
+			",".join(trees_used),
 		]
 	)
 	note(summary)

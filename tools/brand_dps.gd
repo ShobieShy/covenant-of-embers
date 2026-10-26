@@ -24,8 +24,9 @@ static func build(e: E, wand := false, rarity := "basic", seed := 99) -> Wieldab
 
 
 ## {single, aoe, casts, bolts} damage per second.
-static func measure(w: WieldableInstance, seconds := 30.0) -> Dictionary:
+static func measure(w: WieldableInstance, seconds := 30.0, skills: Skills = null) -> Dictionary:
 	var c := Caster.new(w)
+	c.skills = skills
 	var bolts := SpellBolts.new()
 	var aim := Caster.Aim.make(Vector3.ZERO, Vector3.FORWARD)
 	var m := c.fire_mode()
@@ -65,4 +66,43 @@ static func table(wand := false, rarity := "basic") -> Array:
 		rows.append(
 			{"brand": b.id, "wand": wand, "single": r.single, "aoe": r.aoe, "base": base, "ratio": r.single / base}
 		)
+	return rows
+
+
+## Step 151: a Skills with `points` spent in element tree `el` (cheapest tiers first, max ranks,
+## no capstone): the --skills <tree>:<points> build.
+static func skills_build(el: String, points: int) -> Skills:
+	var sk := Skills.new()
+	sk.tree = SkillTree.default_tree()
+	var t := SkillTree.element_tree(el)
+	if t == null:
+		return sk
+	var rows: Array = t.skills.values().filter(func(x): return not bool(x.get("capstone", false)))
+	rows.sort_custom(func(a, b): return int(a["tier"]) < int(b["tier"]))
+	var d := {}
+	var left := points
+	for r in rows:
+		if left <= 0:
+			break
+		var n := mini(left, int(r["max_rank"]))
+		d[r["id"]] = n
+		left -= n
+	sk.el_ranks[el] = d
+	return sk
+
+
+## Step 151: every element's staff with `points` in its own tree vs the mean:
+## [{element, single, base, ratio}] (ratio = single / mean single at those points).
+static func skills_table(points: int, wand := false) -> Array:
+	var rows: Array = []
+	var sum := 0.0
+	for el in ElementTable.IDS:
+		var e := ElementTable.parse(el) as E
+		var w := build(e, wand)
+		var base: float = measure(w).single
+		var r: float = measure(build(e, wand), 30.0, skills_build(el, points)).single
+		rows.append({"element": el, "single": r, "base": base, "gain": r / base})
+		sum += r / base
+	for row in rows:
+		row["ratio"] = row["gain"] / (sum / rows.size())
 	return rows
