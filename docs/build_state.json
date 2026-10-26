@@ -1214,6 +1214,13 @@
       "type": "release",
       "summary": "Version 0.1.1-prealpha: VersionInfo suffix-aware parsing (menu name, PE numeric), export presets 0.1.1.0",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T08:00:00-05:00",
+      "step": "release-0.1.2",
+      "type": "release",
+      "summary": "Version 0.1.2-prealpha: look-based interaction, unequip all gear + station auto-loads held staff, pixel theme on every screen, item-type icons",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1355,5 +1362,5 @@
     "2026-10-24: steps 119-134 (art spree A1-A8, FX spree F1-F8) planned, waiting on user go; see docs/ART_SPREE_PLAN.md, docs/FX_SPREE_PLAN.md",
     "2026-10-24: Q27-Q34 answered (low-poly, CC-BY credited in-game, Loli small witch normal attire, gear visible now, moonlit night, Light/Dark FX for all, Low=Steam Deck, F1 first)"
   ],
-  "version": "0.1.1-prealpha"
+  "version": "0.1.2-prealpha"
 }
