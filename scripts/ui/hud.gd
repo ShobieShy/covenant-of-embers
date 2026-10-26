@@ -279,7 +279,7 @@ func refresh(dt: float) -> void:
 	mana_flash_left = maxf(0.0, mana_flash_left - dt)
 	_set_bar_color(mana_bar, MANA_COLOR.lerp(Color.WHITE, 0.7) if mana_flash_left > 0.0 else MANA_COLOR)
 	breath_bar.value = player.breath.fraction()
-	prompt_label.text = AssemblyStation.prompt_for(player)
+	prompt_label.text = Interaction.prompt(player)
 	_set_bar_color(breath_bar, BREATH_EXHAUSTED if player.breath.exhausted else BREATH_COLOR)
 	_refresh_pips()
 	crosshair.visible = not player.focus.focused and player.alive()

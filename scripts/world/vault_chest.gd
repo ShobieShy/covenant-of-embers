@@ -29,6 +29,7 @@ var _lid: MeshInstance3D
 
 
 func _ready() -> void:
+	Interaction.register(self, 0.5, 0.6)
 	add_to_group(GROUP)
 	if get_child_count() == 0:
 		var body := MeshInstance3D.new()
@@ -102,8 +103,18 @@ func unlock() -> void:
 	locked = false
 
 
+func interact_prompt() -> String:
+	return "[F] Open chest" if not locked and not is_open else ""
+
+
+## Looked at (t60u camera-centre cone/sphere-cast, Interaction) and within range.
 func in_reach(p: Player) -> bool:
-	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
+	return near(p) and Interaction.is_target(p, self)
+
+
+## Plain proximity (attunement, bot walking); interaction itself goes by look (t60u).
+func near(p: Player) -> bool:
+	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH + 1.0
 
 
 ## Opens once (unlocked only): rolls, spawns pickups via `dropper` when set, emits opened.

@@ -19,6 +19,7 @@ func _init(p := "", ft: FastTravel = null) -> void:
 
 
 func _ready() -> void:
+	Interaction.register(self, 1.0, 0.5)
 	var c := CSGCylinder3D.new()
 	c.radius = 0.25
 	c.height = 1.6
@@ -37,13 +38,23 @@ func _ready() -> void:
 	add_child(l)
 
 
+func interact_prompt() -> String:
+	return "[F] Waystone: %s" % String(FastTravel.POINTS.get(point, {}).get("name", point))
+
+
+## Looked at (t60u camera-centre cone/sphere-cast, Interaction) and within range.
 func in_reach(p: Player) -> bool:
+	return Interaction.is_target(p, self)
+
+
+## Plain proximity (attunement, bot walking); interaction itself goes by look (t60u).
+func near(p: Player) -> bool:
 	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
 
 
 ## Attunes when the player is in reach; true when it newly attuned.
 func check_attune() -> bool:
-	if travel and in_reach(player) and travel.attune(point):
+	if travel and near(player) and travel.attune(point):
 		attuned.emit(point)
 		return true
 	return false

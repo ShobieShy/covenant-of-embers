@@ -171,6 +171,13 @@ func _follow_host() -> void:
 			walk_to(h)
 
 
+## t60u: interaction is by look, so once near an interactable, aim the camera at it first.
+func _reach(n: Node3D) -> bool:
+	if n.near(player):
+		look_at_point(Interaction.aim_point(n))
+	return n.in_reach(player)
+
+
 ## Look at `at` (yaw + pitch from the eye).
 func look_at_point(at: Vector3) -> void:
 	var d := at - player.eye_position()
@@ -378,12 +385,12 @@ func _physics_process(delta: float) -> void:
 			if st == null:
 				_finish(false, "no station in the Breach")
 				return
-			if not st.in_reach(player) and t < 60.0 * _walk_scale():
+			if not _reach(st) and t < 60.0 * _walk_scale():
 				# Snagged (loot / chest in the way): circle round the station after 15 s.
 				var k := int(t / (5.0 * _walk_scale()))
 				var off := Vector3.ZERO if t < 15.0 * _walk_scale() else Vector3(1.5, 0, 0).rotated(Vector3.UP, k * 1.7)
 				walk_to(st.global_position + off)
-			elif not st.in_reach(player):
+			elif not _reach(st):
 				_finish(false, "could not walk to the station (%.1f m)" % flat_distance(st.global_position))
 				return
 			else:
@@ -406,7 +413,7 @@ func _physics_process(delta: float) -> void:
 				_finish(true)
 		"breach_chest":
 			var c: VaultChest = main.breach.chest
-			if not c.in_reach(player) and t < 60.0 * _walk_scale():
+			if not _reach(c) and t < 60.0 * _walk_scale():
 				var front := c.global_position + c.global_transform.basis.z * 1.0
 				if flat_distance(front) < 1.0 or (t > 30.0 * _walk_scale() and flat_distance(c.global_position) < 8.0):
 					look_at_point(c.global_position + Vector3(0, 1.0, 0))  # last metres: straight in
@@ -414,7 +421,7 @@ func _physics_process(delta: float) -> void:
 					_input = PlayerInput.hold(["forward"])
 				else:
 					walk_to(front)
-			elif not c.in_reach(player):
+			elif not _reach(c):
 				_finish(false, "could not walk to the vault chest (%.1f m)" % flat_distance(c.global_position))
 				return
 			else:
@@ -438,7 +445,7 @@ func _breach_route(b: Breach) -> void:
 		return
 	for sw in b.switches:
 		if not sw.is_pressed:
-			if sw.in_reach(player):
+			if _reach(sw):
 				if sw.press():
 					note("pulled lever %s" % sw.name)
 			else:
@@ -618,7 +625,7 @@ func _intro_craft(d: IntroDirector) -> bool:
 			walk_to(pk.global_position)
 		return true
 	var st := d.station()
-	if st and st.in_reach(player):
+	if st and _reach(st):
 		_craft(st)
 		return true
 	return false
@@ -637,7 +644,7 @@ func _intro_interact(d: IntroDirector) -> void:
 	_talk_cd = 1.0
 	for n in main.find_children("*", "", true, false):
 		if (n is Npc or n is LevelGate) and (n as Node3D).global_position.distance_to(at) < 0.6:
-			look_at_point((n as Node3D).global_position + Vector3(0, 1.2, 0))
+			look_at_point(Interaction.aim_point(n as Node3D))
 			if n is Npc:
 				(n as Npc).talk()
 			else:

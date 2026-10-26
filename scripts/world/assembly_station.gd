@@ -17,7 +17,7 @@ signal crafting_completed(item: WieldableInstance)
 const GROUP := &"assembly_stations"
 const REACH := 3.0
 const MARKER := "WaveSpawns/station"  ## step 46: a level's station spot (else beside the start)
-const PROMPT := "[E] %s"
+const PROMPT := "[F] %s"
 
 @export var station_name := "Magic Assembly Station"
 @export var can_craft_staffs := true
@@ -47,20 +47,27 @@ static func place(parent: Node, level: Node, fallback: Vector3) -> AssemblyStati
 
 ## The shared station prompt for whichever station is in reach ("" when none).
 static func prompt_for(p: Player) -> String:
-	if p == null or p.ui_open or not p.is_inside_tree():
-		return ""
-	for s in p.get_tree().get_nodes_in_group(GROUP):
-		if (s as AssemblyStation).in_reach(p):
-			return PROMPT % (s as AssemblyStation).station_name
-	return ""
+	var t := Interaction.target(p) if p and not p.ui_open else null
+	return (t as AssemblyStation).interact_prompt() if t is AssemblyStation else ""
 
 
 func _ready() -> void:
+	Interaction.register(self, 1.0, 0.9)
 	add_to_group(GROUP)
 
 
+func interact_prompt() -> String:
+	return PROMPT % station_name
+
+
+## Looked at (t60u camera-centre cone/sphere-cast, Interaction) and within range.
 func in_reach(p: Player) -> bool:
-	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
+	return near(p) and Interaction.is_target(p, self)
+
+
+## Plain proximity (attunement, bot walking); interaction itself goes by look (t60u).
+func near(p: Player) -> bool:
+	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH + 1.0
 
 
 func allows(type: WieldableDef.Type) -> bool:

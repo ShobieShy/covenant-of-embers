@@ -443,6 +443,8 @@ func _has_button(action: StringName, b: MouseButton) -> bool:
 
 
 func test_input_map_actions() -> void:
+	# Project defaults, not the user's saved rebinds (user://keybinds.cfg applied by earlier tests).
+	InputMap.load_from_project_settings()
 	var keys := {
 		&"forward": KEY_W,
 		&"back": KEY_S,

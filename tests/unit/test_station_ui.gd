@@ -24,6 +24,7 @@ func test_assemble_via_ui() -> void:
 	var s := _setup()
 	var p: Player = s[0]
 	var ui: StationUi = s[2]
+	Interaction.face(p, s[1])
 	check(ui.nearest_station() == s[1], "station in reach")
 	ui.open(s[1])
 	check(p.ui_open and ui.visible, "open freezes the player")

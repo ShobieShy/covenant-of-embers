@@ -142,7 +142,7 @@ func test_station_in_breach() -> void:
 	)
 	p.spawn(st.global_position + Vector3(0, 0, 1.5), 0.0)
 	check(st.in_reach(p), "in reach beside it")
-	check(AssemblyStation.prompt_for(p) == "[E] Magic Assembly Station", "prompt: %s" % AssemblyStation.prompt_for(p))
+	check(AssemblyStation.prompt_for(p) == "[F] Magic Assembly Station", "prompt: %s" % AssemblyStation.prompt_for(p))
 	var base := WieldableInstance.load_base("apprentice_fire_staff")
 	var parts := []
 	for id in ["basic_fire_head", "basic_exterior", "basic_interior", "basic_handle"]:

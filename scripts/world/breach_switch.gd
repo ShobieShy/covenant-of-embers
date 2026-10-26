@@ -17,6 +17,7 @@ var _gem: StandardMaterial3D
 
 
 func _ready() -> void:
+	Interaction.register(self, 0.8, 0.4)
 	add_to_group(GROUP)
 	var post := MeshInstance3D.new()
 	var pm := BoxMesh.new()
@@ -45,8 +46,18 @@ func arm() -> void:
 	_refresh()
 
 
+func interact_prompt() -> String:
+	return "[F] Pull lever" if armed and not is_pressed else ""
+
+
+## Looked at (t60u camera-centre cone/sphere-cast, Interaction) and within range.
 func in_reach(p: Player) -> bool:
-	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
+	return near(p) and Interaction.is_target(p, self)
+
+
+## Plain proximity (attunement, bot walking); interaction itself goes by look (t60u).
+func near(p: Player) -> bool:
+	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH + 1.0
 
 
 func press() -> bool:

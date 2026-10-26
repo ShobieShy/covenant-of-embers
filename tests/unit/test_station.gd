@@ -31,6 +31,7 @@ func _part(id: String) -> WieldablePart:
 func test_assemble_then_disassemble() -> void:
 	var p := _player()
 	var st := _station()
+	Interaction.face(p, st)
 	check(st.is_in_group(AssemblyStation.GROUP) and st.in_reach(p), "station in reach")
 	var base := WieldableInstance.load_base("swift_wind_wand")
 	var parts := [_part("rare_water_head"), _part("uncommon_air_exterior"), _part("uncommon_dark_handle")]

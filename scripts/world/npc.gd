@@ -18,6 +18,7 @@ func _init(s := "") -> void:
 
 
 func _ready() -> void:
+	Interaction.register(self, 1.2, 0.5)
 	var model := CharacterModel.make_for_speaker(speaker)  # batch_02 art
 	if model:
 		add_child(model)
@@ -41,8 +42,18 @@ func _placeholder_body() -> void:
 	add_child(body)
 
 
+func interact_prompt() -> String:
+	return "[F] Talk to %s" % speaker
+
+
+## Looked at (t60u camera-centre cone/sphere-cast, Interaction) and within range.
 func in_reach(p: Player) -> bool:
-	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
+	return near(p) and Interaction.is_target(p, self)
+
+
+## Plain proximity (attunement, bot walking); interaction itself goes by look (t60u).
+func near(p: Player) -> bool:
+	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH + 1.0
 
 
 func talk() -> void:

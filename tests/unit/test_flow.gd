@@ -134,13 +134,16 @@ func test_new_run_confirm_and_slots() -> void:  # step 49
 	check(tmp[0] == SaveGame.PATH and tmp[1] != tmp[2] and tmp[1] != tmp[0], "3 distinct slot files")
 	var p2: String = tmp[1]
 	var had := FileAccess.file_exists(p2)
+	var want := "breach"
 	if not had:
 		SaveGame.write({"version": SaveGame.VERSION, "progress": {"level_id": "breach"}}, p2)
+	else:  # a real slot-2 save (never overwritten): expect its own level
+		want = String(SaveGame.read(p2).get("data", {}).get("progress", {}).get("level_id", "midden"))
 	GameFlow.path_override = ""  # this test exercises real slot paths
 	m.select_slot(2)
 	check(GameFlow.save_path == p2 and GameFlow.slot_has_save(2), "slot 2 selected + has its save")
 	check(not (m.buttons["continue"] as Button).disabled, "continue enabled for slot 2")
-	check(GameFlow.continue_run(null) and GameFlow.level_id == "breach", "slot 2 continues its own level")
+	check(GameFlow.continue_run(null) and GameFlow.level_id == want, "slot 2 continues its own level (%s)" % want)
 	if not had:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(p2))
 	check(not GameFlow.slot_has_save(3) or FileAccess.file_exists(tmp[2]), "slot 3 isolated")

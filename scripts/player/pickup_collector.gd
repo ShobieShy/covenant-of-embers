@@ -59,6 +59,8 @@ func look_target(p: Player, all: Array = []) -> LootPickup:
 		if c >= best_cos:
 			best_cos = c
 			best = lp
+	if best != null and p.is_inside_tree() and not (Interaction.target(p) is LootPickup):
+		return null  # t60u: something else (NPC, station...) is the looked-at target
 	return best
 
 

@@ -21,6 +21,7 @@ func _init(t := "breach") -> void:
 
 
 func _ready() -> void:
+	Interaction.register(self, 1.2, 0.8)
 	var box := CSGBox3D.new()
 	box.size = Vector3(1.0, 2.4, 0.3)
 	box.position.y = 1.2
@@ -38,8 +39,18 @@ func _ready() -> void:
 	add_child(l)
 
 
+func interact_prompt() -> String:
+	return "[F] Gate: %s" % target.capitalize()
+
+
+## Looked at (t60u camera-centre cone/sphere-cast, Interaction) and within range.
 func in_reach(p: Player) -> bool:
-	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
+	return near(p) and Interaction.is_target(p, self)
+
+
+## Plain proximity (attunement, bot walking); interaction itself goes by look (t60u).
+func near(p: Player) -> bool:
+	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH + 1.0
 
 
 func locked() -> bool:
