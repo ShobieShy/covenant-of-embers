@@ -25,6 +25,7 @@ const LEVEL_IDS := {
 
 static var level_id := "midden"
 static var load_save := false
+static var spawn_anchor := ""  ## step 155: co-op join at the host's waystone
 static var save_path := SaveGame.PATH
 static var slot := 1
 ## Tests: when set, select_slot keeps this path (the real slot saves stay untouched and unread).

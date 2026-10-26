@@ -222,13 +222,32 @@ def _pois(items: list, out: dict) -> None:
         out["pois"].append({"name": name, "center": _vec(_need(p, "center", w), f"{w} center"), "radius": float(r)})
 
 
+def _anchors(d: dict, out: dict) -> None:
+    """Step 155: [[anchor]] name, position (feet), yaw_deg, beat (intro beat id) and
+    [[waystone]] point (FastTravel point id), position, yaw_deg: named spawn spots."""
+    for sec, key, idk in (("anchor", "anchors", "name"), ("waystone", "waystones", "point")):
+        seen: set[str] = set()
+        for i, x in enumerate(d.get(sec, [])):
+            w = f"{sec} {i + 1}"
+            _only(x, {idk, "position", "yaw_deg"} | ({"beat"} if sec == "anchor" else set()), w)
+            name = str(_need(x, idk, w))
+            if not re.fullmatch(r"[a-z0-9_]+", name) or name in seen:
+                raise LevelError(f"{w}: {idk} must be unique snake_case")
+            seen.add(name)
+            out[key].append({"name": name, "position": _vec(_need(x, "position", w), f"{w} position"),
+                             "yaw_deg": float(x.get("yaw_deg", 0.0)), "beat": str(x.get("beat", ""))})
+    names = {a["name"] for a in out["anchors"]} & {a["name"] for a in out["waystones"]}
+    if names:
+        raise LevelError(f"anchor and waystone share a name: {sorted(names)}")
+
+
 def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     try:
         d = tomllib.loads(text)
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch", "materials", "prop", "terrain", "poi"}, "top level")
+               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -281,6 +300,8 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "materials": {},
         "props": [],
         "pois": [],
+        "anchors": [],
+        "waystones": [],
     }
     # Step 75: [materials] kind = "assets/<vendor>/<set>" (color/normal/roughness.jpg there),
     # uv_scale = world tiling per metre (triplanar, so boxes of any size tile evenly).
@@ -410,6 +431,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
             raise LevelError(f"switch '{name}' position (feet) must lie on a box surface (within 5 cm)")
         out["switches"].append({"name": name, "opens": opens, "position": pos, "yaw_deg": float(sw.get("yaw_deg", 0.0))})
     _pois(d.get("poi", []), out)
+    _anchors(d, out)
     _props(d.get("prop", []), out)
     out["terrain"] = _terrain(d["terrain"], out["boxes"]) if "terrain" in d else None
     # Step 65: travel exits (LevelGate per exit, `to` = a GameFlow level id) and NPCs.
@@ -671,6 +693,14 @@ def to_tscn(lv: dict, source: str) -> str:
                  f'metadata/yaw_deg = {_f(lv["start_yaw_deg"])}\n')
     nodes.append(f'[node name="Eye" type="Marker3D" parent="PlayerStart"]\n'
                  f'transform = {_xf(rot_yxz([0, 0, 0]), [0, EYE_HEIGHT, 0])}\n')
+    for holder, key in (("Anchors", "anchors"), ("Waystones", "waystones")):
+        if lv.get(key):
+            nodes.append(f'[node name="{holder}" type="Node3D" parent="."]\n')
+            for a in lv[key]:
+                nodes.append(f'[node name="{a["name"]}" type="Marker3D" parent="{holder}"]\n'
+                             f'transform = {_xf(rot_yxz([0, a["yaw_deg"], 0]), a["position"])}\n'
+                             f'metadata/yaw_deg = {_f(a["yaw_deg"])}\n'
+                             + (f'metadata/beat = "{a["beat"]}"\n' if a["beat"] else ""))
     nodes.append('[node name="EnemySpawns" type="Node3D" parent="."]\n')
     for i, e in enumerate(lv["enemies"]):
         nodes.append(f'[node name="{e["enemy"]}_{i + 1}" type="Marker3D" parent="EnemySpawns"]\n'
@@ -860,6 +890,21 @@ def self_test() -> int:
                      ('size = [400, 400]\nwhat = 1', "unknown"), ('size = [60, 60]', "24 m inside")):
         try:
             parse_level(good + "\n[terrain]\n" + bad + "\n")
+        except LevelError as e:
+            assert msg in str(e), (msg, str(e))
+        else:
+            raise AssertionError(f"expected error: {msg}")
+    # Step 155: [[anchor]] / [[waystone]] -> Anchors / Waystones markers.
+    pa = parse_level(hdr + box + '[[anchor]]\nname = "joe"\nposition = [1, 0, 2]\nbeat = "meet_joe"\n'
+                     '[[waystone]]\npoint = "landfill"\nposition = [3, 0, 2]\nyaw_deg = 90\n')
+    pts = to_tscn(pa, "a.toml")
+    assert 'name="joe" type="Marker3D" parent="Anchors"' in pts and 'metadata/beat = "meet_joe"' in pts, pts
+    assert 'name="landfill" type="Marker3D" parent="Waystones"' in pts and "metadata/yaw_deg = 90" in pts, pts
+    for body, msg in (('[[anchor]]\nname = "A"\nposition = [0, 0, 0]\n', "snake_case"),
+                      ('[[anchor]]\nname = "a"\nposition = [0, 0, 0]\n[[waystone]]\npoint = "a"\nposition = [0, 0, 0]\n',
+                       "share a name")):
+        try:
+            parse_level(hdr + box + body)
         except LevelError as e:
             assert msg in str(e), (msg, str(e))
         else:

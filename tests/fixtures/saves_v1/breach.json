@@ -1,0 +1,60 @@
+{
+	"items": {
+		"equipment": [
+			"",
+			"",
+			"",
+			"",
+			""
+		],
+		"inventory": [],
+		"junk": [],
+		"potion": "",
+		"staff": "EM1-0G000-42W",
+		"wand": "EM1-0G681-H5S"
+	},
+	"player": {
+		"archetype": "",
+		"breath": 100.0,
+		"color": "5999ff",
+		"dust": 0.0,
+		"gold": 50.0,
+		"health": 100.0,
+		"level": 1.0,
+		"mana": 100.0,
+		"name": "Ember",
+		"quest_items": [],
+		"shield": 50.0,
+		"skills": {
+			"elements": {},
+			"ranks": {},
+			"respecs": 0.0,
+			"skills_version": 2.0,
+			"tree": "ember_path"
+		},
+		"total_xp": 0.0,
+		"xp": 0.0,
+		"xp_to_next": 100.0
+	},
+	"progress": {
+		"flags": {
+			"intro_done": 1.0,
+			"region:landfill": 3.0,
+			"tutorial_done": 1.0
+		},
+		"level_id": "breach",
+		"quests": {
+			"active": {},
+			"clues": [],
+			"done": [],
+			"flags": {
+				"intro_done": 1.0,
+				"region:landfill": 3.0,
+				"tutorial_done": 1.0
+			}
+		},
+		"vault_open": false
+	},
+	"saved_at": "2026-10-26T21:07:42",
+	"version": 1.0
+}

@@ -13,6 +13,7 @@ extends Node
 
 const SNAP_HZ := 20.0
 const MAX_ENEMIES := 64  ## per snapshot
+const INTEREST := 150.0  ## step 155: m, a peer only gets enemies this close to it
 const HP_PER_EXTRA_PLAYER := 0.6  ## step 80: enemy health +60 pct per extra player
 const LAST_STAND := 15.0  ## s downed before bleeding out
 const REVIVE_RANGE := 2.5  ## m, a living teammate this close revives
@@ -272,14 +273,28 @@ func route_attack(target: Node3D, bite: Gnawer.Bite, from: Gnawer = null) -> voi
 		player.call(&"on_enemy_attack", from, bite)
 
 
+## Step 155: interest management. Each peer gets only the enemies within INTEREST m of
+## its proxy (a peer with no pose yet gets everything); puppets missing from a snapshot
+## are freed on the client, so walking away despawns them and walking back respawns them.
 func send_snapshot() -> void:
+	var all := host_enemies()
+	for peer in session.roster:
+		if int(peer) == session.my_id():
+			continue
+		var p: RemotePlayer = proxies.get(int(peer))
+		var at: Variant = p.global_position if p and is_instance_valid(p) and p.is_inside_tree() else null
+		session.send("snap", {"e": interest_rows(all, at)}, int(peer), false)
+	snaps_sent += 1
+
+
+func interest_rows(all: Array[Enemy], at: Variant) -> Array:
 	var list: Array = []
-	for e in host_enemies():
+	for e in all:
 		if list.size() >= MAX_ENEMIES:
 			break
-		list.append(snap_row(e))
-	snaps_sent += 1
-	session.send("snap", {"e": list}, 0, false)
+		if at == null or e.global_position.distance_to(at as Vector3) <= INTEREST:
+			list.append(snap_row(e))
+	return list
 
 
 ## One snapshot row; [8] = Enemy.fx_flags() (step 134: status FX parity on clients).

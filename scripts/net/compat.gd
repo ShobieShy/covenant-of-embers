@@ -11,6 +11,12 @@ extends RefCounted
 
 static var fingerprint_override := ""  ## tests: pretend to be a different build
 static var _cached := ""
+static var terrain_override := ""  ## tests: pretend to have different maps
+static var _terrain_cached := ""
+## Terrain properties that decide heights, splat and navmesh (TerrainZone exports).
+const TERRAIN_PROPS: PackedStringArray = [
+	"size", "center", "height", "noise_seed", "spacing", "rim", "map_version", "layers", "pads", "pad_y", "blend"
+]
 
 
 static func canonical(data: Variant) -> String:
@@ -35,6 +41,37 @@ static func samples() -> PackedStringArray:
 	for d in DropRoller.roll_enemy(rng, EnemyTable.load_default().find("heap")):
 		out.append(d.describe())
 	return out
+
+
+## Step 155: every level's terrain settings + TerrainZone.GEN_VERSION. Heights, splat and
+## navmesh tiles are pure functions of these, so equal hashes = equal maps.
+static func terrain_rows() -> PackedStringArray:
+	var out := PackedStringArray(["gen %d" % TerrainZone.GEN_VERSION])
+	var ids: Array = GameFlow.LEVELS.keys()
+	ids.sort()
+	for id in ids:
+		var ps := load(String(GameFlow.LEVELS[id])) as PackedScene
+		var st := ps.get_state() if ps else null
+		if st == null:
+			out.append("%s missing" % id)
+			continue
+		for i in st.get_node_count():
+			if String(st.get_node_path(i)) != "./Terrain":
+				continue
+			var props := {}
+			for j in st.get_node_property_count(i):
+				if TERRAIN_PROPS.has(String(st.get_node_property_name(i, j))):
+					props[String(st.get_node_property_name(i, j))] = st.get_node_property_value(i, j)
+			out.append("%s %s" % [id, canonical(var_to_str(props))])
+	return out
+
+
+static func terrain_fingerprint() -> String:
+	if not terrain_override.is_empty():
+		return terrain_override
+	if _terrain_cached.is_empty():
+		_terrain_cached = sha("\n".join(terrain_rows())).left(16)
+	return _terrain_cached
 
 
 static func fingerprint() -> String:

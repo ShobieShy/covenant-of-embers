@@ -6,11 +6,25 @@ extends RefCounted
 ## a pack into a town or onto a tile with no navmesh. Bosses are never leashed.
 
 const LEASH := 40.0
+const ACTIVATE := 80.0  ## step 155: a camp wakes while any player is this close (flat m)
 const HOME := &"camp_home"
 
 
 static func home(e: Enemy, at: Vector3) -> void:
 	e.set_meta(HOME, at)
+
+
+## Step 155: per-player proximity; `players` = Node3Ds (local Player, RemotePlayers).
+static func camp_active(center: Vector3, players: Array, radius := ACTIVATE) -> bool:
+	for p in players:
+		var n := p as Node3D
+		if (
+			n
+			and is_instance_valid(n)
+			and Vector2(n.global_position.x - center.x, n.global_position.z - center.z).length() <= radius
+		):
+			return true
+	return false
 
 
 ## Returns how many enemies were sent home.

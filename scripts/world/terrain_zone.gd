@@ -14,6 +14,7 @@ extends Node3D
 ## and heights, and `terrain` stays null.
 
 const LAYER_DIR := "res://assets/ambientcg/%s/"
+const GEN_VERSION := 1  ## step 155: bump when height/splat generation changes (co-op hash)
 const EDGE := 24.0  ## metres over which the zone edge rises to `rim`
 
 @export var size := Vector2(200, 200)

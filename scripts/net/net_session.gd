@@ -94,6 +94,7 @@ func _info(info: Dictionary) -> Dictionary:
 	d["ready"] = false
 	d["version"] = version()
 	d["data"] = Compat.fingerprint()  # step 90
+	d["terrain"] = Compat.terrain_fingerprint()  # step 155
 	return d
 
 
@@ -217,6 +218,11 @@ func _hello(info: Dictionary) -> void:
 		why = (
 			"game data mismatch (host %s, you %s): both players need the same build"
 			% [Compat.fingerprint(), info.get("data", "?")]
+		)
+	elif String(info.get("terrain", "")) != Compat.terrain_fingerprint():
+		why = (
+			"map data mismatch (host %s, you %s): both players need the same terrain and navmesh"
+			% [Compat.terrain_fingerprint(), info.get("terrain", "?")]
 		)
 	elif state != State.LOBBY:
 		why = "the game has already started"

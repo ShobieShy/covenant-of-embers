@@ -85,6 +85,12 @@ static func host_level() -> String:
 	return id if GameFlow.LEVELS.has(id) else "midden"
 
 
+## Step 155: the anchor/waystone the host's save stands at; joining clients spawn there.
+static func host_anchor() -> String:
+	var r := SaveGame.read(GameFlow.save_path)
+	return "" if r.has("error") else String((r["data"] as Dictionary).get("progress", {}).get("anchor", ""))
+
+
 ## session.started: everyone loads the game scene in the host's level. The host plays
 ## from its own save (world + quests); clients bring their character (step 91).
 static func begin(tree: SceneTree) -> void:
@@ -98,5 +104,6 @@ static func begin(tree: SceneTree) -> void:
 	var host_info: Dictionary = session.roster.get(1, {})
 	var lvl := String(host_info.get("level", "midden"))
 	GameFlow.level_id = lvl if GameFlow.LEVELS.has(lvl) else "midden"
+	GameFlow.spawn_anchor = String(host_info.get("anchor", ""))
 	GameFlow.load_save = false
 	GameFlow._change(tree, GameFlow.GAME)

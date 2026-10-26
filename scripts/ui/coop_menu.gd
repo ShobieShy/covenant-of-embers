@@ -107,7 +107,9 @@ func _session() -> NetSession:
 
 func info() -> Dictionary:
 	var n := name_edit.text.strip_edges()
-	return {"name": n if not n.is_empty() else Coop.default_name(), "level": Coop.host_level()}
+	return {
+		"name": n if not n.is_empty() else Coop.default_name(), "level": Coop.host_level(), "anchor": Coop.host_anchor()
+	}
 
 
 func press(id: String) -> void:

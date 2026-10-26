@@ -194,10 +194,21 @@ func tick(dt: float) -> void:
 	_tick_waves(dt)
 
 
+## Step 155: any player triggers it, the local one or a co-op teammate (RemotePlayer).
 func triggered() -> bool:
-	if player == null or not player.alive() or trigger_radius <= 0.0:
+	if trigger_radius <= 0.0:
 		return false
-	var d := player.global_position - trigger_center
+	if player != null and player.alive() and _inside(player.global_position):
+		return true
+	if is_inside_tree():
+		for r in get_tree().get_nodes_in_group(RemotePlayer.GROUP):
+			if r.alive() and _inside((r as Node3D).global_position):
+				return true
+	return false
+
+
+func _inside(at: Vector3) -> bool:
+	var d := at - trigger_center
 	return Vector2(d.x, d.z).length() <= trigger_radius and absf(d.y) <= 3.0
 
 

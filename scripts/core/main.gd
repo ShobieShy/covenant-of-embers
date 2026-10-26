@@ -206,6 +206,7 @@ func _setup_flow(player: Player) -> void:
 	pause_menu.bind(player, s_ui)
 	pause_menu.save_requested.connect(save_game)
 	var fresh := not GameFlow.load_save
+	var saved_progress := {}
 	if Coop.is_client():
 		# Step 91: a client plays its own portable character, never the host's slot.
 		var cr := CharacterSave.load_into(player, Coop.character)
@@ -217,11 +218,13 @@ func _setup_flow(player: Player) -> void:
 			push_warning("[save] " + String(r["error"]))
 		else:
 			load_warnings = SaveGame.apply(player, r["data"])
+			saved_progress = (r["data"] as Dictionary).get("progress", {})
 			story_flags.from_dict((r["data"] as Dictionary).get("progress", {}).get("flags", {}))
 			_loaded_quests = (r["data"] as Dictionary).get("progress", {}).get("quests", {})
 			if breach and (r["data"] as Dictionary).get("progress", {}).get("vault_open", false):
 				breach.restore_open()   # step 47: rooms cleared, gate + vault stay open
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
+	_spawn_at_anchor(player, saved_progress)
 	if fresh:
 		_apply_new_identity(player)
 		if not Coop.is_client():
@@ -371,7 +374,10 @@ func _setup_fast_travel(player: Player, here: String) -> void:
 	waystone.name = "Waystone"
 	waystone.player = player
 	add_child(waystone)
-	waystone.global_position = player.spawn_feet + Vector3(0.0, 0.0, -2.5)
+	var marker := get_node_or_null("Level/Waystones/" + point) as Node3D  # step 155
+	var start := get_node_or_null("Level/PlayerStart") as Node3D
+	var base := start.global_position if start else player.spawn_feet
+	waystone.global_position = marker.global_position if marker else base + Vector3(0.0, 0.0, -2.5)
 	waystone.opened.connect(open_map)
 
 func open_map(point := "") -> void:
@@ -389,8 +395,17 @@ func _on_map_closed() -> void:
 	if player:
 		player.ui_open = false
 
-func _on_fast_travel(_point: String, level: String) -> void:
-	travel(level)
+func _on_fast_travel(point: String, level: String) -> void:
+	travel(level, point)
+
+## Step 155: a save's anchor (or the co-op host's waystone) instead of PlayerStart.
+func _spawn_at_anchor(player: Player, saved: Dictionary) -> void:
+	var forced := GameFlow.spawn_anchor
+	GameFlow.spawn_anchor = ""
+	var n := MapAnchors.spawn_node($Level, saved, IntroDirector.beat(story_flags), forced)
+	if n:
+		player.spawn(n.global_position, deg_to_rad(float(n.get_meta("yaw_deg", 0.0))))
+		print("[spawn] at anchor %s" % n.name)
 
 ## Step 71: skill respec is only offered at the Old Oak; step 59: it costs Player.respec_price() gold.
 func can_respec() -> bool:
@@ -471,7 +486,10 @@ func _on_coop_ended(reason: String) -> void:
 
 
 func progress() -> Dictionary:
+	var player := get_node_or_null("Player") as Node3D
 	return {"level_id": GameFlow.id_of($Level), "vault_open": breach.open if breach else false,
+		"anchor": MapAnchors.nearest($Level, player.global_position) if player else "",
+		"map_version": MapAnchors.version_of($Level),
 		"flags": story_flags.to_dict(), "quests": quests.to_dict() if quests else {}}
 
 func save_game() -> Error:
@@ -492,7 +510,7 @@ func save_game() -> Error:
 	return err
 
 ## Autosave, then load `to` with the saved state.
-func travel(to: String) -> void:
+func travel(to: String, anchor := "") -> void:
 	if coop and not coop.host:
 		print("[coop] only the host can travel")  # step 91: the host's world decides
 		return
@@ -502,6 +520,8 @@ func travel(to: String) -> void:
 	if player:
 		var d := SaveGame.capture(player, progress())
 		d["progress"]["level_id"] = to
+		d["progress"]["anchor"] = anchor  # step 155: "" = the new level's PlayerStart
+		d["progress"].erase("map_version")
 		SaveGame.write(d, GameFlow.save_path)
 	GameFlow.travel(get_tree(), to)
 
