@@ -42,6 +42,7 @@ Python stdlib only (tomllib, Python >= 3.11).
 from __future__ import annotations
 
 import math
+import re
 import sys
 import tomllib
 from pathlib import Path
@@ -178,7 +179,7 @@ def _props(items: list, out: dict) -> None:
     seen: set[str] = set()
     for i, pr in enumerate(items):
         w = f"prop {i + 1}"
-        _only(pr, {"name", "model", "position", "rotation_deg", "scale", "count", "step"}, w)
+        _only(pr, {"name", "model", "position", "rotation_deg", "scale", "count", "step", "poi"}, w)
         name = str(pr.get("name", f"prop_{i + 1}"))
         if name in seen:
             raise LevelError(f"duplicate prop name '{name}'")
@@ -201,7 +202,24 @@ def _props(items: list, out: dict) -> None:
             "position": _vec(_need(pr, "position", w), f"{w} position"),
             "rotation_deg": _vec(pr.get("rotation_deg", [0, 0, 0]), f"{w} rotation_deg"),
             "step": _vec(pr.get("step", [0, 0, 0]), f"{w} step"),
+            "poi": str(pr.get("poi", "")),
         })
+        if out["props"][-1]["poi"] and out["props"][-1]["poi"] not in {p["name"] for p in out["pois"]}:
+            raise LevelError(f"{w}: unknown poi '{out['props'][-1]['poi']}'")
+
+
+def _pois(items: list, out: dict) -> None:
+    """Step 153: [[poi]] name, center [x, y, z], radius (m): a streamed point of interest."""
+    for i, p in enumerate(items):
+        w = f"poi {i + 1}"
+        _only(p, {"name", "center", "radius"}, w)
+        name = str(_need(p, "name", w))
+        if not re.fullmatch(r"[a-z0-9_]+", name) or any(x["name"] == name for x in out["pois"]):
+            raise LevelError(f"{w}: name must be a unique snake_case id")
+        r = p.get("radius", 30.0)
+        if not isinstance(r, (int, float)) or isinstance(r, bool) or not 4 <= r <= 200:
+            raise LevelError(f"poi '{name}': radius must be 4..200 m")
+        out["pois"].append({"name": name, "center": _vec(_need(p, "center", w), f"{w} center"), "radius": float(r)})
 
 
 def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
@@ -210,7 +228,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch", "materials", "prop", "terrain"}, "top level")
+               "encounter", "switch", "materials", "prop", "terrain", "poi"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -262,6 +280,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "switches": [],
         "materials": {},
         "props": [],
+        "pois": [],
     }
     # Step 75: [materials] kind = "assets/<vendor>/<set>" (color/normal/roughness.jpg there),
     # uv_scale = world tiling per metre (triplanar, so boxes of any size tile evenly).
@@ -390,6 +409,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         if not on_surface(out["boxes"], pos):
             raise LevelError(f"switch '{name}' position (feet) must lie on a box surface (within 5 cm)")
         out["switches"].append({"name": name, "opens": opens, "position": pos, "yaw_deg": float(sw.get("yaw_deg", 0.0))})
+    _pois(d.get("poi", []), out)
     _props(d.get("prop", []), out)
     out["terrain"] = _terrain(d["terrain"], out["boxes"]) if "terrain" in d else None
     # Step 65: travel exits (LevelGate per exit, `to` = a GameFlow level id) and NPCs.
@@ -627,8 +647,13 @@ def to_tscn(lv: dict, source: str) -> str:
                      f'layers = PackedStringArray({layers})\npads = Array[Rect2]([{pads}])\n'
                      f'blend = {_f(tr["blend"])}\n')
     scenes: dict[str, str] = {}
-    if lv["props"]:
+    if any(not pr["poi"] for pr in lv["props"]):
         nodes.append('[node name="Props" type="Node3D" parent="."]\n')
+    if lv["pois"]:
+        nodes.append('[node name="Pois" type="Node3D" parent="."]\nscript = ExtResource("1_stream")\n')
+        for p in lv["pois"]:
+            nodes.append(f'[node name="{p["name"]}" type="Node3D" parent="Pois"]\n'
+                         f'metadata/center = {_v3(p["center"])}\nmetadata/radius = {_f(p["radius"])}\n')
     for pr in lv["props"]:
         sid = scenes.setdefault(pr["model"], f"{len(scenes) + 1}_glb")
         m = rot_yxz(pr["rotation_deg"])
@@ -636,7 +661,8 @@ def to_tscn(lv: dict, source: str) -> str:
         for k in range(pr["count"]):
             pos = [pr["position"][j] + k * pr["step"][j] for j in range(3)]
             nm = pr["name"] if pr["count"] == 1 else f'{pr["name"]}_{k + 1}'
-            nodes.append(f'[node name="{nm}" parent="Props" instance=ExtResource("{sid}")]\n'
+            par = f'Pois/{pr["poi"]}' if pr["poi"] else "Props"
+            nodes.append(f'[node name="{nm}" parent="{par}" instance=ExtResource("{sid}")]\n'
                          f'transform = {_xf(basis, pos)}\n')
     nodes.append('[node name="Navigation" type="NavigationRegion3D" parent="."]\n'
                  'script = ExtResource("1_nav")\nsource = NodePath("../Boxes")\n')
@@ -693,6 +719,8 @@ def to_tscn(lv: dict, source: str) -> str:
     ext = f'[ext_resource type="Script" path="{NAV_SCRIPT}" id="1_nav"]\n'
     if tr:
         ext += f'[ext_resource type="Script" path="{TERRAIN_SCRIPT}" id="1_terrain"]\n'
+    if lv["pois"]:
+        ext += '[ext_resource type="Script" path="res://scripts/world/zone_streamer.gd" id="1_stream"]\n'
     for path, i in exts.items():
         ext += f'[ext_resource type="Texture2D" path="res://{path}" id="{i}"]\n'
     for path, i in scenes.items():
@@ -832,6 +860,20 @@ def self_test() -> int:
                      ('size = [400, 400]\nwhat = 1', "unknown"), ('size = [60, 60]', "24 m inside")):
         try:
             parse_level(good + "\n[terrain]\n" + bad + "\n")
+        except LevelError as e:
+            assert msg in str(e), (msg, str(e))
+        else:
+            raise AssertionError(f"expected error: {msg}")
+    # Step 153: [[poi]] -> Pois (ZoneStreamer) with props parented by `poi`.
+    pp = parse_level(hdr + box + '[[poi]]\nname = "camp_a"\ncenter = [1, 0, 2]\nradius = 20\n'
+                     + prop.replace('name = "f"', 'name = "f"\npoi = "camp_a"'))
+    ps = to_tscn(pp, "p.toml")
+    assert 'id="1_stream"' in ps and ps.count('parent="Pois/camp_a" instance=') == 3 and 'name="Props"' not in ps, ps
+    for body, msg in ((prop.replace('name = "f"', 'name = "f"\npoi = "zz"'), "unknown poi"),
+                      ('[[poi]]\nname = "A b"\ncenter = [0, 0, 0]\n', "snake_case"),
+                      ('[[poi]]\nname = "a"\ncenter = [0, 0, 0]\nradius = 1\n', "radius must be")):
+        try:
+            parse_level(hdr + box + body)
         except LevelError as e:
             assert msg in str(e), (msg, str(e))
         else:

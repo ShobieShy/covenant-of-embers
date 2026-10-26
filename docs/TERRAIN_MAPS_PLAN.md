@@ -225,3 +225,7 @@ Hub towns are smaller (150-300 m), and dungeons are linear 200-400 m runs. We ma
 - Q10 Fast-travel count: **Landfill 3, town 2, Oak 1, Breach 1**.
 - Q11 Co-op leash: **no hard leash; arena locks gather players; enemies replicate within 150 m**.
 - Q12 Old saves: **spawn at the matching anchor; nothing reset**.
+
+## Build log
+
+- Step 153 (W2): `ZoneStreamer` on the generated `Pois` node (TOML `[[poi]]`, props take `poi = "<id>"`); load 150/200/250 m (Low/Medium/High), unload +50 m; prop visibility ranges 90/140/220 m; occlusion culling on Medium/High; `perf_capture.gd -- <out> --flythrough`. POI content is detached rather than loaded from separate .tscn files (same memory win for rendering/physics, no load hitches).

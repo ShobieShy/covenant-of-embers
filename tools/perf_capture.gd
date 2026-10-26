@@ -3,6 +3,12 @@ extends SceneTree
 ## (Steam Deck resolution), vsync off, with a stress load of FX (8 burning/frozen/dark enemies,
 ## a summoning circle, repeated spell bursts). Writes <out>/perf.json and prints a table.
 ## godot --display-driver wayland --path . -s tools/perf_capture.gd -- <out_dir>
+## Step 153: `-- <out_dir> --flythrough` instead flies a camera (12 m/s, 8 m up) through
+## every POI of each open-zone level (one with a Pois/ZoneStreamer), Low and High, so the
+## streaming, visibility ranges and terrain LOD are measured while moving.
+
+const FLY_SPEED := 12.0
+const FLY_LEVELS := ["midden", "old_oak", "town_square", "breach", "mage_association"]
 
 const FRAMES := 300
 const WARMUP := 60
@@ -15,12 +21,29 @@ func _initialize() -> void:
 	DisplayServer.window_set_size(Vector2i(1280, 800))
 	root.size = Vector2i(1280, 800)
 	var results := []
+	if "--flythrough" in OS.get_cmdline_user_args():
+		for q in [QualityPresets.Level.LOW, QualityPresets.Level.HIGH]:
+			QualityPresets.level = q
+			QualityPresets.apply_engine()
+			Engine.max_fps = 0
+			for id in FLY_LEVELS:
+				var r := await _fly(id, q)
+				if not r.is_empty():
+					results.append(r)
+		_write(out, results)
+		quit()
+		return
 	for q in [QualityPresets.Level.LOW, QualityPresets.Level.MEDIUM, QualityPresets.Level.HIGH]:
 		QualityPresets.level = q
 		QualityPresets.apply_engine()
 		Engine.max_fps = 0  # measure headroom, not the 60 cap
 		for id in ["midden", "breach", "town_square"]:
 			results.append(await _run(id, q))
+	_write(out, results)
+	quit()
+
+
+func _write(out: String, results: Array) -> void:
 	var f := FileAccess.open(out + "/perf.json", FileAccess.WRITE)
 	f.store_string(JSON.stringify(results, "  "))
 	print("[perf] gpu=%s" % RenderingServer.get_video_adapter_name())
@@ -31,7 +54,50 @@ func _initialize() -> void:
 				% [r.preset, r.level, r.avg_ms, r.fps, r.low1_fps]
 			)
 		)
-	quit()
+
+
+func _fly(id: String, q: int) -> Dictionary:
+	var lvl: Node3D = (load("res://scenes/levels/%s.tscn" % id) as PackedScene).instantiate()
+	var pois := lvl.get_node_or_null(^"Pois")
+	if pois == null or pois.get_child_count() < 2:
+		lvl.free()
+		return {}
+	var route: Array[Vector3] = []
+	for p in pois.get_children():
+		route.append((p.get_meta(&"center", Vector3.ZERO) as Vector3) + Vector3(0, 8, 0))
+	var cam := Camera3D.new()
+	cam.add_to_group(&"stream_viewers")
+	lvl.add_child(cam)
+	cam.position = route[0]
+	root.add_child(lvl)
+	cam.current = true
+	QualityPresets.apply_level(lvl)
+	var times := PackedFloat64Array()
+	var last := Time.get_ticks_usec()
+	for i in range(1, route.size()):
+		while cam.position.distance_to(route[i]) > 1.0:
+			var dir := cam.position.direction_to(route[i])
+			cam.position += dir * FLY_SPEED / 60.0
+			cam.look_at(cam.position + Vector3(dir.x, -0.2, dir.z + 0.001))
+			await process_frame
+			var now := Time.get_ticks_usec()
+			times.append((now - last) / 1000.0)
+			last = now
+	lvl.queue_free()
+	await process_frame
+	var sorted := times.duplicate()
+	sorted.sort()
+	var avg := 0.0
+	for t in times:
+		avg += t
+	avg /= maxf(1.0, times.size())
+	return {
+		"preset": QualityPresets.NAMES[q].split(" ")[0],
+		"level": id + " fly",
+		"avg_ms": avg,
+		"fps": 1000.0 / avg,
+		"low1_fps": 1000.0 / sorted[int(sorted.size() * 0.99)],
+	}
 
 
 func _run(id: String, q: int) -> Dictionary:

@@ -40,6 +40,7 @@ static func available() -> bool:
 
 const REGION_SIZE := 256  # Terrain3D default region_size (vertices)
 
+
 func _ready() -> void:
 	if build_on_ready:
 		build()
@@ -227,4 +228,3 @@ func add_nav_faces(data: NavigationMeshSourceGeometryData3D, aabb: AABB) -> void
 			faces.append_array([a, b, c, b, d, c])
 	if not faces.is_empty():
 		data.add_faces(faces, Transform3D.IDENTITY)
-

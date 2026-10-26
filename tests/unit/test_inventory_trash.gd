@@ -120,8 +120,9 @@ func test_junk_sold_together_and_saved() -> void:
 	SaveGame.apply(p, data)
 	check(p.inventory.junk_items().size() == 1, "junk mark survives save/load")
 	var old := data.duplicate(true)
-	old["items"].erase("junk") if old.has("items") else null
+	check(old.has("items"), "save has an items block")
 	if old.has("items"):
+		old["items"].erase("junk")
 		SaveGame.apply(p, old)
 		check(p.inventory.junk_items().is_empty() and p.inventory.size() > 0, "old saves load without junk")
 	p.queue_free()
