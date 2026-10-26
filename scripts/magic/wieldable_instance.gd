@@ -56,9 +56,21 @@ func type() -> WieldableDef.Type:
 	return def.type
 
 
-## The base's name; an assembled one is Magewar's "<Rarity> <Element> Staff|Wand".
+## The base's name; an assembled one is Magewar's "<Rarity> <Element> Staff|Wand", with the
+## brand before the element when branded (step 135: "Rare Pyrowning Fire Staff").
 func display_name() -> String:
-	return Assembly.name_for(def.type, rarity_id(), element()) if assembled else def.display_name
+	return Assembly.name_for(def.type, rarity_id(), element(), brand()) if assembled else def.display_name
+
+
+## Step 135: the Head part's brand (its own element, not a gem's); null = unbranded (no Head
+## or an Arcane Head), which casts exactly as before.
+func brand() -> Brand:
+	var h := part(WieldablePart.PartType.HEAD)
+	return h.brand() if h != null else null
+
+
+func is_wand() -> bool:
+	return def != null and def.type == WieldableDef.Type.WAND
 
 
 ## The attached part of `part_type` (first one), or null.

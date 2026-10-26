@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="Brand" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/brand.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "sigil_sauer"
+display_name = "Sigil Sauer"
+short_name = "Sigil Sauer"
+element = 2
+fire_mode = 2
+color = Color(0.3, 0.6, 1, 1)
+tagline = "Patience, then a tide."
+mode_line = "Charge: hold to charge, release; full charge chains"
+wand_scale = 0.6
+params = {
+"charge_seconds": 1.0,
+"min_mult": 0.6,
+"max_mult": 1.8,
+"chain_threshold": 0.95,
+"chain_targets": 2,
+"chain_range": 6.0,
+"chain_fraction": 0.5,
+"mana_min": 0.5,
+"mana_max": 1.5
+}

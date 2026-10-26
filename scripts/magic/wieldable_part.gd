@@ -154,3 +154,9 @@ func validate() -> PackedStringArray:
 	if gem_slots < 0 or gem_slots > MAX_GEM_SLOTS:
 		errs.append("%s gem_slots must be in [0, %d] (got %d)" % [w, MAX_GEM_SLOTS, gem_slots])
 	return errs
+
+
+## Step 135: the brand for this part's own element (null for Arcane). Only the Head's brand
+## counts on a wieldable (Q44); gems never change it (Q35).
+func brand() -> Brand:
+	return BrandTable.for_element(element)

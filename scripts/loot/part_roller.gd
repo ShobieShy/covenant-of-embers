@@ -170,7 +170,8 @@ static func name_for(part_type: WieldablePart.PartType, rarity_id: String, eleme
 	var el := ElementTable.load_default().display_name(element)
 	match part_type:
 		P.HEAD:
-			return "%s %s Crystal Head" % [HEAD_PREFIXES[t], el]
+			var b := BrandTable.for_element(element)  # step 135: brand on the Head only (Q44)
+			return "%s %s%s Crystal Head" % [HEAD_PREFIXES[t], (b.short_name + " ") if b != null else "", el]
 		P.EXTERIOR:
 			return "%s Exterior" % EXTERIOR_MATERIALS[t]
 		P.INTERIOR:

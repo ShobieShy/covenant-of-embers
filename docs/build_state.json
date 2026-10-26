@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 143,
-  "steps_done": 115,
-  "last_commit": "03687d8",
+  "steps_done": 116,
+  "last_commit": "7b47c48",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1228,6 +1228,13 @@
       "type": "plan",
       "summary": "Phase U plan: six element brands (Pyrowning Arms, Sigil Sauer, Moss & Berg, Windchester, Coltara Halo, Hexler & Koch), steps 135-143 waiting on user go",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T13:24:00-05:00",
+      "step": 135,
+      "type": "build",
+      "summary": "Brands B1: Brand/BrandTable + six resources/brands/*.tres, brand() from the Head's own element, brand in wieldable and Head names, test_brands.gd",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1345,7 +1352,8 @@
     131,
     132,
     133,
-    134
+    134,
+    135
   ],
   "deferred": [
     74,
@@ -1365,7 +1373,6 @@
     }
   ],
   "waiting_on_user_go": [
-    135,
     136,
     137,
     138,

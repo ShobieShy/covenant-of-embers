@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="Brand" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/brand.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "windchester"
+display_name = "Windchester"
+short_name = "Windchester"
+element = 4
+fire_mode = 4
+color = Color(0.6, 0.95, 0.85, 1)
+tagline = "The longer it sings, the faster it speaks."
+mode_line = "Spin-up: full auto, fire rate rises while held"
+wand_scale = 0.6
+params = {
+"spin_start": 1.4,
+"spin_end": 0.45,
+"spin_seconds": 1.5,
+"spin_down": 1.5,
+"damage_mult": 0.5,
+"bloom_mult": 0.6
+}

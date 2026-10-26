@@ -8,7 +8,7 @@ extends TestCase
 ##  - cooldown = base x Exterior x Charm >= 0.1 s; the Head's element overrides the base's
 ##    (an Arcane Head keeps the base's);
 ##  - the PLAN §30.3 worked examples (Fire staff, + charm, Earthward, Swift Wind wand);
-##  - name "<Rarity> <Element> Staff|Wand", same part objects kept (disassemble returns
+##  - name "<Rarity> [Brand] <Element> Staff|Wand", same part objects kept (disassemble returns
 ##    them), wand Head sockets capped at 1, handling shortens the Loadout draw.
 
 const EPS := 1e-6
@@ -148,7 +148,7 @@ func test_worked_examples() -> void:
 	check_near(a.damage(), 15.0, EPS, "1: damage 15")
 	check_near(a.cooldown(), 0.4, EPS, "1: 0.4 s")
 	check_near(a.accuracy(), 65.0, EPS, "1: 50 + 5 + 10")
-	check(a.element() == E.FIRE and a.display_name() == "Basic Fire Staff", "1: %s" % a.display_name())
+	check(a.element() == E.FIRE and a.display_name() == "Basic Pyrowning Fire Staff", "1: %s" % a.display_name())
 	# 2. + Rare Light Charm: still Basic (0.4 floors to 0): 17.5 / 0.36 s / 75 %.
 	var b := Assembly.assemble(_def("apprentice_fire_staff"), _parts(FIRE_STAFF + ["rare_light_charm"]))
 	check(b.rarity_id() == "basic", "2: Basic")
@@ -161,14 +161,14 @@ func test_worked_examples() -> void:
 	check_near(c.damage(), 46.0, EPS, "3: damage 46")
 	check_near(c.cooldown(), 0.55 * 0.55 * 0.85, EPS, "3: 0.2571 s")
 	check_near(c.accuracy(), 99.0, EPS, "3: 99 %")
-	check(c.element() == E.FIRE and c.display_name() == "Rare Fire Staff", "3: %s" % c.display_name())
+	check(c.element() == E.FIRE and c.display_name() == "Rare Pyrowning Fire Staff", "3: %s" % c.display_name())
 	# 4. Swift Wind Wand + Rare Water Head + Uncommon Air Exterior + Uncommon Dark Handle:
 	#    Uncommon x1.25 -> 6 x 1.25 + 6 + 0 + 1 = 14.5; 0.18 x 0.65 = 0.117 s; 50 + 12 + 15 = 77.
 	var d := Assembly.assemble(_def("swift_wind_wand"), _parts(WAND_PARTS))
 	check_near(d.damage(), 14.5, EPS, "4: damage 14.5")
 	check_near(d.cooldown(), 0.117, EPS, "4: 0.117 s")
 	check_near(d.accuracy(), 77.0, EPS, "4: 77 %")
-	check(d.element() == E.WATER and d.display_name() == "Uncommon Water Wand", "4: %s" % d.display_name())
+	check(d.element() == E.WATER and d.display_name() == "Uncommon Sigil Sauer Water Wand", "4: %s" % d.display_name())
 	# 4b. Without the optional Handle: 7.5 + 6 = 13.5, 62 %.
 	var d2 := Assembly.assemble(_def("swift_wind_wand"), _parts(["rare_water_head", "uncommon_air_exterior"]))
 	check_near(d2.damage(), 13.5, EPS, "4b: 13.5")
@@ -208,7 +208,7 @@ func test_cooldown_floor_and_element_override() -> void:
 		_def("earthward_battlestaff"), [arcane] + _parts(["basic_exterior", "basic_interior", "basic_handle"])
 	)
 	check(
-		s.element() == E.EARTH and s.display_name() == "Basic Earth Staff",
+		s.element() == E.EARTH and s.display_name() == "Basic Earth Staff" and s.brand() == null,
 		"Arcane Head keeps Earth: %s" % s.display_name()
 	)
 	var aw := Assembly.assemble(_def("novice_arcane_wand"), [arcane, WieldablePart.load_part("basic_exterior")])

@@ -137,12 +137,10 @@ static func draw_seconds(base_seconds: float, handling: float) -> float:
 
 
 ## Magewar's assembled name: "<Rarity> <Element> Staff|Wand".
-static func name_for(type: WieldableDef.Type, rarity_id: String, element: ElementTable.Element) -> String:
-	return (
-		"%s %s %s"
-		% [
-			RarityTable.load_default().display_name(rarity_id),
-			ElementTable.load_default().display_name(element),
-			TYPE_NAMES[type]
-		]
-	)
+static func name_for(
+	type: WieldableDef.Type, rarity_id: String, element: ElementTable.Element, brand: Brand = null
+) -> String:
+	var el := ElementTable.load_default().display_name(element)
+	if brand != null:
+		el = "%s %s" % [brand.short_name, el]
+	return "%s %s %s" % [RarityTable.load_default().display_name(rarity_id), el, TYPE_NAMES[type]]

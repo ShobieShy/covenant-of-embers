@@ -189,12 +189,12 @@ func test_names_and_descriptions() -> void:
 	var want := {
 		P.HEAD:
 		[
-			"Rough Fire Crystal Head",
-			"Polished Fire Crystal Head",
-			"Brilliant Fire Crystal Head",
-			"Ethereal Fire Crystal Head",
-			"Ancient Fire Crystal Head",
-			"Legendary Fire Crystal Head"
+			"Rough Pyrowning Fire Crystal Head",
+			"Polished Pyrowning Fire Crystal Head",
+			"Brilliant Pyrowning Fire Crystal Head",
+			"Ethereal Pyrowning Fire Crystal Head",
+			"Ancient Pyrowning Fire Crystal Head",
+			"Legendary Pyrowning Fire Crystal Head"
 		],
 		P.EXTERIOR:
 		[

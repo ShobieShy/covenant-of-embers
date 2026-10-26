@@ -47,7 +47,7 @@ func test_assemble_then_disassemble() -> void:
 	GameEvents.bus().crafting_completed.disconnect(cb)
 	check(w != null, "assembled: " + st.last_error)
 	check_near(w.damage(), 14.5, 1e-4, "Magewar worked example 4 damage")
-	check(w.display_name() == "Uncommon Water Wand", w.display_name())
+	check(w.display_name() == "Uncommon Sigil Sauer Water Wand", w.display_name())
 	check(p.inventory.size() == 1 and p.inventory.has(w), "only the wand left in the pack")
 	check(events[0] == 1 and st.crafted == 1, "crafting_completed")
 	var back := st.disassemble(p, w)

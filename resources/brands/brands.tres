@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BrandTable" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/brand_table.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/magic/brand.gd" id="9"]
+[ext_resource type="Resource" path="res://resources/brands/pyrowning_arms.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/brands/sigil_sauer.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/brands/moss_and_berg.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/brands/windchester.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/brands/coltara_halo.tres" id="6"]
+[ext_resource type="Resource" path="res://resources/brands/hexler_and_koch.tres" id="7"]
+
+[resource]
+script = ExtResource("1")
+brands = Array[ExtResource("9")]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7")])

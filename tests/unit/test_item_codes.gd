@@ -183,7 +183,7 @@ func test_decoded_items_are_fresh_and_assembled() -> void:
 	var m := ItemCodes.decode(ItemCodes.encode(w))
 	check(m.ok() and m.kind == K.ASSEMBLED, "assembled decodes: %s" % m.error)
 	var d := m.item as WieldableInstance
-	check(d.assembled and d.display_name() == "Rare Fire Staff", "name %s" % d.display_name())
+	check(d.assembled and d.display_name() == "Rare Pyrowning Fire Staff", "name %s" % d.display_name())
 	check_near(d.damage(), 46.0, 1e-9, "damage")
 	check_near(d.cooldown(), 0.55 * 0.55 * 0.85, 1e-9, "cooldown")
 	check(d.gem_slots() == 3, "gem slots")
