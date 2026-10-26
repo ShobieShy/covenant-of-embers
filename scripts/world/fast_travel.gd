@@ -16,7 +16,10 @@ const PREFIX := "waystone:"
 const POINTS := {
 	"old_oak": {"name": "The Old Oak", "level": "old_oak"},
 	"town_gate": {"name": "Eldoria - Town Gate", "level": "town_square"},
+	"town_market": {"name": "Eldoria - Market", "level": "town_square"},  # step 158
 	"landfill": {"name": "The Landfill", "level": "midden"},
+	"landfill_camp": {"name": "The Landfill - Joe's Camp", "level": "midden"},  # step 161
+	"landfill_overlook": {"name": "The Landfill - Overlook", "level": "midden"},
 	"breach": {"name": "The Breach", "level": "breach"},
 }
 ## GameFlow level id -> the waystone point in it.

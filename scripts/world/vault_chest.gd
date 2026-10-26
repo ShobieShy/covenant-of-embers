@@ -137,6 +137,14 @@ func open_chest() -> Array[LootDrop]:
 	return drops
 
 
+## Step 158: an already-looted zone chest (its flag is set): shown open, no loot.
+func open_chest_quiet() -> void:
+	is_open = true
+	if _lid:
+		_lid.rotation_degrees.x = -70.0
+		_lid.position = Vector3(0, 0.9, -0.35)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if locked or is_open or player == null or player.ui_open:
 		return

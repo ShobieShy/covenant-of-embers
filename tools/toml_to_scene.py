@@ -265,13 +265,33 @@ def _gates(items: list, out: dict) -> None:
                              "requires_flag": flag, "reason": reason})
 
 
+def _chests(items: list, out: dict) -> None:
+    """Step 158: [[chest]] name, position (feet), yaw_deg, tier (normal|hidden|vault),
+    requires_flag (vault lock), snap: a zone chest (scripts/world/zone_chests.gd)."""
+    for i, c in enumerate(items):
+        w = f"chest {i + 1}"
+        _only(c, {"name", "position", "yaw_deg", "tier", "requires_flag", "snap"}, w)
+        name = str(_need(c, "name", w))
+        if not re.fullmatch(r"[a-z0-9_]+", name) or any(x["name"] == name for x in out["chests"]):
+            raise LevelError(f"{w}: name must be unique snake_case")
+        tier = str(c.get("tier", "normal"))
+        if tier not in ("normal", "hidden", "vault"):
+            raise LevelError(f"chest '{name}': tier must be normal, hidden or vault")
+        flag = str(c.get("requires_flag", ""))
+        if flag and not re.fullmatch(r"[a-z0-9_:]+", flag):
+            raise LevelError(f"chest '{name}': requires_flag must be a story flag id")
+        out["chests"].append({"name": name, "position": _vec(_need(c, "position", w), f"{w} position"),
+                              "yaw_deg": float(c.get("yaw_deg", 0.0)), "tier": tier, "requires_flag": flag,
+                              "snap": _bool(c.get("snap", False), f"{w} snap")})
+
+
 def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     try:
         d = tomllib.loads(text)
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate"}, "top level")
+               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate", "chest"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -327,6 +347,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "anchors": [],
         "waystones": [],
         "gates": [],
+        "chests": [],
     }
     # Step 75: [materials] kind = "assets/<vendor>/<set>" (color/normal/roughness.jpg there),
     # uv_scale = world tiling per metre (triplanar, so boxes of any size tile evenly).
@@ -458,6 +479,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     _pois(d.get("poi", []), out)
     _anchors(d, out)
     _gates(d.get("gate", []), out)
+    _chests(d.get("chest", []), out)
     _props(d.get("prop", []), out)
     out["terrain"] = _terrain(d["terrain"], out["boxes"]) if "terrain" in d else None
     # Step 65: travel exits (LevelGate per exit, `to` = a GameFlow level id) and NPCs.
@@ -728,6 +750,14 @@ def to_tscn(lv: dict, source: str) -> str:
                              f'metadata/yaw_deg = {_f(a["yaw_deg"])}\n'
                              + (f'metadata/beat = "{a["beat"]}"\n' if a["beat"] else "")
                              + ('metadata/snap = true\n' if a["snap"] else ""))
+    if lv.get("chests"):
+        nodes.append('[node name="Chests" type="Node3D" parent="."]\n')
+        for c in lv["chests"]:
+            nodes.append(f'[node name="{c["name"]}" type="Marker3D" parent="Chests"]\n'
+                         f'transform = {_xf(rot_yxz([0, c["yaw_deg"], 0]), c["position"])}\n'
+                         f'metadata/tier = "{c["tier"]}"\n'
+                         + (f'metadata/requires_flag = "{c["requires_flag"]}"\n' if c["requires_flag"] else "")
+                         + ('metadata/snap = true\n' if c["snap"] else ""))
     if lv.get("gates"):
         nodes.append('[node name="Gates" type="Node3D" parent="."]\n')
         for g in lv["gates"]:
@@ -929,6 +959,10 @@ def self_test() -> int:
             assert msg in str(e), (msg, str(e))
         else:
             raise AssertionError(f"expected error: {msg}")
+    # Step 158: [[chest]] -> Chests/<name> markers with a tier.
+    pc = to_tscn(parse_level(hdr + box + '[[chest]]\nname = "c1"\nposition = [0, 0, 0]\ntier = "vault"\n'
+                             'requires_flag = "lever_3"\n'), "c.toml")
+    assert 'parent="Chests"' in pc and 'metadata/tier = "vault"' in pc and 'requires_flag = "lever_3"' in pc, pc
     # Step 156: [[gate]] -> Gates/<name> FlagGate.
     pg = to_tscn(parse_level(hdr + box + '[[gate]]\nname = "funnel"\ncenter = [0, 1.5, 4]\nsize = [6, 3, 0.5]\n'
                              'reason = "Not yet."\n'), "g.toml")

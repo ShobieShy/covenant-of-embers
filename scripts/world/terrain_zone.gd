@@ -54,7 +54,7 @@ func snap_level() -> void:
 	var lvl := get_parent()
 	if lvl == null:
 		return
-	for holder in ["Props", "Anchors", "Waystones", "Pois"]:
+	for holder in ["Props", "Anchors", "Waystones", "Pois", "Chests"]:
 		var h := lvl.get_node_or_null(holder)
 		if h == null:
 			continue

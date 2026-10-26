@@ -95,6 +95,12 @@ class Map:
     def waystone(self, point, pos, yaw=0.0):
         self.out.append(f'[[waystone]]\npoint = "{point}"\nposition = {v(pos)}\nyaw_deg = {yaw}\n')
 
+    def chest(self, name, pos, tier="normal", flag="", snap=False, yaw=0.0):
+        s = f'[[chest]]\nname = "{name}"\nposition = {v(pos)}\nyaw_deg = {yaw}\ntier = "{tier}"\n'
+        s += f'requires_flag = "{flag}"\n' if flag else ""
+        s += "snap = true\n" if snap else ""
+        self.out.append(s)
+
     def gate(self, name, center, size, reason="Bob said to stick to the path.", flag="tutorial_done"):
         self.out.append(f'[[gate]]\nname = "{name}"\ncenter = {v(center)}\nsize = {v(size)}\n'
                         f'requires_flag = "{flag}"\nreason = "{reason}"\n')
@@ -154,7 +160,63 @@ def old_oak() -> Map:
     return m
 
 
-MAPS = {"data/levels/old_oak.toml": old_oak}
+TOWN = "assets/kenney/fantasy-town-kit/"
+STONE = [0.55, 0.5, 0.48]
+
+
+def town() -> Map:
+    """158 W7 Eldoria town, 240x240 m: market (E), temple hill (NW), docks + canal (W),
+    rooftop jump route, sealed sewer, 6 flavour spots, 2 waystones, 6 + 2 hidden chests."""
+    m = Map({"size": [240, 240], "center": [0, 0], "height": 14.0, "seed": 158, "rim": 20.0, "blend": 16.0,
+             "map_version": 2, "layers": ["PavingStones131", "Grass004", "Rock030", "Ground037"]})
+    pave = [0.5, 0.47, 0.44]
+    # Market district (east gate at z -2..2).
+    m.path("market_road", (21, 0), (38, 0), 5, pave)
+    m.pad("market", 58, 0, 36, 32, pave)
+    for i, (x, z) in enumerate(((48, -10), (56, -10), (64, -10), (48, 10), (56, 10), (64, 10))):
+        m.prop(f"market_stall_{i + 1}", TOWN + ("stall-red.glb" if i % 2 else "stall-green.glb"), [x, 0, z],
+               180.0 if z > 0 else 0.0, 2.5, poi="market")
+    # Rooftop jump route: crates up to a 6 m roof with a hidden chest.
+    for i, (x, z, y) in enumerate(((70, -4, 1.0), (72.5, -6, 2.2), (74.5, -8.5, 3.4), (72.5, -11, 4.6))):
+        m.box(f"roof_hop_{i + 1}", "crate", [x, y / 2, z], [1.8, y, 1.8], [0.45, 0.32, 0.2])
+    m.box("roof_house", "wall", [68, 2.9, -14], [8, 5.8, 6], [0.6, 0.55, 0.5])
+    m.box("roof_top", "platform", [68, 6.0, -14], [8.4, 0.4, 6.4], [0.5, 0.25, 0.2])
+    m.chest("roof_hidden", [66, 6.2, -14], "hidden")
+    m.poi("market", [58, 0, 0], 30)
+    # Temple / Patron hill (north-west): a 9 m terrace reached by a stair.
+    m.path("temple_road", (-21, 0), (-40, -40), 5, pave)
+    m.pad("temple_foot", -40, -46, 14, 10, pave)
+    m.stairs("temple_step", -40, -52, 9.0, 12, (0.0, -1.2), 5.0, STONE)
+    m.box("temple_terrace", "platform", [-40, 8.8, -72], [24, 0.4, 14], STONE)
+    m.box("temple_hall", "wall", [-40, 12, -76], [12, 6, 5], [0.7, 0.66, 0.6])
+    m.chest("temple_chest", [-48, 9, -70], "normal")
+    m.anchor("temple_overlook", [-34, 9, -68], 180.0)
+    m.poi("temple_hill", [-40, 9, -70], 30)
+    # Docks and canal (west gate).
+    m.path("docks_road", (-21, 0), (-44, 0), 5, pave)
+    m.pad("docks", -56, 10, 28, 30, [0.42, 0.34, 0.25])
+    m.box("canal", "platform", [-76, 0.02, 10], [10, 0.04, 70], [0.16, 0.28, 0.38])
+    for i in range(4):
+        m.box(f"pier_{i + 1}", "platform", [-72, 0.15, -6 + i * 10], [8, 0.3, 2.5], [0.4, 0.3, 0.2])
+    m.chest("docks_chest", [-62, 0, 20], "normal")
+    m.chest("pier_hidden", [-75, 0.3, 24], "hidden")
+    m.poi("docks", [-60, 0, 10], 30)
+    # Sewer entrance under the docks road: locked until a later step.
+    m.pad("sewer_mouth", -34, 22, 8, 8, [0.3, 0.3, 0.28])
+    m.gate("sewer_grate", [-34, 1.5, 26], [4, 3, 0.5], "The sewer grate is rusted shut.", "sewers_open")
+    # Chests inside the walls and along the Guard Gate road.
+    m.chest("square_chest", [-16, 0, -14], "normal")
+    m.chest("market_chest", [70, 0, 12], "normal")
+    m.chest("gate_chest", [16, 0, -16], "normal")
+    for i, (x, z, yaw) in enumerate(((50, -4, 90), (60, 6, 0), (-50, 4, 270), (-58, 18, 90), (-36, -46, 0),
+                                     (-10, -10, 45))):
+        m.anchor(f"flavour_{i + 1}", [x, 0, z], yaw)
+    m.scatter("town_tree", TREES, 36, 0, 0, 120, 120, 158, (3.0, 4.5), 16, avoid=((0, 0, 30),))
+    m.waystone("town_market", [58, 0, -4], 0.0)
+    return m
+
+
+MAPS = {"data/levels/old_oak.toml": old_oak, "data/levels/town_square.toml": town}
 
 
 def apply(path: Path, block: str) -> str:

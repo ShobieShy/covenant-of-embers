@@ -51,14 +51,16 @@ def wall_z(name, piece, z0, z1, xc, h, thick, tile=4.0, y=0.0, flip=False):
 
 
 def town() -> tuple[set[str], str]:
-    hide = {"wall_north_w", "wall_north_e", "wall_south_w", "wall_south_e", "wall_west", "wall_east", "ward_1", "ward_2", "ward_3",
+    hide = {"wall_north_w", "wall_north_e", "wall_south_w", "wall_south_e", "wall_west", "wall_east", "wall_west_s", "wall_east_s", "ward_1", "ward_2", "ward_3",
             "ward_4", "association_doors", "fountain", "stall_1", "stall_2", "stall_3", "stall_4", "flagon"}
     p = []
     for side, z in (("north", -19.5), ("south", 19.5)):
         p.append(wall_x(f"{side}_w_wall", TOWN + "wall.glb", -20, -2, z, 4, 1, flip=z > 0))
         p.append(wall_x(f"{side}_e_wall", TOWN + "wall.glb", 2, 20, z, 4, 1, flip=z > 0))
-    p.append(wall_z("west_wall", TOWN + "wall.glb", -19, 19, -19.5, 4, 1))
-    p.append(wall_z("east_wall", TOWN + "wall.glb", -19, 19, 19.5, 4, 1, flip=True))
+    p.append(wall_z("west_wall", TOWN + "wall.glb", -19, -2.5, -19.5, 4, 1))  # step 158: district gates
+    p.append(wall_z("west_wall_s", TOWN + "wall.glb", 2.5, 19, -19.5, 4, 1))
+    p.append(wall_z("east_wall", TOWN + "wall.glb", -19, -2.5, 19.5, 4, 1, flip=True))
+    p.append(wall_z("east_wall_s", TOWN + "wall.glb", 2.5, 19, 19.5, 4, 1, flip=True))
     for i, (x, z) in enumerate(((-18, -18), (18, -18), (-18, 18), (18, 18))):
         p.append(prop(f"ward_{i + 1}", TOWN + "pillar-stone.glb", (x, 0, z), 0.0, (7.5, 6, 7.5)))
         p.append(prop(f"ward_lantern_{i + 1}", TOWN + "lantern.glb", (x, 6, z), 0.0, 1.2))
