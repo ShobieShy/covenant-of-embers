@@ -97,7 +97,9 @@ func test_v1_fixture_saves_load() -> void:
 		else:  # step 157+: a redesigned map moves a v1 save to its waystone / beat anchor
 			var to := MapAnchors.spawn_node(level, {}, "", "")
 			var want := to.global_position if to else start.global_position
-			check(p.spawn_feet.distance_to(want) < 0.6, "%s (map v%d): spawn at %s" % [lvl, v, to.name if to else "start"])
+			check(
+				p.spawn_feet.distance_to(want) < 0.6, "%s (map v%d): spawn at %s" % [lvl, v, to.name if to else "start"]
+			)
 		check(g.load_warnings.is_empty(), "%s: no warnings %s" % [lvl, g.load_warnings])
 		check(g.story_flags.has("tutorial_done"), "%s: flags kept" % lvl)
 		var pr: Dictionary = g.progress()

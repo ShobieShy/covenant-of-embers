@@ -757,25 +757,7 @@ func wall_up(w: String) -> bool:
 
 
 func _wall(n: String, z: float) -> StaticBody3D:
-	var body := StaticBody3D.new()
-	body.name = n
-	var shape := CollisionShape3D.new()
-	var box := BoxShape3D.new()
-	box.size = Vector3(29.0, 4.0, 0.6)
-	shape.shape = box
-	body.add_child(shape)
-	var mesh := MeshInstance3D.new()
-	var bm := BoxMesh.new()
-	bm.size = Vector3(29.0, 1.2, 0.6)
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.35, 0.28, 0.2)
-	bm.material = mat
-	mesh.mesh = bm
-	mesh.position.y = -1.4
-	body.add_child(mesh)
-	main.add_child(body)
-	body.global_position = Vector3(0.0, 2.0, z)
-	return body
+	return IntroWall.make(main, n, z)
 
 
 func _drop_wall(w: String) -> void:
@@ -856,7 +838,9 @@ func _on_crafted(_p: Player, _w: WieldableInstance) -> void:
 func _make_shrines() -> void:
 	if not shrines.is_empty():
 		return
-	for spec in [["Light shrine", spot("light_shrine", LIGHT_SHRINE)], ["Dark shrine", spot("dark_shrine", DARK_SHRINE)]]:
+	for spec in [
+		["Light shrine", spot("light_shrine", LIGHT_SHRINE)], ["Dark shrine", spot("dark_shrine", DARK_SHRINE)]
+	]:
 		var n := Npc.new(String(spec[0]))
 		n.name = String(spec[0]).replace(" ", "")
 		n.player = player
