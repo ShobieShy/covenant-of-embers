@@ -258,3 +258,9 @@ Hub towns are smaller (150-300 m), and dungeons are linear 200-400 m runs. We ma
   allowlists exactly that pair, like run_tests.sh.
 - Perf: no display on the build box this run, so the Low-budget flythrough (perf_capture.gd
   --flythrough) was not re-measured; carried over.
+
+### Step 165 (W14) Docs + balance, 2026-10-26
+- docs/ZONE_BALANCE.md: camps, encounters, chest tiers and waystones per zone, with density
+  and the rarity floor per chest tier. No numbers changed; hand tuning is carried over.
+- README: a World section for the five zones and links to the plan, balance and art requests.
+- CREDITS already lists all 9 ambientCG CC0 textures (gen_credits --check).

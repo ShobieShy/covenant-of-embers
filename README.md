@@ -11,6 +11,14 @@ godot --headless --path . -- --seconds 2   # smoke run
 ./tools/run_tests.sh                  # import + unit tests + smoke + asset lint
 ```
 
+## World (0.1.4-prealpha)
+Five zones on Terrain3D heightmaps textured with CC0 ambientCG materials: Eldoria's town
+square, the Old Oak, the Mage Association, the Landfill (Joe's dump camp, 8 respawning
+camps, trash and junk to salvage) and the Breach (crater approach, 6 rooms on 2 levels,
+3 levers, an optional side wing). Waystones fast-travel between them; see
+[docs/ZONE_BALANCE.md](docs/ZONE_BALANCE.md) and [docs/TERRAIN_MAPS_PLAN.md](docs/TERRAIN_MAPS_PLAN.md).
+Placeholder art slots awaiting original Ember Art: [docs/EMBER_ART_REQUESTS.md](docs/EMBER_ART_REQUESTS.md).
+
 ## Licenses
 - Code: Apache-2.0 (see `LICENSE`).
 - Original assets: CC BY-SA 4.0 (`LICENSE-ASSETS`, to be added with the first original asset).
