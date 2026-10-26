@@ -303,3 +303,13 @@ license = "CC0-1.0"
 license_url = "https://docs.ambientcg.com/license/"
 date_added = "2026-10-26"
 use = "Step 152 terrain mud layer (color/normal/roughness/height at 512 px + Terrain3D packed PNGs)"
+
+[[asset]]
+name = "Ember Art (0.1.4)"
+path = "assets/original/ember_art"
+author = "Covenant of Embers project (Ember Art)"
+source = "incoming_art/batch_06_requests (Ember Art batch 06; original work, Blender 4.5 script + PIL)"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-10-26"
+use = "Landmarks (junk mountain, Association spire, Old Oak LODs, Breach crater rim), waystone and chest variants, Filth decal, skyline, world map paintings, 16 px item icons"

@@ -25,7 +25,8 @@ var rng := RandomNumberGenerator.new()
 var luck := 0.0
 var table: RarityTable
 var element := -1  ## -1 = roll per item; the Breach passes the boss's affinity
-var _lid: MeshInstance3D
+var _lid: Node3D  ## placeholder lid mesh, or the batch 06 GLB's Lid hinge
+var _art := false
 
 
 func _ready() -> void:
@@ -35,6 +36,8 @@ func _ready() -> void:
 	var art := EmberArt.model("chest_" + tier) if get_child_count() == 0 else null  # step 163
 	if art:
 		add_child(art)
+		_art = true
+		_lid = art.find_child("Lid", true, false) as Node3D
 	elif get_child_count() == 0:
 		var tint: Array = EmberArt.chest_colors(tier)
 		var body := MeshInstance3D.new()
@@ -46,16 +49,17 @@ func _ready() -> void:
 		m.albedo_color = tint[0]
 		body.material_override = m
 		add_child(body)
-		_lid = MeshInstance3D.new()
+		var lid := MeshInstance3D.new()
+		_lid = lid
 		var lm := BoxMesh.new()
 		lm.size = Vector3(1.25, 0.15, 0.75)
-		_lid.mesh = lm
+		lid.mesh = lm
 		_lid.position.y = 0.68
 		var gm := StandardMaterial3D.new()
 		gm.albedo_color = tint[1]
 		gm.emission_enabled = true
 		gm.emission = (tint[1] as Color) * 0.9
-		_lid.material_override = gm
+		lid.material_override = gm
 		add_child(_lid)
 
 
@@ -135,9 +139,7 @@ func open_chest() -> Array[LootDrop]:
 	var drops := roll_contents(rng, floor_rarity, luck, table, element, bias)
 	if dropper != null and dropper.parent != null:
 		dropper.spawn_drops(drops, dropper.parent.to_local(global_position + Vector3(0, 0.2, 1.0)), "vault_chest")
-	if _lid:
-		_lid.rotation_degrees.x = -70.0
-		_lid.position = Vector3(0, 0.9, -0.35)
+	_swing_lid(true)
 	opened.emit(drops)
 	return drops
 
@@ -145,9 +147,7 @@ func open_chest() -> Array[LootDrop]:
 ## Step 158: an already-looted zone chest (its flag is set): shown open, no loot.
 func open_chest_quiet() -> void:
 	is_open = true
-	if _lid:
-		_lid.rotation_degrees.x = -70.0
-		_lid.position = Vector3(0, 0.9, -0.35)
+	_swing_lid(false)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -156,3 +156,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"interact") and in_reach(player):
 		open_chest()
 		get_viewport().set_input_as_handled()
+
+
+## Swings the lid back on its local X hinge; animated (0.45 s) unless restoring a save.
+func _swing_lid(animated: bool) -> void:
+	if _lid == null:
+		return
+	if not _art:
+		_lid.position = Vector3(0, 0.9, -0.35)
+	if animated and is_inside_tree():
+		create_tween().tween_property(_lid, ^"rotation_degrees:x", -70.0, 0.45).set_trans(Tween.TRANS_BACK)
+	else:
+		_lid.rotation_degrees.x = -70.0

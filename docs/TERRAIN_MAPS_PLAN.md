@@ -264,3 +264,17 @@ Hub towns are smaller (150-300 m), and dungeons are linear 200-400 m runs. We ma
   and the rarity floor per chest tier. No numbers changed; hand tuning is carried over.
 - README: a World section for the five zones and links to the plan, balance and art requests.
 - CREDITS already lists all 9 ambientCG CC0 textures (gen_credits --check).
+
+### Ember Art batch 06 integration, 2026-10-26
+- 39 CC0 original files copied from incoming_art/batch_06_requests to assets/original/ember_art
+  (ASSETS.toml entry, CREDITS line, data/credits.toml regenerated).
+- EmberArt: LOD siblings get visibility ranges (junk mountain 180/450 m, spire 90/260 m, oak
+  45/120/300 m with the impostor as the far band); junk_mountain scaled 0.6 (~114 x 38 m);
+  waystone emission scaled to 0.3x energy (it read white); skyline tiles 2x per quad; slots for
+  all 8 map_<region> paintings.
+- VaultChest: uses the GLB's Lid hinge; opening tweens it to -70 degrees on local X (0.45 s),
+  save restores snap it open.
+- ItemIcons: batch 06 16 px icons first (staff/wand, element heads, hood/robe/boots, gem, charm
+  amulet); junk-marked backpack slots show a junk icon. Ring and the belt/grimoire slots keep
+  the older icons.
+- Tests: test_ember_art 3/3 (new batch 06 check) and 16 related test files pass; lint green.

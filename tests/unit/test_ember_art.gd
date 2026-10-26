@@ -19,8 +19,46 @@ func test_ember_art_slots() -> void:
 	var c := VaultChest.new()
 	c.set_meta(&"tier", "hidden")
 	runner_tree.root.add_child(c)
-	check(c._lid != null and c._lid.material_override.albedo_color == EmberArt.chest_colors("hidden")[1], "tinted")
+	if EmberArt.has_art("chest_hidden"):
+		check(c._art and c._lid != null and c._lid.name == &"Lid", "batch 06 chest has its Lid hinge")
+	else:
+		check(c._lid != null and c._lid.material_override.albedo_color == EmberArt.chest_colors("hidden")[1], "tinted")
+	c.open_chest_quiet()
+	check(is_equal_approx(c._lid.rotation_degrees.x, -70.0), "lid swings open on local X")
 	c.free()
+
+
+func test_ember_art_batch06() -> void:
+	for id in EmberArt.SLOTS:
+		check(EmberArt.has_art(id), "batch 06 file for " + id)
+	var jm := EmberArt.model("junk_mountain")
+	check(jm != null and is_equal_approx(jm.scale.x, 0.6), "junk mountain scaled")
+	var lods := {}
+	for g in jm.find_children("*", "GeometryInstance3D", true, false):
+		var gi := g as GeometryInstance3D
+		lods[[gi.visibility_range_begin, gi.visibility_range_end]] = true
+	check(lods.size() == 3, "3 LOD bands: %s" % [lods.keys()])
+	jm.free()
+	var oak := EmberArt.model("oak_lod")
+	var imp := oak.find_child("oak_lod_Impostor", true, false)
+	check(imp != null and imp.visible, "oak impostor kept as the far band")
+	oak.free()
+	var ws := EmberArt.model("waystone_breach")
+	var dimmed := ws.find_children("*", "MeshInstance3D", true, false).any(
+		func(m: Node) -> bool:
+			for i in (m as MeshInstance3D).mesh.get_surface_count():
+				var o := (m as MeshInstance3D).get_surface_override_material(i) as StandardMaterial3D
+				if o and o.emission_enabled:
+					return true
+			return false
+	)
+	check(dimmed, "waystone glow dimmed")
+	ws.free()
+	for r in WorldMap.REGIONS:
+		check(EmberArt.texture("map_" + String(r)) is CompressedTexture2D, "painting " + String(r))
+	var g := ElementGem.new()
+	check(ItemIcons.path_for(g).ends_with("icons/gear/gem.png"), "gem icon from batch 06")
+	check(ItemIcons.junk_icon(g) != null, "junk icon")
 
 
 func test_ember_art_dress() -> void:

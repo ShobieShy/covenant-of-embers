@@ -40,6 +40,8 @@ Characters by Quaternius (quaternius.com), CC0. Delivered by Ember Art as batch 
 
 Staff brands (0.1.3): the six maker logos are original CC0 marks (tools/gen_brand_logos.py); brand VFX (heat glow, vent steam, charge glow, spin ring, orb/boulder heads, blasts) are procedural, made in code for this project; brand sounds reuse the Kenney Interface Sounds and Impact Sounds packs listed above (CC0). The makers are fictional.
 
+Ember Art (0.1.4): the junk mountain, Association spire, Old Oak LOD set, Breach crater rim, 4 waystone variants, 3 chest tiers, Filth decal, skyline strip, 8 world map paintings and the 16 px element / gear / junk icons are original work made for Covenant of Embers (Ember Art batch 06, Blender 4.5 script + PIL), CC0 1.0.
+
 CC0 does not require attribution; Kenney and ambientCG are credited anyway with thanks. Support: https://kenney.nl/donate
 
 ## Libraries

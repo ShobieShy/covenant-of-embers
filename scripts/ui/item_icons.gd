@@ -7,6 +7,11 @@ extends RefCounted
 const ITEMS := "res://assets/kenney/pixel-ui/icons/items/"
 const SPELLS := "res://assets/kenney/pixel-ui/icons/spells_elements/"
 const GEAR := "res://assets/kenney/pixel-ui/icons/gear/"
+## Ember Art batch 06 (CC0, original): 16 px element / gear / junk icons, preferred when present.
+const EMBER := "res://assets/original/ember_art/icons/"
+const EMBER_ELEMENTS: PackedStringArray = ["arcane", "fire", "water", "earth", "air", "", ""]
+const EMBER_GEAR: PackedStringArray = ["hood", "robe", "", "boots", ""]
+const EMBER_JUNK: PackedStringArray = ["bottle", "can", "bag", "bone", "scrap"]
 const PART_ICONS: PackedStringArray = [
 	"",  # HEAD: by element (HEAD_BY_ELEMENT)
 	ITEMS + "buckler_square.png",  # EXTERIOR: the casing
@@ -38,6 +43,9 @@ const GEM_TINT: Array[Color] = [
 
 ## Path of the icon for `item` ("" for null / an unknown type).
 static func path_for(item: Resource) -> String:
+	var e := _ember_path(item)
+	if not e.is_empty() and ResourceLoader.exists(e):
+		return e
 	if item is WieldableInstance:
 		var w := item as WieldableInstance
 		return ITEMS + ("staff_purple.png" if w.type() == WieldableDef.Type.STAFF else "staff_blue.png")
@@ -53,6 +61,36 @@ static func path_for(item: Resource) -> String:
 	if item is ConsumableItem:
 		return ITEMS + ("potion_blue.png" if (item as ConsumableItem).attribute == "mana" else "potion_red.png")
 	return ""
+
+
+## The batch 06 icon for `item`, or "" when it has none.
+static func _ember_path(item: Resource) -> String:
+	if item is WieldableInstance:
+		return (
+			EMBER
+			+ "gear/"
+			+ ("staff" if (item as WieldableInstance).type() == WieldableDef.Type.STAFF else "wand")
+			+ ".png"
+		)
+	if item is WieldablePart and (item as WieldablePart).part_type == WieldablePart.PartType.HEAD:
+		var n := EMBER_ELEMENTS[clampi((item as WieldablePart).element, 0, EMBER_ELEMENTS.size() - 1)]
+		return "" if n.is_empty() else EMBER + "elements/" + n + ".png"
+	if item is EquipmentItem:
+		var g := EMBER_GEAR[clampi((item as EquipmentItem).slot, 0, EMBER_GEAR.size() - 1)]
+		return "" if g.is_empty() else EMBER + "gear/" + g + ".png"
+	if item is ElementGem:
+		return EMBER + "gear/gem.png"
+	if item is WieldablePart and (item as WieldablePart).part_type == WieldablePart.PartType.CHARM:
+		return EMBER + "gear/amulet.png"
+	return ""
+
+
+## A junk mark icon (one of 5, stable per item) for backpack slots marked as junk.
+static func junk_icon(item: Resource) -> Texture2D:
+	var p := (
+		EMBER + "junk/" + EMBER_JUNK[absi(hash(item.resource_name + item.resource_path)) % EMBER_JUNK.size()] + ".png"
+	)
+	return load(p) as Texture2D if ResourceLoader.exists(p) else null
 
 
 static func for_item(item: Resource) -> Texture2D:

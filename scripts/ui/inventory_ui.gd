@@ -271,6 +271,9 @@ func refresh() -> void:
 		if it and player.inventory.is_junk(it):
 			slot_buttons[i].modulate = slot_buttons[i].modulate.darkened(0.55)
 			slot_buttons[i].tooltip_text += " (junk)"
+			var jt := ItemIcons.junk_icon(it)
+			if jt:
+				slot_buttons[i].icon = jt
 	var pot := player.equipment.potion
 	potion_button.text = ("Potions: %s x%d" % [name_of(pot), player.equipment.potion_count] if pot else "Potions: -")
 	for c in quest_box.get_children():

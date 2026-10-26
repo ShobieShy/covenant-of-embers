@@ -24,8 +24,24 @@ const SLOTS := {
 	"filth_decal": {"kind": "texture", "level": ""},
 	"skyline": {"kind": "texture", "level": ""},
 	"map_eldoria": {"kind": "texture", "level": ""},
+	"map_luminar": {"kind": "texture", "level": ""},
+	"map_willowbrook": {"kind": "texture", "level": ""},
+	"map_stonehaven": {"kind": "texture", "level": ""},
 	"map_landfill": {"kind": "texture", "level": ""},
+	"map_whispering_woods": {"kind": "texture", "level": ""},
+	"map_shattered_peaks": {"kind": "texture", "level": ""},
+	"map_crimson_sea": {"kind": "texture", "level": ""},
 }
+## Batch 06: LOD switch distances (m) per model with <id>_LOD0/1/2 (+ _Impostor) siblings,
+## and the landmark scale (junk_mountain arrives ~190 m wide x 63 m tall).
+const LOD_RANGES := {
+	"junk_mountain": [180.0, 450.0],
+	"association_spire": [90.0, 260.0],
+	"oak_lod": [45.0, 120.0, 300.0],
+}
+const SCALE := {"junk_mountain": 0.6}
+## The waystone GLBs' emission read nearly white; scale it down.
+const WAYSTONE_GLOW := 0.3
 ## Placeholder tints (body, trim) per chest tier.
 const CHEST := {
 	"normal": [Color(0.45, 0.3, 0.15), Color(0.85, 0.65, 0.2)],
@@ -54,7 +70,46 @@ static func model(id: String) -> Node3D:
 	if not has_art(id):
 		return null
 	var ps := load(path(id)) as PackedScene
-	return ps.instantiate() as Node3D if ps else null
+	var m := ps.instantiate() as Node3D if ps else null
+	if m:
+		_prep(m, id)
+	return m
+
+
+## Batch 06 fix-ups: LOD visibility ranges, landmark scale, dimmer waystone glow.
+static func _prep(m: Node3D, id: String) -> void:
+	if SCALE.has(id):
+		m.scale = Vector3.ONE * float(SCALE[id])
+	var r: Array = LOD_RANGES.get(id, [])
+	if not r.is_empty():
+		var bands := {
+			"_LOD0": [0.0, r[0]],
+			"_LOD1": [r[0], r[1]],
+			"_LOD2": [r[1], r[2] if r.size() > 2 else 0.0],
+			"_Impostor": [r[2] if r.size() > 2 else 0.0, 0.0],
+		}
+		for n in m.find_children("*", "Node3D", true, false):
+			for suf in bands:
+				if String(n.name).ends_with(suf):
+					var b: Array = bands[suf]
+					if suf == "_Impostor" and r.size() < 3:
+						n.visible = false
+					for g in [n] + n.find_children("*", "GeometryInstance3D", true, false):
+						if g is GeometryInstance3D:
+							(g as GeometryInstance3D).visibility_range_begin = float(b[0])
+							(g as GeometryInstance3D).visibility_range_end = float(b[1])
+	if id.begins_with("waystone_"):
+		for mi in m.find_children("*", "MeshInstance3D", true, false):
+			var mesh := (mi as MeshInstance3D).mesh
+			if mesh == null:
+				continue
+			for i in mesh.get_surface_count():
+				var mat := mesh.surface_get_material(i) as StandardMaterial3D
+				if mat and mat.emission_enabled:
+					var d := mat.duplicate() as StandardMaterial3D
+					d.emission_energy_multiplier *= WAYSTONE_GLOW
+					d.emission = d.emission * 0.6
+					(mi as MeshInstance3D).set_surface_override_material(i, d)
 
 
 ## The slot's texture, or a procedural placeholder (a two-colour gradient).
@@ -139,6 +194,8 @@ static func _skyline(holder: Node3D, tz: TerrainZone) -> void:
 	var r := maxf(tz.size.x, tz.size.y) * 0.5 + 60.0
 	var mat := StandardMaterial3D.new()
 	mat.albedo_texture = texture("skyline")
+	mat.texture_repeat = true
+	mat.uv1_scale = Vector3(2, 1, 1)  # the batch 06 strip tiles horizontally
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
