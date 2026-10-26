@@ -98,6 +98,7 @@ static func _prep(m: Node3D, id: String) -> void:
 						if g is GeometryInstance3D:
 							(g as GeometryInstance3D).visibility_range_begin = float(b[0])
 							(g as GeometryInstance3D).visibility_range_end = float(b[1])
+	_collide(m, id)
 	if id.begins_with("waystone_"):
 		for mi in m.find_children("*", "MeshInstance3D", true, false):
 			var mesh := (mi as MeshInstance3D).mesh
@@ -212,3 +213,20 @@ static func _skyline(holder: Node3D, tz: TerrainZone) -> void:
 		holder.add_child(q)
 		q.position = Vector3(tz.center.x + r * sin(a), qm.size.y * 0.5, tz.center.y + r * cos(a))
 		q.rotation.y = a + PI
+
+
+## Simple collision: a trimesh from each landmark's LOD0 (or its only mesh); a convex hull for
+## the small props (waystones, chests) so the interaction reach still works round them.
+static func _collide(m: Node3D, id: String) -> void:
+	var small := id.begins_with("waystone_") or id.begins_with("chest_")
+	var meshes := m.find_children("*", "MeshInstance3D", true, false)
+	var lod0 := meshes.filter(
+		func(n: Node) -> bool: return String(n.name).contains("_LOD0") or String(n.get_parent().name).ends_with("_LOD0")
+	)
+	for mi in lod0 if not lod0.is_empty() else meshes:
+		if String(mi.name).contains("Impostor") or (small and String(mi.get_parent().name) == "Lid"):
+			continue
+		if small:
+			(mi as MeshInstance3D).create_convex_collision(true, true)
+		else:
+			(mi as MeshInstance3D).create_trimesh_collision()

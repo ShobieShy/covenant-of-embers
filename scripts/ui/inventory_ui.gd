@@ -271,9 +271,7 @@ func refresh() -> void:
 		if it and player.inventory.is_junk(it):
 			slot_buttons[i].modulate = slot_buttons[i].modulate.darkened(0.55)
 			slot_buttons[i].tooltip_text += " (junk)"
-			var jt := ItemIcons.junk_icon(it)
-			if jt:
-				slot_buttons[i].icon = jt
+		_junk_badge(slot_buttons[i], it if it and player.inventory.is_junk(it) else null)
 	var pot := player.equipment.potion
 	potion_button.text = ("Potions: %s x%d" % [name_of(pot), player.equipment.potion_count] if pot else "Potions: -")
 	for c in quest_box.get_children():
@@ -426,3 +424,26 @@ func import_code(code: String) -> bool:
 	selected = m.item
 	refresh()
 	return true
+
+
+## A small junk badge in the slot's top-right corner (over, not instead of, the item icon).
+func _junk_badge(b: Button, it: Resource) -> void:
+	var old := b.get_node_or_null(^"JunkBadge")
+	var tex := ItemIcons.junk_icon(it) if it else null
+	if tex == null:
+		if old:
+			old.queue_free()
+		return
+	var r := old as TextureRect
+	if r == null:
+		r = TextureRect.new()
+		r.name = "JunkBadge"
+		r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		r.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+		r.offset_left = -18
+		r.offset_top = 2
+		r.offset_right = -2
+		r.offset_bottom = 18
+		b.add_child(r)
+	r.texture = tex

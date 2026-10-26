@@ -38,6 +38,11 @@ func test_ember_art_batch06() -> void:
 		var gi := g as GeometryInstance3D
 		lods[[gi.visibility_range_begin, gi.visibility_range_end]] = true
 	check(lods.size() == 3, "3 LOD bands: %s" % [lods.keys()])
+	check(jm.find_children("*", "StaticBody3D", true, false).size() >= 1, "junk mountain collides")
+	for id in ["association_spire", "oak_lod", "breach_crater_rim", "waystone_town", "chest_vault"]:
+		var mm := EmberArt.model(id)
+		check(mm.find_children("*", "StaticBody3D", true, false).size() >= 1, id + " collides")
+		mm.free()
 	jm.free()
 	var oak := EmberArt.model("oak_lod")
 	var imp := oak.find_child("oak_lod_Impostor", true, false)
