@@ -30,8 +30,8 @@ def v(p) -> str:
 
 
 class Map:
-    def __init__(self, terrain: dict):
-        self.out = ["[terrain]\n" + "".join(f"{k} = {v(x) if isinstance(x, (list, tuple)) and not isinstance(x[0], str) else _val(x)}\n"
+    def __init__(self, terrain: dict | None):
+        self.out = [] if terrain is None else ["[terrain]\n" + "".join(f"{k} = {v(x) if isinstance(x, (list, tuple)) and not isinstance(x[0], str) else _val(x)}\n"
                                              for k, x in terrain.items())]
         self.rects: list[tuple[float, float, float, float]] = []
 
@@ -216,7 +216,51 @@ def town() -> Map:
     return m
 
 
-MAPS = {"data/levels/old_oak.toml": old_oak, "data/levels/town_square.toml": town}
+HALL_STONE = [0.62, 0.58, 0.55]
+WOOD = [0.42, 0.3, 0.2]
+
+
+def association() -> Map:
+    """159 W8 Mage Association, 60x90 m, 3 floors, no terrain: the 20x30 grand hall stays as is
+    (beats 1-4); the library wing (E, mezzanine at 4 m, archive at 8 m) and the courtyard wing (W)
+    open through side doors behind tutorial_done gates."""
+    m = Map(None)
+    for side, sx in (("east", 1), ("west", -1)):
+        cx = 20 * sx
+        m.box(f"{side}_wing_floor", "ground", [cx, -0.1, 0], [20, 0.2, 90], [0.5, 0.47, 0.44])
+        m.wall(f"{side}_wing_outer", [30.5 * sx, 4, 0], [1, 8, 92], HALL_STONE)
+        m.wall(f"{side}_wing_north", [cx, 4, -45.5], [20, 8, 1], HALL_STONE)
+        m.wall(f"{side}_wing_south", [cx, 4, 45.5], [20, 8, 1], HALL_STONE)
+        m.wall(f"{side}_wing_inner_n", [10.5 * sx, 4, -30.25], [1, 8, 29.5], HALL_STONE)
+        m.wall(f"{side}_wing_inner_s", [10.5 * sx, 4, 30.25], [1, 8, 29.5], HALL_STONE)
+        m.gate(f"{side}_wing_door", [10.6 * sx, 1.75, 0], [0.5, 3.5, 4.4],
+               "The Archmage's wings are closed to novices.", "tutorial_done")
+    # Library wing: shelves on the ground floor, a mezzanine (floor 2) and an archive (floor 3).
+    for i in range(6):
+        m.box(f"shelf_{i + 1}", "wall", [24, 1.6, -40 + i * 6], [8, 3.2, 1], WOOD)
+    m.stairs("library_stair", 13, 12, 4.0, 10, (0.0, -1.2), 3.0, WOOD)
+    m.box("mezzanine", "platform", [21, 3.8, -21.8], [18, 0.4, 43.6], WOOD)
+    for i in range(8):
+        m.box(f"archive_stair_{i + 1}", "platform", [28, 4 + 4 * (i + 1) / 8 - 0.2, -4 - 1.2 * i], [3, 0.4, 3], WOOD)
+    m.box("archive", "platform", [25, 7.8, -27.5], [9, 0.4, 25], WOOD)
+    m.box("archive_rail", "wall", [20.25, 8.6, -27.5], [0.3, 1.2, 25], WOOD)
+    m.chest("archive_hidden", [28, 8.0, -38], "hidden")
+    m.chest("library_chest", [16, 0, -42], "normal")
+    m.anchor("library", [16, 0, 0], 270.0)
+    m.poi("library", [20, 0, -10], 25)
+    # Courtyard wing: open to the sky, a fountain, planters and trees.
+    m.box("fountain", "wall", [-20, 0.5, 0], [6, 1, 6], HALL_STONE)
+    m.box("fountain_water", "platform", [-20, 1.02, 0], [5, 0.04, 5], [0.16, 0.28, 0.38])
+    for i, (x, z) in enumerate(((-15, -30), (-25, -30), (-15, 30), (-25, 30), (-15, -15), (-25, 15))):
+        m.prop(f"courtyard_tree_{i + 1}", TREES[i % len(TREES)], [x, 0, z], 37.0 * i, 3.5, poi="courtyard")
+    m.chest("courtyard_chest", [-27, 0, -42], "normal")
+    m.anchor("courtyard", [-16, 0, 0], 90.0)
+    m.poi("courtyard", [-20, 0, 0], 25)
+    return m
+
+
+MAPS = {"data/levels/old_oak.toml": old_oak, "data/levels/town_square.toml": town,
+        "data/levels/mage_association.toml": association}
 
 
 def apply(path: Path, block: str) -> str:
@@ -224,7 +268,7 @@ def apply(path: Path, block: str) -> str:
     if BEGIN in s:
         a = s.index(BEGIN)
         b = s.index(END, a) + len(END)
-        s = s[:a] + s[b:]
+        s = s[:a] + s[b:].removeprefix("\n")  # the "\n" apply() adds before DRESS
     i = s.find(DRESS)
     if i < 0:
         return s.rstrip("\n") + "\n\n" + block
