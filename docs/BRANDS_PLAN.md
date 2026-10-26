@@ -143,7 +143,7 @@ default R) that only some brands use; others ignore it.
 | Pyrowning | cooldown_mult 0.8, heat_per_cast 0.12, heat_decay 0.6/s, vent_delay 0.4 s, overheat_seconds 2.0, vent_seconds 1.0, mana 0 |
 | Sigil Sauer | charge_seconds 1.0, min_mult 0.6, max_mult 1.8, chain_threshold 0.95, chain_targets 2, chain_range 6 m, chain_fraction 0.5, mana x lerp(0.5,1.5) |
 | Moss & Berg | cooldown_mult 1.8, damage_mult 2.2, speed_mult 0.6, blast_radius 3 m, falloff 0.5 at edge, mana_mult 1.6 |
-| Windchester | spin_start 1.4, spin_end 0.45 (cooldown x), spin_seconds 1.5, spin_down 1.5/s, damage_mult 0.6, bloom_mult 0.6, still >= 0.1 s min cooldown? (Q11) |
+| Windchester | spin_start 1.4, spin_end 0.45 (cooldown x), spin_seconds 1.5, spin_down 1.5/s, damage_mult 0.6, bloom_mult 0.6, still >= 0.1 s min cooldown? (Q45: yes, clamped at 0.1 s) |
 | Coltara Halo | burst_count 3, burst_gap 0.07 s, burst_mana 2.0, ramp_per_cast +4 acc, ramp_max +20, ramp_window 0.6 s |
 | Hexler & Koch | accuracy_add +15, damage_mult 1.15, crit_mult 2.0, crit_chance 0.1 (no weak point), pool_casts 6, orb_damage_per_charge 0.4x damage, refill_seconds 1.5 |
 Target: DPS within +/-15 % of unbranded semi at equal rarity over a 10 s dummy test.
@@ -172,16 +172,19 @@ Target: DPS within +/-15 % of unbranded semi at equal rarity over a 10 s dummy t
 - **142 Brands B8** Co-op: brand_fx snapshot bits, blast/orb hit lists, PROTOCOL 2; coop test.
 - **143 Brands B9** Balance pass with DPS harness, BalancePatch support for brand params, playtest bot rotation, docs.
 
-## 12. Open questions
-- **Q35** Gems: brand follows the Head's own element (planned) or the socketed gem's element?
-- **Q36** Flat gear/Consecration bonus: once per bolt (planned; strong on Windchester/bursts) or once per trigger press?
-- **Q37** Pyrowning mana: zero mana (planned) or a mana charge on overheat/vent?
-- **Q38** Overheat penalty: lockout only (planned) or also a small self-burn?
-- **Q39** Moss & Berg boulders: straight (planned) or arcing with gravity?
-- **Q40** Coltara Halo: select fire toggle on R (planned) or a separate key; any Hyperion-style shield on focus?
-- **Q41** Hexler crit: real weak-point hitboxes on enemies (planned, plus chance fallback) or chance only?
-- **Q42** Sigil Sauer chain vs Air's chain status: keep both (Water chain only on full charge), or give Water something else?
-- **Q43** Naming: "Rare Pyrowning Fire Staff" (planned) or drop the element ("Rare Pyrowning Staff")?
-- **Q44** Brand only the Head (planned) or every elemental part, with a set bonus for matching brands?
-- **Q45** Windchester: keep the 0.1 s global minimum cooldown or let spin-up go lower?
-- **Q46** Wands: same brand behaviour as staves, or a lighter version (e.g. no burst/orb)?
+## 12. Open questions (all answered 2026-10-26: user accepted the defaults)
+- ~~**Q35** Gems: brand follows the Head's own element (planned) or the socketed gem's element?~~ **Answered 2026-10-26:** Head element (gems don't change brand).
+- ~~**Q36** Flat gear/Consecration bonus: once per bolt (planned; strong on Windchester/bursts) or once per trigger press?~~ **Answered 2026-10-26:** Per bolt.
+- ~~**Q37** Pyrowning mana: zero mana (planned) or a mana charge on overheat/vent?~~ **Answered 2026-10-26:** No mana.
+- ~~**Q38** Overheat penalty: lockout only (planned) or also a small self-burn?~~ **Answered 2026-10-26:** Lockout only.
+- ~~**Q39** Moss & Berg boulders: straight (planned) or arcing with gravity?~~ **Answered 2026-10-26:** Straight.
+- ~~**Q40** Coltara Halo: select fire toggle on R (planned) or a separate key; any Hyperion-style shield on focus?~~ **Answered 2026-10-26:** R toggles; no shield.
+- ~~**Q41** Hexler crit: real weak-point hitboxes on enemies (planned, plus chance fallback) or chance only?~~ **Answered 2026-10-26:** Weak-point hitboxes with chance fallback.
+- ~~**Q42** Sigil Sauer chain vs Air's chain status: keep both (Water chain only on full charge), or give Water something else?~~ **Answered 2026-10-26:** Keep; Water chain on full charge only.
+- ~~**Q43** Naming: "Rare Pyrowning Fire Staff" (planned) or drop the element ("Rare Pyrowning Staff")?~~ **Answered 2026-10-26:** Keep element in names.
+- ~~**Q44** Brand only the Head (planned) or every elemental part, with a set bonus for matching brands?~~ **Answered 2026-10-26:** Head only.
+- ~~**Q45** Windchester: keep the 0.1 s global minimum cooldown or let spin-up go lower?~~ **Answered 2026-10-26:** Windchester spin-up clamps at the existing 0.1 s minimum cooldown.
+- ~~**Q46** Wands: same brand behaviour as staves, or a lighter version (e.g. no burst/orb)?~~ **Answered 2026-10-26:** Wands get a lighter version (scaled-down brand effects).
+
+## 13. Wands (Q46)
+Wands use the same brand modes with scaled-down effects: a per-brand `wand_scale` param (placeholder 0.6) shrinks heat/charge multipliers, blast radius, burst count (2), spin range, accuracy ramp, crit mult and orb damage toward the unbranded baseline.

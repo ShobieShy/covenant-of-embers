@@ -821,16 +821,16 @@ Details: docs/BRANDS_PLAN.md. One brand per element, from the Head part; Arcane 
 - **Step 142 (waiting on user go)** Brands B8: co-op brand_fx snapshot bits, blast/orb hits, PROTOCOL 2.
 - **Step 143 (waiting on user go)** Brands B9: balance pass (DPS harness), BalancePatch brand params, playtest rotation.
 
-### Open questions (Phase U)
-- Q35 Gems: brand from the Head's element (planned) or the gem's?
-- Q36 Flat gear bonus once per bolt (planned) or per trigger press?
-- Q37 Pyrowning: zero mana (planned) or mana on overheat/vent?
-- Q38 Overheat: lockout only (planned) or also self-burn?
-- Q39 Moss & Berg boulders straight (planned) or arcing?
-- Q40 Coltara select fire on R (planned) or own key; shield on focus?
-- Q41 Hexler crits: weak-point hitboxes + chance fallback (planned) or chance only?
-- Q42 Sigil Sauer chain overlaps Air's chain: keep (full charge only) or change?
-- Q43 Name "Rare Pyrowning Fire Staff" (planned) or drop the element?
-- Q44 Brand only the Head (planned) or all elemental parts + set bonus?
-- Q45 Windchester below the 0.1 s minimum cooldown?
-- Q46 Wands: same brand behaviour or lighter?
+### Open questions (Phase U) — all answered 2026-10-26 (defaults)
+- ~~Q35 Gems: brand from the Head's element (planned) or the gem's?~~ **Answered 2026-10-26:** Head element (gems don't change brand).
+- ~~Q36 Flat gear bonus once per bolt (planned) or per trigger press?~~ **Answered 2026-10-26:** Per bolt.
+- ~~Q37 Pyrowning: zero mana (planned) or mana on overheat/vent?~~ **Answered 2026-10-26:** No mana.
+- ~~Q38 Overheat: lockout only (planned) or also self-burn?~~ **Answered 2026-10-26:** Lockout only.
+- ~~Q39 Moss & Berg boulders straight (planned) or arcing?~~ **Answered 2026-10-26:** Straight.
+- ~~Q40 Coltara select fire on R (planned) or own key; shield on focus?~~ **Answered 2026-10-26:** R toggles; no shield.
+- ~~Q41 Hexler crits: weak-point hitboxes + chance fallback (planned) or chance only?~~ **Answered 2026-10-26:** Weak-point hitboxes with chance fallback.
+- ~~Q42 Sigil Sauer chain overlaps Air's chain: keep (full charge only) or change?~~ **Answered 2026-10-26:** Keep; Water chain on full charge only.
+- ~~Q43 Name "Rare Pyrowning Fire Staff" (planned) or drop the element?~~ **Answered 2026-10-26:** Keep element in names.
+- ~~Q44 Brand only the Head (planned) or all elemental parts + set bonus?~~ **Answered 2026-10-26:** Head only.
+- ~~Q45 Windchester below the 0.1 s minimum cooldown?~~ **Answered 2026-10-26:** Windchester spin-up clamps at the existing 0.1 s minimum cooldown.
+- ~~Q46 Wands: same brand behaviour or lighter?~~ **Answered 2026-10-26:** Wands get a lighter version (scaled-down brand effects).
