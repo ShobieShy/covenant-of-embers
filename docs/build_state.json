@@ -1291,6 +1291,13 @@
       "type": "build",
       "summary": "Brands B9: DPS harness + \u00b115% test, charge/refill scale with cooldown, BalancePatch brands section, playtest bot rotates branded staffs, docs",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T14:05:15-05:00",
+      "step": "release-0.1.3",
+      "type": "release",
+      "summary": "Version 0.1.3-prealpha: staff brands (six fire styles), R vent/reload (potion on H), HUD brand meter, brand logos/FX, co-op protocol 2, brand balance harness",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1443,5 +1450,5 @@
     "2026-10-26: steps 135-143 (part brands B1-B9) planned, waiting on user go; see docs/BRANDS_PLAN.md; open Q35-Q46",
     "2026-10-26: Q35-Q46 answered (defaults): Head brand, flat bonus per bolt, Pyrowning no mana, overheat lockout only, straight boulders, Coltara R toggle no shield, weak points + chance fallback, Water chain full charge only, element kept in names, Head-only brand, Windchester clamps at 0.1 s, wands scaled-down brand effects; steps 135-143 still waiting on user go"
   ],
-  "version": "0.1.2-prealpha"
+  "version": "0.1.3-prealpha"
 }
