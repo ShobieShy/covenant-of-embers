@@ -63,6 +63,7 @@ var mana_refused := 0
 var damage_bonus := 0.0  ## step 19: worn spell_damage_bonus, added flat to each cast
 var conditional_bonus := 0.0  ## step 36: Consecration bonus while its condition holds (flat, each cast)
 var next_cast_bonus := 0.0  ## step 36: Consecration one-shot bonus, spent by the next cast
+var skills: Skills  ## step 145: element-tree mods (ElementSkillMods), set by Player
 var mode: FireMode  ## step 136: rebuilt when the wieldable's brand or type changes
 var _was_held := false
 
@@ -105,15 +106,22 @@ func wants_aim(pressed: bool, held: bool) -> bool:
 	return m != null and (m.wants_cast(pressed, held, _was_held and not held) or m.pending())
 
 
-## Extra accuracy points from the brand (Coltara ramp, Hexler).
+## Step 145: the element-tree mods for the wieldable's element ({} with empty hands).
+func mods() -> Dictionary:
+	if wieldable == null or skills == null:
+		return {}
+	return ElementSkillMods.of(skills, wieldable.element())
+
+
+## Extra accuracy points from the brand (Coltara ramp, Hexler) and element skills.
 func accuracy_bonus() -> float:
 	var m := fire_mode()
-	return m.accuracy_bonus() if m != null else 0.0
+	return (m.accuracy_bonus() if m != null else 0.0) + ElementSkillMods.value(mods(), "accuracy")
 
 
 func bloom_mult() -> float:
 	var m := fire_mode()
-	return m.bloom_mult() if m != null else 1.0
+	return (m.bloom_mult() if m != null else 1.0) * ElementSkillMods.mult(mods(), "bloom_pct", 0.1)
 
 
 ## The R action (vent / toggle / orb). True when the brand did something.
@@ -150,7 +158,8 @@ func tick(pressed: bool, held: bool, dt: float, aim: Aim, bolts: SpellBolts) -> 
 		if edge:
 			blocked += 1
 		return fired
-	var cost := wieldable.mana_cost() * m.cost_mult()
+	var md := mods()
+	var cost := wieldable.mana_cost() * m.cost_mult() * ElementSkillMods.mult(md, "cost_pct", ElementSkillMods.COST_MIN)
 	if m.cost_mult() > 0.0 and mana_spender.is_valid() and not bool(mana_spender.call(cost)):
 		if edge:
 			blocked += 1
@@ -158,7 +167,7 @@ func tick(pressed: bool, held: bool, dt: float, aim: Aim, bolts: SpellBolts) -> 
 			out_of_mana.emit(cost)
 		return fired
 	var cd := wieldable.cooldown()
-	var cm := m.cooldown_mult()
+	var cm := m.cooldown_mult() * ElementSkillMods.mult(md, "cooldown_pct", ElementSkillMods.COST_MIN)
 	cooldown_left = cd if cm == 1.0 else maxf(WieldableDef.MIN_COOLDOWN, cd * cm)
 	_cast(m, aim, bolts)
 	m.after_cast()
@@ -181,9 +190,24 @@ func _cast(m: FireMode, aim: Aim, bolts: SpellBolts) -> void:
 			s.damage *= MagicEffects.LIGHT_DAMAGE_SCALE  # step 108
 		s.dark_bonus = wieldable.dark_chance_bonus()
 		m.modify(s)
+		_apply_mods(s)
 		_fill_aim(s, aim)
 		bolts.spawn(s)
 	casts += 1
+
+
+## Step 145: element-skill damage, range, turn chance and crit on a bolt of the wieldable's element.
+func _apply_mods(s: SpellBolts.Spawn) -> void:
+	var md := mods()
+	if md.is_empty():
+		return
+	s.mods = md
+	s.damage *= ElementSkillMods.mult(md, "damage_pct")
+	s.range_m *= ElementSkillMods.mult(md, "range_pct", 0.1)
+	s.dark_bonus += ElementSkillMods.value(md, "turn_chance") / 100.0
+	if s.crit_mult > 1.0:
+		s.crit_chance += ElementSkillMods.value(md, "crit_chance") / 100.0
+		s.crit_mult *= ElementSkillMods.mult(md, "crit_damage_pct")
 
 
 func _fill_aim(s: SpellBolts.Spawn, aim: Aim) -> void:

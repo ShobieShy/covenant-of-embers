@@ -13,6 +13,7 @@ const OFFSET := Vector3(0.6, 2.0, 0.0)
 const GROUP := &"light_summons"
 
 var owner_player: Player
+var lifetime := LIFETIME  ## step 145: + Light status_seconds skills
 var age := 0.0
 var cooldown := 0.0
 var smites := 0
@@ -24,7 +25,7 @@ static func of(p: Object) -> LightSummon:
 		return null
 	for n in (p as Node).get_tree().get_nodes_in_group(GROUP):
 		var s := n as LightSummon
-		if s and s.owner_player == p and not s.is_queued_for_deletion() and s.age < LIFETIME:
+		if s and s.owner_player == p and not s.is_queued_for_deletion() and s.age < s.lifetime:
 			return s
 	return null
 
@@ -52,7 +53,7 @@ func _physics_process(delta: float) -> void:
 
 func tick(dt: float) -> void:
 	age += dt
-	if age >= LIFETIME or owner_player == null or not is_instance_valid(owner_player):
+	if age >= lifetime or owner_player == null or not is_instance_valid(owner_player):
 		queue_free()
 		return
 	global_position = owner_player.global_position + OFFSET

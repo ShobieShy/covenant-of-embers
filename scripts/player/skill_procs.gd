@@ -22,10 +22,14 @@ func bind(p: Player) -> void:
 		GameEvents.bus().enemy_killed.connect(_on_killed)
 
 
-func on_kill(p: Player) -> void:
+func on_kill(p: Player, element := -1) -> void:
 	if p == null or not p.alive():
 		return
 	var t := p.skills.totals()
+	var el := ElementSkillMods.of(p.skills, element)  # step 145: the killing element's tree
+	for k in ["kill_mana", "kill_health"]:
+		if el.has(k):
+			t[k] = float(t.get(k, 0.0)) + float(el[k])
 	var any := false
 	if float(t.get("kill_mana", 0.0)) > 0.0 and p.mana != null:
 		p.mana.restore(float(t["kill_mana"]))
@@ -50,6 +54,6 @@ func tick(p: Player, dt: float) -> void:
 			c.conditional_bonus += bonus
 
 
-func _on_killed(_enemy: Enemy, _element: ElementTable.Element) -> void:
+func _on_killed(_enemy: Enemy, element: ElementTable.Element) -> void:
 	var p: Player = _player.get_ref() if _player else null
-	on_kill(p)
+	on_kill(p, element)

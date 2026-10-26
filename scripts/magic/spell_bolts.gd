@@ -71,6 +71,7 @@ class Spawn:
 	var chain_targets := 0  ## Sigil Sauer full charge: extra jumps (MagicEffects.chain_n)
 	var chain_range := 0.0
 	var chain_fraction := 0.0
+	var mods: Dictionary = {}  ## step 145: ElementSkillMods for this bolt's element
 	var crit_mult := 1.0  ## Hexler & Koch: extra x on weak points, or on a crit_chance roll
 	var crit_chance := 0.0
 	var is_orb := false  ## Hexler cursed orb (blast, Dark roll once per enemy)
@@ -320,6 +321,8 @@ func _resolve(h: Hit) -> void:
 		t = h.collider.get(&"damage_target")
 	if t is Damage.Target:
 		h.result = Damage.resolve_hit(h.damage, h.element, t)
+		if h.spawn != null and not h.spawn.mods.is_empty():
+			MagicEffects.apply_skill_hit(h, (t as Damage.Target).weak_point, h.collider)
 		if h.spawn != null and h.spawn.crit_mult > 1.0:
 			MagicEffects.apply_crit(h, (t as Damage.Target).weak_point)
 

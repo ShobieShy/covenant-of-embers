@@ -3,10 +3,10 @@
   "engine": "Godot 4.7.2",
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
-  "next_step": 145,
+  "next_step": 146,
   "total_steps": 166,
-  "steps_done": 125,
-  "last_commit": "cb6c748",
+  "steps_done": 126,
+  "last_commit": "92d11d1",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1324,6 +1324,10 @@
     {
       "date": "2026-10-26",
       "note": "Step 144 done: tools/gen_element_trees.py writes data/skills/{arcane,fire,water,earth,air,light,dark}.toml (21 skills each, 20 ranked + exclusive capstone; ELEMENT_STATS vocabulary); SkillTree element/gate/exclusive_group + element_tree(); Skills el_ranks/el_why_not/el_spend/el_totals/capstone_owner (capstone_locked), respec clears all, to_dict skills_version 2 + elements, v1 saves load, two capstones keep the first; Player.spend_element_skill. 490 unit tests green (8 new)."
+    },
+    {
+      "date": "2026-10-26",
+      "note": "Step 145 done: scripts/magic/element_skill_mods.gd (per-element totals, mult floors); Caster.skills/mods(): damage_pct, range_pct, cost_pct, cooldown_pct (x0.5 floor), accuracy, bloom_pct, turn_chance, crit (brand crits); Spawn.mods; MagicEffects: burn seconds/fraction (cap 60%)/damage, slow factor (floor 0.45)/seconds, stagger seconds, chain range/fraction/extra jumps, Light heal % and summon lifetime, Dark corrupt seconds, weak-point %; SkillProcs element kill_mana/kill_health. 493 unit tests green."
     }
   ],
   "completed_steps": [
@@ -1451,7 +1455,8 @@
     141,
     142,
     143,
-    144
+    144,
+    145
   ],
   "deferred": [
     74,
@@ -1471,12 +1476,6 @@
     }
   ],
   "waiting_on_user_go": [
-    {
-      "step": 145,
-      "name": "Element trees V2 ElementSkillMods + status knobs",
-      "plan": "docs/ELEMENT_TREES_PLAN.md",
-      "answers": "t70u"
-    },
     {
       "step": 146,
       "name": "Element trees V3 brand synergies",

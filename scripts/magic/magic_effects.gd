@@ -141,8 +141,26 @@ static func on_hit(h: SpellBolts.Hit) -> void:
 			stagger(h)
 		ElementTable.Element.AIR:
 			chain(h)
+	var md := ElementSkillMods.of_hit(h)
+	if h.element == ElementTable.Element.AIR and int(ElementSkillMods.value(md, "chain_jumps")) > 0:
+		chain_n(h, int(ElementSkillMods.value(md, "chain_jumps")), _chain_range(md), _chain_fraction(md))
 	if h.spawn != null and h.spawn.chain_targets > 0:  # step 138: Sigil Sauer full charge
 		chain_n(h, h.spawn.chain_targets, h.spawn.chain_range, h.spawn.chain_fraction)
+
+
+## Step 145: weak-point bonus on a bolt with element-skill mods (conditional bonuses: step 147).
+static func apply_skill_hit(h: SpellBolts.Hit, weak_point: bool, _target: Object) -> void:
+	var md := ElementSkillMods.of_hit(h)
+	if weak_point and md.has("weakpoint_pct"):
+		h.result.amount *= ElementSkillMods.mult(md, "weakpoint_pct")
+
+
+static func _chain_range(md: Dictionary) -> float:
+	return CHAIN_RANGE + ElementSkillMods.value(md, "chain_range")
+
+
+static func _chain_fraction(md: Dictionary) -> float:
+	return CHAIN_FRACTION * ElementSkillMods.mult(md, "status_pct")
 
 
 static func light_heal_amount(dmg: float) -> float:
@@ -154,12 +172,14 @@ static func light(h: SpellBolts.Hit) -> void:
 	if p == null or not is_instance_valid(p) or not p.alive() or p.health == null:
 		return
 	var before := p.health.value
-	p.health.heal(light_heal_amount(h.result.amount))
+	p.health.heal(light_heal_amount(h.result.amount) * ElementSkillMods.mult(ElementSkillMods.of_hit(h), "heal_pct"))
 	var gained := p.health.value - before
 	light_heals += 1
 	if gained > 0.0:
 		GameEvents.bus().player_healed.emit(p, gained)
-	summon_light(p)
+	var s := summon_light(p)
+	if s != null:
+		s.lifetime += ElementSkillMods.value(ElementSkillMods.of_hit(h), "status_seconds")
 
 
 ## One live summon per caster; returns the new one or null (already has one / no world).
@@ -188,14 +208,14 @@ static func dark(h: SpellBolts.Hit) -> bool:
 	var e := h.collider as Enemy
 	if e == null or e.hold_death:
 		return false
-	return try_corrupt(e, h.dark_bonus)
+	return try_corrupt(e, h.dark_bonus, ElementSkillMods.value(ElementSkillMods.of_hit(h), "status_seconds"))
 
 
 static func dark_chance(bonus: float) -> float:
 	return clampf(DARK_BASE_CHANCE + maxf(0.0, bonus), 0.0, DARK_MAX_CHANCE)
 
 
-static func try_corrupt(e: Enemy, bonus: float) -> bool:
+static func try_corrupt(e: Enemy, bonus: float, extra_seconds := 0.0) -> bool:
 	if e == null or not e.alive() or e.is_boss() or not (e is Gnawer) or e.is_ally():
 		return false
 	var roll := float(dark_roll.call()) if dark_roll.is_valid() else randf()
@@ -204,7 +224,7 @@ static func try_corrupt(e: Enemy, bonus: float) -> bool:
 		roll = 0.0
 	if roll >= dark_chance(bonus):
 		return false
-	if e.corrupt(DARK_SECONDS):
+	if e.corrupt(DARK_SECONDS + extra_seconds):
 		corruptions += 1
 		return true
 	return false
@@ -218,8 +238,15 @@ static func burn(h: SpellBolts.Hit) -> void:
 	var e := h.collider as Enemy
 	if e == null or not e.alive():
 		return
-	var secs := BURN_SECONDS * _scale(h)
-	e.burn_dps = maxf(e.burn_dps if e.burn_left > 0.0 else 0.0, BURN_FRACTION * h.result.amount / secs)
+	var md := ElementSkillMods.of_hit(h)
+	var secs := (BURN_SECONDS + ElementSkillMods.value(md, "status_seconds")) * _scale(h)
+	if secs <= 0.0:
+		return
+	var frac := minf(
+		ElementSkillMods.BURN_FRACTION_MAX, BURN_FRACTION + ElementSkillMods.value(md, "status_pct") / 100.0
+	)
+	frac *= ElementSkillMods.mult(md, "status_damage_pct")
+	e.burn_dps = maxf(e.burn_dps if e.burn_left > 0.0 else 0.0, frac * h.result.amount / secs)
 	e.burn_left = maxf(e.burn_left, secs)
 
 
@@ -227,15 +254,17 @@ static func slow(h: SpellBolts.Hit) -> void:
 	var e := h.collider as Enemy
 	if e == null or not e.alive():
 		return
-	e.slow_factor = SLOW_FACTOR
-	e.slow_left = maxf(e.slow_left, SLOW_SECONDS * _scale(h))
+	var md := ElementSkillMods.of_hit(h)
+	e.slow_factor = maxf(ElementSkillMods.SLOW_FLOOR, SLOW_FACTOR - ElementSkillMods.value(md, "status_pct") / 100.0)
+	e.slow_left = maxf(e.slow_left, (SLOW_SECONDS + ElementSkillMods.value(md, "status_seconds")) * _scale(h))
 
 
 static func stagger(h: SpellBolts.Hit) -> void:
 	var e := h.collider as Enemy
 	if e == null or not e.alive():
 		return
-	e.stagger_left = maxf(e.stagger_left, STAGGER_SECONDS * _scale(h))
+	var secs := STAGGER_SECONDS + ElementSkillMods.value(ElementSkillMods.of_hit(h), "status_seconds")
+	e.stagger_left = maxf(e.stagger_left, secs * _scale(h))
 
 
 ## Returns the enemy the bolt jumped to (null = none in range).
@@ -243,7 +272,8 @@ static func chain(h: SpellBolts.Hit) -> Enemy:
 	var src := h.collider as Enemy
 	if src == null:
 		return null
-	return chain_from(src, CHAIN_FRACTION * h.damage, ElementTable.Element.AIR, CHAIN_RANGE, [])
+	var md := ElementSkillMods.of_hit(h)
+	return chain_from(src, _chain_fraction(md) * h.damage, ElementTable.Element.AIR, _chain_range(md), [])
 
 
 ## Step 138 (Sigil Sauer): up to `n` jumps, each from the last enemy struck to the nearest

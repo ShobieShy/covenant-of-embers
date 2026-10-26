@@ -623,6 +623,7 @@ func apply_bonuses() -> void:
 	var dmg := equipment.spell_damage_bonus() + float(sk.get("spell_damage", 0.0))
 	for c in loadout.casters:
 		c.damage_bonus = dmg
+		c.skills = skills  # step 145: element-tree mods
 	consecrations.apply(self)
 	skill_procs.bind(self)
 
