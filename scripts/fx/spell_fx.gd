@@ -78,6 +78,7 @@ func update_heads(heads: Array) -> void:
 		mi.visible = i < heads.size()
 		if mi.visible:
 			mi.global_position = heads[i][0]
+			mi.scale = Vector3.ONE * (float(heads[i][2]) if heads[i].size() > 2 else 1.0)
 			mi.set_instance_shader_parameter(&"element_color", color(heads[i][1]))
 
 

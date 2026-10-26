@@ -891,6 +891,7 @@ func tick(input: PlayerInput, dt: float) -> void:
 			feel.add_shake(tuning.shake_wand if is_wand else tuning.shake_staff)
 	if viewmodel != null:
 		viewmodel.update_pose(caster.wieldable, focus.amount(), loadout.draw_progress(), feel.recoil_offset())
+		viewmodel.update_brand(caster.fire_mode())
 
 
 func _set_capsule(h: float) -> void:

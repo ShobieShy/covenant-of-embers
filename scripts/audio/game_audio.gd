@@ -32,6 +32,17 @@ const SOUNDS := {
 	"slam": IMPACT + "impactPlate_heavy_000.ogg",
 	"ui_click": UIPACK + "click-a.ogg",
 	"pickup": IFACE + "drop_002.ogg",
+	# step 141 (Brands B7): brand fire-mode sounds, same Kenney CC0 packs
+	"brand_overheat": IFACE + "error_006.ogg",
+	"brand_vent": IFACE + "scratch_004.ogg",
+	"brand_charge_full": IFACE + "maximize_005.ogg",
+	"brand_charge_release": IFACE + "glass_005.ogg",
+	"brand_blast": IMPACT + "impactMining_002.ogg",
+	"brand_spin_full": IFACE + "tick_002.ogg",
+	"brand_burst": IFACE + "click_003.ogg",
+	"brand_toggle": IFACE + "switch_004.ogg",
+	"brand_orb": IFACE + "maximize_008.ogg",
+	"brand_crit": IMPACT + "impactGlass_light_002.ogg",
 }
 const UI_KEYS: PackedStringArray = ["ui_click", "kill", "wave_start", "wave_clear", "cast_fail", "equip", "pickup"]
 const LAND_MIN := 2.0  ## m/s: Cogito's min landing velocity (quiet)
@@ -47,6 +58,8 @@ var _pool: Array[AudioStreamPlayer] = []
 var _last := {}
 var _step_acc := 0.0
 var _last_pos := Vector3.INF
+var _charge_full := false
+var _spin_full := false
 
 
 static func load_stream(key: String) -> AudioStream:
@@ -103,6 +116,7 @@ func bind(p: Player) -> void:
 	p.loadout.swap_started.connect(func(_s): play("equip"))
 	for c in p.loadout.casters:
 		c.out_of_mana.connect(func(_c): play("cast_fail"))
+		c.brand_event.connect(_on_brand_event)
 	p.pickups.collected.connect(func(_a, _b): play("pickup"))
 	_last = _snapshot()
 
@@ -115,7 +129,9 @@ func _snapshot() -> Dictionary:
 		"landings": player.landings,
 		"dashes": player.dash.dashes if player.dash else 0,
 		"casts": casts,
-		"focus": player.focus.amount() > 0.5 if player.focus else false
+		"focus": player.focus.amount() > 0.5 if player.focus else false,
+		"blasts": MagicEffects.blasts,
+		"crits": MagicEffects.crits,
 	}
 
 
@@ -132,6 +148,10 @@ func _physics_process(_dt: float) -> void:
 		play_at("cast", player.viewmodel.cast_point_position() if player.viewmodel else player.global_position)
 	if now["focus"] and not _last["focus"]:
 		play("focus", -6.0)
+	if now["blasts"] > _last.get("blasts", now["blasts"]):
+		play("brand_blast", -4.0)
+	if now["crits"] > _last.get("crits", now["crits"]):
+		play("brand_crit", -2.0)
 	_last = now
 	var pos := player.global_position
 	if player.is_on_floor() and _last_pos != Vector3.INF:
@@ -140,6 +160,32 @@ func _physics_process(_dt: float) -> void:
 			_step_acc = 0.0
 			play("footstep", -8.0, randf_range(0.9, 1.1))
 	_last_pos = pos
+
+
+## Step 141: brand fire-mode events (FireMode.emit -> Caster.brand_event).
+func _on_brand_event(kind: StringName, value: float) -> void:
+	match kind:
+		&"overheated":
+			play("brand_overheat")
+		&"vent":
+			play("brand_vent", -2.0)
+		&"charge":
+			if value >= 0.95 and not _charge_full:
+				play("brand_charge_full", -6.0)
+			_charge_full = value >= 0.95
+		&"charge_released":
+			_charge_full = false
+			play("brand_charge_release", 0.0, lerpf(1.2, 0.8, clampf(value, 0.0, 1.0)))
+		&"spin":
+			if value >= 0.99 and not _spin_full:
+				play("brand_spin_full", -8.0, 1.5)
+			_spin_full = value >= 0.99
+		&"burst":
+			play("brand_burst", -6.0)
+		&"mode_toggled":
+			play("brand_toggle")
+		&"orb_thrown":
+			play("brand_orb")
 
 
 func _on_hurt(p: Player, _r: Damage.Result) -> void:

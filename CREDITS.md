@@ -35,6 +35,8 @@
 
 Characters by Quaternius (quaternius.com), CC0. Delivered by Ember Art as batch 02; see docs/credits/quaternius_batch_02_CREDITS.md.
 
+Staff brands (0.1.3): the six maker logos are original CC0 marks (tools/gen_brand_logos.py); brand VFX (heat glow, vent steam, charge glow, spin ring, orb/boulder heads, blasts) are procedural, made in code for this project; brand sounds reuse the Kenney Interface Sounds and Impact Sounds packs listed above (CC0). The makers are fictional.
+
 CC0 does not require attribution; Kenney and ambientCG are credited anyway with thanks. Support: https://kenney.nl/donate
 
 ## Libraries

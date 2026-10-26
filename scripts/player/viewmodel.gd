@@ -43,6 +43,7 @@ var model: Node3D
 var shaft: MeshInstance3D
 var gem: MeshInstance3D
 var cast_point: Marker3D
+var brand_fx: BrandFX  ## step 141: heat/charge/spin look on the Head
 var render_viewport: SubViewport  ## enable_render()
 var render_camera: Camera3D
 var _overlay: CanvasLayer
@@ -59,6 +60,8 @@ func _init() -> void:
 	cast_point = Marker3D.new()
 	cast_point.name = "CastPoint"
 	model.add_child(cast_point)
+	brand_fx = BrandFX.new(LAYER_MASK)
+	cast_point.add_child(brand_fx)
 	visible = false
 
 
@@ -163,6 +166,11 @@ func update_pose(w: WieldableInstance, focus_amount: float, draw: float, recoil:
 	model.position = pose_position(focus_amount, draw, recoil)
 	if render_camera != null and _main_camera != null:
 		render_camera.global_transform = _main_camera.global_transform
+
+
+## Step 141: the held brand's FX (heat glow/steam, charge glow, spin ring).
+func update_brand(m: FireMode) -> void:
+	brand_fx.show_mode(m)
 
 
 ## Cast point in world space (the visible tracer start).

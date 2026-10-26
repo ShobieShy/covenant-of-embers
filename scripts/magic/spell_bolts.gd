@@ -375,7 +375,9 @@ func bolt_heads(alpha: float) -> Array:
 		var d := d_prev + (b.travelled - d_prev) * clampf(alpha, 0.0, 1.0)
 		if d < SKIP_NEAR and not b.spawn.has_visual_origin:
 			continue
-		out.append([drawn_point(b.spawn, d), b.spawn.element])
+		# step 141: Hexler orbs and Moss & Berg boulders draw bigger heads
+		var big := 2.6 if b.spawn.is_orb else (1.8 if b.spawn.blast_radius > 0.0 else 1.0)
+		out.append([drawn_point(b.spawn, d), b.spawn.element, big])
 	return out
 
 

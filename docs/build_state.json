@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 143,
-  "steps_done": 121,
-  "last_commit": "6eea422",
+  "steps_done": 122,
+  "last_commit": "c03cd68",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1270,6 +1270,13 @@
       "type": "build",
       "summary": "Brands B6: original CC0 brand logos (assets/original/brands, tools/gen_brand_logos.py, ASSETS/CREDITS), brand line on item cards (logo, maker, mode line, Rare+ tagline) and vendor compare text, HUD brand meter under the crosshair; tests/unit/test_brand_ui.gd",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T13:54:00-05:00",
+      "step": 141,
+      "type": "build",
+      "summary": "Brands B7: BrandFX on the staff Head (heat glow + light, vent steam, charge glow, spin ring; quality-capped particles; driven by fx bits for co-op), bigger orb/boulder bolt heads, brand SFX from Kenney CC0 packs (overheat, vent, charge full/release, blast, crit, spin, burst, toggle, orb), credits note; tests/unit/test_brand_fx.gd",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1393,7 +1400,8 @@
     137,
     138,
     139,
-    140
+    140,
+    141
   ],
   "deferred": [
     74,
@@ -1413,7 +1421,6 @@
     }
   ],
   "waiting_on_user_go": [
-    141,
     142,
     143
   ],
