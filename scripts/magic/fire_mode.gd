@@ -55,6 +55,13 @@ func caster() -> Caster:
 	return _caster.get_ref() as Caster if _caster != null else null
 
 
+## Step 143: the wieldable's own cooldown (s); brand timings scale with it so a fast wand
+## and a slow staff stay balanced (BrandDps). 0.4 with no wieldable.
+func base_cooldown() -> float:
+	var c := caster()
+	return c.wieldable.cooldown() if c != null and c.wieldable != null else 0.4
+
+
 func id() -> StringName:
 	return &"semi"
 

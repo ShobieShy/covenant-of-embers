@@ -170,7 +170,7 @@ Target: DPS within +/-15 % of unbranded semi at equal rarity over a 10 s dummy t
 - **140 Brands B6** UI: card/tooltip brand line + logos, HUD heat/charge/spin/burst/pool meter, settings for reload key.
 - **141 Brands B7** VFX/SFX hooks and assets, quality-preset caps, credits.
 - **142 Brands B8** Co-op: brand_fx snapshot bits, blast/orb hit lists, PROTOCOL 2; coop test.
-- **143 Brands B9** Balance pass with DPS harness, BalancePatch support for brand params, playtest bot rotation, docs.
+- **143 Brands B9** (done, §14) Balance pass with DPS harness, BalancePatch support for brand params, playtest bot rotation, docs.
 
 ## 12. Open questions (all answered 2026-10-26: user accepted the defaults)
 - ~~**Q35** Gems: brand follows the Head's own element (planned) or the socketed gem's element?~~ **Answered 2026-10-26:** Head element (gems don't change brand).
@@ -188,3 +188,10 @@ Target: DPS within +/-15 % of unbranded semi at equal rarity over a 10 s dummy t
 
 ## 13. Wands (Q46)
 Wands use the same brand modes with scaled-down effects: a per-brand `wand_scale` param (placeholder 0.6) shrinks heat/charge multipliers, blast radius, burst count (2), spin range, accuracy ramp, crit mult and orb damage toward the unbranded baseline.
+
+## 14. Balance pass (step 143, B9)
+`tools/brand_dps.gd` (BrandDps) runs a Caster at 60 Hz for 30 s with unlimited mana and a good-player policy per mode (Sigil Sauer holds to a full charge then releases, Pyrowning vents on R at 90% heat, everything else holds/taps) and sums spawned bolt damage. Single-target counts direct hits x the crit expectation (cursed orbs land on the target); AoE adds one extra enemy (blast at mid-radius, one chain jump). Print it with `godot --headless --path . -s res://tools/brand_dps_main.gd`. `tests/unit/test_brand_balance.gd` keeps every brand within +-15% of the unbranded build (staff and wand, basic and rare) and checks unbranded = damage / cooldown.
+
+Changes from the placeholders: Sigil Sauer full charge now takes `charge_cooldowns` 1.7 x the wieldable cooldown (was a flat 1.0 s: 0.70x on staves, 0.26x on wands); Hexler & Koch refill takes `refill_cooldowns` 4.0 x the cooldown (was 1.5 s: 0.63x on wands). Single-target ratios (basic staff / wand): Pyrowning 1.05 / 0.91, Sigil Sauer 0.98 / 0.90, Moss & Berg 1.09 / 1.10, Windchester 1.07 / 0.95, Coltara Halo 0.90 / 0.90, Hexler & Koch 1.08 / 0.91. Moss & Berg and Sigil Sauer gain ~45-50% more with a second enemy in reach; Pyrowning's edge is zero mana, which the harness doesn't count.
+
+BalancePatch JSON gains a `"brands"` section: `{"brands": {"<id>": {"wand_scale": 0.6, "params": {"<existing param>": n}}}}` patches the shared Brand resources in place (unknown brands/params or negative values reject the whole patch; `reset()` reloads them). The playtest bot fights with a branded staff, rotating through all six (new brand at each level start and every second kill), charging/venting/holding as each mode wants; its PASS line lists the brands used.

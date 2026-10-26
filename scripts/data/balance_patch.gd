@@ -17,7 +17,10 @@ extends RefCounted
 ##  "rarities": {"luck_common_step": 5, "luck_rare_step": 2, "luck_common_floor": 1,
 ##               "<rarity id>": {"multiplier": 1.5, "drop_weight": 15, "color": "#RRGGBB"}},
 ##  "drop_pools": {"<pool id>": {"drop_chance": 0.3, "min_level": 1, "max_level": 50,
-##                 "entries": {"<index>": {"weight": 1.0, "rarity": "rare"}}}}}
+##                 "entries": {"<index>": {"weight": 1.0, "rarity": "rare"}}}},
+##  "brands": {"<brand id>": {"wand_scale": 0.6, "params": {"<existing param>": 1.2}}}}
+## Step 143: brand params patch the shared Brand resources in place (FireModes read them
+## live); only params the brand already has, as non-negative numbers.
 
 const VERSION := 1
 const LOCKED := ["item_codes", "part_rolls", "equipment_rolls"]
@@ -69,6 +72,7 @@ static func apply(patch: Dictionary, patch_id := "patch") -> PackedStringArray:
 	var el: ElementTable = null
 	var ra: RarityTable = null
 	var dp: DropTable = null
+	var br := {}  ## brand id -> {wand_scale?, params}
 	for key in patch:
 		match key:
 			"version":
@@ -82,6 +86,8 @@ static func apply(patch: Dictionary, patch_id := "patch") -> PackedStringArray:
 			"drop_pools":
 				dp = DropRoller.default_pools().duplicate(true) as DropTable
 				_patch_pools(dp, patch[key], errs)
+			"brands":
+				br = _patch_brands(patch[key], errs)
 			_:
 				if LOCKED.has(key):
 					(
@@ -118,6 +124,12 @@ static func apply(patch: Dictionary, patch_id := "patch") -> PackedStringArray:
 		shared_r.rebuild()
 	if dp != null:
 		DropRoller._pools = dp
+	for id in br:
+		var b := BrandTable.by_id(id)
+		if br[id].has("wand_scale"):
+			b.wand_scale = float(br[id]["wand_scale"])
+		for k in br[id]["params"]:
+			b.params[k] = float(br[id]["params"][k])
 	applied.append(patch_id)
 	return errs
 
@@ -137,7 +149,56 @@ static func reset() -> void:
 		shared_r.set(k, ra.get(k))
 	shared_r.rebuild()
 	DropRoller._pools = null
+	for b: Brand in BrandTable.load_default().brands:
+		var disk := (
+			ResourceLoader.load("res://resources/brands/%s.tres" % b.id, "", ResourceLoader.CACHE_MODE_IGNORE_DEEP)
+			as Brand
+		)
+		if disk != null:
+			b.params = disk.params.duplicate()
+			b.wand_scale = disk.wand_scale
 	applied.clear()
+
+
+## Step 143: validates the "brands" section; returns {id: {wand_scale?, params}} to apply.
+static func _patch_brands(sec: Variant, errs: PackedStringArray) -> Dictionary:
+	var out := {}
+	if not (sec is Dictionary):
+		errs.append("brands: must be an object")
+		return out
+	for id in sec:
+		var b := BrandTable.by_id(String(id))
+		var where := "brands.%s" % id
+		if b == null:
+			errs.append("%s: unknown brand" % where)
+			continue
+		if not (sec[id] is Dictionary):
+			errs.append("%s: must be an object" % where)
+			continue
+		var row := {"params": {}}
+		for k in sec[id]:
+			var v: Variant = sec[id][k]
+			match k:
+				"wand_scale":
+					if not _is_num(v) or float(v) <= 0.0 or float(v) > 1.0:
+						errs.append("%s.wand_scale: must be in (0, 1]" % where)
+					else:
+						row["wand_scale"] = v
+				"params":
+					if not (v is Dictionary):
+						errs.append("%s.params: must be an object" % where)
+						continue
+					for pk in v:
+						if not b.params.has(pk):
+							errs.append("%s.params: unknown param '%s'" % [where, pk])
+						elif not _is_num(v[pk]) or float(v[pk]) < 0.0:
+							errs.append("%s.params.%s: must be a number >= 0" % [where, pk])
+						else:
+							row["params"][pk] = v[pk]
+				_:
+					errs.append("%s: unknown key '%s'" % [where, k])
+		out[String(id)] = row
+	return out
 
 
 static func _tag(prefix: String, errs: PackedStringArray) -> PackedStringArray:

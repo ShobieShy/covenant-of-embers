@@ -23,6 +23,8 @@ static var stats := {
 }
 static var log_lines := PackedStringArray()
 static var coop_started := false
+static var brand_turn := 0  ## step 143: next brand in the staff rotation
+static var brands_used := PackedStringArray()
 static var coop_totals := {"hits_sent": 0, "hits_applied": 0, "snaps_seen": 0, "poses_seen": 0}  ## step 93: the menu wiped the bot files once
 
 var main: Node
@@ -43,6 +45,8 @@ static func reset_run() -> void:
 		"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0, "teleports": 0, "looted_parts": 0
 	}
 	log_lines = PackedStringArray()
+	brand_turn = 0
+	brands_used = PackedStringArray()
 	intro_beats = PackedStringArray()
 
 
@@ -61,7 +65,30 @@ func setup(m: Node, p: Player) -> void:
 		Coop.session.ended.connect(func(r: String): _client_done("session ended: " + r))
 	elif stage == "midden_walk" and IntroDirector.live and IntroDirector.active(IntroDirector.live):
 		stage = "intro"  # step 118: a new game plays the prologue first
+	if not Coop.is_client() and stage != "intro":
+		next_brand()
 	note("start %s in %s" % [stage, GameFlow.id_of(m.get_node("Level"))])
+
+
+## Step 143: the bot fights with branded staffs, one brand after another (a basic staff with
+## that brand's Head; next one at each level start and every second kill).
+func next_brand() -> void:
+	var all := BrandTable.load_default().brands
+	var b: Brand = all[brand_turn % all.size()]
+	brand_turn += 1
+	var parts: Array[WieldablePart] = [
+		PartRoller.from_seed(40 + brand_turn, WieldablePart.PartType.HEAD, "basic", b.element)
+	]
+	for id in ["basic_exterior", "basic_interior", "basic_handle"]:
+		parts.append(WieldablePart.load_part(id))
+	var w := Assembly.assemble(WieldableInstance.load_base("apprentice_fire_staff").def, parts)
+	if w == null or w.brand() != b:
+		return
+	player.equip(w)
+	player.loadout.select(Loadout.Slot.STAFF)
+	if not brands_used.has(b.id):
+		brands_used.append(b.id)
+	note("brand staff: %s (%s)" % [b.display_name, b.fire_mode_name()])
 
 
 func _exit_tree() -> void:
@@ -81,6 +108,8 @@ func _on_kill(e: Enemy, _el) -> void:
 	if e and e.def and not e.def.ai.is_empty():
 		stats["kills"] += 1
 		note("killed %s (%d) at %.1f s" % [e.def.id, stats["kills"], total_time])
+		if stats["kills"] % 2 == 0 and not Coop.is_client() and stage not in ["intro", "breach_craft", "craft"]:
+			next_brand()
 
 
 func _goto(s: String) -> void:
@@ -95,7 +124,7 @@ func _finish(ok: bool, why := "") -> void:
 	_done = true
 	player.bot_input = Callable()
 	var summary := (
-		"%s kills %d, pickups %d, casts %d, crafted %s, saves %d, deaths %d, teleports %d, level %d, %.0f s simulated"
+		"%s kills %d, pickups %d, casts %d, crafted %s, saves %d, deaths %d, teleports %d, level %d, %.0f s simulated, brands %s"
 		% [
 			"PASS" if ok else "FAIL " + why,
 			stats["kills"],
@@ -106,7 +135,8 @@ func _finish(ok: bool, why := "") -> void:
 			stats["deaths"],
 			stats["teleports"],
 			player.progression.level,
-			total_time
+			total_time,
+			",".join(brands_used),
 		]
 	)
 	note(summary)
@@ -252,8 +282,17 @@ func fight(e: Enemy) -> void:
 	var held := ["action_primary"]
 	if e.global_position.distance_to(player.global_position) > 10.0:
 		held.append("forward")
-	if player.mana.value < 5.0 and player.loadout.active == Loadout.Slot.STAFF:
+	var m := player.caster.fire_mode() if player.caster != null else null
+	if player.mana.value < 5.0 and player.loadout.active == Loadout.Slot.STAFF and not (m is HeatMode):
 		_input = PlayerInput.hold(held, ["slot_2"])
+	elif m is ChargeMode:  # step 143: hold to a full charge, then let go for one tick
+		if m.charge >= 1.0:
+			held.erase("action_primary")
+		_input = PlayerInput.hold(held, [] if m.charge > 0.0 else ["action_primary"])
+	elif m is HeatMode and m.meter() >= 0.9:  # vent before the lockout
+		_input = PlayerInput.hold(held, ["reload"])
+	elif m is HeatMode or m is SpinMode:  # hold the trigger
+		_input = PlayerInput.hold(held, ["action_primary"] if _tick % 30 == 0 else [])
 	else:
 		_input = PlayerInput.hold(held, ["action_primary"] if _tick % 2 == 0 else [])
 

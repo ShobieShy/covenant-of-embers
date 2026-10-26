@@ -16,6 +16,7 @@ mode_line = "Charge: hold to charge, release; full charge chains"
 wand_scale = 0.6
 params = {
 "charge_seconds": 1.0,
+"charge_cooldowns": 1.7,
 "min_mult": 0.6,
 "max_mult": 1.8,
 "chain_threshold": 0.95,

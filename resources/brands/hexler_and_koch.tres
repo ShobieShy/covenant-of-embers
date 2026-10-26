@@ -23,5 +23,6 @@ params = {
 "orb_damage_per_charge": 0.4,
 "orb_radius": 2.5,
 "orb_speed": 18.0,
-"refill_seconds": 1.5
+"refill_seconds": 1.5,
+"refill_cooldowns": 4.0
 }

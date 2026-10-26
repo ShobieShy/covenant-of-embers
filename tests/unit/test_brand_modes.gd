@@ -185,8 +185,10 @@ func test_charge_mode() -> void:
 	var bolts := SpellBolts.new()
 	var m := c.fire_mode() as ChargeMode
 	check(m != null and m.id() == &"charge", "Water Head -> ChargeMode")
-	check(_hold(c, 30) == 0, "no cast while holding")
-	check(absf(m.charge - 0.5) < 0.02, "half charged after 0.5 s (%.2f)" % m.charge)
+	var half_ticks := roundi(m.charge_time() * 0.5 / DT)
+	check(absf(m.charge_time() - 1.7 * w.cooldown()) < 1e-6, "full charge = 1.7 cooldowns (step 143)")
+	check(_hold(c, half_ticks) == 0, "no cast while holding")
+	check(absf(m.charge - 0.5) < 0.04, "half charged (%.2f)" % m.charge)
 	c.tick(false, false, DT, _aim(), bolts)
 	check(bolts.live.size() == 1, "release casts")
 	var half := bolts.live[0].spawn
@@ -360,8 +362,9 @@ func test_precision_mode_and_orb() -> void:
 	check(orb.is_orb and orb.element == E.DARK and orb.blast_radius == 2.5, "cursed orb")
 	check(absf(orb.damage - 0.4 * w.damage()) < 1e-3, "orb = 0.4 x damage x 1 cast spent")
 	check(m.is_locked() and not c.tick(true, true, DT, _aim(), bolts), "refilling: no casts")
-	_idle(c, 95)
-	check(not m.is_locked(), "refilled after 1.5 s")
+	check(absf(m.refill_time() - 4.0 * w.cooldown()) < 1e-6, "refill = 4 cooldowns (step 143)")
+	_idle(c, ceili(m.refill_time() / DT) + 2)
+	check(not m.is_locked(), "refilled")
 	var before := bolts.live.size()
 	for i in 6:
 		_idle(c, 40)

@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 143,
-  "steps_done": 123,
-  "last_commit": "8c49dac",
+  "steps_done": 124,
+  "last_commit": "106f5ef",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1284,6 +1284,13 @@
       "type": "build",
       "summary": "Brands B8: co-op PROTOCOL 2, pose brand FX on RemotePlayer, puppet blast/chain/orb hits forwarded to host",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T14:05:00-05:00",
+      "step": 143,
+      "type": "build",
+      "summary": "Brands B9: DPS harness + \u00b115% test, charge/refill scale with cooldown, BalancePatch brands section, playtest bot rotates branded staffs, docs",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1409,7 +1416,8 @@
     139,
     140,
     141,
-    142
+    142,
+    143
   ],
   "deferred": [
     74,
@@ -1428,9 +1436,7 @@
       "shots": "playtest/wayland_20261024_run3/"
     }
   ],
-  "waiting_on_user_go": [
-    143
-  ],
+  "waiting_on_user_go": [],
   "notes": [
     "2026-10-24: steps 119-134 (art spree A1-A8, FX spree F1-F8) planned, waiting on user go; see docs/ART_SPREE_PLAN.md, docs/FX_SPREE_PLAN.md",
     "2026-10-24: Q27-Q34 answered (low-poly, CC-BY credited in-game, Loli small witch normal attire, gear visible now, moonlit night, Light/Dark FX for all, Low=Steam Deck, F1 first)",

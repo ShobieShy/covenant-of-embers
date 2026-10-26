@@ -1,7 +1,7 @@
 class_name ChargeMode
 extends FireMode
 ## Sigil Sauer (step 138, BRANDS_PLAN §3): holding the trigger charges 0..1 over
-## `charge_seconds`; releasing casts. Damage x lerp(min_mult, max_mult, charge), mana x
+## charge_time() (step 143); releasing casts. Damage x lerp(min_mult, max_mult, charge), mana x
 ## lerp(mana_min, mana_max, charge). A charge >= chain_threshold chains to `chain_targets`
 ## enemies within `chain_range` for `chain_fraction` of the damage (Q42: Water chains only on
 ## a full charge). A tap (press and release in one tick) is a weak quick shot. A release
@@ -28,6 +28,14 @@ func damage_mult() -> float:
 	return lerpf(param("min_mult", 1.0), param("max_mult", 1.0), shot)
 
 
+## Step 143: seconds to full charge = `charge_cooldowns` x the wieldable cooldown (wands
+## scale it toward 1 like the multipliers), min 0.12 s; else the flat `charge_seconds`.
+func charge_time() -> float:
+	if brand != null and brand.params.has("charge_cooldowns"):
+		return maxf(0.12, param("charge_cooldowns", 1.0) * base_cooldown())
+	return maxf(raw("charge_seconds", 1.0), 1e-6)
+
+
 func full() -> bool:
 	return shot >= raw("chain_threshold", 0.95)
 
@@ -46,7 +54,7 @@ func after_cast() -> void:
 
 func tick(dt: float, held: bool, _pressed: bool, in_hand: bool) -> void:
 	if held and in_hand:
-		charge = minf(1.0, charge + dt / maxf(raw("charge_seconds", 1.0), 1e-6))
+		charge = minf(1.0, charge + dt / charge_time())
 		shot = charge
 		emit(&"charge", charge)
 	elif charge > 0.0:

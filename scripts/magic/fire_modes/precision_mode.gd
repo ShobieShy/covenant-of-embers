@@ -5,7 +5,7 @@ extends FireMode
 ## for x`crit_mult` on a `crit_chance` roll (Q41; MagicEffects.apply_crit). A pool of
 ## `pool_casts` casts: R, or emptying the pool, throws the spent charge as a cursed orb (a
 ## Dark bolt bursting for `orb_damage_per_charge` x casts spent x the wieldable damage over
-## `orb_radius`, Dark roll once per enemy), then the pool refills over `refill_seconds`
+## `orb_radius`, Dark roll once per enemy), then the pool refills over refill_time()
 ## (no casts meanwhile). Casts still cost mana. Wands (Q46): smaller bonuses and orb.
 
 const ORB_RANGE := 30.0
@@ -37,6 +37,13 @@ func accuracy_bonus() -> float:
 func modify(s: SpellBolts.Spawn) -> void:
 	s.crit_mult = param("crit_mult", 1.0)
 	s.crit_chance = raw("crit_chance", 0.0)
+
+
+## Step 143: `refill_cooldowns` x the wieldable cooldown, else the flat `refill_seconds`.
+func refill_time() -> float:
+	if brand != null and brand.params.has("refill_cooldowns"):
+		return raw("refill_cooldowns", 3.5) * base_cooldown()
+	return raw("refill_seconds", 1.5)
 
 
 func after_cast() -> void:
@@ -73,16 +80,12 @@ func reload(out: Array) -> bool:
 	out.append(s)
 	emit(&"orb_thrown", float(spent))
 	spent = 0
-	refill_left = raw("refill_seconds", 1.5)
+	refill_left = refill_time()
 	return true
 
 
 func meter() -> float:
-	return (
-		1.0 - refill_left / maxf(raw("refill_seconds", 1.5), 1e-6)
-		if refill_left > 0.0
-		else float(pool() - spent) / pool()
-	)
+	return 1.0 - refill_left / maxf(refill_time(), 1e-6) if refill_left > 0.0 else float(pool() - spent) / pool()
 
 
 func meter_kind() -> StringName:
