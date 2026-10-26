@@ -249,3 +249,12 @@ Hub towns are smaller (150-300 m), and dungeons are linear 200-400 m runs. We ma
 - Request list: docs/EMBER_ART_REQUESTS.md. No files arrived yet, so all slots are placeholders.
 - Tests: test_ember_art 2/2 new; world_map, fast_travel, vault, flow, breach_art, save_migration,
   interaction, landfill_zone pass. Lint green.
+
+### Step 164 (W13) Bot routes + perf pass, 2026-10-26
+- Zone sweeps on the 5 terrain maps: full unit suite 541/541 passed; 1x playtest PASS (49 kills,
+  1 death, 0 teleports, 626 s); 4x playtest PASS (52 kills, 0 deaths, 0 teleports, 636 s).
+- Co-op bot: both bots PASS (host 56 kills / 3 deaths, joiner 56 kills / 2 deaths, 0 teleports),
+  but `tools/coop_playtest.sh` failed the run on the Terrain3D load("res://") pair. Fix: it now
+  allowlists exactly that pair, like run_tests.sh.
+- Perf: no display on the build box this run, so the Low-budget flythrough (perf_capture.gd
+  --flythrough) was not re-measured; carried over.

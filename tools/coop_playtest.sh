@@ -22,7 +22,8 @@ grep -E '^\[(playtest|coop)\]' "$dir/host.log" | sed 's/^/host   /' | tail -12
 grep -E '^\[(playtest|coop|character)\]' "$dir/join.log" | sed 's/^/joiner /' | tail -12
 bad=0
 for f in host join; do
-	if grep -qE '^(SCRIPT ERROR|ERROR):' "$dir/$f.log"; then echo "[coop_playtest] errors in $f log:"; grep -E -A3 '^(SCRIPT ERROR|ERROR):' "$dir/$f.log" | head -20; bad=1; fi
+	# Terrain3D 1.0.2 logs a harmless load("res://") pair per terrain init (as in run_tests.sh).
+	if grep -vE "^ERROR: (Resource file not found: res:// \(expected type: unknown\)|Error loading resource: ''\.)$" "$dir/$f.log" | grep -qE '^(SCRIPT ERROR|ERROR):'; then echo "[coop_playtest] errors in $f log:"; grep -E -A3 '^(SCRIPT ERROR|ERROR):' "$dir/$f.log" | head -20; bad=1; fi
 done
 if [ $hrc -eq 0 ] && [ $jrc -eq 0 ] && [ $bad -eq 0 ] && grep -q '^\[playtest\] PASS' "$dir/host.log" && grep -q '^\[playtest\] PASS' "$dir/join.log"; then
 	echo "[coop_playtest] PASS (logs $dir)"
