@@ -89,7 +89,10 @@ func apply_pose(d: Dictionary) -> void:
 	poses += 1
 	if not _placed:
 		_placed = true
-		global_position = target_pos
+		if is_inside_tree():
+			global_position = target_pos
+		else:
+			position = target_pos
 		rotation.y = target_yaw
 
 

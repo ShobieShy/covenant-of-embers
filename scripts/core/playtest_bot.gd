@@ -283,7 +283,7 @@ func fight(e: Enemy) -> void:
 	if e.global_position.distance_to(player.global_position) > 10.0:
 		held.append("forward")
 	var m := player.caster.fire_mode() if player.caster != null else null
-	if player.mana.value < 5.0 and player.loadout.active == Loadout.Slot.STAFF and not (m is HeatMode):
+	if player.mana.value < 5.0 and player.loadout.active == Loadout.Slot.STAFF:
 		_input = PlayerInput.hold(held, ["slot_2"])
 	elif m is ChargeMode:  # step 143: hold to a full charge, then let go for one tick
 		if m.charge >= 1.0:
