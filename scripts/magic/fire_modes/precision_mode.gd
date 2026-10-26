@@ -71,9 +71,10 @@ func reload(out: Array) -> bool:
 	s.element = ElementTable.Element.DARK
 	s.is_orb = true
 	s.damage = param("orb_damage_per_charge", 0.0) * spent * (w.damage() if w != null else 0.0)
+	s.damage *= skill_mult("splash_damage_pct")
 	s.speed = raw("orb_speed", 18.0)
 	s.range_m = ORB_RANGE
-	s.blast_radius = param("orb_radius", 0.0)
+	s.blast_radius = param("orb_radius", 0.0) * skill_mult("splash_pct")
 	s.blast_falloff = 0.5
 	s.blast_fraction = 1.0
 	s.dark_bonus = w.dark_chance_bonus() if w != null else 0.0

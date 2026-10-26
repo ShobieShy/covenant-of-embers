@@ -31,7 +31,7 @@ func bloom_mult() -> float:
 func tick(dt: float, held: bool, _pressed: bool, in_hand: bool) -> void:
 	var before := spin
 	if held and in_hand:
-		spin = minf(1.0, spin + dt / maxf(raw("spin_seconds", 1.5), 1e-6))
+		spin = minf(1.0, spin + dt / maxf(raw("spin_seconds", 1.5) * skill_mult("spin_pct", 0.3), 1e-6))
 	else:
 		spin = maxf(0.0, spin - raw("spin_down", 1.5) * dt)
 	if spin != before:

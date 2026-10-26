@@ -32,8 +32,8 @@ func damage_mult() -> float:
 ## scale it toward 1 like the multipliers), min 0.12 s; else the flat `charge_seconds`.
 func charge_time() -> float:
 	if brand != null and brand.params.has("charge_cooldowns"):
-		return maxf(0.12, param("charge_cooldowns", 1.0) * base_cooldown())
-	return maxf(raw("charge_seconds", 1.0), 1e-6)
+		return maxf(0.12, param("charge_cooldowns", 1.0) * base_cooldown() * skill_mult("charge_pct", 0.3))
+	return maxf(raw("charge_seconds", 1.0) * skill_mult("charge_pct", 0.3), 1e-6)
 
 
 func full() -> bool:
@@ -42,8 +42,8 @@ func full() -> bool:
 
 func modify(s: SpellBolts.Spawn) -> void:
 	if full():
-		s.chain_targets = maxi(1, roundi(param("chain_targets", 0.0)))
-		s.chain_range = raw("chain_range", 6.0)
+		s.chain_targets = maxi(1, roundi(param("chain_targets", 0.0) + skill_add("chain_jumps")))
+		s.chain_range = raw("chain_range", 6.0) + skill_add("chain_range")
 		s.chain_fraction = raw("chain_fraction", 0.5)
 
 

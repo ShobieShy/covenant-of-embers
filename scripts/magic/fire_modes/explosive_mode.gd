@@ -24,7 +24,7 @@ func damage_mult() -> float:
 
 
 func modify(s: SpellBolts.Spawn) -> void:
-	s.speed *= param("speed_mult", 1.0)
-	s.blast_radius = param("blast_radius", 0.0)
+	s.speed *= param("speed_mult", 1.0) * skill_mult("speed_pct")
+	s.blast_radius = param("blast_radius", 0.0) * skill_mult("splash_pct")
 	s.blast_falloff = raw("blast_falloff", 0.5)
-	s.blast_fraction = raw("blast_fraction", 0.5)
+	s.blast_fraction = raw("blast_fraction", 0.5) * skill_mult("splash_damage_pct")

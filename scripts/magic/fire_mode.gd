@@ -71,6 +71,21 @@ func param(key: String, neutral: float) -> float:
 	return brand.scaled(key, neutral, is_wand) if brand != null else neutral
 
 
+## Step 146: element-tree brand synergy for the brand's element: 1 + value/100 (wands scale
+## the value by wand_scale), never below `floor_v`. 1 with no skills.
+func skill_mult(key: String, floor_v := 0.1) -> float:
+	return maxf(floor_v, 1.0 + skill_add(key) / 100.0)
+
+
+## Step 146: the raw summed value of an element-tree key for the brand's element (wand-scaled).
+func skill_add(key: String) -> float:
+	var c := caster()
+	if c == null or c.skills == null or brand == null:
+		return 0.0
+	var v := ElementSkillMods.value(ElementSkillMods.of(c.skills, brand.element), key)
+	return v * brand.wand_scale if is_wand else v
+
+
 ## Raw (unscaled) brand tunable.
 func raw(key: String, default: float) -> float:
 	return brand.p(key, default) if brand != null else default

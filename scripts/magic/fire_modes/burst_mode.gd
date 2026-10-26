@@ -42,7 +42,7 @@ func bloom_mult() -> float:
 
 func modify(_s: SpellBolts.Spawn) -> void:
 	ramp = ramp if since_bolt <= raw("ramp_window", 0.6) else 0.0
-	ramp = minf(param("ramp_max", 0.0), ramp + param("ramp_per_cast", 0.0))
+	ramp = minf(param("ramp_max", 0.0), ramp + param("ramp_per_cast", 0.0) * skill_mult("ramp_pct"))
 	since_bolt = 0.0
 
 
