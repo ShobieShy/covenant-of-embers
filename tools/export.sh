@@ -19,11 +19,11 @@ cp packaging/linux/covenant-of-embers.desktop build/linux/
 cp assets/branding/icon.png build/linux/covenant-of-embers.png
 log=$(mktemp)
 timeout 60 build/linux/covenant_of_embers.x86_64 --headless -- --seconds 2 >"$log" 2>&1 </dev/null; cat "$log"
-if grep -qE "SCRIPT ERROR|^ERROR" "$log"; then echo "[export] linux export logged errors"; exit 1; fi
+if grep -vE "^ERROR: (Resource file not found: res:// \(expected type: unknown\)|Error loading resource: ''\.)$" "$log" | grep -qE "SCRIPT ERROR|^ERROR"; then echo "[export] linux export logged errors"; exit 1; fi
 if [[ "${WINE_SMOKE:-0}" == 1 ]]; then
 	WINEPREFIX="$PWD/build/wineprefix" WINEDEBUG=-all timeout 600 wine build/windows/covenant_of_embers.exe --headless -- --seconds 2 >"$log" 2>&1 </dev/null; cat "$log"
 	WINEPREFIX="$PWD/build/wineprefix" wineserver -k || true
-	if grep -qE "SCRIPT ERROR|^ERROR" "$log"; then echo "[export] windows export logged errors"; exit 1; fi
+	if grep -vE "^ERROR: (Resource file not found: res:// \(expected type: unknown\)|Error loading resource: ''\.)$" "$log" | grep -qE "SCRIPT ERROR|^ERROR"; then echo "[export] windows export logged errors"; exit 1; fi
 else
 	echo "[export] windows export built (set WINE_SMOKE=1 to smoke-run it under wine)"
 fi

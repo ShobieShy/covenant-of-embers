@@ -70,7 +70,10 @@ func test_terrain3d_builds_and_collides() -> void:
 	check(not hit.is_empty(), "ray hits terrain collision")
 	if not hit.is_empty():
 		check(absf(hit.position.y - want) < 0.6, "collision at %.2f ~ height %.2f" % [hit.position.y, want])
-	var bounds := nav.navigation_mesh.get_vertices()
+	check(not nav.tiles.is_empty(), "step 154: terrain levels bake in tiles")
+	var bounds := PackedVector3Array()
+	for t in nav.tiles:
+		bounds.append_array(t.navigation_mesh.get_vertices())
 	var far := 0
 	for v in bounds:
 		if absf(v.x - C.x) > 11.0 or absf(v.z - C.y) > 11.0:

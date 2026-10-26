@@ -348,8 +348,17 @@ var _stuck_from := Vector3.ZERO
 var _stuck_s := 0.0
 var _unstick_s := 0.0
 
+var _route: RouteGraph
+var _route_level: Node
+
 
 func walk_to(at: Vector3, held: Array = []) -> void:
+	var lvl := main.get_node_or_null("Level")
+	if lvl and lvl.has_node("Pois"):  # step 154: open zones route long walks via landmarks
+		if _route == null or _route_level != lvl:
+			_route = RouteGraph.from_level(lvl)
+			_route_level = lvl
+		at = _route.next_waypoint(player.global_position, at)
 	_replan_left -= get_physics_process_delta_time()
 	if _replan_left <= 0.0 or _path_goal.distance_to(at) > 0.5:
 		_replan_left = REPLAN

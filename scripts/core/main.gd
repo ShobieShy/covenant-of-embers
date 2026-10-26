@@ -124,7 +124,7 @@ func _ready() -> void:
 			", ".join(spawned.map(func(e: Enemy) -> String: return e.def.id)), skipped.size(), ", ".join(skipped)])
 		var nav := $Level.get_node_or_null("Navigation") as LevelNavigation
 		print("[nav] %s navmesh: %d polygon(s), %d bake(s)" % [$Level.name,
-			nav.navigation_mesh.get_polygon_count() if nav and nav.navigation_mesh else 0, nav.bakes if nav else 0])
+			nav.polygon_count() if nav else 0, nav.bakes if nav else 0])
 		print("[waves] %d wave(s) (%s), trigger r %.1f m at %s" % [spawner.waves.size(),
 			", ".join(spawner.waves.map(func(w: Dictionary) -> String: return String(w["id"]))),
 			spawner.trigger_radius, spawner.trigger_center])

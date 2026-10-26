@@ -23,8 +23,18 @@ signal baked(region: LevelNavigation)
 @export var terrain: NodePath = ^"../Terrain"
 
 const TERRAIN_NAV_MARGIN := 12.0
+## Step 154 (W3, TERRAIN_MAPS_PLAN section 9): open zones bake in TILE m tiles, each its own
+## NavigationRegion3D child (border_size + edge connections join neighbours, so paths cross
+## tile seams). Tiles cover the greybox (+TERRAIN_NAV_MARGIN) and every POI/camp area;
+## the rest of the terrain has no navmesh (enemies only live near camps). Baked offline by
+## tools/bake_nav.gd into CACHE_DIR/<level_id>/ (a manifest with the source hash + one
+## NavigationMesh per tile); a stale or missing cache bakes at load with a warning.
+const TILE := 64.0
+const CACHE_DIR := "res://scenes/levels/nav"
 
 var bakes := 0
+var tiles: Array[NavigationRegion3D] = []  ## step 154: open-zone tiles (empty for greybox levels)
+var from_cache := false
 var _bake_iteration := -1  ## step 47: the map iteration a re-bake started on
 
 
@@ -62,8 +72,7 @@ func bake_now() -> int:
 	NavigationServer3D.parse_source_geometry_data(nm, data, root)
 	var tz := get_node_or_null(terrain) as TerrainZone
 	if tz != null and data.has_data():
-		# Step 152: terrain around the greybox pads (TERRAIN_MAPS_PLAN section 9 chunks it later).
-		tz.add_nav_faces(data, data.get_bounds().grow(TERRAIN_NAV_MARGIN))
+		return _bake_tiles(data, tz)
 	NavigationServer3D.bake_from_source_geometry_data(nm, data)
 	navigation_mesh = null  # re-assign so the region pushes the new polygons
 	navigation_mesh = nm
@@ -74,11 +83,158 @@ func bake_now() -> int:
 	return nm.get_polygon_count()
 
 
+func level_id() -> String:
+	var lvl := get_parent()
+	return String(lvl.get_meta(&"level_id", lvl.name)) if lvl else "level"
+
+
+## Tile keys (Vector2i, TILE-m grid) covering the greybox bounds and every POI/camp area.
+func tile_keys(box_bounds: AABB) -> Array[Vector2i]:
+	var rects: Array[Rect2] = []
+	var g := box_bounds.grow(TERRAIN_NAV_MARGIN)
+	rects.append(Rect2(g.position.x, g.position.z, g.size.x, g.size.z))
+	var lvl := get_parent()
+	for holder in [^"Pois", ^"Camps"]:
+		var h := lvl.get_node_or_null(holder) if lvl else null
+		if h == null:
+			continue
+		for p in h.get_children():
+			var c: Vector3 = p.get_meta(&"center", Vector3.ZERO)
+			var r := float(p.get_meta(&"radius", p.get_meta(&"leash", 30.0)))
+			rects.append(Rect2(c.x - r, c.z - r, 2 * r, 2 * r))
+	if lvl:  # links: a corridor of tiles along every route-graph edge between landmarks
+		var rg := RouteGraph.from_level(lvl)
+		for i in rg.points.size():
+			for j in rg.astar.get_point_connections(i):
+				var a := rg.points[i]
+				var b := rg.points[j]
+				var n := int(ceil(a.distance_to(b) / (TILE * 0.5)))
+				for s in n + 1:
+					var q := a.lerp(b, float(s) / maxf(1, n))
+					rects.append(Rect2(q.x - 8, q.z - 8, 16, 16))
+	var seen := {}
+	var out: Array[Vector2i] = []
+	for r in rects:
+		for j in range(int(floor(r.position.y / TILE)), int(floor(r.end.y / TILE)) + 1):
+			for i in range(int(floor(r.position.x / TILE)), int(floor(r.end.x / TILE)) + 1):
+				var k := Vector2i(i, j)
+				if not seen.has(k):
+					seen[k] = true
+					out.append(k)
+	out.sort()
+	return out
+
+
+## Hash of everything a tile bake reads: box geometry, terrain bytes, the tile set.
+func source_hash(data: NavigationMeshSourceGeometryData3D, tz: TerrainZone, keys: Array[Vector2i]) -> int:
+	return hash([data.get_vertices(), data.get_indices(), tz.content_hash(), keys, TILE])
+
+
+func cache_path() -> String:
+	return "%s/%s" % [CACHE_DIR, level_id()]
+
+
+func _read_cache(h: int, keys: Array[Vector2i]) -> Array[NavigationMesh]:
+	var out: Array[NavigationMesh] = []
+	var mf := cache_path() + "/manifest.json"
+	if not FileAccess.file_exists(mf):
+		return out
+	var m: Variant = JSON.parse_string(FileAccess.get_file_as_string(mf))
+	if not m is Dictionary or str(m.get("hash", "")) != str(h) or int(m.get("tiles", -1)) != keys.size():
+		return out
+	for k in keys:
+		var nm := load("%s/tile_%d_%d.res" % [cache_path(), k.x, k.y]) as NavigationMesh
+		if nm == null:
+			return [] as Array[NavigationMesh]
+		out.append(nm)
+	return out
+
+
+## Writes the baked tiles (tools/bake_nav.gd). Returns OK or the first error.
+func save_cache() -> Error:
+	var data := NavigationMeshSourceGeometryData3D.new()
+	NavigationServer3D.parse_source_geometry_data(make_mesh(), data, get_node(source))
+	var tz := get_node_or_null(terrain) as TerrainZone
+	if tz == null or tiles.is_empty():
+		return ERR_UNAVAILABLE
+	var keys := tile_keys(data.get_bounds())
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(cache_path()))
+	for f in DirAccess.get_files_at(cache_path()):
+		if f.begins_with("tile_"):
+			DirAccess.remove_absolute(cache_path() + "/" + f)
+	for i in keys.size():
+		var err := ResourceSaver.save(
+			tiles[i].navigation_mesh, "%s/tile_%d_%d.res" % [cache_path(), keys[i].x, keys[i].y]
+		)
+		if err != OK:
+			return err
+	var f := FileAccess.open(cache_path() + "/manifest.json", FileAccess.WRITE)
+	f.store_string(JSON.stringify({"hash": str(source_hash(data, tz, keys)), "tiles": keys.size()}))
+	return OK
+
+
+func cache_fresh() -> bool:
+	var data := NavigationMeshSourceGeometryData3D.new()
+	NavigationServer3D.parse_source_geometry_data(make_mesh(), data, get_node(source))
+	var tz := get_node_or_null(terrain) as TerrainZone
+	if tz == null:
+		return true
+	var keys := tile_keys(data.get_bounds())
+	return _read_cache(source_hash(data, tz, keys), keys).size() == keys.size()
+
+
+func _bake_tiles(data: NavigationMeshSourceGeometryData3D, tz: TerrainZone) -> int:
+	for t in tiles:
+		t.free()
+	tiles.clear()
+	navigation_mesh = null
+	var keys := tile_keys(data.get_bounds())
+	var cached := _read_cache(source_hash(data, tz, keys), keys)
+	from_cache = cached.size() == keys.size()
+	if not from_cache and not Engine.is_editor_hint():
+		push_warning(
+			(
+				"LevelNavigation %s: no fresh nav cache, baking %d tiles (run tools/bake_nav.gd)"
+				% [level_id(), keys.size()]
+			)
+		)
+	var polys := 0
+	for n in keys.size():
+		var k := keys[n]
+		var nm: NavigationMesh = cached[n] if from_cache else bake_tile(data, tz, k)
+		var r := NavigationRegion3D.new()
+		r.name = "Tile_%d_%d" % [k.x, k.y]
+		r.navigation_mesh = nm
+		add_child(r)
+		tiles.append(r)
+		polys += nm.get_polygon_count()
+	var m := get_navigation_map() if is_inside_tree() else RID()
+	_bake_iteration = NavigationServer3D.map_get_iteration_id(m) if m.is_valid() else -1
+	bakes += 1
+	baked.emit(self)
+	return polys
+
+
+static func bake_tile(boxes: NavigationMeshSourceGeometryData3D, tz: TerrainZone, k: Vector2i) -> NavigationMesh:
+	var nm := make_mesh()
+	var lo := Vector3(k.x * TILE, -200.0, k.y * TILE)
+	nm.filter_baking_aabb = AABB(lo - Vector3(1, 0, 1), Vector3(TILE + 2, 600.0, TILE + 2))
+	nm.border_size = 1.0
+	var d := NavigationMeshSourceGeometryData3D.new()
+	d.set_vertices(boxes.get_vertices())
+	d.set_indices(boxes.get_indices())
+	tz.add_nav_faces(d, AABB(lo - Vector3(4, 0, 4), Vector3(TILE + 8, 600.0, TILE + 8)))
+	NavigationServer3D.bake_from_source_geometry_data(nm, d)
+	return nm
+
+
 ## True once the navigation map has synced with this region's baked polygons on it. The
 ## server builds regions on worker threads: a few frames for a test room, ~35 physics
 ## frames for the Midden's 244 polygons (measured); until then paths come back empty and
 ## the Gnawer steers straight.
 func map_ready() -> bool:
+	if not tiles.is_empty():
+		return _tiles_ready()
 	if navigation_mesh == null or navigation_mesh.get_polygon_count() == 0:
 		return false
 	var map := get_navigation_map()
@@ -94,3 +250,28 @@ func map_ready() -> bool:
 	var p := global_transform * (c / poly.size())  # the polygon's centre: only this region owns it
 	var owner_rid := NavigationServer3D.map_get_closest_point_owner(map, p)
 	return owner_rid == get_rid()
+
+
+func _tiles_ready() -> bool:
+	var map := get_navigation_map()
+	if not map.is_valid() or NavigationServer3D.map_get_iteration_id(map) <= maxi(_bake_iteration, 0):
+		return false
+	for t in tiles:
+		var nm := t.navigation_mesh
+		if nm and nm.get_polygon_count() > 0:
+			var verts := nm.get_vertices()
+			var c := Vector3.ZERO
+			for v in nm.get_polygon(0):
+				c += verts[v]
+			return NavigationServer3D.map_get_closest_point_owner(map, c / nm.get_polygon(0).size()) == t.get_rid()
+	return false
+
+
+## Total polygons (whole mesh or all tiles), for logs.
+func polygon_count() -> int:
+	if tiles.is_empty():
+		return navigation_mesh.get_polygon_count() if navigation_mesh else 0
+	var n := 0
+	for t in tiles:
+		n += t.navigation_mesh.get_polygon_count()
+	return n

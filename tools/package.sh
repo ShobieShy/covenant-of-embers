@@ -45,7 +45,7 @@ cp "$ZIPDIR"/* build/steam/content/windows/
 log=$(mktemp)
 timeout 60 "$IMG" --appimage-extract-and-run --headless -- --seconds 2 >"$log" 2>&1 </dev/null || true
 cat "$log"
-if grep -qE "SCRIPT ERROR|^ERROR" "$log" || ! grep -qE "\[(main|menu)\]" "$log"; then echo "[package] AppImage smoke failed"; exit 1; fi
+if grep -vE "^ERROR: (Resource file not found: res:// \(expected type: unknown\)|Error loading resource: ''\.)$" "$log" | grep -qE "SCRIPT ERROR|^ERROR" || ! grep -qE "\[(main|menu)\]" "$log"; then echo "[package] AppImage smoke failed"; exit 1; fi
 unzip -l "$ZIP" | grep -q "CovenantOfEmbers/covenant_of_embers.exe"
 ls -la "$REL"
 echo "[package] AppImage + Windows zip + Steam staging: green"

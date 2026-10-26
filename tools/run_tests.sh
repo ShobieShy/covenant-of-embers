@@ -16,7 +16,8 @@ run_clean() {
 	local rc=0
 	"$@" 2>&1 | tee "$log" || rc=$?
 	if [ "$rc" -ne 0 ]; then echo "[run_tests] failed (exit $rc): $*"; exit "$rc"; fi
-	if grep -qE '^(SCRIPT ERROR|ERROR):' "$log"; then
+	# Terrain3D 1.0.2 logs a harmless load("res://") pair when a terrain initialises.
+	if grep -vE "^ERROR: (Resource file not found: res:// \(expected type: unknown\)|Error loading resource: ''\.)$" "$log" | grep -qE '^(SCRIPT ERROR|ERROR):'; then
 		echo "[run_tests] errors logged by: $*"; exit 1
 	fi
 }

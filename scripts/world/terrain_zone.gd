@@ -139,8 +139,9 @@ func build() -> void:
 	var t: Node3D = ClassDB.instantiate(&"Terrain3D")
 	t.name = "Terrain3D"
 	var cam := get_viewport().get_camera_3d() if is_inside_tree() else null
-	if cam == null:
-		# Headless tests / servers: Terrain3D stops processing without a camera.
+	if cam == null or DisplayServer.get_name() == "headless":
+		# Headless tests / servers: Terrain3D stops processing without a camera, and a
+		# borrowed camera may be freed before the terrain (another test's scene).
 		cam = Camera3D.new()
 		cam.name = "TerrainFallbackCamera"
 		cam.current = false
