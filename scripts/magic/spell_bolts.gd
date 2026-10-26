@@ -64,6 +64,16 @@ class Spawn:
 	var graze_radius := GRAZE_RADIUS  ## step 11: enemy graze sphere radius (0 = off)
 	var source: Object  ## step 50: the caster (Player) or null
 	var dark_bonus := 0.0  ## step 108: Dark-part conversion bonus (WieldableInstance)
+	## Step 138 (Brands B4/B5): set by FireMode.modify(); all 0 = a plain bolt.
+	var blast_radius := 0.0  ## m: Moss & Berg AoE on impact (MagicEffects.blast)
+	var blast_falloff := 1.0  ## damage factor at the blast edge (1 at the centre)
+	var blast_fraction := 0.0  ## of the bolt's damage dealt to enemies in the blast
+	var chain_targets := 0  ## Sigil Sauer full charge: extra jumps (MagicEffects.chain_n)
+	var chain_range := 0.0
+	var chain_fraction := 0.0
+	var crit_mult := 1.0  ## Hexler & Koch: extra x on weak points, or on a crit_chance roll
+	var crit_chance := 0.0
+	var is_orb := false  ## Hexler cursed orb (blast, Dark roll once per enemy)
 
 
 class Bolt:
@@ -94,6 +104,7 @@ class Hit:
 	var grazed := false  ## step 11: the graze sphere hit, not the ray
 	var source: Object  ## step 50: the caster (Spawn.source)
 	var dark_bonus := 0.0  ## step 108: Spawn.dark_bonus
+	var spawn: Spawn  ## step 138: the bolt's Spawn (brand blast/chain/crit fields)
 
 
 class Line:
@@ -198,6 +209,7 @@ func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
 			h.direction = s.direction
 			h.source = s.source
 			h.dark_bonus = s.dark_bonus
+			h.spawn = s
 			_resolve(h)
 			last_hits.append(h)
 			if fx:
@@ -222,6 +234,8 @@ func tick(dt: float, space: PhysicsDirectSpaceState3D = null) -> Array[Hit]:
 			h.collider.call(&"take_hit", h)
 		MagicEffects.on_hit(h)
 		bolt_hit.emit(h)
+		if h.spawn != null and h.spawn.blast_radius > 0.0 and is_inside_tree():
+			MagicEffects.blast(h, get_tree())
 	return last_hits
 
 
@@ -306,6 +320,8 @@ func _resolve(h: Hit) -> void:
 		t = h.collider.get(&"damage_target")
 	if t is Damage.Target:
 		h.result = Damage.resolve_hit(h.damage, h.element, t)
+		if h.spawn != null and h.spawn.crit_mult > 1.0:
+			MagicEffects.apply_crit(h, (t as Damage.Target).weak_point)
 
 
 func _color(e: ElementTable.Element) -> Color:

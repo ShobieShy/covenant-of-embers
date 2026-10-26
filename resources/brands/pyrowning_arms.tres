@@ -15,10 +15,10 @@ mode_line = "Heat: no mana per cast; overheats, R vents"
 wand_scale = 0.6
 params = {
 "cooldown_mult": 0.8,
-"heat_per_cast": 0.12,
+"heat_per_cast": 0.08,
 "heat_decay": 0.6,
 "vent_delay": 0.4,
-"overheat_seconds": 2.0,
+"overheat_seconds": 1.2,
 "vent_seconds": 1.0,
 "damage_mult": 1.0
 }

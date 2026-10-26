@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 143,
-  "steps_done": 118,
-  "last_commit": "b67d7d8",
+  "steps_done": 119,
+  "last_commit": "c95aebd",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1249,6 +1249,13 @@
       "type": "build",
       "summary": "Brands B3: Pyrowning HeatMode + Windchester SpinMode + tests",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T13:42:00-05:00",
+      "step": 138,
+      "type": "build",
+      "summary": "Brands B4: Sigil Sauer ChargeMode + chain_n, Moss & Berg ExplosiveMode + blast; Pyrowning heat retune",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1369,7 +1376,8 @@
     134,
     135,
     136,
-    137
+    137,
+    138
   ],
   "deferred": [
     74,
@@ -1389,7 +1397,6 @@
     }
   ],
   "waiting_on_user_go": [
-    138,
     139,
     140,
     141,

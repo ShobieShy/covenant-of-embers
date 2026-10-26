@@ -31,6 +31,10 @@ static func for_wieldable(w: WieldableInstance) -> FireMode:
 			m = HeatMode.new()
 		Brand.Mode.AUTO_SPINUP:
 			m = SpinMode.new()
+		Brand.Mode.CHARGE:
+			m = ChargeMode.new()
+		Brand.Mode.EXPLOSIVE:
+			m = ExplosiveMode.new()
 		_:
 			m = FireMode.new()
 	m.brand = b

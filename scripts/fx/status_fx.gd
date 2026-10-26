@@ -20,6 +20,7 @@ const AIR := Color(0.8, 0.95, 1.0)
 const STAR := Color(1.0, 0.95, 0.5)
 const ARC_TIME := 0.18
 const DEATH_TIME := 0.9
+const BLAST_TIME := 0.3  ## step 138
 
 
 ## Turn each status child on/off for `e` (names: Burn, Frost, Stars).
@@ -175,4 +176,49 @@ static func death(parent: Node, at: Vector3, size: Vector3, base: Color, edge: C
 	tw.tween_method(func(v: float) -> void: sm.set_shader_parameter(&"progress", v), 0.0, 1.0, DEATH_TIME * 0.85)
 	tw.tween_interval(DEATH_TIME * 0.15)
 	tw.tween_callback(root.queue_free)
+	return root
+
+
+## Step 138 (Moss & Berg boulder, Hexler cursed orb): an element-coloured shock sphere that
+## grows to `radius` and fades over BLAST_TIME, plus a burst of debris particles.
+static func blast(parent: Node, at: Vector3, radius: float, element: ElementTable.Element) -> Node3D:
+	if parent == null or not parent.is_inside_tree():
+		return null
+	var t := ElementTable.load_default()
+	var c := t.color(element) if t != null else Color.WHITE
+	var root := Node3D.new()
+	root.name = "BlastFX"
+	root.top_level = true
+	parent.add_child(root)
+	root.global_position = at
+	var shell := MeshInstance3D.new()
+	var sphere := SphereMesh.new()
+	sphere.radius = 1.0
+	sphere.height = 2.0
+	sphere.radial_segments = 16
+	sphere.rings = 8
+	shell.mesh = sphere
+	var m := StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	m.albedo_color = Color(c, 0.45)
+	shell.material_override = m
+	shell.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	shell.scale = Vector3.ONE * 0.2
+	root.add_child(shell)
+	var puff := _particles(18, 0.5, c, 0.18)
+	puff.one_shot = true
+	puff.explosiveness = 1.0
+	puff.spread = 180.0
+	puff.initial_velocity_min = radius * 1.5
+	puff.initial_velocity_max = radius * 3.0
+	puff.emitting = true
+	root.add_child(puff)
+	var tw := root.create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(shell, ^"scale", Vector3.ONE * maxf(0.3, radius), BLAST_TIME)
+	tw.tween_property(m, ^"albedo_color:a", 0.0, BLAST_TIME)
+	tw.chain().tween_interval(0.3)
+	tw.chain().tween_callback(root.queue_free)
 	return root

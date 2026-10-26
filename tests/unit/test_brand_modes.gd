@@ -159,3 +159,152 @@ func test_events_and_fx_bits() -> void:
 	check(m.meter_kind() == &"heat" and m.meter() >= 0.0, "heat meter")
 	var u: Caster = _caster(WieldableInstance.load_base("apprentice_fire_staff"))[0]
 	check(u.fire_mode().meter() < 0.0 and u.fire_mode().fx_bits() == 0, "unbranded: no meter")
+
+
+# --- B4 -------------------------------------------------------------------------------
+
+
+func _aim() -> Caster.Aim:
+	return Caster.Aim.make(Vector3.ZERO, Vector3.FORWARD)
+
+
+## Holds for `ticks` then releases; returns the last spawned bolt (or null).
+func _charge_shot(c: Caster, ticks: int, bolts: SpellBolts) -> SpellBolts.Spawn:
+	var n := bolts.live.size()
+	for t in ticks:
+		c.tick(t == 0, true, DT, _aim(), bolts)
+	c.tick(false, false, DT, _aim(), bolts)
+	return bolts.live[-1].spawn if bolts.live.size() > n else null
+
+
+func test_charge_mode() -> void:
+	var w := branded(E.WATER)
+	var cp := _caster(w)
+	var c: Caster = cp[0]
+	var pool: Pool = cp[1]
+	var bolts := SpellBolts.new()
+	var m := c.fire_mode() as ChargeMode
+	check(m != null and m.id() == &"charge", "Water Head -> ChargeMode")
+	check(_hold(c, 30) == 0, "no cast while holding")
+	check(absf(m.charge - 0.5) < 0.02, "half charged after 0.5 s (%.2f)" % m.charge)
+	c.tick(false, false, DT, _aim(), bolts)
+	check(bolts.live.size() == 1, "release casts")
+	var half := bolts.live[0].spawn
+	var base := w.damage()
+	check(absf(half.damage - base * lerpf(0.6, 1.8, 0.5)) < base * 0.03, "half charge damage curve")
+	check(half.chain_targets == 0, "half charge does not chain")
+	check(absf(pool.spent - w.mana_cost()) < w.mana_cost() * 0.05, "half charge = ~1x mana")
+	_idle(c, 60)
+	var full := _charge_shot(c, 70, bolts)
+	check(full != null and absf(full.damage - base * 1.8) < 1e-3, "full charge = max_mult")
+	check(full.chain_targets == 2 and full.chain_range == 6.0, "full charge chains 2")
+	_idle(c, 60)
+	var tap := _charge_shot(c, 1, bolts)
+	check(tap != null and tap.damage < base * 0.65, "tap = weak quick shot")
+	var wm := (Caster.new(branded(E.WATER, true))).fire_mode()
+	wm.shot = 1.0
+	check(wm.damage_mult() < 1.8 and wm.damage_mult() > 1.0, "wand charge lighter")
+	bolts.free()
+
+
+func test_charge_lost_when_holstered() -> void:
+	var c: Caster = _caster(branded(E.WATER))[0]
+	_hold(c, 30)
+	c.cool(DT)
+	check((c.fire_mode() as ChargeMode).charge == 0.0, "holstering drops the charge")
+	check(not c.tick(false, false, DT, null, null), "no cast after holstering")
+
+
+func test_explosive_mode() -> void:
+	var w := branded(E.EARTH)
+	var cp := _caster(w)
+	var c: Caster = cp[0]
+	var pool: Pool = cp[1]
+	var bolts := SpellBolts.new()
+	check(c.fire_mode() is ExplosiveMode, "Earth Head -> ExplosiveMode")
+	check(c.tick(true, true, DT, _aim(), bolts), "press casts")
+	var s := bolts.live[0].spawn
+	check(absf(s.damage - w.damage() * 2.0) < 1e-3, "boulder damage x2")
+	check(absf(s.speed - w.projectile_speed() * 0.6) < 1e-3, "slow boulder")
+	check(s.blast_radius == 3.0 and s.blast_fraction == 0.6, "blast fields")
+	check(absf(pool.spent - w.mana_cost() * 1.6) < 1e-3, "x1.6 mana")
+	check(absf(c.cooldown_left - w.cooldown() * 1.8) < 1e-6, "x1.8 cooldown")
+	var ws := Caster.new(branded(E.EARTH, true)).fire_mode() as ExplosiveMode
+	var sp := SpellBolts.Spawn.new()
+	ws.modify(sp)
+	check(sp.blast_radius < 3.0 and sp.blast_radius > 0.0, "wand blast smaller")
+	bolts.free()
+
+
+func _world(k: int) -> Node3D:
+	var w := Node3D.new()
+	w.position = Vector3(-9000, 0, -9000 - 300 * k)
+	runner_tree.root.add_child(w)
+	return w
+
+
+func _enemy(w: Node3D, at: Vector3) -> Enemy:
+	var e := Enemy.create(EnemyTable.load_default().find("gnawer"), Transform3D(Basis(), at))
+	w.add_child(e)
+	if e is Gnawer:
+		(e as Gnawer).auto_tick = false
+	e.set_physics_process(false)
+	return e
+
+
+func _brand_hit(e: Enemy, el: E, dmg: float, s: SpellBolts.Spawn) -> SpellBolts.Hit:
+	var h := SpellBolts.Hit.new()
+	h.collider = e
+	h.element = el
+	h.damage = dmg
+	h.point = e.global_position
+	h.spawn = s
+	h.result = Damage.Result.new()
+	h.result.amount = dmg
+	return h
+
+
+func test_blast_hits_nearby_enemies() -> void:
+	var w := _world(1)
+	var a := _enemy(w, Vector3.ZERO)
+	var near := _enemy(w, Vector3(1, 0, 0))
+	var edge := _enemy(w, Vector3(2.9, 0, 0))
+	var far := _enemy(w, Vector3(10, 0, 0))
+	var hn := near.health
+	var he := edge.health
+	var hf := far.health
+	var ha := a.health
+	var s := SpellBolts.Spawn.new()
+	s.blast_radius = 3.0
+	s.blast_falloff = 0.5
+	s.blast_fraction = 0.6
+	var n := MagicEffects.blast(_brand_hit(a, E.EARTH, 10.0, s), runner_tree)
+	check(n == 2, "two enemies in the blast (%d)" % n)
+	check(a.health == ha, "the direct target is not blasted again")
+	check(far.health == hf, "far enemy untouched")
+	check(hn - near.health > he - edge.health and he > edge.health, "falloff toward the edge")
+	check(near.stagger_left > 0.0, "earth blast staggers")
+	w.queue_free()
+
+
+func test_water_full_charge_chains_two() -> void:
+	var w := _world(2)
+	var a := _enemy(w, Vector3.ZERO)
+	var b := _enemy(w, Vector3(3, 0, 0))
+	var c := _enemy(w, Vector3(6, 0, 0))
+	var d := _enemy(w, Vector3(9, 0, 0))
+	var hb := b.health
+	var hc := c.health
+	var hd := d.health
+	var s := SpellBolts.Spawn.new()
+	s.chain_targets = 2
+	s.chain_range = 6.0
+	s.chain_fraction = 0.5
+	var h := _brand_hit(a, E.WATER, 10.0, s)
+	MagicEffects.on_hit(h)
+	check(b.health < hb and c.health < hc, "jumped twice, onward from the last")
+	check(d.health == hd, "only two jumps")
+	var b2 := b.health
+	MagicEffects.on_hit(_brand_hit(a, E.WATER, 10.0, null))
+	check(b.health == b2, "a plain Water hit never chains")
+	w.queue_free()

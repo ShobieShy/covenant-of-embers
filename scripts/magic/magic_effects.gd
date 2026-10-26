@@ -49,6 +49,12 @@ static var force_convert := false  ## step 115: the tutorial's next Dark roll al
 static var dark_roll := Callable()  ## tests: func() -> float in [0, 1)
 static var summons_made := 0
 static var ally_heals := 0
+static var blasts := 0  ## step 138: enemies struck by blasts (Moss & Berg, cursed orb)
+static var crits := 0  ## step 139: brand crits (Hexler & Koch)
+static var crit_roll := Callable()  ## tests: func() -> float in [0, 1)
+## Step 142: blast hits on co-op puppets this frame, [Enemy, amount, element]; CoopWorld
+## forwards them to the host like a client's "hit".
+static var puppet_hits: Array = []
 
 
 ## Step 108: before take_hit. True when the bolt hit an ally: a Light bolt heals it, any
@@ -135,6 +141,8 @@ static func on_hit(h: SpellBolts.Hit) -> void:
 			stagger(h)
 		ElementTable.Element.AIR:
 			chain(h)
+	if h.spawn != null and h.spawn.chain_targets > 0:  # step 138: Sigil Sauer full charge
+		chain_n(h, h.spawn.chain_targets, h.spawn.chain_range, h.spawn.chain_fraction)
 
 
 static func light_heal_amount(dmg: float) -> float:
@@ -233,13 +241,34 @@ static func stagger(h: SpellBolts.Hit) -> void:
 ## Returns the enemy the bolt jumped to (null = none in range).
 static func chain(h: SpellBolts.Hit) -> Enemy:
 	var src := h.collider as Enemy
+	if src == null:
+		return null
+	return chain_from(src, CHAIN_FRACTION * h.damage, ElementTable.Element.AIR, CHAIN_RANGE, [])
+
+
+## Step 138 (Sigil Sauer): up to `n` jumps, each from the last enemy struck to the nearest
+## new one within `range_m`, for `fraction` x the bolt's damage in the bolt's element.
+static func chain_n(h: SpellBolts.Hit, n: int, range_m: float, fraction: float) -> int:
+	var src := h.collider as Enemy
+	var done := 0
+	var seen: Array = [src]
+	while src != null and done < n:
+		src = chain_from(src, fraction * h.damage, h.element, range_m, seen)
+		if src != null:
+			seen.append(src)
+			done += 1
+	return done
+
+
+## One jump from `src` to the nearest live hostile enemy within `range_m` not in `skip`.
+static func chain_from(src: Enemy, dmg: float, element: ElementTable.Element, range_m: float, skip: Array) -> Enemy:
 	if src == null or not src.is_inside_tree():
 		return null
 	var best: Enemy = null
-	var best_d := CHAIN_RANGE
+	var best_d := range_m
 	for n in src.get_tree().get_nodes_in_group(Enemy.GROUP):
 		var e := n as Enemy
-		if e == null or e == src or not e.alive() or e.is_ally():
+		if e == null or e == src or not e.alive() or e.is_ally() or skip.has(e):
 			continue
 		var d := e.global_position.distance_to(src.global_position)
 		if d <= best_d:
@@ -249,9 +278,66 @@ static func chain(h: SpellBolts.Hit) -> Enemy:
 		return null
 	var wp := best.damage_target.weak_point
 	best.damage_target.weak_point = false  # a jump never crits
-	var r := Damage.resolve_hit(CHAIN_FRACTION * h.damage, ElementTable.Element.AIR, best.damage_target)
+	var r := Damage.resolve_hit(dmg, element, best.damage_target)
 	best.damage_target.weak_point = wp
-	best.apply_damage(r.amount, ElementTable.Element.AIR)
+	_hurt(best, r.amount, element)
 	StatusFX.chain_arc(src.get_parent(), src.global_position + Vector3.UP, best.global_position + Vector3.UP)
 	chains += 1
 	return best
+
+
+## Damage outside a bolt (chain jumps, blasts); a co-op client's puppet is also queued in
+## puppet_hits so CoopWorld can tell the host (step 142).
+static func _hurt(e: Enemy, amount: float, element: ElementTable.Element) -> void:
+	if e.hold_death:
+		puppet_hits.append([e, amount, element])
+	e.apply_damage(amount, element)
+
+
+## Step 138 (Moss & Berg boulders, Hexler's cursed orb): every other live hostile enemy within
+## blast_radius of the impact takes blast_fraction x the bolt's damage, x1 at the centre down
+## to blast_falloff at the edge, resolved against its own resist (never a crit). Earth blasts
+## stagger, orbs roll Dark once per enemy. Allies and the player are never hurt. Returns the
+## number of enemies struck.
+static func blast(h: SpellBolts.Hit, tree: SceneTree) -> int:
+	var s := h.spawn
+	if s == null or s.blast_radius <= 0.0 or tree == null:
+		return 0
+	var n := 0
+	for node in tree.get_nodes_in_group(Enemy.GROUP):
+		var e := node as Enemy
+		if e == null or e == h.collider or not e.alive() or e.is_ally() or e.damage_target == null:
+			continue
+		var d := e.global_position.distance_to(h.point)
+		if d > s.blast_radius:
+			continue
+		var k := lerpf(1.0, s.blast_falloff, clampf(d / s.blast_radius, 0.0, 1.0))
+		var wp := e.damage_target.weak_point
+		e.damage_target.weak_point = false
+		var r := Damage.resolve_hit(s.blast_fraction * h.damage * k, h.element, e.damage_target)
+		e.damage_target.weak_point = wp
+		_hurt(e, r.amount, h.element)
+		n += 1
+		if h.element == ElementTable.Element.EARTH and e.alive():
+			e.stagger_left = maxf(e.stagger_left, STAGGER_SECONDS * (1.0 - Damage.clamp_resist(r.resist)))
+		if s.is_orb:
+			try_corrupt(e, h.dark_bonus)
+	blasts += n
+	if n > 0 or s.is_orb:
+		StatusFX.blast(tree.current_scene, h.point, s.blast_radius, h.element)
+	return n
+
+
+## Step 139 (Hexler & Koch): a weak-point hit gets x crit_mult on top of the weak-point x2;
+## any other hit crits on a crit_chance roll for x crit_mult. Updates h.result.
+static func apply_crit(h: SpellBolts.Hit, weak_point: bool) -> void:
+	var s := h.spawn
+	if h.result == null or s == null or s.crit_mult <= 1.0:
+		return
+	if not weak_point:
+		var roll := float(crit_roll.call()) if crit_roll.is_valid() else randf()
+		if roll >= s.crit_chance:
+			return
+	h.result.crit *= s.crit_mult
+	h.result.amount *= s.crit_mult
+	crits += 1
