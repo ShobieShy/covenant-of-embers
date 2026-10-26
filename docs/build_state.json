@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 143,
-  "steps_done": 120,
-  "last_commit": "43cb672",
+  "steps_done": 121,
+  "last_commit": "6eea422",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1263,6 +1263,13 @@
       "type": "build",
       "summary": "Brands B5: Coltara BurstMode (select fire + accuracy ramp) + Hexler PrecisionMode (crit, pool, cursed orb)",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T13:49:00-05:00",
+      "step": 140,
+      "type": "build",
+      "summary": "Brands B6: original CC0 brand logos (assets/original/brands, tools/gen_brand_logos.py, ASSETS/CREDITS), brand line on item cards (logo, maker, mode line, Rare+ tagline) and vendor compare text, HUD brand meter under the crosshair; tests/unit/test_brand_ui.gd",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1385,7 +1392,8 @@
     136,
     137,
     138,
-    139
+    139,
+    140
   ],
   "deferred": [
     74,
@@ -1405,7 +1413,6 @@
     }
   ],
   "waiting_on_user_go": [
-    140,
     141,
     142,
     143

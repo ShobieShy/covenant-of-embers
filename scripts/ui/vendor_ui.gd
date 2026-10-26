@@ -118,6 +118,13 @@ func _on_stock_selected(i: int) -> void:
 	if it is EquipmentItem:
 		var cur: EquipmentItem = player.equipment.item((it as EquipmentItem).slot)
 		compare.text = "vs equipped: %s" % (name_of(cur) if cur else "nothing")
+	var b: Brand = null  # step 140: the maker line (plain text; the Label has no BBCode)
+	if it is WieldableInstance:
+		b = (it as WieldableInstance).brand()
+	elif it is WieldablePart:
+		b = (it as WieldablePart).brand()
+	if b != null:
+		compare.text = ("%s - %s\n%s" % [b.display_name, b.mode_line, compare.text]).strip_edges()
 
 
 func _selected(list: ItemList) -> int:

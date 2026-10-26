@@ -17,6 +17,7 @@
 | "Animated Wizard" by Quaternius (Elders, recoloured) | Quaternius | CC BY 3.0 | https://poly.pizza/m/kttbFvCl2C | 2026-10-24 |
 | KayKit Adventurers (Mage, rig animations, props) | Kay Lousberg | CC0 1.0 | https://kaylousberg.itch.io/kaykit-adventurers | 2026-10-24 |
 | Old Oak (giant) | Covenant of Embers project | CC0 1.0 | original work | 2026-10-24 |
+| Brand logos | Covenant of Embers project | CC0 1.0 | original work (tools/gen_brand_logos.py; fictional makers) | 2026-10-26 |
 | Quaternius enemies (Rat, Slime, Slime Enemy, Goleling, trash props; recoloured, garbage golems kitbashed) | Quaternius | CC0 1.0 | https://poly.pizza/u/Quaternius | 2026-10-24 |
 | Kenney Pixel UI Pack, Fantasy UI Borders, Tiny Dungeon icons, Cursor Pixel Pack, Kenney Fonts | Kenney | CC0 1.0 | https://kenney.nl/assets/pixel-ui-pack | 2026-10-24 |
 | Magewar item resources | ShobieShy (Magewar) | MIT (~/game LICENSE) | local ~/game/magewar/resources | 2026-10-23 |

@@ -11,6 +11,7 @@ element = 5
 fire_mode = 5
 color = Color(1, 0.9, 0.5, 1)
 tagline = "Three notes of the same hymn."
+logo_path = "res://assets/original/brands/coltara_halo.png"
 mode_line = "Select fire: R toggles burst/semi; accuracy ramps"
 wand_scale = 0.6
 params = {

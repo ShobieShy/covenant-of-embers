@@ -49,6 +49,7 @@ var death_overlay: ColorRect
 var death_label: Label
 var boss_label: Label  ## step 56: boss name + phase pips
 var boss_bar: ProgressBar
+var brand_meter: BrandMeter  ## step 140: heat/charge/spin/burst/pool under the crosshair
 var hint_left := 0.0
 var marker_left := 0.0
 var mana_flash_left := 0.0
@@ -70,6 +71,54 @@ class Crosshair:
 		for d in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]:
 			draw_line(c + d * gap, c + d * (gap + 8.0), col, 2.0)
 		draw_circle(c, 1.5, col)
+
+
+## Step 140 (Brands B6): the held brand's logo, a 96x6 meter and its short text, centred
+## under the crosshair; hidden for unbranded wieldables and empty hands.
+class BrandMeter:
+	extends Control
+	const COLORS := {
+		&"heat": Color(1.0, 0.45, 0.1),
+		&"charge": Color(0.35, 0.65, 1.0),
+		&"spin": Color(0.9, 0.97, 1.0),
+		&"burst": Color(1.0, 0.85, 0.35),
+		&"pool": Color(0.7, 0.4, 1.0),
+	}
+	var logo: Texture2D
+	var value := 0.0
+	var kind := &""
+	var text := ""
+	var font: Font
+	var hot := false  ## overheated / venting: the bar flashes
+
+	func show_mode(m: FireMode) -> void:
+		visible = m != null and m.brand != null
+		if not visible:
+			return
+		logo = m.brand.logo()
+		value = clampf(m.meter(), 0.0, 1.0)
+		kind = m.meter_kind()
+		text = m.meter_text()
+		hot = (m.fx_bits() & 2) != 0
+		queue_redraw()
+
+	func meter_color() -> Color:
+		var c: Color = COLORS.get(kind, Color.WHITE)
+		if kind == &"heat":
+			c = Color(1.0, 0.75, 0.3).lerp(Color(1.0, 0.15, 0.05), value)
+		if hot and int(Time.get_ticks_msec() / 120) % 2 == 0:
+			c = Color.WHITE
+		return c
+
+	func _draw() -> void:
+		var c := size * 0.5 + Vector2(0, 46)
+		var bar := Rect2(c + Vector2(-40, 0), Vector2(96, 6))
+		if logo != null:
+			draw_texture_rect(logo, Rect2(c + Vector2(-62, -5), Vector2(16, 16)), false)
+		draw_rect(bar.grow(1.0), Color(0, 0, 0, 0.6))
+		draw_rect(Rect2(bar.position, Vector2(bar.size.x * value, bar.size.y)), meter_color())
+		if font != null and not text.is_empty():
+			draw_string(font, c + Vector2(-40, 22), text, HORIZONTAL_ALIGNMENT_LEFT, 120, 12, meter_color())
 
 
 func _init() -> void:
@@ -96,6 +145,12 @@ func _init() -> void:
 	crosshair.set_anchors_preset(Control.PRESET_FULL_RECT)
 	crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(crosshair)
+	brand_meter = BrandMeter.new()
+	brand_meter.set_anchors_preset(Control.PRESET_FULL_RECT)
+	brand_meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	brand_meter.font = font
+	brand_meter.visible = false
+	root.add_child(brand_meter)
 	marker = _label(28, root)
 	marker.set_anchors_preset(Control.PRESET_CENTER)
 	marker.text = "x"
@@ -285,6 +340,8 @@ func refresh(dt: float) -> void:
 	crosshair.visible = not player.focus.focused and player.alive()
 	crosshair.gap = crosshair_gap() + 3.0
 	crosshair.queue_redraw()
+	var cst := player.caster
+	brand_meter.show_mode(cst.fire_mode() if cst != null and player.alive() else null)
 	var et := ElementTable.load_default()
 	for i in 2:
 		var w := player.loadout.wieldable(i)

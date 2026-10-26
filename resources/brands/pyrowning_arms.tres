@@ -11,6 +11,7 @@ element = 1
 fire_mode = 1
 color = Color(1, 0.45, 0.15, 1)
 tagline = "Runs hot. Never asks for mana."
+logo_path = "res://assets/original/brands/pyrowning_arms.png"
 mode_line = "Heat: no mana per cast; overheats, R vents"
 wand_scale = 0.6
 params = {

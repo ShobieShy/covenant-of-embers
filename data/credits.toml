@@ -167,3 +167,10 @@ author = "Kenney"
 license = "CC0 1.0"
 source = "https://kenney.nl/assets/pixel-ui-pack"
 line = "Kenney Pixel UI Pack, Fantasy UI Borders, Tiny Dungeon icons, Cursor Pixel Pack, Kenney Fonts by Kenney, CC0 1.0"
+
+[[credit]]
+name = "Brand logos"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "original (this repository, drawn by tools/gen_brand_logos.py)"
+line = "Brand logos by Covenant of Embers project, CC0 1.0"

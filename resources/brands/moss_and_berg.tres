@@ -11,6 +11,7 @@ element = 3
 fire_mode = 3
 color = Color(0.55, 0.42, 0.25, 1)
 tagline = "Quarried, not conjured."
+logo_path = "res://assets/original/brands/moss_and_berg.png"
 mode_line = "Explosive: slow boulders that burst on impact"
 wand_scale = 0.6
 params = {

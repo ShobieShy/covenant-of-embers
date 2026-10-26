@@ -11,6 +11,7 @@ element = 4
 fire_mode = 4
 color = Color(0.6, 0.95, 0.85, 1)
 tagline = "The longer it sings, the faster it speaks."
+logo_path = "res://assets/original/brands/windchester.png"
 mode_line = "Spin-up: full auto, fire rate rises while held"
 wand_scale = 0.6
 params = {

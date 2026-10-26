@@ -17,6 +17,8 @@ var gems: Array[Dictionary] = []  ## step 45: socketed gems {element, name, colo
 var consecration := ""  ## step 45: consecration id ("" = none)
 var consecration_text := ""
 var current_consecration := ""  ## the compared item's consecration ("" = none / nothing compared)
+var brand: Brand  ## step 140: the maker (Head element), null = unbranded
+var is_wand := false
 
 
 static func for_item(item: Resource, player: Player = null) -> CompareCard:
@@ -28,6 +30,8 @@ static func for_item(item: Resource, player: Player = null) -> CompareCard:
 		c.title = w.display_name()
 		c.rarity_id = w.rarity_id()
 		c.kind = "wand" if w.type() == WieldableDef.Type.WAND else "staff"
+		c.brand = w.brand()
+		c.is_wand = w.is_wand()
 		if player != null:
 			current = player.loadout.wieldable(Loadout.slot_for(w))
 		var cw := current as WieldableInstance
@@ -52,6 +56,7 @@ static func for_item(item: Resource, player: Player = null) -> CompareCard:
 		c.title = p.display_name
 		c.rarity_id = p.rarity
 		c.kind = "part"
+		c.brand = p.brand()
 		c._row("damage_bonus", "Damage", p.damage_bonus, NAN, true)
 		c._row("fire_rate_modifier", "Cast time x", p.fire_rate_modifier, NAN, false)
 		c._row("accuracy_bonus", "Accuracy", p.accuracy_bonus, NAN, true)
@@ -102,7 +107,7 @@ func _add_gems(list: Array) -> void:
 ## Step 45: the gem + consecration lines as BBCode (shared by the inventory and station cards).
 ## Gems in their element colour; the consecration in gold with a "replaces"/"loses" delta line.
 func extra_lines() -> String:
-	var s := ""
+	var s := brand_line()
 	if not gems.is_empty():
 		var names := PackedStringArray()
 		for g in gems:
@@ -114,6 +119,23 @@ func extra_lines() -> String:
 			s += "[color=#e05050](replaces %s)[/color]\n" % current_consecration.capitalize()
 	elif not current_consecration.is_empty():
 		s += "[color=#e05050](loses %s)[/color]\n" % current_consecration.capitalize()
+	return s
+
+
+## Step 140: "[logo] Pyrowning Arms - Heat: hold to fire, ..." in the brand colour, plus the
+## tagline in grey on Rare+ wieldables and "(wand: lighter)" on wands; "" when unbranded.
+func brand_line() -> String:
+	if brand == null:
+		return ""
+	var s := ""
+	if not brand.logo_path.is_empty() and ResourceLoader.exists(brand.logo_path):
+		s += "[img=16x16]%s[/img] " % brand.logo_path
+	s += "[color=#%s][b]%s[/b][/color] - %s" % [brand.color.to_html(false), brand.display_name, brand.mode_line]
+	if is_wand:
+		s += " [i](wand: lighter)[/i]"
+	s += "\n"
+	if not brand.tagline.is_empty() and kind != "part" and Rarity.parse(rarity_id) >= Rarity.Tier.RARE:
+		s += "[color=#a0a0a0][i]%s[/i][/color]\n" % brand.tagline
 	return s
 
 

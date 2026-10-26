@@ -260,3 +260,13 @@ license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-10-24"
 use = "UI theme (buttons, panels, slider), HUD bar frames, cursors, pixel fonts, item/element icons"
+
+[[asset]]
+name = "Brand logos"
+path = "assets/original/brands"
+author = "Covenant of Embers project"
+source = "original (this repository, drawn by tools/gen_brand_logos.py)"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-10-26"
+use = "Staff/wand maker logos on item cards and the HUD brand meter (Pyrowning Arms, Sigil Sauer, Moss & Berg, Windchester, Coltara Halo, Hexler & Koch; fictional makers)"
