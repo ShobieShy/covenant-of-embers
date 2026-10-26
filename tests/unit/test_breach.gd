@@ -25,18 +25,17 @@ func test_layout() -> void:
 	for n in ["boss_dais", "west_wing", "east_wing", "vault_chest"]:
 		check(level.get_node_or_null("WaveSpawns/" + n) != null, "spawn %s" % n)
 	check(level.get_node("Waves").get_child_count() == 3, "three waves (the boss last)")
-	check(level.get_node("Encounters").get_child_count() == 3, "three room encounters")
-	check(level.get_node("Switches").get_child_count() == 2, "two levers")
+	check(level.get_node("Encounters").get_child_count() == 6, "six room encounters (step 162)")
+	check(level.get_node("Switches").get_child_count() == 3, "three levers (step 162)")
 	level.free()
 
 
 func test_navmesh_and_spawns_reachable() -> void:
 	var level := _load(Vector3(3000, 0, -3000))
 	var nav := level.get_node("Navigation") as LevelNavigation
-	check(nav != null and nav.navigation_mesh.get_polygon_count() > 0, "navmesh baked")
-	for i in 120:
-		if nav.map_ready():
-			break
+	check(nav != null and nav.polygon_count() > 0, "navmesh baked")
+	var t0 := Time.get_ticks_msec()  # step 162: the 220x320 m zone syncs in real seconds
+	while not nav.map_ready() and Time.get_ticks_msec() - t0 < 20000:
 		await runner_tree.physics_frame
 	check(nav.map_ready(), "navmesh synced")
 	var map := nav.get_navigation_map()
@@ -72,10 +71,9 @@ func _reaches(map: RID, a: Vector3, b: Vector3, tol: float) -> bool:
 
 
 func _synced(nav: LevelNavigation) -> void:
-	for i in 300:
+	var t0 := Time.get_ticks_msec()
+	while not nav.map_ready() and Time.get_ticks_msec() - t0 < 20000:
 		await runner_tree.physics_frame
-		if nav.map_ready():
-			break
 
 
 ## Step 47: room encounters fire on their triggers and clear; the levers stay inert until
@@ -91,7 +89,7 @@ func test_rooms_and_levers() -> void:
 	w.add_child(b)
 	b.setup(level, p, false)
 	await _synced(level.get_node("Navigation") as LevelNavigation)
-	check(b.encounters.size() == 3 and b.switches.size() == 2, "3 rooms, 2 levers")
+	check(b.encounters.size() == 6 and b.switches.size() == 3, "6 rooms, 3 levers")
 	check(not b.rooms_cleared() and b.next_encounter() == b.encounters[0], "first room first")
 	check(not b.switches[0].press(), "lever inert while rooms hold enemies")
 	for e in b.encounters:
@@ -109,9 +107,10 @@ func test_rooms_and_levers() -> void:
 			e.tick(0.1)
 		check(e.cleared(), "%s cleared" % e.name)
 	check(b.rooms_cleared(), "rooms cleared")
-	check(b.switches[0].armed and b.switches[1].armed, "levers armed")
+	check(b.switches.all(func(x: BreachSwitch) -> bool: return x.armed), "levers armed")
 	check(b.switches[0].press() and not b.gate_open, "one lever is not enough")
-	check(b.switches[1].press() and b.gate_open, "both levers open the gate")
+	check(b.switches[1].press() and not b.gate_open, "two levers are not enough")
+	check(b.switches[2].press() and b.gate_open, "all three levers open the gate")
 	w.queue_free()
 
 
@@ -126,9 +125,8 @@ func test_station_in_breach() -> void:
 	check(marker != null and st.global_position.distance_to(marker.global_position) < 0.01, "placed on the marker")
 	check(st.global_position.distance_to(start) > 1.0, "not on top of the start")
 	var nav := level.get_node("Navigation") as LevelNavigation
-	for i in 120:
-		if nav.map_ready():
-			break
+	var t0 := Time.get_ticks_msec()  # step 162: the 220x320 m zone syncs in real seconds
+	while not nav.map_ready() and Time.get_ticks_msec() - t0 < 20000:
 		await runner_tree.physics_frame
 	var path := NavigationServer3D.map_get_path(nav.get_navigation_map(), start, st.global_position, true)
 	check(path.size() > 1 and path[path.size() - 1].distance_to(st.global_position) < 1.5, "station reachable")

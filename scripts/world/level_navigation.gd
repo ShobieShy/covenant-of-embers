@@ -282,9 +282,11 @@ func _tiles_ready() -> bool:
 			for v in nm.get_polygon(0):
 				c += verts[v]
 			# Step 161: on the map (a neighbour tile's overlapping border may own the point).
+			# Step 162: every tile, not just the first (a half-synced map cut Breach paths at a seam).
 			var q: Vector3 = t.global_transform * (c / nm.get_polygon(0).size())
-			return NavigationServer3D.map_get_closest_point(map, q).distance_to(q) < 0.3
-	return false
+			if NavigationServer3D.map_get_closest_point(map, q).distance_to(q) >= 0.3:
+				return false
+	return true
 
 
 ## Total polygons (whole mesh or all tiles), for logs.

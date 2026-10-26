@@ -376,9 +376,104 @@ def landfill() -> Map:
     landfill_part2(m)
     return m
 
+BRICK = [0.3, 0.3, 0.34]
+CRATER = [0.3, 0.24, 0.28]
+SHARD = [0.45, 0.25, 0.55]
+
+
+def _spawn(m: Map, name, pos, yaw=180.0):
+    m.out.append(f'[[spawn_point]]\nname = "{name}"\nposition = {v(pos)}\nyaw_deg = {yaw}\n')
+
+
+def _encounter(m: Map, eid, trig, enemies):
+    en = ", ".join(f'{{enemy = "{e}", count = {n}, at = "{a}"}}' for e, n, a in enemies)
+    m.out.append(f'[[encounter]]\nid = "{eid}"\ntrigger_center = {v(trig)}\ntrigger_radius = 3.5\nenemies = [{en}]\n')
+
+
+def breach() -> Map:
+    """162 W11 The Breach, 220x320 m: a crater approach from the south (the breach waystone),
+    the 6-room interior (den, gallery, cistern + the west annex: ossuary on the ground, bell loft
+    and reliquary on a 4 m upper level with the 3rd lever) and the optional east side wing
+    (a challenge camp + hidden chest, open after tutorial_done). Still linear: annex rooms are
+    encounters, so all 6 clear before the 3 levers arm."""
+    m = Map({"size": [220, 320], "center": [0, 60], "height": 10.0, "seed": 162, "rim": 20.0, "blend": 12.0,
+             "map_version": 2, "layers": ["Rock030", "Gravel022", "Ground037", "Ground054"]})
+    # West annex, ground floor: room 4 "ossuary" through the den's west door (z 61..65).
+    m.pad("ossuary_floor", -19, 69, 22, 18, [0.3, 0.28, 0.3])
+    m.wall("ossuary_w", [-30.5, 2, 69], [1, 4, 19], BRICK)
+    m.wall("ossuary_s", [-19, 2, 78.5], [23, 4, 1], BRICK)
+    m.wall("ossuary_n_w", [-27, 2, 59.5], [6, 4, 1], BRICK)
+    m.wall("ossuary_n_e", [-14, 2, 59.5], [12, 4, 1], BRICK)
+    for i, (x, z) in enumerate(((-26, 66), (-14, 74), (-26, 75))):
+        m.box(f"ossuary_bones_{i + 1}", "heap", [x, 0.4, z], [2.4, 0.8, 1.6], [0.62, 0.58, 0.5])
+    # The stair north (20 x 0.2 m steps under the nav climb) up to the 4 m upper level.
+    m.stairs("annex_stair", -22, 59, 4.0, 20, (0.0, -0.6), 3.0, BRICK)
+    m.wall("stair_wall_w", [-24, 3, 52.5], [1, 6, 14], BRICK)
+    m.wall("stair_wall_e", [-20, 3, 52.5], [1, 6, 14], BRICK)
+    m.pad("annex_base", -21.5, 32, 17, 56, [0.3, 0.28, 0.3])  # keeps the heightfield flat under the upper level
+    m.box("annex_upper", "platform", [-21.5, 2, 25], [17, 4, 42], BRICK)
+    m.wall("upper_w", [-30.5, 6, 25], [1, 4, 42], BRICK)
+    m.wall("upper_e", [-12.5, 6, 25], [1, 4, 42], BRICK)
+    m.wall("upper_n", [-21.5, 6, 3.5], [19, 4, 1], BRICK)
+    m.wall("upper_s_w", [-27.25, 6, 46.5], [5.5, 4, 1], BRICK)
+    m.wall("upper_s_e", [-16.25, 6, 46.5], [7.5, 4, 1], BRICK)
+    m.wall("loft_part_w", [-26.5, 6, 26], [7, 4, 1], BRICK)
+    m.wall("loft_part_e", [-16, 6, 26], [6, 4, 1], BRICK)
+    m.box("loft_bell", "crate", [-21, 5, 34], [2, 2, 2], [0.5, 0.4, 0.2])
+    _spawn(m, "ossuary_west", [-26, 0, 70], 90.0)
+    _spawn(m, "loft_north", [-21, 4, 30])
+    _spawn(m, "reliquary_north", [-21, 4, 9])
+    _encounter(m, "room4_ossuary", [-12, 0, 63], [("gnawer", 2, "ossuary_west"), ("ooze", 1, "ossuary_west")])
+    _encounter(m, "room5_bell_loft", [-21, 4, 42], [("scorchling", 2, "loft_north")])
+    _encounter(m, "room6_reliquary", [-21, 4, 22], [("gnawer", 2, "reliquary_north"), ("scorchling", 1, "reliquary_north")])
+    m.out.append('[[switch]]\nname = "lever_loft"\nopens = "switch_gate"\nposition = [-28.0, 4.0, 14.0]\nyaw_deg = 90.0\n')
+    m.chest("ossuary_chest", [-28, 0, 76], "normal")
+    m.chest("loft_chest", [-28, 4, 44], "normal")
+    m.anchor("ossuary", [-12, 0, 63], 270.0)
+    m.anchor("reliquary", [-21, 4, 20], 180.0)
+    m.poi("ossuary", [-19, 0, 69], 14)
+    m.poi("bell_loft", [-21, 4, 36], 12)
+    m.poi("reliquary", [-21, 4, 15], 12)
+    # East side wing through the gallery's east door (z 49..53): challenge camp + hidden chest.
+    m.pad("side_hall", 11, 51, 7, 4.4, [0.3, 0.28, 0.3])
+    m.wall("side_hall_n", [11, 2, 48.5], [6, 4, 1], BRICK)
+    m.wall("side_hall_s", [11, 2, 53.5], [6, 4, 1], BRICK)
+    m.gate("side_wing_door", [8.2, 1.75, 51], [0.5, 3.5, 4.4], "A sealed ward. Come back when the town trusts you.")
+    m.pad("side_wing", 24, 51, 20, 22, [0.28, 0.24, 0.3])
+    m.wall("side_e", [34.5, 2, 51], [1, 4, 23], BRICK)
+    m.wall("side_n", [24, 2, 39.5], [21, 4, 1], BRICK)
+    m.wall("side_s", [24, 2, 62.5], [21, 4, 1], BRICK)
+    m.wall("side_w_n", [13.5, 2, 44.5], [1, 4, 9], BRICK)
+    m.wall("side_w_s", [13.5, 2, 57.5], [1, 4, 9], BRICK)
+    for i, (x, z) in enumerate(((20, 45), (28, 57), (20, 57), (28, 45))):
+        m.box(f"side_pillar_{i + 1}", "crate", [x, 1.5, z], [1.5, 3, 1.5], [0.35, 0.3, 0.38])
+    m.camp("side_challenge", [26, 0, 51], [("scorchling", 2), ("ooze", 1), ("gnawer", 2)], 900.0)
+    m.chest("side_hidden", [32, 0, 60], "hidden")
+    m.poi("side_wing", [24, 0, 51], 14)
+    # Crater approach: a road from the entrance waystone north through a rim of rock.
+    m.pad("entrance_plaza", 0, 176, 24, 12, CRATER)
+    m.path("approach", (0, 80), (0, 170), 6, CRATER)
+    m.pad("crater_floor", 0, 125, 44, 36, CRATER)
+    for i in range(20):
+        a = 2 * math.pi * i / 20
+        x, z = 58 * math.sin(a), 125 + 40 * math.cos(a)
+        if abs(x) < 12:
+            continue  # the road passes north and south
+        m.box(f"crater_rim_{i + 1}", "heap", [x, 2.5, z], [10, 5 + (i % 3) * 2, 6], ROCK, [0, math.degrees(a), 0])
+    for i, (x, z) in enumerate(((-14, 118), (12, 132), (-6, 138), (16, 114), (0, 125))):
+        m.box(f"breach_shard_{i + 1}", "heap", [x, 1.5 + (i % 2), z], [1.2, 3 + 2 * (i % 2), 1.2], SHARD, [12, 30 * i, 8])
+    m.scatter("crater_rock", [TOWN + "rock-large.glb", TOWN + "rock-wide.glb", TOWN + "rock-small.glb"], 30, 0, 60, 110, 160,
+              162, (2.0, 4.0), 26, avoid=((0, 30, 60),))
+    m.chest("crater_chest", [18, 0, 128], "normal")
+    m.anchor("crater_entrance", [0, 0, 172], 0.0)
+    m.waystone("breach", [5, 0, 176], 0.0)
+    m.poi("crater", [0, 0, 125], 40)
+    return m
+
 
 MAPS = {"data/levels/old_oak.toml": old_oak, "data/levels/town_square.toml": town,
-        "data/levels/mage_association.toml": association, "data/levels/midden_greybox.toml": landfill}
+        "data/levels/mage_association.toml": association, "data/levels/midden_greybox.toml": landfill,
+        "data/levels/breach_slice.toml": breach}
 
 
 def apply(path: Path, block: str) -> str:
