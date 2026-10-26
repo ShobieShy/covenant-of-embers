@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 143,
-  "steps_done": 117,
-  "last_commit": "ab3b658",
+  "steps_done": 118,
+  "last_commit": "b67d7d8",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1242,6 +1242,13 @@
       "type": "build",
       "summary": "Brands B2: FireMode refactor of Caster (unbranded = semi, 48-run parity test vs the 0.1.2 Caster), brand_event signal, reload action on R (potion moved to H; pad Y -> reload, potion -> Misc1), spread bloom mult + accuracy bonus hooks",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T13:32:00-05:00",
+      "step": 137,
+      "type": "build",
+      "summary": "Brands B3: Pyrowning HeatMode + Windchester SpinMode + tests",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1361,7 +1368,8 @@
     133,
     134,
     135,
-    136
+    136,
+    137
   ],
   "deferred": [
     74,
@@ -1381,7 +1389,6 @@
     }
   ],
   "waiting_on_user_go": [
-    137,
     138,
     139,
     140,

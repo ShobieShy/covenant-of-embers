@@ -27,6 +27,10 @@ static func for_wieldable(w: WieldableInstance) -> FireMode:
 	var b := w.brand() if w != null else null
 	var m: FireMode
 	match b.fire_mode if b != null else Brand.Mode.SEMI:
+		Brand.Mode.HEAT:
+			m = HeatMode.new()
+		Brand.Mode.AUTO_SPINUP:
+			m = SpinMode.new()
 		_:
 			m = FireMode.new()
 	m.brand = b
