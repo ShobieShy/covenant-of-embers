@@ -4,7 +4,7 @@
   "plan_file": "docs/BUILD_PLAN.md",
   "current_milestone": "M1",
   "next_step": 0,
-  "total_steps": 134,
+  "total_steps": 143,
   "steps_done": 115,
   "last_commit": "03687d8",
   "history": [
@@ -1221,6 +1221,13 @@
       "type": "release",
       "summary": "Version 0.1.2-prealpha: look-based interaction, unequip all gear + station auto-loads held staff, pixel theme on every screen, item-type icons",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T13:10:00-05:00",
+      "step": "plan-brands",
+      "type": "plan",
+      "summary": "Phase U plan: six element brands (Pyrowning Arms, Sigil Sauer, Moss & Berg, Windchester, Coltara Halo, Hexler & Koch), steps 135-143 waiting on user go",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1357,10 +1364,21 @@
       "shots": "playtest/wayland_20261024_run3/"
     }
   ],
-  "waiting_on_user_go": [],
+  "waiting_on_user_go": [
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143
+  ],
   "notes": [
     "2026-10-24: steps 119-134 (art spree A1-A8, FX spree F1-F8) planned, waiting on user go; see docs/ART_SPREE_PLAN.md, docs/FX_SPREE_PLAN.md",
-    "2026-10-24: Q27-Q34 answered (low-poly, CC-BY credited in-game, Loli small witch normal attire, gear visible now, moonlit night, Light/Dark FX for all, Low=Steam Deck, F1 first)"
+    "2026-10-24: Q27-Q34 answered (low-poly, CC-BY credited in-game, Loli small witch normal attire, gear visible now, moonlit night, Light/Dark FX for all, Low=Steam Deck, F1 first)",
+    "2026-10-26: steps 135-143 (part brands B1-B9) planned, waiting on user go; see docs/BRANDS_PLAN.md; open Q35-Q46"
   ],
   "version": "0.1.2-prealpha"
 }

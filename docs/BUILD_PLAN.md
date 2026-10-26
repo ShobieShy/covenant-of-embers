@@ -807,3 +807,30 @@ Suggested order: 127 first (lighting fixes make every art screenshot meaningful)
 - ~~Q32 Should Light heal/Dark aura FX be visible to all players or only involved players? (recommended all)~~ **Answered 2026-10-24:** Everyone sees Light and Dark FX.
 - ~~Q33 Low preset target hardware: Steam Deck class?~~ **Answered 2026-10-24:** Low preset targets Steam Deck.
 - ~~Q34 Order: start with FX F1 lighting fix first (recommended) or art first?~~ **Answered 2026-10-24:** FX F1 lighting goes first.
+
+## Phase U – Staff/wand part brands (planned 2026-10-26, WAITING ON USER GO)
+Details: docs/BRANDS_PLAN.md. One brand per element, from the Head part; Arcane unbranded. Borderlands design patterns only, no Borderlands content. Do not start until the user says go.
+
+- **Step 135 (waiting on user go)** Brands B1: Brand/BrandTable data, six brands, brand() from the Head, names; no behaviour change.
+- **Step 136 (waiting on user go)** Brands B2: Caster FireMode refactor (SemiMode = today), reload/vent input, brand signals.
+- **Step 137 (waiting on user go)** Brands B3: Pyrowning Arms heat/overheat/vent; Windchester spin-up full auto.
+- **Step 138 (waiting on user go)** Brands B4: Sigil Sauer hold-to-charge + chain; Moss & Berg explosive boulders.
+- **Step 139 (waiting on user go)** Brands B5: Coltara Halo burst/semi + accuracy ramp; Hexler & Koch crit + cursed orb reload.
+- **Step 140 (waiting on user go)** Brands B6: brand name/logo on cards and tooltips; HUD heat/charge/spin/burst meter.
+- **Step 141 (waiting on user go)** Brands B7: brand VFX/SFX hooks and assets, quality caps, credits.
+- **Step 142 (waiting on user go)** Brands B8: co-op brand_fx snapshot bits, blast/orb hits, PROTOCOL 2.
+- **Step 143 (waiting on user go)** Brands B9: balance pass (DPS harness), BalancePatch brand params, playtest rotation.
+
+### Open questions (Phase U)
+- Q35 Gems: brand from the Head's element (planned) or the gem's?
+- Q36 Flat gear bonus once per bolt (planned) or per trigger press?
+- Q37 Pyrowning: zero mana (planned) or mana on overheat/vent?
+- Q38 Overheat: lockout only (planned) or also self-burn?
+- Q39 Moss & Berg boulders straight (planned) or arcing?
+- Q40 Coltara select fire on R (planned) or own key; shield on focus?
+- Q41 Hexler crits: weak-point hitboxes + chance fallback (planned) or chance only?
+- Q42 Sigil Sauer chain overlaps Air's chain: keep (full charge only) or change?
+- Q43 Name "Rare Pyrowning Fire Staff" (planned) or drop the element?
+- Q44 Brand only the Head (planned) or all elemental parts + set bonus?
+- Q45 Windchester below the 0.1 s minimum cooldown?
+- Q46 Wands: same brand behaviour or lighter?
