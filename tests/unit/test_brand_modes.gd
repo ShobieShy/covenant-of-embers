@@ -308,3 +308,109 @@ func test_water_full_charge_chains_two() -> void:
 	MagicEffects.on_hit(_brand_hit(a, E.WATER, 10.0, null))
 	check(b.health == b2, "a plain Water hit never chains")
 	w.queue_free()
+
+
+# --- B5 -------------------------------------------------------------------------------
+
+
+func test_burst_mode() -> void:
+	var w := branded(E.LIGHT)
+	var cp := _caster(w)
+	var c: Caster = cp[0]
+	var pool: Pool = cp[1]
+	var bolts := SpellBolts.new()
+	var m := c.fire_mode() as BurstMode
+	check(m != null and m.burst, "Light Head -> BurstMode, starts in burst")
+	var fired_at: Array[int] = []
+	var peak := 0.0
+	for t in 60:
+		if c.tick(t == 0, t < 3, DT, _aim(), bolts):
+			fired_at.append(t)
+		peak = maxf(peak, m.accuracy_bonus())
+	check(bolts.live.size() == 3, "one press = 3 bolts (%d)" % bolts.live.size())
+	check(fired_at.size() == 3 and fired_at[2] - fired_at[0] == 9, "0.07 s apart: %s" % [fired_at])
+	check(absf(pool.spent - w.mana_cost() * 2.0) < 1e-3, "one mana charge x2 for the burst")
+	check(absf(c.cooldown_left - maxf(0.0, w.cooldown() * 3.0 - 59 * DT)) < 0.02, "burst cooldown x3")
+	check(is_equal_approx(peak, 12.0), "ramp +4 per bolt (%.1f)" % peak)
+	check(c.bloom_mult() == 0.0, "no bloom")
+	check(c.reload(null, null) and not m.burst, "R toggles to semi")
+	_idle(c, 120)
+	check(m.accuracy_bonus() == 0.0, "ramp resets after the window")
+	var n := bolts.live.size()
+	_hold(c, 30, bolts, _aim())
+	check(bolts.live.size() == n + 1, "semi: one bolt per press")
+	var wm := Caster.new(branded(E.LIGHT, true)).fire_mode() as BurstMode
+	check(wm.count() == 2, "wand burst 2")
+	bolts.free()
+
+
+func test_precision_mode_and_orb() -> void:
+	var w := branded(E.DARK)
+	var cp := _caster(w)
+	var c: Caster = cp[0]
+	var bolts := SpellBolts.new()
+	var m := c.fire_mode() as PrecisionMode
+	check(m != null, "Dark Head -> PrecisionMode")
+	check(c.accuracy_bonus() == 15.0, "+15 accuracy")
+	c.tick(true, true, DT, _aim(), bolts)
+	var s := bolts.live[0].spawn
+	check(absf(s.damage - w.damage() * 1.15) < 1e-3 and s.crit_mult == 1.5, "x1.15 damage, crit x1.5")
+	check(c.reload(_aim(), bolts), "R throws the spent charge")
+	var orb := bolts.live[-1].spawn
+	check(orb.is_orb and orb.element == E.DARK and orb.blast_radius == 2.5, "cursed orb")
+	check(absf(orb.damage - 0.4 * w.damage()) < 1e-3, "orb = 0.4 x damage x 1 cast spent")
+	check(m.is_locked() and not c.tick(true, true, DT, _aim(), bolts), "refilling: no casts")
+	_idle(c, 95)
+	check(not m.is_locked(), "refilled after 1.5 s")
+	var before := bolts.live.size()
+	for i in 6:
+		_idle(c, 40)
+		c.tick(true, true, DT, _aim(), bolts)
+	check(bolts.live.size() == before + 7, "6 casts then an automatic orb")
+	check(absf(bolts.live[-1].spawn.damage - 0.4 * 6 * w.damage()) < 1e-3, "orb scales with casts spent")
+	bolts.free()
+
+
+func test_crit_rules() -> void:
+	var s := SpellBolts.Spawn.new()
+	s.crit_mult = 1.5
+	s.crit_chance = 0.1
+	var mk := func() -> SpellBolts.Hit:
+		var h := SpellBolts.Hit.new()
+		h.spawn = s
+		h.result = Damage.Result.new()
+		h.result.amount = 10.0
+		return h
+	MagicEffects.crit_roll = func() -> float: return 0.5
+	var body: SpellBolts.Hit = mk.call()
+	MagicEffects.apply_crit(body, false)
+	check(body.result.amount == 10.0, "no crit on a failed roll")
+	var weak: SpellBolts.Hit = mk.call()
+	MagicEffects.apply_crit(weak, true)
+	check(weak.result.amount == 15.0, "weak point always crits x1.5 more")
+	MagicEffects.crit_roll = func() -> float: return 0.05
+	var lucky: SpellBolts.Hit = mk.call()
+	MagicEffects.apply_crit(lucky, false)
+	check(lucky.result.amount == 15.0, "chance crit on a body hit")
+	MagicEffects.crit_roll = Callable()
+
+
+func test_orb_blast_rolls_dark() -> void:
+	var w := _world(3)
+	var a := _enemy(w, Vector3.ZERO)
+	var b := _enemy(w, Vector3(1.5, 0, 0))
+	var s := SpellBolts.Spawn.new()
+	s.is_orb = true
+	s.blast_radius = 2.5
+	s.blast_falloff = 0.5
+	s.blast_fraction = 1.0
+	var rolls := [0]
+	MagicEffects.dark_roll = func() -> float:
+		rolls[0] += 1
+		return 0.99
+	var hb := b.health
+	MagicEffects.blast(_brand_hit(a, E.DARK, 10.0, s), runner_tree)
+	check(b.health < hb, "orb blast hurts")
+	check(rolls[0] == 1, "one Dark roll per enemy blasted (%d)" % rolls[0])
+	MagicEffects.dark_roll = Callable()
+	w.queue_free()

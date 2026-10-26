@@ -35,6 +35,10 @@ static func for_wieldable(w: WieldableInstance) -> FireMode:
 			m = ChargeMode.new()
 		Brand.Mode.EXPLOSIVE:
 			m = ExplosiveMode.new()
+		Brand.Mode.SELECT_BURST:
+			m = BurstMode.new()
+		Brand.Mode.PRECISION:
+			m = PrecisionMode.new()
 		_:
 			m = FireMode.new()
 	m.brand = b
@@ -113,6 +117,11 @@ func take_due() -> int:
 
 
 func pending() -> bool:
+	return false
+
+
+## True when the mode wants its R action right after this cast (Hexler: pool empty).
+func auto_reload() -> bool:
 	return false
 
 

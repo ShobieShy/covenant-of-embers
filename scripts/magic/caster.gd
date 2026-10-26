@@ -160,6 +160,8 @@ func tick(pressed: bool, held: bool, dt: float, aim: Aim, bolts: SpellBolts) -> 
 	cooldown_left = cd if cm == 1.0 else maxf(WieldableDef.MIN_COOLDOWN, cd * cm)
 	_cast(m, aim, bolts)
 	m.after_cast()
+	if m.auto_reload():
+		reload(aim, bolts)
 	return true
 
 

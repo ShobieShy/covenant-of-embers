@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 143,
-  "steps_done": 119,
-  "last_commit": "c95aebd",
+  "steps_done": 120,
+  "last_commit": "43cb672",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1256,6 +1256,13 @@
       "type": "build",
       "summary": "Brands B4: Sigil Sauer ChargeMode + chain_n, Moss & Berg ExplosiveMode + blast; Pyrowning heat retune",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T13:45:00-05:00",
+      "step": 139,
+      "type": "build",
+      "summary": "Brands B5: Coltara BurstMode (select fire + accuracy ramp) + Hexler PrecisionMode (crit, pool, cursed orb)",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1377,7 +1384,8 @@
     135,
     136,
     137,
-    138
+    138,
+    139
   ],
   "deferred": [
     74,
@@ -1397,7 +1405,6 @@
     }
   ],
   "waiting_on_user_go": [
-    139,
     140,
     141,
     142,
