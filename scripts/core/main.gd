@@ -237,6 +237,9 @@ func _setup_flow(player: Player) -> void:
 	if here == "old_oak":
 		_setup_hub(player)
 	_setup_fast_travel(player, here)
+	for g in get_tree().get_nodes_in_group(FlagGate.GROUP):  # step 156: intro soft-blocks
+		if is_ancestor_of(g):
+			(g as FlagGate).bind(story_flags)
 	if story_flags.has("rusty_dagger"):
 		add_child(DaggerGlow.make(player))  # step 113
 	print("[flow] level %s, gate to %s" % [here, gate.target])

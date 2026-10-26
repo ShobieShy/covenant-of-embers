@@ -241,13 +241,35 @@ def _anchors(d: dict, out: dict) -> None:
         raise LevelError(f"anchor and waystone share a name: {sorted(names)}")
 
 
+def _gates(items: list, out: dict) -> None:
+    """Step 156: [[gate]] name, center, size, requires_flag (default tutorial_done),
+    reason: an intro soft-block wall (scripts/world/flag_gate.gd)."""
+    for i, g in enumerate(items):
+        w = f"gate {i + 1}"
+        _only(g, {"name", "center", "size", "requires_flag", "reason"}, w)
+        name = str(_need(g, "name", w))
+        if not re.fullmatch(r"[a-z0-9_]+", name) or any(x["name"] == name for x in out["gates"]):
+            raise LevelError(f"{w}: name must be unique snake_case")
+        size = _vec(_need(g, "size", w), f"{w} size")
+        if min(size) <= 0:
+            raise LevelError(f"gate '{name}': size must be positive")
+        flag = str(g.get("requires_flag", "tutorial_done"))
+        if not re.fullmatch(r"[a-z0-9_:]+", flag):
+            raise LevelError(f"gate '{name}': requires_flag must be a story flag id")
+        reason = str(g.get("reason", "Bob said to stick to the path."))
+        if '"' in reason or "\\" in reason:
+            raise LevelError(f"gate '{name}': reason must not contain quotes or backslashes")
+        out["gates"].append({"name": name, "center": _vec(_need(g, "center", w), f"{w} center"), "size": size,
+                             "requires_flag": flag, "reason": reason})
+
+
 def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     try:
         d = tomllib.loads(text)
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone"}, "top level")
+               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -302,6 +324,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "pois": [],
         "anchors": [],
         "waystones": [],
+        "gates": [],
     }
     # Step 75: [materials] kind = "assets/<vendor>/<set>" (color/normal/roughness.jpg there),
     # uv_scale = world tiling per metre (triplanar, so boxes of any size tile evenly).
@@ -432,6 +455,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         out["switches"].append({"name": name, "opens": opens, "position": pos, "yaw_deg": float(sw.get("yaw_deg", 0.0))})
     _pois(d.get("poi", []), out)
     _anchors(d, out)
+    _gates(d.get("gate", []), out)
     _props(d.get("prop", []), out)
     out["terrain"] = _terrain(d["terrain"], out["boxes"]) if "terrain" in d else None
     # Step 65: travel exits (LevelGate per exit, `to` = a GameFlow level id) and NPCs.
@@ -701,6 +725,12 @@ def to_tscn(lv: dict, source: str) -> str:
                              f'transform = {_xf(rot_yxz([0, a["yaw_deg"], 0]), a["position"])}\n'
                              f'metadata/yaw_deg = {_f(a["yaw_deg"])}\n'
                              + (f'metadata/beat = "{a["beat"]}"\n' if a["beat"] else ""))
+    if lv.get("gates"):
+        nodes.append('[node name="Gates" type="Node3D" parent="."]\n')
+        for g in lv["gates"]:
+            nodes.append(f'[node name="{g["name"]}" type="StaticBody3D" parent="Gates"]\n'
+                         f'transform = {_xf(rot_yxz([0, 0, 0]), g["center"])}\nscript = ExtResource("1_gate")\n'
+                         f'requires_flag = "{g["requires_flag"]}"\nreason = "{g["reason"]}"\nsize = {_v3(g["size"])}\n')
     nodes.append('[node name="EnemySpawns" type="Node3D" parent="."]\n')
     for i, e in enumerate(lv["enemies"]):
         nodes.append(f'[node name="{e["enemy"]}_{i + 1}" type="Marker3D" parent="EnemySpawns"]\n'
@@ -749,6 +779,8 @@ def to_tscn(lv: dict, source: str) -> str:
     ext = f'[ext_resource type="Script" path="{NAV_SCRIPT}" id="1_nav"]\n'
     if tr:
         ext += f'[ext_resource type="Script" path="{TERRAIN_SCRIPT}" id="1_terrain"]\n'
+    if lv.get("gates"):
+        ext += '[ext_resource type="Script" path="res://scripts/world/flag_gate.gd" id="1_gate"]\n'
     if lv["pois"]:
         ext += '[ext_resource type="Script" path="res://scripts/world/zone_streamer.gd" id="1_stream"]\n'
     for path, i in exts.items():
@@ -894,6 +926,16 @@ def self_test() -> int:
             assert msg in str(e), (msg, str(e))
         else:
             raise AssertionError(f"expected error: {msg}")
+    # Step 156: [[gate]] -> Gates/<name> FlagGate.
+    pg = to_tscn(parse_level(hdr + box + '[[gate]]\nname = "funnel"\ncenter = [0, 1.5, 4]\nsize = [6, 3, 0.5]\n'
+                             'reason = "Not yet."\n'), "g.toml")
+    assert 'id="1_gate"' in pg and 'requires_flag = "tutorial_done"' in pg and 'reason = "Not yet."' in pg, pg
+    try:
+        parse_level(hdr + box + '[[gate]]\nname = "g"\ncenter = [0, 0, 0]\nsize = [1, 1, 0]\n')
+    except LevelError as e:
+        assert "positive" in str(e), str(e)
+    else:
+        raise AssertionError("expected gate size error")
     # Step 155: [[anchor]] / [[waystone]] -> Anchors / Waystones markers.
     pa = parse_level(hdr + box + '[[anchor]]\nname = "joe"\nposition = [1, 0, 2]\nbeat = "meet_joe"\n'
                      '[[waystone]]\npoint = "landfill"\nposition = [3, 0, 2]\nyaw_deg = 90\n')

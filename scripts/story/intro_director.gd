@@ -257,6 +257,13 @@ func advance(id: String) -> bool:
 	return true
 
 
+## Step 156: a beat / cinematic marker from the level's Anchors (TOML [[anchor]]), so
+## redesigned maps move the intro without code changes; `fallback` = the greybox spot.
+func spot(id: String, fallback: Vector3) -> Vector3:
+	var n := main.get_node_or_null(NodePath("Level/Anchors/" + id)) as Node3D if main else null
+	return n.global_position if n else fallback
+
+
 ## Step 110: plays a cinematic here; `done` runs when it ends or is skipped (flags apply).
 func play_cinematic(cid: String, shots: Array, done: Callable = Callable()) -> Cinematic:
 	var c := Cinematic.make(cid, shots, player)
@@ -273,8 +280,8 @@ func _dress_association() -> void:
 	main.call("_ensure_dialogue")
 	if not (main.dialogue as DialogueRunner).ended.is_connected(_on_dialogue_ended):
 		(main.dialogue as DialogueRunner).ended.connect(_on_dialogue_ended)
-	_spawn("Elder", ELDER_SPOT, 0.0)
-	_spawn("Clerk", CLERK_SPOT, 180.0)
+	_spawn("Elder", spot("elder", ELDER_SPOT), 0.0)
+	_spawn("Clerk", spot("clerk", CLERK_SPOT), 180.0)
 	var others := Array(Archetype.IDS).filter(func(a: String) -> bool: return a != player.archetype)
 	for i in mini(3, others.size()):
 		_spawn("Summoned " + Archetype.label(others[i]), SUMMONED_SPOTS[i], 0.0)
@@ -282,7 +289,7 @@ func _dress_association() -> void:
 		_hide_joe()
 	match current():
 		"summoning":
-			player.global_position = DAIS_SPOT
+			player.global_position = spot("dais", DAIS_SPOT)
 			_play_summoning()
 		"appraisal":
 			open_creator()
@@ -320,7 +327,7 @@ func _hide_joe() -> void:
 
 func _play_summoning() -> void:
 	var dais := Vector3(0, 1.2, -10)
-	var circle := RitualFX.summoning_circle(DAIS_SPOT)  # step 133 (FX F7)
+	var circle := RitualFX.summoning_circle(spot("dais", DAIS_SPOT))  # step 133 (FX F7)
 	main.add_child(circle)
 	cinematic = play_cinematic(
 		"summoning",
@@ -335,7 +342,7 @@ func _play_summoning() -> void:
 			{
 				"from": Vector3(-6, 2, -6),
 				"to": Vector3(-3, 2, -5),
-				"look": DAIS_SPOT + Vector3(0, 1, 0),
+				"look": spot("dais", DAIS_SPOT) + Vector3(0, 1, 0),
 				"s": 3.0,
 				"text": "The circle cracks the marble. Four strangers stand in the smoke."
 			},
@@ -396,16 +403,16 @@ func _play_expulsion() -> void:
 		"expulsion",
 		[
 			{
-				"from": ELDER_SPOT + Vector3(2, 1.8, 3),
-				"to": ELDER_SPOT + Vector3(1, 1.7, 2),
-				"look": ELDER_SPOT + Vector3(0, 1.5, 0),
+				"from": spot("elder", ELDER_SPOT) + Vector3(2, 1.8, 3),
+				"to": spot("elder", ELDER_SPOT) + Vector3(1, 1.7, 2),
+				"look": spot("elder", ELDER_SPOT) + Vector3(0, 1.5, 0),
 				"s": 2.5,
 				"text": 'Elder: "Joseph. You were warned."'
 			},
 			{
 				"from": from + Vector3(3, 2, 3),
-				"to": BACK_DOOR + Vector3(3, 2, 3),
-				"look": BACK_DOOR + Vector3(0, 1, 0),
+				"to": spot("back_door", BACK_DOOR) + Vector3(3, 2, 3),
+				"look": spot("back_door", BACK_DOOR) + Vector3(0, 1, 0),
 				"s": 3.0,
 				"text": "Crazy Joe is marched out through the back door. It slams behind him."
 			},
@@ -414,7 +421,7 @@ func _play_expulsion() -> void:
 	)
 	if j:
 		var tw := j.create_tween()
-		tw.tween_property(j, "global_position", BACK_DOOR, 3.0)
+		tw.tween_property(j, "global_position", spot("back_door", BACK_DOOR), 3.0)
 
 
 func _after_expulsion() -> void:
@@ -719,9 +726,9 @@ func _dress_landfill() -> void:
 			walls[w] = _wall(w, float(WALLS[w][0]))
 	var st := station()
 	if st:
-		st.global_position = CAMP
+		st.global_position = spot("joe_bench", CAMP)
 	if not flags.has("joe_wand_given"):
-		_spawn("Crazy Joe", JOE_CAMP, -120.0)
+		_spawn("Crazy Joe", spot("joe_camp", JOE_CAMP), -120.0)
 	if not GameEvents.bus().crafting_completed.is_connected(_on_crafted):
 		GameEvents.bus().crafting_completed.connect(_on_crafted)
 	match b:
@@ -849,7 +856,7 @@ func _on_crafted(_p: Player, _w: WieldableInstance) -> void:
 func _make_shrines() -> void:
 	if not shrines.is_empty():
 		return
-	for spec in [["Light shrine", LIGHT_SHRINE], ["Dark shrine", DARK_SHRINE]]:
+	for spec in [["Light shrine", spot("light_shrine", LIGHT_SHRINE)], ["Dark shrine", spot("dark_shrine", DARK_SHRINE)]]:
 		var n := Npc.new(String(spec[0]))
 		n.name = String(spec[0]).replace(" ", "")
 		n.player = player
@@ -858,7 +865,7 @@ func _make_shrines() -> void:
 		n.talked.connect(touch_shrine)
 		shrines[spec[0]] = n
 	if not flags.has("light_learned"):
-		var s := _spawn("Wounded scavenger", LIGHT_SHRINE + Vector3(-1.5, 0, 0.5), 90.0)
+		var s := _spawn("Wounded scavenger", spot("light_shrine", LIGHT_SHRINE) + Vector3(-1.5, 0, 0.5), 90.0)
 		s.rotation_degrees.z = 70.0  # slumped against the heap
 
 
@@ -887,7 +894,7 @@ func _dark_lesson() -> void:
 	var sp := spawner()
 	var d := sp.table.find("gnawer") if sp else null
 	if d:
-		dark_gnawer = Enemy.create(d, Transform3D(Basis(), DARK_SHRINE + Vector3(1.5, 0, -1.0)))
+		dark_gnawer = Enemy.create(d, Transform3D(Basis(), spot("dark_shrine", DARK_SHRINE) + Vector3(1.5, 0, -1.0)))
 		dark_gnawer.name = "ShrineGnawer"
 		sp.add_child(dark_gnawer)
 		sp.call("_adopt", dark_gnawer)
