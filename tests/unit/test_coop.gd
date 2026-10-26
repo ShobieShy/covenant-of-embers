@@ -278,8 +278,6 @@ func test_light_heal_and_dark_convert() -> void:
 ## colour) and the RemotePlayer shows it; a client's blast/chain damage on a puppet
 ## (MagicEffects._hurt) reaches the host's real enemy as a "hit".
 func test_brand_fx_and_blast_hits() -> void:
-	check(NetSession.PROTOCOL == 2, "protocol 2 (brands)")
-	check(NetSession.version().ends_with("/p2"), "older builds can't join")
 	var d := await _coop_pair()
 	var table := EnemyTable.load_default()
 	var real := Enemy.new()
@@ -309,6 +307,47 @@ func test_brand_fx_and_blast_hits() -> void:
 	await _tick_both(d, 2)
 	check(cw.brand_hits_sent == 1 and hw.brand_hits_sent == 0, "sent once, by the client")
 	check(MagicEffects.puppet_hits.is_empty(), "queue drained")
+	(d["c"] as NetSession).leave()
+	(d["h"] as NetSession).leave()
+	(d["root"] as Node).queue_free()
+	await runner_tree.process_frame
+
+
+## Step 150 (element trees co-op): PROTOCOL 3; a client's "hit" carries its element-tree status
+## mods ("sm") and the host applies the status and mark; junk keys are dropped, values clamped;
+## a capstone area hit on a puppet goes through the puppet-hit path.
+func test_element_status_mods_reach_host() -> void:
+	check(NetSession.PROTOCOL == 3, "protocol 3 (element trees)")
+	check(NetSession.version().ends_with("/p3"), "0.1.3 builds can't join")
+	var san := ElementSkillMods.sanitize_net({"status_seconds": 99.0, "evil": 5, "mark_seconds": -3})
+	check(san.size() == 2 and san["status_seconds"] == 10.0 and san["mark_seconds"] == 0.0, "host sanitises sm")
+	check(
+		ElementSkillMods.net_status({"damage_pct": 9, "mark_seconds": 2}).keys() == ["mark_seconds"],
+		"only status keys sent"
+	)
+	var d := await _coop_pair()
+	var table := EnemyTable.load_default()
+	var real := Enemy.new()
+	real.setup(table.find("earth_training_dummy"))
+	(d["henemies"] as Node).add_child(real)
+	real.global_position = Vector3(5, 0, -4)
+	real.scale_health(100)
+	var hw: CoopWorld = d["hw"]
+	var cw: CoopWorld = d["cw"]
+	hw.setup(d["h"], d["hp"], d["henemies"], table)
+	cw.setup(d["c"], d["cp"], d["cenemies"], table)
+	for i in 120:
+		await _tick_both(d)
+		if cw.puppets.size() == 1:
+			break
+	var pup: Enemy = cw.puppets.values()[0]
+	cw.send_hit(pup, 2.0, ElementTable.Element.WATER, 0.0, {"mark_seconds": 4.0, "status_seconds": 1.0})
+	check(await _wait(func(): return real.soaked_left > 3.0), "host Soaks it (%.2f)" % real.soaked_left)
+	check(real.slow_left > MagicEffects.SLOW_SECONDS, "host slow got +status_seconds")
+	var before := real.health
+	MagicEffects._hurt(pup, 3.0, ElementTable.Element.FIRE)  # e.g. Backdraft's ring
+	await _tick_both(d, 2)
+	check(await _wait(func(): return real.health < before), "capstone area hit reaches the host")
 	(d["c"] as NetSession).leave()
 	(d["h"] as NetSession).leave()
 	(d["root"] as Node).queue_free()

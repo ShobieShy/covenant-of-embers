@@ -29,3 +29,34 @@ static func mult(mods: Dictionary, key: String, floor_v := 0.0) -> float:
 ## The bolt's mods (spawn.mods), {} for a plain bolt.
 static func of_hit(h: SpellBolts.Hit) -> Dictionary:
 	return h.spawn.mods if h != null and h.spawn != null else {}
+
+
+## Step 150 (co-op §7): the status keys a client sends with its "hit" ("sm"); the host clamps each.
+const NET_KEYS := {
+	"status_seconds": 10.0,
+	"status_pct": 100.0,
+	"status_damage_pct": 300.0,
+	"mark_seconds": 20.0,
+	"vs_mark_status_pct": 300.0,
+}
+
+
+## The non-zero NET_KEYS of `mods` (what the host needs to apply this hit's statuses).
+static func net_status(mods: Dictionary) -> Dictionary:
+	var out := {}
+	for k in NET_KEYS:
+		var v := value(mods, k)
+		if v != 0.0:
+			out[k] = v
+	return out
+
+
+## Host side: only known keys, each clamped to [0, NET_KEYS[key]].
+static func sanitize_net(d: Variant) -> Dictionary:
+	var out := {}
+	if not d is Dictionary:
+		return out
+	for k in d:
+		if NET_KEYS.has(String(k)):
+			out[String(k)] = clampf(float(d[k]), 0.0, float(NET_KEYS[String(k)]))
+	return out

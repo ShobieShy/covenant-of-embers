@@ -362,14 +362,17 @@ func _apply_snapshot(list: Array) -> void:
 func _on_puppet_hit(e: Enemy, h: SpellBolts.Hit) -> void:
 	if h == null or h.result == null:
 		return
-	send_hit(e, h.result.amount, h.element, h.dark_bonus)
+	send_hit(e, h.result.amount, h.element, h.dark_bonus, ElementSkillMods.net_status(ElementSkillMods.of_hit(h)))
 
 
 ## The client's hit on a puppet goes to the host (the puppet already showed it). Step 108:
 ## "db" = the Dark-part bonus; the host rolls the conversion.
-func send_hit(e: Enemy, amount: float, element: ElementTable.Element, dark_bonus := 0.0) -> void:
+## Step 150: "sm" = the element-tree status mods (ElementSkillMods.net_status), omitted when none.
+func send_hit(e: Enemy, amount: float, element: ElementTable.Element, dark_bonus := 0.0, sm := {}) -> void:
 	hits_sent += 1
 	var d := {"id": int(e.get_meta(&"net_id", 0)), "amt": amount, "el": int(element), "db": dark_bonus}
+	if not sm.is_empty():
+		d["sm"] = sm
 	session.send("hit", d, 1)
 
 
@@ -427,6 +430,10 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 					e.apply_damage(maxf(0.0, float(data.get("amt", 0.0))), el)
 					if el == ElementTable.Element.DARK and float(data.get("amt", 0.0)) > 0.0:
 						MagicEffects.try_corrupt(e, float(data.get("db", 0.0)))
+					if data.has("sm"):
+						MagicEffects.net_status(
+							e, el, float(data.get("amt", 0.0)), ElementSkillMods.sanitize_net(data["sm"])
+						)
 		"heal":
 			var amt := maxf(0.0, float(data.get("amt", 0.0)))
 			if player is Player:

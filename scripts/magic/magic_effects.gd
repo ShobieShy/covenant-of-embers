@@ -357,6 +357,28 @@ static func chain_from(src: Enemy, dmg: float, element: ElementTable.Element, ra
 
 ## Damage outside a bolt (chain jumps, blasts); a co-op client's puppet is also queued in
 ## puppet_hits so CoopWorld can tell the host (step 142).
+## Step 150 (host): a co-op client's hit on `e` carried status mods `sm`; apply the element's
+## status (burn / slow / stagger) and mark with them, as the client's own bolt would have.
+static func net_status(e: Enemy, element: ElementTable.Element, amount: float, sm: Dictionary) -> void:
+	if e == null or sm.is_empty() or not e.alive():
+		return
+	var h := SpellBolts.Hit.new()
+	h.collider = e
+	h.element = element
+	h.result = Damage.Result.new()
+	h.result.amount = amount
+	h.spawn = SpellBolts.Spawn.new()
+	h.spawn.mods = sm
+	match element:
+		ElementTable.Element.FIRE:
+			burn(h)
+		ElementTable.Element.WATER:
+			slow(h)
+		ElementTable.Element.EARTH:
+			stagger(h)
+	mark(e, element, sm)
+
+
 static func _hurt(e: Enemy, amount: float, element: ElementTable.Element) -> void:
 	if e.hold_death:
 		puppet_hits.append([e, amount, element])

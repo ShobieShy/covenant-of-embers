@@ -18,7 +18,7 @@ signal message(from: int, kind: String, data: Dictionary)  ## step 79+: game tra
 
 enum State { IDLE, CONNECTING, LOBBY, IN_GAME, ENDED }
 
-const PROTOCOL := 2  ## step 142: 2 = staff brands (pose brand_fx, blast/chain/orb hit lists)
+const PROTOCOL := 3  ## step 142: 2 = staff brands; step 150: 3 = element trees ("hit" sm status mods)
 const CONNECT_TIMEOUT := 8.0
 
 var state := State.IDLE
