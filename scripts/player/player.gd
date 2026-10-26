@@ -643,6 +643,14 @@ func spend_skill(sid: String) -> bool:
 	return true
 
 
+## Step 144: one rank in element tree `el` (see Skills.el_why_not); re-applies the bonuses.
+func spend_element_skill(el: String, sid: String) -> bool:
+	if not skills.el_spend(el, sid, progression.level):
+		return false
+	apply_bonuses()
+	return true
+
+
 ## Step 59: respec price in gold: 25 x (respecs so far + 1), at most 200; free with nothing spent.
 func respec_price() -> int:
 	if skills.spent() <= 0:

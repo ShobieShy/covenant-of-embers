@@ -7,14 +7,22 @@ extends RefCounted
 ## respec() refunds everything (at the Old Oak; Player.respec_price() gold, step 59).
 ## totals() sums every rank's effects; Player.apply_bonuses() reads it (never +=/-=).
 ## Ranks travel with the character save (portable between hosts, step 91).
+## Phase V step 144: plus 7 element trees (SkillTree.element_tree) drawing on the same point
+## pool. Element tiers open on points spent in that tree (tier t needs 5t); a capstone needs
+## 25 points and a tier-4 skill, and only one element capstone may be owned at a time
+## (CAPSTONE_LOCKED; respec unlocks). Saves: "elements" {tree: {sid: rank}}, skills_version 2.
 
 signal changed
 
 const FIRST_POINT_LEVEL := 2
+const VERSION := 2
+const CAPSTONE_LOCKED := "capstone_locked"
+const CAPSTONE_POINTS := 25
 
 var tree: SkillTree
 var ranks: Dictionary = {}  ## skill id -> rank
 var respecs := 0
+var el_ranks: Dictionary = {}  ## step 144: element tree id -> {skill id -> rank}
 
 
 static func points_for_level(level: int) -> int:
@@ -25,7 +33,98 @@ func spent() -> int:
 	var n := 0
 	for k in ranks:
 		n += int(ranks[k])
+	for el in el_ranks:
+		n += el_spent(el)
 	return n
+
+
+func core_spent() -> int:
+	var n := 0
+	for k in ranks:
+		n += int(ranks[k])
+	return n
+
+
+func el_rank(el: String, sid: String) -> int:
+	return int(el_ranks.get(el, {}).get(sid, 0))
+
+
+func el_spent(el: String) -> int:
+	var n := 0
+	var d: Dictionary = el_ranks.get(el, {})
+	for k in d:
+		n += int(d[k])
+	return n
+
+
+## The element tree that owns the exclusive capstone, "" when none.
+func capstone_owner() -> String:
+	for el in ElementTable.IDS:
+		var t := SkillTree.element_tree(el)
+		if t == null:
+			continue
+		for sid in el_ranks.get(el, {}):
+			if bool(t.skill(sid).get("capstone", false)):
+				return el
+	return ""
+
+
+func _has_tier(el: String, tier: int) -> bool:
+	var t := SkillTree.element_tree(el)
+	for sid in el_ranks.get(el, {}):
+		if int(t.skill(sid).get("tier", -1)) == tier:
+			return true
+	return false
+
+
+## "" when a rank of element skill `sid` in tree `el` can be taken, else why not
+## (CAPSTONE_LOCKED when another tree owns the element capstone).
+func el_why_not(el: String, sid: String, level: int) -> String:
+	var t := SkillTree.element_tree(el)
+	if t == null:
+		return "no skill tree"
+	var s := t.skill(sid)
+	if s.is_empty():
+		return "unknown skill"
+	if el_rank(el, sid) >= int(s["max_rank"]):
+		return "max rank"
+	if bool(s["capstone"]):
+		var own := capstone_owner()
+		if not own.is_empty() and own != el:
+			return CAPSTONE_LOCKED
+	if available(level) <= 0:
+		return "no skill points"
+	var tier := int(s["tier"])
+	if bool(s["capstone"]):
+		if el_spent(el) < CAPSTONE_POINTS or not _has_tier(el, tier - 1):
+			return "needs %d points in %s and a tier %d skill" % [CAPSTONE_POINTS, t.name, tier]
+	elif el_spent(el) < tier * SkillTree.POINTS_PER_TIER:
+		return "needs %d points in %s" % [tier * SkillTree.POINTS_PER_TIER, t.name]
+	return ""
+
+
+func el_spend(el: String, sid: String, level: int) -> bool:
+	if not el_why_not(el, sid, level).is_empty():
+		return false
+	if not el_ranks.has(el):
+		el_ranks[el] = {}
+	el_ranks[el][sid] = el_rank(el, sid) + 1
+	changed.emit()
+	return true
+
+
+## Sum of tree `el`'s effects over its spent ranks: stat -> value.
+func el_totals(el: String) -> Dictionary:
+	var out := {}
+	var t := SkillTree.element_tree(el)
+	if t == null:
+		return out
+	var d: Dictionary = el_ranks.get(el, {})
+	for sid in d:
+		var eff: Dictionary = t.skill(sid).get("effects", {})
+		for k in eff:
+			out[k] = float(out.get(k, 0.0)) + float(eff[k]) * int(d[sid])
+	return out
 
 
 func available(level: int) -> int:
@@ -79,6 +178,7 @@ func spend(sid: String, level: int) -> bool:
 func respec() -> int:
 	var n := spent()
 	ranks.clear()
+	el_ranks.clear()
 	if n > 0:
 		respecs += 1
 		changed.emit()
@@ -119,14 +219,48 @@ func main_branch() -> String:
 
 
 func to_dict() -> Dictionary:
-	return {"tree": tree.id if tree else "", "ranks": ranks.duplicate(), "respecs": respecs}
+	return {
+		"tree": tree.id if tree else "",
+		"ranks": ranks.duplicate(),
+		"respecs": respecs,
+		"elements": el_ranks.duplicate(true),
+		"skills_version": VERSION,
+	}
 
 
 ## Loads saved ranks; unknown skills are dropped, ranks clamped, and an over-spent set
 ## (fewer points than ranks, e.g. an edited save) is refunded entirely. Returns warnings.
+## A version-1 save (no "elements") loads with empty element trees; with two element
+## capstones the first in ElementTable.IDS order is kept and the other refunded.
 func from_dict(d: Dictionary, level: int) -> PackedStringArray:
 	var warn := PackedStringArray()
 	ranks.clear()
+	el_ranks.clear()
+	var els: Dictionary = d.get("elements", {}) if d.get("elements", {}) is Dictionary else {}
+	var cap_kept := ""
+	for el in ElementTable.IDS:
+		if not els.has(el) or not (els[el] is Dictionary):
+			continue
+		var t := SkillTree.element_tree(el)
+		var out := {}
+		for sid in els[el]:
+			var s := t.skill(String(sid)) if t else {}
+			if s.is_empty():
+				warn.append("skills: dropped unknown %s skill '%s'" % [el, sid])
+				continue
+			if bool(s["capstone"]):
+				if not cap_kept.is_empty():
+					warn.append("skills: second capstone %s refunded (kept %s)" % [sid, cap_kept])
+					continue
+				cap_kept = String(sid)
+			var r := clampi(int(els[el][sid]), 0, int(s["max_rank"]))
+			if r > 0:
+				out[String(sid)] = r
+		if not out.is_empty():
+			el_ranks[el] = out
+	for k in els:
+		if not ElementTable.IDS.has(String(k)):
+			warn.append("skills: dropped unknown tree '%s'" % k)
 	respecs = int(d.get("respecs", 0))
 	var saved: Dictionary = d.get("ranks", {})
 	for sid in saved:
@@ -140,5 +274,6 @@ func from_dict(d: Dictionary, level: int) -> PackedStringArray:
 	if available(level) < 0:
 		warn.append("skills: %d ranks for %d points; refunded" % [spent(), points_for_level(level)])
 		ranks.clear()
+		el_ranks.clear()
 	changed.emit()
 	return warn
