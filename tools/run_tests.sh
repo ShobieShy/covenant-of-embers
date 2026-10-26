@@ -5,6 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 GODOT="${GODOT:-godot}"
 python3 tools/toml_to_scene.py --self-test
+python3 tools/expand_maps.py --check
 python3 tools/toml_to_scene.py --check
 python3 tools/import_magewar_parts.py --check
 timeout 300 "$GODOT" --headless --path . --import >/dev/null 2>&1

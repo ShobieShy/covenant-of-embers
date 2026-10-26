@@ -3,20 +3,28 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/world/level_navigation.gd" id="1_nav"]
+[ext_resource type="Script" path="res://scripts/world/terrain_zone.gd" id="1_terrain"]
+[ext_resource type="Script" path="res://scripts/world/zone_streamer.gd" id="1_stream"]
 [ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="2_tex"]
 [ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_tex"]
 [ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="4_tex"]
-[ext_resource type="PackedScene" path="res://assets/original/old_oak/OldOak_Giant.glb" id="1_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_oldTall.glb" id="2_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/grass_large.glb" id="3_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/flower_redA.glb" id="4_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/mushroom_redGroup.glb" id="5_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/mushroom_redTall.glb" id="6_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/mushroom_red.glb" id="7_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/flower_redB.glb" id="8_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/flower_redC.glb" id="9_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_roundDetailed.glb" id="10_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_squareDetailedWide.glb" id="11_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/grass_large.glb" id="1_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/mushroom_redGroup.glb" id="2_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_fat.glb" id="3_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_oak.glb" id="4_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_oak_dark.glb" id="5_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_detailed.glb" id="6_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_round.glb" id="7_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_old.glb" id="8_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/mushroom_red.glb" id="9_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/old_oak/OldOak_Giant.glb" id="10_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_oldTall.glb" id="11_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/flower_redA.glb" id="12_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/mushroom_redTall.glb" id="13_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/flower_redB.glb" id="14_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/flower_redC.glb" id="15_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_roundDetailed.glb" id="16_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_squareDetailedWide.glb" id="17_glb"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -79,40 +87,184 @@ size = Vector3(1, 8, 14)
 size = Vector3(1, 8, 14)
 
 [sub_resource type="BoxMesh" id="BoxMesh_4"]
-size = Vector3(2, 0.4, 3)
+size = Vector3(1, 8, 5.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4"]
+size = Vector3(1, 8, 5.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5"]
+size = Vector3(2, 0.4, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5"]
 size = Vector3(2, 0.4, 3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
 albedo_color = Color(0.537099, 0.665185, 0.423583, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_5"]
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
 size = Vector3(0.2, 1, 0.2)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_5"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_6"]
 size = Vector3(0.2, 1, 0.2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
 albedo_color = Color(1, 0.930925, 0.735357, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_6"]
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
 size = Vector3(1.6, 1, 1)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_6"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_7"]
 size = Vector3(1.6, 1, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
 albedo_color = Color(0.701411, 0.583831, 0.423583, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_7"]
+[sub_resource type="BoxMesh" id="BoxMesh_8"]
 size = Vector3(2.5, 0.1, 2.5)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_7"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_8"]
 size = Vector3(2.5, 0.1, 2.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
 albedo_color = Color(0.461356, 0.410021, 0.34919, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_9"]
+size = Vector3(32, 0.2, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_9"]
+size = Vector3(32, 0.2, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
+albedo_color = Color(0.72, 0.688519, 0.646087, 1)
+albedo_texture = ExtResource("2_tex")
+roughness = 1.0
+roughness_texture = ExtResource("3_tex")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_texture = ExtResource("4_tex")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxMesh" id="BoxMesh_10"]
+size = Vector3(4, 0.2, 22)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_10"]
+size = Vector3(4, 0.2, 22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_11"]
+size = Vector3(22, 0.2, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_11"]
+size = Vector3(22, 0.2, 18)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8"]
+albedo_color = Color(0.709574, 0.72, 0.650116, 1)
+albedo_texture = ExtResource("2_tex")
+roughness = 1.0
+roughness_texture = ExtResource("3_tex")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_texture = ExtResource("4_tex")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxMesh" id="BoxMesh_12"]
+size = Vector3(14, 0.04, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_12"]
+size = Vector3(14, 0.04, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_9"]
+albedo_color = Color(0.461356, 0.583831, 0.649956, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_13"]
+size = Vector3(4, 0.2, 44)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_13"]
+size = Vector3(4, 0.2, 44)
+
+[sub_resource type="BoxMesh" id="BoxMesh_14"]
+size = Vector3(58, 0.2, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_14"]
+size = Vector3(58, 0.2, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_15"]
+size = Vector3(18, 0.2, 16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_15"]
+size = Vector3(18, 0.2, 16)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_10"]
+albedo_color = Color(0.72, 0.687987, 0.651492, 1)
+albedo_texture = ExtResource("2_tex")
+roughness = 1.0
+roughness_texture = ExtResource("3_tex")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_texture = ExtResource("4_tex")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxMesh" id="BoxMesh_16"]
+size = Vector3(18, 5, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_16"]
+size = Vector3(18, 5, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11"]
+albedo_color = Color(0.537099, 0.484529, 0.423583, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_17"]
+size = Vector3(1, 5, 16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_17"]
+size = Vector3(1, 5, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_18"]
+size = Vector3(18, 0.4, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_18"]
+size = Vector3(18, 0.4, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_19"]
+size = Vector3(1.2, 0.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_19"]
+size = Vector3(1.2, 0.8, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_12"]
+albedo_color = Color(0.797738, 0.701411, 0.484529, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_20"]
+size = Vector3(8, 0.2, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_20"]
+size = Vector3(8, 0.2, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_21"]
+size = Vector3(3, 0.4, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_21"]
+size = Vector3(3, 0.4, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_13"]
+albedo_color = Color(0.609712, 0.556393, 0.484529, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_22"]
+size = Vector3(8, 0.4, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_22"]
+size = Vector3(8, 0.4, 8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14"]
+albedo_color = Color(0.665185, 0.583831, 0.484529, 1)
 
 [node name="OldOak" type="Node3D"]
 metadata/level_id = "old_oak"
@@ -179,206 +331,876 @@ surface_material_override/0 = SubResource("StandardMaterial3D_2")
 shape = SubResource("BoxShape3D_3")
 
 [node name="bark_east" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 4, -4.25)
 metadata/kind = "wall"
 metadata/toml_index = 4
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/bark_east"]
-mesh = SubResource("BoxMesh_3")
+mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/bark_east"]
-shape = SubResource("BoxShape3D_3")
+shape = SubResource("BoxShape3D_4")
+
+[node name="bark_east_s" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 4, 4.25)
+metadata/kind = "wall"
+metadata/toml_index = 5
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/bark_east_s"]
+mesh = SubResource("BoxMesh_4")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/bark_east_s"]
+shape = SubResource("BoxShape3D_4")
 
 [node name="moss_bed_1" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.2, -5)
 metadata/kind = "platform"
-metadata/toml_index = 5
+metadata/toml_index = 6
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/moss_bed_1"]
-mesh = SubResource("BoxMesh_4")
+mesh = SubResource("BoxMesh_5")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/moss_bed_1"]
-shape = SubResource("BoxShape3D_4")
+shape = SubResource("BoxShape3D_5")
 
 [node name="moss_bed_2" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.2, -5)
 metadata/kind = "platform"
-metadata/toml_index = 6
+metadata/toml_index = 7
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/moss_bed_2"]
-mesh = SubResource("BoxMesh_4")
+mesh = SubResource("BoxMesh_5")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/moss_bed_2"]
-shape = SubResource("BoxShape3D_4")
+shape = SubResource("BoxShape3D_5")
 
 [node name="moss_bed_3" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.2, -5)
 metadata/kind = "platform"
-metadata/toml_index = 7
+metadata/toml_index = 8
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/moss_bed_3"]
-mesh = SubResource("BoxMesh_4")
+mesh = SubResource("BoxMesh_5")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/moss_bed_3"]
-shape = SubResource("BoxShape3D_4")
+shape = SubResource("BoxShape3D_5")
 
 [node name="candle_1" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.5, 3)
 metadata/kind = "crate"
-metadata/toml_index = 8
+metadata/toml_index = 9
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/candle_1"]
-mesh = SubResource("BoxMesh_5")
+mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/candle_1"]
-shape = SubResource("BoxShape3D_5")
+shape = SubResource("BoxShape3D_6")
 
 [node name="candle_2" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.5, 3)
 metadata/kind = "crate"
-metadata/toml_index = 9
+metadata/toml_index = 10
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/candle_2"]
-mesh = SubResource("BoxMesh_5")
+mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/candle_2"]
-shape = SubResource("BoxShape3D_5")
+shape = SubResource("BoxShape3D_6")
 
 [node name="candle_3" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.5, -2)
 metadata/kind = "crate"
-metadata/toml_index = 10
+metadata/toml_index = 11
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/candle_3"]
-mesh = SubResource("BoxMesh_5")
+mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/candle_3"]
-shape = SubResource("BoxShape3D_5")
+shape = SubResource("BoxShape3D_6")
 
 [node name="candle_4" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.5, -2)
 metadata/kind = "crate"
-metadata/toml_index = 11
+metadata/toml_index = 12
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/candle_4"]
-mesh = SubResource("BoxMesh_5")
+mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/candle_4"]
-shape = SubResource("BoxShape3D_5")
+shape = SubResource("BoxShape3D_6")
 
 [node name="stash" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0.5, -5.5)
 metadata/kind = "crate"
-metadata/toml_index = 12
+metadata/toml_index = 13
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/stash"]
-mesh = SubResource("BoxMesh_6")
+mesh = SubResource("BoxMesh_7")
 surface_material_override/0 = SubResource("StandardMaterial3D_5")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/stash"]
-shape = SubResource("BoxShape3D_6")
+shape = SubResource("BoxShape3D_7")
 
 [node name="slot_bobs_lab" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.05, 0.5)
 metadata/kind = "platform"
-metadata/toml_index = 13
+metadata/toml_index = 14
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/slot_bobs_lab"]
-mesh = SubResource("BoxMesh_7")
+mesh = SubResource("BoxMesh_8")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/slot_bobs_lab"]
-shape = SubResource("BoxShape3D_7")
+shape = SubResource("BoxShape3D_8")
 
 [node name="slot_potion_garden" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -1.5)
 metadata/kind = "platform"
-metadata/toml_index = 14
+metadata/toml_index = 15
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/slot_potion_garden"]
-mesh = SubResource("BoxMesh_7")
+mesh = SubResource("BoxMesh_8")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/slot_potion_garden"]
-shape = SubResource("BoxShape3D_7")
+shape = SubResource("BoxShape3D_8")
 
 [node name="slot_portals" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.05, 0.5)
 metadata/kind = "platform"
-metadata/toml_index = 15
+metadata/toml_index = 16
 
 [node name="Mesh" type="MeshInstance3D" parent="Boxes/slot_portals"]
-mesh = SubResource("BoxMesh_7")
+mesh = SubResource("BoxMesh_8")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/slot_portals"]
-shape = SubResource("BoxShape3D_7")
+shape = SubResource("BoxShape3D_8")
+
+[node name="grove_path" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, -0.1, 0)
+metadata/kind = "ground"
+metadata/toml_index = 17
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/grove_path"]
+mesh = SubResource("BoxMesh_9")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/grove_path"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="pond_path_z" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, -0.1, 9)
+metadata/kind = "ground"
+metadata/toml_index = 18
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/pond_path_z"]
+mesh = SubResource("BoxMesh_10")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/pond_path_z"]
+shape = SubResource("BoxShape3D_10")
+
+[node name="pond_shore" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, -0.1, 28)
+metadata/kind = "ground"
+metadata/toml_index = 19
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/pond_shore"]
+mesh = SubResource("BoxMesh_11")
+surface_material_override/0 = SubResource("StandardMaterial3D_8")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/pond_shore"]
+shape = SubResource("BoxShape3D_11")
+
+[node name="pond_water" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0.02, 30)
+metadata/kind = "platform"
+metadata/toml_index = 20
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/pond_water"]
+mesh = SubResource("BoxMesh_12")
+surface_material_override/0 = SubResource("StandardMaterial3D_9")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/pond_water"]
+shape = SubResource("BoxShape3D_12")
+
+[node name="cave_path_z" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, -0.1, -20)
+metadata/kind = "ground"
+metadata/toml_index = 21
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/cave_path_z"]
+mesh = SubResource("BoxMesh_13")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cave_path_z"]
+shape = SubResource("BoxShape3D_13")
+
+[node name="cave_path_w_x" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.1, -44)
+metadata/kind = "ground"
+metadata/toml_index = 22
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/cave_path_w_x"]
+mesh = SubResource("BoxMesh_14")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cave_path_w_x"]
+shape = SubResource("BoxShape3D_14")
+
+[node name="root_caves" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, -0.1, -44)
+metadata/kind = "ground"
+metadata/toml_index = 23
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/root_caves"]
+mesh = SubResource("BoxMesh_15")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/root_caves"]
+shape = SubResource("BoxShape3D_15")
+
+[node name="cave_wall_n" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 2.5, -52.5)
+metadata/kind = "wall"
+metadata/toml_index = 24
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/cave_wall_n"]
+mesh = SubResource("BoxMesh_16")
+surface_material_override/0 = SubResource("StandardMaterial3D_11")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cave_wall_n"]
+shape = SubResource("BoxShape3D_16")
+
+[node name="cave_wall_w" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.5, 2.5, -44)
+metadata/kind = "wall"
+metadata/toml_index = 25
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/cave_wall_w"]
+mesh = SubResource("BoxMesh_17")
+surface_material_override/0 = SubResource("StandardMaterial3D_11")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cave_wall_w"]
+shape = SubResource("BoxShape3D_17")
+
+[node name="cave_wall_s" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 2.5, -35.5)
+metadata/kind = "wall"
+metadata/toml_index = 26
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/cave_wall_s"]
+mesh = SubResource("BoxMesh_16")
+surface_material_override/0 = SubResource("StandardMaterial3D_11")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cave_wall_s"]
+shape = SubResource("BoxShape3D_16")
+
+[node name="cave_roof" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 5.2, -44)
+metadata/kind = "platform"
+metadata/toml_index = 27
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/cave_roof"]
+mesh = SubResource("BoxMesh_18")
+surface_material_override/0 = SubResource("StandardMaterial3D_11")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cave_roof"]
+shape = SubResource("BoxShape3D_18")
+
+[node name="cave_chest_spot" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46, 0.4, -49)
+metadata/kind = "crate"
+metadata/toml_index = 28
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/cave_chest_spot"]
+mesh = SubResource("BoxMesh_19")
+surface_material_override/0 = SubResource("StandardMaterial3D_12")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cave_chest_spot"]
+shape = SubResource("BoxShape3D_19")
+
+[node name="lookout_foot" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -0.1, -20)
+metadata/kind = "ground"
+metadata/toml_index = 29
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_foot"]
+mesh = SubResource("BoxMesh_20")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_foot"]
+shape = SubResource("BoxShape3D_20")
+
+[node name="lookout_step_1" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1.05, -24)
+metadata/kind = "platform"
+metadata/toml_index = 30
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_1"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_1"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_2" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.3, -25)
+metadata/kind = "platform"
+metadata/toml_index = 31
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_2"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_2"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_3" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 3.55, -26)
+metadata/kind = "platform"
+metadata/toml_index = 32
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_3"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_3"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_4" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4.8, -27)
+metadata/kind = "platform"
+metadata/toml_index = 33
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_4"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_4"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_5" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 6.05, -28)
+metadata/kind = "platform"
+metadata/toml_index = 34
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_5"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_5"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_6" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 7.3, -29)
+metadata/kind = "platform"
+metadata/toml_index = 35
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_6"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_6"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_7" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 8.55, -30)
+metadata/kind = "platform"
+metadata/toml_index = 36
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_7"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_7"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_8" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 9.8, -31)
+metadata/kind = "platform"
+metadata/toml_index = 37
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_8"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_8"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_9" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 11.05, -32)
+metadata/kind = "platform"
+metadata/toml_index = 38
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_9"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_9"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_10" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 12.3, -33)
+metadata/kind = "platform"
+metadata/toml_index = 39
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_10"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_10"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_11" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 13.55, -34)
+metadata/kind = "platform"
+metadata/toml_index = 40
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_11"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_11"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_12" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 14.8, -35)
+metadata/kind = "platform"
+metadata/toml_index = 41
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_12"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_12"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_13" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 16.05, -36)
+metadata/kind = "platform"
+metadata/toml_index = 42
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_13"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_13"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_14" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 17.3, -37)
+metadata/kind = "platform"
+metadata/toml_index = 43
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_14"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_14"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_15" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 18.55, -38)
+metadata/kind = "platform"
+metadata/toml_index = 44
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_15"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_15"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout_step_16" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 19.8, -39)
+metadata/kind = "platform"
+metadata/toml_index = 45
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout_step_16"]
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout_step_16"]
+shape = SubResource("BoxShape3D_21")
+
+[node name="lookout" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 19.8, -44)
+metadata/kind = "platform"
+metadata/toml_index = 46
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/lookout"]
+mesh = SubResource("BoxMesh_22")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lookout"]
+shape = SubResource("BoxShape3D_22")
+
+[node name="Terrain" type="Node3D" parent="."]
+script = ExtResource("1_terrain")
+size = Vector2(160, 160)
+center = Vector2(0, -13)
+height = 9
+noise_seed = 66
+spacing = 1
+rim = 18
+map_version = 2
+layers = PackedStringArray("Grass004", "Ground037", "Rock030", "Ground054")
+pads = Array[Rect2]([Rect2(-10, -10, 20, 20), Rect2(6, -4, 36, 8), Rect2(36, -4, 8, 26), Rect2(27, 17, 26, 22), Rect2(20, -44, 8, 48), Rect2(-34, -48, 62, 8), Rect2(-51, -54, 22, 20), Rect2(8, -26, 12, 12)])
+blend = 12
 
 [node name="Props" type="Node3D" parent="."]
 
-[node name="old_oak" parent="Props" instance=ExtResource("1_glb")]
+[node name="Pois" type="Node3D" parent="."]
+script = ExtResource("1_stream")
+
+[node name="pond" type="Node3D" parent="Pois"]
+metadata/center = Vector3(40, 0, 28)
+metadata/radius = 24
+
+[node name="root_caves" type="Node3D" parent="Pois"]
+metadata/center = Vector3(-40, 0, -44)
+metadata/radius = 24
+
+[node name="lookout" type="Node3D" parent="Pois"]
+metadata/center = Vector3(14, 20, -40)
+metadata/radius = 20
+
+[node name="pond_reed_1" parent="Pois/pond" instance=ExtResource("1_glb")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 33, 0, 22)
+
+[node name="pond_reed_2" parent="Pois/pond" instance=ExtResource("1_glb")]
+transform = Transform3D(1.606969, 0, 1.915111, 0, 2.5, 0, -1.915111, 0, 1.606969, 35.6, 0, 22)
+
+[node name="pond_reed_3" parent="Pois/pond" instance=ExtResource("1_glb")]
+transform = Transform3D(-0.43412, 0, 2.462019, 0, 2.5, 0, -2.462019, 0, -0.43412, 38.2, 0, 22)
+
+[node name="pond_reed_4" parent="Pois/pond" instance=ExtResource("1_glb")]
+transform = Transform3D(-2.165064, 0, 1.25, 0, 2.5, 0, -1.25, 0, -2.165064, 40.8, 0, 22)
+
+[node name="pond_reed_5" parent="Pois/pond" instance=ExtResource("1_glb")]
+transform = Transform3D(-2.349232, 0, -0.85505, 0, 2.5, 0, 0.85505, 0, -2.349232, 43.4, 0, 22)
+
+[node name="pond_reed_6" parent="Pois/pond" instance=ExtResource("1_glb")]
+transform = Transform3D(-0.85505, 0, -2.349232, 0, 2.5, 0, 2.349232, 0, -0.85505, 46, 0, 22)
+
+[node name="cave_mush_1" parent="Pois/root_caves" instance=ExtResource("2_glb")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -46, 0, -40)
+
+[node name="cave_mush_2" parent="Pois/root_caves" instance=ExtResource("2_glb")]
+transform = Transform3D(1.02606, 0, 2.819078, 0, 3, 0, -2.819078, 0, 1.02606, -42, 0, -40)
+
+[node name="cave_mush_3" parent="Pois/root_caves" instance=ExtResource("2_glb")]
+transform = Transform3D(-2.298133, 0, 1.928363, 0, 3, 0, -1.928363, 0, -2.298133, -38, 0, -40)
+
+[node name="cave_mush_4" parent="Pois/root_caves" instance=ExtResource("2_glb")]
+transform = Transform3D(-2.598076, 0, -1.5, 0, 3, 0, 1.5, 0, -2.598076, -34, 0, -40)
+
+[node name="grove_tree_1" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(-1.354983, 0, 2.987042, 0, 3.28, 0, -2.987042, 0, -1.354983, -63.832, 0, -32.878)
+metadata/snap = true
+
+[node name="grove_tree_2" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(3.36997, 0, 2.797803, 0, 4.38, 0, -2.797803, 0, 3.36997, -42.408, 0, 18.258)
+metadata/snap = true
+
+[node name="grove_tree_3" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(4.227285, 0, -1.324751, 0, 4.43, 0, 1.324751, 0, 4.227285, 48.907, 0, -27.27)
+metadata/snap = true
+
+[node name="grove_tree_4" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(-1.789714, 0, 3.215482, 0, 3.68, 0, -3.215482, 0, -1.789714, -62.454, 0, 17.533)
+metadata/snap = true
+
+[node name="grove_tree_5" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(-0.464544, 0, 3.145886, 0, 3.18, 0, -3.145886, 0, -0.464544, 57.108, 0, -3.537)
+metadata/snap = true
+
+[node name="grove_tree_6" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(3.042106, 0, 0.855097, 0, 3.16, 0, -0.855097, 0, 3.042106, -27.111, 0, 44.823)
+metadata/snap = true
+
+[node name="grove_tree_7" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(-2.175945, 0, -3.708809, 0, 4.3, 0, 3.708809, 0, -2.175945, -57.298, 0, 14.891)
+metadata/snap = true
+
+[node name="grove_tree_8" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(2.732575, 0, 3.268124, 0, 4.26, 0, -3.268124, 0, 2.732575, 23.785, 0, 36.076)
+metadata/snap = true
+
+[node name="grove_tree_9" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(3.441202, 0, -3.142249, 0, 4.66, 0, 3.142249, 0, 3.441202, -17.054, 0, 43.672)
+metadata/snap = true
+
+[node name="grove_tree_10" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(4.525722, 0, -0.765469, 0, 4.59, 0, 0.765469, 0, 4.525722, -31.056, 0, 23.375)
+metadata/snap = true
+
+[node name="grove_tree_11" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(0, 0, -4.32, 0, 4.32, 0, 4.32, 0, 0, -65.635, 0, 14.13)
+metadata/snap = true
+
+[node name="grove_tree_12" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(-2.180806, 0, 4.050196, 0, 4.6, 0, -4.050196, 0, -2.180806, 25.156, 0, 13.319)
+metadata/snap = true
+
+[node name="grove_tree_13" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(0.697329, 0, 3.837152, 0, 3.9, 0, -3.837152, 0, 0.697329, 61.47, 0, -30.349)
+metadata/snap = true
+
+[node name="grove_tree_14" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(4.608684, 0, -0.443766, 0, 4.63, 0, 0.443766, 0, 4.608684, 33.429, 0, 52.463)
+metadata/snap = true
+
+[node name="grove_tree_15" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(-0.480165, 0, 3.910632, 0, 3.94, 0, -3.910632, 0, -0.480165, -39.14, 0, -5.53)
+metadata/snap = true
+
+[node name="grove_tree_16" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(-2.128977, 0, 4.055103, 0, 4.58, 0, -4.055103, 0, -2.128977, 60.369, 0, -23.798)
+metadata/snap = true
+
+[node name="grove_tree_17" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(2.970076, 0, -1.980795, 0, 3.57, 0, 1.980795, 0, 2.970076, -50.482, 0, -14.878)
+metadata/snap = true
+
+[node name="grove_tree_18" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(0.292299, 0, 3.798771, 0, 3.81, 0, -3.798771, 0, 0.292299, 35.07, 0, -38.823)
+metadata/snap = true
+
+[node name="grove_tree_19" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(2.999647, 0, -2.896725, 0, 4.17, 0, 2.896725, 0, 2.999647, -34.217, 0, 19.559)
+metadata/snap = true
+
+[node name="grove_tree_20" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(-3.767079, 0, -0.691388, 0, 3.83, 0, 0.691388, 0, -3.767079, 58.591, 0, 30.066)
+metadata/snap = true
+
+[node name="grove_tree_21" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(0.334709, 0, -3.41363, 0, 3.43, 0, 3.41363, 0, 0.334709, -59.399, 0, 31.65)
+metadata/snap = true
+
+[node name="grove_tree_22" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(0.911211, 0, 4.110206, 0, 4.21, 0, -4.110206, 0, 0.911211, 60.17, 0, -9.127)
+metadata/snap = true
+
+[node name="grove_tree_23" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(1.476189, 0, -2.973763, 0, 3.32, 0, 2.973763, 0, 1.476189, 14.664, 0, 28.19)
+metadata/snap = true
+
+[node name="grove_tree_24" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(3.881387, 0, -0.380573, 0, 3.9, 0, 0.380573, 0, 3.881387, 17.196, 0, 13.885)
+metadata/snap = true
+
+[node name="grove_tree_25" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(-0.855865, 0, 3.958534, 0, 4.05, 0, -3.958534, 0, -0.855865, -26.065, 0, -73.197)
+metadata/snap = true
+
+[node name="grove_tree_26" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(-1.283094, 0, 3.92563, 0, 4.13, 0, -3.92563, 0, -1.283094, -34.061, 0, 47.203)
+metadata/snap = true
+
+[node name="grove_tree_27" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(-0.145476, 0, -3.967334, 0, 3.97, 0, 3.967334, 0, -0.145476, -58.877, 0, -51.562)
+metadata/snap = true
+
+[node name="grove_tree_28" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(-4.562173, 0, 1.787896, 0, 4.9, 0, -1.787896, 0, -4.562173, -5.307, 0, 11.359)
+metadata/snap = true
+
+[node name="grove_tree_29" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(-2.981886, 0, 2.466831, 0, 3.87, 0, -2.466831, 0, -2.981886, 32.396, 0, -38.229)
+metadata/snap = true
+
+[node name="grove_tree_30" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(0.518189, 0, -3.936036, 0, 3.97, 0, 3.936036, 0, 0.518189, 3.941, 0, -57.962)
+metadata/snap = true
+
+[node name="grove_tree_31" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(-0.11361, 0, -4.648612, 0, 4.65, 0, 4.648612, 0, -0.11361, -5.526, 0, -33.725)
+metadata/snap = true
+
+[node name="grove_tree_32" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(-4.472225, 0, -1.770679, 0, 4.81, 0, 1.770679, 0, -4.472225, -54.913, 0, -5.047)
+metadata/snap = true
+
+[node name="grove_tree_33" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(4.755846, 0, -0.898626, 0, 4.84, 0, 0.898626, 0, 4.755846, -47.155, 0, 9.203)
+metadata/snap = true
+
+[node name="grove_tree_34" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(3.949481, 0, -0.491934, 0, 3.98, 0, 0.491934, 0, 3.949481, 7.767, 0, 22.885)
+metadata/snap = true
+
+[node name="grove_tree_35" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(3.320791, 0, -3.297688, 0, 4.68, 0, 3.297688, 0, 3.320791, -11.434, 0, 7.768)
+metadata/snap = true
+
+[node name="grove_tree_36" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(-4.049698, 0, -0.049479, 0, 4.05, 0, 0.049479, 0, -4.049698, 3.881, 0, -33.476)
+metadata/snap = true
+
+[node name="grove_tree_37" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(2.973403, 0, -2.168243, 0, 3.68, 0, 2.168243, 0, 2.973403, 44.222, 0, -73.089)
+metadata/snap = true
+
+[node name="grove_tree_38" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(3.889563, 0, 3.093898, 0, 4.97, 0, -3.093898, 0, 3.889563, -36.747, 0, 38.468)
+metadata/snap = true
+
+[node name="grove_tree_39" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(-0.040055, 0, 4.589825, 0, 4.59, 0, -4.589825, 0, -0.040055, -60.486, 0, 49.69)
+metadata/snap = true
+
+[node name="grove_tree_40" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(-0.961002, 0, 4.129658, 0, 4.24, 0, -4.129658, 0, -0.961002, 42.748, 0, -50.975)
+metadata/snap = true
+
+[node name="grove_tree_41" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(3.127918, 0, 2.157806, 0, 3.8, 0, -2.157806, 0, 3.127918, -35.561, 0, -23.111)
+metadata/snap = true
+
+[node name="grove_tree_42" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(-2.653934, 0, -1.769954, 0, 3.19, 0, 1.769954, 0, -2.653934, 12.693, 0, 11.778)
+metadata/snap = true
+
+[node name="grove_stump_1" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1.553622, 0, 3.346992, 0, 3.69, 0, -3.346992, 0, 1.553622, -45.302, 0, -61.512)
+metadata/snap = true
+
+[node name="grove_stump_2" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-3.149693, 0, -0.043981, 0, 3.15, 0, 0.043981, 0, -3.149693, 16.894, 0, 53.681)
+metadata/snap = true
+
+[node name="grove_stump_3" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(0.810104, 0, 3.023348, 0, 3.13, 0, -3.023348, 0, 0.810104, -14.035, 0, -25.452)
+metadata/snap = true
+
+[node name="grove_stump_4" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(-2.583287, 0, -0.294328, 0, 2.6, 0, 0.294328, 0, -2.583287, 62.493, 0, -60.582)
+metadata/snap = true
+
+[node name="grove_stump_5" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(2.398307, 0, -2.25216, 0, 3.29, 0, 2.25216, 0, 2.398307, 45.952, 0, -53.649)
+metadata/snap = true
+
+[node name="grove_stump_6" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(-1.333054, 0, 3.171209, 0, 3.44, 0, -3.171209, 0, -1.333054, -28.921, 0, 19.902)
+metadata/snap = true
+
+[node name="grove_stump_7" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(-0.623654, 0, 2.482872, 0, 2.56, 0, -2.482872, 0, -0.623654, -35.158, 0, -11.078)
+metadata/snap = true
+
+[node name="grove_stump_8" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(-2.565725, 0, 2.351054, 0, 3.48, 0, -2.351054, 0, -2.565725, 63.845, 0, -50.097)
+metadata/snap = true
+
+[node name="grove_stump_9" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-2.565328, 0, -2.610497, 0, 3.66, 0, 2.610497, 0, -2.565328, -50.128, 0, -16.168)
+metadata/snap = true
+
+[node name="grove_stump_10" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-3.191214, 0, 0.951342, 0, 3.33, 0, -0.951342, 0, -3.191214, 50.957, 0, -68.411)
+metadata/snap = true
+
+[node name="grove_stump_11" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-2.053255, 0, -1.829383, 0, 2.75, 0, 1.829383, 0, -2.053255, -62.947, 0, 21.801)
+metadata/snap = true
+
+[node name="grove_stump_12" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.506003, 0, 2.509494, 0, 2.56, 0, -2.509494, 0, 0.506003, -1.526, 0, 56.299)
+metadata/snap = true
+
+[node name="grove_stump_13" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(3.279038, 0, 0.860239, 0, 3.39, 0, -0.860239, 0, 3.279038, 34.3, 0, -55.439)
+metadata/snap = true
+
+[node name="grove_stump_14" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-2.000172, 0, -1.813646, 0, 2.7, 0, 1.813646, 0, -2.000172, -4.468, 0, -10.558)
+metadata/snap = true
+
+[node name="grove_stump_15" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(3.157031, 0, -0.522643, 0, 3.2, 0, 0.522643, 0, 3.157031, -40.985, 0, 35.294)
+metadata/snap = true
+
+[node name="grove_stump_16" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(-1.01882, 0, 3.484093, 0, 3.63, 0, -3.484093, 0, -1.01882, -10.242, 0, -79.051)
+metadata/snap = true
+
+[node name="grove_stump_17" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-3.49928, 0, -1.699159, 0, 3.89, 0, 1.699159, 0, -3.49928, 12.786, 0, 40.765)
+metadata/snap = true
+
+[node name="grove_stump_18" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.307103, 0, 2.873637, 0, 2.89, 0, -2.873637, 0, -0.307103, -67.276, 0, -69.934)
+metadata/snap = true
+
+[node name="old_oak" parent="Props" instance=ExtResource("10_glb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, -13)
 
-[node name="root_1" parent="Props" instance=ExtResource("2_glb")]
+[node name="root_1" parent="Props" instance=ExtResource("11_glb")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -6.6, 0.2, -6.6)
 
-[node name="root_2" parent="Props" instance=ExtResource("2_glb")]
+[node name="root_2" parent="Props" instance=ExtResource("11_glb")]
 transform = Transform3D(0, 0, 3, 0, 3, 0, -3, 0, 0, 6.6, 0.2, -6.6)
 
-[node name="root_3" parent="Props" instance=ExtResource("2_glb")]
+[node name="root_3" parent="Props" instance=ExtResource("11_glb")]
 transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, -6.6, 0.2, 6.6)
 
-[node name="root_4" parent="Props" instance=ExtResource("2_glb")]
+[node name="root_4" parent="Props" instance=ExtResource("11_glb")]
 transform = Transform3D(0, 0, -3, 0, 3, 0, 3, 0, 0, 6.6, 0.2, 6.6)
 
-[node name="bed_moss_1" parent="Props" instance=ExtResource("3_glb")]
+[node name="bed_moss_1" parent="Props" instance=ExtResource("1_glb")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -5.5, 0.45, -5.6)
 
-[node name="bed_flower_1" parent="Props" instance=ExtResource("4_glb")]
+[node name="bed_flower_1" parent="Props" instance=ExtResource("12_glb")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -4.4, 0.45, -4)
 
-[node name="bed_moss_2" parent="Props" instance=ExtResource("3_glb")]
+[node name="bed_moss_2" parent="Props" instance=ExtResource("1_glb")]
 transform = Transform3D(1.732051, 0, 1, 0, 2, 0, -1, 0, 1.732051, -3, 0.45, -5.6)
 
-[node name="bed_flower_2" parent="Props" instance=ExtResource("4_glb")]
+[node name="bed_flower_2" parent="Props" instance=ExtResource("12_glb")]
 transform = Transform3D(1.931852, 0, 0.517638, 0, 2, 0, -0.517638, 0, 1.931852, -1.9, 0.45, -4)
 
-[node name="bed_moss_3" parent="Props" instance=ExtResource("3_glb")]
+[node name="bed_moss_3" parent="Props" instance=ExtResource("1_glb")]
 transform = Transform3D(1, 0, 1.732051, 0, 2, 0, -1.732051, 0, 1, 2, 0.45, -5.6)
 
-[node name="bed_flower_3" parent="Props" instance=ExtResource("4_glb")]
+[node name="bed_flower_3" parent="Props" instance=ExtResource("12_glb")]
 transform = Transform3D(1.732051, 0, 1, 0, 2, 0, -1, 0, 1.732051, 3.1, 0.45, -4)
 
-[node name="deco_1" parent="Props" instance=ExtResource("5_glb")]
+[node name="deco_1" parent="Props" instance=ExtResource("2_glb")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -6.6, 0.15, 1)
 
-[node name="deco_2" parent="Props" instance=ExtResource("6_glb")]
+[node name="deco_2" parent="Props" instance=ExtResource("13_glb")]
 transform = Transform3D(2.298133, 0, 1.928363, 0, 3, 0, -1.928363, 0, 2.298133, 6.6, 0.15, -3.5)
 
-[node name="deco_3" parent="Props" instance=ExtResource("7_glb")]
+[node name="deco_3" parent="Props" instance=ExtResource("9_glb")]
 transform = Transform3D(0.520945, 0, 2.954423, 0, 3, 0, -2.954423, 0, 0.520945, -6.7, 0.15, -3.6)
 
-[node name="deco_4" parent="Props" instance=ExtResource("5_glb")]
+[node name="deco_4" parent="Props" instance=ExtResource("2_glb")]
 transform = Transform3D(-1.5, 0, 2.598076, 0, 3, 0, -2.598076, 0, -1.5, 6.7, 0.15, 1.5)
 
-[node name="deco_5" parent="Props" instance=ExtResource("8_glb")]
+[node name="deco_5" parent="Props" instance=ExtResource("14_glb")]
 transform = Transform3D(-2.819078, 0, 1.02606, 0, 3, 0, -1.02606, 0, -2.819078, -3, 0.15, 6.7)
 
-[node name="deco_6" parent="Props" instance=ExtResource("9_glb")]
+[node name="deco_6" parent="Props" instance=ExtResource("15_glb")]
 transform = Transform3D(-2.819078, 0, -1.02606, 0, 3, 0, 1.02606, 0, -2.819078, 3, 0.15, 6.7)
 
-[node name="stool" parent="Props" instance=ExtResource("10_glb")]
+[node name="stool" parent="Props" instance=ExtResource("16_glb")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 3.8, 0.15, -5.5)
 
-[node name="table" parent="Props" instance=ExtResource("11_glb")]
+[node name="table" parent="Props" instance=ExtResource("17_glb")]
 transform = Transform3D(2.819078, 0, 1.02606, 0, 3, 0, -1.02606, 0, 2.819078, -1.6, 0.15, 3.4)
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
@@ -391,6 +1213,26 @@ metadata/yaw_deg = 0
 
 [node name="Eye" type="Marker3D" parent="PlayerStart"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="Anchors" type="Node3D" parent="."]
+
+[node name="grove_door" type="Marker3D" parent="Anchors"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 9.5, 0, 0)
+metadata/yaw_deg = 90
+
+[node name="pond" type="Marker3D" parent="Anchors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 20)
+metadata/yaw_deg = 0
+
+[node name="lookout_top" type="Marker3D" parent="Anchors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 20, -44)
+metadata/yaw_deg = 0
+
+[node name="Waystones" type="Node3D" parent="."]
+
+[node name="old_oak" type="Marker3D" parent="Waystones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.5)
+metadata/yaw_deg = 0
 
 [node name="EnemySpawns" type="Node3D" parent="."]
 

@@ -179,7 +179,7 @@ def _props(items: list, out: dict) -> None:
     seen: set[str] = set()
     for i, pr in enumerate(items):
         w = f"prop {i + 1}"
-        _only(pr, {"name", "model", "position", "rotation_deg", "scale", "count", "step", "poi"}, w)
+        _only(pr, {"name", "model", "position", "rotation_deg", "scale", "count", "step", "poi", "snap"}, w)
         name = str(pr.get("name", f"prop_{i + 1}"))
         if name in seen:
             raise LevelError(f"duplicate prop name '{name}'")
@@ -203,6 +203,7 @@ def _props(items: list, out: dict) -> None:
             "rotation_deg": _vec(pr.get("rotation_deg", [0, 0, 0]), f"{w} rotation_deg"),
             "step": _vec(pr.get("step", [0, 0, 0]), f"{w} step"),
             "poi": str(pr.get("poi", "")),
+            "snap": _bool(pr.get("snap", False), f"{w} snap"),
         })
         if out["props"][-1]["poi"] and out["props"][-1]["poi"] not in {p["name"] for p in out["pois"]}:
             raise LevelError(f"{w}: unknown poi '{out['props'][-1]['poi']}'")
@@ -229,13 +230,14 @@ def _anchors(d: dict, out: dict) -> None:
         seen: set[str] = set()
         for i, x in enumerate(d.get(sec, [])):
             w = f"{sec} {i + 1}"
-            _only(x, {idk, "position", "yaw_deg"} | ({"beat"} if sec == "anchor" else set()), w)
+            _only(x, {idk, "position", "yaw_deg", "snap"} | ({"beat"} if sec == "anchor" else set()), w)
             name = str(_need(x, idk, w))
             if not re.fullmatch(r"[a-z0-9_]+", name) or name in seen:
                 raise LevelError(f"{w}: {idk} must be unique snake_case")
             seen.add(name)
             out[key].append({"name": name, "position": _vec(_need(x, "position", w), f"{w} position"),
-                             "yaw_deg": float(x.get("yaw_deg", 0.0)), "beat": str(x.get("beat", ""))})
+                             "yaw_deg": float(x.get("yaw_deg", 0.0)), "beat": str(x.get("beat", "")),
+                             "snap": _bool(x.get("snap", False), f"{w} snap")})
     names = {a["name"] for a in out["anchors"]} & {a["name"] for a in out["waystones"]}
     if names:
         raise LevelError(f"anchor and waystone share a name: {sorted(names)}")
@@ -709,7 +711,7 @@ def to_tscn(lv: dict, source: str) -> str:
             nm = pr["name"] if pr["count"] == 1 else f'{pr["name"]}_{k + 1}'
             par = f'Pois/{pr["poi"]}' if pr["poi"] else "Props"
             nodes.append(f'[node name="{nm}" parent="{par}" instance=ExtResource("{sid}")]\n'
-                         f'transform = {_xf(basis, pos)}\n')
+                         f'transform = {_xf(basis, pos)}\n' + ('metadata/snap = true\n' if pr["snap"] else ""))
     nodes.append('[node name="Navigation" type="NavigationRegion3D" parent="."]\n'
                  'script = ExtResource("1_nav")\nsource = NodePath("../Boxes")\n')
     nodes.append(f'[node name="PlayerStart" type="Marker3D" parent="."]\n'
@@ -724,7 +726,8 @@ def to_tscn(lv: dict, source: str) -> str:
                 nodes.append(f'[node name="{a["name"]}" type="Marker3D" parent="{holder}"]\n'
                              f'transform = {_xf(rot_yxz([0, a["yaw_deg"], 0]), a["position"])}\n'
                              f'metadata/yaw_deg = {_f(a["yaw_deg"])}\n'
-                             + (f'metadata/beat = "{a["beat"]}"\n' if a["beat"] else ""))
+                             + (f'metadata/beat = "{a["beat"]}"\n' if a["beat"] else "")
+                             + ('metadata/snap = true\n' if a["snap"] else ""))
     if lv.get("gates"):
         nodes.append('[node name="Gates" type="Node3D" parent="."]\n')
         for g in lv["gates"]:

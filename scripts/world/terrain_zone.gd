@@ -43,8 +43,30 @@ const REGION_SIZE := 256  # Terrain3D default region_size (vertices)
 
 
 func _ready() -> void:
+	snap_level()
 	if build_on_ready:
 		build()
+
+
+## Step 157: TOML props / anchors / waystones with `snap = true` keep their y as an offset
+## above the heightfield (the generator does not know the noise), so they sit on the hills.
+func snap_level() -> void:
+	var lvl := get_parent()
+	if lvl == null:
+		return
+	for holder in ["Props", "Anchors", "Waystones", "Pois"]:
+		var h := lvl.get_node_or_null(holder)
+		if h == null:
+			continue
+		var stack: Array[Node] = h.get_children()
+		while not stack.is_empty():
+			var n := stack.pop_back() as Node
+			if n is Node3D and n.get_meta(&"snap", false) and not n.get_meta(&"snapped", false):
+				var p := (n as Node3D).position
+				(n as Node3D).position.y = height_at(p.x, p.z) + p.y
+				n.set_meta(&"snapped", true)
+			if holder == "Pois":
+				stack.append_array(n.get_children())
 
 
 func noise() -> FastNoiseLite:

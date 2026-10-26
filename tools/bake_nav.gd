@@ -8,6 +8,11 @@ const LEVELS := ["mage_association", "town_square", "old_oak", "midden", "breach
 
 
 func _initialize() -> void:
+	_run.call_deferred()
+
+
+func _run() -> void:
+	await process_frame  # the root must be inside the tree before parsing geometry
 	var bad := 0
 	for id in LEVELS:
 		var ps := load("res://scenes/levels/%s.tscn" % id) as PackedScene
@@ -17,6 +22,7 @@ func _initialize() -> void:
 			lvl.free()
 			continue
 		root.add_child(lvl)
+		await process_frame
 		var nav := lvl.get_node(^"Navigation") as LevelNavigation
 		if nav.from_cache:
 			print("[bake_nav] %s: cache fresh (%d tiles)" % [id, nav.tiles.size()])
