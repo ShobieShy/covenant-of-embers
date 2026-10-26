@@ -1305,6 +1305,13 @@
       "type": "plan",
       "summary": "Planned Phase V element skill trees (steps 144-151, waiting on user go): Core + 7 element trees, Q47-Q56",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T14:45:00-05:00",
+      "step": "plan-element-trees-answers",
+      "type": "plan",
+      "summary": "t70u answers for Phase V: element trees uncapped, 21 skills per tree, one exclusive element capstone (locks the others until respec), other questions default; steps 144-151 still waiting on user go",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1453,43 +1460,51 @@
   "waiting_on_user_go": [
     {
       "step": 144,
-      "name": "Element trees V1 multi-tree data + save v2",
-      "plan": "docs/ELEMENT_TREES_PLAN.md"
+      "name": "Element trees V1 multi-tree data (21 skills/tree, uncapped, exclusive capstone lock) + save v2",
+      "plan": "docs/ELEMENT_TREES_PLAN.md",
+      "answers": "t70u"
     },
     {
       "step": 145,
       "name": "Element trees V2 ElementSkillMods + status knobs",
-      "plan": "docs/ELEMENT_TREES_PLAN.md"
+      "plan": "docs/ELEMENT_TREES_PLAN.md",
+      "answers": "t70u"
     },
     {
       "step": 146,
       "name": "Element trees V3 brand synergies",
-      "plan": "docs/ELEMENT_TREES_PLAN.md"
+      "plan": "docs/ELEMENT_TREES_PLAN.md",
+      "answers": "t70u"
     },
     {
       "step": 147,
-      "name": "Element trees V4 marks + conditionals",
-      "plan": "docs/ELEMENT_TREES_PLAN.md"
+      "name": "Element trees V4 marks + T1-T3 conditionals",
+      "plan": "docs/ELEMENT_TREES_PLAN.md",
+      "answers": "t70u"
     },
     {
       "step": 148,
-      "name": "Element trees V5 capstones",
-      "plan": "docs/ELEMENT_TREES_PLAN.md"
+      "name": "Element trees V5 capstones + T4 runtime skills",
+      "plan": "docs/ELEMENT_TREES_PLAN.md",
+      "answers": "t70u"
     },
     {
       "step": 149,
-      "name": "Element trees V6 skills UI tabs",
-      "plan": "docs/ELEMENT_TREES_PLAN.md"
+      "name": "Element trees V6 skills UI tabs + locked-capstone look",
+      "plan": "docs/ELEMENT_TREES_PLAN.md",
+      "answers": "t70u"
     },
     {
       "step": 150,
       "name": "Element trees V7 co-op sync + PROTOCOL 3",
-      "plan": "docs/ELEMENT_TREES_PLAN.md"
+      "plan": "docs/ELEMENT_TREES_PLAN.md",
+      "answers": "t70u"
     },
     {
       "step": 151,
       "name": "Element trees V8 balance + bot + docs",
-      "plan": "docs/ELEMENT_TREES_PLAN.md"
+      "plan": "docs/ELEMENT_TREES_PLAN.md",
+      "answers": "t70u"
     }
   ],
   "notes": [

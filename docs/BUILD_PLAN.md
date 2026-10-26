@@ -836,20 +836,20 @@ Details: docs/BRANDS_PLAN.md. One brand per element, from the Head part; Arcane 
 - ~~Q46 Wands: same brand behaviour or lighter?~~ **Answered 2026-10-26:** Wands get a lighter version (scaled-down brand effects).
 
 ## Phase V – Element skill trees (planned 2026-10-26, WAITING ON USER GO)
-Details: docs/ELEMENT_TREES_PLAN.md (request t67u). Recommended structure (b): the current tree stays as Core, plus 7 element trees (Arcane/Fire/Water/Earth/Air/Light/Dark) drawing on the shared point pool, 25-point cap per element tree, and effects that apply only while casting that element. Do not start until the user says go.
+Details: docs/ELEMENT_TREES_PLAN.md (request t67u). User answers t70u: structure (b), the current tree stays as Core, plus 7 element trees (Arcane/Fire/Water/Earth/Air/Light/Dark) drawing on the shared point pool. Element trees are **uncapped**, each has **21 skills** (20 ranked + 1 capstone, 6 tiers), and taking one element capstone **locks all other element capstones** until respec. Effects apply only while casting that element; other questions use their defaults. Do not start until the user says go.
 
-- **Step 144 (waiting on user go)** Element trees V1: multi-tree data, 7 placeholder element trees, shared pool + 25 cap, save v2 + migration (Core unchanged).
+- **Step 144 (waiting on user go)** Element trees V1: multi-tree data, 7 placeholder element trees of 21 skills each, shared pool (uncapped), exclusive element-capstone lock (respec unlocks), save v2 + migration (keeps the first capstone if a save has two; Core unchanged).
 - **Step 145 (waiting on user go)** Element trees V2: ElementSkillMods; damage/accuracy/mana in Caster; status knobs in MagicEffects.
 - **Step 146 (waiting on user go)** Element trees V3: brand synergies in FireModes (heat, vent, charge, splash, spin, burst, crit/orb), wand-scaled.
-- **Step 147 (waiting on user go)** Element trees V4: marks (Soaked, Hex) and conditional bonuses.
-- **Step 148 (waiting on user go)** Element trees V5: the 7 capstones (cooldowns, boss rules).
-- **Step 149 (waiting on user go)** Element trees V6: skills UI tabs, tooltips, gamepad, card line, screenshots.
+- **Step 147 (waiting on user go)** Element trees V4: marks (Soaked, Hex) and the T1–T3 conditional bonuses.
+- **Step 148 (waiting on user go)** Element trees V5: the 7 capstones (cooldowns, boss rules) and the T4 runtime skills.
+- **Step 149 (waiting on user go)** Element trees V6: skills UI tabs (21-node layout), tooltips, gamepad, card line, locked-capstone look (padlock, greyed, tooltip, confirm dialog, tab badges), screenshots.
 - **Step 150 (waiting on user go)** Element trees V7: co-op status-mod sync, capstone hits/heals, PROTOCOL 3.
 - **Step 151 (waiting on user go)** Element trees V8: balance (DPS harness with skills, BalancePatch), bot spends element points, docs.
 
-### Open questions (Phase V) — defaults used unless the user changes them
+### Questions (Phase V) — answered t70u (Q48 uncapped; the rest take their defaults)
 - Q47 Structure (a)/(b)/(c)? Default (b) Core + 7 element trees.
-- Q48 Per-element-tree cap? Default 25 points.
+- Q48 Per-element-tree cap? **Answered: uncapped.** Plus 21 skills per tree and one exclusive element capstone.
 - Q49 Element skills only while casting that element? Default yes.
 - Q50 Respec all together only? Default yes.
 - Q51 Archetype-specific Core branches? Default not now.
