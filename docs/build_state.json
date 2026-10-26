@@ -5,8 +5,8 @@
   "current_milestone": "M1",
   "next_step": 0,
   "total_steps": 143,
-  "steps_done": 116,
-  "last_commit": "7b47c48",
+  "steps_done": 117,
+  "last_commit": "ab3b658",
   "history": [
     {
       "time": "2026-10-23T07:15-05:00",
@@ -1235,6 +1235,13 @@
       "type": "build",
       "summary": "Brands B1: Brand/BrandTable + six resources/brands/*.tres, brand() from the Head's own element, brand in wieldable and Head names, test_brands.gd",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-26T13:29:00-05:00",
+      "step": 136,
+      "type": "build",
+      "summary": "Brands B2: FireMode refactor of Caster (unbranded = semi, 48-run parity test vs the 0.1.2 Caster), brand_event signal, reload action on R (potion moved to H; pad Y -> reload, potion -> Misc1), spread bloom mult + accuracy bonus hooks",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1353,7 +1360,8 @@
     132,
     133,
     134,
-    135
+    135,
+    136
   ],
   "deferred": [
     74,
@@ -1373,7 +1381,6 @@
     }
   ],
   "waiting_on_user_go": [
-    136,
     137,
     138,
     139,

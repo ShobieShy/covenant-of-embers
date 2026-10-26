@@ -23,6 +23,7 @@ const ACTIONS: Array[StringName] = [
 	&"quickslot_prev_wieldable",
 	&"quickslot_next_wieldable",
 	&"use_potion",
+	&"reload",
 ]
 
 var held: Dictionary = {}  # StringName -> true

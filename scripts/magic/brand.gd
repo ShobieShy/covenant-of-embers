@@ -6,7 +6,7 @@ extends Resource
 ## FireMode (step 136+); `params` holds its tunables (BalancePatch can override them, step 143).
 ## Wands use the same mode scaled toward the unbranded baseline by `wand_scale` (Q46).
 
-enum FireMode { SEMI, HEAT, CHARGE, EXPLOSIVE, AUTO_SPINUP, SELECT_BURST, PRECISION }
+enum Mode { SEMI, HEAT, CHARGE, EXPLOSIVE, AUTO_SPINUP, SELECT_BURST, PRECISION }
 
 const FIRE_MODE_NAMES: PackedStringArray = [
 	"Semi", "Heat", "Charge", "Explosive", "Spin-up", "Select fire", "Precision"
@@ -16,7 +16,7 @@ const FIRE_MODE_NAMES: PackedStringArray = [
 @export var display_name := ""  ## full maker name ("Pyrowning Arms")
 @export var short_name := ""  ## in item names ("Rare Pyrowning Fire Staff")
 @export var element: ElementTable.Element = ElementTable.Element.FIRE
-@export var fire_mode: FireMode = FireMode.SEMI
+@export var fire_mode: Mode = Mode.SEMI
 @export var color := Color.WHITE
 @export var tagline := ""  ## our own flavour line (Rare+ cards)
 @export var mode_line := ""  ## one-line fire-mode summary for cards

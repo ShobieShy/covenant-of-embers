@@ -132,6 +132,7 @@ func apply(aim: Caster.Aim, accuracy: float, s: Stance) -> Caster.Aim:
 	return a
 
 
-## After a real cast (Caster.tick returned true): bloom grows.
-func on_cast() -> void:
-	bloom = minf(bloom_max_deg, bloom + bloom_per_cast_deg)
+## After a real cast (Caster.tick returned true): bloom grows (x `mult`, step 136: the
+## brand's Caster.bloom_mult(); 0 = no bloom).
+func on_cast(mult := 1.0) -> void:
+	bloom = minf(bloom_max_deg, bloom + bloom_per_cast_deg * mult)

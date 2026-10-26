@@ -856,7 +856,7 @@ func tick(input: PlayerInput, dt: float) -> void:
 	elif input.was_pressed(&"quickslot_prev_wieldable"):
 		started = loadout.cycle(-1)
 	loadout.tick(dt, started)
-	if input.was_pressed(&"use_potion"):  # step 24: R uses the quick-slot potion
+	if input.was_pressed(&"use_potion"):  # step 24 (H since step 136): the quick-slot potion
 		use_potion()
 	# Pickups (step 23): walk-over auto-collect, then Interact on the looked-at item.
 	pickups.tick(self, input.was_pressed(&"interact"))
@@ -877,13 +877,15 @@ func tick(input: PlayerInput, dt: float) -> void:
 		loadout.tick_swap(fire_pressed, dt)
 	else:
 		var a := aim()
-		if w != null and (fire_pressed or (caster.hold_to_repeat and fire_held)):
-			a = spread.apply(a, w.accuracy(), spread_stance())
+		if w != null and caster.wants_aim(fire_pressed, fire_held):
+			a = spread.apply(a, minf(100.0, w.accuracy() + caster.accuracy_bonus()), spread_stance())
 		if viewmodel != null and w != null and viewmodel.is_inside_tree():
 			viewmodel.update_pose(w, focus.amount(), loadout.draw_progress(), feel.recoil_offset())
 			a.with_visual_origin(viewmodel.cast_point_position())
+		if input.was_pressed(&"reload") and w != null:  # step 136: R = the brand's vent action
+			caster.reload(a, bolts)
 		if caster.tick(fire_pressed, fire_held, dt, a, bolts):
-			spread.on_cast()
+			spread.on_cast(caster.bloom_mult())
 			var is_wand := w.type() == WieldableDef.Type.WAND
 			feel.add_recoil(tuning.recoil_wand if is_wand else tuning.recoil_staff)
 			feel.add_shake(tuning.shake_wand if is_wand else tuning.shake_staff)

@@ -4,7 +4,7 @@ extends TestCase
 ##  - equip_from_inventory: gear -> Equipment (bonuses applied, replaced piece back in the
 ##    backpack), staff/wand -> Loadout slot (replacing the one in hand starts a draw);
 ##  - unequip to the backpack restores the stats; refused (with a hint) when full;
-##  - R (use_potion) drinks the quick-slot potion.
+##  - H (use_potion; R until step 136) drinks the quick-slot potion.
 
 const DT := 1.0 / 60.0
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
@@ -85,5 +85,5 @@ func test_use_potion_key() -> void:
 	p.equipment.add_potions(ConsumableItem.load_item("mana_potion"), 2)
 	p.mana.value = 10.0
 	p.tick(PlayerInput.hold([&"use_potion"], [&"use_potion"]), DT)
-	check(p.equipment.potion_count == 1 and p.mana.value > 10.0, "R drinks a potion")
+	check(p.equipment.potion_count == 1 and p.mana.value > 10.0, "H drinks a potion")
 	p.queue_free()
