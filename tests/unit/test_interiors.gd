@@ -51,3 +51,28 @@ func test_enter_and_leave() -> void:
 	)
 	check(fades[0] == 4, "a fade per transition (%d)" % fades[0])
 	root.free()
+
+
+func test_fade_and_slow_load_overlay() -> void:
+	var i := Interiors.new()
+	runner_tree.root.add_child(i)
+	var f := InteriorFade.new()
+	f.interiors = i
+	runner_tree.root.add_child(f)
+	i.fade.emit(Interiors.FADE)
+	for n in 5:
+		await runner_tree.process_frame
+	check(f.rect.color.a > 0.0, "fade dips to black (%.2f)" % f.rect.color.a)
+	i.slow_load.emit("mage_association")
+	check(f.screen != null and f.screen.manual, "slow load shows the overlay")
+	var s := f.screen
+	i.entered.emit("mage_association")
+	check(f.screen == null and s.progress >= 1.0, "overlay closes on entry")
+	await runner_tree.create_timer(0.6).timeout
+	await runner_tree.process_frame
+	check(not is_instance_valid(s), "overlay freed after its fade-out")
+	check(
+		runner_tree.current_scene == null or runner_tree.current_scene.name != "", "no scene change"
+	)
+	f.free()
+	i.free()

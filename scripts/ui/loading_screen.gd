@@ -13,7 +13,9 @@ extends CanvasLayer
 ## no navigation) gives up after STAGE_TIMEOUT and the screen still closes.
 
 enum Stage { SCENE, LEVEL, SWAP, TERRAIN, NAV, DONE }
-const STAGE_TEXT := ["Loading", "Loading the region", "Entering", "Raising the land", "Charting paths", "Ready"]
+const STAGE_TEXT := [
+	"Loading", "Loading the region", "Entering", "Raising the land", "Charting paths", "Ready"
+]
 const STAGE_RANGE := [[0.0, 0.35], [0.35, 0.7], [0.7, 0.8], [0.8, 0.9], [0.9, 1.0], [1.0, 1.0]]
 const STAGE_TIMEOUT := 20.0
 const TIP_SECONDS := 4.0
@@ -44,6 +46,27 @@ var ember: Control
 
 static var active: LoadingScreen = null
 static var dry_run := false  ## tests: build the screen but never change scenes
+## OW5: an overlay screen driven by its caller (advance / done), never changing scenes:
+## instanced interiors show it over the world when a load runs long.
+var manual := false
+
+
+## An overlay for a load the caller runs itself (Interiors); close it with done().
+static func overlay(tree: SceneTree, level := "") -> LoadingScreen:
+	if active and is_instance_valid(active):
+		active.queue_free()
+	var s := LoadingScreen.new()
+	s.manual = true
+	s.level_id = level
+	s._tree = tree
+	tree.root.add_child(s)
+	active = s
+	return s
+
+
+func done() -> void:
+	advance(Stage.DONE, 1.0)
+	_finish()
 
 
 ## Starts a load of `path` (and `level` for the game scene); returns the screen.
@@ -73,7 +96,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	tip_index = randi() % TIPS.size()
 	_build_ui()
-	if dry_run:
+	if dry_run or manual:
 		return
 	ResourceLoader.load_threaded_request(target, "PackedScene")
 	if level_id != "":
@@ -102,7 +125,9 @@ func _build_ui() -> void:
 	root.add_child(backdrop)
 	var panel := PanelContainer.new()
 	panel.name = "Panel"
-	panel.add_theme_stylebox_override(&"panel", UiTheme.box("panels_9slice/pixel_ui/Ancient/brown.png", 16))
+	panel.add_theme_stylebox_override(
+		&"panel", UiTheme.box("panels_9slice/pixel_ui/Ancient/brown.png", 16)
+	)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 	panel.custom_minimum_size = Vector2(900, 170)
 	panel.offset_left = -450
@@ -169,7 +194,7 @@ func _process(delta: float) -> void:
 		_t_tip = 0.0
 		tip_index = (tip_index + 1) % TIPS.size()
 		_refresh()
-	if dry_run:
+	if dry_run or manual:
 		return
 	_t_stage += delta
 	var timed_out := _t_stage > STAGE_TIMEOUT
@@ -271,4 +296,7 @@ class _Ember:
 			var a := t * 3.0 + i * TAU / 8.0
 			var p := c + Vector2(cos(a), sin(a)) * 14.0
 			var k := float(i) / 8.0
-			draw_rect(Rect2((p - Vector2(2, 2)).floor(), Vector2(4, 4)), Color(1.0, 0.35 + 0.4 * k, 0.1, 0.3 + 0.7 * k))
+			draw_rect(
+				Rect2((p - Vector2(2, 2)).floor(), Vector2(4, 4)),
+				Color(1.0, 0.35 + 0.4 * k, 0.1, 0.3 + 0.7 * k)
+			)

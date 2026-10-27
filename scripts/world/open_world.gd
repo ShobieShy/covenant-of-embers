@@ -28,6 +28,10 @@ func _ready() -> void:
 	interiors.height_fn = height_at
 	add_child(interiors)
 	interiors.add_doors()
+	var fader := InteriorFade.new()
+	fader.name = "InteriorFade"
+	fader.interiors = interiors
+	add_child(fader)
 
 
 static func load_info() -> Dictionary:

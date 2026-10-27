@@ -1435,6 +1435,12 @@
       "step": "OW5a",
       "type": "test",
       "summary": "rt10 failed test_world_nav (the default navigation map held other tests' regions); the test now queries a private map (852d623). rt11: run_tests.sh 558 passed, 0 failed, EXIT 0."
+    },
+    {
+      "time": "2026-10-27T03:01-05:00",
+      "step": "OW5a",
+      "type": "feature",
+      "summary": "Interior UI: InteriorFade (CanvasLayer under OpenWorld) dips a black rect over Interiors.fade, and on slow_load shows LoadingScreen.overlay (new manual mode: caller-driven, never changes scenes), closed by done() on entered/left. Test added to test_interiors.gd."
     }
   ],
   "completed_steps": [
