@@ -57,6 +57,13 @@ static func make_mesh() -> NavigationMesh:
 
 func _ready() -> void:
 	if bake_on_ready:
+		_bake_when_settled.call_deferred()
+
+
+## Deferred: main.tscn embeds the Midden and frees it in its own _ready when the run starts
+## elsewhere, so a synchronous bake here cost every load a 100-tile Midden bake.
+func _bake_when_settled() -> void:
+	if is_inside_tree() and not is_queued_for_deletion() and bakes == 0:
 		bake_now()
 
 
@@ -88,7 +95,10 @@ func bake_now() -> int:
 func _add_landmarks(nm: NavigationMesh, data: NavigationMeshSourceGeometryData3D) -> void:
 	if get_parent() == null or not is_inside_tree():
 		return
-	var src := EmberArt.nav_source(GameFlow.id_of(get_parent()))
+	var raw := String(get_parent().get_meta(&"level_id", ""))
+	if not GameFlow.LEVEL_IDS.has(raw):
+		return  # only shipped levels carry landmarks (id_of falls back to the Midden)
+	var src := EmberArt.nav_source(String(GameFlow.LEVEL_IDS[raw]))
 	if src.get_child_count() == 0:
 		src.free()
 		return
@@ -189,7 +199,9 @@ func _read_cache(h: int, keys: Array[Vector2i]) -> Array[NavigationMesh]:
 ## Writes the baked tiles (tools/bake_nav.gd). Returns OK or the first error.
 func save_cache() -> Error:
 	var data := NavigationMeshSourceGeometryData3D.new()
-	NavigationServer3D.parse_source_geometry_data(make_mesh(), data, get_node(source))
+	var nm := make_mesh()
+	NavigationServer3D.parse_source_geometry_data(nm, data, get_node(source))
+	_add_landmarks(nm, data)  # same source as bake_now / cache_fresh
 	var tz := get_node_or_null(terrain) as TerrainZone
 	if tz == null or tiles.is_empty():
 		return ERR_UNAVAILABLE

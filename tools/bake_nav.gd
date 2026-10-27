@@ -24,6 +24,8 @@ func _run() -> void:
 		root.add_child(lvl)
 		await process_frame
 		var nav := lvl.get_node(^"Navigation") as LevelNavigation
+		if nav.bakes == 0:
+			nav.bake_now()  # the ready bake is deferred
 		if nav.from_cache:
 			print("[bake_nav] %s: cache fresh (%d tiles)" % [id, nav.tiles.size()])
 		else:

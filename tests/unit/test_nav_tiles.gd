@@ -55,7 +55,10 @@ func test_tiles_links_and_seam_path() -> void:
 	var nav := w.get_node("Navigation") as LevelNavigation
 	nav.bake_now()
 	var keys := nav.tile_keys(AABB(Vector3(C.x - 10, -0.2, C.y - 10), Vector3(20, 0.2, 20)))
-	check(nav.tiles.size() == keys.size() and keys.size() >= 3, "%d tiles over box, link and POI" % keys.size())
+	check(
+		nav.tiles.size() == keys.size() and keys.size() >= 3,
+		"%d tiles over box, link and POI (built %d)" % [keys.size(), nav.tiles.size()]
+	)
 	check(nav.polygon_count() > 0, "tiles have polygons")
 	var ok := false
 	for i in 120:

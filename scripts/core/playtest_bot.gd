@@ -663,6 +663,12 @@ func _intro_tick() -> void:
 		t = 0.0
 		note("intro beat %s (%d/%d) in %s" % [b, intro_beats.size(), IntroDirector.BEATS.size(), d.here])
 	_talk_cd -= get_physics_process_delta_time()
+	if t > 90.0:  # a stalled beat fails fast with where the bot was and what it aimed at
+		_finish(
+			false,
+			"intro beat %s stalled in %s: feet %s, target %s" % [b, d.here, player.global_position, d.target_point()]
+		)
+		return
 	_intro_shot(b)
 	if _intro_ui(d):
 		return
