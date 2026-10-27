@@ -1381,6 +1381,18 @@
       "step": "loading-screen",
       "type": "wip",
       "summary": "Playtest stall after travel fixed: every main.tscn load baked the embedded Midden's 100 nav tiles before the swap (and its cache was never fresh because save_cache skipped the landmarks). Now skipped when swapped out, save_cache hashes landmarks, Midden cache re-baked, landmarks only for shipped level ids. Suite 547/0 green. The suite's playtest smoke tripped the new 90 s stalled-beat guard on the Filth fight; guard raised to 240 s. Standalone 1x/4x/co-op chain still running. LABYRINTH_PLAN.md written (plan only, after 0.2.0)."
+    },
+    {
+      "time": "2026-10-27T01:50:00-05:00",
+      "step": "OW1",
+      "type": "done",
+      "summary": "world_offset on all levels (docs/WORLD_LAYOUT.md), tools/export_zone_heights.gd, tools/build_world.py (stitch zones minus 24 m rim on 2 m grid, Laplace gap fill, --check/--self-test; 1281x1025, 5x4 regions). LABYRINTH_PLAN approval recorded (all 12 defaults, build after 0.2.0)."
+    },
+    {
+      "time": "2026-10-27T02:10:00-05:00",
+      "step": "OW2",
+      "type": "done",
+      "summary": "One Terrain3DData for the world: export_zone_heights.gd also writes control maps + layers; build_world.py at 1 m (2305x1537), coarse-to-fine Laplace fill, world layer list (8), control map remaps zone paint and makes auto-shader cells explicit (flat/slope blend), transition strips blend nearest zone's flat layer into the next; tools/save_world_terrain.gd saves 70 region files to res://world/terrain/ (13 MB) + world_terrain.json; tools/build_world.sh runs all three. test_world_terrain.gd: offsets on 16 m grid, world heights match each zone (<=5 mm). Strip paint is a placeholder until roads/ridges."
     }
   ],
   "completed_steps": [
@@ -1611,12 +1623,7 @@
     "2026-10-24: steps 119-134 (art spree A1-A8, FX spree F1-F8) planned, waiting on user go; see docs/ART_SPREE_PLAN.md, docs/FX_SPREE_PLAN.md",
     "2026-10-24: Q27-Q34 answered (low-poly, CC-BY credited in-game, Loli small witch normal attire, gear visible now, moonlit night, Light/Dark FX for all, Low=Steam Deck, F1 first)",
     "2026-10-26: steps 135-143 (part brands B1-B9) planned, waiting on user go; see docs/BRANDS_PLAN.md; open Q35-Q46",
-    "2026-10-26: Q35-Q46 answered (defaults): Head brand, flat bonus per bolt, Pyrowning no mana, overheat lockout only, straight boulders, Coltara R toggle no shield, weak points + chance fallback, Water chain full charge only, element kept in names, Head-only brand, Windchester clamps at 0.1 s, wands scaled-down brand effects; steps 135-143 still waiting on user go",
-    {
-      "time": "2026-10-27 01:50 CDT",
-      "step": "OW1",
-      "note": "world_offset on all levels, export_zone_heights.gd, build_world.py (stitch + Laplace fill, --check/--self-test), docs/WORLD_LAYOUT.md; LABYRINTH_PLAN approval recorded"
-    }
+    "2026-10-26: Q35-Q46 answered (defaults): Head brand, flat bonus per bolt, Pyrowning no mana, overheat lockout only, straight boulders, Coltara R toggle no shield, weak points + chance fallback, Water chain full charge only, element kept in names, Head-only brand, Windchester clamps at 0.1 s, wands scaled-down brand effects; steps 135-143 still waiting on user go"
   ],
   "version": "0.1.4-prealpha"
 }

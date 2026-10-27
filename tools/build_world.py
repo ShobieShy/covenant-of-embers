@@ -2,7 +2,7 @@
 """OW1: stitch every terrain level's heightfield into one world heightmap.
 
   godot --headless --path . -s res://tools/export_zone_heights.gd   # build/world/<id>.f32 + .json
-  tools/build_world.py              # -> build/world/world_height.f32, world.json, world_preview.png
+  tools/build_world.py              # -> build/world/world_height.f32, world_control.u32, world.json, world_preview.png
   tools/build_world.py --check      # layout checks only (footprints, gaps, 16 m offsets)
   tools/build_world.py --self-test
 
@@ -20,7 +20,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "build" / "world"
-SPACING = 2.0
+SPACING = 1.0  # OPEN_WORLD_PLAN section 2: 1 m grid, 256 m regions
 REGION = 256 * SPACING
 EDGE = 24.0  # TerrainZone.EDGE
 MIN_GAP = 64.0  # transition strip between footprints (OPEN_WORLD_PLAN section 2: 24-64 m)
@@ -58,7 +58,83 @@ def load(id_):
     if z.get("terrain"):
         w, h = z["grid"]
         z["h"] = np.fromfile(OUT / f"{id_}.f32", dtype="<f4").reshape(h, w)
+        ctl = OUT / f"{id_}.ctl"
+        if ctl.exists():
+            z["c"] = np.fromfile(ctl, dtype="<u4").reshape(h, w)
     return z
+
+
+def _jacobi(h, free, n):
+    for _ in range(n):
+        avg = 0.25 * (np.roll(h, 1, 0) + np.roll(h, -1, 0) + np.roll(h, 1, 1) + np.roll(h, -1, 1))
+        h[free] = avg[free]
+
+
+def relax(h, free, iters, levels=3):
+    """Harmonic fill of the free cells: coarse-to-fine so 1 m grids converge in seconds."""
+    if levels > 0 and min(h.shape) > 64:
+        hc, fc = h[::4, ::4].copy(), free[::4, ::4].copy()
+        relax(hc, fc, iters, levels - 1)
+        up = np.repeat(np.repeat(hc, 4, 0), 4, 1)[: h.shape[0], : h.shape[1]]
+        h[free] = up[free]
+        _jacobi(h, free, max(50, iters // 20))
+    else:
+        _jacobi(h, free, iters)
+
+
+LAYER_SHIFT, OVER_SHIFT, BLEND_SHIFT = 27, 22, 14
+NAV, AUTO = 2, 1
+
+
+def world_layers(zones):
+    out = []
+    for z in zones:
+        for n in z.get("layers", []):
+            if n not in out:
+                out.append(n)
+    return out
+
+
+def paint(zones, owner, xs, zs, layers):
+    """OW2 control map: zone cells keep their own paint (ids remapped to the world layer list,
+    auto-shader cells made explicit: flat layer 0 / slope layer 1 by the zone's own slope);
+    the strips between zones blend the nearest zone's flat layer into the next one's."""
+    from scipy import ndimage
+    t = [z for z in zones if z.get("terrain")]
+    nz, nx = owner.shape
+    ctl = np.zeros((nz, nx), np.uint32)
+    dist = np.full((len(t), nz, nx), np.inf, np.float32)
+    for k, z in enumerate(t):
+        dist[k] = ndimage.distance_transform_edt(owner != k) * SPACING
+    order = np.argsort(dist, 0)
+    d1 = np.take_along_axis(dist, order[:1], 0)[0]
+    d2 = np.take_along_axis(dist, order[1:2], 0)[0] if len(t) > 1 else d1 + 1
+    flat = np.array([layers.index(z["layers"][0]) for z in t], np.uint32)
+    blend = np.clip(255 * d1 / np.maximum(d1 + d2, 1e-3), 0, 127).astype(np.uint32)
+    ctl[:] = (flat[order[0]] << LAYER_SHIFT) | (flat[order[1] if len(t) > 1 else order[0]] << OVER_SHIFT)
+    ctl |= (blend * 2) << BLEND_SHIFT | NAV  # 0 at the zone edge, 254 midway (even split)
+    for k, z in enumerate(t):
+        if "c" not in z:
+            continue
+        m = owner == k
+        iz, ix = np.nonzero(m)
+        ox, oz = z["origin"]
+        wx, wz = z["world_offset"]
+        px = np.clip(np.rint((xs[ix] - wx - ox) / z["spacing"]).astype(int), 0, z["c"].shape[1] - 1)
+        pz = np.clip(np.rint((zs[iz] - wz - oz) / z["spacing"]).astype(int), 0, z["c"].shape[0] - 1)
+        c = z["c"][pz, px]
+        remap = np.array([layers.index(n) for n in z["layers"]] + [0] * 32, np.uint32)
+        base = remap[(c >> LAYER_SHIFT) & 31]
+        gy, gx = np.gradient(z["h"])
+        slope = np.hypot(gx, gy)[pz, px] / z["spacing"]
+        auto = (c & AUTO) != 0
+        sl = remap[min(1, len(z["layers"]) - 1)]
+        fl = remap[0]
+        bl = np.clip((slope - 0.6) / 0.8 * 255, 0, 255).astype(np.uint32)
+        out = np.where(auto, (fl << LAYER_SHIFT) | (sl << OVER_SHIFT) | (bl << BLEND_SHIFT) | NAV,
+                       (base << LAYER_SHIFT) | (base << OVER_SHIFT) | NAV)
+        ctl[iz, ix] = out
+    return ctl
 
 
 def stitch(zones, iters=4000):
@@ -90,16 +166,17 @@ def stitch(zones, iters=4000):
     border[0, :] = border[-1, :] = border[:, 0] = border[:, -1] = True
     free = ~fixed & ~border
     hw[border] = 0.0
-    for _ in range(iters):  # Jacobi relaxation of the gaps (harmonic fill)
-        avg = 0.25 * (np.roll(hw, 1, 0) + np.roll(hw, -1, 0) + np.roll(hw, 1, 1) + np.roll(hw, -1, 1))
-        hw[free] = avg[free]
+    relax(hw, free, iters)
+    layers = world_layers(t)
+    ctl = paint(t, owner, xs, zs, layers) if all("layers" in z for z in t) else None
     meta = {
+        "layers": layers,
         "origin": [float(x0), float(z0)], "grid": [nx, nz], "spacing": SPACING,
         "regions": [int((x1 - x0) / REGION), int((z1 - z0) / REGION)],
         "zones": {z["id"]: {"world_offset": z["world_offset"], "footprint": list(footprint(z))} for z in t},
         "height_range": [float(hw.min()), float(hw.max())],
     }
-    return hw, owner, meta
+    return hw, owner, meta, ctl
 
 
 def preview(hw, owner, path):
@@ -121,7 +198,7 @@ def self_test():
     assert check([dict(a, world_offset=[8, 0])])  # off-grid
     for z, off in ((a, 0), (b, 176)):
         z["origin"], z["spacing"], z["h"] = [-50, -50], 1.0, np.full((101, 101), 5.0 if off else 1.0, np.float32)
-    hw, owner, meta = stitch([a, b], iters=3000)
+    hw, owner, meta, _ = stitch([a, b], iters=3000)
     mid = hw[int((0 - meta["origin"][1]) / SPACING), int((88 - meta["origin"][0]) / SPACING)]
     assert 1.0 < mid < 5.0, mid  # the gap blends between the two zones
     assert meta["origin"][0] % REGION == 0
@@ -143,8 +220,10 @@ def main(argv):
     if errs or "--check" in argv:
         print("[build_world] layout %s (%d zones)" % ("FAILED" if errs else "OK", len(zones)))
         return 1 if errs else 0
-    hw, owner, meta = stitch(zones)
+    hw, owner, meta, ctl = stitch(zones)
     hw.astype("<f4").tofile(OUT / "world_height.f32")
+    if ctl is not None:
+        ctl.astype("<u4").tofile(OUT / "world_control.u32")
     (OUT / "world.json").write_text(json.dumps(meta, indent=2))
     preview(hw, owner, OUT / "world_preview.png")
     print("[build_world] %dx%d at %.0f m (%dx%d regions), heights %.1f..%.1f m -> build/world/" % (

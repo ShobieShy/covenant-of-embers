@@ -1,0 +1,23 @@
+{
+  "grid": [
+    2305.0,
+    1537.0
+  ],
+  "hash": 895603703,
+  "layers": [
+    "ash_scorched",
+    "crystal",
+    "rubble_junk",
+    "rock",
+    "dirt",
+    "mud_filth",
+    "grass",
+    "path_cobble"
+  ],
+  "origin": [
+    -768.0,
+    -768.0
+  ],
+  "regions": 70,
+  "spacing": 1.0
+}
