@@ -27,6 +27,8 @@ From 0.1.4-prealpha. Steps OW1 to OW11 in docs/build_state.json.
     broken up with noise, and there's no seam at the midline.
   - Landfill paths are muddy rubble with feathered edges. The flat tan squares are gone.
   - Mud patches now break up the Landfill's flat rubble.
+- Shaders warm up behind the first-load screen, so the first walk into the Landfill no longer
+  hitches on a cold cache (was about 400 ms). `tools/perf_cold.sh` captures cold-cache perf.
 - The Arena walls also drop when the Filth dies.
 - Tightened the breach loft geometry (annex stair), so the loft stays on the navmesh.
 

@@ -112,7 +112,8 @@ func travel_to(point: String) -> bool:
 ## OW10 (plan section 9): streams the cells around `dest` behind the loading screen, then
 ## lands the party there; the first world load uses it (a fresh start or the Association's
 ## front door), waystones use travel_to.
-func land_at(dest: Vector3, level := "") -> void:
+## OW11e: `warm` (awaited) runs with the party in place, just before the loading screen goes.
+func land_at(dest: Vector3, level := "", warm := Callable()) -> void:
 	while busy and is_inside_tree():  # QA-2: queue behind a load in flight (a 2nd overlay freed the 1st)
 		await get_tree().process_frame
 	busy = true
@@ -125,6 +126,8 @@ func land_at(dest: Vector3, level := "") -> void:
 			o.call("spawn", to, o.rotation.y)
 		else:
 			o.global_position = to
+	if warm.is_valid():
+		await warm.call()
 	if is_instance_valid(screen):
 		screen.done()
 	busy = false

@@ -82,7 +82,7 @@ func first_load(dest: Vector3, level := "") -> void:
 	if first_loaded:
 		return
 	first_loaded = true
-	await travel.land_at(dest, level)
+	await travel.land_at(dest, level, func() -> void: await ShaderWarmup.run(get_tree()))
 	first_load_done.emit()
 
 

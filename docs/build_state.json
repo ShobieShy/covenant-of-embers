@@ -1593,6 +1593,11 @@
       "step": "OW11d",
       "date": "2026-10-27",
       "summary": "OW11 polish. tools/build_world.py paint(): zone strips blend each side's flat layer into a shared STRIP_MID material (mud Eldoria/Landfill, ash Landfill/Breach, grass Oak/Town) with value-noise edges, BLEND_MAX 240 (255 rendered black); ZONE_PAINT gives Landfill pads mud_filth over rubble_junk with a 3 m feather (the flat tan dirt pads are gone) and mud patches on the Landfill flats. World terrain regenerated (paint only; heights, cells and nav unchanged). world_shots.gd adds landfill, landfill_pads_low and town_pads_low views (build/shots_ow11_before|after). perf_capture.gd --world [--res]: Town to Landfill to Breach walk; docs/perf_ow11.md: dev GPU High 1440p 855 fps, warm worst frame 4.0-6.0 ms, VRAM at most 410 MB; iGPU and Deck not measured; cold first run had a 432 ms compile stall. Targeted tests test_world_terrain, map_anchors, world_travel, world_session: 14 passed. Drafts in docs/release/ (0.2.0 changelog and release notes), not released."
+    },
+    {
+      "step": "OW11e",
+      "date": "2026-10-27",
+      "summary": "ShaderWarmup behind the first-load screen (193 mesh/material copies, about 450 ms cold). Cold-cache capture (tools/perf_cold.sh): stalls of 398/364 ms are now 0 frames over 33 ms, worst 4-9 ms at 1280x800 and 1440p. Deck/iGPU deferred; road/ridge strips skipped for 0.2.0."
     }
   ],
   "completed_steps": [

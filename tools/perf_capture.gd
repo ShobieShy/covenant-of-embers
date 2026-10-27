@@ -144,13 +144,23 @@ func _walk_world(q: int) -> Dictionary:
 	var p := Vector3(WORLD_ROUTE[0].x, 0, WORLD_ROUTE[0].y)
 	w.streamer.viewer_override = [p]
 	w.streamer.flush()
+	var h0 := w.height_at(p.x, p.z)
+	cam.position = Vector3(p.x, (0.0 if is_nan(h0) else h0) + 1.7, p.z)
+	var d0 := Vector3(WORLD_ROUTE[1].x - p.x, 0, WORLD_ROUTE[1].y - p.z).normalized()
+	cam.look_at(cam.position + d0 + Vector3(0, -0.15, 0))
 	for _f in WARMUP:
 		await process_frame
+	if "--warm" in OS.get_cmdline_user_args():  # OW11e: what OpenWorld.first_load runs
+		var t0 := Time.get_ticks_msec()
+		var nw: int = await ShaderWarmup.run(self, cam)
+		print("[perf] warmup copies: %d in %d ms" % [nw, Time.get_ticks_msec() - t0])
 	w.streamer.viewer_override = []
 	var times := PackedFloat64Array()
 	var last := Time.get_ticks_usec()
 	var peak_ram := 0
 	var peak_vram := 0
+	var worst := 0.0
+	var worst_at := Vector3.ZERO
 	for i in range(1, WORLD_ROUTE.size()):
 		var to := Vector3(WORLD_ROUTE[i].x, 0, WORLD_ROUTE[i].y)
 		while Vector2(p.x, p.z).distance_to(Vector2(to.x, to.z)) > 1.0:
@@ -162,6 +172,16 @@ func _walk_world(q: int) -> Dictionary:
 			await process_frame
 			var now := Time.get_ticks_usec()
 			times.append((now - last) / 1000.0)
+			if times[-1] > 33.3:
+				print(
+					(
+						"[perf] stall %.0f ms at frame %d %s"
+						% [times[-1], times.size() - 1, cam.position]
+					)
+				)
+			if times[-1] > worst:
+				worst = times[-1]
+				worst_at = cam.position
 			last = now
 			peak_ram = maxi(peak_ram, OS.get_static_memory_usage())
 			peak_vram = maxi(
@@ -184,6 +204,7 @@ func _walk_world(q: int) -> Dictionary:
 		"fps": 1000.0 / avg,
 		"low1_fps": 1000.0 / sorted[int(sorted.size() * 0.99)],
 		"worst_ms": sorted[sorted.size() - 1],
+		"worst_at": [snappedf(worst_at.x, 1), snappedf(worst_at.z, 1), times.find(worst)],
 		"over_33ms": sorted.size() - sorted.bsearch(33.3),
 		"ram_mb": peak_ram / 1048576.0,
 		"vram_mb": peak_vram / 1048576.0,

@@ -17,6 +17,6 @@ way to mud, then to rubble, and the ash thickens at the Breach.
 **Prefer the old flow?** Launch with `--classic-levels`.
 
 **Known issues**
-- The first time you load, there can be a short stutter while shaders compile.
-- Performance hasn't been checked on integrated GPUs or the Steam Deck yet.
+- Performance hasn't been checked on integrated GPUs or the Steam Deck yet. That testing is deferred.
+- Road and ridge transition strips are not in 0.2.0.
 - In co-op, the joining game can close with an error code on exit. Your progress is already saved.
