@@ -9,3 +9,4 @@ godot --headless --path . -s res://tools/build_cells.gd
 godot --headless --path . -s res://tools/bake_world_nav.gd
 godot --headless --path . -s res://tools/bake_interior_nav.gd
 godot --headless --path . -s res://tools/bake_world_markers.gd
+python3 tools/gen_world_map.py

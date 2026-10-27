@@ -11,6 +11,10 @@ var terrain: Node3D
 var streamer: WorldStreamer
 var interiors: Interiors
 var travel: WorldTravel
+var fog := WorldFog.new()  ## OW7; main.gd saves it under progress.fog from OW10
+var pins := MapPins.new()
+var map_screen: WorldMapScreen
+var _fog_t := 0.0
 var info := {}
 
 
@@ -34,10 +38,51 @@ func _ready() -> void:
 	travel.streamer = streamer
 	travel.height_fn = height_at
 	add_child(travel)
+	var layer := CanvasLayer.new()
+	layer.name = "MapLayer"
+	layer.layer = 20
+	add_child(layer)
+	map_screen = WorldMapScreen.new()
+	map_screen.fog = fog
+	map_screen.pins = pins
+	map_screen.travel = travel
+	map_screen.players = _map_players
+	layer.add_child(map_screen)
+	for w in travel.waystones.values():
+		(w as Waystone).opened.connect(func(_p: String) -> void: map_screen.open())
 	var fader := InteriorFade.new()
 	fader.name = "InteriorFade"
 	fader.interiors = interiors
 	add_child(fader)
+
+
+## Reveals fog around every player twice a second.
+func _process(dt: float) -> void:
+	_fog_t += dt
+	if _fog_t < 0.5:
+		return
+	_fog_t = 0.0
+	for p in _map_players():
+		fog.reveal(p[0].x, p[0].z)
+
+
+func _map_players() -> Array:
+	var out: Array = []
+	if not is_inside_tree():
+		return out
+	for g in [Player.GROUP, &"coop_avatars"]:
+		for n in get_tree().get_nodes_in_group(g):
+			if n is Node3D and not (interiors and interiors.current != ""):
+				var c := Color(1, 0.8, 0.3) if g == Player.GROUP else Color(0.4, 0.8, 1.0)
+				out.append(
+					[
+						(n as Node3D).global_position,
+						(n as Node3D).global_rotation.y,
+						String(n.get_meta(&"display_name", "")),
+						c
+					]
+				)
+	return out
 
 
 static func load_info() -> Dictionary:

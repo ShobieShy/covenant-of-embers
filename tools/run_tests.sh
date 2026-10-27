@@ -34,6 +34,7 @@ tools/coop_playtest.sh || { echo "[run_tests] co-op playtest did not pass"; exit
 python3 tools/check_assets.py
 python3 tools/gen_credits.py --check
 python3 tools/gen_element_trees.py --check
+python3 tools/gen_world_map.py --check  # OW7
 python3 tools/check_paths.py --self-test
 python3 tools/check_paths.py
 echo "[run_tests] all green"
