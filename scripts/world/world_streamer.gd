@@ -26,6 +26,7 @@ var nav := {}  ## Vector2i -> NavigationRegion3D in the tree
 var _nav_known := {}
 var stream_partners := false  ## tests: stream around RemotePlayers without a session
 var viewer_override: Array[Vector3] = []  ## tests / tools
+var hold := false  ## OW11b: no new cell loads while an interior loads (one threaded load at a time)
 
 
 static func cell_of(p: Vector2) -> Vector2i:
@@ -110,6 +111,8 @@ func step() -> void:
 	var want := wanted(pts, RING)
 	var keep := wanted(pts, RING + 1)
 	for k in want:
+		if hold:
+			break
 		if not loaded.has(k) and not _pending.has(k):
 			var path := cells_dir + "%d_%d.tscn" % [k.x, k.y]
 			ResourceLoader.load_threaded_request(path, "PackedScene")
@@ -159,6 +162,11 @@ func _step_nav(pts: Array[Vector3]) -> void:
 			add_child(r)
 			nav[k] = r
 			return  # at most one nav tile per frame
+
+
+## True while any cell scene is still loading on a thread.
+func loading() -> bool:
+	return not _pending.is_empty()
 
 
 func nav_pending(pts: Array[Vector3]) -> bool:

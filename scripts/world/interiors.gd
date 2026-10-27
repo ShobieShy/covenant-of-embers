@@ -53,6 +53,7 @@ var current := ""
 var interior: Node3D
 var height_fn: Callable  ## (x, z) -> world height; OpenWorld.height_at
 var busy := false
+var streamer: WorldStreamer  ## OW11b: held while the interior loads
 var breach: Breach  ## OW5b: the rooms' logic while breach_rooms is entered
 
 
@@ -150,6 +151,12 @@ func enter(id: String, from_level := "") -> Vector3:
 	fade.emit(FADE)
 	var path := GameFlow.level_scene(link["scene"])
 	var t0 := Time.get_ticks_msec()
+	# OW11b: two threaded loads sharing materials raced in the dummy renderer ("material is
+	# null"); hold the streamer and let its in-flight cells finish first.
+	if is_instance_valid(streamer):
+		streamer.hold = true
+		while streamer.loading() and Time.get_ticks_msec() - t0 < 5000:
+			await get_tree().process_frame
 	ResourceLoader.load_threaded_request(path, "PackedScene")
 	_loading = path
 	var slow := false
@@ -160,6 +167,8 @@ func enter(id: String, from_level := "") -> Vector3:
 		await get_tree().process_frame
 	var ps := ResourceLoader.load_threaded_get(path) as PackedScene
 	_loading = ""
+	if is_instance_valid(streamer):
+		streamer.hold = false
 	interior = ps.instantiate() as Node3D
 	prepare(interior, id)
 	interior.name = "Interior"

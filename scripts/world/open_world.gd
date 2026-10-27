@@ -35,6 +35,7 @@ func _ready() -> void:
 	interiors = Interiors.new()
 	interiors.name = "Interiors"
 	interiors.height_fn = height_at
+	interiors.streamer = streamer
 	add_child(interiors)
 	interiors.add_doors()
 	travel = WorldTravel.new()  # OW6

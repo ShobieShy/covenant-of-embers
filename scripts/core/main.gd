@@ -561,6 +561,7 @@ func _enter_open_world(player: Player, data: Dictionary) -> void:
 	var ow := OpenWorld.new()
 	ow.name = "OpenWorld"
 	add_child(ow)
+	ow.interiors.entered.connect(_bind_interior_gates.bind(ow))  # OW11b
 	WorldSession.restore(ow, data)
 	var mode := GameFlow.intro_mode if not GameFlow.intro_mode.is_empty() else GameFlow.INTRO_PLAY
 	var at := WorldSession.start_spot(data, mode)
@@ -591,12 +592,25 @@ func here_id() -> String:
 
 ## OW11b: in-world travel (no scene reload): to a zone's entrance behind the loading screen,
 ## or into the Breach rooms (their own spawner; `breach` points at their logic).
+## OW11b: an interior's FlagGates (the Breach side wing) read the story flags like $Level's.
+func _bind_interior_gates(_id: String, ow: OpenWorld) -> void:
+	if ow.interiors.interior == null:
+		return
+	for g in get_tree().get_nodes_in_group(FlagGate.GROUP):
+		if ow.interiors.interior.is_ancestor_of(g):
+			(g as FlagGate).bind(story_flags)
+
+
 func _world_travel(ow: OpenWorld, to: String) -> void:
 	if to == "breach":
 		if ow.interiors.current == "":
 			await ow.interiors.enter("breach_rooms")
 		breach = ow.interiors.breach
 		var player := get_node_or_null("Player") as Player
+		var st := get_node_or_null("AssemblyStation") as Node3D
+		var at := ow.interiors.interior.get_node_or_null(AssemblyStation.MARKER) as Node3D if ow.interiors.interior else null
+		if st and at:  # OW11b: the station stands at the Breach entrance, as in the classic level
+			st.global_transform = at.global_transform
 		if breach and get_node_or_null("BreachEnemies") == null:
 			var sp := EnemySpawner.new()
 			sp.name = "BreachEnemies"

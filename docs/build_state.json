@@ -1538,6 +1538,11 @@
       "step": "OW11b-4",
       "date": "2026-10-27",
       "summary": "Breach loft fix: annex_stair_20 was 0.1 m short of annex_upper, a slit that eroded the loft off the navmesh (loft->lever path ended at -13.5,4,28); stair deepened in breach_slice.toml, breach.tscn regenerated, breach nav tiles + interior_breach_rooms cache rebaked. Interiors._move_party sets Player.spawn_feet so a death indoors respawns indoors (was respawning in the midden). Bot: nearest lever first, path ending >2 m short of goal walks straight, re-enters the Breach if outdoors. Open-world autoplay now clears breach_fight, chest and loot; breach_craft fails walking 258 m to the town station (build/ow_play22.log). side_challenge: bot skip kept (real flow: the wing is sealed until tutorial_done, which only the intro/quest sets)."
+    },
+    {
+      "step": "OW11b-5",
+      "date": "2026-10-27",
+      "summary": "Open-world autoplay PASS end to end (build/ow_play24.log: 36 kills, chest 3 drops, crafted + equipped, 2 saves, 468 s). main binds an interior's FlagGates to story_flags on Interiors.entered (they were never bound). Entering the Breach moves the AssemblyStation to the interior's WaveSpawns/station marker, as in the classic level (was beside the world start, 258 m off). Material-null fix: Interiors.enter holds WorldStreamer (hold flag, loading()) and waits for in-flight cell loads before its own threaded load; concurrent threaded loads sharing materials raced in the dummy renderer (material_get_instance_shader_parameters / material_set_shader null, ow_play10/18). 0 errors in ow_play24 (intermittent before: 2 of 13 runs)."
     }
   ],
   "completed_steps": [
