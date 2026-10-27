@@ -15,6 +15,7 @@ var fog := WorldFog.new()  ## OW7; main.gd saves it under progress.fog from OW10
 var pins := MapPins.new()
 var map_screen: WorldMapScreen
 var minimap: Minimap
+var leash: CoopLeash
 var _fog_t := 0.0
 var info := {}
 
@@ -49,6 +50,12 @@ func _ready() -> void:
 	map_screen.travel = travel
 	map_screen.players = _map_players
 	layer.add_child(map_screen)
+	leash = CoopLeash.new()  # OW9
+	leash.name = "Leash"
+	leash.height_fn = height_at
+	leash.host_pos = _host_pos
+	leash.hint = _hint
+	add_child(leash)
 	minimap = Minimap.new()  # OW8
 	minimap.fog = fog
 	minimap.pins = pins
@@ -72,6 +79,9 @@ func _process(dt: float) -> void:
 	_fog_t = 0.0
 	for p in _map_players():
 		fog.reveal(p[0].x, p[0].z)
+	if Coop.is_client() and interiors.current == "":
+		leash.player = get_tree().get_first_node_in_group(Player.GROUP) as Node3D
+		leash.check()
 	if minimap:
 		minimap.visible = not map_screen.visible
 
@@ -81,6 +91,22 @@ func _map_players() -> Array:
 	if not is_inside_tree() or (interiors and interiors.current != ""):
 		return []
 	return map_rows(get_tree())
+
+
+## The host's proxy on a joiner (peer 1), or null.
+func _host_pos() -> Variant:
+	for n in get_tree().get_nodes_in_group(RemotePlayer.GROUP):
+		if (n as RemotePlayer).peer == 1:
+			return (n as Node3D).global_position
+	return null
+
+
+func _hint(t: String) -> void:
+	var hud := (
+		get_tree().current_scene.get_node_or_null("Hud") if get_tree().current_scene else null
+	)
+	if hud and hud.has_method(&"show_hint"):
+		hud.call(&"show_hint", t)
 
 
 static func map_rows(tree: SceneTree) -> Array:

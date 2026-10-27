@@ -1478,6 +1478,11 @@
       "date": "2026-10-27",
       "step": "OW8",
       "summary": "Minimap (scripts/ui/minimap.gd): top-right 160 px round, drawn from world/map.png + fog (no second camera), 0.8 px/m, rotates with the camera unless Settings.minimap_north (new option, checkbox in settings, old settings files load), waystones/exits/pins/partners with rim clamping, hidden while the full map is open. Co-op partner markers: OpenWorld.map_rows lists the local Player and every RemotePlayer with name, colour and yaw for both the map and minimap."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "OW9",
+      "summary": "Co-op leash (scripts/world/coop_leash.gd): joiners get one warning past 300 m from the host and are pulled to 5 m beside the host (on their side, ground height) past 400 m; checked twice a second outdoors on the joiner. Host-side streaming: WorldStreamer.viewers adds RemotePlayers when hosting (cap 4 players) so cells and nav load around partners; EnemySleep wakes enemies near RemotePlayers (the old coop_avatars group was never populated)."
     }
   ],
   "completed_steps": [

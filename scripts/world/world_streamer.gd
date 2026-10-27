@@ -24,6 +24,7 @@ var _known := {}  ## Vector2i -> true for cells that exist on disk
 var nav_dir := NAV_DIR
 var nav := {}  ## Vector2i -> NavigationRegion3D in the tree
 var _nav_known := {}
+var stream_partners := false  ## tests: stream around RemotePlayers without a session
 var viewer_override: Array[Vector3] = []  ## tests / tools
 
 
@@ -57,10 +58,18 @@ func viewers() -> Array[Vector3]:
 	var out: Array[Vector3] = []
 	if not is_inside_tree():
 		return out
-	for g in [Player.GROUP, &"coop_avatars", &"stream_viewers"]:
+	for g in [Player.GROUP, &"stream_viewers"]:
 		for n in get_tree().get_nodes_in_group(g):
 			if n is Node3D and (n as Node3D).is_inside_tree():
 				out.append((n as Node3D).global_position)
+	if stream_partners or Coop.is_host():  # OW9: the host simulates around every partner
+		var left := CoopLeash.MAX_PLAYERS - 1
+		for n in get_tree().get_nodes_in_group(RemotePlayer.GROUP):
+			if left <= 0:
+				break
+			if n is Node3D and (n as Node3D).is_inside_tree():
+				out.append((n as Node3D).global_position)
+				left -= 1
 	return out
 
 

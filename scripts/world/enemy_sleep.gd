@@ -23,7 +23,7 @@ func _physics_process(delta: float) -> void:
 func update_now(at: Array[Vector3] = []) -> void:
 	var pts := at
 	if pts.is_empty():
-		for g in [Player.GROUP, &"coop_avatars", &"stream_viewers"]:
+		for g in [Player.GROUP, RemotePlayer.GROUP, &"stream_viewers"]:
 			for n in get_tree().get_nodes_in_group(g):
 				if n is Node3D and (n as Node3D).is_inside_tree():
 					pts.append((n as Node3D).global_position)
