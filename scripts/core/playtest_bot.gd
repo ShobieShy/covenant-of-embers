@@ -84,7 +84,7 @@ func setup(m: Node, p: Player) -> void:
 		stage = "coop_follow"
 		Coop.session.message.connect(_on_coop_bot_message)
 		Coop.session.ended.connect(func(r: String): _client_done("session ended: " + r))
-	elif stage == "midden_walk" and IntroDirector.live and IntroDirector.active(IntroDirector.live):
+	elif stage == "midden_walk" and IntroDirector.active(m.get(&"story_flags")):  # OW11c: before the director
 		stage = "intro"  # step 118: a new game plays the prologue first
 	if not Coop.is_client() and stage != "intro":
 		next_brand()
@@ -796,6 +796,8 @@ func _intro_director() -> IntroDirector:
 
 func _intro_tick() -> void:
 	var d := _intro_director()
+	if d == null and IntroDirector.active(main.get(&"story_flags")):
+		return  # OW11c: the open world's director is made once the party has landed
 	if d == null or not IntroDirector.active(d.flags):
 		note("prologue done: %d beat(s) %s" % [intro_beats.size(), ",".join(intro_beats)])
 		if intro_beats.size() < IntroDirector.BEATS.size():
@@ -931,6 +933,15 @@ func _intro_craft(d: IntroDirector) -> bool:
 func _intro_interact(d: IntroDirector) -> void:
 	var at: Variant = d.target_point()
 	if at == null:
+		return
+	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
+	if ow and d.world_hop != "" and flat_distance(at) > 60.0 and ow.interiors.current == "":
+		# OW11c: a zone hundreds of metres off: travel there like midden_walk (walk_to is
+		# good for a zone's streamed ring, not a cross-world trek)
+		if not ow.travel.busy and _talk_cd <= 0.0:
+			note("travel to %s for beat %s" % [d.world_hop, d.current()])
+			main.call(&"travel", d.world_hop)
+			_talk_cd = 5.0
 		return
 	if flat_distance(at) > 1.8:
 		walk_to(at)

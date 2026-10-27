@@ -253,7 +253,7 @@ func _setup_flow(player: Player) -> void:
 		_apply_new_identity(player)
 		if not Coop.is_client():
 			_start_intro(player)
-	if IntroDirector.active(story_flags):
+	if IntroDirector.active(story_flags) and not open_world_on():
 		intro = IntroDirector.new()
 		add_child(intro)
 		intro.setup(self, player, story_flags, here)
@@ -592,6 +592,42 @@ func here_id() -> String:
 
 ## OW11b: in-world travel (no scene reload): to a zone's entrance behind the loading screen,
 ## or into the Breach rooms (their own spawner; `breach` points at their logic).
+## OW11c: the open world's intro director follows the party: a fresh director (dressing,
+## gate rules, marker) whenever the place changes, with its greybox origin at the
+## interior / zone, like the classic one made per level load.
+var _ow_reached := ""
+
+
+func _ow_intro_sync() -> void:
+	var ow := get_node_or_null("OpenWorld") as OpenWorld
+	var player := get_node_or_null("Player") as Player
+	if ow == null or player == null:
+		return
+	if ow.interiors.busy or ow.travel.busy or not ow.is_node_ready():
+		return
+	var h := here_id()
+	if h != _ow_reached and quest_driver:
+		_ow_reached = h
+		quest_driver.reached(h)  # OW11c: no level loads, so zone changes count as "reach"
+	if not IntroDirector.active(story_flags):
+		return
+	if is_instance_valid(intro) and intro.here == h:
+		return
+	if is_instance_valid(intro):
+		if is_instance_valid(intro.cinematic):
+			intro.cinematic.queue_free()
+		remove_child(intro)  # its name goes to the new director at once
+		intro.queue_free()
+	intro = IntroDirector.new()
+	if ow.interiors.current != "" and ow.interiors.interior:
+		intro.base = ow.interiors.interior.global_position
+	else:
+		var wo: Vector2 = SaveMigration.world_offset(h)
+		intro.base = Vector3(wo.x, 0.0, wo.y)
+	add_child(intro)
+	intro.setup(self, player, story_flags, h)
+
+
 ## OW11b: an interior's FlagGates (the Breach side wing) read the story flags like $Level's.
 func _bind_interior_gates(_id: String, ow: OpenWorld) -> void:
 	if ow.interiors.interior == null:
@@ -599,6 +635,24 @@ func _bind_interior_gates(_id: String, ow: OpenWorld) -> void:
 	for g in get_tree().get_nodes_in_group(FlagGate.GROUP):
 		if ow.interiors.interior.is_ancestor_of(g):
 			(g as FlagGate).bind(story_flags)
+	# OW11c: the interior's Exits are travel gates (the Association's front and back doors)
+	var exits := ow.interiors.interior.get_node_or_null("Exits")
+	var player := get_node_or_null("Player") as Player
+	if exits == null or player == null:
+		return
+	for m in exits.get_children():
+		var to := String(m.get_meta("to", ""))
+		if to == "" or not (m is Node3D):
+			continue
+		var g := LevelGate.new(to)
+		g.name = "InteriorGate_" + to
+		g.player = player
+		ow.interiors.interior.add_child(g)
+		g.global_position = (m as Node3D).global_position
+		g.used.connect(travel)
+		g.blocked.connect(_on_gate_blocked)
+		gates.append(g)
+		g.tree_exiting.connect(func(): gates.erase(g))
 
 
 func _world_travel(ow: OpenWorld, to: String) -> void:
@@ -622,6 +676,9 @@ func _world_travel(ow: OpenWorld, to: String) -> void:
 		return
 	if ow.interiors.current != "":
 		ow.interiors.leave(to)
+		return
+	if Interiors.LINKS.has(to):  # OW11c: a gate to the Association goes indoors
+		ow.interiors.enter(to)
 		return
 	ow.travel.land_at(SaveMigration.entrance(to), to)
 
@@ -653,6 +710,8 @@ func _notification(what: int) -> void:
 
 func _process(delta: float) -> void:
 	_frames += 1
+	if _frames % 15 == 0:
+		_ow_intro_sync()
 	_elapsed += delta
 	if _seconds > 0.0 and _elapsed >= _seconds:
 		print("[main] %d frames, %d physics ticks in %.2f s" % [_frames, _ticks, _elapsed])

@@ -36,6 +36,23 @@ static func entrance(level: String) -> Vector3:
 	return _spots[level]
 
 
+## OW11c: `level`'s world_offset (cached; zero for an unknown level).
+static var _offsets := {}
+
+
+static func world_offset(level: String) -> Vector2:
+	if _offsets.has(level):
+		return _offsets[level]
+	var path := GameFlow.level_scene(level)
+	var wo := Vector2.ZERO
+	if GameFlow.LEVELS.has(level) and ResourceLoader.exists(path):
+		var lvl := (load(path) as PackedScene).instantiate() as Node3D
+		wo = lvl.get_meta(&"world_offset", Vector2.ZERO)
+		lvl.free()
+	_offsets[level] = wo
+	return wo
+
+
 ## Where a save at `level` (optionally with a level-local position) stands in the world.
 static func world_spot(level: String, local: Variant = null) -> Vector3:
 	var e := entrance(level)

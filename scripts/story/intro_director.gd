@@ -79,7 +79,9 @@ const END_FLAGS: PackedStringArray = [
 const DAIS_SPOT := Vector3(0.0, 0.3, -7.5)
 const ELDER_SPOT := Vector3(-3.0, 0.3, -11.0)
 const CLERK_SPOT := Vector3(6.0, 0.0, 9.0)
-const SUMMONED_SPOTS: Array[Vector3] = [Vector3(-2.0, 0.3, -8.0), Vector3(2.0, 0.3, -8.0), Vector3(-1.0, 0.3, -9.0)]
+const SUMMONED_SPOTS: Array[Vector3] = [
+	Vector3(-2.0, 0.3, -8.0), Vector3(2.0, 0.3, -8.0), Vector3(-1.0, 0.3, -9.0)
+]
 const BACK_DOOR := Vector3(0.0, 0.0, -13.5)
 const GRANT_GOLD := 50
 
@@ -91,21 +93,34 @@ const GATE_RULES := {
 		"midden": ["landfill_route_open", "Staff only. By order of the Elders."],
 	},
 	"town_square":
-	{"midden": ["filth_defeated", 'Bored Guard: "Barrier edge. Summoned don\'t go out there without say-so."']},
+	{
+		"midden":
+		[
+			"filth_defeated",
+			'Bored Guard: "Barrier edge. Summoned don\'t go out there without say-so."'
+		]
+	},
 	"midden":
 	{
 		"breach": ["tutorial_done", "The Breach is sealed. Bob wants you back first."],
 		"town_square":
-		["filth_defeated", "The barrier gate is barred from this side. Deal with whatever lurks here first."],
+		[
+			"filth_defeated",
+			"The barrier gate is barred from this side. Deal with whatever lurks here first."
+		],
 	},
 }
 ## Next gate to take from a level towards another (the intro's map: Association - Town - Oak,
 ## the Landfill off the Association's back door, and its barrier gate back to town).
 const ROUTE := {
-	"mage_association": {"town_square": "town_square", "old_oak": "town_square", "midden": "midden"},
-	"town_square": {"mage_association": "mage_association", "old_oak": "old_oak", "midden": "mage_association"},
-	"old_oak": {"town_square": "town_square", "mage_association": "town_square", "midden": "town_square"},
-	"midden": {"town_square": "town_square", "old_oak": "town_square", "mage_association": "town_square"},
+	"mage_association":
+	{"town_square": "town_square", "old_oak": "town_square", "midden": "midden"},
+	"town_square":
+	{"mage_association": "mage_association", "old_oak": "old_oak", "midden": "mage_association"},
+	"old_oak":
+	{"town_square": "town_square", "mage_association": "town_square", "midden": "town_square"},
+	"midden":
+	{"town_square": "town_square", "old_oak": "town_square", "mage_association": "town_square"},
 }
 ## Menus the intro holds back: feature -> [flag that unlocks it, why].
 const LOCKS := {
@@ -122,6 +137,8 @@ var main: Node
 var player: Player
 var flags: StoryFlags
 var here := ""
+var world_hop := ""  ## OW11c: the zone / interior target_point last walked towards
+var base := Vector3.ZERO  ## OW11c: where this level's greybox origin sits (open world / interior)
 var cast := {}  ## speaker -> Npc this director spawned
 var creator: CanvasLayer
 var cinematic: Cinematic
@@ -261,7 +278,15 @@ func advance(id: String) -> bool:
 ## redesigned maps move the intro without code changes; `fallback` = the greybox spot.
 func spot(id: String, fallback: Vector3) -> Vector3:
 	var n := main.get_node_or_null(NodePath("Level/Anchors/" + id)) as Node3D if main else null
-	return n.global_position if n else fallback
+	var ow := main.get_node_or_null("OpenWorld") as OpenWorld if main else null
+	if ow and ow.interiors.interior and ow.interiors.current == here:  # OW11c: indoors
+		n = ow.interiors.interior.get_node_or_null(NodePath("Anchors/" + id)) as Node3D
+	return n.global_position if n else base + fallback
+
+
+## OW11c: a greybox (level-local) point in the world.
+func at(v: Vector3) -> Vector3:
+	return base + v
 
 
 ## Step 110: plays a cinematic here; `done` runs when it ends or is skipped (flags apply).
@@ -326,30 +351,30 @@ func _hide_joe() -> void:
 
 
 func _play_summoning() -> void:
-	var dais := Vector3(0, 1.2, -10)
+	var dais := at(Vector3(0, 1.2, -10))
 	var circle := RitualFX.summoning_circle(spot("dais", DAIS_SPOT))  # step 133 (FX F7)
 	main.add_child(circle)
 	cinematic = play_cinematic(
 		"summoning",
 		[
 			{
-				"from": Vector3(0, 6, 8),
-				"to": Vector3(0, 4, -2),
+				"from": at(Vector3(0, 6, 8)),
+				"to": at(Vector3(0, 4, -2)),
 				"look": dais,
 				"s": 3.0,
 				"text": "The Mage Association, Eldoria. Crazy Joe's forbidden ritual."
 			},
 			{
-				"from": Vector3(-6, 2, -6),
-				"to": Vector3(-3, 2, -5),
+				"from": at(Vector3(-6, 2, -6)),
+				"to": at(Vector3(-3, 2, -5)),
 				"look": spot("dais", DAIS_SPOT) + Vector3(0, 1, 0),
 				"s": 3.0,
 				"text": "The circle cracks the marble. Four strangers stand in the smoke."
 			},
 			{
-				"from": Vector3(3, 1.8, -5),
-				"to": Vector3(1.5, 1.7, -6),
-				"look": Vector3(0, 1.6, -10),
+				"from": at(Vector3(3, 1.8, -5)),
+				"to": at(Vector3(1.5, 1.7, -6)),
+				"look": at(Vector3(0, 1.6, -10)),
 				"s": 2.5,
 				"text": 'Crazy Joe: "Ah! The ritual worked! You\'re actually here!"'
 			},
@@ -369,7 +394,11 @@ func _after_summoning() -> void:
 func open_creator() -> void:
 	if creator:
 		return
-	var pre := {"archetype": player.archetype, "name": player.character_name, "color": player.character_color}
+	var pre := {
+		"archetype": player.archetype,
+		"name": player.character_name,
+		"color": player.character_color
+	}
 	creator = CharacterCreator.overlay(pre)
 	main.add_child(creator)
 	CharacterCreator.of(creator).confirmed.connect(choose_identity)
@@ -379,8 +408,15 @@ func open_creator() -> void:
 
 
 func choose_identity(idn: Dictionary) -> void:
-	player.set_character(String(idn.get("archetype", "")), String(idn.get("name", "")), idn.get("color", null))
-	print("[character] %s the %s (appraisal)" % [player.character_name, Archetype.label(player.archetype)])
+	player.set_character(
+		String(idn.get("archetype", "")), String(idn.get("name", "")), idn.get("color", null)
+	)
+	print(
+		(
+			"[character] %s the %s (appraisal)"
+			% [player.character_name, Archetype.label(player.archetype)]
+		)
+	)
 	if creator:
 		creator.queue_free()
 		creator = null
@@ -398,7 +434,7 @@ func _joe_explains() -> void:
 
 func _play_expulsion() -> void:
 	var j := joe()
-	var from := j.global_position if j else Vector3(0, 0.3, -10)
+	var from := j.global_position if j else at(Vector3(0, 0.3, -10))
 	cinematic = play_cinematic(
 		"expulsion",
 		[
@@ -496,8 +532,28 @@ func target_point() -> Variant:
 		return null
 	var dest := String(LEVEL.get(b, here))
 	if dest != here:
-		var g := gate_to(String(ROUTE.get(here, {}).get(dest, "")))
-		return g.global_position if g else null
+		var hop := String(ROUTE.get(here, {}).get(dest, ""))
+		var ow := main.get_node_or_null("OpenWorld") as OpenWorld
+		if ow and here == "town_square" and (dest == "midden" or b == "back_door"):
+			# OW11c: out of the Association's back door at the Landfill edge: on to the Landfill
+			var edge := ow.interiors.marker_world("town_square", "to_landfill")
+			if (
+				player
+				and (
+					(
+						Vector2(
+							edge.x - player.global_position.x, edge.z - player.global_position.z
+						)
+						. length()
+					)
+					< 40.0
+				)
+			):
+				hop = "midden"
+		var g := gate_to(hop)
+		if g == null:
+			return _world_way(hop)
+		return g.global_position
 	var n: Node3D = null
 	match b:
 		"expulsion":
@@ -505,16 +561,34 @@ func target_point() -> Variant:
 		"grant":
 			n = cast.get("Clerk")
 		"welcome":
-			n = gate_to("town_square") if here == "mage_association" else gate_to("old_oak")
+			var hop := "town_square" if here == "mage_association" else "old_oak"
+			n = gate_to(hop)
+			if n == null:
+				return _world_way(hop)
 		"new_home", "return_to_bob", "crystal":
 			n = target_oak()
 		"back_door":
 			n = gate_to("midden")
+			if n == null:
+				return _world_way("midden")
 		"crafting":
 			n = station()
 		"light_dark":
 			n = shrines.get("Dark shrine" if flags.has("light_learned") else "Light shrine")
 	return n.global_position if n else null
+
+
+## OW11c: the open world has no zone gates: walk to the next zone's entrance, or to the
+## front door of an interior on the way.
+func _world_way(hop: String) -> Variant:
+	var ow := main.get_node_or_null("OpenWorld") as OpenWorld if main else null
+	if ow == null or hop == "":
+		return null
+	world_hop = hop
+	if Interiors.LINKS.has(hop):
+		var d := ow.interiors.get_node_or_null("Door_" + hop) as Node3D
+		return d.global_position if d else null
+	return SaveMigration.entrance(hop)
 
 
 func _make_marker() -> void:
@@ -578,7 +652,11 @@ func _dress_oak() -> void:
 func target_oak() -> Node3D:
 	match current():
 		"new_home":
-			return bed if bed and not flags.has(MentorArrival.FLAG) else main.get_node_or_null("Npc_Bob")
+			return (
+				bed
+				if bed and not flags.has(MentorArrival.FLAG)
+				else main.get_node_or_null("Npc_Bob")
+			)
 		"return_to_bob", "crystal":
 			return main.get_node_or_null("Npc_Bob")
 	return null
@@ -655,7 +733,9 @@ func give_kit() -> void:
 	if main.get_node_or_null("DaggerGlow") == null:
 		main.add_child(DaggerGlow.make(player))
 	advance("back_door")
-	_hint("Bob's kit: Apprentice Fire Staff, Mana Potion, rusty dagger (glows near danger), bark map")
+	_hint(
+		"Bob's kit: Apprentice Fire Staff, Mana Potion, rusty dagger (glows near danger), bark map"
+	)
 
 
 # --- Step 115: beats 8-10, the Landfill lessons ------------------------------------------
@@ -667,7 +747,9 @@ const LIGHT_SHRINE := Vector3(-5.0, 0.0, 4.0)
 const DARK_SHRINE := Vector3(5.0, 0.0, 4.0)
 const TUTORIAL_PART := "basic_fire_head"
 ## Step 118: one head can't make a staff, so the yard drops a full salvage kit.
-const TUTORIAL_KIT: PackedStringArray = ["basic_fire_head", "basic_exterior", "basic_interior", "basic_handle"]
+const TUTORIAL_KIT: PackedStringArray = [
+	"basic_fire_head", "basic_exterior", "basic_interior", "basic_handle"
+]
 ## Soft walls across the Landfill: name -> [z, flag that drops it].
 const WALLS := {
 	"YardWall": [9.0, "gnawers_cleared"],
@@ -735,7 +817,7 @@ func _dress_landfill() -> void:
 		"combat":
 			_start_yard()
 		"crafting":
-			_drop_part(Vector3(0, 0, 10.5))
+			_drop_part(at(Vector3(0, 0, 10.5)))
 		"light_dark":
 			_make_shrines()
 	_queue_toasts(b)
@@ -772,7 +854,7 @@ func _start_yard() -> void:
 	if d == null:
 		return
 	for at in YARD_GNAWERS:
-		var e := Enemy.create(d, Transform3D(Basis(), at))
+		var e := Enemy.create(d, Transform3D(Basis(), base + at))
 		e.name = "YardGnawer%d" % (yard.size() + 1)
 		sp.add_child(e)
 		sp.call("_adopt", e)
@@ -807,8 +889,10 @@ func _drop_part(at: Vector3) -> void:
 		d.rarity_id = "basic"
 		d.rolled_rarity_id = "basic"
 		d.element = part.element
-		var off := Vector3(cos(i * TAU / TUTORIAL_KIT.size()), 0, sin(i * TAU / TUTORIAL_KIT.size())) * 0.9
-		var pk := LootPickup.create(d, Vector3(at.x, 0.4, at.z) + off)
+		var off := (
+			Vector3(cos(i * TAU / TUTORIAL_KIT.size()), 0, sin(i * TAU / TUTORIAL_KIT.size())) * 0.9
+		)
+		var pk := LootPickup.create(d, Vector3(at.x, at.y + 0.4, at.z) + off)
 		main.add_child(pk)
 		part_pickups.append(pk)
 		i += 1
@@ -839,7 +923,8 @@ func _make_shrines() -> void:
 	if not shrines.is_empty():
 		return
 	for spec in [
-		["Light shrine", spot("light_shrine", LIGHT_SHRINE)], ["Dark shrine", spot("dark_shrine", DARK_SHRINE)]
+		["Light shrine", spot("light_shrine", LIGHT_SHRINE)],
+		["Dark shrine", spot("dark_shrine", DARK_SHRINE)]
 	]:
 		var n := Npc.new(String(spec[0]))
 		n.name = String(spec[0]).replace(" ", "")
@@ -849,7 +934,9 @@ func _make_shrines() -> void:
 		n.talked.connect(touch_shrine)
 		shrines[spec[0]] = n
 	if not flags.has("light_learned"):
-		var s := _spawn("Wounded scavenger", spot("light_shrine", LIGHT_SHRINE) + Vector3(-1.5, 0, 0.5), 90.0)
+		var s := _spawn(
+			"Wounded scavenger", spot("light_shrine", LIGHT_SHRINE) + Vector3(-1.5, 0, 0.5), 90.0
+		)
 		s.rotation_degrees.z = 70.0  # slumped against the heap
 
 
@@ -862,7 +949,9 @@ func touch_shrine(which: String) -> void:
 		var s: Npc = cast.get("Wounded scavenger")
 		if s:
 			s.rotation_degrees.z = 0.0
-		_hint("Light washes over the scavenger. He stands. (Light heals allies; enemies take a little less.)")
+		_hint(
+			"Light washes over the scavenger. He stands. (Light heals allies; enemies take a little less.)"
+		)
 	elif which == "Dark shrine" and not flags.has("dark_learned"):
 		_dark_lesson()
 	if flags.has("light_learned") and flags.has("dark_learned") and current() == "light_dark":
@@ -878,7 +967,9 @@ func _dark_lesson() -> void:
 	var sp := spawner()
 	var d := sp.table.find("gnawer") if sp else null
 	if d:
-		dark_gnawer = Enemy.create(d, Transform3D(Basis(), spot("dark_shrine", DARK_SHRINE) + Vector3(1.5, 0, -1.0)))
+		dark_gnawer = Enemy.create(
+			d, Transform3D(Basis(), spot("dark_shrine", DARK_SHRINE) + Vector3(1.5, 0, -1.0))
+		)
 		dark_gnawer.name = "ShrineGnawer"
 		sp.add_child(dark_gnawer)
 		sp.call("_adopt", dark_gnawer)
@@ -962,7 +1053,8 @@ func _play_crystal() -> void:
 				"to": at + Vector3(1, 1.6, 1.5),
 				"look": at + Vector3(0, 1.2, 0),
 				"s": 3.0,
-				"text": "Bob turns Joe's trash in his hands. It hums. It glows. It becomes a crystal."
+				"text":
+				"Bob turns Joe's trash in his hands. It hums. It glows. It becomes a crystal."
 			},
 		],
 		complete

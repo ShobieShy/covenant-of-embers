@@ -1543,6 +1543,11 @@
       "step": "OW11b-5",
       "date": "2026-10-27",
       "summary": "Open-world autoplay PASS end to end (build/ow_play24.log: 36 kills, chest 3 drops, crafted + equipped, 2 saves, 468 s). main binds an interior's FlagGates to story_flags on Interiors.entered (they were never bound). Entering the Breach moves the AssemblyStation to the interior's WaveSpawns/station marker, as in the classic level (was beside the world start, 258 m off). Material-null fix: Interiors.enter holds WorldStreamer (hold flag, loading()) and waits for in-flight cell loads before its own threaded load; concurrent threaded loads sharing materials raced in the dummy renderer (material_get_instance_shader_parameters / material_set_shader null, ow_play10/18). 0 errors in ow_play24 (intermittent before: 2 of 13 runs)."
+    },
+    {
+      "step": "OW11c-1",
+      "date": "2026-10-27",
+      "summary": "Intro ported to the open world. Open-world autoplay without --skip-intro: prologue done, 13/13 beats (build/ow_intro11.log). main recreates IntroDirector when here_id changes (frees the old cinematic first; base = interior position or zone world_offset); classic intro setup skipped in the open world; interior Exits markers become LevelGates; _world_travel enters interiors. IntroDirector: spot()/at() offset by base, _world_way() targets the next zone entrance or interior door when no gate exists, back-door hop to midden near town_square's to_landfill marker. Zone changes now call quest_driver.reached() (the_landfill's 'reach landfill' never fired, so filth_defeated was never set; ow_intro10 stalled at filth). SaveMigration.world_offset(); playtest bot intro detection via IntroDirector.active and travel to world_hop past 60 m. Targeted tests 20/20. Not yet fixed: owner-inconsistency warnings (world_zones merged), terrain_zone.gd:181 load('')."
     }
   ],
   "completed_steps": [
