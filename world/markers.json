@@ -1,0 +1,104 @@
+{
+	"exits": [
+		{
+			"kind": "road",
+			"level": "old_oak",
+			"name": "to_town",
+			"pos": [
+				-272.0,
+				7.0
+			],
+			"to": "town_square"
+		},
+		{
+			"kind": "door",
+			"level": "town_square",
+			"name": "to_association",
+			"pos": [
+				0.0,
+				-17.0
+			],
+			"to": "mage_association"
+		},
+		{
+			"kind": "road",
+			"level": "town_square",
+			"name": "to_landfill",
+			"pos": [
+				0.0,
+				17.5
+			],
+			"to": "midden"
+		},
+		{
+			"kind": "road",
+			"level": "town_square",
+			"name": "to_old_oak",
+			"pos": [
+				17.0,
+				14.0
+			],
+			"to": "old_oak"
+		},
+		{
+			"kind": "road",
+			"level": "midden",
+			"name": "to_breach",
+			"pos": [
+				573.0,
+				-228.5
+			],
+			"to": "breach"
+		},
+		{
+			"kind": "road",
+			"level": "midden",
+			"name": "to_town",
+			"pos": [
+				579.0,
+				-228.5
+			],
+			"to": "town_square"
+		},
+		{
+			"kind": "door",
+			"level": "breach",
+			"name": "to_midden",
+			"pos": [
+				1099.5,
+				11.0
+			],
+			"to": "midden"
+		}
+	],
+	"waystones": {
+		"breach": [
+			1109.0,
+			112.0
+		],
+		"landfill": [
+			576.0,
+			-230.0
+		],
+		"landfill_camp": [
+			580.0,
+			-148.0
+		],
+		"landfill_overlook": [
+			636.0,
+			10.0
+		],
+		"old_oak": [
+			-272.0,
+			3.5
+		],
+		"town_gate": [
+			0.0,
+			11.5
+		],
+		"town_market": [
+			58.0,
+			-4.0
+		]
+	}
+}

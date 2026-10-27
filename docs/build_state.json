@@ -1458,6 +1458,11 @@
       "date": "2026-10-27",
       "step": "OW5b-fix",
       "note": "World nav bake ran before cells entered the tree and parsed no colliders (walls were walkable); now deferred, nav.json records obstacle_verts/shapes, test_cells_have_obstacles guards it. Interiors.prepare loads an offline interior navmesh (tools/bake_interior_nav.gd -> scenes/levels/nav/interior_<id>.res), entering never bakes; freshness test."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "OW6",
+      "note": "test_world_nav path test waits on the wall clock (failed only under --fixed-fps 60). WorldTravel: waystones placed from world/markers.json (tools/bake_world_markers.gd, level Waystones/Exits at world_offset, main.gd fallbacks), travel_to streams destination cells+nav under the loading overlay then moves the party keeping spread; free between attuned stones, refused in combat. Level exits are road markers (exit_markers) for the OW7 map; doors stay Interiors. main.gd untouched until OW10."
     }
   ],
   "completed_steps": [

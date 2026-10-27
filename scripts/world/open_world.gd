@@ -10,6 +10,7 @@ const TERRAIN_DIR := "res://world/terrain/"
 var terrain: Node3D
 var streamer: WorldStreamer
 var interiors: Interiors
+var travel: WorldTravel
 var info := {}
 
 
@@ -28,6 +29,11 @@ func _ready() -> void:
 	interiors.height_fn = height_at
 	add_child(interiors)
 	interiors.add_doors()
+	travel = WorldTravel.new()  # OW6
+	travel.name = "Travel"
+	travel.streamer = streamer
+	travel.height_fn = height_at
+	add_child(travel)
 	var fader := InteriorFade.new()
 	fader.name = "InteriorFade"
 	fader.interiors = interiors
