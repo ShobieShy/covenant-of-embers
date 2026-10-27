@@ -59,8 +59,12 @@ func test_town_to_midden_path() -> void:
 	NavigationServer3D.map_set_active(m, true)
 	for r in s.nav.values():
 		(r as NavigationRegion3D).set_navigation_map(m)
-	for i in 120:
+	# Region syncs run on worker threads; under --fixed-fps 60 frames outrun them, so wait on
+	# the wall clock rather than a frame count.
+	var until := Time.get_ticks_msec() + 20000
+	while Time.get_ticks_msec() < until:
 		await runner_tree.physics_frame
+		OS.delay_msec(5)
 		if NavigationServer3D.map_get_iteration_id(m) > 0:
 			var a := NavigationServer3D.map_get_closest_point(m, TOWN)
 			var b := NavigationServer3D.map_get_closest_point(m, MIDDEN)
