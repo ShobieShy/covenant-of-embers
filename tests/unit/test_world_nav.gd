@@ -45,7 +45,12 @@ func test_town_to_midden_path() -> void:
 	for i in 6:
 		pts.append(TOWN.lerp(MIDDEN, i / 5.0))
 	s.viewer_override = pts
-	s.flush()
+	for i in 20:  # flush is frame-capped; under full-suite load the nav ring can lag
+		s.flush()
+		if not s.nav_pending(s.viewers()):
+			break
+		await runner_tree.process_frame
+	check(not s.nav_pending(s.viewers()), "nav ring complete")
 	check(not s.nav.is_empty(), "nav tiles streamed (%d)" % s.nav.size())
 	# A private map: other tests leave regions on the world's default map.
 	var m := NavigationServer3D.map_create()
