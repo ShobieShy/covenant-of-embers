@@ -99,8 +99,22 @@ func _ready() -> void:
 	if dry_run or manual:
 		return
 	ResourceLoader.load_threaded_request(target, "PackedScene")
+	_requests.append(target)
 	if level_id != "":
 		ResourceLoader.load_threaded_request(level_path(level_id), "PackedScene")
+		_requests.append(level_path(level_id))
+
+
+## Threaded requests not yet collected. A screen freed mid-load (a test, a quit) collects
+## them, so the loader never hands a stale half-finished request to the next load.
+var _requests: Array[String] = []
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		for r in _requests:
+			ResourceLoader.load_threaded_get(r)
+		_requests.clear()
 
 
 func _build_ui() -> void:
@@ -215,6 +229,7 @@ func _process(delta: float) -> void:
 			if not _swapped:
 				_swapped = true
 				var ps := ResourceLoader.load_threaded_get(target) as PackedScene
+				_requests.erase(target)
 				_tree.paused = false
 				if ps:
 					_tree.change_scene_to_packed(ps)
@@ -223,6 +238,7 @@ func _process(delta: float) -> void:
 			elif _tree.current_scene and _tree.current_scene.is_node_ready():
 				if level_id != "":
 					ResourceLoader.load_threaded_get(level_path(level_id))  # drop the request
+					_requests.erase(level_path(level_id))
 				advance(Stage.TERRAIN)
 		Stage.TERRAIN:
 			if terrain_ready(_tree.current_scene) or timed_out:

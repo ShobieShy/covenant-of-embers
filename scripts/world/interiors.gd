@@ -126,6 +126,17 @@ static func prepare(n: Node3D, id: String, use_cache := true) -> void:
 		push_warning("Interiors: no nav cache for %s (run tools/bake_interior_nav.gd)" % id)
 
 
+## The interior scene still loading on a thread ("" when none).
+var _loading := ""
+
+
+## Freed mid-enter (a test, a quit): collect the threaded load so it is not left stale.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE and _loading != "":
+		ResourceLoader.load_threaded_get(_loading)
+		_loading = ""
+
+
 ## Enters `id` from `from_level` (the side of the front door). Returns the landing.
 func enter(id: String, from_level := "") -> Vector3:
 	if busy or current != "" or not LINKS.has(id):
@@ -138,6 +149,7 @@ func enter(id: String, from_level := "") -> Vector3:
 	var path := GameFlow.level_scene(link["scene"])
 	var t0 := Time.get_ticks_msec()
 	ResourceLoader.load_threaded_request(path, "PackedScene")
+	_loading = path
 	var slow := false
 	while ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
 		if not slow and Time.get_ticks_msec() - t0 > SLOW_MS:
@@ -145,6 +157,7 @@ func enter(id: String, from_level := "") -> Vector3:
 			slow_load.emit(id)
 		await get_tree().process_frame
 	var ps := ResourceLoader.load_threaded_get(path) as PackedScene
+	_loading = ""
 	interior = ps.instantiate() as Node3D
 	prepare(interior, id)
 	interior.name = "Interior"

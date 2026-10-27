@@ -1498,6 +1498,11 @@
       "date": "2026-10-27",
       "step": "OW10c",
       "note": "rt26 EXIT 0 (579 unit). First-load loading screen (plan section 9): OpenWorld.first_load streams the start cells behind LoadingScreen.overlay once (WorldTravel.land_at), on an outdoor start or on first leaving the intro's Association interior."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "OW10c-fix",
+      "note": "rt27 EXIT 1: freed-RID errors (EmberArt waystone material, streamer instance_set_base) in test_main_open_world, full unit phase only (not reproducible in quarters/halves). Cause: LoadingScreen and Interiors freed mid threaded load left uncollected requests. Both now collect pending loads in PREDELETE (like WorldStreamer). Unit phase rt28u: 579 ok, 0 errors."
     }
   ],
   "completed_steps": [
