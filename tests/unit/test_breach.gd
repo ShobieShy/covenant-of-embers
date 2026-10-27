@@ -46,7 +46,9 @@ func test_navmesh_and_spawns_reachable() -> void:
 		var m := (level.get_node("WaveSpawns/" + n) as Node3D).global_position
 		check(_reaches(map, start, m, 0.6), "room spot %s reachable" % n)
 	for s in level.get_node("Switches").get_children():
-		check(_reaches(map, start, (s as Node3D).global_position, 1.0), "lever %s reachable" % s.name)
+		check(
+			_reaches(map, start, (s as Node3D).global_position, 1.0), "lever %s reachable" % s.name
+		)
 	var b := Breach.new()
 	level.get_parent().add_child(b)
 	b.setup(level, null, false)
@@ -56,6 +58,15 @@ func test_navmesh_and_spawns_reachable() -> void:
 	for n in ["boss_dais", "west_wing", "east_wing"]:
 		var m := (level.get_node("WaveSpawns/" + n) as Node3D).global_position
 		check(_reaches(map, start, m, 0.6), "%s reachable once the gate is open" % n)
+	# QA-2: co-op host stalled 30 s at (0, 0, 59.7) going for the warden: the den doorway
+	# must path through to the dais once the gate is open.
+	var den := level.global_transform * Vector3(-0.25, 0.0, 59.7)
+	var dais2 := (level.get_node("WaveSpawns/boss_dais") as Node3D).global_position
+	var dp := NavigationServer3D.map_get_path(map, den, dais2, true)
+	var dl := 0.0
+	for i in range(1, dp.size()):
+		dl += dp[i].distance_to(dp[i - 1])
+	check(_reaches(map, den, dais2, 0.6) and dl < 80.0, "den doorway to dais: %.0f m" % dl)
 	var vc := (level.get_node("WaveSpawns/vault_chest") as Node3D).global_position
 	check(not _reaches(map, start, vc, 2.0), "vault sealed by its door")
 	b.open_vault()
@@ -122,14 +133,22 @@ func test_station_in_breach() -> void:
 	var start := (level.get_node("PlayerStart") as Node3D).global_position
 	var st := AssemblyStation.place(w, level, start)
 	var marker := level.get_node_or_null(AssemblyStation.MARKER) as Node3D
-	check(marker != null and st.global_position.distance_to(marker.global_position) < 0.01, "placed on the marker")
+	check(
+		marker != null and st.global_position.distance_to(marker.global_position) < 0.01,
+		"placed on the marker"
+	)
 	check(st.global_position.distance_to(start) > 1.0, "not on top of the start")
 	var nav := level.get_node("Navigation") as LevelNavigation
 	var t0 := Time.get_ticks_msec()  # step 162: the 220x320 m zone syncs in real seconds
 	while not nav.map_ready() and Time.get_ticks_msec() - t0 < 20000:
 		await runner_tree.physics_frame
-	var path := NavigationServer3D.map_get_path(nav.get_navigation_map(), start, st.global_position, true)
-	check(path.size() > 1 and path[path.size() - 1].distance_to(st.global_position) < 1.5, "station reachable")
+	var path := NavigationServer3D.map_get_path(
+		nav.get_navigation_map(), start, st.global_position, true
+	)
+	check(
+		path.size() > 1 and path[path.size() - 1].distance_to(st.global_position) < 1.5,
+		"station reachable"
+	)
 	var p: Player = (load("res://scenes/player/player.tscn") as PackedScene).instantiate()
 	p.input_enabled = false
 	w.add_child(p)
@@ -140,7 +159,10 @@ func test_station_in_breach() -> void:
 	)
 	p.spawn(st.global_position + Vector3(0, 0, 1.5), 0.0)
 	check(st.in_reach(p), "in reach beside it")
-	check(AssemblyStation.prompt_for(p) == "[F] Magic Assembly Station", "prompt: %s" % AssemblyStation.prompt_for(p))
+	check(
+		AssemblyStation.prompt_for(p) == "[F] Magic Assembly Station",
+		"prompt: %s" % AssemblyStation.prompt_for(p)
+	)
 	var base := WieldableInstance.load_base("apprentice_fire_staff")
 	var parts := []
 	for id in ["basic_fire_head", "basic_exterior", "basic_interior", "basic_handle"]:

@@ -1558,6 +1558,11 @@
       "step": "OW11c-3",
       "date": "2026-10-27",
       "summary": "Open world is the default: GameFlow.open_world = true; --classic-levels falls back to the level flow (main.open_world_on). Co-op started with --host/--join stays on classic levels unless --open-world is passed: in the open world the joiner never cast (coop_def1 FAIL), co-op isn't ported yet. tests/run_tests.gd sets GameFlow.open_world = false before the unit tests (they build classic levels; world tests opt in). Verified: tools/playtest.sh with no flag runs the open world, 13/13 intro beats + PASS (build/def_play1.log); --classic-levels PASS with private user:// (build/classic_play2.log); tools/coop_playtest.sh PASS (build/coop_def2.log); targeted tests 20/20. classic_play1 FAIL was a shared user://playtest_save.json clash with parallel runs (playtest flake, logged)."
+    },
+    {
+      "step": "OW11c-4",
+      "date": "2026-10-27",
+      "summary": "QA round 2 fixes. (1) WorldTravel.land_at queues behind a load in flight (waits while busy; travel_to already refused via can_travel); _stream/land_at/travel_to check is_instance_valid(screen) (a 2nd LoadingScreen.overlay freed the 1st). QA bot patch 05 applied (midden_walk waits out the first world load). --skip-intro at 4x: 3/3 PASS (build/qa2_skip4x_1..3.log; QA had 0/3). (2) WorldStreamer.step instantiates no cell while any of its threaded loads is IN_PROGRESS or an interior holds it: NOT fully fixed, qa2_skip4x_3 still logged 'Parameter m is null' / surface-material errors from ps.instantiate() at world_streamer.gd:151 early in the run (no streamer load in flight then, so another loader shares the mesh). (3) Co-op Breach stall at (0,0,59.7): new test_breach check paths den doorway -> boss dais after the gate opens (passes, <80 m), so navmesh/geometry there are fine; host had 2 deaths, likely a respawn at PlayerStart then blocked in the room1 doorway (x -2..2, z 57), cause not found yet. Targeted tests 22/22 + test_breach 4/4. rt29 not run (no time)."
     }
   ],
   "completed_steps": [

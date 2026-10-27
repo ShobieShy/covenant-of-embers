@@ -535,6 +535,9 @@ func _physics_process(delta: float) -> void:
 			_intro_tick()
 		"midden_walk":
 			if main.call(&"here_id") != "midden":  # step 109: a new game starts elsewhere
+				var ow0 := main.get_node_or_null("OpenWorld") as OpenWorld
+				if ow0 and ow0.travel.busy:
+					return  # QA-2: wait out the first world load (4x: travel overlapped it)
 				if t > 0.5 and not _ow_travel:
 					note("travel to the Landfill from %s" % main.call(&"here_id"))
 					main.call(&"travel", "midden")

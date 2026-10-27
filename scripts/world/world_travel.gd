@@ -102,7 +102,8 @@ func travel_to(point: String) -> bool:
 			o.call("spawn", to, o.rotation.y)
 		else:
 			o.global_position = to
-	screen.done()
+	if is_instance_valid(screen):
+		screen.done()
 	busy = false
 	arrived.emit(point)
 	return true
@@ -112,6 +113,8 @@ func travel_to(point: String) -> bool:
 ## lands the party there; the first world load uses it (a fresh start or the Association's
 ## front door), waystones use travel_to.
 func land_at(dest: Vector3, level := "") -> void:
+	while busy and is_inside_tree():  # QA-2: queue behind a load in flight (a 2nd overlay freed the 1st)
+		await get_tree().process_frame
 	busy = true
 	var screen := LoadingScreen.overlay(get_tree(), level)
 	await _stream(dest, screen)
@@ -122,7 +125,8 @@ func land_at(dest: Vector3, level := "") -> void:
 			o.call("spawn", to, o.rotation.y)
 		else:
 			o.global_position = to
-	screen.done()
+	if is_instance_valid(screen):
+		screen.done()
 	busy = false
 
 
@@ -144,9 +148,11 @@ func _stream(dest: Vector3, screen: LoadingScreen) -> void:
 		var got := 0
 		for k in want:
 			got += 1 if streamer.loaded.has(k) else 0
-		screen.advance(LoadingScreen.Stage.LEVEL, float(got) / maxf(1.0, want.size()))
+		if is_instance_valid(screen):
+			screen.advance(LoadingScreen.Stage.LEVEL, float(got) / maxf(1.0, want.size()))
 		if got == want.size():
-			screen.advance(LoadingScreen.Stage.NAV, 0.0)
+			if is_instance_valid(screen):
+				screen.advance(LoadingScreen.Stage.NAV, 0.0)
 			if not streamer.nav_pending(pts):
 				break
 		await get_tree().process_frame

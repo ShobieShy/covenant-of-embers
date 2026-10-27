@@ -122,8 +122,11 @@ func step() -> void:
 			(loaded[k] as Node).queue_free()
 			loaded.erase(k)
 	var fresh: Array[Vector2i] = []  # QA: a cell loaded this step is instantiated next step
+	var busy_load := hold  # QA-2: an interior's threaded load is in flight
 	for k in _pending.keys():
 		var st := ResourceLoader.load_threaded_get_status(_pending[k])
+		if st == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+			busy_load = true
 		if st == ResourceLoader.THREAD_LOAD_LOADED and not _ready_q.has(k):
 			fresh.append(k)
 		elif (
@@ -133,7 +136,13 @@ func step() -> void:
 			push_warning("WorldStreamer: cell %s failed to load" % k)
 			_pending.erase(k)
 	var t0 := Time.get_ticks_usec()
-	while not _ready_q.is_empty() and (Time.get_ticks_usec() - t0) < BUDGET_MS * 1000.0:
+	# QA-2: instantiating while another threaded load shares its materials left "material is
+	# null" / "Parameter m is null" in the dummy renderer: wait until no load is in flight.
+	while (
+		not busy_load
+		and not _ready_q.is_empty()
+		and (Time.get_ticks_usec() - t0) < BUDGET_MS * 1000.0
+	):
 		var k: Vector2i = _ready_q.pop_front()
 		var ps := ResourceLoader.load_threaded_get(_pending[k]) as PackedScene
 		_pending.erase(k)
