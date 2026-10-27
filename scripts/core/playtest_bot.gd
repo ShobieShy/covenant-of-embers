@@ -291,12 +291,35 @@ func look_at_point(at: Vector3) -> void:
 
 
 ## `foes_only` skips corrupted allies (a converted gnawer nearer than the Filth used to stall the beat).
+## OW11b: a foe fought for UNREACHABLE_S without its hp moving is skipped from then on.
+const UNREACHABLE_S := 45.0
+var _unreachable := {}
+var _target: Enemy
+var _target_hp := 0.0
+var _target_s := 0.0
+
+
+func _watch_target(e: Enemy) -> void:
+	var hp := float(e.hits)
+	if e != _target or hp != _target_hp:
+		_target = e
+		_target_hp = hp
+		_target_s = 0.0
+		return
+	_target_s += get_physics_process_delta_time()
+	if _target_s > UNREACHABLE_S:
+		_unreachable[e] = true
+		note("skipping unreachable %s" % _foe_desc(e))
+
+
 func nearest_enemy(foes_only := false) -> Enemy:
 	var best: Enemy = null
 	var bd := INF
 	for n in get_tree().get_nodes_in_group(Enemy.GROUP):
 		var e := n as Enemy
 		if e == null or not e.alive() or e.def.ai.is_empty() or (foes_only and e.is_ally()):
+			continue
+		if _unreachable.has(e):  # OW11b: e.g. a camp behind a sealed flag gate
 			continue
 		var d := e.global_position.distance_to(player.global_position)
 		if d < bd:
@@ -519,6 +542,7 @@ func _physics_process(delta: float) -> void:
 				return  # OW11b: still entering the Breach rooms
 			var e := nearest_enemy(true)
 			if e:
+				_watch_target(e)
 				fight(e)
 			elif stage == "midden_fight":
 				if stats["kills"] >= MIDDEN_KILLS:
@@ -637,6 +661,8 @@ func _breach_route(b: Breach) -> void:
 ## No enemy left and the waves not done: walk into the wave trigger.
 func _enter_arena() -> void:
 	var sp := main.get_node_or_null("Enemies") as EnemySpawner
+	if stage.begins_with("breach") and main.get_node_or_null("BreachEnemies"):
+		sp = main.get_node("BreachEnemies") as EnemySpawner  # OW11b: the rooms' own waves
 	if sp == null:
 		return
 	if not sp.triggered() and flat_distance(sp.trigger_center) > sp.trigger_radius * 0.5:

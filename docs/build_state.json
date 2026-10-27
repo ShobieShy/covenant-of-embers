@@ -1523,6 +1523,11 @@
       "step": "OW11b-2",
       "date": "2026-10-27",
       "summary": "Bot walk_to uses the entered interior's LevelNavigation. Open-world breach_fight kills 5-7 room foes then wedges at (7.6,-2000,49.6) short of camp side_challenge (26,-2000,51): path of 13 points exists, so a collider blocks it (open; logs build/ow_play10.log, ow_play11.log). Interior entry also logs 'Parameter material is null' (dummy renderer) errors to clear before OW11 default/full suite."
+    },
+    {
+      "step": "OW11b-3",
+      "date": "2026-10-27",
+      "summary": "Bot skips a foe it has hit nothing on for 45 s (camp side_challenge behind the tutorial_done flag gate, unset under --skip-intro), and breach _enter_arena uses BreachEnemies. Open-world breach_fight now clears all rooms (21 kills) but stalls at (-13,-1996,27) before lever_west (-6,-2000,28): open (build/ow_play14.log, ow_play15.log)."
     }
   ],
   "completed_steps": [
