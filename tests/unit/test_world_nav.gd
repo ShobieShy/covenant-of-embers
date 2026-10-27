@@ -26,10 +26,16 @@ func test_town_to_midden_path() -> void:
 	s.viewer_override = pts
 	s.flush()
 	check(not s.nav.is_empty(), "nav tiles streamed (%d)" % s.nav.size())
-	var m := s.get_world_3d().navigation_map
+	# A private map: other tests leave regions on the world's default map.
+	var m := NavigationServer3D.map_create()
+	NavigationServer3D.map_set_cell_size(m, 0.1)
+	NavigationServer3D.map_set_cell_height(m, 0.05)
+	NavigationServer3D.map_set_active(m, true)
+	for r in s.nav.values():
+		(r as NavigationRegion3D).set_navigation_map(m)
 	for i in 120:
 		await runner_tree.physics_frame
-		if NavigationServer3D.map_get_iteration_id(m) > 2:
+		if NavigationServer3D.map_get_iteration_id(m) > 0:
 			var a := NavigationServer3D.map_get_closest_point(m, TOWN)
 			var b := NavigationServer3D.map_get_closest_point(m, MIDDEN)
 			var p := NavigationServer3D.map_get_path(m, a, b, true)
@@ -49,6 +55,7 @@ func test_town_to_midden_path() -> void:
 	check(not p.is_empty(), "a path exists")
 	if p.is_empty():
 		s.free()
+		NavigationServer3D.free_rid(m)
 		return
 	check(
 		p[p.size() - 1].distance_to(b) < 1.0, "path reaches the Midden (ends %s)" % p[p.size() - 1]
@@ -58,3 +65,4 @@ func test_town_to_midden_path() -> void:
 		length += p[i].distance_to(p[i - 1])
 	check(length < a.distance_to(b) * 2.0, "path is not absurd (%.0f m)" % length)
 	s.free()
+	NavigationServer3D.free_rid(m)
