@@ -115,6 +115,11 @@ func _ready() -> void:
 	if args.has("--autoplay"):  # step 40: the bot never touches the real save
 		GameFlow.save_path = "user://playtest_save.json"
 		PlaytestBot.reset_run()
+		if not PlaytestBot.save_cleared:  # QA: each bot run starts without a stale save
+			PlaytestBot.save_cleared = true
+			for f in [GameFlow.save_path, GameFlow.save_path + ".bak"]:
+				if FileAccess.file_exists(f):
+					DirAccess.remove_absolute(ProjectSettings.globalize_path(f))
 		var cargs := Coop.parse_args(OS.get_cmdline_user_args())
 		if cargs["mode"] != "" and not PlaytestBot.coop_started:  # step 93: bots start fresh
 			PlaytestBot.coop_started = true
@@ -159,7 +164,9 @@ func press(id: String) -> void:
 
 func _start_new() -> void:
 	GameFlow.new_identity = identity()
-	var mode := _new_mode if _new_mode != "" else GameFlow.intro_mode_from_args(OS.get_cmdline_user_args())
+	var mode := (
+		_new_mode if _new_mode != "" else GameFlow.intro_mode_from_args(OS.get_cmdline_user_args())
+	)
 	GameFlow.new_run(get_tree(), mode)
 
 

@@ -6,7 +6,15 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 G="${GODOT:-godot}"
-PORT="${COOP_PORT:-$((27800 + RANDOM % 200))}"
+# QA: a random port that ss shows as free (UDP, ENet), retried up to 20 times.
+port_free() { ! ss -Hlun "sport = :$1" 2>/dev/null | /usr/bin/grep -q .; }
+PORT="${COOP_PORT:-}"
+if [ -z "$PORT" ]; then
+	for _ in $(seq 20); do
+		PORT=$((27800 + RANDOM % 200))
+		port_free "$PORT" && break
+	done
+fi
 EXTRA=()
 [ -n "${COOP_LAG:-}" ] && EXTRA+=("--net-lag=${COOP_LAG}")
 [ -n "${COOP_LOSS:-}" ] && EXTRA+=("--net-loss=${COOP_LOSS}")

@@ -1528,6 +1528,11 @@
       "step": "OW11b-3",
       "date": "2026-10-27",
       "summary": "Bot skips a foe it has hit nothing on for 45 s (camp side_challenge behind the tutorial_done flag gate, unset under --skip-intro), and breach _enter_arena uses BreachEnemies. Open-world breach_fight now clears all rooms (21 kills) but stalls at (-13,-1996,27) before lever_west (-6,-2000,28): open (build/ow_play14.log, ow_play15.log)."
+    },
+    {
+      "step": "QA-1",
+      "date": "2026-10-27",
+      "summary": "Ember QA patches rebased onto HEAD: run_tests.sh private XDG_DATA_HOME per run (RUN_TESTS_SHARED_USER=1 opts out); run_tests.gd sweeps user://test_*.bak/.tmp; bot 'no line to X' note after a 30 s stall (the stage-timeout feet/foe text was already in OW11b-1). 03 skipped (1eeb236 covers it). Also: WorldStreamer instantiates a cell the step after its threaded load finishes; main_menu clears playtest_save.json + .bak once per --autoplay process; coop_playtest.sh picks a port ss shows free (20 tries)."
     }
   ],
   "completed_steps": [

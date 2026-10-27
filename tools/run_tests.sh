@@ -12,7 +12,14 @@ timeout 300 "$GODOT" --headless --path . --import >/dev/null 2>&1
 # Unit tests and the smoke run must also log no SCRIPT ERROR / ERROR lines: a GDScript
 # runtime error inside a test doesn't fail it by itself (step 8 fix).
 log="$(mktemp)"
-trap 'rm -f "$log"' EXIT
+# QA: every run (unit suite, smoke, solo + co-op playtests) gets a private user:// so two runs
+# (or a run and a play session) never read/delete each other's saves, character files, .bak
+# leftovers, keybinds or user://patches. Override with RUN_TESTS_SHARED_USER=1.
+if [ "${RUN_TESTS_SHARED_USER:-0}" != 1 ]; then
+	XDG_DATA_HOME="$(mktemp -d -t coe-user.XXXXXX)"
+	export XDG_DATA_HOME
+fi
+trap 'rm -f "$log"; [ "${RUN_TESTS_SHARED_USER:-0}" = 1 ] || rm -rf "${XDG_DATA_HOME:?}"' EXIT
 run_clean() {
 	local rc=0
 	"$@" 2>&1 | tee "$log" || rc=$?

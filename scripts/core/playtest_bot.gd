@@ -29,6 +29,7 @@ static var stats := {
 	"looted_parts": 0
 }
 static var log_lines := PackedStringArray()
+static var save_cleared := false  ## QA: main_menu cleared the bot save this process
 static var coop_started := false
 static var brand_turn := 0  ## step 143: next brand in the staff rotation
 static var brands_used := PackedStringArray()
@@ -352,6 +353,7 @@ var _tick := 0
 var _fight_target: Enemy = null
 var _fight_hits := 0
 var _fight_stall := 0.0
+var _los_noted: Enemy = null  ## QA: one note per target the bot keeps walking at without a line
 
 
 ## Step 96: at --time-scale N the player covers ~1/N of the ground per game second (seen:
@@ -368,6 +370,20 @@ func fight(e: Enemy) -> void:
 	_fight_stall += get_physics_process_delta_time()
 	var aim := e.global_position + Vector3(0, e.def.size.y * 0.5, 0)
 	if not has_line_to(aim):
+		if _fight_stall > 30.0 and _los_noted != e:  # QA: name the target a long stall is on
+			_los_noted = e
+			note(
+				(
+					"no line to %s for %.0f s: enemy %s, feet %s, ally %s"
+					% [
+						e.def.id,
+						_fight_stall,
+						e.global_position,
+						player.global_position,
+						e.is_ally()
+					]
+				)
+			)
 		walk_to(e.global_position)
 		return
 	if (

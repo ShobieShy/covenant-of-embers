@@ -118,10 +118,11 @@ func step() -> void:
 		if not keep.has(k):
 			(loaded[k] as Node).queue_free()
 			loaded.erase(k)
+	var fresh: Array[Vector2i] = []  # QA: a cell loaded this step is instantiated next step
 	for k in _pending.keys():
 		var st := ResourceLoader.load_threaded_get_status(_pending[k])
 		if st == ResourceLoader.THREAD_LOAD_LOADED and not _ready_q.has(k):
-			_ready_q.append(k)
+			fresh.append(k)
 		elif (
 			st == ResourceLoader.THREAD_LOAD_FAILED
 			or st == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE
@@ -139,6 +140,7 @@ func step() -> void:
 		add_child(n)
 		loaded[k] = n
 		break  # at most one cell per frame
+	_ready_q.append_array(fresh)
 
 
 func _step_nav(pts: Array[Vector3]) -> void:

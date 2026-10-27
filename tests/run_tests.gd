@@ -59,4 +59,16 @@ func _run_all() -> void:
 				failures += 1
 				print("  FAIL %s::%s: %s" % [f, name, "; ".join(errs)])
 	print("[tests] %d passed, %d failed" % [passed, failures])
+	_sweep_user_leftovers()
 	quit(1 if failures > 0 else 0)
+
+
+## QA: UserDir.write_atomic keeps <file>.bak (and a crash can leave .tmp); most tests remove
+## only their .json. Sweep test-owned leftovers so direct runs don't litter the shared user://.
+func _sweep_user_leftovers() -> void:
+	var d := DirAccess.open("user://")
+	if d == null:
+		return
+	for f in d.get_files():
+		if f.begins_with("test_") and (f.ends_with(".bak") or f.ends_with(".tmp")):
+			d.remove(f)
