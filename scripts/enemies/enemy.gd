@@ -336,7 +336,13 @@ func _die(element: ElementTable.Element) -> void:
 		head_shape.set_deferred(&"disabled", true)
 	if is_inside_tree() and def:
 		var et := ElementTable.load_default()
-		StatusFX.death(get_parent(), global_position, def.size, def.color, et.color(element) if et else Color.WHITE)
+		StatusFX.death(
+			get_parent(),
+			global_position,
+			def.size,
+			def.color,
+			et.color(element) if et else Color.WHITE
+		)
 	visible = false
 
 
@@ -355,6 +361,7 @@ func fx_flags() -> int:
 
 ## Hit flash: the greybox tint goes towards white for FLASH_TIME after a hit.
 func tick(dt: float) -> void:
+	_fall_guard()
 	_status_tick(dt)
 	_sync_overlay()
 	var f := fx_flags() | net_fx  # step 134: a co-op puppet shows the host's statuses
@@ -365,7 +372,9 @@ func tick(dt: float) -> void:
 		f & FX_SLOW != 0 and not dead,
 		f & FX_STAGGER != 0 and not dead
 	)
-	SpellFX.sync_aura(self, 0.0 if dead else corrupted_left, 0.6 + (def.size.x * 0.5 if def else 0.4))
+	SpellFX.sync_aura(
+		self, 0.0 if dead else corrupted_left, 0.6 + (def.size.x * 0.5 if def else 0.4)
+	)
 	if corrupted_left > 0.0 and not dead:
 		corrupted_left = maxf(0.0, corrupted_left - dt)
 		if corrupted_left <= 0.0:
@@ -389,7 +398,9 @@ func tick(dt: float) -> void:
 ## Spawns one Enemy per EnemySpawns marker of `level` whose `enemy` meta is in `table`,
 ## under `parent` (posed before entering the tree). Unknown ids are skipped and returned
 ## in `skipped`. Types with a brain spawn as its subclass (the Gnawer, step 12).
-static func spawn_at_markers(level: Node, parent: Node3D, table: EnemyTable, skipped: Array = []) -> Array[Enemy]:
+static func spawn_at_markers(
+	level: Node, parent: Node3D, table: EnemyTable, skipped: Array = []
+) -> Array[Enemy]:
 	var out: Array[Enemy] = []
 	var spawns := level.get_node_or_null("EnemySpawns")
 	if spawns == null:
@@ -452,7 +463,13 @@ func has_status_of(element: int) -> bool:
 			return slow_left > 0.0
 		ElementTable.Element.EARTH:
 			return stagger_left > 0.0
-	return burn_left > 0.0 or slow_left > 0.0 or stagger_left > 0.0 or soaked_left > 0.0 or hex_left > 0.0
+	return (
+		burn_left > 0.0
+		or slow_left > 0.0
+		or stagger_left > 0.0
+		or soaked_left > 0.0
+		or hex_left > 0.0
+	)
 
 
 ## Step 147: the mark an element's tree applies (Water: Soaked, others: Hex) is on this enemy.
@@ -491,3 +508,20 @@ func _status_tick(dt: float) -> void:
 		_burn_acc = 0.0
 		burn_damage += minf(amount, health)
 		apply_damage(amount, ElementTable.Element.FIRE)
+
+
+## OW11b: a foe that spawns before the streamed ground's collision is ready falls forever.
+## Anything FALL_LIMIT below where it first ticked goes back there.
+const FALL_LIMIT := 60.0
+var _first_pos = null
+
+
+func _fall_guard() -> void:
+	if not is_inside_tree():
+		return
+	if _first_pos == null:
+		_first_pos = global_position
+	elif global_position.y < _first_pos.y - FALL_LIMIT:
+		global_position = _first_pos + Vector3.UP
+		if self is CharacterBody3D:
+			set(&"velocity", Vector3.ZERO)

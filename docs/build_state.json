@@ -1513,6 +1513,11 @@
       "date": "2026-10-27",
       "step": "OW11a",
       "note": "Open-world path swaps $Level for WorldZones.merged(here): every zone's Anchors/Waystones/Camps/Chests/Gates/EnemySpawns/WaveSpawns/Waves/NPCs at world positions, start zone's PlayerStart + level_id, no Exits. main's single spawner, NPCs, quests, gates, chests, fast travel and ArenaLock now run once over the world (test: one spawner, no duplicate enemies). Low enemy count is the data: the 3 zones have 4 EnemySpawns markers in total (rest are midden waves/camps); 0 skipped."
+    },
+    {
+      "step": "OW11b-1",
+      "date": "2026-10-27",
+      "summary": "Open-world travel without reload (main._world_travel, here_id; breach via Interiors with a BreachEnemies spawner), merged groups keep their metas (Waves trigger_center in world space), bot walk_to uses the world nav map, Enemy fall guard returns foes that fell through not-yet-ready streamed ground (gnawer_3 was at y -1.7M: the 'few enemies / 0 kills' cause). Open-world autoplay now clears midden_fight; breach_fight stalls (build/ow_play9.log)."
     }
   ],
   "completed_steps": [

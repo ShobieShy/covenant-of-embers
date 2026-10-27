@@ -67,6 +67,9 @@ const MERGE: PackedStringArray = [
 	"Anchors", "Waystones", "Camps", "Chests", "Gates", "EnemySpawns", "WaveSpawns", "Waves", "NPCs"
 ]
 
+## Group metas that are level-local points.
+const POINT_METAS: Array[StringName] = [&"trigger_center"]
+
 
 ## One "Level" for main.gd in the open world: every zone's MERGE groups with their markers
 ## moved to world positions, `here`'s PlayerStart, and `here`'s level_id, so the spawner,
@@ -101,6 +104,9 @@ static func merged(here: String) -> Node3D:
 				dst = Node3D.new() if src is Node3D else Node.new()
 				dst.name = g
 				lv.add_child(dst)
+			for k in src.get_meta_list():  # e.g. Waves' trigger (level-local -> world)
+				var v: Variant = src.get_meta(k)
+				dst.set_meta(k, z.transform * (v as Vector3) if k in POINT_METAS else v)
 			var base := (
 				z.transform * ((src as Node3D).transform if src is Node3D else Transform3D())
 			)

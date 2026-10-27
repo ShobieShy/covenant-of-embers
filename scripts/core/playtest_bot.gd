@@ -66,6 +66,9 @@ static func reset_run() -> void:
 	intro_beats = PackedStringArray()
 
 
+var _ow_travel := false  ## OW11b: an in-world trip to the Landfill is under way
+
+
 func setup(m: Node, p: Player) -> void:
 	main = m
 	player = p
@@ -84,7 +87,7 @@ func setup(m: Node, p: Player) -> void:
 		stage = "intro"  # step 118: a new game plays the prologue first
 	if not Coop.is_client() and stage != "intro":
 		next_brand()
-	note("start %s in %s" % [stage, GameFlow.id_of(m.get_node("Level"))])
+	note("start %s in %s" % [stage, m.call(&"here_id")])
 
 
 ## Step 143: the bot fights with branded staffs, one brand after another (a basic staff with
@@ -171,6 +174,15 @@ func _on_kill(e: Enemy, _el) -> void:
 			and stage not in ["intro", "breach_craft", "craft"]
 		):
 			next_brand()
+
+
+func _foe_desc(e: Enemy) -> String:
+	if e == null:
+		return "none"
+	return (
+		"%s at %s hp %.0f (%.1f m)"
+		% [e.name, e.global_position, e.health, flat_distance(e.global_position)]
+	)
 
 
 func _goto(s: String) -> void:
@@ -399,6 +411,10 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 			_path = NavigationServer3D.map_get_path(
 				nav.get_navigation_map(), player.global_position, at, true
 			)
+		elif main.get_node_or_null("OpenWorld"):  # OW11b: the streamed world cells' nav
+			var wm := player.get_world_3d().navigation_map
+			if NavigationServer3D.map_get_iteration_id(wm) > 0:
+				_path = NavigationServer3D.map_get_path(wm, player.global_position, at, true)
 	var next := at
 	var feet := player.global_position
 	# Step 118: start from the waypoint nearest the feet (a long, wiggly path otherwise hands back
@@ -451,7 +467,19 @@ func _physics_process(delta: float) -> void:
 		_finish(false, "run over %.0f s in stage %s" % [SIM_LIMIT, stage])
 		return
 	if t > STAGE_LIMIT and stage != "coop_follow":  # the joiner follows as long as the host plays
-		_finish(false, "stage %s over %.0f s" % [stage, STAGE_LIMIT])
+		_finish(
+			false,
+			(
+				"stage %s over %.0f s at %s in %s, nearest foe %s"
+				% [
+					stage,
+					STAGE_LIMIT,
+					player.global_position,
+					main.call(&"here_id"),
+					_foe_desc(nearest_enemy(true))
+				]
+			)
+		)
 		return
 	_input = PlayerInput.hold()
 	match stage:
@@ -460,11 +488,20 @@ func _physics_process(delta: float) -> void:
 		"intro":
 			_intro_tick()
 		"midden_walk":
-			if GameFlow.id_of(main.get_node("Level")) != "midden":  # step 109: a new game starts elsewhere
-				if t > 0.5:
-					note("travel to the Landfill from %s" % GameFlow.id_of(main.get_node("Level")))
+			if main.call(&"here_id") != "midden":  # step 109: a new game starts elsewhere
+				if t > 0.5 and not _ow_travel:
+					note("travel to the Landfill from %s" % main.call(&"here_id"))
 					main.call(&"travel", "midden")
-					_done = true
+					_ow_travel = main.get_node_or_null("OpenWorld") != null  # OW11b: no reload
+					_done = not _ow_travel
+				return
+			if _ow_travel:  # OW11b: landed in the world's Landfill; walk from here
+				var ow: OpenWorld = main.get_node("OpenWorld")
+				if ow.travel.busy:
+					return
+				_ow_travel = false
+				_walk_start = player.global_position
+				_goto("midden_walk")
 				return
 			_input = PlayerInput.hold(["forward"])
 			if t > 1.0:
@@ -475,6 +512,8 @@ func _physics_process(delta: float) -> void:
 				note("walked %.1f m" % moved)
 				_goto("midden_fight")
 		"midden_fight", "breach_fight":
+			if stage == "breach_fight" and main.breach == null:
+				return  # OW11b: still entering the Breach rooms
 			var e := nearest_enemy(true)
 			if e:
 				fight(e)

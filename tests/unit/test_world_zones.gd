@@ -78,4 +78,14 @@ func test_merged_level() -> void:
 				if c is Node3D and (c as Node3D).position.distance_to(probe_at) < 0.01:
 					hit = true
 			check(hit, "%s: %s's first marker at its world position" % [g, probe])
+	var mid := WorldZones.zone_of("midden")
+	var want_c: Vector3 = (
+		mid.transform * (mid.get_node("Waves").get_meta(&"trigger_center") as Vector3)
+	)
+	check(
+		(lv.get_node("Waves").get_meta(&"trigger_center") as Vector3).distance_to(want_c) < 0.01,
+		"the Landfill's wave trigger at its world position"
+	)
+	check(float(lv.get_node("Waves").get_meta(&"trigger_radius", 0.0)) > 0.0, "trigger radius kept")
+	mid.free()
 	lv.free()

@@ -577,8 +577,48 @@ func _enter_open_world(player: Player, data: Dictionary) -> void:
 	ow.first_load(p, WorldSession.nearest_level(p))  # the loading screen, once
 
 
+## OW11b: where the party is: the zone nearest the player in the open world ("breach" in
+## the Breach rooms), else the loaded level.
+func here_id() -> String:
+	var ow := get_node_or_null("OpenWorld") as OpenWorld
+	var player := get_node_or_null("Player") as Player
+	if ow == null or player == null:
+		return GameFlow.id_of(get_node_or_null("Level"))
+	if ow.interiors.current != "":
+		return "breach" if ow.interiors.current == "breach_rooms" else ow.interiors.current
+	return WorldSession.nearest_level(player.global_position)
+
+
+## OW11b: in-world travel (no scene reload): to a zone's entrance behind the loading screen,
+## or into the Breach rooms (their own spawner; `breach` points at their logic).
+func _world_travel(ow: OpenWorld, to: String) -> void:
+	if to == "breach":
+		if ow.interiors.current == "":
+			await ow.interiors.enter("breach_rooms")
+		breach = ow.interiors.breach
+		var player := get_node_or_null("Player") as Player
+		if breach and get_node_or_null("BreachEnemies") == null:
+			var sp := EnemySpawner.new()
+			sp.name = "BreachEnemies"
+			add_child(sp)
+			sp.setup(ow.interiors.interior, player)
+			if breach.chest:
+				breach.chest.dropper = get_node_or_null("LootDropper") as LootDropper
+			ow.interiors.left.connect(func(_id): sp.queue_free(), CONNECT_ONE_SHOT)
+		return
+	if ow.interiors.current != "":
+		ow.interiors.leave(to)
+		return
+	ow.travel.land_at(SaveMigration.entrance(to), to)
+
+
 ## Autosave, then load `to` with the saved state.
 func travel(to: String, anchor := "") -> void:
+	var ow := get_node_or_null("OpenWorld") as OpenWorld
+	if ow and not (coop and not coop.host):
+		save_game()
+		_world_travel(ow, to)
+		return
 	if coop and not coop.host:
 		print("[coop] only the host can travel")  # step 91: the host's world decides
 		return
