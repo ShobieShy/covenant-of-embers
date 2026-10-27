@@ -24,6 +24,8 @@ var hp := 0.0
 var hp_max := 1.0
 var level := 1
 var poses := 0
+var breach_open := 0  ## OW11c: pose "bo", the host's Breach gate (1) / vault (2) bits
+var interior := ""  ## OW11c: pose "w", the interior the player is in ("" outdoors)
 var _tag: Label3D
 var color := Color(0.35, 0.6, 1.0)  ## step 73: the character colour (pose "c")
 var _mat: StandardMaterial3D
@@ -69,6 +71,8 @@ func _ready() -> void:
 
 func apply_pose(d: Dictionary) -> void:
 	target_pos = d.get("p", target_pos)
+	interior = String(d.get("w", ""))
+	breach_open = int(d.get("bo", 0))
 	target_yaw = float(d.get("y", target_yaw))
 	is_alive = bool(d.get("a", true))
 	is_invulnerable = bool(d.get("i", false))

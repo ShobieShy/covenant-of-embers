@@ -1563,6 +1563,11 @@
       "step": "OW11c-4",
       "date": "2026-10-27",
       "summary": "QA round 2 fixes. (1) WorldTravel.land_at queues behind a load in flight (waits while busy; travel_to already refused via can_travel); _stream/land_at/travel_to check is_instance_valid(screen) (a 2nd LoadingScreen.overlay freed the 1st). QA bot patch 05 applied (midden_walk waits out the first world load). --skip-intro at 4x: 3/3 PASS (build/qa2_skip4x_1..3.log; QA had 0/3). (2) WorldStreamer.step instantiates no cell while any of its threaded loads is IN_PROGRESS or an interior holds it: NOT fully fixed, qa2_skip4x_3 still logged 'Parameter m is null' / surface-material errors from ps.instantiate() at world_streamer.gd:151 early in the run (no streamer load in flight then, so another loader shares the mesh). (3) Co-op Breach stall at (0,0,59.7): new test_breach check paths den doorway -> boss dais after the gate opens (passes, <80 m), so navmesh/geometry there are fine; host had 2 deaths, likely a respawn at PlayerStart then blocked in the room1 doorway (x -2..2, z 57), cause not found yet. Targeted tests 22/22 + test_breach 4/4. rt29 not run (no time)."
+    },
+    {
+      "step": "OW11c-5",
+      "date": "2026-10-27",
+      "summary": "Material-null root cause: Godot 4.7.2 dummy renderer RID_Owner<DummyMesh/DummyMaterial> not thread-safe (fixed upstream on master), so worker-thread loads race main-thread mesh creation. New SafeLoad (scripts/core/safe_load.gd) wraps load_threaded_*; synchronous under headless. Used by loading_screen, world_streamer, interiors (covers startup waystone prep, streamer, Breach load). --skip-intro 4x 3/3 PASS, 0 RID/null errors (build/sl_skip4x_1..3.log). Co-op now uses open world by default (--classic-levels fallback): client forces intro skip, no intro director; pose carries interior 'w' and host Breach bits 'bo'; joiner follows host space, syncs gate/vault (doorway block), 400 m leash outdoors; host shares all world_enemies, joiner frees local ones. coop_ow4: host PASS, joiner PASS (casts 268, hits_sent 220) but joiner exits rc 134 double free at teardown; same crash in a 05:03 core dump pre-dating these changes, open. test_interiors waits a frame first (coop test leftovers). rt29 not run."
     }
   ],
   "completed_steps": [

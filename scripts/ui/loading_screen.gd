@@ -98,10 +98,10 @@ func _ready() -> void:
 	_build_ui()
 	if dry_run or manual:
 		return
-	ResourceLoader.load_threaded_request(target, "PackedScene")
+	SafeLoad.request(target, "PackedScene")
 	_requests.append(target)
 	if level_id != "":
-		ResourceLoader.load_threaded_request(level_path(level_id), "PackedScene")
+		SafeLoad.request(level_path(level_id), "PackedScene")
 		_requests.append(level_path(level_id))
 
 
@@ -113,7 +113,7 @@ var _requests: Array[String] = []
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		for r in _requests:
-			ResourceLoader.load_threaded_get(r)
+			SafeLoad.take(r)
 		_requests.clear()
 
 
@@ -228,7 +228,7 @@ func _process(delta: float) -> void:
 		Stage.SWAP:
 			if not _swapped:
 				_swapped = true
-				var ps := ResourceLoader.load_threaded_get(target) as PackedScene
+				var ps := SafeLoad.take(target) as PackedScene
 				_requests.erase(target)
 				_tree.paused = false
 				if ps:
@@ -237,7 +237,7 @@ func _process(delta: float) -> void:
 					_tree.change_scene_to_file(target)
 			elif _tree.current_scene and _tree.current_scene.is_node_ready():
 				if level_id != "":
-					ResourceLoader.load_threaded_get(level_path(level_id))  # drop the request
+					SafeLoad.take(level_path(level_id))  # drop the request
 					_requests.erase(level_path(level_id))
 				advance(Stage.TERRAIN)
 		Stage.TERRAIN:
@@ -251,7 +251,7 @@ func _process(delta: float) -> void:
 
 func _poll(path: String) -> float:
 	var p := []
-	var st := ResourceLoader.load_threaded_get_status(path, p)
+	var st := SafeLoad.status(path, p)
 	match st:
 		ResourceLoader.THREAD_LOAD_LOADED, ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
 			return 1.0

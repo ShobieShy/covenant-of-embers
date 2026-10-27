@@ -191,8 +191,6 @@ static func open_world_on() -> bool:
 	var args := OS.get_cmdline_user_args()
 	if args.has("--classic-levels"):
 		return false
-	if args.has("--host") or args.has("--join"):
-		return args.has("--open-world")  # co-op isn't ported to the open world yet (joiner never synced)
 	return GameFlow.open_world or args.has("--open-world")
 
 
@@ -497,6 +495,7 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 	coop = CoopWorld.new()
 	coop.name = "CoopWorld"
 	add_child(coop)
+	coop.world_enemies = get_node_or_null("OpenWorld") != null  # OW11c
 	coop.setup(Coop.session, player, spawner, spawner.table)
 	var frames := PartyFrames.new()  # step 80
 	frames.name = "PartyFrames"
@@ -518,7 +517,8 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 
 ## Step 91: the host's travel moves everyone; clients follow with their character.
 func _on_coop_message(_from: int, kind: String, data: Dictionary) -> void:
-	if kind == "travel" and Coop.is_client():
+	if kind == "travel" and Coop.is_client() and get_node_or_null("OpenWorld") == null:
+		# (OW11c: in the open world the joiner follows the host's pose "w" and the leash)
 		if String(data.get("to", "midden")) == GameFlow.id_of($Level):
 			return  # already here (the host announces its level on every load)
 		save_game()
@@ -570,6 +570,9 @@ func _enter_open_world(player: Player, data: Dictionary) -> void:
 	ow.interiors.entered.connect(_bind_interior_gates.bind(ow))  # OW11b
 	WorldSession.restore(ow, data)
 	var mode := GameFlow.intro_mode if not GameFlow.intro_mode.is_empty() else GameFlow.INTRO_PLAY
+	if Coop.is_client():  # OW11c: a joiner starts outdoors; it follows the host's space after
+		mode = GameFlow.INTRO_SKIP
+		ow.host_space.connect(_follow_host_space.bind(ow))
 	var at := WorldSession.start_spot(data, mode)
 	if String(at["interior"]) != "":
 		ow.interiors.enter(String(at["interior"]))
@@ -615,8 +618,8 @@ func _ow_intro_sync() -> void:
 	if h != _ow_reached and quest_driver:
 		_ow_reached = h
 		quest_driver.reached(h)  # OW11c: no level loads, so zone changes count as "reach"
-	if not IntroDirector.active(story_flags):
-		return
+	if not IntroDirector.active(story_flags) or Coop.is_client():
+		return  # OW11c: a joiner gets the host's beats as IntroSync recaps, no director of its own
 	if is_instance_valid(intro) and intro.here == h:
 		return
 	if is_instance_valid(intro):
@@ -687,6 +690,22 @@ func _world_travel(ow: OpenWorld, to: String) -> void:
 		ow.interiors.enter(to)
 		return
 	ow.travel.land_at(SaveMigration.entrance(to), to)
+
+
+## OW11c: a joiner goes where its host is: into the host's interior, or back outdoors (the
+## leash then pulls it beside the host).
+func _follow_host_space(interior: String, ow: OpenWorld) -> void:
+	print("[coop] following the host %s" % ("outdoors" if interior == "" else "into " + interior))
+	if ow.interiors.current != "":
+		ow.interiors.leave()
+		if interior == "":
+			return
+		while ow.interiors.busy:
+			await get_tree().process_frame
+	if interior == "breach_rooms":
+		await _world_travel(ow, "breach")
+	elif Interiors.LINKS.has(interior):
+		await ow.interiors.enter(interior)
 
 
 ## Autosave, then load `to` with the saved state.

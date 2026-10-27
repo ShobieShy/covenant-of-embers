@@ -22,6 +22,7 @@ func test_links_resolve() -> void:
 
 
 func test_enter_and_leave() -> void:
+	await runner_tree.process_frame  # earlier tests' queued frees (players) land first
 	var root := Node3D.new()
 	runner_tree.root.add_child(root)
 	var i := Interiors.new()
@@ -37,7 +38,7 @@ func test_enter_and_leave() -> void:
 	var land: Vector3 = await i.enter("mage_association")
 	check(i.current == "mage_association" and i.interior != null, "interior loaded")
 	check(absf(land.y - Interiors.DEPTH) < 5.0, "landing below the world (%s)" % land)
-	check(p.global_position.distance_to(land) < 1.0, "player moved inside")
+	check(p.global_position.distance_to(land) < 1.0, "player moved inside (%s vs %s)" % [p.global_position, land])
 	check(i.interior.get_node_or_null("WorldEnvironment") == null, "world sky kept")
 	var out := i.leave("midden")
 	check(i.current == "", "left")

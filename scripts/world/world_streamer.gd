@@ -98,7 +98,7 @@ func _process(_delta: float) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		for k in _pending.keys():
-			ResourceLoader.load_threaded_get(_pending[k])
+			SafeLoad.take(_pending[k])
 		_pending.clear()
 
 
@@ -115,7 +115,7 @@ func step() -> void:
 			break
 		if not loaded.has(k) and not _pending.has(k):
 			var path := cells_dir + "%d_%d.tscn" % [k.x, k.y]
-			ResourceLoader.load_threaded_request(path, "PackedScene")
+			SafeLoad.request(path, "PackedScene")
 			_pending[k] = path
 	for k in loaded.keys():
 		if not keep.has(k):
@@ -124,7 +124,7 @@ func step() -> void:
 	var fresh: Array[Vector2i] = []  # QA: a cell loaded this step is instantiated next step
 	var busy_load := hold  # QA-2: an interior's threaded load is in flight
 	for k in _pending.keys():
-		var st := ResourceLoader.load_threaded_get_status(_pending[k])
+		var st := SafeLoad.status(_pending[k])
 		if st == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
 			busy_load = true
 		if st == ResourceLoader.THREAD_LOAD_LOADED and not _ready_q.has(k):
@@ -144,7 +144,7 @@ func step() -> void:
 		and (Time.get_ticks_usec() - t0) < BUDGET_MS * 1000.0
 	):
 		var k: Vector2i = _ready_q.pop_front()
-		var ps := ResourceLoader.load_threaded_get(_pending[k]) as PackedScene
+		var ps := SafeLoad.take(_pending[k]) as PackedScene
 		_pending.erase(k)
 		if not keep.has(k) or ps == null:
 			continue  # walked away while it loaded

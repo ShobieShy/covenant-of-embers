@@ -20,6 +20,7 @@ var _fog_t := 0.0
 var info := {}
 var first_loaded := false  ## OW10: the initial world load (loading screen) has run
 signal first_load_done
+signal host_space(interior: String)  ## OW11c: a joiner whose host is in another space
 
 
 func _ready() -> void:
@@ -100,9 +101,14 @@ func _process(dt: float) -> void:
 	_fog_t = 0.0
 	for p in _map_players():
 		fog.reveal(p[0].x, p[0].z)
-	if Coop.is_client() and interiors.current == "":
-		leash.player = get_tree().get_first_node_in_group(Player.GROUP) as Node3D
-		leash.check()
+	if Coop.is_client():
+		var hs: Variant = _host_interior()
+		_sync_breach()
+		if hs is String and hs != interiors.current and not interiors.busy and not travel.busy:
+			host_space.emit(hs)  # OW11c: follow the host in or out of an interior
+		elif interiors.current == "" and not interiors.busy and not travel.busy:
+			leash.player = get_tree().get_first_node_in_group(Player.GROUP) as Node3D
+			leash.check()
 	if minimap:
 		minimap.visible = not map_screen.visible
 
@@ -119,6 +125,30 @@ func _host_pos() -> Variant:
 	for n in get_tree().get_nodes_in_group(RemotePlayer.GROUP):
 		if (n as RemotePlayer).peer == 1:
 			return (n as Node3D).global_position
+	return null
+
+
+## OW11c: the joiner's Breach rooms open the gate and vault when the host's have (the levers
+## and the boss are the host's; without this the joiner is walled in at the switch gate).
+func _sync_breach() -> void:
+	var br := interiors.breach if interiors else null
+	if br == null or not is_instance_valid(br):
+		return
+	for n in get_tree().get_nodes_in_group(RemotePlayer.GROUP):
+		var r := n as RemotePlayer
+		if r.peer == 1:
+			if r.breach_open & 1 and not br.gate_open:
+				br.open_gate()
+			if r.breach_open & 2 and not br.open:
+				br.open_vault()
+
+
+## The interior the host is in ("" outdoors), or null before its first pose.
+func _host_interior() -> Variant:
+	for n in get_tree().get_nodes_in_group(RemotePlayer.GROUP):
+		var r := n as RemotePlayer
+		if r.peer == 1 and r.poses > 0:
+			return r.interior
 	return null
 
 

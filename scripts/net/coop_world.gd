@@ -52,6 +52,10 @@ var poses_seen := 0
 var revive_progress := 0.0
 var revives := 0
 
+## OW11c: in the open world enemies live in streamed cells and interior spawners, not under
+## one root: the host shares every Enemy in the group, the joiner keeps only its puppets.
+var world_enemies := false
+
 
 func setup(s: NetSession, p: Node3D, enemy_root: Node, t: EnemyTable = null) -> void:
 	session = s
@@ -76,7 +80,11 @@ func _physics_process(dt: float) -> void:
 
 
 func tick(dt: float) -> void:
-	if session == null or not is_instance_valid(session) or session.state != NetSession.State.IN_GAME:
+	if (
+		session == null
+		or not is_instance_valid(session)
+		or session.state != NetSession.State.IN_GAME
+	):
 		return
 	_snap_left -= dt
 	if _snap_left <= 0.0:
@@ -90,18 +98,28 @@ func tick(dt: float) -> void:
 	_flush_puppet_hits()
 	for pr: RemotePlayer in proxies.values():
 		pr.smooth(dt)
+	if not host and world_enemies:
+		for c in get_tree().get_nodes_in_group(Enemy.GROUP):
+			if c is Enemy and not is_ancestor_of(c) and not c.is_queued_for_deletion():
+				c.queue_free()  # the host's world decides; only puppets fight here
 	if not host:
 		for e: Enemy in puppets.values():
 			var want: Variant = e.get_meta(&"net_pos", null)
 			if want is Vector3:
-				e.global_position = e.global_position.lerp(want, 1.0 - exp(-RemotePlayer.SMOOTH * dt))
+				e.global_position = e.global_position.lerp(
+					want, 1.0 - exp(-RemotePlayer.SMOOTH * dt)
+				)
 
 
 ## --- poses -------------------------------------------------------------------------
 
 
 func local_pose() -> Dictionary:
-	var d := {"p": player.global_position, "y": player.rotation.y, "n": session.local_info.get("name", "Player")}
+	var d := {
+		"p": player.global_position,
+		"y": player.rotation.y,
+		"n": session.local_info.get("name", "Player")
+	}
 	var col: Variant = player.get(&"character_color")
 	if col is Color:  # step 73: the character's colour shows on the others' screens
 		d["c"] = (col as Color).to_html(false)
@@ -121,6 +139,12 @@ func local_pose() -> Dictionary:
 	var pr: Variant = player.get(&"progression")
 	if pr != null:
 		d["l"] = int(pr.get(&"level"))
+	var ow := player.get_node_or_null(^"../OpenWorld")
+	if ow and ow.get(&"interiors"):  # OW11c: which interior (or "" outdoors) the player is in
+		d["w"] = String(ow.get(&"interiors").get(&"current"))
+		var br: Variant = ow.get(&"interiors").get(&"breach")
+		if host and br is Breach and is_instance_valid(br):  # the host's gate / vault state
+			d["bo"] = int((br as Breach).gate_open) + 2 * int((br as Breach).open)
 	var fx := brand_fx_of(player)
 	if not fx.is_empty():  # step 142: the held brand's FX state (bits, meter, colour)
 		d["bf"] = fx
@@ -224,6 +248,11 @@ func enemy_id(e: Enemy) -> int:
 
 func host_enemies() -> Array[Enemy]:
 	var out: Array[Enemy] = []
+	if world_enemies and is_inside_tree():
+		for c in get_tree().get_nodes_in_group(Enemy.GROUP):
+			if c is Enemy and not is_ancestor_of(c) and not c.is_queued_for_deletion():
+				out.append(c)
+		return out
 	if enemies == null:
 		return out
 	for c in enemies.get_children():
@@ -267,7 +296,9 @@ func _on_attack(g: Gnawer, bite: Gnawer.Bite) -> void:
 func route_attack(target: Node3D, bite: Gnawer.Bite, from: Gnawer = null) -> void:
 	if target is RemotePlayer:
 		hurts_sent += 1
-		var d := {"dmg": bite.damage, "el": int(bite.element), "dodged": bite.dodged, "from": bite.from}
+		var d := {
+			"dmg": bite.damage, "el": int(bite.element), "dodged": bite.dodged, "from": bite.from
+		}
 		session.send("hurt", d, (target as RemotePlayer).peer)
 	elif player and player.has_method(&"on_enemy_attack"):
 		player.call(&"on_enemy_attack", from, bite)
@@ -282,7 +313,9 @@ func send_snapshot() -> void:
 		if int(peer) == session.my_id():
 			continue
 		var p: RemotePlayer = proxies.get(int(peer))
-		var at: Variant = p.global_position if p and is_instance_valid(p) and p.is_inside_tree() else null
+		var at: Variant = (
+			p.global_position if p and is_instance_valid(p) and p.is_inside_tree() else null
+		)
 		session.send("snap", {"e": interest_rows(all, at)}, int(peer), false)
 	snaps_sent += 1
 
@@ -377,15 +410,25 @@ func _apply_snapshot(list: Array) -> void:
 func _on_puppet_hit(e: Enemy, h: SpellBolts.Hit) -> void:
 	if h == null or h.result == null:
 		return
-	send_hit(e, h.result.amount, h.element, h.dark_bonus, ElementSkillMods.net_status(ElementSkillMods.of_hit(h)))
+	send_hit(
+		e,
+		h.result.amount,
+		h.element,
+		h.dark_bonus,
+		ElementSkillMods.net_status(ElementSkillMods.of_hit(h))
+	)
 
 
 ## The client's hit on a puppet goes to the host (the puppet already showed it). Step 108:
 ## "db" = the Dark-part bonus; the host rolls the conversion.
 ## Step 150: "sm" = the element-tree status mods (ElementSkillMods.net_status), omitted when none.
-func send_hit(e: Enemy, amount: float, element: ElementTable.Element, dark_bonus := 0.0, sm := {}) -> void:
+func send_hit(
+	e: Enemy, amount: float, element: ElementTable.Element, dark_bonus := 0.0, sm := {}
+) -> void:
 	hits_sent += 1
-	var d := {"id": int(e.get_meta(&"net_id", 0)), "amt": amount, "el": int(element), "db": dark_bonus}
+	var d := {
+		"id": int(e.get_meta(&"net_id", 0)), "amt": amount, "el": int(element), "db": dark_bonus
+	}
 	if not sm.is_empty():
 		d["sm"] = sm
 	session.send("hit", d, 1)
@@ -447,7 +490,10 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 						MagicEffects.try_corrupt(e, float(data.get("db", 0.0)))
 					if data.has("sm"):
 						MagicEffects.net_status(
-							e, el, float(data.get("amt", 0.0)), ElementSkillMods.sanitize_net(data["sm"])
+							e,
+							el,
+							float(data.get("amt", 0.0)),
+							ElementSkillMods.sanitize_net(data["sm"])
 						)
 		"heal":
 			var amt := maxf(0.0, float(data.get("amt", 0.0)))

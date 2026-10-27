@@ -136,7 +136,7 @@ var _loading := ""
 ## Freed mid-enter (a test, a quit): collect the threaded load so it is not left stale.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE and _loading != "":
-		ResourceLoader.load_threaded_get(_loading)
+		SafeLoad.take(_loading)
 		_loading = ""
 
 
@@ -157,15 +157,15 @@ func enter(id: String, from_level := "") -> Vector3:
 		streamer.hold = true
 		while streamer.loading() and Time.get_ticks_msec() - t0 < 5000:
 			await get_tree().process_frame
-	ResourceLoader.load_threaded_request(path, "PackedScene")
+	SafeLoad.request(path, "PackedScene")
 	_loading = path
 	var slow := false
-	while ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+	while SafeLoad.status(path) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
 		if not slow and Time.get_ticks_msec() - t0 > SLOW_MS:
 			slow = true
 			slow_load.emit(id)
 		await get_tree().process_frame
-	var ps := ResourceLoader.load_threaded_get(path) as PackedScene
+	var ps := SafeLoad.take(path) as PackedScene
 	_loading = ""
 	if is_instance_valid(streamer):
 		streamer.hold = false

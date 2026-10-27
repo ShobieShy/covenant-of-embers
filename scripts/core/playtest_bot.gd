@@ -435,6 +435,9 @@ var _route_level: Node
 
 func walk_to(at: Vector3, held: Array = []) -> void:
 	var lvl := main.get_node_or_null("Level")
+	var ow_in := main.get_node_or_null("OpenWorld/Interiors")
+	if ow_in and ow_in.get(&"interior"):
+		lvl = null  # OW11c: indoors the outdoor zone's landmark route does not apply
 	if lvl and lvl.has_node("Pois"):  # step 154: open zones route long walks via landmarks
 		if _route == null or _route_level != lvl:
 			_route = RouteGraph.from_level(lvl)
