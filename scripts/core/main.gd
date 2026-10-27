@@ -49,6 +49,8 @@ func _ready() -> void:
 	for m in patch_log:
 		push_warning("[patches] " + m)
 	_swap_level(GameFlow.level_id)
+	if open_world_on():
+		_use_world_level()
 	# The player spawns at the level's PlayerStart (feet), facing its yaw; its Head sits
 	# at PlayerStart/Eye (1.5 m).
 	var start := get_node_or_null("Level/PlayerStart") as Node3D
@@ -183,6 +185,24 @@ func _swap_level(id: String) -> void:
 	move_child(lv, 0)
 	QualityPresets.apply_level(lv)  # step 134
 
+## OW11a: the open world (GameFlow.open_world or --open-world).
+static func open_world_on() -> bool:
+	return GameFlow.open_world or OS.get_cmdline_user_args().has("--open-world")
+
+
+## OW11a: swaps the level for WorldZones.merged so every level system (spawner, NPCs,
+## quests, gates, chests, waystones, arena walls) runs once over all the zones.
+func _use_world_level() -> void:
+	var here := GameFlow.level_id if WorldZones.ZONES.has(GameFlow.level_id) else "old_oak"
+	var old := get_node_or_null("Level")
+	if old:
+		remove_child(old)
+		old.free()
+	var lv := WorldZones.merged(here)
+	add_child(lv)
+	move_child(lv, 0)
+
+
 ## Step 39: Breach logic, the travel gate, the pause menu (+ its settings screen), and the
 ## save load when the flow asks for it.
 func _setup_flow(player: Player) -> void:
@@ -227,7 +247,7 @@ func _setup_flow(player: Player) -> void:
 				breach.restore_open()   # step 47: rooms cleared, gate + vault stay open
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
 	_spawn_at_anchor(player, saved_progress)
-	if GameFlow.open_world or OS.get_cmdline_user_args().has("--open-world"):
+	if open_world_on():
 		_enter_open_world(player, {"progress": saved_progress} if not saved_progress.is_empty() else {})
 	if fresh:
 		_apply_new_identity(player)

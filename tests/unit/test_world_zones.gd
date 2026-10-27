@@ -47,3 +47,35 @@ func test_zones_and_spawners() -> void:
 	print("    zones: %d enemies spawned across %d zones" % [total, wz.spawners.size()])
 	check(total > 0, "zone spawners spawned enemies")
 	root.free()
+
+
+func test_merged_level() -> void:
+	var lv := WorldZones.merged("old_oak")
+	check(String(lv.get_meta(&"level_id", "")) != "", "level_id from the start zone")
+	check(lv.get_node_or_null("Exits") == null, "no Exits (seamless zones)")
+	check(lv.get_node_or_null("Boxes") != null, "an empty Boxes for main's log")
+	var st := lv.get_node("PlayerStart") as Node3D
+	check(st.position.distance_to(SaveMigration.entrance("old_oak")) < 0.01, "old_oak's start")
+	for g in WorldZones.MERGE:
+		var want := 0
+		var probe := ""
+		var probe_at := Vector3.INF
+		for id in WorldZones.ZONES:
+			var z := WorldZones.zone_of(id)
+			var src := z.get_node_or_null(NodePath(g))
+			if src:
+				want += src.get_child_count()
+				var c := src.get_child(0) if src.get_child_count() > 0 else null
+				if c is Node3D and probe == "":
+					probe = id
+					probe_at = z.transform * (src as Node3D).transform * (c as Node3D).position
+			z.free()
+		var got := lv.get_node_or_null(NodePath(g))
+		check((got.get_child_count() if got else 0) == want, "%s: %d markers merged" % [g, want])
+		if probe != "" and got:
+			var hit := false
+			for c in got.get_children():
+				if c is Node3D and (c as Node3D).position.distance_to(probe_at) < 0.01:
+					hit = true
+			check(hit, "%s: %s's first marker at its world position" % [g, probe])
+	lv.free()

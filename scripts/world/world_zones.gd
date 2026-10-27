@@ -60,3 +60,57 @@ func zone_at(p: Vector3) -> String:
 			bd = d
 			best = id
 	return best
+
+
+## OW11a: the groups main.gd's level systems read, merged from every zone.
+const MERGE: PackedStringArray = [
+	"Anchors", "Waystones", "Camps", "Chests", "Gates", "EnemySpawns", "WaveSpawns", "Waves", "NPCs"
+]
+
+
+## One "Level" for main.gd in the open world: every zone's MERGE groups with their markers
+## moved to world positions, `here`'s PlayerStart, and `here`'s level_id, so the spawner,
+## NPCs, quests, gates, chests, waystones and arena walls run once over the whole world.
+## No art, terrain or navigation (world cells), no Exits (zones join seamlessly; doors are
+## Interiors). Name clashes between zones get Godot's readable suffixes.
+static func merged(here: String) -> Node3D:
+	var lv := Node3D.new()
+	lv.name = "Level"
+	var boxes := Node3D.new()
+	boxes.name = "Boxes"
+	lv.add_child(boxes)
+	var ids := Array(ZONES)
+	if not ids.has(here):
+		here = ids[0]
+	for id in ids:
+		var z := zone_of(id)
+		if id == here:
+			lv.set_meta(&"level_id", z.get_meta(&"level_id", id))
+			var st := z.get_node_or_null("PlayerStart") as Node3D
+			if st:
+				var xf := z.transform * st.transform
+				z.remove_child(st)
+				lv.add_child(st)
+				st.transform = xf
+		for g in MERGE:
+			var src := z.get_node_or_null(NodePath(g))
+			if src == null:
+				continue
+			var dst := lv.get_node_or_null(NodePath(g))
+			if dst == null:
+				dst = Node3D.new() if src is Node3D else Node.new()
+				dst.name = g
+				lv.add_child(dst)
+			var base := (
+				z.transform * ((src as Node3D).transform if src is Node3D else Transform3D())
+			)
+			for c in src.get_children():
+				var xf := base * (c as Node3D).transform if c is Node3D else Transform3D()
+				src.remove_child(c)
+				dst.add_child(c, true)
+				if c is Node3D:
+					(c as Node3D).transform = xf
+		z.free()
+	lv.set_meta(&"world_offset", Vector2.ZERO)
+	lv.set_meta(&"open_world", true)
+	return lv

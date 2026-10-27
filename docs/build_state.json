@@ -1508,6 +1508,11 @@
       "date": "2026-10-27",
       "step": "OW10d",
       "note": "WorldZones: town_square/old_oak/midden gameplay markers (spawns, waves, camps, chests, gates, exits, NPCs, waystones, anchors) at world offsets with level art stripped; one EnemySpawner per zone. Not yet wired into main. test_world_zones (4 enemies across 3 zones)."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "OW11a",
+      "note": "Open-world path swaps $Level for WorldZones.merged(here): every zone's Anchors/Waystones/Camps/Chests/Gates/EnemySpawns/WaveSpawns/Waves/NPCs at world positions, start zone's PlayerStart + level_id, no Exits. main's single spawner, NPCs, quests, gates, chests, fast travel and ArenaLock now run once over the world (test: one spawner, no duplicate enemies). Low enemy count is the data: the 3 zones have 4 EnemySpawns markers in total (rest are midden waves/camps); 0 skipped."
     }
   ],
   "completed_steps": [

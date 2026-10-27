@@ -84,6 +84,19 @@ func test_main_open_world() -> void:
 		"world keys %s" % [pr.keys()]
 	)
 	check(pr["level_id"] == "old_oak", "level_id still saved")
+	var lv := g.get_node("Level")
+	check(lv.get_meta(&"open_world", false), "the merged world level")
+	var sps := g.find_children("*", "EnemySpawner", true, false)
+	check(sps.size() == 1, "one spawner (%d)" % sps.size())
+	var markers := lv.get_node("EnemySpawns").get_child_count()
+	var sp := sps[0] as EnemySpawner
+	print(
+		"    world: %d spawn markers, %d spawned, skipped %s" % [markers, sp.spawned, [sp.skipped]]
+	)
+	var names := {}
+	for c in sp.get_children():
+		check(not names.has(c.name), "no duplicate enemy %s" % c.name)
+		names[c.name] = true
 	var ow := g.get_node("OpenWorld") as OpenWorld
 	check(
 		ow.first_loaded and LoadingScreen.active != null,
