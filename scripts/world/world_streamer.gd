@@ -92,6 +92,15 @@ func _process(_delta: float) -> void:
 	step()
 
 
+## A streamer freed mid-load (a test, a scene change) collects its threaded loads first, so
+## the loader never keeps a stale request for the next streamer of the same cells.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		for k in _pending.keys():
+			ResourceLoader.load_threaded_get(_pending[k])
+		_pending.clear()
+
+
 ## One frame of streaming: request, unload, then add finished cells within the budget.
 func step() -> void:
 	var pts := viewers()

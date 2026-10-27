@@ -84,7 +84,9 @@ func test_main_open_world() -> void:
 		"world keys %s" % [pr.keys()]
 	)
 	check(pr["level_id"] == "old_oak", "level_id still saved")
-	g.free()
+	g.queue_free()
+	for i in 10:  # let its cell loads and deferred frees finish before the next test
+		await runner_tree.process_frame
 	GameFlow.open_world = false
 	GameFlow.dry_run = false
 	GameFlow.load_save = false
