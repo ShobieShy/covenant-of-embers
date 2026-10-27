@@ -1533,6 +1533,11 @@
       "step": "QA-1",
       "date": "2026-10-27",
       "summary": "Ember QA patches rebased onto HEAD: run_tests.sh private XDG_DATA_HOME per run (RUN_TESTS_SHARED_USER=1 opts out); run_tests.gd sweeps user://test_*.bak/.tmp; bot 'no line to X' note after a 30 s stall (the stage-timeout feet/foe text was already in OW11b-1). 03 skipped (1eeb236 covers it). Also: WorldStreamer instantiates a cell the step after its threaded load finishes; main_menu clears playtest_save.json + .bak once per --autoplay process; coop_playtest.sh picks a port ss shows free (20 tries)."
+    },
+    {
+      "step": "OW11b-4",
+      "date": "2026-10-27",
+      "summary": "Breach loft fix: annex_stair_20 was 0.1 m short of annex_upper, a slit that eroded the loft off the navmesh (loft->lever path ended at -13.5,4,28); stair deepened in breach_slice.toml, breach.tscn regenerated, breach nav tiles + interior_breach_rooms cache rebaked. Interiors._move_party sets Player.spawn_feet so a death indoors respawns indoors (was respawning in the midden). Bot: nearest lever first, path ending >2 m short of goal walks straight, re-enters the Breach if outdoors. Open-world autoplay now clears breach_fight, chest and loot; breach_craft fails walking 258 m to the town station (build/ow_play22.log). side_challenge: bot skip kept (real flow: the wing is sealed until tutorial_done, which only the intro/quest sets)."
     }
   ],
   "completed_steps": [

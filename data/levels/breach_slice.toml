@@ -647,8 +647,9 @@ color = [0.3, 0.3, 0.34]
 [[box]]
 name = "annex_stair_20"
 kind = "platform"
-center = [-22.0, 3.8, 47.6]
-size = [3.0, 0.4, 3.0]
+# OW11b: 0.2 m deeper so it meets annex_upper (z 46); the 0.1 m slit cut the loft off the navmesh
+center = [-22.0, 3.8, 47.5]
+size = [3.0, 0.4, 3.2]
 color = [0.3, 0.3, 0.34]
 
 [[box]]

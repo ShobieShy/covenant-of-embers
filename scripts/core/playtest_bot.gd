@@ -457,6 +457,10 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 			var wm := player.get_world_3d().navigation_map
 			if NavigationServer3D.map_get_iteration_id(wm) > 0:
 				_path = NavigationServer3D.map_get_path(wm, player.global_position, at, true)
+	# OW11b: a path that ends well short of the goal means the bot is on a nav island (seen on
+	# a Breach-rooms ledge 4 m above lever_west): walk straight at the goal and drop off it.
+	if not _path.is_empty() and Vector2(_path[-1].x - at.x, _path[-1].z - at.z).length() > 2.0:
+		_path = PackedVector3Array()
 	var next := at
 	var feet := player.global_position
 	# Step 118: start from the waypoint nearest the feet (a long, wiggly path otherwise hands back
@@ -554,8 +558,15 @@ func _physics_process(delta: float) -> void:
 				note("walked %.1f m" % moved)
 				_goto("midden_fight")
 		"midden_fight", "breach_fight":
-			if stage == "breach_fight" and main.breach == null:
-				return  # OW11b: still entering the Breach rooms
+			if stage == "breach_fight":
+				var owb := main.get_node_or_null("OpenWorld") as OpenWorld
+				if owb and owb.interiors.current == "" and not owb.travel.busy:
+					if _tick % 300 == 0:  # OW11b: a death respawns outdoors; go back in
+						note("back into the Breach rooms from %s" % player.global_position)
+						main.call(&"travel", "breach")
+					return
+				if not is_instance_valid(main.breach):
+					return  # OW11b: still entering the Breach rooms
 			var e := nearest_enemy(true)
 			if e:
 				_watch_target(e)
@@ -663,8 +674,12 @@ func _breach_route(b: Breach) -> void:
 		if enc.wave_state == EnemySpawner.WaveState.WAITING:
 			walk_to(enc.trigger_center)
 		return
-	for sw in b.switches:
-		if not sw.is_pressed:
+	var levers: Array = b.switches.filter(func(x): return not x.is_pressed)
+	levers.sort_custom(
+		func(a, c): return flat_distance(a.global_position) < flat_distance(c.global_position)  # OW11b: nearest lever first (the loft one when the bot is up there)
+	)
+	for sw in levers:
+		if true:
 			if _reach(sw):
 				if sw.press():
 					note("pulled lever %s" % sw.name)

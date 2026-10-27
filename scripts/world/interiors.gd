@@ -100,6 +100,8 @@ func _move_party(p: Vector3) -> void:
 	var i := 0
 	for n in party():
 		n.global_position = p + Vector3(i * 0.8, 0.5, 0)
+		if n is Player:  # OW11b: a death respawns on this side of the door, not where we came from
+			(n as Player).spawn_feet = n.global_position
 		if n is CharacterBody3D:
 			(n as CharacterBody3D).velocity = Vector3.ZERO
 		i += 1
