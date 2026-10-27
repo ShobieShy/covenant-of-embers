@@ -1468,6 +1468,11 @@
       "date": "2026-10-27",
       "step": "OW7",
       "summary": "World map screen: tools/gen_world_map.py (map.png/map.json, --check in run_tests), WorldFog (32 m cells, 48 m reveal, base64 save, co-op merge, old saves ok), MapPins (max 32), WorldMapScreen (pan/zoom, fog, regions, waystones, exits, pins, player arrows, click-to-travel on attuned waystones); wired into OpenWorld. rt17 EXIT 1 was mid-run edit contamination (unit 564/564)."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "fix",
+      "summary": "Co-op playtest flake: the host bot's filth-beat fight skipped all fighting when the nearest enemy was a corrupted ally gnawer (re-corrupted by its own dark casts), so it idled at the trigger. nearest_enemy(foes_only) now skips allies. rt19 full suite EXIT 0 (567 unit tests, co-op PASS) on c878bbe."
     }
   ],
   "completed_steps": [
