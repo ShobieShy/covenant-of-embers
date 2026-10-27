@@ -1399,6 +1399,12 @@
       "step": "OW3a",
       "type": "wip",
       "summary": "tools/build_cells.gd cuts each terrain level's Boxes/Props/Pois into 128 m cells (world/cells/<cx>_<cz>.tscn, 28 cells, 416 KB, cells.json) at world_offset; gameplay groups stay with the level. scripts/world/world_streamer.gd: 5x5 ring per viewer, load_threaded_request, one add per frame within 2 ms, RING+1 unload hysteresis, flush() for loading screens. test_world_streamer.gd (fresh cells, ring, hysteresis, cell_of). Not wired into main yet (OW3b: world scene)."
+    },
+    {
+      "time": "2026-10-27T02:01:00-05:00",
+      "step": "OW3b",
+      "type": "wip",
+      "summary": "scenes/world/open_world.tscn + scripts/world/open_world.gd (OpenWorld): Terrain3D from saved res://world/terrain regions (no generation), painted control map (auto shader off), Dynamic collision, WorldStreamer cells. TerrainZone.make_assets static (shared). test_open_world_scene. main.gd still runs levels; switching the game to the world is later (OW5/OW10)."
     }
   ],
   "completed_steps": [

@@ -95,7 +95,10 @@ func pad_distance(x: float, z: float) -> float:
 ## Distance (m) from (x, z) to the zone edge (negative outside).
 func edge_distance(x: float, z: float) -> float:
 	var h := size * 0.5
-	return minf(minf(x - (center.x - h.x), center.x + h.x - x), minf(z - (center.y - h.y), center.y + h.y - z))
+	return minf(
+		minf(x - (center.x - h.x), center.x + h.x - x),
+		minf(z - (center.y - h.y), center.y + h.y - z)
+	)
 
 
 func height_at(x: float, z: float) -> float:
@@ -180,7 +183,9 @@ func build() -> void:
 	t.get(&"material").set(&"show_checkered", false)
 	t.get(&"collision").set(&"mode", 3)  # FULL_GAME: static collision for the whole zone
 	var o := origin()
-	t.get(&"data").call(&"import_images", [height_image(), control_image(), null], Vector3(o.x, 0, o.y), 0.0, 1.0)
+	t.get(&"data").call(
+		&"import_images", [height_image(), control_image(), null], Vector3(o.x, 0, o.y), 0.0, 1.0
+	)
 	var mat: Object = t.get(&"material")
 	mat.set(&"auto_shader", true)
 	mat.call(&"set_shader_param", &"auto_slope", 1.2)
@@ -208,6 +213,11 @@ func _hide_ground_meshes() -> void:
 
 
 func _assets() -> Object:
+	return make_assets(layers)
+
+
+## Terrain3DAssets for a layer id list (OW2: the open world shares this with zones).
+static func make_assets(layers: PackedStringArray) -> Object:
 	var a: Object = ClassDB.instantiate(&"Terrain3DAssets")
 	for i in layers.size():
 		var ta: Object = ClassDB.instantiate(&"Terrain3DTextureAsset")
@@ -259,8 +269,13 @@ func _add_edge_walls() -> void:
 func add_nav_faces(data: NavigationMeshSourceGeometryData3D, aabb: AABB) -> void:
 	# Built from height_at rather than Terrain3D.generate_nav_mesh_source_geometry,
 	# which returned no faces right after import (and must match on every peer anyway).
-	var lo := Vector2(maxf(aabb.position.x, center.x - size.x * 0.5), maxf(aabb.position.z, center.y - size.y * 0.5))
-	var hi := Vector2(minf(aabb.end.x, center.x + size.x * 0.5), minf(aabb.end.z, center.y + size.y * 0.5))
+	var lo := Vector2(
+		maxf(aabb.position.x, center.x - size.x * 0.5),
+		maxf(aabb.position.z, center.y - size.y * 0.5)
+	)
+	var hi := Vector2(
+		minf(aabb.end.x, center.x + size.x * 0.5), minf(aabb.end.z, center.y + size.y * 0.5)
+	)
 	if hi.x <= lo.x or hi.y <= lo.y:
 		return
 	var o := origin()

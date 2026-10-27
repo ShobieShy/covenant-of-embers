@@ -43,3 +43,27 @@ func test_world_terrain_matches_zones() -> void:
 		lvl.free()
 	t.free()
 	cam.free()
+
+
+func test_open_world_scene() -> void:
+	var w := (load("res://scenes/world/open_world.tscn") as PackedScene).instantiate() as OpenWorld
+	runner_tree.root.add_child(w)
+	check(w.streamer != null, "open world has a cell streamer")
+	check(not w.info.is_empty(), "world_terrain.json read")
+	if TerrainZone.available():
+		check(w.terrain != null, "world terrain built from saved regions")
+		var tz := (
+			(load(GameFlow.level_scene("midden")) as PackedScene).instantiate().get_node(^"Terrain")
+			as TerrainZone
+		)
+		var wo := Vector2(576, -240)
+		var p := tz.center + Vector2(37, -51)
+		check(
+			absf(w.height_at(p.x + wo.x, p.y + wo.y) - tz.height_at(p.x, p.y)) < 0.25,
+			"open world height matches the Midden"
+		)
+		tz.get_parent().free()
+	w.streamer.viewer_override = [Vector3(10, 0, 10)]
+	w.streamer.flush()
+	check(w.streamer.loaded.has(Vector2i(0, 0)), "town cell streamed in")
+	w.free()
