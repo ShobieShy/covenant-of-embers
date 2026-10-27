@@ -38,8 +38,11 @@ func test_ember_art_batch06() -> void:
 		var gi := g as GeometryInstance3D
 		lods[[gi.visibility_range_begin, gi.visibility_range_end]] = true
 	check(lods.size() == 3, "3 LOD bands: %s" % [lods.keys()])
-	check(jm.find_children("*", "StaticBody3D", true, false).size() >= 1, "junk mountain collides")
-	for id in ["association_spire", "oak_lod", "breach_crater_rim", "waystone_town", "chest_vault"]:
+	check(
+		jm.find_children("*", "StaticBody3D", true, false).is_empty(),
+		"junk mountain left walk-through (not in the navmesh)"
+	)
+	for id in [] if not EmberArt.COLLIDE else ["oak_lod", "breach_crater_rim", "waystone_town", "chest_vault"]:
 		var mm := EmberArt.model(id)
 		check(mm.find_children("*", "StaticBody3D", true, false).size() >= 1, id + " collides")
 		mm.free()

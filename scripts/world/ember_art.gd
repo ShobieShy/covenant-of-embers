@@ -6,6 +6,8 @@ extends RefCounted
 ## that file exists and otherwise builds a procedural placeholder, so the art drops in later
 ## with no code change. `dress()` adds a level's decals, skyline and landmark art.
 
+## Landmark and prop collision (the spire and junk mountain are skipped in _collide).
+const COLLIDE := true
 const DIR := "res://assets/original/ember_art/"
 const GROUP := &"ember_art"
 ## id -> kind ("model" / "texture"), the level it belongs to ("" = any) and where it stands.
@@ -98,7 +100,8 @@ static func _prep(m: Node3D, id: String) -> void:
 						if g is GeometryInstance3D:
 							(g as GeometryInstance3D).visibility_range_begin = float(b[0])
 							(g as GeometryInstance3D).visibility_range_end = float(b[1])
-	_collide(m, id)
+	if COLLIDE:
+		_collide(m, id)
 	if id.begins_with("waystone_"):
 		for mi in m.find_children("*", "MeshInstance3D", true, false):
 			var mesh := (mi as MeshInstance3D).mesh
@@ -218,7 +221,7 @@ static func _skyline(holder: Node3D, tz: TerrainZone) -> void:
 ## Simple collision: a trimesh from each landmark's LOD0 (or its only mesh); a convex hull for
 ## the small props (waystones, chests) so the interaction reach still works round them.
 static func _collide(m: Node3D, id: String) -> void:
-	if id == "association_spire":  ## backdrop behind the Association back door; a trimesh blocks the exit
+	if id in ["association_spire", "junk_mountain"]:  ## not in the baked navmesh yet: a trimesh strands the bots
 		return
 	var small := id.begins_with("waystone_") or id.begins_with("chest_")
 	var meshes := m.find_children("*", "MeshInstance3D", true, false)
