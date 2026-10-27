@@ -21,6 +21,7 @@
 [level]
 id = "breach_slice"
 name = "The Breach"
+world_offset = [1104.0, -64.0]  # OW1: docs/WORLD_LAYOUT.md
 
 [materials]                  # step 75 art pass: CC0 ambientCG sets, tinted by each box colour
 ground = "assets/ambientcg/PavingStones131"

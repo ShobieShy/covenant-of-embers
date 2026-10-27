@@ -1611,7 +1611,12 @@
     "2026-10-24: steps 119-134 (art spree A1-A8, FX spree F1-F8) planned, waiting on user go; see docs/ART_SPREE_PLAN.md, docs/FX_SPREE_PLAN.md",
     "2026-10-24: Q27-Q34 answered (low-poly, CC-BY credited in-game, Loli small witch normal attire, gear visible now, moonlit night, Light/Dark FX for all, Low=Steam Deck, F1 first)",
     "2026-10-26: steps 135-143 (part brands B1-B9) planned, waiting on user go; see docs/BRANDS_PLAN.md; open Q35-Q46",
-    "2026-10-26: Q35-Q46 answered (defaults): Head brand, flat bonus per bolt, Pyrowning no mana, overheat lockout only, straight boulders, Coltara R toggle no shield, weak points + chance fallback, Water chain full charge only, element kept in names, Head-only brand, Windchester clamps at 0.1 s, wands scaled-down brand effects; steps 135-143 still waiting on user go"
+    "2026-10-26: Q35-Q46 answered (defaults): Head brand, flat bonus per bolt, Pyrowning no mana, overheat lockout only, straight boulders, Coltara R toggle no shield, weak points + chance fallback, Water chain full charge only, element kept in names, Head-only brand, Windchester clamps at 0.1 s, wands scaled-down brand effects; steps 135-143 still waiting on user go",
+    {
+      "time": "2026-10-27 01:50 CDT",
+      "step": "OW1",
+      "note": "world_offset on all levels, export_zone_heights.gd, build_world.py (stitch + Laplace fill, --check/--self-test), docs/WORLD_LAYOUT.md; LABYRINTH_PLAN approval recorded"
+    }
   ],
   "version": "0.1.4-prealpha"
 }

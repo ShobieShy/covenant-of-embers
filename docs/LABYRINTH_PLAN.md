@@ -1,7 +1,8 @@
 # The Labyrinth (plan only)
 
-Status: PLAN, queued for after the 0.2.0 open-world release (OW11). Nothing here is built
-until 0.2.0 ships and these defaults are approved. Requested 2026-10-27 ~01:18 CDT.
+Status: APPROVED 2026-10-27 ~01:48 CDT (all 12 recommended defaults in section 13). Build
+L1 onward only after the 0.2.0 open-world release (OW11). Nothing here is built
+until 0.2.0 ships. Requested 2026-10-27 ~01:18 CDT.
 
 One main-game, multi-floor labyrinth dungeon replaces the Magewar Bible's "defeat all 5
 dungeons, then the Demon Lord's lair" plan. It sits alongside the open world (OPEN_WORLD_PLAN.md):

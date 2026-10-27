@@ -334,6 +334,7 @@ texture_filter = 5
 [node name="TownSquare" type="Node3D"]
 metadata/level_id = "town_square"
 metadata/level_name = "Eldoria - Town Square"
+metadata/world_offset = Vector2(0, 0)
 metadata/source = "res://data/levels/town_square.toml"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]

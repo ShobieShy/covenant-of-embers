@@ -269,6 +269,7 @@ albedo_color = Color(0.665185, 0.583831, 0.484529, 1)
 [node name="OldOak" type="Node3D"]
 metadata/level_id = "old_oak"
 metadata/level_name = "The Old Oak"
+metadata/world_offset = Vector2(-272, 0)
 metadata/source = "res://data/levels/old_oak.toml"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]

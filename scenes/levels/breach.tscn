@@ -559,6 +559,7 @@ size = Vector3(1.2, 5, 1.2)
 [node name="BreachSlice" type="Node3D"]
 metadata/level_id = "breach_slice"
 metadata/level_name = "The Breach"
+metadata/world_offset = Vector2(1104, -64)
 metadata/source = "res://data/levels/breach_slice.toml"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]

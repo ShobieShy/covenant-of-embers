@@ -5,6 +5,7 @@
 [level]
 id = "mage_association"
 name = "Eldoria - Mage Association"
+world_offset = [0.0, -256.0]  # OW1: docs/WORLD_LAYOUT.md
 
 [materials]                  # step 127 (FX F1): textured CC0 ground so it reads under AgX
 ground = "assets/ambientcg/PavingStones131"

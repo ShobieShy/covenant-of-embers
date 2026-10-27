@@ -17,6 +17,7 @@
 [level]
 id = "midden_greybox"
 name = "The Landfill (greybox)"
+world_offset = [576.0, -240.0]  # OW1: docs/WORLD_LAYOUT.md
 
 [materials]                  # step 75 art pass: CC0 ambientCG sets, tinted by each box colour
 ground = "assets/ambientcg/Ground037"

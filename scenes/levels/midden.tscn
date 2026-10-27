@@ -713,6 +713,7 @@ size = Vector3(140, 0.2, 10)
 [node name="Midden" type="Node3D"]
 metadata/level_id = "midden_greybox"
 metadata/level_name = "The Landfill (greybox)"
+metadata/world_offset = Vector2(576, -240)
 metadata/source = "res://data/levels/midden_greybox.toml"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]

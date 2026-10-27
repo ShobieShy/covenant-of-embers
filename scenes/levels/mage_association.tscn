@@ -197,6 +197,7 @@ albedo_color = Color(0.436627, 0.565728, 0.649956, 1)
 [node name="MageAssociation" type="Node3D"]
 metadata/level_id = "mage_association"
 metadata/level_name = "Eldoria - Mage Association"
+metadata/world_offset = Vector2(0, -256)
 metadata/source = "res://data/levels/mage_association.toml"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]

@@ -6,6 +6,7 @@
 [level]
 id = "old_oak"
 name = "The Old Oak"
+world_offset = [-272.0, 0.0]  # OW1: docs/WORLD_LAYOUT.md
 
 [materials]                  # step 127 (FX F1): textured CC0 ground so it reads under AgX
 ground = "assets/ambientcg/Ground037"

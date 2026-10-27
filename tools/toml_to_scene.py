@@ -320,7 +320,10 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         if sec not in d:
             raise LevelError(f"missing [{sec}]")
     lv = d["level"]
-    _only(lv, {"id", "name"}, "[level]")
+    _only(lv, {"id", "name", "world_offset"}, "[level]")
+    wo = [float(x) for x in lv.get("world_offset", [0.0, 0.0])]  # OW1: [x, z] metres into world space
+    if len(wo) != 2 or any(x % 16.0 for x in wo):
+        raise LevelError("world_offset must be [x, z], multiples of 16 m")
     env = d["environment"]
     _only(env, {"sky_color", "ambient_color", "fog_density", "sky", "volumetric_fog", "fog_albedo", "grade"}, "[environment]")
     vfog = float(env.get("volumetric_fog", 0.0))
@@ -343,6 +346,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     out = {
         "id": str(_need(lv, "id", "[level]")),
         "name": str(_need(lv, "name", "[level]")),
+        "world_offset": wo,
         "sky_color": _color(_need(env, "sky_color", "[environment]"), "sky_color"),
         "ambient_color": _color(_need(env, "ambient_color", "[environment]"), "ambient_color"),
         "fog_density": fog,
@@ -706,7 +710,9 @@ def to_tscn(lv: dict, source: str) -> str:
     nodes: list[str] = []
     root = "Midden" if lv["id"].startswith("midden") else "".join(w.capitalize() for w in lv["id"].split("_"))
     nodes.append(f'[node name="{root}" type="Node3D"]\nmetadata/level_id = "{lv["id"]}"\n'
-                 f'metadata/level_name = "{lv["name"]}"\nmetadata/source = "res://{source}"\n')
+                 f'metadata/level_name = "{lv["name"]}"\n'
+                 f'metadata/world_offset = Vector2({_f(lv["world_offset"][0])}, {_f(lv["world_offset"][1])})\n'
+                 f'metadata/source = "res://{source}"\n')
     nodes.append(f'[node name="WorldEnvironment" type="WorldEnvironment" parent="."]\nenvironment = SubResource("{env}")\n')
     nodes.append(f'[node name="Sun" type="DirectionalLight3D" parent="."]\n'
                  f'transform = {_xf(sun_basis(lv["to_light"]), [0, 10, 0])}\n'
