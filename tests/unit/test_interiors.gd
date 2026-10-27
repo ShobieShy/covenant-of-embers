@@ -107,3 +107,22 @@ func test_breach_rooms() -> void:
 	)
 	check(i.breach == null, "logic dropped")
 	root.free()
+
+
+func test_interior_nav_cached_and_fresh() -> void:
+	for id in Interiors.LINKS:
+		check(ResourceLoader.exists(Interiors.nav_cache(id)), "%s nav cache present" % id)
+		var ps := load(GameFlow.level_scene(Interiors.LINKS[id]["scene"])) as PackedScene
+		var n := ps.instantiate() as Node3D
+		Interiors.prepare(n, id)
+		var nav := n.get_node_or_null("Navigation") as LevelNavigation
+		check(nav != null and not nav.bake_on_ready, "%s uses the cache" % id)
+		var cached := nav.navigation_mesh.get_polygon_count()
+		runner_tree.root.add_child(n)
+		check(nav.bakes == 0, "%s did not bake on entry" % id)
+		var fresh := nav.bake_now()
+		check(
+			fresh == cached,
+			"%s cache fresh (%d vs %d): rerun tools/bake_interior_nav.gd" % [id, cached, fresh]
+		)
+		n.free()

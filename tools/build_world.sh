@@ -7,3 +7,4 @@ python3 tools/build_world.py
 godot --headless --path . -s res://tools/save_world_terrain.gd
 godot --headless --path . -s res://tools/build_cells.gd
 godot --headless --path . -s res://tools/bake_world_nav.gd
+godot --headless --path . -s res://tools/bake_interior_nav.gd

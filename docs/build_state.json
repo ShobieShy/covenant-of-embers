@@ -1453,6 +1453,11 @@
       "step": "OW5b",
       "type": "test",
       "summary": "rt12: run_tests.sh 560 passed, 0 failed, EXIT 0 after OW5b."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "OW5b-fix",
+      "note": "World nav bake ran before cells entered the tree and parsed no colliders (walls were walkable); now deferred, nav.json records obstacle_verts/shapes, test_cells_have_obstacles guards it. Interiors.prepare loads an offline interior navmesh (tools/bake_interior_nav.gd -> scenes/levels/nav/interior_<id>.res), entering never bakes; freshness test."
     }
   ],
   "completed_steps": [

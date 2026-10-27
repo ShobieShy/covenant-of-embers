@@ -16,6 +16,27 @@ func test_nav_fresh() -> void:
 		check(ResourceLoader.exists("res://world/nav/%s.res" % k), "nav tile %s on disk" % k)
 
 
+## The bake must see each content cell's colliders (it once ran before the scene root
+## was in the tree and parsed none, so walls were walkable).
+func test_cells_have_obstacles() -> void:
+	var nav: Dictionary = JSON.parse_string(
+		FileAccess.get_file_as_string("res://world/nav/nav.json")
+	)
+	var cells: Dictionary = JSON.parse_string(
+		FileAccess.get_file_as_string("res://world/cells/cells.json")
+	)
+	var seen := 0
+	for k in cells["cells"]:
+		if not nav["cells"].has(k):
+			continue
+		var e: Variant = nav["cells"][k]
+		check(e is Dictionary and e.has("shapes"), "cell %s has obstacle info" % k)
+		if e is Dictionary and int(e.get("shapes", 0)) > 0:
+			seen += 1
+			check(int(e["obstacle_verts"]) > 0, "cell %s nav saw its colliders" % k)
+	check(seen > 0, "some cells carve obstacles")
+
+
 func test_town_to_midden_path() -> void:
 	var s := WorldStreamer.new()
 	s.cells_dir = "res://world/__none__/"  # nav only: keep this test light

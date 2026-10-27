@@ -105,6 +105,27 @@ func _move_party(p: Vector3) -> void:
 		i += 1
 
 
+static func nav_cache(id: String) -> String:
+	return "res://scenes/levels/nav/interior_%s.res" % id
+
+
+## Drops the interior's sky, sun and STRIP parts, and gives its LevelNavigation the
+## offline mesh (tools/bake_interior_nav.gd) so entering never bakes on the main thread.
+static func prepare(n: Node3D, id: String, use_cache := true) -> void:
+	var strip: Array = ["WorldEnvironment", "Sun"] + LINKS[id].get("strip", [])
+	for s in strip:  # the world's sky and sun stay
+		var e := n.get_node_or_null(NodePath(s))
+		if e:
+			n.remove_child(e)
+			e.free()
+	var nav := n.get_node_or_null("Navigation") as LevelNavigation
+	if nav and use_cache and ResourceLoader.exists(nav_cache(id)):
+		nav.bake_on_ready = false
+		nav.navigation_mesh = load(nav_cache(id)) as NavigationMesh
+	elif nav and use_cache:
+		push_warning("Interiors: no nav cache for %s (run tools/bake_interior_nav.gd)" % id)
+
+
 ## Enters `id` from `from_level` (the side of the front door). Returns the landing.
 func enter(id: String, from_level := "") -> Vector3:
 	if busy or current != "" or not LINKS.has(id):
@@ -125,12 +146,7 @@ func enter(id: String, from_level := "") -> Vector3:
 		await get_tree().process_frame
 	var ps := ResourceLoader.load_threaded_get(path) as PackedScene
 	interior = ps.instantiate() as Node3D
-	var strip: Array = ["WorldEnvironment", "Sun"] + link.get("strip", [])
-	for n in strip:  # the world's sky and sun stay
-		var e := interior.get_node_or_null(n)
-		if e:
-			interior.remove_child(e)
-			e.free()
+	prepare(interior, id)
 	interior.name = "Interior"
 	interior.position = Vector3(0, DEPTH, 0)
 	add_child(interior)

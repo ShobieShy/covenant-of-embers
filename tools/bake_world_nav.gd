@@ -18,6 +18,10 @@ var spacing := 1.0
 
 
 func _initialize() -> void:
+	_run.call_deferred()  # root is not in the tree yet: parsed colliders would be empty
+
+
+func _run() -> void:
 	var meta: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(SRC + "world.json"))
 	origin = Vector2(meta.origin[0], meta.origin[1])
 	grid = Vector2i(int(meta.grid[0]), int(meta.grid[1]))
@@ -32,9 +36,12 @@ func _initialize() -> void:
 		if not only.is_empty() and not only.has(id):
 			continue
 		var t1 := Time.get_ticks_msec()
-		var nm := bake_cell(k)
+		var obstacles := [0, 0]
+		var nm := bake_cell(k, obstacles)
 		ResourceSaver.save(nm, DST + id + ".res", ResourceSaver.FLAG_COMPRESS)
-		info[id] = nm.get_polygon_count()
+		info[id] = {
+			"polys": nm.get_polygon_count(), "obstacle_verts": obstacles[0], "shapes": obstacles[1]
+		}
 		print("[nav] %s %d polys %d ms" % [id, nm.get_polygon_count(), Time.get_ticks_msec() - t1])
 	if only.is_empty():
 		var f := FileAccess.open(DST + "nav.json", FileAccess.WRITE)
@@ -65,7 +72,7 @@ func h(x: float, z: float) -> float:
 	return hw[j * grid.x + i]
 
 
-func bake_cell(k: Vector2i) -> NavigationMesh:
+func bake_cell(k: Vector2i, obstacles: Array) -> NavigationMesh:
 	var c := WorldStreamer.CELL
 	var lo := Vector2(k.x * c, k.y * c)
 	var nm := LevelNavigation.make_mesh()
@@ -77,6 +84,11 @@ func bake_cell(k: Vector2i) -> NavigationMesh:
 		var n := (load(path) as PackedScene).instantiate()
 		root.add_child(n)
 		NavigationServer3D.parse_source_geometry_data(nm, d, n)
+		obstacles[0] = d.get_vertices().size() / 3
+		# decor-only cells (rocks, trash glbs) have no physics, so nothing to carve
+		obstacles[1] = n.find_children("*", "CollisionShape3D", true, false).size()
+		if obstacles[1] > 0 and obstacles[0] == 0:
+			push_error("bake_world_nav: cell %s parsed no colliders" % path)
 		n.free()
 	var faces := PackedVector3Array()
 	var x0 := lo.x - 4.0
