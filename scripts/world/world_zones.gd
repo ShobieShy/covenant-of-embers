@@ -93,7 +93,9 @@ static func merged(here: String) -> Node3D:
 			if st:
 				var xf := z.transform * st.transform
 				z.remove_child(st)
+				st.owner = null
 				lv.add_child(st)
+				st.owner = lv
 				st.transform = xf
 		for g in MERGE:
 			var src := z.get_node_or_null(NodePath(g))
@@ -113,10 +115,25 @@ static func merged(here: String) -> Node3D:
 			for c in src.get_children():
 				var xf := base * (c as Node3D).transform if c is Node3D else Transform3D()
 				src.remove_child(c)
+				var owned := _owned_by(c, z)
+				for o in owned:
+					o.owner = null  # OW11c-2: no owner-inconsistency warning on reparent
 				dst.add_child(c, true)
+				for o in owned:
+					o.owner = lv
 				if c is Node3D:
 					(c as Node3D).transform = xf
 		z.free()
 	lv.set_meta(&"world_offset", Vector2.ZERO)
 	lv.set_meta(&"open_world", true)
 	return lv
+
+
+## OW11c-2: `n` and its descendants owned by `z`, to re-own to the merged level.
+static func _owned_by(n: Node, z: Node) -> Array[Node]:
+	var out: Array[Node] = []
+	if n.owner == z:
+		out.append(n)
+	for c in n.get_children():
+		out.append_array(_owned_by(c, z))
+	return out

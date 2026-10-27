@@ -1548,6 +1548,11 @@
       "step": "OW11c-1",
       "date": "2026-10-27",
       "summary": "Intro ported to the open world. Open-world autoplay without --skip-intro: prologue done, 13/13 beats (build/ow_intro11.log). main recreates IntroDirector when here_id changes (frees the old cinematic first; base = interior position or zone world_offset); classic intro setup skipped in the open world; interior Exits markers become LevelGates; _world_travel enters interiors. IntroDirector: spot()/at() offset by base, _world_way() targets the next zone entrance or interior door when no gate exists, back-door hop to midden near town_square's to_landfill marker. Zone changes now call quest_driver.reached() (the_landfill's 'reach landfill' never fired, so filth_defeated was never set; ow_intro10 stalled at filth). SaveMigration.world_offset(); playtest bot intro detection via IntroDirector.active and travel to world_hop past 60 m. Targeted tests 20/20. Not yet fixed: owner-inconsistency warnings (world_zones merged), terrain_zone.gd:181 load('')."
+    },
+    {
+      "step": "OW11c-2",
+      "date": "2026-10-27",
+      "summary": "WorldZones.merged() clears the owner of each reparented node (and its zone-owned descendants, and PlayerStart) before add_child, then re-owns them to the merged level: 0 owner-inconsistency warnings in build/ow_play25.log (open world, --skip-intro: PASS, 36 kills, 2 saves; 82 warnings in ow_intro11). Targeted tests 16/16 (world_zones, world_session, interiors, save_migration). terrain_zone.gd:181 load('') is Terrain3D 1.0.2's known load(\"res://\") pair, already whitelisted by run_tests.sh: left as is."
     }
   ],
   "completed_steps": [
