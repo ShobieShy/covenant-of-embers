@@ -1583,6 +1583,11 @@
       "step": "OW11c-8",
       "date": "2026-10-27",
       "summary": "Co-op during the host's intro. rt29 failed in co-op: joiner never cast, host stalled at intro beat filth (a gnawer wandered off to (427,-54), likely chasing the far-away joiner's proxy). Causes: (1) _setup_coop runs before _enter_open_world, so coop.world_enemies was always false (host shared only its spawner, joiner kept local enemies); now set true after _enter_open_world, so the host shares every world enemy incl. intro waves. (2) A host fast travel in the open world sent nothing, leaving the joiner 100s of m behind; the host now sends 'travel' and the joiner lands at the same outdoor place (_follow_host_travel; interiors/Breach stay on pose 'w'). Co-op 6/6 PASS (build/coop_intro1..3, coop_intro_b1..3; joiner kills from ~197 s, during the intro), no filth stall; joiner rc 134 after PASS accepted with WARNING. Coop/interiors targeted tests 20/20."
+    },
+    {
+      "step": "OW11c-9",
+      "date": "2026-10-27",
+      "summary": "rt30 (full tools/run_tests.sh at a7f56a0, 13:07-~13:30 CDT): all green. Unit 581 passed, 0 failed; solo playtests PASS (50 and 52 kills); co-op in the open world host PASS 48 kills, joiner PASS 35 kills/255 casts; joiner rc 134 at teardown after PASS accepted with the WARNING line (known exit crash, root cause open). Log build/rt30.log."
     }
   ],
   "completed_steps": [
