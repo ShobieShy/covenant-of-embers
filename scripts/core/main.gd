@@ -480,6 +480,9 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 	sync.setup(Coop.session, story_flags, player, coop.host)
 	if coop.host:
 		sync.push()
+		## 0.1.4: the lobby level comes from the host's save, which can be stale (or the host
+		## starts the intro elsewhere); every host level load tells clients where it really is.
+		Coop.session.send("travel", {"to": GameFlow.id_of($Level)})
 	if not Coop.session.ended.is_connected(_on_coop_ended):
 		Coop.session.ended.connect(_on_coop_ended)
 	print("[coop] %s, %d player(s)" % ["hosting" if coop.host else "joined", Coop.session.roster.size()])
@@ -488,6 +491,8 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 ## Step 91: the host's travel moves everyone; clients follow with their character.
 func _on_coop_message(_from: int, kind: String, data: Dictionary) -> void:
 	if kind == "travel" and Coop.is_client():
+		if String(data.get("to", "midden")) == GameFlow.id_of($Level):
+			return  # already here (the host announces its level on every load)
 		save_game()
 		GameFlow.travel(get_tree(), String(data.get("to", "midden")))
 
