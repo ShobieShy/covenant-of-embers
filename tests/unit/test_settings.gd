@@ -38,7 +38,7 @@ func test_each_option_saved() -> void:
 	var l := Settings.load_from(FILE)
 	for k in s._options():
 		check(l.get(k) == s.get(k), "option %s round-trips" % k)
-	check(Settings.new()._options().size() == 17, "17 options (step 134: quality)")
+	check(Settings.new()._options().size() == 18, "18 options (OW8: minimap_north)")
 	_cleanup()
 
 
@@ -56,7 +56,10 @@ func test_options_applied() -> void:
 	check(p.feel.reduced_motion, "reduced motion wired")
 	check(p.focus_toggle and p.crouch_toggle and p.invert_y, "toggles wired")
 	check(Accessibility.colorblind == Accessibility.Mode.DEUTERANOPIA, "palette mode applied")
-	check(not Accessibility.subtitles and Accessibility.font_size() == Accessibility.BASE_FONT * 2, "subtitles applied")
+	check(
+		not Accessibility.subtitles and Accessibility.font_size() == Accessibility.BASE_FONT * 2,
+		"subtitles applied"
+	)
 	p.queue_free()
 	_cleanup()
 
@@ -66,7 +69,11 @@ func test_palettes_distinct_and_used() -> void:
 	var et := ElementTable.load_default()
 	var base_rare := rt.color("rare")
 	var base_fire := et.color(ElementTable.Element.FIRE)
-	for m in [Accessibility.Mode.DEUTERANOPIA, Accessibility.Mode.PROTANOPIA, Accessibility.Mode.TRITANOPIA]:
+	for m in [
+		Accessibility.Mode.DEUTERANOPIA,
+		Accessibility.Mode.PROTANOPIA,
+		Accessibility.Mode.TRITANOPIA
+	]:
 		Accessibility.colorblind = m
 		var seen := {}
 		for id in Rarity.IDS:
@@ -76,9 +83,15 @@ func test_palettes_distinct_and_used() -> void:
 		for e in ElementTable.COUNT:
 			seen[et.color(e).to_html()] = true
 		check(seen.size() == ElementTable.COUNT, "element colours distinct in mode %d" % m)
-	check(rt.color("rare") != base_rare or et.color(ElementTable.Element.FIRE) != base_fire, "palette overrides data")
+	check(
+		rt.color("rare") != base_rare or et.color(ElementTable.Element.FIRE) != base_fire,
+		"palette overrides data"
+	)
 	Accessibility.reset()
-	check(rt.color("rare") == base_rare and et.color(ElementTable.Element.FIRE) == base_fire, "off = data colours")
+	check(
+		rt.color("rare") == base_rare and et.color(ElementTable.Element.FIRE) == base_fire,
+		"off = data colours"
+	)
 
 
 func test_dialogue_subtitles() -> void:
@@ -88,7 +101,10 @@ func test_dialogue_subtitles() -> void:
 	Accessibility.subtitle_scale = 1.5
 	ui._on_line("Bob", "Hello")
 	check(not ui.text_label.visible, "subtitles off hides line")
-	check(ui.text_label.get_theme_font_size("font_size") == roundi(Accessibility.BASE_FONT * 1.5), "scale applied")
+	check(
+		ui.text_label.get_theme_font_size("font_size") == roundi(Accessibility.BASE_FONT * 1.5),
+		"scale applied"
+	)
 	Accessibility.subtitles = true
 	ui._on_line("Bob", "Hello")
 	check(ui.text_label.visible, "subtitles on shows line")

@@ -14,6 +14,7 @@ var travel: WorldTravel
 var fog := WorldFog.new()  ## OW7; main.gd saves it under progress.fog from OW10
 var pins := MapPins.new()
 var map_screen: WorldMapScreen
+var minimap: Minimap
 var _fog_t := 0.0
 var info := {}
 
@@ -48,6 +49,13 @@ func _ready() -> void:
 	map_screen.travel = travel
 	map_screen.players = _map_players
 	layer.add_child(map_screen)
+	minimap = Minimap.new()  # OW8
+	minimap.fog = fog
+	minimap.pins = pins
+	minimap.travel = travel
+	minimap.players = _map_players
+	minimap.lock_north = Settings.load_from().minimap_north
+	layer.add_child(minimap)
 	for w in travel.waystones.values():
 		(w as Waystone).opened.connect(func(_p: String) -> void: map_screen.open())
 	var fader := InteriorFade.new()
@@ -64,24 +72,35 @@ func _process(dt: float) -> void:
 	_fog_t = 0.0
 	for p in _map_players():
 		fog.reveal(p[0].x, p[0].z)
+	if minimap:
+		minimap.visible = not map_screen.visible
 
 
+## [pos, yaw, name, colour, is_local] for the local player and every co-op partner (OW8).
 func _map_players() -> Array:
+	if not is_inside_tree() or (interiors and interiors.current != ""):
+		return []
+	return map_rows(get_tree())
+
+
+static func map_rows(tree: SceneTree) -> Array:
 	var out: Array = []
-	if not is_inside_tree():
-		return out
-	for g in [Player.GROUP, &"coop_avatars"]:
-		for n in get_tree().get_nodes_in_group(g):
-			if n is Node3D and not (interiors and interiors.current != ""):
-				var c := Color(1, 0.8, 0.3) if g == Player.GROUP else Color(0.4, 0.8, 1.0)
-				out.append(
-					[
-						(n as Node3D).global_position,
-						(n as Node3D).global_rotation.y,
-						String(n.get_meta(&"display_name", "")),
-						c
-					]
-				)
+	for n in tree.get_nodes_in_group(Player.GROUP):
+		var p := n as Node3D
+		var nm: Variant = p.get(&"character_name")
+		var c: Variant = p.get(&"character_color")
+		out.append(
+			[
+				p.global_position,
+				p.global_rotation.y,
+				String(nm) if nm != null else "",
+				c if c is Color else Color(1, 0.8, 0.3),
+				true
+			]
+		)
+	for n in tree.get_nodes_in_group(RemotePlayer.GROUP):
+		var r := n as RemotePlayer
+		out.append([r.global_position, r.target_yaw, r.display_name, r.color, false])
 	return out
 
 

@@ -28,6 +28,7 @@ var subtitle_scale := 1.0
 var renderer := "auto"  ## step 86: PlatformDisplay.RENDERERS (next launch)
 var window_mode := 0  ## PlatformDisplay.WINDOW_MODES
 var ui_scale := 0.0  ## 0 = auto (DPI)
+var minimap_north := false  ## OW8: lock the minimap north instead of rotating with the camera
 var quality := -1  ## step 134: QualityPresets.Level, -1 = auto (Low on Steam Deck)
 
 
@@ -109,7 +110,9 @@ func rebind(action: StringName, e: InputEvent) -> bool:
 			if Gamepad.is_pad(old) != Gamepad.is_pad(e):
 				kept.append(event_to_dict(old))
 	kept.append(d)
-	kept.sort_custom(func(x, y): return not (x.has("joy") or x.has("axis")) and (y.has("joy") or y.has("axis")))
+	kept.sort_custom(
+		func(x, y): return not (x.has("joy") or x.has("axis")) and (y.has("joy") or y.has("axis"))
+	)
 	bindings[action] = kept
 	if InputMap.has_action(action):
 		InputMap.action_erase_events(action)
@@ -131,7 +134,9 @@ func apply_input_map() -> void:
 
 
 func apply_to(p: Player) -> void:
-	Accessibility.colorblind = clampi(colorblind, 0, Accessibility.MODE_NAMES.size() - 1) as Accessibility.Mode
+	Accessibility.colorblind = (
+		clampi(colorblind, 0, Accessibility.MODE_NAMES.size() - 1) as Accessibility.Mode
+	)
 	Accessibility.subtitles = subtitles
 	Accessibility.subtitle_scale = subtitle_scale
 	var tree := Engine.get_main_loop() as SceneTree
@@ -207,5 +212,6 @@ func _options() -> PackedStringArray:
 		"renderer",
 		"window_mode",
 		"ui_scale",
-		"quality"
+		"quality",
+		"minimap_north"
 	]

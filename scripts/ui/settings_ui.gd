@@ -39,7 +39,9 @@ func _init() -> void:
 		action_buttons[a] = b
 	var opts := VBoxContainer.new()
 	h.add_child(opts)
-	for o in ["invert_y", "focus_toggle", "crouch_toggle", "reduced_motion", "subtitles"]:
+	for o in [
+		"invert_y", "focus_toggle", "crouch_toggle", "reduced_motion", "subtitles", "minimap_north"
+	]:
 		var c := CheckBox.new()
 		c.text = o.capitalize()
 		c.toggled.connect(func(v): set_option(o, v))
@@ -88,7 +90,9 @@ func _init() -> void:
 	var rd := OptionButton.new()
 	for n in PlatformDisplay.renderers_for(OS.get_name()):
 		rd.add_item("Renderer: " + n + " (restart)")
-	rd.item_selected.connect(func(i): set_option("renderer", PlatformDisplay.renderers_for(OS.get_name())[i]))
+	rd.item_selected.connect(
+		func(i): set_option("renderer", PlatformDisplay.renderers_for(OS.get_name())[i])
+	)
 	opts.add_child(rd)
 	controls["renderer"] = rd
 	var back := Button.new()
@@ -126,7 +130,9 @@ func refresh() -> void:
 		if c is CheckBox:
 			(c as CheckBox).set_pressed_no_signal(settings.get(o))
 		elif c is OptionButton and o == "renderer":
-			(c as OptionButton).select(maxi(0, PlatformDisplay.renderers_for(OS.get_name()).find(settings.renderer)))
+			(c as OptionButton).select(
+				maxi(0, PlatformDisplay.renderers_for(OS.get_name()).find(settings.renderer))
+			)
 		elif c is OptionButton and o == "quality":
 			(c as OptionButton).select(int(settings.quality) + 1)
 		elif c is OptionButton:
@@ -154,10 +160,16 @@ func _commit() -> void:
 func _input(event: InputEvent) -> void:
 	if not visible or listening == &"":
 		return
-	var pad_axis := event is InputEventJoypadMotion and absf((event as InputEventJoypadMotion).axis_value) > 0.6
+	var pad_axis := (
+		event is InputEventJoypadMotion and absf((event as InputEventJoypadMotion).axis_value) > 0.6
+	)
 	if (
 		(
-			(event is InputEventKey or event is InputEventMouseButton or event is InputEventJoypadButton)
+			(
+				event is InputEventKey
+				or event is InputEventMouseButton
+				or event is InputEventJoypadButton
+			)
 			and event.is_pressed()
 		)
 		or pad_axis

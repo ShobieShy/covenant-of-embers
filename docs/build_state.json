@@ -1473,6 +1473,11 @@
       "date": "2026-10-27",
       "step": "fix",
       "summary": "Co-op playtest flake: the host bot's filth-beat fight skipped all fighting when the nearest enemy was a corrupted ally gnawer (re-corrupted by its own dark casts), so it idled at the trigger. nearest_enemy(foes_only) now skips allies. rt19 full suite EXIT 0 (567 unit tests, co-op PASS) on c878bbe."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "OW8",
+      "summary": "Minimap (scripts/ui/minimap.gd): top-right 160 px round, drawn from world/map.png + fog (no second camera), 0.8 px/m, rotates with the camera unless Settings.minimap_north (new option, checkbox in settings, old settings files load), waystones/exits/pins/partners with rim clamping, hidden while the full map is open. Co-op partner markers: OpenWorld.map_rows lists the local Player and every RemotePlayer with name, colour and yaw for both the map and minimap."
     }
   ],
   "completed_steps": [
