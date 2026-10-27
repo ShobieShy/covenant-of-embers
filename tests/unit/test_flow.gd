@@ -12,6 +12,9 @@ func _reset() -> void:
 	GameFlow.save_path = FILE
 	GameFlow.path_override = FILE  # the menu's select_slot must not read the player's real save
 	GameFlow.last_request = ""
+	for f in [FILE, FILE + ".bak", FILE + ".tmp"]:  # a killed run leaves the test's own save behind
+		if FileAccess.file_exists(f):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(f))
 
 
 func _restore() -> void:
