@@ -1503,6 +1503,11 @@
       "date": "2026-10-27",
       "step": "OW10c-fix",
       "note": "rt27 EXIT 1: freed-RID errors (EmberArt waystone material, streamer instance_set_base) in test_main_open_world, full unit phase only (not reproducible in quarters/halves). Cause: LoadingScreen and Interiors freed mid threaded load left uncollected requests. Both now collect pending loads in PREDELETE (like WorldStreamer). Unit phase rt28u: 579 ok, 0 errors."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "OW10d",
+      "note": "WorldZones: town_square/old_oak/midden gameplay markers (spawns, waves, camps, chests, gates, exits, NPCs, waystones, anchors) at world offsets with level art stripped; one EnemySpawner per zone. Not yet wired into main. test_world_zones (4 enemies across 3 zones)."
     }
   ],
   "completed_steps": [
