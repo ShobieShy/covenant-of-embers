@@ -1447,6 +1447,12 @@
       "step": "OW5b",
       "type": "feature",
       "summary": "Breach rooms instanced: Interiors.LINKS breach_rooms loads the breach scene at y -2000 minus its crater parts (Terrain, Props, Pois, sky, sun), portal at the complex entrance road (breach to_midden marker, world 1099.5, 11), a Breach node runs the rooms (encounters, switches, vault) while inside. Interiors.CELL_SKIP keeps the breach Boxes out of the world cells; cells and world nav rebuilt. Tests in test_interiors.gd; test_cells_fresh honours CELL_SKIP."
+    },
+    {
+      "time": "2026-10-27T03:22-05:00",
+      "step": "OW5b",
+      "type": "test",
+      "summary": "rt12: run_tests.sh 560 passed, 0 failed, EXIT 0 after OW5b."
     }
   ],
   "completed_steps": [
