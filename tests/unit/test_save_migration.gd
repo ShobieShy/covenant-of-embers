@@ -1,62 +1,80 @@
 extends TestCase
-## OW10: the 0.1.4 save fixtures migrate to world positions + region + seeded fog.
+## Step 118 done check: saves from before the intro. Clearly-past saves are marked done with
+## no question; unclear ones are asked once (both answers stick); "Skip prologue" keys off
+## any finished slot; --skip-intro still skips.
 
-const LEVELS: PackedStringArray = ["midden", "town_square", "old_oak", "breach"]
-
-
-func _fixture(lvl: String) -> Dictionary:
-	var v: Variant = JSON.parse_string(
-		FileAccess.get_file_as_string("res://tests/fixtures/saves_v1/%s.json" % lvl)
-	)
-	return v if v is Dictionary else {}
+const FILE := "user://test_migration_save.json"
 
 
-func test_fixtures_migrate() -> void:
-	for lvl in LEVELS:
-		var d := _fixture(lvl)
-		check(not d.is_empty() and not SaveMigration.is_migrated(d), "%s: an old save" % lvl)
-		check(SaveMigration.migrate(d), "%s: migrated" % lvl)
-		var pr: Dictionary = d["progress"]
-		var wp: Array = pr["world_pos"]
-		var want := SaveMigration.entrance(lvl)
-		check(
-			Vector3(wp[0], wp[1], wp[2]).distance_to(want) < 0.01 and want != Vector3.ZERO,
-			"%s: lands at its entrance %s" % [lvl, want]
-		)
-		check(pr["region"] == WorldMap.LEVEL_REGION[lvl], "%s: region %s" % [lvl, pr["region"]])
-		check(pr["level_id"] == lvl, "%s: level_id kept for level builds" % lvl)
-		var fog := WorldFog.new()
-		fog.from_save(String(pr["fog"]))
-		check(fog.is_revealed(want.x, want.z), "%s: fog seeded around the entrance" % lvl)
-		check(not SaveMigration.migrate(d), "%s: a second migration is a no-op" % lvl)
-		var a := SaveGame.capture(_dummy(), {})
-		check(a["version"] == SaveGame.VERSION, "save version unchanged")
+func _old_save(level_id: String, lvl: int, flags: Dictionary) -> Dictionary:
+	return {
+		"version": SaveGame.VERSION,
+		"player": {"level": lvl},
+		"items": {},
+		"progress": {"level_id": level_id, "flags": flags}
+	}
 
 
-func _dummy() -> Player:
-	var p: Player = (load("res://scenes/player/player.tscn") as PackedScene).instantiate()
-	p.free.call_deferred()
-	return p
+func _cleanup() -> void:
+	if FileAccess.file_exists(FILE):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(FILE))
 
 
-func test_local_and_unknown() -> void:
-	var d := {"progress": {"level_id": "midden", "local_pos": [10.0, 2.0, -4.0]}}
-	SaveMigration.migrate(d)
-	var e := SaveMigration.entrance("midden")
-	var wp: Array = d["progress"]["world_pos"]
-	var mid := (load(GameFlow.level_scene("midden")) as PackedScene).instantiate() as Node3D
-	var wo: Vector2 = mid.get_meta(&"world_offset")
-	mid.free()
-	check(
-		Vector3(wp[0], wp[1], wp[2]).is_equal_approx(Vector3(10 + wo.x, 2, -4 + wo.y)), "local kept"
-	)
-	check(e != Vector3(wp[0], wp[1], wp[2]), "not the entrance")
-	var u := {"progress": {"level_id": "no_such_place"}}
-	SaveMigration.migrate(u)
-	var up: Array = u["progress"]["world_pos"]
-	check(
-		Vector3(up[0], up[1], up[2]).is_equal_approx(SaveMigration.entrance("town_square")),
-		"unknown level lands at the town gate"
-	)
-	var ch := {"version": 1, "player": {"level": 4}}  # a co-op character file
-	check(not SaveMigration.migrate(ch) and not ch.has("progress"), "character files untouched")
+func test_status() -> void:
+	check(SaveGame.intro_status(_old_save("midden", 1, {"tutorial_done": 1})) == SaveGame.INTRO_PAST, "tutorial done")
+	check(SaveGame.intro_status(_old_save("midden", 1, {"filth_defeated": 1})) == SaveGame.INTRO_PAST, "filth dead")
+	check(SaveGame.intro_status(_old_save("midden", 3, {})) == SaveGame.INTRO_PAST, "level 3")
+	check(SaveGame.intro_status(_old_save("breach", 1, {})) == SaveGame.INTRO_PAST, "non-intro level")
+	check(SaveGame.intro_status(_old_save("midden", 2, {"bob_met": 1})) == SaveGame.INTRO_ASK, "unclear: ask")
+	check(SaveGame.intro_status(_old_save("old_oak", 1, {"intro_beat": 6})) == SaveGame.INTRO_ACTIVE, "mid-intro")
+	check(SaveGame.intro_status(_old_save("midden", 1, {"intro_done": 1})) == SaveGame.INTRO_DONE, "done")
+
+
+func test_past_marked_done_on_disk() -> void:
+	SaveGame.write(_old_save("breach", 4, {"bob_met": 1}), FILE)
+	check(SaveGame.migrate_intro(FILE) == SaveGame.INTRO_PAST, "reported past")
+	var d: Dictionary = SaveGame.read(FILE)["data"]
+	check(SaveGame.intro_status(d) == SaveGame.INTRO_DONE, "now done")
+	check(int(d["progress"]["flags"].get("fast_travel_crystal", 0)) == 1, "end flags set")
+	check(String(d["progress"]["level_id"]) == "breach", "stays where it was")
+	check(int(d["progress"]["flags"].get("bob_met", 0)) == 1, "old flags kept")
+	_cleanup()
+
+
+func test_ask_once() -> void:
+	SaveGame.write(_old_save("midden", 1, {}), FILE)
+	check(SaveGame.migrate_intro(FILE) == SaveGame.INTRO_ASK, "asks")
+	check(SaveGame.intro_status(SaveGame.read(FILE)["data"]) == SaveGame.INTRO_ASK, "nothing written before the answer")
+	check(SaveGame.answer_intro(FILE, true) == OK, "answer saved")
+	var d: Dictionary = SaveGame.read(FILE)["data"]
+	check(SaveGame.intro_status(d) == SaveGame.INTRO_ACTIVE, "yes: the intro runs")
+	check(IntroDirector.beat(_flags(d)) == "summoning", "from the summoning")
+	check(String(d["progress"]["level_id"]) == "mage_association", "in the Association")
+	check(SaveGame.migrate_intro(FILE) == SaveGame.INTRO_ACTIVE, "not asked again")
+	SaveGame.write(_old_save("midden", 1, {}), FILE)
+	SaveGame.answer_intro(FILE, false)
+	check(SaveGame.intro_status(SaveGame.read(FILE)["data"]) == SaveGame.INTRO_DONE, "no: marked done")
+	_cleanup()
+
+
+func test_scripted_continue_never_asks() -> void:
+	SaveGame.write(_old_save("midden", 1, {}), FILE)
+	GameFlow.dry_run = true
+	GameFlow.save_path = FILE
+	GameFlow.continue_run(null)
+	check(SaveGame.intro_status(SaveGame.read(FILE)["data"]) == SaveGame.INTRO_DONE, "unasked continue keeps playing")
+	GameFlow.dry_run = false
+	GameFlow.save_path = SaveGame.PATH
+	GameFlow.select_slot(1)
+	_cleanup()
+
+
+func test_skip_flag() -> void:
+	check(GameFlow.intro_mode_from_args(PackedStringArray(["--skip-intro"])) == GameFlow.INTRO_SKIP, "--skip-intro")
+	check(GameFlow.intro_mode_from_args(PackedStringArray(["--autoplay"])) == GameFlow.INTRO_PLAY, "bot plays it")
+
+
+func _flags(d: Dictionary) -> StoryFlags:
+	var f := StoryFlags.new()
+	f.from_dict(d["progress"]["flags"])
+	return f
