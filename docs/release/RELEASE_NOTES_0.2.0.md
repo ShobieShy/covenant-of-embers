@@ -1,4 +1,4 @@
-# Covenant of Embers 0.2.0: The Open World (DRAFT, not released)
+# Covenant of Embers 0.2.0-prealpha: The Open World
 
 Eldoria is one connected world now. Walk from Old Oak through Town Square, down into the
 Landfill and on to the Breach with no level loads. The ground changes as you go: grass gives

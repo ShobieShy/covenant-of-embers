@@ -1598,6 +1598,13 @@
       "step": "OW11e",
       "date": "2026-10-27",
       "summary": "ShaderWarmup behind the first-load screen (193 mesh/material copies, about 450 ms cold). Cold-cache capture (tools/perf_cold.sh): stalls of 398/364 ms are now 0 frames over 33 ms, worst 4-9 ms at 1280x800 and 1440p. Deck/iGPU deferred; road/ridge strips skipped for 0.2.0."
+    },
+    {
+      "time": "2026-10-27T14:25:00-05:00",
+      "step": "release-0.2.0",
+      "type": "release",
+      "summary": "Version 0.2.0-prealpha: the open world (Old Oak, Town Square, Landfill, Breach as one streamed Terrain3D world), waystone fast travel, world map + fog + minimap, intro in the open world, open-world co-op (400 m leash), terrain paint polish, shader warmup. rt31 green at d3550fd (581 unit, solo PASS 48/48, co-op host+joiner PASS, joiner rc 134 known teardown crash).",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1830,5 +1837,5 @@
     "2026-10-26: steps 135-143 (part brands B1-B9) planned, waiting on user go; see docs/BRANDS_PLAN.md; open Q35-Q46",
     "2026-10-26: Q35-Q46 answered (defaults): Head brand, flat bonus per bolt, Pyrowning no mana, overheat lockout only, straight boulders, Coltara R toggle no shield, weak points + chance fallback, Water chain full charge only, element kept in names, Head-only brand, Windchester clamps at 0.1 s, wands scaled-down brand effects; steps 135-143 still waiting on user go"
   ],
-  "version": "0.1.4-prealpha"
+  "version": "0.2.0-prealpha"
 }

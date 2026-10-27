@@ -1,4 +1,4 @@
-# Changelog: 0.2.0 (DRAFT, not released)
+# Changelog: 0.2.0-prealpha (2026-10-27)
 
 From 0.1.4-prealpha. Steps OW1 to OW11 in docs/build_state.json.
 
