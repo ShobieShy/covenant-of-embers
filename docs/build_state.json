@@ -1405,6 +1405,12 @@
       "step": "OW3b",
       "type": "wip",
       "summary": "scenes/world/open_world.tscn + scripts/world/open_world.gd (OpenWorld): Terrain3D from saved res://world/terrain regions (no generation), painted control map (auto shader off), Dynamic collision, WorldStreamer cells. TerrainZone.make_assets static (shared). test_open_world_scene. main.gd still runs levels; switching the game to the world is later (OW5/OW10)."
+    },
+    {
+      "time": "2026-10-27T02:07:00-05:00",
+      "step": "OW3c",
+      "type": "wip",
+      "summary": "tools/world_shots.gd (3 aerial views of the strips). Shots: strip paint had a hard seam at the midline (blend doubled to 254 then swapped zones); fixed to an even 127 mix at the midline. Cell ground meshes hidden (terrain paints pads). build_world.sh also runs build_cells. World data regenerated."
     }
   ],
   "completed_steps": [

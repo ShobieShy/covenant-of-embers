@@ -55,110 +55,112 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_49"]
 size = Vector3(4, 2.4, 4)
 
-[node name="Cell_2_1" type="Node3D" unique_id=2104101954]
+[node name="Cell_2_1" type="Node3D" unique_id=873822430]
 metadata/cell = Vector2i(2, 1)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=1492909438]
+[node name="Boxes" type="Node3D" parent="." unique_id=545747524]
 
-[node name="midden_heap_graveyard" type="StaticBody3D" parent="Boxes" unique_id=623793878]
+[node name="midden_heap_graveyard" type="StaticBody3D" parent="Boxes" unique_id=945910702]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 316, -0.1, 210)
 metadata/kind = "ground"
 metadata/toml_index = 63
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_graveyard" unique_id=1728141246]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_graveyard" unique_id=404907792]
+visible = false
 mesh = SubResource("BoxMesh_28")
 surface_material_override/0 = SubResource("StandardMaterial3D_15")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_graveyard" unique_id=1037348851]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_graveyard" unique_id=700252901]
 shape = SubResource("BoxShape3D_28")
 
-[node name="midden_heap_graveyard_road_z" type="StaticBody3D" parent="Boxes" unique_id=1969953635]
+[node name="midden_heap_graveyard_road_z" type="StaticBody3D" parent="Boxes" unique_id=555067989]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 316, -0.1, 160)
 metadata/kind = "ground"
 metadata/toml_index = 65
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_graveyard_road_z" unique_id=1583398889]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_graveyard_road_z" unique_id=1762769280]
+visible = false
 mesh = SubResource("BoxMesh_36")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_graveyard_road_z" unique_id=2071951859]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_graveyard_road_z" unique_id=1881644515]
 shape = SubResource("BoxShape3D_36")
 
-[node name="midden_graveyard_heap_1" type="StaticBody3D" parent="Boxes" unique_id=598644941]
+[node name="midden_graveyard_heap_1" type="StaticBody3D" parent="Boxes" unique_id=1809693673]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 306, 1.2, 202)
 metadata/kind = "heap"
 metadata/toml_index = 116
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_1" unique_id=2041734240]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_1" unique_id=1941837016]
 mesh = SubResource("BoxMesh_49")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_1" unique_id=871432992]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_1" unique_id=266843282]
 shape = SubResource("BoxShape3D_49")
 
-[node name="midden_graveyard_heap_2" type="StaticBody3D" parent="Boxes" unique_id=1123886446]
+[node name="midden_graveyard_heap_2" type="StaticBody3D" parent="Boxes" unique_id=1019048411]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 313, 1.2, 202)
 metadata/kind = "heap"
 metadata/toml_index = 117
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_2" unique_id=2045655284]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_2" unique_id=592028558]
 mesh = SubResource("BoxMesh_49")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_2" unique_id=1895391426]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_2" unique_id=44064413]
 shape = SubResource("BoxShape3D_49")
 
-[node name="midden_graveyard_heap_3" type="StaticBody3D" parent="Boxes" unique_id=1481198289]
+[node name="midden_graveyard_heap_3" type="StaticBody3D" parent="Boxes" unique_id=1491979952]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 320, 1.2, 202)
 metadata/kind = "heap"
 metadata/toml_index = 118
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_3" unique_id=134786075]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_3" unique_id=1851570923]
 mesh = SubResource("BoxMesh_49")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_3" unique_id=313840050]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_3" unique_id=1566832853]
 shape = SubResource("BoxShape3D_49")
 
-[node name="midden_graveyard_heap_4" type="StaticBody3D" parent="Boxes" unique_id=1655493227]
+[node name="midden_graveyard_heap_4" type="StaticBody3D" parent="Boxes" unique_id=212133799]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 306, 1.2, 211)
 metadata/kind = "heap"
 metadata/toml_index = 119
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_4" unique_id=1266262805]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_4" unique_id=2133899422]
 mesh = SubResource("BoxMesh_49")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_4" unique_id=1538389377]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_4" unique_id=1907822816]
 shape = SubResource("BoxShape3D_49")
 
-[node name="midden_graveyard_heap_5" type="StaticBody3D" parent="Boxes" unique_id=1131596706]
+[node name="midden_graveyard_heap_5" type="StaticBody3D" parent="Boxes" unique_id=61786521]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 313, 1.2, 211)
 metadata/kind = "heap"
 metadata/toml_index = 120
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_5" unique_id=769415229]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_5" unique_id=1392738180]
 mesh = SubResource("BoxMesh_49")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_5" unique_id=141507339]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_5" unique_id=337056219]
 shape = SubResource("BoxShape3D_49")
 
-[node name="midden_graveyard_heap_6" type="StaticBody3D" parent="Boxes" unique_id=1357889714]
+[node name="midden_graveyard_heap_6" type="StaticBody3D" parent="Boxes" unique_id=533094761]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 320, 1.2, 211)
 metadata/kind = "heap"
 metadata/toml_index = 121
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_6" unique_id=2033383266]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_graveyard_heap_6" unique_id=1539949679]
 mesh = SubResource("BoxMesh_49")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_6" unique_id=1565576046]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_graveyard_heap_6" unique_id=852089609]
 shape = SubResource("BoxShape3D_49")
 
-[node name="Pois" type="Node3D" parent="." unique_id=1782723725]
+[node name="Pois" type="Node3D" parent="." unique_id=2145735577]
 
-[node name="midden_heap_graveyard" type="Node3D" parent="Pois" unique_id=2113368182]
+[node name="midden_heap_graveyard" type="Node3D" parent="Pois" unique_id=985327148]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
 metadata/center = Vector3(316, 0, 210)
 metadata/radius = 22

@@ -127,272 +127,276 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_27"]
 size = Vector3(8, 0.2, 8)
 
-[node name="Cell_-1_0" type="Node3D" unique_id=217385523]
+[node name="Cell_-1_0" type="Node3D" unique_id=538828525]
 metadata/cell = Vector2i(-1, 0)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=870358682]
+[node name="Boxes" type="Node3D" parent="." unique_id=1657790533]
 
-[node name="town_square_wall_south_w" type="StaticBody3D" parent="Boxes" unique_id=1210350621]
+[node name="town_square_wall_south_w" type="StaticBody3D" parent="Boxes" unique_id=2122388913]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 2, 19.5)
 metadata/kind = "wall"
 metadata/toml_index = 3
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_wall_south_w" unique_id=1295445058]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_wall_south_w" unique_id=1134306154]
 visible = false
 mesh = SubResource("BoxMesh_2")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_wall_south_w" unique_id=573989847]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_wall_south_w" unique_id=1157576647]
 shape = SubResource("BoxShape3D_2")
 
-[node name="town_square_wall_west_s" type="StaticBody3D" parent="Boxes" unique_id=1338910025]
+[node name="town_square_wall_west_s" type="StaticBody3D" parent="Boxes" unique_id=247814358]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.5, 2, 10.75)
 metadata/kind = "wall"
 metadata/toml_index = 6
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_wall_west_s" unique_id=982713237]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_wall_west_s" unique_id=1331509854]
 visible = false
 mesh = SubResource("BoxMesh_3")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_wall_west_s" unique_id=451776078]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_wall_west_s" unique_id=142716649]
 shape = SubResource("BoxShape3D_3")
 
-[node name="town_square_ward_3" type="StaticBody3D" parent="Boxes" unique_id=1860299885]
+[node name="town_square_ward_3" type="StaticBody3D" parent="Boxes" unique_id=431062236]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 3, 18)
 metadata/kind = "wall"
 metadata/toml_index = 11
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_ward_3" unique_id=1805712738]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_ward_3" unique_id=179629494]
 visible = false
 mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_ward_3" unique_id=946763909]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_ward_3" unique_id=2099062235]
 shape = SubResource("BoxShape3D_4")
 
-[node name="town_square_flagon" type="StaticBody3D" parent="Boxes" unique_id=664247845]
+[node name="town_square_flagon" type="StaticBody3D" parent="Boxes" unique_id=276631706]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 2, 8)
 metadata/kind = "wall"
 metadata/toml_index = 19
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_flagon" unique_id=941017187]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_flagon" unique_id=1891735949]
 visible = false
 mesh = SubResource("BoxMesh_8")
 surface_material_override/0 = SubResource("StandardMaterial3D_7")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_flagon" unique_id=874819227]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_flagon" unique_id=1445569072]
 shape = SubResource("BoxShape3D_8")
 
-[node name="town_square_temple_road_x" type="StaticBody3D" parent="Boxes" unique_id=268662853]
+[node name="town_square_temple_road_x" type="StaticBody3D" parent="Boxes" unique_id=998657533]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.5, -0.1, 0)
 metadata/kind = "ground"
 metadata/toml_index = 28
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_temple_road_x" unique_id=250991657]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_temple_road_x" unique_id=40334708]
+visible = false
 mesh = SubResource("BoxMesh_17")
 surface_material_override/0 = SubResource("StandardMaterial3D_8")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_temple_road_x" unique_id=1773752093]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_temple_road_x" unique_id=1662094218]
 shape = SubResource("BoxShape3D_17")
 
-[node name="town_square_docks_road_x" type="StaticBody3D" parent="Boxes" unique_id=883158596]
+[node name="town_square_docks_road_x" type="StaticBody3D" parent="Boxes" unique_id=1143708935]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.5, -0.1, 0)
 metadata/kind = "ground"
 metadata/toml_index = 45
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_docks_road_x" unique_id=379636622]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_docks_road_x" unique_id=1753788794]
+visible = false
 mesh = SubResource("BoxMesh_23")
 surface_material_override/0 = SubResource("StandardMaterial3D_8")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_docks_road_x" unique_id=1238985054]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_docks_road_x" unique_id=2015910019]
 shape = SubResource("BoxShape3D_23")
 
-[node name="town_square_docks" type="StaticBody3D" parent="Boxes" unique_id=687548387]
+[node name="town_square_docks" type="StaticBody3D" parent="Boxes" unique_id=339552059]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -56, -0.1, 10)
 metadata/kind = "ground"
 metadata/toml_index = 46
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_docks" unique_id=1823198553]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_docks" unique_id=246420312]
+visible = false
 mesh = SubResource("BoxMesh_24")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_docks" unique_id=777664804]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_docks" unique_id=1686172330]
 shape = SubResource("BoxShape3D_24")
 
-[node name="town_square_canal" type="StaticBody3D" parent="Boxes" unique_id=1083973332]
+[node name="town_square_canal" type="StaticBody3D" parent="Boxes" unique_id=197776370]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76, 0.02, 10)
 metadata/kind = "platform"
 metadata/toml_index = 47
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_canal" unique_id=818847881]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_canal" unique_id=1442765130]
 mesh = SubResource("BoxMesh_25")
 surface_material_override/0 = SubResource("StandardMaterial3D_15")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_canal" unique_id=679505728]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_canal" unique_id=1718801934]
 shape = SubResource("BoxShape3D_25")
 
-[node name="town_square_pier_2" type="StaticBody3D" parent="Boxes" unique_id=1125244246]
+[node name="town_square_pier_2" type="StaticBody3D" parent="Boxes" unique_id=1127266097]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -72, 0.15, 4)
 metadata/kind = "platform"
 metadata/toml_index = 49
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_pier_2" unique_id=1211236821]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_pier_2" unique_id=907254968]
 mesh = SubResource("BoxMesh_26")
 surface_material_override/0 = SubResource("StandardMaterial3D_16")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_pier_2" unique_id=795663085]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_pier_2" unique_id=1839673438]
 shape = SubResource("BoxShape3D_26")
 
-[node name="town_square_pier_3" type="StaticBody3D" parent="Boxes" unique_id=1437899734]
+[node name="town_square_pier_3" type="StaticBody3D" parent="Boxes" unique_id=755183756]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -72, 0.15, 14)
 metadata/kind = "platform"
 metadata/toml_index = 50
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_pier_3" unique_id=2127922148]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_pier_3" unique_id=203621304]
 mesh = SubResource("BoxMesh_26")
 surface_material_override/0 = SubResource("StandardMaterial3D_16")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_pier_3" unique_id=2127212613]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_pier_3" unique_id=1406915981]
 shape = SubResource("BoxShape3D_26")
 
-[node name="town_square_pier_4" type="StaticBody3D" parent="Boxes" unique_id=1446382657]
+[node name="town_square_pier_4" type="StaticBody3D" parent="Boxes" unique_id=985238464]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -72, 0.15, 24)
 metadata/kind = "platform"
 metadata/toml_index = 51
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_pier_4" unique_id=1437181600]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_pier_4" unique_id=1825266339]
 mesh = SubResource("BoxMesh_26")
 surface_material_override/0 = SubResource("StandardMaterial3D_16")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_pier_4" unique_id=1566219562]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_pier_4" unique_id=115343944]
 shape = SubResource("BoxShape3D_26")
 
-[node name="town_square_sewer_mouth" type="StaticBody3D" parent="Boxes" unique_id=1906909299]
+[node name="town_square_sewer_mouth" type="StaticBody3D" parent="Boxes" unique_id=338634584]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, -0.1, 22)
 metadata/kind = "ground"
 metadata/toml_index = 52
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_sewer_mouth" unique_id=959138235]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_sewer_mouth" unique_id=515894970]
+visible = false
 mesh = SubResource("BoxMesh_27")
 surface_material_override/0 = SubResource("StandardMaterial3D_17")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_sewer_mouth" unique_id=462000946]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_sewer_mouth" unique_id=114218897]
 shape = SubResource("BoxShape3D_27")
 
-[node name="Props" type="Node3D" parent="." unique_id=1409280193]
+[node name="Props" type="Node3D" parent="." unique_id=1605211789]
 
-[node name="town_square_town_tree_3" type="Node3D" parent="Props" unique_id=1632756593 instance=ExtResource("4_uwq8u")]
+[node name="town_square_town_tree_3" type="Node3D" parent="Props" unique_id=1725404136 instance=ExtResource("4_uwq8u")]
 transform = Transform3D(4.02094, 0, 1.495374, 0, 4.29, 0, -1.495374, 0, 4.02094, -80.324, 0, 11.874)
 metadata/snap = true
 
-[node name="town_square_town_tree_5" type="Node3D" parent="Props" unique_id=1001452024 instance=ExtResource("4_uwq8u")]
+[node name="town_square_town_tree_5" type="Node3D" parent="Props" unique_id=2076941843 instance=ExtResource("4_uwq8u")]
 transform = Transform3D(-2.92629, 0, 2.455449, 0, 3.82, 0, -2.455449, 0, -2.92629, -92.556, 0, 32.825)
 metadata/snap = true
 
-[node name="town_square_town_tree_13" type="Node3D" parent="Props" unique_id=1030326665 instance=ExtResource("4_uwq8u")]
+[node name="town_square_town_tree_13" type="Node3D" parent="Props" unique_id=1517357040 instance=ExtResource("4_uwq8u")]
 transform = Transform3D(3.971699, 0, 1.540521, 0, 4.26, 0, -1.540521, 0, 3.971699, -20.199, 0, 55.011)
 metadata/snap = true
 
-[node name="town_square_town_tree_19" type="Node3D" parent="Props" unique_id=949753077 instance=ExtResource("5_yrsvd")]
+[node name="town_square_town_tree_19" type="Node3D" parent="Props" unique_id=277475769 instance=ExtResource("5_yrsvd")]
 transform = Transform3D(-3.921988, 0, -1.584586, 0, 4.23, 0, 1.584586, 0, -3.921988, -95.202, 0, 51.63)
 metadata/snap = true
 
-[node name="town_square_town_tree_20" type="Node3D" parent="Props" unique_id=1088061187 instance=ExtResource("4_uwq8u")]
+[node name="town_square_town_tree_20" type="Node3D" parent="Props" unique_id=555208300 instance=ExtResource("4_uwq8u")]
 transform = Transform3D(1.461274, 0, 3.344724, 0, 3.65, 0, -3.344724, 0, 1.461274, -18.286, 0, 45.231)
 metadata/snap = true
 
-[node name="town_square_town_tree_21" type="Node3D" parent="Props" unique_id=457739990 instance=ExtResource("6_tg17s")]
+[node name="town_square_town_tree_21" type="Node3D" parent="Props" unique_id=262794230 instance=ExtResource("6_tg17s")]
 transform = Transform3D(2.136027, 0, 2.55466, 0, 3.33, 0, -2.55466, 0, 2.136027, -90.744, 0, 47.951)
 metadata/snap = true
 
-[node name="town_square_town_tree_29" type="Node3D" parent="Props" unique_id=600037029 instance=ExtResource("5_yrsvd")]
+[node name="town_square_town_tree_29" type="Node3D" parent="Props" unique_id=1013216307 instance=ExtResource("5_yrsvd")]
 transform = Transform3D(3.108705, 0, -1.274973, 0, 3.36, 0, 1.274973, 0, 3.108705, -100.159, 0, 103.307)
 metadata/snap = true
 
-[node name="town_square_south_w_wall_1" type="Node3D" parent="Props" unique_id=1573067743 instance=ExtResource("7_1o6ug")]
+[node name="town_square_south_w_wall_1" type="Node3D" parent="Props" unique_id=339654035 instance=ExtResource("7_1o6ug")]
 transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, -17.75, 0, 15)
 
-[node name="town_square_south_w_wall_2" type="Node3D" parent="Props" unique_id=462940560 instance=ExtResource("7_1o6ug")]
+[node name="town_square_south_w_wall_2" type="Node3D" parent="Props" unique_id=607767246 instance=ExtResource("7_1o6ug")]
 transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, -13.25, 0, 15)
 
-[node name="town_square_south_w_wall_3" type="Node3D" parent="Props" unique_id=476282843 instance=ExtResource("7_1o6ug")]
+[node name="town_square_south_w_wall_3" type="Node3D" parent="Props" unique_id=1982169785 instance=ExtResource("7_1o6ug")]
 transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, -8.75, 0, 15)
 
-[node name="town_square_south_w_wall_4" type="Node3D" parent="Props" unique_id=234410591 instance=ExtResource("7_1o6ug")]
+[node name="town_square_south_w_wall_4" type="Node3D" parent="Props" unique_id=1696116674 instance=ExtResource("7_1o6ug")]
 transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, -4.25, 0, 15)
 
-[node name="town_square_west_wall_s_1" type="Node3D" parent="Props" unique_id=717283228 instance=ExtResource("7_1o6ug")]
+[node name="town_square_west_wall_s_1" type="Node3D" parent="Props" unique_id=1752805646 instance=ExtResource("7_1o6ug")]
 transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 4.125, -24, 0, 4.5625)
 
-[node name="town_square_west_wall_s_2" type="Node3D" parent="Props" unique_id=124876690 instance=ExtResource("7_1o6ug")]
+[node name="town_square_west_wall_s_2" type="Node3D" parent="Props" unique_id=1632628637 instance=ExtResource("7_1o6ug")]
 transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 4.125, -24, 0, 8.6875)
 
-[node name="town_square_west_wall_s_3" type="Node3D" parent="Props" unique_id=790479771 instance=ExtResource("7_1o6ug")]
+[node name="town_square_west_wall_s_3" type="Node3D" parent="Props" unique_id=1952101514 instance=ExtResource("7_1o6ug")]
 transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 4.125, -24, 0, 12.8125)
 
-[node name="town_square_west_wall_s_4" type="Node3D" parent="Props" unique_id=1627982215 instance=ExtResource("7_1o6ug")]
+[node name="town_square_west_wall_s_4" type="Node3D" parent="Props" unique_id=931922045 instance=ExtResource("7_1o6ug")]
 transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 4.125, -24, 0, 16.9375)
 
-[node name="town_square_ward_3" type="Node3D" parent="Props" unique_id=748175004 instance=ExtResource("8_4uxjn")]
+[node name="town_square_ward_3" type="Node3D" parent="Props" unique_id=26543009 instance=ExtResource("8_4uxjn")]
 transform = Transform3D(7.5, 0, 0, 0, 6, 0, 0, 0, 7.5, -18, 0, 18)
 
-[node name="town_square_ward_lantern_3" type="Node3D" parent="Props" unique_id=1154858877 instance=ExtResource("9_44dyu")]
+[node name="town_square_ward_lantern_3" type="Node3D" parent="Props" unique_id=275112615 instance=ExtResource("9_44dyu")]
 transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -18, 6, 18)
 
-[node name="town_square_gate_lantern_s1" type="Node3D" parent="Props" unique_id=293458713 instance=ExtResource("9_44dyu")]
+[node name="town_square_gate_lantern_s1" type="Node3D" parent="Props" unique_id=1856453096 instance=ExtResource("9_44dyu")]
 transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -2.6, 0, 18.7)
 
-[node name="town_square_gate_pillars_s_1" type="Node3D" parent="Props" unique_id=1876251262 instance=ExtResource("8_4uxjn")]
+[node name="town_square_gate_pillars_s_1" type="Node3D" parent="Props" unique_id=892930476 instance=ExtResource("8_4uxjn")]
 transform = Transform3D(6, 0, 0, 0, 5, 0, 0, 0, 6, -2, 0, 19.5)
 
-[node name="town_square_flagon_n_1" type="Node3D" parent="Props" unique_id=752214666 instance=ExtResource("10_b8bho")]
+[node name="town_square_flagon_n_1" type="Node3D" parent="Props" unique_id=635287115 instance=ExtResource("10_b8bho")]
 transform = Transform3D(0, 0, 2.6667, 0, 4, 0, -4, 0, 0, -16.6667, 0, 6.8)
 
-[node name="town_square_flagon_n_2" type="Node3D" parent="Props" unique_id=941301480 instance=ExtResource("10_b8bho")]
+[node name="town_square_flagon_n_2" type="Node3D" parent="Props" unique_id=319780816 instance=ExtResource("10_b8bho")]
 transform = Transform3D(0, 0, 2.6667, 0, 4, 0, -4, 0, 0, -14, 0, 6.8)
 
-[node name="town_square_flagon_n_3" type="Node3D" parent="Props" unique_id=486113679 instance=ExtResource("10_b8bho")]
+[node name="town_square_flagon_n_3" type="Node3D" parent="Props" unique_id=1807038850 instance=ExtResource("10_b8bho")]
 transform = Transform3D(0, 0, 2.6667, 0, 4, 0, -4, 0, 0, -11.3333, 0, 6.8)
 
-[node name="town_square_flagon_s_1" type="Node3D" parent="Props" unique_id=743701606 instance=ExtResource("11_mtel0")]
+[node name="town_square_flagon_s_1" type="Node3D" parent="Props" unique_id=1698279719 instance=ExtResource("11_mtel0")]
 transform = Transform3D(0, 0, -2.6667, 0, 4, 0, 4, 0, 0, -16.6667, 0, 9.2)
 
-[node name="town_square_flagon_s_2" type="Node3D" parent="Props" unique_id=354382025 instance=ExtResource("11_mtel0")]
+[node name="town_square_flagon_s_2" type="Node3D" parent="Props" unique_id=1961052464 instance=ExtResource("11_mtel0")]
 transform = Transform3D(0, 0, -2.6667, 0, 4, 0, 4, 0, 0, -14, 0, 9.2)
 
-[node name="town_square_flagon_s_3" type="Node3D" parent="Props" unique_id=1205112790 instance=ExtResource("11_mtel0")]
+[node name="town_square_flagon_s_3" type="Node3D" parent="Props" unique_id=1131564214 instance=ExtResource("11_mtel0")]
 transform = Transform3D(0, 0, -2.6667, 0, 4, 0, 4, 0, 0, -11.3333, 0, 9.2)
 
-[node name="town_square_flagon_w_1" type="Node3D" parent="Props" unique_id=449325533 instance=ExtResource("12_5gfxh")]
+[node name="town_square_flagon_w_1" type="Node3D" parent="Props" unique_id=154539012 instance=ExtResource("12_5gfxh")]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 3, -19.8, 0, 6.5)
 
-[node name="town_square_flagon_w_2" type="Node3D" parent="Props" unique_id=2122090012 instance=ExtResource("12_5gfxh")]
+[node name="town_square_flagon_w_2" type="Node3D" parent="Props" unique_id=64262303 instance=ExtResource("12_5gfxh")]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 3, -19.8, 0, 9.5)
 
-[node name="town_square_flagon_e" type="Node3D" parent="Props" unique_id=577780239 instance=ExtResource("13_g844n")]
+[node name="town_square_flagon_e" type="Node3D" parent="Props" unique_id=11349548 instance=ExtResource("13_g844n")]
 transform = Transform3D(-4, 0, 0, 0, 4, 0, 0, 0, -6, -8.2, 0, 8)
 
-[node name="town_square_flagon_roof" type="Node3D" parent="Props" unique_id=2058211594 instance=ExtResource("14_xk50s")]
+[node name="town_square_flagon_roof" type="Node3D" parent="Props" unique_id=195416426 instance=ExtResource("14_xk50s")]
 transform = Transform3D(7.4545, 0, 0, 0, 3, 0, 0, 0, 5.6364, -14, 4, 8)
 
-[node name="town_square_flagon_chimney" type="Node3D" parent="Props" unique_id=87398044 instance=ExtResource("15_a438j")]
+[node name="town_square_flagon_chimney" type="Node3D" parent="Props" unique_id=823988360 instance=ExtResource("15_a438j")]
 transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, -16.3, 5.2, 7.2)
 
-[node name="town_square_flagon_lantern" type="Node3D" parent="Props" unique_id=1660390710 instance=ExtResource("9_44dyu")]
+[node name="town_square_flagon_lantern" type="Node3D" parent="Props" unique_id=1612948712 instance=ExtResource("9_44dyu")]
 transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, -9.75, 0, 6.2)
 
-[node name="town_square_tree_2" type="Node3D" parent="Props" unique_id=1251847641 instance=ExtResource("16_c6da7")]
+[node name="town_square_tree_2" type="Node3D" parent="Props" unique_id=97348918 instance=ExtResource("16_c6da7")]
 transform = Transform3D(2.451342, 0, 2.05692, 0, 3.2, 0, -2.05692, 0, 2.451342, -25, 0, 4)
 
-[node name="town_square_tree_3" type="Node3D" parent="Props" unique_id=1948305130 instance=ExtResource("17_58j01")]
+[node name="town_square_tree_3" type="Node3D" parent="Props" unique_id=2140456520 instance=ExtResource("17_58j01")]
 transform = Transform3D(0.555674, 0, 3.151385, 0, 3.2, 0, -3.151385, 0, 0.555674, -23, 0, 16)
 
-[node name="town_square_tree_8" type="Node3D" parent="Props" unique_id=109364529 instance=ExtResource("18_cppqf")]
+[node name="town_square_tree_8" type="Node3D" parent="Props" unique_id=111124953 instance=ExtResource("18_cppqf")]
 transform = Transform3D(2.771281, 0, 1.6, 0, 3.2, 0, -1.6, 0, 2.771281, -12, 0, 25)
 
-[node name="Pois" type="Node3D" parent="." unique_id=2026388337]
+[node name="Pois" type="Node3D" parent="." unique_id=375114654]
 
-[node name="town_square_docks" type="Node3D" parent="Pois" unique_id=1377326855]
+[node name="town_square_docks" type="Node3D" parent="Pois" unique_id=2001722206]
 metadata/center = Vector3(-60, 0, 10)
 metadata/radius = 30

@@ -53,6 +53,10 @@ func _initialize() -> void:
 				if gname == "Pois" and n.has_meta(&"center"):
 					n.set_meta(&"center", c + Vector3(wo.x, 0, wo.y))
 				holder.add_child(n)
+				if gname == "Boxes" and String(n.get_meta("kind", "")) == "ground":
+					var m := n.get_node_or_null(^"Mesh") as MeshInstance3D
+					if m:
+						m.visible = false  # the world terrain paints the pads (as TerrainZone does)
 				for d in kept:
 					d.owner = root
 				var key := "%d_%d" % [cell.x, cell.y]

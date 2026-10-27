@@ -112,7 +112,7 @@ def paint(zones, owner, xs, zs, layers):
     flat = np.array([layers.index(z["layers"][0]) for z in t], np.uint32)
     blend = np.clip(255 * d1 / np.maximum(d1 + d2, 1e-3), 0, 127).astype(np.uint32)
     ctl[:] = (flat[order[0]] << LAYER_SHIFT) | (flat[order[1] if len(t) > 1 else order[0]] << OVER_SHIFT)
-    ctl |= (blend * 2) << BLEND_SHIFT | NAV  # 0 at the zone edge, 254 midway (even split)
+    ctl |= blend << BLEND_SHIFT | NAV  # 0 at the zone edge, 127 (even mix) at the midline: no seam
     for k, z in enumerate(t):
         if "c" not in z:
             continue
