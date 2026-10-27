@@ -143,7 +143,10 @@ func test_checkpoint() -> void:
 		"other waves: no checkpoint"
 	)
 	check(
-		Filth.checkpoint(p, "the_filth", Vector3(5, 0, -1.5)) and p.spawn_feet == Vector3(5, 0, -1.5),
+		(
+			Filth.checkpoint(p, "the_filth", Vector3(5, 0, -1.5))
+			and p.spawn_feet == Vector3(5, 0, -1.5)
+		),
 		"boss wave: respawn at the boss door"
 	)
 	p.free()
@@ -163,7 +166,9 @@ func test_arena_walls() -> void:
 	sp.wave_started.emit(0, "midden_trash")
 	check(not lock.raised(), "other waves: no walls")
 	sp.wave_started.emit(1, Filth.WAVE_ID)
-	check(lock.get_child_count() == ArenaLock.SEGMENTS, "boss wave: %d walls" % lock.get_child_count())
+	check(
+		lock.get_child_count() == ArenaLock.SEGMENTS, "boss wave: %d walls" % lock.get_child_count()
+	)
 	await runner_tree.physics_frame
 	await runner_tree.physics_frame
 	var c := w.global_position + Vector3(0, 1, 0)
@@ -175,4 +180,12 @@ func test_arena_walls() -> void:
 	)
 	sp.waves_completed.emit()
 	check(not lock.raised(), "walls drop when the waves are done")
+	sp.wave_started.emit(1, Filth.WAVE_ID)  # again, now with a boss that spawns after the walls
+	check(lock.raised(), "walls up again")
+	var boss := Enemy.create(EnemyTable.load_default().find("the_filth"), Transform3D.IDENTITY)
+	boss.auto_tick = false
+	sp.add_child(boss)
+	boss.died.emit(boss, ElementTable.Element.FIRE)
+	await runner_tree.process_frame
+	check(not lock.raised(), "walls drop when the Filth dies, even with wave enemies left")
 	w.free()

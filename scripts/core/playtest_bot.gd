@@ -737,6 +737,8 @@ func _intro_tick() -> void:
 		return
 	if b == "crafting" and d.here == "midden" and _intro_craft(d):
 		return
+	if _arena_held(d):
+		return
 	_intro_interact(d)
 
 
@@ -794,6 +796,19 @@ func _intro_fight(d: IntroDirector, b: String) -> bool:
 	var sp := d.spawner()
 	if sp:
 		walk_to(sp.trigger_center)
+	return true
+
+
+## A wave gnawer corrupted into an ally stays in its wave; once it turns back it keeps the
+## arena walls up after the Filth dies (return_to_bob stalled inside the ring). Clear it.
+func _arena_held(d: IntroDirector) -> bool:
+	var sp := d.spawner()
+	var lock := sp.get_node_or_null(^"ArenaLock") as ArenaLock if sp else null
+	if lock == null or not lock.raised():
+		return false
+	var e := nearest_enemy(true)
+	if e:
+		fight(e)
 	return true
 
 

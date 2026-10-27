@@ -65,6 +65,30 @@ func raise() -> void:
 		b.global_position = center + Vector3(sin(ang) * radius, HEIGHT * 0.5, cos(ang) * radius)
 		b.global_rotation = Vector3(0, ang, 0)
 	print("[arena] walls up (r %.1f)" % radius)
+	_watch_boss()
+
+
+## The walls also drop when the wave's boss dies: a wave gnawer turned ally and back again
+## must not keep the ring up after the Filth is dead.
+func _watch_boss() -> void:
+	var sp := get_parent()
+	if sp == null:
+		return
+	for c in sp.get_children():
+		_watch(c)
+	if not sp.child_entered_tree.is_connected(_watch):
+		sp.child_entered_tree.connect(_watch)  # the boss spawns after the wave's delay
+
+
+func _watch(c: Node) -> void:
+	if c is Enemy and (c as Enemy).is_boss() and not (c as Enemy).died.is_connected(_on_boss_died):
+		(c as Enemy).died.connect(_on_boss_died)
+
+
+func _on_boss_died(_a: Variant = null, _b: Variant = null) -> void:
+	if raised():
+		print("[arena] walls down (boss dead)")
+	drop.call_deferred()
 
 
 ## Step 118: the ring must enclose the spawner's live enemies (the boss) and every player when it rises (the Filth sits on
@@ -76,7 +100,13 @@ func _fit_radius() -> void:
 	for g in [Enemy.GROUP, Player.GROUP]:
 		for n in get_tree().get_nodes_in_group(g):
 			var n3 := n as Node3D
-			if n3 == null or (n3 is Enemy and (not (n3 as Enemy).alive() or not get_parent().is_ancestor_of(n3))):
+			if (
+				n3 == null
+				or (
+					n3 is Enemy
+					and (not (n3 as Enemy).alive() or not get_parent().is_ancestor_of(n3))
+				)
+			):
 				continue
 			var off := n3.global_position - center
 			fit = maxf(fit, Vector2(off.x, off.z).length() + MARGIN)
