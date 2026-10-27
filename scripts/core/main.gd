@@ -554,6 +554,7 @@ func _enter_open_world(player: Player, data: Dictionary) -> void:
 		p.y = h
 	player.spawn(p, player.rotation.y)
 	print("[world] start at (%.0f, %.0f, %.0f)" % [p.x, p.y, p.z])
+	ow.first_load(p, WorldSession.nearest_level(p))  # the loading screen, once
 
 
 ## Autosave, then load `to` with the saved state.

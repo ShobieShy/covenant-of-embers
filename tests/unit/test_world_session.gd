@@ -84,6 +84,25 @@ func test_main_open_world() -> void:
 		"world keys %s" % [pr.keys()]
 	)
 	check(pr["level_id"] == "old_oak", "level_id still saved")
+	var ow := g.get_node("OpenWorld") as OpenWorld
+	check(
+		ow.first_loaded and LoadingScreen.active != null,
+		"first world load behind the loading screen"
+	)
+	var n := 0
+	while ow.travel.busy and n < 1400:
+		await runner_tree.process_frame
+		n += 1
+	check(not ow.travel.busy, "first load finished (%d frames)" % n)
+	check(
+		(
+			Vector2(p.global_position.x, p.global_position.z).distance_to(Vector2(want.x, want.z))
+			< 0.5
+		),
+		"landed at the entrance"
+	)
+	ow.first_load(Vector3.ZERO)
+	check(not ow.travel.busy, "only once")
 	g.queue_free()
 	for i in 10:  # let its cell loads and deferred frees finish before the next test
 		await runner_tree.process_frame

@@ -108,6 +108,24 @@ func travel_to(point: String) -> bool:
 	return true
 
 
+## OW10 (plan section 9): streams the cells around `dest` behind the loading screen, then
+## lands the party there; the first world load uses it (a fresh start or the Association's
+## front door), waystones use travel_to.
+func land_at(dest: Vector3, level := "") -> void:
+	busy = true
+	var screen := LoadingScreen.overlay(get_tree(), level)
+	await _stream(dest, screen)
+	for n in _party():
+		var o := n as Node3D
+		var to := ground(dest.x, dest.z)
+		if o.has_method("spawn"):
+			o.call("spawn", to, o.rotation.y)
+		else:
+			o.global_position = to
+	screen.done()
+	busy = false
+
+
 func _party() -> Array:
 	if party.is_valid():
 		return party.call()

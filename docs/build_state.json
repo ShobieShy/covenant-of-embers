@@ -1493,6 +1493,11 @@
       "date": "2026-10-27",
       "step": "OW10b",
       "note": "Restored step 118 test_save_migration.gd (bb4da55 had overwritten it: unit count 573->570); OW10 migration tests now test_world_save_migration.gd. WorldSession: start spot (fresh intro -> Mage Association interior, skip -> Old Oak entrance, saves -> migrated world_pos; mid-intro Association saves resume indoors), capture/restore of world_pos/region/fog/interior. main.gd: opt-in GameFlow.open_world / --open-world adds OpenWorld, restores fog, places the player, merges world keys into progress(); default stays on levels."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "OW10c",
+      "note": "rt26 EXIT 0 (579 unit). First-load loading screen (plan section 9): OpenWorld.first_load streams the start cells behind LoadingScreen.overlay once (WorldTravel.land_at), on an outdoor start or on first leaving the intro's Association interior."
     }
   ],
   "completed_steps": [

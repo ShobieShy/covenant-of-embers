@@ -18,6 +18,8 @@ var minimap: Minimap
 var leash: CoopLeash
 var _fog_t := 0.0
 var info := {}
+var first_loaded := false  ## OW10: the initial world load (loading screen) has run
+signal first_load_done
 
 
 func _ready() -> void:
@@ -65,10 +67,28 @@ func _ready() -> void:
 	layer.add_child(minimap)
 	for w in travel.waystones.values():
 		(w as Waystone).opened.connect(func(_p: String) -> void: map_screen.open())
+	interiors.left.connect(_on_left_interior)
 	var fader := InteriorFade.new()
 	fader.name = "InteriorFade"
 	fader.interiors = interiors
 	add_child(fader)
+
+
+## OW10 (plan section 9): the one initial world load, behind the loading screen; later
+## moves stream in the background as usual.
+func first_load(dest: Vector3, level := "") -> void:
+	if first_loaded:
+		return
+	first_loaded = true
+	await travel.land_at(dest, level)
+	first_load_done.emit()
+
+
+func _on_left_interior(_id: String) -> void:
+	if not first_loaded:  # a run that started indoors (the intro): its first look outside
+		var p := interiors.party()
+		if not p.is_empty():
+			first_load((p[0] as Node3D).global_position, "town_square")
 
 
 ## Reveals fog around every player twice a second.
