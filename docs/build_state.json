@@ -1411,6 +1411,12 @@
       "step": "OW3c",
       "type": "wip",
       "summary": "tools/world_shots.gd (3 aerial views of the strips). Shots: strip paint had a hard seam at the midline (blend doubled to 254 then swapped zones); fixed to an even 127 mix at the midline. Cell ground meshes hidden (terrain paints pads). build_world.sh also runs build_cells. World data regenerated."
+    },
+    {
+      "time": "2026-10-27T02:08:00-05:00",
+      "step": "OW4a",
+      "type": "wip",
+      "summary": "EnemySleep (scripts/world/enemy_sleep.gd): enemies beyond 96 m of every viewer get PROCESS_MODE_DISABLED, wake inside 80 m, 0.5 s tick; only OpenWorld adds it. Dynamic collision already in OpenWorld (OW3b). test_enemy_sleep.gd. Remaining OW4: per-cell world navmesh tiles."
     }
   ],
   "completed_steps": [

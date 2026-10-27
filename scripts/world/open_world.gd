@@ -19,6 +19,9 @@ func _ready() -> void:
 	streamer = WorldStreamer.new()
 	streamer.name = "Cells"
 	add_child(streamer)
+	var sleeper := EnemySleep.new()
+	sleeper.name = "EnemySleep"
+	add_child(sleeper)
 
 
 static func load_info() -> Dictionary:
