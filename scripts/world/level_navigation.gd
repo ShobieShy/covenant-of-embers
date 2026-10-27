@@ -56,15 +56,18 @@ static func make_mesh() -> NavigationMesh:
 
 
 func _ready() -> void:
-	if bake_on_ready:
-		_bake_when_settled.call_deferred()
-
-
-## Deferred: main.tscn embeds the Midden and frees it in its own _ready when the run starts
-## elsewhere, so a synchronous bake here cost every load a 100-tile Midden bake.
-func _bake_when_settled() -> void:
-	if is_inside_tree() and not is_queued_for_deletion() and bakes == 0:
+	if bake_on_ready and not _swapped_out():
 		bake_now()
+
+
+## main.tscn embeds the Midden as its Level and frees it in main._ready when the run starts
+## elsewhere; baking it first cost every load a 100-tile Midden bake (the playtest stall).
+func _swapped_out() -> bool:
+	var lvl := get_parent()
+	var main := lvl.get_parent() if lvl else null
+	if main == null or lvl.name != &"Level" or not main.has_method(&"_swap_level"):
+		return false
+	return GameFlow.id_of(lvl) != GameFlow.level_id
 
 
 ## Parses `source` and bakes into navigation_mesh (creating one if missing); returns
