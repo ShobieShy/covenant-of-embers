@@ -1,8 +1,8 @@
 # Open World Plan (one seamless Elyria + in-game map)
 
-Status: plan only (2026-10-27). Nothing here is built yet. Supersedes the "one level per
-scene" part of TERRAIN_MAPS_PLAN.md once approved. Recommended defaults for every open
-question are at the end; the plan below assumes them.
+Status: APPROVED 2026-10-27 ~00:30 CDT. The user accepted all 12 recommended defaults in
+section 12 as written and gave the go to build OW1-OW11 in order; no release until OW11
+(0.2.0). Supersedes the "one level per scene" part of TERRAIN_MAPS_PLAN.md.
 
 ## 1. Goals and non-goals
 

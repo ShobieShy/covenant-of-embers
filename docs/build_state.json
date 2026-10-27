@@ -1369,6 +1369,12 @@
       "step": "ember-art-batch-07",
       "type": "wip",
       "summary": "WIP: Ember Art batch 07: belt/grimoire icons (no Signet slot, ring_signet dropped), junk mountain 9 convex hulls + spire walls with back-door gap, both in the nav bake (midden tiles rebaked), 10 Terrain3D sets (VRAM compressed, normal-map off, mipmaps) mapped per region, crystal desaturated, fixed the long-standing checker (assets set after add_child), credits; open world plan docs/OPEN_WORLD_PLAN.md. Full run_tests.sh in progress."
+    },
+    {
+      "time": "2026-10-27T00:53:00-05:00",
+      "step": "loading-screen",
+      "type": "wip",
+      "summary": "WIP: batch 07 fixes (6 terrain sets had a flat height channel -> DXT1 vs DXT5 mismatch, heights derived from albedo; autoshader base/overlay swapped so grass is on the flats; ground box meshes hidden over terrain; shot-only fog thinning) + LoadingScreen (threaded ResourceLoader for main + level, scene swap, Terrain3D and navmesh readiness, ember spinner, rotating tips, region painting) wired into GameFlow._change. OPEN_WORLD_PLAN approved with all 12 defaults."
     }
   ],
   "completed_steps": [

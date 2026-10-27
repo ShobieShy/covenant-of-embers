@@ -97,3 +97,31 @@ func test_ember_art_dress() -> void:
 	check(EmberArt.dress(lvl, "midden").get_child_count() == n, "redress replaces")
 	check(lvl.get_children().filter(func(x: Node) -> bool: return x.name == &"EmberArt").size() == 1, "one holder")
 	lvl.free()
+
+
+## Batch 07 follow-up: Terrain3D needs one format per array; a flat height channel imports
+## as DXT1 instead of DXT5 and the whole layer set falls back to the base texture.
+func test_terrain_sets_share_format() -> void:
+	var fmt := {}
+	for id in [
+		"dirt", "grass", "rock", "rubble_junk", "ash_scorched", "mud_filth", "sand", "snow", "crystal", "path_cobble"
+	]:
+		var p := TerrainZone.layer_textures(id)
+		check(p.size() == 2, "set " + id)
+		for k in 2:
+			var img := (load(p[k]) as Texture2D).get_image()
+			fmt["%d:%d" % [k, img.get_format()]] = true
+			check(img.get_width() == 1024, "1024 px " + p[k])
+	check(fmt.size() == 2, "one albedo and one normal format: %s" % [fmt.keys()])
+
+
+## Batch 07 follow-up: with a terrain, the ground boxes keep collision but not their mesh.
+func test_terrain_hides_ground_meshes() -> void:
+	if not TerrainZone.available():
+		return
+	var lv: Node3D = (load("res://scenes/levels/old_oak.tscn") as PackedScene).instantiate()
+	runner_tree.root.add_child(lv)
+	var floor_box := lv.get_node("Boxes/floor")
+	check(not (floor_box.get_node("Mesh") as MeshInstance3D).visible, "ground mesh hidden")
+	check(floor_box.get_node("Shape") is CollisionShape3D, "ground collision kept")
+	lv.free()

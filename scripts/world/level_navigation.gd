@@ -211,7 +211,9 @@ func save_cache() -> Error:
 
 func cache_fresh() -> bool:
 	var data := NavigationMeshSourceGeometryData3D.new()
-	NavigationServer3D.parse_source_geometry_data(make_mesh(), data, get_node(source))
+	var nm := make_mesh()
+	NavigationServer3D.parse_source_geometry_data(nm, data, get_node(source))
+	_add_landmarks(nm, data)  # batch 07: same source as bake_now, or the hash never matches
 	var tz := get_node_or_null(terrain) as TerrainZone
 	if tz == null:
 		return true

@@ -23,6 +23,8 @@ func _initialize() -> void:
 		var lvl: Node3D = (load("res://scenes/levels/%s.tscn" % v[1]) as PackedScene).instantiate()
 		root.add_child(lvl)
 		EmberArt.dress(lvl, v[1])
+		if String(v[0]).begins_with("overview"):
+			_thin_fog(lvl)  # shots only: the cameras sit 150-400 m out, gameplay fog hides the map
 		var cam := Camera3D.new()
 		cam.far = 2000.0
 		lvl.add_child(cam)
@@ -34,6 +36,18 @@ func _initialize() -> void:
 	await _props(out)
 	await _map(out)
 	quit()
+
+
+func _thin_fog(n: Node) -> void:
+	for we in n.find_children("*", "WorldEnvironment", true, false):
+		var e: Environment = (we as WorldEnvironment).environment
+		if e:
+			e = e.duplicate()
+			e.fog_density = minf(e.fog_density, 0.0008)
+			e.fog_aerial_perspective = 0.0
+			e.volumetric_fog_enabled = false
+			(we as WorldEnvironment).environment = e
+			print("[shots] thinned fog on %s" % we.get_path())
 
 
 func _snap(out: String, name: String, frames: int) -> void:

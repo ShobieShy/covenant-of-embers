@@ -77,7 +77,7 @@ static func _change(tree: SceneTree, path: String) -> void:
 	if dry_run or tree == null:
 		return
 	tree.paused = false
-	tree.change_scene_to_file.call_deferred(path)
+	LoadingScreen.start(tree, path, level_id if path == GAME else "")  # threaded load, staged bar
 
 
 ## Step 109: a new game starts the intro in the Mage Association (or skips it to the Old Oak).

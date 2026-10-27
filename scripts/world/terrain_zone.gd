@@ -184,10 +184,27 @@ func build() -> void:
 	var mat: Object = t.get(&"material")
 	mat.set(&"auto_shader", true)
 	mat.call(&"set_shader_param", &"auto_slope", 1.2)
-	mat.call(&"set_shader_param", &"auto_base_texture", 0)
-	mat.call(&"set_shader_param", &"auto_overlay_texture", mini(1, layers.size() - 1))
+	# Batch 07 follow-up: in Terrain3D 1.0.2 the "base" id lands on the slopes and the
+	# "overlay" id on the flats (shots showed layer 0 on the rims only), so layer 0 goes in overlay.
+	mat.call(&"set_shader_param", &"auto_base_texture", mini(1, layers.size() - 1))
+	mat.call(&"set_shader_param", &"auto_overlay_texture", 0)
 	t.get(&"collision").call(&"build")
 	terrain = t
+	_hide_ground_meshes()
+
+
+## Batch 07 follow-up: the greybox `ground` boxes sit 2 cm above the pads and hid the painted
+## terrain under flat tan Ground037. With a terrain the boxes keep only their collision (the
+## navmesh parses shapes); the pads show the terrain's path layer instead.
+func _hide_ground_meshes() -> void:
+	var boxes := get_parent().get_node_or_null("Boxes") if get_parent() else null
+	if boxes == null:
+		return
+	for b in boxes.get_children():
+		if String(b.get_meta("kind", "")) == "ground":
+			var m := b.get_node_or_null("Mesh") as MeshInstance3D
+			if m:
+				m.visible = false
 
 
 func _assets() -> Object:
