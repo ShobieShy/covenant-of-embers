@@ -1518,6 +1518,11 @@
       "step": "OW11b-1",
       "date": "2026-10-27",
       "summary": "Open-world travel without reload (main._world_travel, here_id; breach via Interiors with a BreachEnemies spawner), merged groups keep their metas (Waves trigger_center in world space), bot walk_to uses the world nav map, Enemy fall guard returns foes that fell through not-yet-ready streamed ground (gnawer_3 was at y -1.7M: the 'few enemies / 0 kills' cause). Open-world autoplay now clears midden_fight; breach_fight stalls (build/ow_play9.log)."
+    },
+    {
+      "step": "OW11b-2",
+      "date": "2026-10-27",
+      "summary": "Bot walk_to uses the entered interior's LevelNavigation. Open-world breach_fight kills 5-7 room foes then wedges at (7.6,-2000,49.6) short of camp side_challenge (26,-2000,51): path of 13 points exists, so a collider blocks it (open; logs build/ow_play10.log, ow_play11.log). Interior entry also logs 'Parameter material is null' (dummy renderer) errors to clear before OW11 default/full suite."
     }
   ],
   "completed_steps": [

@@ -407,11 +407,14 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		_path_goal = at
 		_path = PackedVector3Array()
 		var nav := main.get_node_or_null("Level/Navigation") as LevelNavigation
+		var ow := main.get_node_or_null("OpenWorld")
+		if ow and ow.get(&"interiors") and ow.interiors.interior:  # OW11b: indoors
+			nav = ow.interiors.interior.get_node_or_null("Navigation") as LevelNavigation
 		if nav and nav.map_ready():
 			_path = NavigationServer3D.map_get_path(
 				nav.get_navigation_map(), player.global_position, at, true
 			)
-		elif main.get_node_or_null("OpenWorld"):  # OW11b: the streamed world cells' nav
+		elif ow:  # OW11b: the streamed world cells' nav
 			var wm := player.get_world_3d().navigation_map
 			if NavigationServer3D.map_get_iteration_id(wm) > 0:
 				_path = NavigationServer3D.map_get_path(wm, player.global_position, at, true)
