@@ -9,6 +9,7 @@ const TERRAIN_DIR := "res://world/terrain/"
 
 var terrain: Node3D
 var streamer: WorldStreamer
+var interiors: Interiors
 var info := {}
 
 
@@ -22,6 +23,11 @@ func _ready() -> void:
 	var sleeper := EnemySleep.new()
 	sleeper.name = "EnemySleep"
 	add_child(sleeper)
+	interiors = Interiors.new()
+	interiors.name = "Interiors"
+	interiors.height_fn = height_at
+	add_child(interiors)
+	interiors.add_doors()
 
 
 static func load_info() -> Dictionary:

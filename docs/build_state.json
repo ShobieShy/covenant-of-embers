@@ -1423,6 +1423,12 @@
       "step": "OW4b",
       "type": "feature",
       "summary": "Offline whole-world navmesh: tools/bake_world_nav.gd bakes one NavigationMesh per 128 m cell (84 cells over the zones' bbox +64 m, 157 s, 524 KB in world/nav/) from build/world/world_height.f32 (2 m quads) plus each cell's colliders; WorldStreamer streams nav tiles on the cell rings, including strip cells with no content. build_world.sh runs it last. tests/unit/test_world_nav.gd: tiles on disk, and a town-to-Midden path across cell seams and the strip."
+    },
+    {
+      "time": "2026-10-27T02:26-05:00",
+      "step": "OW5a",
+      "type": "feature",
+      "summary": "Instanced interiors: Interiors (child of OpenWorld) loads an interior on a thread at y -2000 below the streamed world, emits fade (0.3 s) and slow_load (>250 ms, the loading-screen hook), lands the party inside the matching exit and back out at the linked world marker inset 2.5 m clear of the door; InteriorDoor triggers (host only in co-op). Mage Association front door at the town's to_association marker, back door at the town's to_landfill road. The interior's WorldEnvironment and Sun are dropped. tests/unit/test_interiors.gd. Breach rooms are OW5b; the fade/loading UI is not wired yet."
     }
   ],
   "completed_steps": [
