@@ -143,7 +143,7 @@ seed = 66
 rim = 18.0
 blend = 12.0
 map_version = 2
-layers = ["Grass004", "Ground037", "Rock030", "Ground054"]
+layers = ["grass", "dirt", "path_cobble", "mud_filth"]
 
 [[box]]
 name = "grove_path"

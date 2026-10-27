@@ -260,7 +260,7 @@ seed = 160
 rim = 30.0
 blend = 20.0
 map_version = 2
-layers = ["Ground054", "Ground037", "Rock030", "Grass004"]
+layers = ["rubble_junk", "ash_scorched", "dirt", "mud_filth"]
 
 [[gate]]
 name = "arena_exit"

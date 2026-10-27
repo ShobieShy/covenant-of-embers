@@ -132,7 +132,7 @@ TREES = [N + "tree_oak.glb", N + "tree_fat.glb", N + "tree_detailed.glb", N + "t
 def old_oak() -> Map:
     """157 W6 Old Oak grove, 160x160 m: pond, root caves, bark lookout (20 m), east door."""
     m = Map({"size": [160, 160], "center": [0, -13], "height": 9.0, "seed": 66, "rim": 18.0, "blend": 12.0,
-             "map_version": 2, "layers": ["Grass004", "Ground037", "Rock030", "Ground054"]})
+             "map_version": 2, "layers": ["grass", "dirt", "path_cobble", "mud_filth"]})
     m.pad("grove_path", 24, 0, 32, 4)
     m.path("pond_path", (40, 0), (40, 18))
     m.pad("pond_shore", 40, 28, 22, 18, [0.3, 0.32, 0.2])
@@ -173,7 +173,7 @@ def town() -> Map:
     """158 W7 Eldoria town, 240x240 m: market (E), temple hill (NW), docks + canal (W),
     rooftop jump route, sealed sewer, 6 flavour spots, 2 waystones, 6 + 2 hidden chests."""
     m = Map({"size": [240, 240], "center": [0, 0], "height": 14.0, "seed": 158, "rim": 20.0, "blend": 16.0,
-             "map_version": 2, "layers": ["PavingStones131", "Grass004", "Rock030", "Ground037"]})
+             "map_version": 2, "layers": ["grass", "dirt", "path_cobble", "rock"]})
     pave = [0.5, 0.47, 0.44]
     # Market district (east gate at z -2..2).
     m.path("market_road", (21, 0), (38, 0), 5, pave)
@@ -371,7 +371,7 @@ def landfill_part2(m: Map) -> None:
 def landfill() -> Map:
     """160-161 W9-W10 the Landfill, 700x600 m (Q3): arena at the north end, the zone south of it."""
     m = Map({"size": [700, 600], "center": [0, 240], "height": 18.0, "seed": 160, "rim": 30.0, "blend": 20.0,
-             "map_version": 2, "layers": ["Ground054", "Ground037", "Rock030", "Grass004"]})
+             "map_version": 2, "layers": ["rubble_junk", "ash_scorched", "dirt", "mud_filth"]})
     landfill_part1(m)
     landfill_part2(m)
     return m
@@ -397,7 +397,7 @@ def breach() -> Map:
     (a challenge camp + hidden chest, open after tutorial_done). Still linear: annex rooms are
     encounters, so all 6 clear before the 3 levers arm."""
     m = Map({"size": [220, 320], "center": [0, 60], "height": 10.0, "seed": 162, "rim": 20.0, "blend": 12.0,
-             "map_version": 2, "layers": ["Rock030", "Gravel022", "Ground037", "Ground054"]})
+             "map_version": 2, "layers": ["ash_scorched", "crystal", "rubble_junk", "rock"]})
     # West annex, ground floor: room 4 "ossuary" through the den's west door (z 61..65).
     m.pad("ossuary_floor", -19, 69, 22, 18, [0.3, 0.28, 0.3])
     m.wall("ossuary_w", [-30.5, 2, 69], [1, 4, 19], BRICK)

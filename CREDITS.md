@@ -42,6 +42,8 @@ Staff brands (0.1.3): the six maker logos are original CC0 marks (tools/gen_bran
 
 Ember Art (0.1.4): the junk mountain, Association spire, Old Oak LOD set, Breach crater rim, 4 waystone variants, 3 chest tiers, Filth decal, skyline strip, 8 world map paintings and the 16 px element / gear / junk icons are original work made for Covenant of Embers (Ember Art batch 06, Blender 4.5 script + PIL), CC0 1.0.
 
+Ember Art terrain sets (batch 07, based on ambientCG): the 10 Terrain3D texture sets (dirt, grass, rock, rubble, ash, mud, sand, snow, crystal, cobble path) are modified (blurred, posterized, tinted, overlays added) from ambientCG Ground080, Grass004, Rock030, Gravel022, Ground037, Ground054, Ground033, Snow006, Rocks011 and PavingStones131 by Lennart Demes, CC0 1.0. Textures based on ambientCG.com (CC0). Batch 07 also adds the belt and grimoire icons and the junk mountain collision hulls (original, CC0 1.0).
+
 CC0 does not require attribution; Kenney and ambientCG are credited anyway with thanks. Support: https://kenney.nl/donate
 
 ## Libraries

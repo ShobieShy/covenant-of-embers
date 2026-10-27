@@ -13,7 +13,10 @@ extends Node3D
 ## When the GDExtension is missing (a broken install), the zone still adds its edge walls
 ## and heights, and `terrain` stays null.
 
-const LAYER_DIR := "res://assets/ambientcg/%s/"
+const LAYER_DIR := "res://assets/ambientcg/%s/"  ## legacy ambientCG ids (Grass004, ...)
+## Batch 07: Ember Art terrain sets, named by material (dirt, grass, rock, rubble_junk,
+## ash_scorched, mud_filth, sand, snow, crystal, path_cobble). All 1024 px, OpenGL normals.
+const EMBER_DIR := "res://assets/original/ember_art/terrain/"
 const GEN_VERSION := 1  ## step 155: bump when height/splat generation changes (co-op hash)
 const EDGE := 24.0  ## metres over which the zone edge rises to `rim`
 
@@ -172,8 +175,9 @@ func build() -> void:
 	t.call(&"set_camera", cam)
 	t.set(&"vertex_spacing", spacing)
 	t.set(&"material", ClassDB.instantiate(&"Terrain3DMaterial"))
-	t.set(&"assets", _assets())
 	add_child(t)
+	t.set(&"assets", _assets())  # batch 07: after add_child (set before, Terrain3D dropped the list)
+	t.get(&"material").set(&"show_checkered", false)
 	t.get(&"collision").set(&"mode", 3)  # FULL_GAME: static collision for the whole zone
 	var o := origin()
 	t.get(&"data").call(&"import_images", [height_image(), control_image(), null], Vector3(o.x, 0, o.y), 0.0, 1.0)
@@ -188,19 +192,28 @@ func build() -> void:
 
 func _assets() -> Object:
 	var a: Object = ClassDB.instantiate(&"Terrain3DAssets")
-	var list := []
 	for i in layers.size():
 		var ta: Object = ClassDB.instantiate(&"Terrain3DTextureAsset")
 		ta.set(&"name", layers[i])
 		ta.set(&"id", i)
-		var dir := LAYER_DIR % layers[i]
-		if ResourceLoader.exists(dir + "terrain_alb_ht.png"):
-			ta.set(&"albedo_texture", load(dir + "terrain_alb_ht.png"))
-			ta.set(&"normal_texture", load(dir + "terrain_nrm_rgh.png"))
+		var tex := layer_textures(layers[i])
+		if not tex.is_empty():
+			ta.set(&"albedo_texture", load(tex[0]))
+			ta.set(&"normal_texture", load(tex[1]))
 		ta.set(&"uv_scale", 0.15)
-		list.append(ta)
-	a.set(&"texture_list", list)
+		a.call(&"set_texture", i, ta)  # batch 07: set_texture rebuilds the texture arrays (texture_list did not: checker)
 	return a
+
+
+## [albedo+height, normal+roughness] paths for a layer id, or [] when it has no textures.
+static func layer_textures(id: String) -> PackedStringArray:
+	var e := EMBER_DIR + id
+	if ResourceLoader.exists(e + "_albedo_height.png"):
+		return [e + "_albedo_height.png", e + "_normal_roughness.png"]
+	var d := LAYER_DIR % id
+	if ResourceLoader.exists(d + "terrain_alb_ht.png"):
+		return [d + "terrain_alb_ht.png", d + "terrain_nrm_rgh.png"]
+	return []
 
 
 ## Invisible walls just inside the zone edge (the rim slopes up to them).

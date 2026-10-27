@@ -202,3 +202,10 @@ author = "Covenant of Embers project"
 license = "CC0 1.0"
 source = "incoming_art/batch_06_requests (Ember Art batch 06; original work, Blender 4.5 script + PIL)"
 line = "Ember Art (0.1.4) by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
+name = "Ember Art terrain sets (batch 07, based on ambientCG)"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "incoming_art/batch_07 (modified: blurred, posterized, tinted, overlays added; crystal desaturated in-repo) from ambientCG Ground080, Grass004, Rock030, Gravel022, Ground037, Ground054, Ground033, Snow006, Rocks011, PavingStones131"
+line = "Ember Art terrain sets (batch 07, based on ambientCG) by Covenant of Embers project, CC0 1.0"

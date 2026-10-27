@@ -38,10 +38,27 @@ func test_ember_art_batch06() -> void:
 		var gi := g as GeometryInstance3D
 		lods[[gi.visibility_range_begin, gi.visibility_range_end]] = true
 	check(lods.size() == 3, "3 LOD bands: %s" % [lods.keys()])
-	check(
-		jm.find_children("*", "StaticBody3D", true, false).is_empty(),
-		"junk mountain left walk-through (not in the navmesh)"
-	)
+	var hulls := jm.find_children("*", "StaticBody3D", true, false)
+	check(hulls.size() == 9, "junk mountain: 9 convex hulls (batch 07), got %d" % hulls.size())
+	var sp := EmberArt.model("association_spire")
+	var walls := sp.find_children("*", "StaticBody3D", true, false)
+	check(walls.size() == 6, "spire: 4 walls split round the back door + lintel")
+	# The to_landfill exit (level z -13.5) sits inside the spire, reached through the door
+	# gap at the spire's south wall (level z -9): a ray down the door line must hit nothing.
+	var space_ok := true
+	for w in walls:
+		var cs := (w as StaticBody3D).get_child(0) as CollisionShape3D
+		var b := cs.shape as BoxShape3D
+		var c := (w as StaticBody3D).transform.origin
+		var lo := c - b.size / 2
+		var hi := c + b.size / 2
+		if lo.x < 0.5 and hi.x > -0.5 and lo.y < 2.0 and hi.z > 1.5:  # between door (z 6) and exit (z 1.5)
+			space_ok = false
+	check(space_ok, "spire back door gap clear (x -0.5..0.5, below 2 m)")
+	sp.free()
+	var nav := EmberArt.nav_source("midden")
+	check(nav.find_children("*", "StaticBody3D", true, false).size() == 9, "junk hulls join the midden nav bake")
+	nav.free()
 	for id in [] if not EmberArt.COLLIDE else ["oak_lod", "breach_crater_rim", "waystone_town", "chest_vault"]:
 		var mm := EmberArt.model(id)
 		check(mm.find_children("*", "StaticBody3D", true, false).size() >= 1, id + " collides")

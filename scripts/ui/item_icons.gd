@@ -10,7 +10,7 @@ const GEAR := "res://assets/kenney/pixel-ui/icons/gear/"
 ## Ember Art batch 06 (CC0, original): 16 px element / gear / junk icons, preferred when present.
 const EMBER := "res://assets/original/ember_art/icons/"
 const EMBER_ELEMENTS: PackedStringArray = ["arcane", "fire", "water", "earth", "air", "", ""]
-const EMBER_GEAR: PackedStringArray = ["hood", "robe", "", "boots", ""]
+const EMBER_GEAR: PackedStringArray = ["hood", "robe", "belt", "boots", "grimoire"]  ## batch 07: belt, grimoire
 const EMBER_JUNK: PackedStringArray = ["bottle", "can", "bag", "bone", "scrap"]
 const PART_ICONS: PackedStringArray = [
 	"",  # HEAD: by element (HEAD_BY_ELEMENT)

@@ -2021,7 +2021,7 @@ noise_seed = 162
 spacing = 1
 rim = 20
 map_version = 2
-layers = PackedStringArray("Rock030", "Gravel022", "Ground037", "Ground054")
+layers = PackedStringArray("ash_scorched", "crystal", "rubble_junk", "rock")
 pads = Array[Rect2]([Rect2(-17, -27, 34, 52), Rect2(-10, 20, 20, 60), Rect2(-32, 58, 26, 22), Rect2(-32, 2, 21, 60), Rect2(5.5, 46.8, 11, 8.4), Rect2(12, 38, 24, 26), Rect2(-14, 168, 28, 16), Rect2(-5, 75, 10, 100), Rect2(-24, 105, 48, 40)])
 blend = 12
 

@@ -6,7 +6,7 @@ extends RefCounted
 ## that file exists and otherwise builds a procedural placeholder, so the art drops in later
 ## with no code change. `dress()` adds a level's decals, skyline and landmark art.
 
-## Landmark and prop collision (the spire and junk mountain are skipped in _collide).
+## Landmark and prop collision (batch 07: the spire and junk mountain use landmark_bodies).
 const COLLIDE := true
 const DIR := "res://assets/original/ember_art/"
 const GROUP := &"ember_art"
@@ -218,10 +218,86 @@ static func _skyline(holder: Node3D, tz: TerrainZone) -> void:
 		q.rotation.y = a + PI
 
 
+## Batch 07: landmarks whose collision is part of the level's navmesh bake (LevelNavigation).
+const NAV_LANDMARKS: PackedStringArray = ["association_spire", "junk_mountain"]
+const JUNK_COL := DIR + "junk_mountain_col.glb"
+## The spire's 12 x 12 m footprint (model space) and the back-door gap in its south (+z) wall,
+## lined up with the Association's back door (level x 0, z -10) and the to_landfill exit.
+const SPIRE_HALF := 6.0
+const SPIRE_TALL := 45.0
+const SPIRE_WALL := 0.8
+const SPIRE_DOOR := Vector2(4.4, 5.0)  ## gap width, height
+
+
+## Collision bodies for a NAV_LANDMARKS model, in the model's own (unscaled) space.
+static func landmark_bodies(id: String) -> Array[StaticBody3D]:
+	var out: Array[StaticBody3D] = []
+	if id == "junk_mountain" and ResourceLoader.exists(JUNK_COL):
+		var c := (load(JUNK_COL) as PackedScene).instantiate() as Node3D
+		for mi in c.find_children("col_*", "MeshInstance3D", true, false):
+			var mesh := (mi as MeshInstance3D).mesh
+			if mesh == null:
+				continue
+			var sh := ConvexPolygonShape3D.new()
+			sh.points = mesh.get_faces()
+			out.append(_body("Col_" + String(mi.name), sh, (mi as Node3D).transform))
+		c.free()
+	elif id == "association_spire":
+		var h := SPIRE_HALF
+		var w := SPIRE_WALL
+		var t := SPIRE_TALL
+		var side := (2.0 * h - SPIRE_DOOR.x) * 0.5
+		var walls := {
+			"North": [Vector3(2 * h, t, w), Vector3(0, t / 2, -h + w / 2)],
+			"West": [Vector3(w, t, 2 * h), Vector3(-h + w / 2, t / 2, 0)],
+			"East": [Vector3(w, t, 2 * h), Vector3(h - w / 2, t / 2, 0)],
+			"SouthW": [Vector3(side, t, w), Vector3(-h + side / 2, t / 2, h - w / 2)],
+			"SouthE": [Vector3(side, t, w), Vector3(h - side / 2, t / 2, h - w / 2)],
+			"Lintel":
+			[Vector3(SPIRE_DOOR.x, t - SPIRE_DOOR.y, w), Vector3(0, SPIRE_DOOR.y + (t - SPIRE_DOOR.y) / 2, h - w / 2)],
+		}
+		for k in walls:
+			var bs := BoxShape3D.new()
+			bs.size = walls[k][0]
+			out.append(_body("Col_" + String(k), bs, Transform3D(Basis(), walls[k][1])))
+	return out
+
+
+static func _body(n: String, sh: Shape3D, xf: Transform3D) -> StaticBody3D:
+	var b := StaticBody3D.new()
+	b.name = n
+	b.transform = xf
+	var cs := CollisionShape3D.new()
+	cs.shape = sh
+	b.add_child(cs)
+	return b
+
+
+## A collision-only stand-in for the level's NAV_LANDMARKS (placed and scaled like dress()
+## places the art), for LevelNavigation to parse. The caller frees it.
+static func nav_source(level_id: String) -> Node3D:
+	var root := Node3D.new()
+	root.name = "EmberArtNav"
+	for id in NAV_LANDMARKS:
+		var s: Dictionary = SLOTS[id]
+		if String(s["level"]) != level_id or not has_art(id):
+			continue
+		var n := Node3D.new()
+		n.name = id
+		n.position = s["at"]
+		n.scale = Vector3.ONE * float(SCALE.get(id, 1.0))
+		for b in landmark_bodies(id):
+			n.add_child(b)
+		root.add_child(n)
+	return root
+
+
 ## Simple collision: a trimesh from each landmark's LOD0 (or its only mesh); a convex hull for
 ## the small props (waystones, chests) so the interaction reach still works round them.
 static func _collide(m: Node3D, id: String) -> void:
-	if id in ["association_spire", "junk_mountain"]:  ## not in the baked navmesh yet: a trimesh strands the bots
+	if id in NAV_LANDMARKS:  ## batch 07: hand-made shapes, also baked into the navmesh
+		for b in landmark_bodies(id):
+			m.add_child(b)
 		return
 	var small := id.begins_with("waystone_") or id.begins_with("chest_")
 	var meshes := m.find_children("*", "MeshInstance3D", true, false)

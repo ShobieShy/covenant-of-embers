@@ -70,6 +70,7 @@ func bake_now() -> int:
 	var nm := navigation_mesh if navigation_mesh != null else make_mesh()
 	var data := NavigationMeshSourceGeometryData3D.new()
 	NavigationServer3D.parse_source_geometry_data(nm, data, root)
+	_add_landmarks(nm, data)
 	var tz := get_node_or_null(terrain) as TerrainZone
 	if tz != null and data.has_data():
 		return _bake_tiles(data, tz)
@@ -81,6 +82,23 @@ func bake_now() -> int:
 	bakes += 1
 	baked.emit(self)
 	return nm.get_polygon_count()
+
+
+## Batch 07: the level's EmberArt landmark colliders (junk mountain, spire) join the bake.
+func _add_landmarks(nm: NavigationMesh, data: NavigationMeshSourceGeometryData3D) -> void:
+	if get_parent() == null or not is_inside_tree():
+		return
+	var src := EmberArt.nav_source(GameFlow.id_of(get_parent()))
+	if src.get_child_count() == 0:
+		src.free()
+		return
+	src.transform = transform.affine_inverse()  # level space (added under us: the level may be mid-_ready)
+	add_child(src)
+	var extra := NavigationMeshSourceGeometryData3D.new()
+	NavigationServer3D.parse_source_geometry_data(nm, extra, src)
+	data.merge(extra)
+	remove_child(src)
+	src.free()
 
 
 func level_id() -> String:

@@ -312,4 +312,14 @@ source = "incoming_art/batch_06_requests (Ember Art batch 06; original work, Ble
 license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-10-26"
-use = "Landmarks (junk mountain, Association spire, Old Oak LODs, Breach crater rim), waystone and chest variants, Filth decal, skyline, world map paintings, 16 px item icons"
+use = "Landmarks (junk mountain, Association spire, Old Oak LODs, Breach crater rim), waystone and chest variants, Filth decal, skyline, world map paintings, 16 px item icons; batch 07: belt and grimoire icons, junk mountain collision hulls (junk_mountain_col.glb)"
+
+[[asset]]
+name = "Ember Art terrain sets (batch 07, based on ambientCG)"
+path = "assets/original/ember_art/terrain"
+author = "Covenant of Embers project (Ember Art); source textures by Lennart Demes (ambientCG.com)"
+source = "incoming_art/batch_07 (modified: blurred, posterized, tinted, overlays added; crystal desaturated in-repo) from ambientCG Ground080, Grass004, Rock030, Gravel022, Ground037, Ground054, Ground033, Snow006, Rocks011, PavingStones131"
+license = "CC0-1.0"
+license_url = "https://docs.ambientcg.com/license/"
+date_added = "2026-10-27"
+use = "Terrain3D texture sets (albedo+height, normal+roughness, 1024 px): Textures based on ambientCG.com (CC0)"

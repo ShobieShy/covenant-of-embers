@@ -547,11 +547,12 @@ def _terrain(t: dict, boxes: list[dict]) -> dict:
     center = _vec(t.get("center", [0, 0]), "[terrain] center", 2)
     layers = t.get("layers", ["Grass004", "Rock030", "Gravel022"])
     if not isinstance(layers, list) or not 1 <= len(layers) <= 8:
-        raise LevelError("[terrain] layers must be a list of 1-8 ambientCG ids")
+        raise LevelError("[terrain] layers must be a list of 1-8 terrain set ids")
     for x in layers:
-        if not (ROOT / "assets/ambientcg" / str(x) / "terrain_alb_ht.png").is_file():
-            raise LevelError(f"[terrain] layer {x}: no assets/ambientcg/{x}/terrain_alb_ht.png "
-                             "(run tools/pack_terrain_textures.py)")
+        if not ((ROOT / "assets/original/ember_art/terrain" / f"{x}_albedo_height.png").is_file()
+                or (ROOT / "assets/ambientcg" / str(x) / "terrain_alb_ht.png").is_file()):
+            raise LevelError(f"[terrain] layer {x}: no assets/original/ember_art/terrain/{x}_albedo_height.png "
+                             f"or assets/ambientcg/{x}/terrain_alb_ht.png")
     margin = _num(t, "pad_margin", 2.0, 0.0, 64.0)
     pads = []
     for b in boxes:

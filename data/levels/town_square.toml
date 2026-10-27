@@ -213,7 +213,7 @@ seed = 158
 rim = 20.0
 blend = 16.0
 map_version = 2
-layers = ["PavingStones131", "Grass004", "Rock030", "Ground037"]
+layers = ["grass", "dirt", "path_cobble", "rock"]
 
 [[box]]
 name = "market_road_x"

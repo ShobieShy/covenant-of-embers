@@ -1363,6 +1363,12 @@
       "type": "release",
       "summary": "Version 0.1.4-prealpha: element trees + capstone lock, Terrain3D maps (Landfill 700x600 m, Breach 220x320 m), Pyrowning crystal reload (50%/35% max mana), trash and junk, co-op PROTOCOL 3 + host-level follow fix, Ember Art batch 06",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-27T00:35:00-05:00",
+      "step": "ember-art-batch-07",
+      "type": "wip",
+      "summary": "WIP: Ember Art batch 07: belt/grimoire icons (no Signet slot, ring_signet dropped), junk mountain 9 convex hulls + spire walls with back-door gap, both in the nav bake (midden tiles rebaked), 10 Terrain3D sets (VRAM compressed, normal-map off, mipmaps) mapped per region, crystal desaturated, fixed the long-standing checker (assets set after add_child), credits; open world plan docs/OPEN_WORLD_PLAN.md. Full run_tests.sh in progress."
     }
   ],
   "completed_steps": [
