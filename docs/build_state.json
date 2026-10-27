@@ -1578,6 +1578,11 @@
       "step": "OW11c-7",
       "date": "2026-10-27",
       "summary": "run_tests precheck fix: OW11b-4 hand-edited annex_stair_20 inside the generated EXPAND block of breach_slice.toml, so expand_maps --check failed (the 10:58 rt29 attempt stopped there). The 0.2 m deeper top step now lives in tools/expand_maps.py; regenerated TOML differs only by the dropped comment. Precheck passes."
+    },
+    {
+      "step": "OW11c-8",
+      "date": "2026-10-27",
+      "summary": "Co-op during the host's intro. rt29 failed in co-op: joiner never cast, host stalled at intro beat filth (a gnawer wandered off to (427,-54), likely chasing the far-away joiner's proxy). Causes: (1) _setup_coop runs before _enter_open_world, so coop.world_enemies was always false (host shared only its spawner, joiner kept local enemies); now set true after _enter_open_world, so the host shares every world enemy incl. intro waves. (2) A host fast travel in the open world sent nothing, leaving the joiner 100s of m behind; the host now sends 'travel' and the joiner lands at the same outdoor place (_follow_host_travel; interiors/Breach stay on pose 'w'). Co-op 6/6 PASS (build/coop_intro1..3, coop_intro_b1..3; joiner kills from ~197 s, during the intro), no filth stall; joiner rc 134 after PASS accepted with WARNING. Coop/interiors targeted tests 20/20."
     }
   ],
   "completed_steps": [

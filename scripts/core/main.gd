@@ -253,6 +253,8 @@ func _setup_flow(player: Player) -> void:
 	_spawn_at_anchor(player, saved_progress)
 	if open_world_on():
 		_enter_open_world(player, {"progress": saved_progress} if not saved_progress.is_empty() else {})
+		if coop:  # OW11c-8: _setup_coop ran before OpenWorld existed; share world enemies (intro too)
+			coop.world_enemies = true
 	if fresh:
 		_apply_new_identity(player)
 		if not Coop.is_client():
@@ -517,6 +519,9 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 
 ## Step 91: the host's travel moves everyone; clients follow with their character.
 func _on_coop_message(_from: int, kind: String, data: Dictionary) -> void:
+	if kind == "travel" and Coop.is_client() and get_node_or_null("OpenWorld") != null:
+		_follow_host_travel(String(data.get("to", "")), get_node("OpenWorld") as OpenWorld)
+		return
 	if kind == "travel" and Coop.is_client() and get_node_or_null("OpenWorld") == null:
 		# (OW11c: in the open world the joiner follows the host's pose "w" and the leash)
 		if String(data.get("to", "midden")) == GameFlow.id_of($Level):
@@ -694,6 +699,18 @@ func _world_travel(ow: OpenWorld, to: String) -> void:
 	ow.travel.land_at(SaveMigration.entrance(to), to)
 
 
+## OW11c-8: the host fast-travelled outdoors; land the joiner there too. Interiors and the
+## Breach are left to the pose "w" (host_space), which follows them already.
+func _follow_host_travel(to: String, ow: OpenWorld) -> void:
+	if to == "" or to == "breach" or Interiors.LINKS.has(to):
+		return
+	while ow.interiors.busy or ow.travel.busy:
+		await get_tree().process_frame
+	print("[coop] following the host's travel to %s" % to)
+	save_game()
+	_world_travel(ow, to)
+
+
 ## OW11c: a joiner goes where its host is: into the host's interior, or back outdoors (the
 ## leash then pulls it beside the host).
 func _follow_host_space(interior: String, ow: OpenWorld) -> void:
@@ -715,6 +732,8 @@ func travel(to: String, anchor := "") -> void:
 	var ow := get_node_or_null("OpenWorld") as OpenWorld
 	if ow and not (coop and not coop.host):
 		save_game()
+		if Coop.is_host():  # OW11c-8: a joiner follows the host's fast travel (else it is left 100s of m behind)
+			Coop.session.send("travel", {"to": to})
 		_world_travel(ow, to)
 		return
 	if coop and not coop.host:
