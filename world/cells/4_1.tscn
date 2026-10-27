@@ -84,89 +84,89 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_48"]
 size = Vector3(18, 0.4, 14)
 
-[node name="Cell_4_1" type="Node3D" unique_id=1929126721]
+[node name="Cell_4_1" type="Node3D" unique_id=1401103231]
 metadata/cell = Vector2i(4, 1)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=1724149524]
+[node name="Boxes" type="Node3D" parent="." unique_id=2051348348]
 
-[node name="midden_sunken_tip" type="StaticBody3D" parent="Boxes" unique_id=1816273276]
+[node name="midden_sunken_tip" type="StaticBody3D" parent="Boxes" unique_id=722820598]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, 230)
 metadata/kind = "ground"
 metadata/toml_index = 61
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_tip" unique_id=865662919]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_tip" unique_id=2056246909]
 visible = false
 mesh = SubResource("BoxMesh_28")
 surface_material_override/0 = SubResource("StandardMaterial3D_15")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_tip" unique_id=1055608055]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_tip" unique_id=1149990202]
 shape = SubResource("BoxShape3D_28")
 
-[node name="midden_sunken_tip_road_z" type="StaticBody3D" parent="Boxes" unique_id=1862795915]
+[node name="midden_sunken_tip_road_z" type="StaticBody3D" parent="Boxes" unique_id=1961142530]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, 170)
 metadata/kind = "ground"
 metadata/toml_index = 62
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_tip_road_z" unique_id=1258118069]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_tip_road_z" unique_id=1906573589]
 visible = false
 mesh = SubResource("BoxMesh_34")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_tip_road_z" unique_id=1097954374]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_tip_road_z" unique_id=1426125914]
 shape = SubResource("BoxShape3D_34")
 
-[node name="midden_south_road_z" type="StaticBody3D" parent="Boxes" unique_id=263152206]
+[node name="midden_south_road_z" type="StaticBody3D" parent="Boxes" unique_id=1824056934]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, 160)
 metadata/kind = "ground"
 metadata/toml_index = 69
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_south_road_z" unique_id=246692057]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_south_road_z" unique_id=132323099]
 visible = false
 mesh = SubResource("BoxMesh_36")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_south_road_z" unique_id=1519906874]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_south_road_z" unique_id=487639548]
 shape = SubResource("BoxShape3D_36")
 
-[node name="midden_sunken_wall_w" type="StaticBody3D" parent="Boxes" unique_id=661679941]
+[node name="midden_sunken_wall_w" type="StaticBody3D" parent="Boxes" unique_id=1747457582]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 568, 2, 230)
 metadata/kind = "wall"
 metadata/toml_index = 113
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_wall_w" unique_id=1556779887]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_wall_w" unique_id=1653092318]
 mesh = SubResource("BoxMesh_47")
 surface_material_override/0 = SubResource("StandardMaterial3D_24")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_wall_w" unique_id=1613851289]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_wall_w" unique_id=1211660379]
 shape = SubResource("BoxShape3D_47")
 
-[node name="midden_sunken_wall_e" type="StaticBody3D" parent="Boxes" unique_id=861034740]
+[node name="midden_sunken_wall_e" type="StaticBody3D" parent="Boxes" unique_id=345985430]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 584, 2, 230)
 metadata/kind = "wall"
 metadata/toml_index = 114
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_wall_e" unique_id=981666336]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_wall_e" unique_id=1850322675]
 mesh = SubResource("BoxMesh_47")
 surface_material_override/0 = SubResource("StandardMaterial3D_24")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_wall_e" unique_id=901932903]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_wall_e" unique_id=882576683]
 shape = SubResource("BoxShape3D_47")
 
-[node name="midden_sunken_roof" type="StaticBody3D" parent="Boxes" unique_id=709785355]
+[node name="midden_sunken_roof" type="StaticBody3D" parent="Boxes" unique_id=1850169064]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 4.2, 232)
 metadata/kind = "platform"
 metadata/toml_index = 115
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_roof" unique_id=291136399]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_roof" unique_id=1951880906]
 mesh = SubResource("BoxMesh_48")
 surface_material_override/0 = SubResource("StandardMaterial3D_25")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_roof" unique_id=1823255898]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_roof" unique_id=1580118449]
 shape = SubResource("BoxShape3D_48")
 
-[node name="Pois" type="Node3D" parent="." unique_id=315268633]
+[node name="Pois" type="Node3D" parent="." unique_id=1852898653]
 
-[node name="midden_sunken_tip" type="Node3D" parent="Pois" unique_id=616607485]
+[node name="midden_sunken_tip" type="Node3D" parent="Pois" unique_id=1544905076]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
 metadata/center = Vector3(576, 0, 230)
 metadata/radius = 22

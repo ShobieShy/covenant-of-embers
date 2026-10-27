@@ -58,52 +58,52 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_50"]
 size = Vector3(10, 4, 2)
 
-[node name="Cell_6_1" type="Node3D" unique_id=2028937495]
+[node name="Cell_6_1" type="Node3D" unique_id=1581641722]
 metadata/cell = Vector2i(6, 1)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=1679163623]
+[node name="Boxes" type="Node3D" parent="." unique_id=31729242]
 
-[node name="midden_joes_old_stash" type="StaticBody3D" parent="Boxes" unique_id=1887305535]
+[node name="midden_joes_old_stash" type="StaticBody3D" parent="Boxes" unique_id=934796088]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 836, -0.1, 210)
 metadata/kind = "ground"
 metadata/toml_index = 66
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_joes_old_stash" unique_id=1537375812]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_joes_old_stash" unique_id=1547477239]
 visible = false
 mesh = SubResource("BoxMesh_28")
 surface_material_override/0 = SubResource("StandardMaterial3D_15")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_joes_old_stash" unique_id=1363607758]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_joes_old_stash" unique_id=985554161]
 shape = SubResource("BoxShape3D_28")
 
-[node name="midden_joes_old_stash_road_z" type="StaticBody3D" parent="Boxes" unique_id=1452492802]
+[node name="midden_joes_old_stash_road_z" type="StaticBody3D" parent="Boxes" unique_id=783958753]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 836, -0.1, 160)
 metadata/kind = "ground"
 metadata/toml_index = 68
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_joes_old_stash_road_z" unique_id=154668508]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_joes_old_stash_road_z" unique_id=921435073]
 visible = false
 mesh = SubResource("BoxMesh_36")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_joes_old_stash_road_z" unique_id=1801836323]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_joes_old_stash_road_z" unique_id=1896491792]
 shape = SubResource("BoxShape3D_36")
 
-[node name="midden_stash_vault_back" type="StaticBody3D" parent="Boxes" unique_id=938861663]
+[node name="midden_stash_vault_back" type="StaticBody3D" parent="Boxes" unique_id=1820199905]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 836, 2, 222)
 metadata/kind = "wall"
 metadata/toml_index = 122
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_stash_vault_back" unique_id=78368936]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_stash_vault_back" unique_id=1643768703]
 mesh = SubResource("BoxMesh_50")
 surface_material_override/0 = SubResource("StandardMaterial3D_24")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_stash_vault_back" unique_id=281921713]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_stash_vault_back" unique_id=387160341]
 shape = SubResource("BoxShape3D_50")
 
-[node name="Pois" type="Node3D" parent="." unique_id=401060025]
+[node name="Pois" type="Node3D" parent="." unique_id=568373448]
 
-[node name="midden_joes_old_stash" type="Node3D" parent="Pois" unique_id=337213837]
+[node name="midden_joes_old_stash" type="Node3D" parent="Pois" unique_id=1229948745]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
 metadata/center = Vector3(836, 0, 210)
 metadata/radius = 22

@@ -64,88 +64,88 @@ size = Vector3(26, 4, 2)
 [sub_resource type="BoxShape3D" id="BoxShape3D_45"]
 size = Vector3(26, 4, 2)
 
-[node name="Cell_3_1" type="Node3D" unique_id=1688862593]
+[node name="Cell_3_1" type="Node3D" unique_id=990857320]
 metadata/cell = Vector2i(3, 1)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=931375021]
+[node name="Boxes" type="Node3D" parent="." unique_id=1322316557]
 
-[node name="midden_compactor_pit" type="StaticBody3D" parent="Boxes" unique_id=1242755473]
+[node name="midden_compactor_pit" type="StaticBody3D" parent="Boxes" unique_id=13537560]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, -0.1, 190)
 metadata/kind = "ground"
 metadata/toml_index = 55
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_pit" unique_id=1096370961]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_pit" unique_id=1267416003]
 visible = false
 mesh = SubResource("BoxMesh_28")
 surface_material_override/0 = SubResource("StandardMaterial3D_15")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_pit" unique_id=99501791]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_pit" unique_id=1612399046]
 shape = SubResource("BoxShape3D_28")
 
-[node name="midden_compactor_pit_road_z" type="StaticBody3D" parent="Boxes" unique_id=694125771]
+[node name="midden_compactor_pit_road_z" type="StaticBody3D" parent="Boxes" unique_id=2046448005]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, -0.1, 150)
 metadata/kind = "ground"
 metadata/toml_index = 57
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_pit_road_z" unique_id=1954734468]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_pit_road_z" unique_id=2052385648]
 visible = false
 mesh = SubResource("BoxMesh_33")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_pit_road_z" unique_id=185954566]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_pit_road_z" unique_id=1028563119]
 shape = SubResource("BoxShape3D_33")
 
-[node name="midden_compactor_wall_-1_0" type="StaticBody3D" parent="Boxes" unique_id=168556506]
+[node name="midden_compactor_wall_-1_0" type="StaticBody3D" parent="Boxes" unique_id=1245016627]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 412, 2, 190)
 metadata/kind = "wall"
 metadata/toml_index = 105
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_-1_0" unique_id=930156166]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_-1_0" unique_id=2119223188]
 mesh = SubResource("BoxMesh_44")
 surface_material_override/0 = SubResource("StandardMaterial3D_22")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_-1_0" unique_id=271714832]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_-1_0" unique_id=732672425]
 shape = SubResource("BoxShape3D_44")
 
-[node name="midden_compactor_wall_1_0" type="StaticBody3D" parent="Boxes" unique_id=120403060]
+[node name="midden_compactor_wall_1_0" type="StaticBody3D" parent="Boxes" unique_id=1309394351]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 440, 2, 190)
 metadata/kind = "wall"
 metadata/toml_index = 106
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_1_0" unique_id=605155917]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_1_0" unique_id=1778408444]
 mesh = SubResource("BoxMesh_44")
 surface_material_override/0 = SubResource("StandardMaterial3D_22")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_1_0" unique_id=618941158]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_1_0" unique_id=1323831039]
 shape = SubResource("BoxShape3D_44")
 
-[node name="midden_compactor_wall_0_-1" type="StaticBody3D" parent="Boxes" unique_id=373096276]
+[node name="midden_compactor_wall_0_-1" type="StaticBody3D" parent="Boxes" unique_id=2044775678]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, 2, 176)
 metadata/kind = "wall"
 metadata/toml_index = 107
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_0_-1" unique_id=1048936789]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_0_-1" unique_id=1525788320]
 mesh = SubResource("BoxMesh_45")
 surface_material_override/0 = SubResource("StandardMaterial3D_22")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_0_-1" unique_id=602460584]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_0_-1" unique_id=1836449547]
 shape = SubResource("BoxShape3D_45")
 
-[node name="midden_compactor_wall_0_1" type="StaticBody3D" parent="Boxes" unique_id=77156901]
+[node name="midden_compactor_wall_0_1" type="StaticBody3D" parent="Boxes" unique_id=339394410]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, 2, 204)
 metadata/kind = "wall"
 metadata/toml_index = 108
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_0_1" unique_id=1104565439]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_0_1" unique_id=440317230]
 mesh = SubResource("BoxMesh_45")
 surface_material_override/0 = SubResource("StandardMaterial3D_22")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_0_1" unique_id=1674967313]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_0_1" unique_id=1451328781]
 shape = SubResource("BoxShape3D_45")
 
-[node name="Pois" type="Node3D" parent="." unique_id=956834795]
+[node name="Pois" type="Node3D" parent="." unique_id=2069282953]
 
-[node name="midden_compactor_pit" type="Node3D" parent="Pois" unique_id=284800506]
+[node name="midden_compactor_pit" type="Node3D" parent="Pois" unique_id=1982610477]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
 metadata/center = Vector3(426, 0, 190)
 metadata/radius = 22

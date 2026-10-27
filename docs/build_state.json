@@ -1441,6 +1441,12 @@
       "step": "OW5a",
       "type": "feature",
       "summary": "Interior UI: InteriorFade (CanvasLayer under OpenWorld) dips a black rect over Interiors.fade, and on slow_load shows LoadingScreen.overlay (new manual mode: caller-driven, never changes scenes), closed by done() on entered/left. Test added to test_interiors.gd."
+    },
+    {
+      "time": "2026-10-27T03:02-05:00",
+      "step": "OW5b",
+      "type": "feature",
+      "summary": "Breach rooms instanced: Interiors.LINKS breach_rooms loads the breach scene at y -2000 minus its crater parts (Terrain, Props, Pois, sky, sun), portal at the complex entrance road (breach to_midden marker, world 1099.5, 11), a Breach node runs the rooms (encounters, switches, vault) while inside. Interiors.CELL_SKIP keeps the breach Boxes out of the world cells; cells and world nav rebuilt. Tests in test_interiors.gd; test_cells_fresh honours CELL_SKIP."
     }
   ],
   "completed_steps": [

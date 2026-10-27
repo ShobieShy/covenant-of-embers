@@ -21,6 +21,8 @@ func _initialize() -> void:
 		var lvl := (load("res://scenes/levels/%s.tscn" % id) as PackedScene).instantiate() as Node3D
 		var wo: Vector2 = lvl.get_meta(&"world_offset", Vector2.ZERO)
 		for gname in GROUPS:
+			if gname in Interiors.CELL_SKIP.get(id, []):
+				continue  # OW5b: instanced (Interiors), not in the world
 			var g := lvl.get_node_or_null(NodePath(gname)) as Node3D
 			if g == null:
 				continue

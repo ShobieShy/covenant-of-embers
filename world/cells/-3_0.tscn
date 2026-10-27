@@ -72,219 +72,219 @@ albedo_color = Color(0.461356, 0.410021, 0.34919, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_8"]
 size = Vector3(2.5, 0.1, 2.5)
 
-[node name="Cell_-3_0" type="Node3D" unique_id=1178413618]
+[node name="Cell_-3_0" type="Node3D" unique_id=527058373]
 metadata/cell = Vector2i(-3, 0)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=2104962747]
+[node name="Boxes" type="Node3D" parent="." unique_id=688761342]
 
-[node name="old_oak_floor" type="StaticBody3D" parent="Boxes" unique_id=1201323868]
+[node name="old_oak_floor" type="StaticBody3D" parent="Boxes" unique_id=2048241513]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272, -0.1, 0)
 metadata/kind = "ground"
 metadata/toml_index = 0
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_floor" unique_id=1989417979]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_floor" unique_id=1834894788]
 visible = false
 mesh = SubResource("BoxMesh_1")
 surface_material_override/0 = SubResource("StandardMaterial3D_1")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_floor" unique_id=2112672505]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_floor" unique_id=373193626]
 shape = SubResource("BoxShape3D_1")
 
-[node name="old_oak_bark_south" type="StaticBody3D" parent="Boxes" unique_id=2001045157]
+[node name="old_oak_bark_south" type="StaticBody3D" parent="Boxes" unique_id=1363675546]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272, 4, 7.5)
 metadata/kind = "wall"
 metadata/toml_index = 2
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_bark_south" unique_id=1481328266]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_bark_south" unique_id=342784325]
 mesh = SubResource("BoxMesh_2")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_bark_south" unique_id=1214297897]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_bark_south" unique_id=1449192802]
 shape = SubResource("BoxShape3D_2")
 
-[node name="old_oak_bark_west" type="StaticBody3D" parent="Boxes" unique_id=931405933]
+[node name="old_oak_bark_west" type="StaticBody3D" parent="Boxes" unique_id=1247392533]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -279.5, 4, 0)
 metadata/kind = "wall"
 metadata/toml_index = 3
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_bark_west" unique_id=2053598679]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_bark_west" unique_id=1439053907]
 mesh = SubResource("BoxMesh_3")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_bark_west" unique_id=1961134951]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_bark_west" unique_id=677336001]
 shape = SubResource("BoxShape3D_3")
 
-[node name="old_oak_bark_east_s" type="StaticBody3D" parent="Boxes" unique_id=128241989]
+[node name="old_oak_bark_east_s" type="StaticBody3D" parent="Boxes" unique_id=1474312965]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -264.5, 4, 4.25)
 metadata/kind = "wall"
 metadata/toml_index = 5
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_bark_east_s" unique_id=948511566]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_bark_east_s" unique_id=181454978]
 mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_bark_east_s" unique_id=857161640]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_bark_east_s" unique_id=1097741068]
 shape = SubResource("BoxShape3D_4")
 
-[node name="old_oak_candle_1" type="StaticBody3D" parent="Boxes" unique_id=1615442143]
+[node name="old_oak_candle_1" type="StaticBody3D" parent="Boxes" unique_id=1743392183]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -278, 0.5, 3)
 metadata/kind = "crate"
 metadata/toml_index = 9
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_candle_1" unique_id=355195770]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_candle_1" unique_id=2111389306]
 mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_candle_1" unique_id=238116108]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_candle_1" unique_id=1303795990]
 shape = SubResource("BoxShape3D_6")
 
-[node name="old_oak_candle_2" type="StaticBody3D" parent="Boxes" unique_id=1568752481]
+[node name="old_oak_candle_2" type="StaticBody3D" parent="Boxes" unique_id=979569428]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -266, 0.5, 3)
 metadata/kind = "crate"
 metadata/toml_index = 10
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_candle_2" unique_id=125858682]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_candle_2" unique_id=1705222201]
 mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_candle_2" unique_id=1820944808]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_candle_2" unique_id=844033388]
 shape = SubResource("BoxShape3D_6")
 
-[node name="old_oak_slot_bobs_lab" type="StaticBody3D" parent="Boxes" unique_id=2029745755]
+[node name="old_oak_slot_bobs_lab" type="StaticBody3D" parent="Boxes" unique_id=1330159828]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -277, 0.05, 0.5)
 metadata/kind = "platform"
 metadata/toml_index = 14
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_slot_bobs_lab" unique_id=925372866]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_slot_bobs_lab" unique_id=610612331]
 mesh = SubResource("BoxMesh_8")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_slot_bobs_lab" unique_id=1669317870]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_slot_bobs_lab" unique_id=573736261]
 shape = SubResource("BoxShape3D_8")
 
-[node name="old_oak_slot_portals" type="StaticBody3D" parent="Boxes" unique_id=179070463]
+[node name="old_oak_slot_portals" type="StaticBody3D" parent="Boxes" unique_id=441845186]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -267, 0.05, 0.5)
 metadata/kind = "platform"
 metadata/toml_index = 16
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_slot_portals" unique_id=887465968]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_slot_portals" unique_id=296859576]
 mesh = SubResource("BoxMesh_8")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_slot_portals" unique_id=248751576]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_slot_portals" unique_id=161955552]
 shape = SubResource("BoxShape3D_8")
 
-[node name="Props" type="Node3D" parent="." unique_id=1301682410]
+[node name="Props" type="Node3D" parent="." unique_id=1132479943]
 
-[node name="old_oak_grove_tree_2" type="Node3D" parent="Props" unique_id=1706450901 instance=ExtResource("4_dgvhl")]
+[node name="old_oak_grove_tree_2" type="Node3D" parent="Props" unique_id=902722433 instance=ExtResource("4_dgvhl")]
 transform = Transform3D(3.36997, 0, 2.797803, 0, 4.38, 0, -2.797803, 0, 3.36997, -314.408, 0, 18.258)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_4" type="Node3D" parent="Props" unique_id=1189276438 instance=ExtResource("4_dgvhl")]
+[node name="old_oak_grove_tree_4" type="Node3D" parent="Props" unique_id=370069931 instance=ExtResource("4_dgvhl")]
 transform = Transform3D(-1.789714, 0, 3.215482, 0, 3.68, 0, -3.215482, 0, -1.789714, -334.454, 0, 17.533)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_6" type="Node3D" parent="Props" unique_id=971509488 instance=ExtResource("5_2d2if")]
+[node name="old_oak_grove_tree_6" type="Node3D" parent="Props" unique_id=692210621 instance=ExtResource("5_2d2if")]
 transform = Transform3D(3.042106, 0, 0.855097, 0, 3.16, 0, -0.855097, 0, 3.042106, -299.111, 0, 44.823)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_7" type="Node3D" parent="Props" unique_id=1548005170 instance=ExtResource("6_qwyxe")]
+[node name="old_oak_grove_tree_7" type="Node3D" parent="Props" unique_id=1105194072 instance=ExtResource("6_qwyxe")]
 transform = Transform3D(-2.175945, 0, -3.708809, 0, 4.3, 0, 3.708809, 0, -2.175945, -329.298, 0, 14.891)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_9" type="Node3D" parent="Props" unique_id=930394263 instance=ExtResource("7_a380a")]
+[node name="old_oak_grove_tree_9" type="Node3D" parent="Props" unique_id=986052689 instance=ExtResource("7_a380a")]
 transform = Transform3D(3.441202, 0, -3.142249, 0, 4.66, 0, 3.142249, 0, 3.441202, -289.05402, 0, 43.672)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_10" type="Node3D" parent="Props" unique_id=1683076790 instance=ExtResource("5_2d2if")]
+[node name="old_oak_grove_tree_10" type="Node3D" parent="Props" unique_id=1382844240 instance=ExtResource("5_2d2if")]
 transform = Transform3D(4.525722, 0, -0.765469, 0, 4.59, 0, 0.765469, 0, 4.525722, -303.056, 0, 23.375)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_11" type="Node3D" parent="Props" unique_id=486096166 instance=ExtResource("7_a380a")]
+[node name="old_oak_grove_tree_11" type="Node3D" parent="Props" unique_id=1374660730 instance=ExtResource("7_a380a")]
 transform = Transform3D(0, 0, -4.32, 0, 4.32, 0, 4.32, 0, 0, -337.635, 0, 14.13)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_19" type="Node3D" parent="Props" unique_id=1043577357 instance=ExtResource("7_a380a")]
+[node name="old_oak_grove_tree_19" type="Node3D" parent="Props" unique_id=351352623 instance=ExtResource("7_a380a")]
 transform = Transform3D(2.999647, 0, -2.896725, 0, 4.17, 0, 2.896725, 0, 2.999647, -306.217, 0, 19.559)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_21" type="Node3D" parent="Props" unique_id=1817463716 instance=ExtResource("5_2d2if")]
+[node name="old_oak_grove_tree_21" type="Node3D" parent="Props" unique_id=1727741626 instance=ExtResource("5_2d2if")]
 transform = Transform3D(0.334709, 0, -3.41363, 0, 3.43, 0, 3.41363, 0, 0.334709, -331.399, 0, 31.65)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_23" type="Node3D" parent="Props" unique_id=168969138 instance=ExtResource("7_a380a")]
+[node name="old_oak_grove_tree_23" type="Node3D" parent="Props" unique_id=230503975 instance=ExtResource("7_a380a")]
 transform = Transform3D(1.476189, 0, -2.973763, 0, 3.32, 0, 2.973763, 0, 1.476189, -257.336, 0, 28.19)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_26" type="Node3D" parent="Props" unique_id=1280236749 instance=ExtResource("4_dgvhl")]
+[node name="old_oak_grove_tree_26" type="Node3D" parent="Props" unique_id=865501013 instance=ExtResource("4_dgvhl")]
 transform = Transform3D(-1.283094, 0, 3.92563, 0, 4.13, 0, -3.92563, 0, -1.283094, -306.061, 0, 47.203)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_28" type="Node3D" parent="Props" unique_id=610684350 instance=ExtResource("5_2d2if")]
+[node name="old_oak_grove_tree_28" type="Node3D" parent="Props" unique_id=1585167998 instance=ExtResource("5_2d2if")]
 transform = Transform3D(-4.562173, 0, 1.787896, 0, 4.9, 0, -1.787896, 0, -4.562173, -277.307, 0, 11.359)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_33" type="Node3D" parent="Props" unique_id=1705860529 instance=ExtResource("6_qwyxe")]
+[node name="old_oak_grove_tree_33" type="Node3D" parent="Props" unique_id=2073610309 instance=ExtResource("6_qwyxe")]
 transform = Transform3D(4.755846, 0, -0.898626, 0, 4.84, 0, 0.898626, 0, 4.755846, -319.155, 0, 9.203)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_34" type="Node3D" parent="Props" unique_id=1529996349 instance=ExtResource("4_dgvhl")]
+[node name="old_oak_grove_tree_34" type="Node3D" parent="Props" unique_id=905365291 instance=ExtResource("4_dgvhl")]
 transform = Transform3D(3.949481, 0, -0.491934, 0, 3.98, 0, 0.491934, 0, 3.949481, -264.233, 0, 22.885)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_35" type="Node3D" parent="Props" unique_id=2047255908 instance=ExtResource("6_qwyxe")]
+[node name="old_oak_grove_tree_35" type="Node3D" parent="Props" unique_id=694310915 instance=ExtResource("6_qwyxe")]
 transform = Transform3D(3.320791, 0, -3.297688, 0, 4.68, 0, 3.297688, 0, 3.320791, -283.434, 0, 7.768)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_38" type="Node3D" parent="Props" unique_id=682678037 instance=ExtResource("7_a380a")]
+[node name="old_oak_grove_tree_38" type="Node3D" parent="Props" unique_id=227961669 instance=ExtResource("7_a380a")]
 transform = Transform3D(3.889563, 0, 3.093898, 0, 4.97, 0, -3.093898, 0, 3.889563, -308.747, 0, 38.468)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_39" type="Node3D" parent="Props" unique_id=440730165 instance=ExtResource("7_a380a")]
+[node name="old_oak_grove_tree_39" type="Node3D" parent="Props" unique_id=1633908013 instance=ExtResource("7_a380a")]
 transform = Transform3D(-0.040055, 0, 4.589825, 0, 4.59, 0, -4.589825, 0, -0.040055, -332.486, 0, 49.69)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_42" type="Node3D" parent="Props" unique_id=1878961407 instance=ExtResource("5_2d2if")]
+[node name="old_oak_grove_tree_42" type="Node3D" parent="Props" unique_id=1431971601 instance=ExtResource("5_2d2if")]
 transform = Transform3D(-2.653934, 0, -1.769954, 0, 3.19, 0, 1.769954, 0, -2.653934, -259.307, 0, 11.778)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_6" type="Node3D" parent="Props" unique_id=1171970550 instance=ExtResource("8_jcvos")]
+[node name="old_oak_grove_stump_6" type="Node3D" parent="Props" unique_id=209270918 instance=ExtResource("8_jcvos")]
 transform = Transform3D(-1.333054, 0, 3.171209, 0, 3.44, 0, -3.171209, 0, -1.333054, -300.921, 0, 19.902)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_11" type="Node3D" parent="Props" unique_id=2052447847 instance=ExtResource("9_uakgh")]
+[node name="old_oak_grove_stump_11" type="Node3D" parent="Props" unique_id=1963107499 instance=ExtResource("9_uakgh")]
 transform = Transform3D(-2.053255, 0, -1.829383, 0, 2.75, 0, 1.829383, 0, -2.053255, -334.947, 0, 21.801)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_12" type="Node3D" parent="Props" unique_id=383034122 instance=ExtResource("9_uakgh")]
+[node name="old_oak_grove_stump_12" type="Node3D" parent="Props" unique_id=112698414 instance=ExtResource("9_uakgh")]
 transform = Transform3D(0.506003, 0, 2.509494, 0, 2.56, 0, -2.509494, 0, 0.506003, -273.526, 0, 56.299)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_15" type="Node3D" parent="Props" unique_id=1706571142 instance=ExtResource("9_uakgh")]
+[node name="old_oak_grove_stump_15" type="Node3D" parent="Props" unique_id=1871334493 instance=ExtResource("9_uakgh")]
 transform = Transform3D(3.157031, 0, -0.522643, 0, 3.2, 0, 0.522643, 0, 3.157031, -312.985, 0, 35.294)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_17" type="Node3D" parent="Props" unique_id=1042267457 instance=ExtResource("10_556eq")]
+[node name="old_oak_grove_stump_17" type="Node3D" parent="Props" unique_id=871653060 instance=ExtResource("10_556eq")]
 transform = Transform3D(-3.49928, 0, -1.699159, 0, 3.89, 0, 1.699159, 0, -3.49928, -259.214, 0, 40.765)
 metadata/snap = true
 
-[node name="old_oak_root_3" type="Node3D" parent="Props" unique_id=638740137 instance=ExtResource("11_upawh")]
+[node name="old_oak_root_3" type="Node3D" parent="Props" unique_id=805560374 instance=ExtResource("11_upawh")]
 transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, -278.6, 0.2, 6.6)
 
-[node name="old_oak_root_4" type="Node3D" parent="Props" unique_id=2038124127 instance=ExtResource("11_upawh")]
+[node name="old_oak_root_4" type="Node3D" parent="Props" unique_id=218560659 instance=ExtResource("11_upawh")]
 transform = Transform3D(0, 0, -3, 0, 3, 0, 3, 0, 0, -265.4, 0.2, 6.6)
 
-[node name="old_oak_deco_1" type="Node3D" parent="Props" unique_id=1378185673 instance=ExtResource("12_pkir0")]
+[node name="old_oak_deco_1" type="Node3D" parent="Props" unique_id=1005042037 instance=ExtResource("12_pkir0")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -278.6, 0.15, 1)
 
-[node name="old_oak_deco_4" type="Node3D" parent="Props" unique_id=1780071435 instance=ExtResource("12_pkir0")]
+[node name="old_oak_deco_4" type="Node3D" parent="Props" unique_id=1102343552 instance=ExtResource("12_pkir0")]
 transform = Transform3D(-1.5, 0, 2.598076, 0, 3, 0, -2.598076, 0, -1.5, -265.3, 0.15, 1.5)
 
-[node name="old_oak_deco_5" type="Node3D" parent="Props" unique_id=3667055 instance=ExtResource("13_kbi7o")]
+[node name="old_oak_deco_5" type="Node3D" parent="Props" unique_id=1485009858 instance=ExtResource("13_kbi7o")]
 transform = Transform3D(-2.819078, 0, 1.02606, 0, 3, 0, -1.02606, 0, -2.819078, -275, 0.15, 6.7)
 
-[node name="old_oak_deco_6" type="Node3D" parent="Props" unique_id=1875853909 instance=ExtResource("14_kvc4q")]
+[node name="old_oak_deco_6" type="Node3D" parent="Props" unique_id=1540552530 instance=ExtResource("14_kvc4q")]
 transform = Transform3D(-2.819078, 0, -1.02606, 0, 3, 0, 1.02606, 0, -2.819078, -269, 0.15, 6.7)
 
-[node name="old_oak_table" type="Node3D" parent="Props" unique_id=1302955486 instance=ExtResource("15_ifabr")]
+[node name="old_oak_table" type="Node3D" parent="Props" unique_id=648295270 instance=ExtResource("15_ifabr")]
 transform = Transform3D(2.819078, 0, 1.02606, 0, 3, 0, -1.02606, 0, 2.819078, -273.6, 0.15, 3.4)

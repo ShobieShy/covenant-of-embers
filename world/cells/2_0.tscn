@@ -58,76 +58,76 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_41"]
 size = Vector3(8, 0.1, 6)
 
-[node name="Cell_2_0" type="Node3D" unique_id=2114427180]
+[node name="Cell_2_0" type="Node3D" unique_id=1248016499]
 metadata/cell = Vector2i(2, 0)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=163492253]
+[node name="Boxes" type="Node3D" parent="." unique_id=212414985]
 
-[node name="midden_toxic_pools" type="StaticBody3D" parent="Boxes" unique_id=1685439995]
+[node name="midden_toxic_pools" type="StaticBody3D" parent="Boxes" unique_id=20482791]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 376, -0.1, 60)
 metadata/kind = "ground"
 metadata/toml_index = 49
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pools" unique_id=119284844]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pools" unique_id=745915075]
 visible = false
 mesh = SubResource("BoxMesh_28")
 surface_material_override/0 = SubResource("StandardMaterial3D_15")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pools" unique_id=1782577699]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pools" unique_id=1064947961]
 shape = SubResource("BoxShape3D_28")
 
-[node name="midden_toxic_pools_road_z" type="StaticBody3D" parent="Boxes" unique_id=1495614286]
+[node name="midden_toxic_pools_road_z" type="StaticBody3D" parent="Boxes" unique_id=307139575]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 376, -0.1, 85)
 metadata/kind = "ground"
 metadata/toml_index = 51
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pools_road_z" unique_id=1062462694]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pools_road_z" unique_id=2009171044]
 visible = false
 mesh = SubResource("BoxMesh_32")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pools_road_z" unique_id=274008679]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pools_road_z" unique_id=502659749]
 shape = SubResource("BoxShape3D_32")
 
-[node name="midden_toxic_pool_1" type="StaticBody3D" parent="Boxes" unique_id=1731951493]
+[node name="midden_toxic_pool_1" type="StaticBody3D" parent="Boxes" unique_id=462209138]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 370, 0.05, 52)
 metadata/kind = "platform"
 metadata/toml_index = 86
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pool_1" unique_id=594790407]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pool_1" unique_id=1236265695]
 mesh = SubResource("BoxMesh_41")
 surface_material_override/0 = SubResource("StandardMaterial3D_19")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pool_1" unique_id=1218427057]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pool_1" unique_id=1716068130]
 shape = SubResource("BoxShape3D_41")
 
-[node name="midden_toxic_pool_2" type="StaticBody3D" parent="Boxes" unique_id=173878727]
+[node name="midden_toxic_pool_2" type="StaticBody3D" parent="Boxes" unique_id=250818223]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 382, 0.05, 70)
 metadata/kind = "platform"
 metadata/toml_index = 87
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pool_2" unique_id=1685471]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pool_2" unique_id=1839765266]
 mesh = SubResource("BoxMesh_41")
 surface_material_override/0 = SubResource("StandardMaterial3D_19")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pool_2" unique_id=2060825735]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pool_2" unique_id=818587583]
 shape = SubResource("BoxShape3D_41")
 
-[node name="midden_toxic_pool_3" type="StaticBody3D" parent="Boxes" unique_id=1777575674]
+[node name="midden_toxic_pool_3" type="StaticBody3D" parent="Boxes" unique_id=1553222726]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 366, 0.05, 72)
 metadata/kind = "platform"
 metadata/toml_index = 88
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pool_3" unique_id=1727892729]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pool_3" unique_id=1375949033]
 mesh = SubResource("BoxMesh_41")
 surface_material_override/0 = SubResource("StandardMaterial3D_19")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pool_3" unique_id=615796565]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pool_3" unique_id=794878480]
 shape = SubResource("BoxShape3D_41")
 
-[node name="Pois" type="Node3D" parent="." unique_id=172800834]
+[node name="Pois" type="Node3D" parent="." unique_id=218022252]
 
-[node name="midden_toxic_pools" type="Node3D" parent="Pois" unique_id=1564513114]
+[node name="midden_toxic_pools" type="Node3D" parent="Pois" unique_id=695364472]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
 metadata/center = Vector3(376, 0, 60)
 metadata/radius = 22

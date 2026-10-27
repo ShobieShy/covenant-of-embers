@@ -33,59 +33,59 @@ size = Vector3(266, 0.2, 6)
 [sub_resource type="BoxShape3D" id="BoxShape3D_35"]
 size = Vector3(266, 0.2, 6)
 
-[node name="Cell_3_0" type="Node3D" unique_id=674777810]
+[node name="Cell_3_0" type="Node3D" unique_id=540010102]
 metadata/cell = Vector2i(3, 0)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=123145675]
+[node name="Boxes" type="Node3D" parent="." unique_id=1483094801]
 
-[node name="midden_gnawer_warren_road_x" type="StaticBody3D" parent="Boxes" unique_id=663899984]
+[node name="midden_gnawer_warren_road_x" type="StaticBody3D" parent="Boxes" unique_id=1037926934]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 501, -0.1, 10)
 metadata/kind = "ground"
 metadata/toml_index = 44
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_gnawer_warren_road_x" unique_id=1114777175]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_gnawer_warren_road_x" unique_id=1243285357]
 visible = false
 mesh = SubResource("BoxMesh_29")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_gnawer_warren_road_x" unique_id=1336758436]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_gnawer_warren_road_x" unique_id=1964654002]
 shape = SubResource("BoxShape3D_29")
 
-[node name="midden_toxic_pools_road_x" type="StaticBody3D" parent="Boxes" unique_id=717274217]
+[node name="midden_toxic_pools_road_x" type="StaticBody3D" parent="Boxes" unique_id=691889343]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 476, -0.1, 110)
 metadata/kind = "ground"
 metadata/toml_index = 50
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pools_road_x" unique_id=648938304]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pools_road_x" unique_id=740289780]
 visible = false
 mesh = SubResource("BoxMesh_31")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pools_road_x" unique_id=27721846]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pools_road_x" unique_id=854366399]
 shape = SubResource("BoxShape3D_31")
 
-[node name="midden_compactor_pit_road_x" type="StaticBody3D" parent="Boxes" unique_id=370004633]
+[node name="midden_compactor_pit_road_x" type="StaticBody3D" parent="Boxes" unique_id=2101428464]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 501, -0.1, 110)
 metadata/kind = "ground"
 metadata/toml_index = 56
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_pit_road_x" unique_id=1998269622]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_pit_road_x" unique_id=604789930]
 visible = false
 mesh = SubResource("BoxMesh_29")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_pit_road_x" unique_id=649062986]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_pit_road_x" unique_id=1077031945]
 shape = SubResource("BoxShape3D_29")
 
-[node name="midden_heap_graveyard_road_x" type="StaticBody3D" parent="Boxes" unique_id=554964247]
+[node name="midden_heap_graveyard_road_x" type="StaticBody3D" parent="Boxes" unique_id=1122992624]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 446, -0.1, 110)
 metadata/kind = "ground"
 metadata/toml_index = 64
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_graveyard_road_x" unique_id=285405081]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_graveyard_road_x" unique_id=166903300]
 visible = false
 mesh = SubResource("BoxMesh_35")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_graveyard_road_x" unique_id=1788886622]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_graveyard_road_x" unique_id=1903380229]
 shape = SubResource("BoxShape3D_35")

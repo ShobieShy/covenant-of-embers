@@ -6,7 +6,9 @@ extends TestCase
 
 func test_links_resolve() -> void:
 	for id in Interiors.LINKS:
-		var lvl := (load(GameFlow.level_scene(id)) as PackedScene).instantiate()
+		var lvl := (
+			(load(GameFlow.level_scene(Interiors.LINKS[id]["scene"])) as PackedScene).instantiate()
+		)
 		for to in Interiors.LINKS[id]["exits"]:
 			var found := false
 			for e in lvl.get_node("Exits").get_children():
@@ -76,3 +78,32 @@ func test_fade_and_slow_load_overlay() -> void:
 	)
 	f.free()
 	i.free()
+
+
+func test_breach_rooms() -> void:
+	var root := Node3D.new()
+	runner_tree.root.add_child(root)
+	var i := Interiors.new()
+	root.add_child(i)
+	i.add_doors()
+	var door := i.get_node("Door_breach_rooms") as Node3D
+	check(
+		door.position.distance_to(Vector3(1099.5, 0, 11)) < 0.01,
+		"portal at the complex entrance (%s)" % door.position
+	)
+	var p := Node3D.new()
+	p.add_to_group(Player.GROUP)
+	root.add_child(p)
+	var land: Vector3 = await i.enter("breach_rooms")
+	check(i.current == "breach_rooms", "rooms entered")
+	check(absf(land.y - Interiors.DEPTH) < 5.0, "rooms below the world (%s)" % land)
+	check(i.interior.get_node_or_null("Terrain") == null, "crater stays in the world")
+	check(i.interior.has_node("Boxes/vault_door"), "rooms keep their boxes")
+	check(i.breach != null and i.breach.encounters.size() > 0, "Breach logic runs the rooms")
+	var out := i.leave("midden")
+	check(
+		out.y > -100.0 and out.distance_to(door.position) >= InteriorDoor.RADIUS,
+		"back out in the crater, clear of the portal (%s)" % out
+	)
+	check(i.breach == null, "logic dropped")
+	root.free()

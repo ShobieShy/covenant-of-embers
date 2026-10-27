@@ -53,71 +53,71 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_42"]
 size = Vector3(2, 14, 2)
 
-[node name="Cell_5_0" type="Node3D" unique_id=763847469]
+[node name="Cell_5_0" type="Node3D" unique_id=317760363]
 metadata/cell = Vector2i(5, 0)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=1295404586]
+[node name="Boxes" type="Node3D" parent="." unique_id=974910764]
 
-[node name="midden_scrap_bridge_road_x" type="StaticBody3D" parent="Boxes" unique_id=1120557205]
+[node name="midden_scrap_bridge_road_x" type="StaticBody3D" parent="Boxes" unique_id=1823150052]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 651, -0.1, 10)
 metadata/kind = "ground"
 metadata/toml_index = 47
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_scrap_bridge_road_x" unique_id=1903517497]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_scrap_bridge_road_x" unique_id=1880034987]
 visible = false
 mesh = SubResource("BoxMesh_29")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_scrap_bridge_road_x" unique_id=899348283]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_scrap_bridge_road_x" unique_id=738384932]
 shape = SubResource("BoxShape3D_29")
 
-[node name="midden_crane_yard_road_x" type="StaticBody3D" parent="Boxes" unique_id=1957610719]
+[node name="midden_crane_yard_road_x" type="StaticBody3D" parent="Boxes" unique_id=74575446]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 676, -0.1, 110)
 metadata/kind = "ground"
 metadata/toml_index = 53
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crane_yard_road_x" unique_id=169336817]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crane_yard_road_x" unique_id=1362198627]
 visible = false
 mesh = SubResource("BoxMesh_31")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crane_yard_road_x" unique_id=163999887]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crane_yard_road_x" unique_id=368697909]
 shape = SubResource("BoxShape3D_31")
 
-[node name="midden_burned_shacks_road_x" type="StaticBody3D" parent="Boxes" unique_id=814537525]
+[node name="midden_burned_shacks_road_x" type="StaticBody3D" parent="Boxes" unique_id=855860836]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 651, -0.1, 110)
 metadata/kind = "ground"
 metadata/toml_index = 59
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shacks_road_x" unique_id=1636609304]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shacks_road_x" unique_id=1554312148]
 visible = false
 mesh = SubResource("BoxMesh_29")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shacks_road_x" unique_id=1212228824]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shacks_road_x" unique_id=1914267853]
 shape = SubResource("BoxShape3D_29")
 
-[node name="midden_joes_old_stash_road_x" type="StaticBody3D" parent="Boxes" unique_id=1405215676]
+[node name="midden_joes_old_stash_road_x" type="StaticBody3D" parent="Boxes" unique_id=237823561]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 706, -0.1, 110)
 metadata/kind = "ground"
 metadata/toml_index = 67
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_joes_old_stash_road_x" unique_id=423518113]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_joes_old_stash_road_x" unique_id=332954232]
 visible = false
 mesh = SubResource("BoxMesh_35")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_joes_old_stash_road_x" unique_id=1568740473]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_joes_old_stash_road_x" unique_id=738855183]
 shape = SubResource("BoxShape3D_35")
 
-[node name="midden_crane_1" type="StaticBody3D" parent="Boxes" unique_id=1174402869]
+[node name="midden_crane_1" type="StaticBody3D" parent="Boxes" unique_id=943737952]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 766, 7, 50)
 metadata/kind = "wall"
 metadata/toml_index = 89
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crane_1" unique_id=1104337235]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crane_1" unique_id=1952347261]
 mesh = SubResource("BoxMesh_42")
 surface_material_override/0 = SubResource("StandardMaterial3D_20")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crane_1" unique_id=452925972]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crane_1" unique_id=672283677]
 shape = SubResource("BoxShape3D_42")

@@ -55,100 +55,100 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_37"]
 size = Vector3(5, 3, 5)
 
-[node name="Cell_3_-1" type="Node3D" unique_id=1246709206]
+[node name="Cell_3_-1" type="Node3D" unique_id=2013122180]
 metadata/cell = Vector2i(3, -1)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=1585848585]
+[node name="Boxes" type="Node3D" parent="." unique_id=247645817]
 
-[node name="midden_gnawer_warren" type="StaticBody3D" parent="Boxes" unique_id=189027101]
+[node name="midden_gnawer_warren" type="StaticBody3D" parent="Boxes" unique_id=1126030109]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, -0.1, -60)
 metadata/kind = "ground"
 metadata/toml_index = 43
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_gnawer_warren" unique_id=1568603942]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_gnawer_warren" unique_id=14407480]
 visible = false
 mesh = SubResource("BoxMesh_28")
 surface_material_override/0 = SubResource("StandardMaterial3D_15")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_gnawer_warren" unique_id=598699479]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_gnawer_warren" unique_id=1377644615]
 shape = SubResource("BoxShape3D_28")
 
-[node name="midden_gnawer_warren_road_z" type="StaticBody3D" parent="Boxes" unique_id=1553416578]
+[node name="midden_gnawer_warren_road_z" type="StaticBody3D" parent="Boxes" unique_id=455703494]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, -0.1, -25)
 metadata/kind = "ground"
 metadata/toml_index = 45
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_gnawer_warren_road_z" unique_id=743729605]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_gnawer_warren_road_z" unique_id=1474476827]
 visible = false
 mesh = SubResource("BoxMesh_30")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_gnawer_warren_road_z" unique_id=1797667848]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_gnawer_warren_road_z" unique_id=1129982474]
 shape = SubResource("BoxShape3D_30")
 
-[node name="midden_warren_mound_1" type="StaticBody3D" parent="Boxes" unique_id=182115814]
+[node name="midden_warren_mound_1" type="StaticBody3D" parent="Boxes" unique_id=1743896245]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 435, 1.5, -60)
 metadata/kind = "heap"
 metadata/toml_index = 70
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_1" unique_id=1399552659]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_1" unique_id=1902422261]
 mesh = SubResource("BoxMesh_37")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_1" unique_id=1134150236]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_1" unique_id=1680650677]
 shape = SubResource("BoxShape3D_37")
 
-[node name="midden_warren_mound_2" type="StaticBody3D" parent="Boxes" unique_id=271035944]
+[node name="midden_warren_mound_2" type="StaticBody3D" parent="Boxes" unique_id=1504121203]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 428.838, 1.5, -51.459)
 metadata/kind = "heap"
 metadata/toml_index = 71
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_2" unique_id=964223105]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_2" unique_id=904840229]
 mesh = SubResource("BoxMesh_37")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_2" unique_id=1675276528]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_2" unique_id=1949342603]
 shape = SubResource("BoxShape3D_37")
 
-[node name="midden_warren_mound_3" type="StaticBody3D" parent="Boxes" unique_id=1969482647]
+[node name="midden_warren_mound_3" type="StaticBody3D" parent="Boxes" unique_id=1057680405]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 418.78998, 1.5, -54.614)
 metadata/kind = "heap"
 metadata/toml_index = 72
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_3" unique_id=2009278944]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_3" unique_id=2029075334]
 mesh = SubResource("BoxMesh_37")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_3" unique_id=1688940454]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_3" unique_id=1161151595]
 shape = SubResource("BoxShape3D_37")
 
-[node name="midden_warren_mound_4" type="StaticBody3D" parent="Boxes" unique_id=106122069]
+[node name="midden_warren_mound_4" type="StaticBody3D" parent="Boxes" unique_id=1271367221]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 418.615, 1.5, -65.144)
 metadata/kind = "heap"
 metadata/toml_index = 73
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_4" unique_id=1776031666]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_4" unique_id=1069429184]
 mesh = SubResource("BoxMesh_37")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_4" unique_id=981870105]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_4" unique_id=804234512]
 shape = SubResource("BoxShape3D_37")
 
-[node name="midden_warren_mound_5" type="StaticBody3D" parent="Boxes" unique_id=625391246]
+[node name="midden_warren_mound_5" type="StaticBody3D" parent="Boxes" unique_id=292345537]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 428.55298, 1.5, -68.630005)
 metadata/kind = "heap"
 metadata/toml_index = 74
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_5" unique_id=1403733367]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_5" unique_id=1818806122]
 mesh = SubResource("BoxMesh_37")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_5" unique_id=525327562]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_5" unique_id=710831156]
 shape = SubResource("BoxShape3D_37")
 
-[node name="Pois" type="Node3D" parent="." unique_id=1312020834]
+[node name="Pois" type="Node3D" parent="." unique_id=64416403]
 
-[node name="midden_gnawer_warren" type="Node3D" parent="Pois" unique_id=1548162259]
+[node name="midden_gnawer_warren" type="Node3D" parent="Pois" unique_id=2051078940]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
 metadata/center = Vector3(426, 0, -60)
 metadata/radius = 22

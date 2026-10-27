@@ -17,6 +17,8 @@ func test_cells_fresh() -> void:
 	for id in ["town_square", "old_oak", "midden", "breach"]:
 		var lvl := (load(GameFlow.level_scene(id)) as PackedScene).instantiate()
 		for g in ["Boxes", "Props", "Pois"]:
+			if g in Interiors.CELL_SKIP.get(id, []):
+				continue
 			var n := lvl.get_node_or_null(NodePath(g))
 			expect += n.get_child_count() if n else 0
 		lvl.free()

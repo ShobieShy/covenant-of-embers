@@ -58,88 +58,88 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_46"]
 size = Vector3(5, 2.5, 4)
 
-[node name="Cell_5_1" type="Node3D" unique_id=1005887950]
+[node name="Cell_5_1" type="Node3D" unique_id=1181411025]
 metadata/cell = Vector2i(5, 1)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=484393577]
+[node name="Boxes" type="Node3D" parent="." unique_id=1444126104]
 
-[node name="midden_burned_shacks" type="StaticBody3D" parent="Boxes" unique_id=4153260]
+[node name="midden_burned_shacks" type="StaticBody3D" parent="Boxes" unique_id=886096566]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 726, -0.1, 190)
 metadata/kind = "ground"
 metadata/toml_index = 58
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shacks" unique_id=1472510981]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shacks" unique_id=2101891023]
 visible = false
 mesh = SubResource("BoxMesh_28")
 surface_material_override/0 = SubResource("StandardMaterial3D_15")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shacks" unique_id=684912869]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shacks" unique_id=1659888392]
 shape = SubResource("BoxShape3D_28")
 
-[node name="midden_burned_shacks_road_z" type="StaticBody3D" parent="Boxes" unique_id=2035661082]
+[node name="midden_burned_shacks_road_z" type="StaticBody3D" parent="Boxes" unique_id=1592678816]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 726, -0.1, 150)
 metadata/kind = "ground"
 metadata/toml_index = 60
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shacks_road_z" unique_id=1147165459]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shacks_road_z" unique_id=1844156027]
 visible = false
 mesh = SubResource("BoxMesh_33")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shacks_road_z" unique_id=669222550]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shacks_road_z" unique_id=1222435941]
 shape = SubResource("BoxShape3D_33")
 
-[node name="midden_burned_shack_1" type="StaticBody3D" parent="Boxes" unique_id=324876869]
+[node name="midden_burned_shack_1" type="StaticBody3D" parent="Boxes" unique_id=1856695513]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 716, 1.25, 180)
 metadata/kind = "wall"
 metadata/toml_index = 109
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shack_1" unique_id=126572752]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shack_1" unique_id=1264005538]
 mesh = SubResource("BoxMesh_46")
 surface_material_override/0 = SubResource("StandardMaterial3D_23")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shack_1" unique_id=2144235783]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shack_1" unique_id=1896665005]
 shape = SubResource("BoxShape3D_46")
 
-[node name="midden_burned_shack_2" type="StaticBody3D" parent="Boxes" unique_id=1591985260]
+[node name="midden_burned_shack_2" type="StaticBody3D" parent="Boxes" unique_id=1551028640]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 736, 1.25, 184)
 metadata/kind = "wall"
 metadata/toml_index = 110
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shack_2" unique_id=1021086123]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shack_2" unique_id=494828481]
 mesh = SubResource("BoxMesh_46")
 surface_material_override/0 = SubResource("StandardMaterial3D_23")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shack_2" unique_id=1152153169]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shack_2" unique_id=1913526456]
 shape = SubResource("BoxShape3D_46")
 
-[node name="midden_burned_shack_3" type="StaticBody3D" parent="Boxes" unique_id=389022239]
+[node name="midden_burned_shack_3" type="StaticBody3D" parent="Boxes" unique_id=1085259868]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 724, 1.25, 200)
 metadata/kind = "wall"
 metadata/toml_index = 111
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shack_3" unique_id=2052169948]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shack_3" unique_id=2138251223]
 mesh = SubResource("BoxMesh_46")
 surface_material_override/0 = SubResource("StandardMaterial3D_23")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shack_3" unique_id=1141896852]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shack_3" unique_id=793766661]
 shape = SubResource("BoxShape3D_46")
 
-[node name="midden_burned_shack_4" type="StaticBody3D" parent="Boxes" unique_id=1116534006]
+[node name="midden_burned_shack_4" type="StaticBody3D" parent="Boxes" unique_id=520788456]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 738, 1.25, 202)
 metadata/kind = "wall"
 metadata/toml_index = 112
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shack_4" unique_id=769819747]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shack_4" unique_id=776149075]
 mesh = SubResource("BoxMesh_46")
 surface_material_override/0 = SubResource("StandardMaterial3D_23")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shack_4" unique_id=1936741177]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shack_4" unique_id=1100198419]
 shape = SubResource("BoxShape3D_46")
 
-[node name="Pois" type="Node3D" parent="." unique_id=1731408458]
+[node name="Pois" type="Node3D" parent="." unique_id=825797535]
 
-[node name="midden_burned_shacks" type="Node3D" parent="Pois" unique_id=912843219]
+[node name="midden_burned_shacks" type="Node3D" parent="Pois" unique_id=1492115611]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
 metadata/center = Vector3(726, 0, 190)
 metadata/radius = 22

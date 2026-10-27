@@ -262,510 +262,510 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_19"]
 size = Vector3(1.6, 0.6, 1.6)
 
-[node name="Cell_4_-2" type="Node3D" unique_id=1013903085]
+[node name="Cell_4_-2" type="Node3D" unique_id=188803930]
 metadata/cell = Vector2i(4, -2)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=1661925272]
+[node name="Boxes" type="Node3D" parent="." unique_id=638492435]
 
-[node name="midden_ground" type="StaticBody3D" parent="Boxes" unique_id=870371604]
+[node name="midden_ground" type="StaticBody3D" parent="Boxes" unique_id=1975687297]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, -240)
 metadata/kind = "ground"
 metadata/toml_index = 0
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_ground" unique_id=224995028]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_ground" unique_id=549538395]
 visible = false
 mesh = SubResource("BoxMesh_1")
 surface_material_override/0 = SubResource("StandardMaterial3D_1")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_ground" unique_id=1092753893]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_ground" unique_id=1457783715]
 shape = SubResource("BoxShape3D_1")
 
-[node name="midden_wall_north" type="StaticBody3D" parent="Boxes" unique_id=673960003]
+[node name="midden_wall_north" type="StaticBody3D" parent="Boxes" unique_id=127550256]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 2, -254.5)
 metadata/kind = "wall"
 metadata/toml_index = 1
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_wall_north" unique_id=736413748]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_wall_north" unique_id=2064992002]
 mesh = SubResource("BoxMesh_2")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_wall_north" unique_id=695671693]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_wall_north" unique_id=87711211]
 shape = SubResource("BoxShape3D_2")
 
-[node name="midden_wall_east" type="StaticBody3D" parent="Boxes" unique_id=779200591]
+[node name="midden_wall_east" type="StaticBody3D" parent="Boxes" unique_id=754691064]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 590.5, 2, -240)
 metadata/kind = "wall"
 metadata/toml_index = 2
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_wall_east" unique_id=532096973]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_wall_east" unique_id=411014072]
 mesh = SubResource("BoxMesh_3")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_wall_east" unique_id=387650552]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_wall_east" unique_id=1253656414]
 shape = SubResource("BoxShape3D_3")
 
-[node name="midden_wall_west" type="StaticBody3D" parent="Boxes" unique_id=1890225474]
+[node name="midden_wall_west" type="StaticBody3D" parent="Boxes" unique_id=418856476]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 561.5, 2, -240)
 metadata/kind = "wall"
 metadata/toml_index = 3
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_wall_west" unique_id=1938138836]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_wall_west" unique_id=1292336894]
 mesh = SubResource("BoxMesh_3")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_wall_west" unique_id=1058574158]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_wall_west" unique_id=27755657]
 shape = SubResource("BoxShape3D_3")
 
-[node name="midden_wall_south_west" type="StaticBody3D" parent="Boxes" unique_id=2125078432]
+[node name="midden_wall_south_west" type="StaticBody3D" parent="Boxes" unique_id=1680674882]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 567.5, 2, -225.5)
 metadata/kind = "wall"
 metadata/toml_index = 4
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_wall_south_west" unique_id=1728351477]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_wall_south_west" unique_id=487941824]
 mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_wall_south_west" unique_id=988577874]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_wall_south_west" unique_id=496080483]
 shape = SubResource("BoxShape3D_4")
 
-[node name="midden_wall_south_east" type="StaticBody3D" parent="Boxes" unique_id=302361711]
+[node name="midden_wall_south_east" type="StaticBody3D" parent="Boxes" unique_id=771071909]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 584.5, 2, -225.5)
 metadata/kind = "wall"
 metadata/toml_index = 5
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_wall_south_east" unique_id=183269204]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_wall_south_east" unique_id=441551497]
 mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_wall_south_east" unique_id=477420287]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_wall_south_east" unique_id=1921639819]
 shape = SubResource("BoxShape3D_4")
 
-[node name="midden_scrap_ledge" type="StaticBody3D" parent="Boxes" unique_id=168787453]
+[node name="midden_scrap_ledge" type="StaticBody3D" parent="Boxes" unique_id=961333210]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0.75, -251.5)
 metadata/kind = "platform"
 metadata/toml_index = 6
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_scrap_ledge" unique_id=1135736223]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_scrap_ledge" unique_id=2076184686]
 mesh = SubResource("BoxMesh_5")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_scrap_ledge" unique_id=791855880]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_scrap_ledge" unique_id=1368095890]
 shape = SubResource("BoxShape3D_5")
 
-[node name="midden_ramp_west" type="StaticBody3D" parent="Boxes" unique_id=2001212885]
+[node name="midden_ramp_west" type="StaticBody3D" parent="Boxes" unique_id=1787633424]
 transform = Transform3D(1, 0, 0, 0, 0.936329, -0.351123, 0, 0.351123, 0.936329, 571.5, 0.61, -247.05)
 metadata/kind = "ramp"
 metadata/toml_index = 7
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_ramp_west" unique_id=1763580443]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_ramp_west" unique_id=2141204290]
 mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_ramp_west" unique_id=725768881]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_ramp_west" unique_id=386024764]
 shape = SubResource("BoxShape3D_6")
 
-[node name="midden_ramp_east" type="StaticBody3D" parent="Boxes" unique_id=2143254260]
+[node name="midden_ramp_east" type="StaticBody3D" parent="Boxes" unique_id=520636061]
 transform = Transform3D(1, 0, 0, 0, 0.936329, -0.351123, 0, 0.351123, 0.936329, 580.5, 0.61, -247.05)
 metadata/kind = "ramp"
 metadata/toml_index = 8
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_ramp_east" unique_id=1036797652]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_ramp_east" unique_id=622755226]
 mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_ramp_east" unique_id=27790131]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_ramp_east" unique_id=691306798]
 shape = SubResource("BoxShape3D_6")
 
-[node name="midden_midden_mound" type="StaticBody3D" parent="Boxes" unique_id=1754709586]
+[node name="midden_midden_mound" type="StaticBody3D" parent="Boxes" unique_id=1335130527]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 576, 0.6, -241.5)
 metadata/kind = "heap"
 metadata/toml_index = 9
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_midden_mound" unique_id=1079275472]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_midden_mound" unique_id=1522461304]
 mesh = SubResource("BoxMesh_7")
 surface_material_override/0 = SubResource("StandardMaterial3D_5")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_midden_mound" unique_id=1080742128]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_midden_mound" unique_id=2037100667]
 shape = SubResource("BoxShape3D_7")
 
-[node name="midden_heap_west" type="StaticBody3D" parent="Boxes" unique_id=1232220748]
+[node name="midden_heap_west" type="StaticBody3D" parent="Boxes" unique_id=810165020]
 transform = Transform3D(0.951057, 0, 0.309017, 0, 1, 0, -0.309017, 0, 0.951057, 567, 0.9, -243)
 metadata/kind = "heap"
 metadata/toml_index = 10
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_west" unique_id=568171022]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_west" unique_id=1402929512]
 mesh = SubResource("BoxMesh_8")
 surface_material_override/0 = SubResource("StandardMaterial3D_5")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_west" unique_id=398070710]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_west" unique_id=571279445]
 shape = SubResource("BoxShape3D_8")
 
-[node name="midden_heap_east" type="StaticBody3D" parent="Boxes" unique_id=1353045183]
+[node name="midden_heap_east" type="StaticBody3D" parent="Boxes" unique_id=920889487]
 transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 585, 1.2, -237)
 metadata/kind = "heap"
 metadata/toml_index = 11
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_east" unique_id=171128519]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_east" unique_id=800113912]
 mesh = SubResource("BoxMesh_9")
 surface_material_override/0 = SubResource("StandardMaterial3D_5")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_east" unique_id=927511472]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_east" unique_id=987171100]
 shape = SubResource("BoxShape3D_9")
 
-[node name="midden_crate_w1" type="StaticBody3D" parent="Boxes" unique_id=1473523852]
+[node name="midden_crate_w1" type="StaticBody3D" parent="Boxes" unique_id=1332262699]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 569, 0.5, -235)
 metadata/kind = "crate"
 metadata/toml_index = 12
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crate_w1" unique_id=1841766225]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crate_w1" unique_id=2072797252]
 mesh = SubResource("BoxMesh_10")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crate_w1" unique_id=1764700372]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crate_w1" unique_id=636523606]
 shape = SubResource("BoxShape3D_10")
 
-[node name="midden_crate_w2" type="StaticBody3D" parent="Boxes" unique_id=1413067686]
+[node name="midden_crate_w2" type="StaticBody3D" parent="Boxes" unique_id=205895219]
 transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 570.1, 0.5, -234.7)
 metadata/kind = "crate"
 metadata/toml_index = 13
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crate_w2" unique_id=463099765]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crate_w2" unique_id=914588965]
 mesh = SubResource("BoxMesh_10")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crate_w2" unique_id=718487366]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crate_w2" unique_id=1570572719]
 shape = SubResource("BoxShape3D_10")
 
-[node name="midden_crate_w3_stacked" type="StaticBody3D" parent="Boxes" unique_id=2010025196]
+[node name="midden_crate_w3_stacked" type="StaticBody3D" parent="Boxes" unique_id=634880663]
 transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 569.5, 1.5, -234.9)
 metadata/kind = "crate"
 metadata/toml_index = 14
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crate_w3_stacked" unique_id=1366543634]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crate_w3_stacked" unique_id=53892391]
 mesh = SubResource("BoxMesh_10")
 surface_material_override/0 = SubResource("StandardMaterial3D_7")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crate_w3_stacked" unique_id=1400567161]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crate_w3_stacked" unique_id=1191460291]
 shape = SubResource("BoxShape3D_10")
 
-[node name="midden_crate_e_wide" type="StaticBody3D" parent="Boxes" unique_id=1078019724]
+[node name="midden_crate_e_wide" type="StaticBody3D" parent="Boxes" unique_id=1168299655]
 transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 581.5, 0.4, -233)
 metadata/kind = "crate"
 metadata/toml_index = 15
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crate_e_wide" unique_id=827408674]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crate_e_wide" unique_id=473815135]
 mesh = SubResource("BoxMesh_11")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crate_e_wide" unique_id=272038979]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crate_e_wide" unique_id=2112194176]
 shape = SubResource("BoxShape3D_11")
 
-[node name="midden_crate_ne" type="StaticBody3D" parent="Boxes" unique_id=1410052068]
+[node name="midden_crate_ne" type="StaticBody3D" parent="Boxes" unique_id=309609487]
 transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, 586, 0.6, -246)
 metadata/kind = "crate"
 metadata/toml_index = 16
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crate_ne" unique_id=421360768]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crate_ne" unique_id=161752999]
 mesh = SubResource("BoxMesh_12")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crate_ne" unique_id=136017247]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crate_ne" unique_id=211319456]
 shape = SubResource("BoxShape3D_12")
 
-[node name="midden_funnel_z" type="StaticBody3D" parent="Boxes" unique_id=1612264790]
+[node name="midden_funnel_z" type="StaticBody3D" parent="Boxes" unique_id=32144791]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, -194)
 metadata/kind = "ground"
 metadata/toml_index = 17
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_z" unique_id=542110811]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_z" unique_id=1153511122]
 visible = false
 mesh = SubResource("BoxMesh_13")
 surface_material_override/0 = SubResource("StandardMaterial3D_8")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_z" unique_id=1972049776]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_z" unique_id=1958380722]
 shape = SubResource("BoxShape3D_13")
 
-[node name="midden_funnel_heap_w1" type="StaticBody3D" parent="Boxes" unique_id=1786252678]
+[node name="midden_funnel_heap_w1" type="StaticBody3D" parent="Boxes" unique_id=745346365]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 570.5, 1.4, -214)
 metadata/kind = "heap"
 metadata/toml_index = 18
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w1" unique_id=589903986]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w1" unique_id=441749389]
 mesh = SubResource("BoxMesh_14")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w1" unique_id=2278526]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w1" unique_id=224861231]
 shape = SubResource("BoxShape3D_14")
 
-[node name="midden_funnel_heap_e1" type="StaticBody3D" parent="Boxes" unique_id=846393704]
+[node name="midden_funnel_heap_e1" type="StaticBody3D" parent="Boxes" unique_id=647718436]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 581.5, 1.4, -214)
 metadata/kind = "heap"
 metadata/toml_index = 19
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e1" unique_id=1645956845]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e1" unique_id=1693716802]
 mesh = SubResource("BoxMesh_14")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e1" unique_id=887874699]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e1" unique_id=818158731]
 shape = SubResource("BoxShape3D_14")
 
-[node name="midden_funnel_heap_w2" type="StaticBody3D" parent="Boxes" unique_id=759207092]
+[node name="midden_funnel_heap_w2" type="StaticBody3D" parent="Boxes" unique_id=1331560679]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 569.5, 2.4, -206)
 metadata/kind = "heap"
 metadata/toml_index = 20
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w2" unique_id=1866798085]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w2" unique_id=235542594]
 mesh = SubResource("BoxMesh_15")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w2" unique_id=1844816613]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w2" unique_id=615600129]
 shape = SubResource("BoxShape3D_15")
 
-[node name="midden_funnel_heap_e2" type="StaticBody3D" parent="Boxes" unique_id=890215237]
+[node name="midden_funnel_heap_e2" type="StaticBody3D" parent="Boxes" unique_id=1230365014]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 582.5, 2.4, -206)
 metadata/kind = "heap"
 metadata/toml_index = 21
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e2" unique_id=1989733556]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e2" unique_id=641085241]
 mesh = SubResource("BoxMesh_15")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e2" unique_id=16032372]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e2" unique_id=1372173455]
 shape = SubResource("BoxShape3D_15")
 
-[node name="midden_funnel_heap_w3" type="StaticBody3D" parent="Boxes" unique_id=512586557]
+[node name="midden_funnel_heap_w3" type="StaticBody3D" parent="Boxes" unique_id=2068985939]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 568.5, 1.4, -198)
 metadata/kind = "heap"
 metadata/toml_index = 22
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w3" unique_id=1992420792]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w3" unique_id=605171377]
 mesh = SubResource("BoxMesh_14")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w3" unique_id=487285071]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w3" unique_id=967080818]
 shape = SubResource("BoxShape3D_14")
 
-[node name="midden_funnel_heap_e3" type="StaticBody3D" parent="Boxes" unique_id=440098190]
+[node name="midden_funnel_heap_e3" type="StaticBody3D" parent="Boxes" unique_id=196266826]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 583.5, 1.4, -198)
 metadata/kind = "heap"
 metadata/toml_index = 23
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e3" unique_id=1966901405]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e3" unique_id=1694445800]
 mesh = SubResource("BoxMesh_14")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e3" unique_id=1284829158]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e3" unique_id=1447589978]
 shape = SubResource("BoxShape3D_14")
 
-[node name="midden_funnel_heap_w4" type="StaticBody3D" parent="Boxes" unique_id=1182312937]
+[node name="midden_funnel_heap_w4" type="StaticBody3D" parent="Boxes" unique_id=63140082]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 570.5, 2.4, -190)
 metadata/kind = "heap"
 metadata/toml_index = 24
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w4" unique_id=285472286]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w4" unique_id=57672321]
 mesh = SubResource("BoxMesh_15")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w4" unique_id=1166533388]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w4" unique_id=1924345921]
 shape = SubResource("BoxShape3D_15")
 
-[node name="midden_funnel_heap_e4" type="StaticBody3D" parent="Boxes" unique_id=2071483579]
+[node name="midden_funnel_heap_e4" type="StaticBody3D" parent="Boxes" unique_id=134935549]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 581.5, 2.4, -190)
 metadata/kind = "heap"
 metadata/toml_index = 25
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e4" unique_id=209215650]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e4" unique_id=936965866]
 mesh = SubResource("BoxMesh_15")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e4" unique_id=1827226489]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e4" unique_id=595727713]
 shape = SubResource("BoxShape3D_15")
 
-[node name="midden_funnel_heap_w5" type="StaticBody3D" parent="Boxes" unique_id=1507007609]
+[node name="midden_funnel_heap_w5" type="StaticBody3D" parent="Boxes" unique_id=1487598293]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 569.5, 1.4, -182)
 metadata/kind = "heap"
 metadata/toml_index = 26
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w5" unique_id=1790018841]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w5" unique_id=675882160]
 mesh = SubResource("BoxMesh_14")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w5" unique_id=161631578]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w5" unique_id=1305516107]
 shape = SubResource("BoxShape3D_14")
 
-[node name="midden_funnel_heap_e5" type="StaticBody3D" parent="Boxes" unique_id=280898294]
+[node name="midden_funnel_heap_e5" type="StaticBody3D" parent="Boxes" unique_id=1805169384]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 582.5, 1.4, -182)
 metadata/kind = "heap"
 metadata/toml_index = 27
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e5" unique_id=85788739]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e5" unique_id=523935445]
 mesh = SubResource("BoxMesh_14")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e5" unique_id=482074631]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e5" unique_id=1119885112]
 shape = SubResource("BoxShape3D_14")
 
-[node name="midden_funnel_heap_w6" type="StaticBody3D" parent="Boxes" unique_id=353800863]
+[node name="midden_funnel_heap_w6" type="StaticBody3D" parent="Boxes" unique_id=180188458]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 568.5, 2.4, -174)
 metadata/kind = "heap"
 metadata/toml_index = 28
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w6" unique_id=1399308212]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_w6" unique_id=706266263]
 mesh = SubResource("BoxMesh_15")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w6" unique_id=1909971484]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_w6" unique_id=191940322]
 shape = SubResource("BoxShape3D_15")
 
-[node name="midden_funnel_heap_e6" type="StaticBody3D" parent="Boxes" unique_id=1538809971]
+[node name="midden_funnel_heap_e6" type="StaticBody3D" parent="Boxes" unique_id=388120708]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 583.5, 2.4, -174)
 metadata/kind = "heap"
 metadata/toml_index = 29
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e6" unique_id=889937905]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_funnel_heap_e6" unique_id=1762110287]
 mesh = SubResource("BoxMesh_15")
 surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e6" unique_id=242341481]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_funnel_heap_e6" unique_id=1837074961]
 shape = SubResource("BoxShape3D_15")
 
-[node name="midden_dump_camp" type="StaticBody3D" parent="Boxes" unique_id=467551683]
+[node name="midden_dump_camp" type="StaticBody3D" parent="Boxes" unique_id=963801696]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, -148)
 metadata/kind = "ground"
 metadata/toml_index = 30
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_dump_camp" unique_id=1144819952]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_dump_camp" unique_id=1073596789]
 visible = false
 mesh = SubResource("BoxMesh_16")
 surface_material_override/0 = SubResource("StandardMaterial3D_10")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_dump_camp" unique_id=1928413331]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_dump_camp" unique_id=1964048262]
 shape = SubResource("BoxShape3D_16")
 
-[node name="midden_camp_shack_1" type="StaticBody3D" parent="Boxes" unique_id=984671450]
+[node name="midden_camp_shack_1" type="StaticBody3D" parent="Boxes" unique_id=1222470478]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 564, 1.5, -156)
 metadata/kind = "wall"
 metadata/toml_index = 31
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_camp_shack_1" unique_id=2122686186]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_camp_shack_1" unique_id=2118337231]
 mesh = SubResource("BoxMesh_17")
 surface_material_override/0 = SubResource("StandardMaterial3D_11")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_camp_shack_1" unique_id=1955432701]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_camp_shack_1" unique_id=1410993110]
 shape = SubResource("BoxShape3D_17")
 
-[node name="midden_camp_shack_2" type="StaticBody3D" parent="Boxes" unique_id=1512754270]
+[node name="midden_camp_shack_2" type="StaticBody3D" parent="Boxes" unique_id=664078580]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 588, 1.5, -156)
 metadata/kind = "wall"
 metadata/toml_index = 32
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_camp_shack_2" unique_id=1561978272]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_camp_shack_2" unique_id=518538479]
 mesh = SubResource("BoxMesh_17")
 surface_material_override/0 = SubResource("StandardMaterial3D_11")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_camp_shack_2" unique_id=1602777313]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_camp_shack_2" unique_id=692784307]
 shape = SubResource("BoxShape3D_17")
 
-[node name="midden_camp_shack_3" type="StaticBody3D" parent="Boxes" unique_id=281518854]
+[node name="midden_camp_shack_3" type="StaticBody3D" parent="Boxes" unique_id=2077144542]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 564, 1.5, -139)
 metadata/kind = "wall"
 metadata/toml_index = 33
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_camp_shack_3" unique_id=503254681]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_camp_shack_3" unique_id=1091146747]
 mesh = SubResource("BoxMesh_18")
 surface_material_override/0 = SubResource("StandardMaterial3D_11")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_camp_shack_3" unique_id=1255799712]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_camp_shack_3" unique_id=136489135]
 shape = SubResource("BoxShape3D_18")
 
-[node name="midden_camp_fire" type="StaticBody3D" parent="Boxes" unique_id=1354049331]
+[node name="midden_camp_fire" type="StaticBody3D" parent="Boxes" unique_id=969987800]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0.3, -148)
 metadata/kind = "heap"
 metadata/toml_index = 34
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_camp_fire" unique_id=1506011991]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_camp_fire" unique_id=750643209]
 mesh = SubResource("BoxMesh_19")
 surface_material_override/0 = SubResource("StandardMaterial3D_12")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_camp_fire" unique_id=1007014199]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_camp_fire" unique_id=808705318]
 shape = SubResource("BoxShape3D_19")
 
-[node name="Props" type="Node3D" parent="." unique_id=944753054]
+[node name="Props" type="Node3D" parent="." unique_id=991045097]
 
-[node name="midden_trash_1" type="Node3D" parent="Props" unique_id=551457010 instance=ExtResource("13_px1y2")]
+[node name="midden_trash_1" type="Node3D" parent="Props" unique_id=347071177 instance=ExtResource("13_px1y2")]
 transform = Transform3D(5.12, 0, 0, 0, 5.12, 0, 0, 0, 5.12, 563.5, 0, -252.5)
 
-[node name="midden_trash_2" type="Node3D" parent="Props" unique_id=1409725168 instance=ExtResource("13_px1y2")]
+[node name="midden_trash_2" type="Node3D" parent="Props" unique_id=1402835643 instance=ExtResource("13_px1y2")]
 transform = Transform3D(1.970036, 0, 5.412629, 0, 5.76, 0, -5.412629, 0, 1.970036, 588.4, 0, -252.6)
 
-[node name="midden_trash_3" type="Node3D" parent="Props" unique_id=1689354357 instance=ExtResource("14_k7wce")]
+[node name="midden_trash_3" type="Node3D" parent="Props" unique_id=878203398 instance=ExtResource("14_k7wce")]
 transform = Transform3D(1.052456, 0, 0.383063, 0, 1.12, 0, -0.383063, 0, 1.052456, 563.4, 0, -238)
 
-[node name="midden_trash_4" type="Node3D" parent="Props" unique_id=1967258839 instance=ExtResource("14_k7wce")]
+[node name="midden_trash_4" type="Node3D" parent="Props" unique_id=500566868 instance=ExtResource("14_k7wce")]
 transform = Transform3D(0.969948, 0, -0.56, 0, 1.12, 0, 0.56, 0, 0.969948, 588.6, 0, -231.5)
 
-[node name="midden_trash_5" type="Node3D" parent="Props" unique_id=452836261 instance=ExtResource("13_px1y2")]
+[node name="midden_trash_5" type="Node3D" parent="Props" unique_id=2082538668 instance=ExtResource("13_px1y2")]
 transform = Transform3D(-3.677013, 0, 3.085381, 0, 4.8, 0, -3.085381, 0, -3.677013, 565, 0, -229.5)
 
-[node name="midden_trash_6" type="Node3D" parent="Props" unique_id=1344690644 instance=ExtResource("15_e36c6")]
+[node name="midden_trash_6" type="Node3D" parent="Props" unique_id=1404616839 instance=ExtResource("15_e36c6")]
 transform = Transform3D(3.879794, 0, 2.24, 0, 4.48, 0, -2.24, 0, 3.879794, 587.2, 0, -228.2)
 
-[node name="midden_trash_7" type="Node3D" parent="Props" unique_id=207647375 instance=ExtResource("15_e36c6")]
+[node name="midden_trash_7" type="Node3D" parent="Props" unique_id=2132949650 instance=ExtResource("15_e36c6")]
 transform = Transform3D(2.08, 0, 3.602666, 0, 4.16, 0, -3.602666, 0, 2.08, 567, 0, -240.8)
 
-[node name="midden_trash_8" type="Node3D" parent="Props" unique_id=388068937 instance=ExtResource("16_g1ctv")]
+[node name="midden_trash_8" type="Node3D" parent="Props" unique_id=246689115 instance=ExtResource("16_g1ctv")]
 transform = Transform3D(3.033208, 0, 0.534836, 0, 3.08, 0, -0.534836, 0, 3.033208, 565.2, 0, -243.6)
 
-[node name="midden_trash_9" type="Node3D" parent="Props" unique_id=1051128089 instance=ExtResource("13_px1y2")]
+[node name="midden_trash_9" type="Node3D" parent="Props" unique_id=1083638366 instance=ExtResource("13_px1y2")]
 transform = Transform3D(-4.209823, 0, -1.53225, 0, 4.48, 0, 1.53225, 0, -4.209823, 585.6, 0, -234.4)
 
-[node name="midden_trash_10" type="Node3D" parent="Props" unique_id=988117340 instance=ExtResource("16_g1ctv")]
+[node name="midden_trash_10" type="Node3D" parent="Props" unique_id=275660410 instance=ExtResource("16_g1ctv")]
 transform = Transform3D(0.496634, 0, 2.81655, 0, 2.86, 0, -2.81655, 0, 0.496634, 582.8, 0, -237.8)
 
-[node name="midden_trash_11" type="Node3D" parent="Props" unique_id=233143380 instance=ExtResource("17_3onuc")]
+[node name="midden_trash_11" type="Node3D" parent="Props" unique_id=1319002172 instance=ExtResource("17_3onuc")]
 transform = Transform3D(1.68, 0, 0, 0, 1.68, 0, 0, 0, 1.68, 572, 0, -229)
 
-[node name="midden_trash_12" type="Node3D" parent="Props" unique_id=1268021917 instance=ExtResource("15_e36c6")]
+[node name="midden_trash_12" type="Node3D" parent="Props" unique_id=163991663 instance=ExtResource("15_e36c6")]
 transform = Transform3D(-1.313357, 0, 3.60842, 0, 3.84, 0, -3.60842, 0, -1.313357, 580.2, 0, -227.6)
 
-[node name="midden_trash_13" type="Node3D" parent="Props" unique_id=293625394 instance=ExtResource("16_g1ctv")]
+[node name="midden_trash_13" type="Node3D" parent="Props" unique_id=445374539 instance=ExtResource("16_g1ctv")]
 transform = Transform3D(1.866762, 0, 1.866762, 0, 2.64, 0, -1.866762, 0, 1.866762, 573.8, 0, -243.6)
 
-[node name="midden_trash_14" type="Node3D" parent="Props" unique_id=176424042 instance=ExtResource("15_e36c6")]
+[node name="midden_trash_14" type="Node3D" parent="Props" unique_id=1579650312 instance=ExtResource("15_e36c6")]
 transform = Transform3D(1.76, 0, -3.048409, 0, 3.52, 0, 3.048409, 0, 1.76, 578.4, 0, -240.2)
 
-[node name="midden_trash_15" type="Node3D" parent="Props" unique_id=1386644030 instance=ExtResource("17_3onuc")]
+[node name="midden_trash_15" type="Node3D" parent="Props" unique_id=1703437083 instance=ExtResource("17_3onuc")]
 transform = Transform3D(1.622755, 0, 0.434816, 0, 1.68, 0, -0.434816, 0, 1.622755, 563.2, 0, -247)
 
-[node name="midden_trash_16" type="Node3D" parent="Props" unique_id=1486331027 instance=ExtResource("13_px1y2")]
+[node name="midden_trash_16" type="Node3D" parent="Props" unique_id=162024371 instance=ExtResource("13_px1y2")]
 transform = Transform3D(-0.446237, 0, 5.100517, 0, 5.12, 0, -5.100517, 0, -0.446237, 588.7, 0, -242.5)
 
-[node name="midden_trash_17" type="Node3D" parent="Props" unique_id=184434087 instance=ExtResource("16_g1ctv")]
+[node name="midden_trash_17" type="Node3D" parent="Props" unique_id=1655563344 instance=ExtResource("16_g1ctv")]
 transform = Transform3D(-1.838373, 0, 2.190887, 0, 2.86, 0, -2.190887, 0, -1.838373, 570, 0, -232.8)
 
-[node name="midden_trash_18" type="Node3D" parent="Props" unique_id=903845363 instance=ExtResource("13_px1y2")]
+[node name="midden_trash_18" type="Node3D" parent="Props" unique_id=2110400001 instance=ExtResource("13_px1y2")]
 transform = Transform3D(4.411939, 0, 0.777944, 0, 4.48, 0, -0.777944, 0, 4.411939, 576.5, 0, -253)
 
-[node name="Pois" type="Node3D" parent="." unique_id=1519815502]
+[node name="Pois" type="Node3D" parent="." unique_id=2056568278]
 
-[node name="midden_dump_camp" type="Node3D" parent="Pois" unique_id=721587531]
+[node name="midden_dump_camp" type="Node3D" parent="Pois" unique_id=206341694]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
 metadata/center = Vector3(576, 0, -148)
 metadata/radius = 25
 
-[node name="camp_trash_1" type="Node3D" parent="Pois/midden_dump_camp" unique_id=800006990 instance=ExtResource("13_px1y2")]
+[node name="camp_trash_1" type="Node3D" parent="Pois/midden_dump_camp" unique_id=1643284815 instance=ExtResource("13_px1y2")]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, -6, 0, 80)
 
-[node name="camp_trash_2" type="Node3D" parent="Pois/midden_dump_camp" unique_id=1335625400 instance=ExtResource("13_px1y2")]
+[node name="camp_trash_2" type="Node3D" parent="Pois/midden_dump_camp" unique_id=756164746 instance=ExtResource("13_px1y2")]
 transform = Transform3D(1.939238, 0, 3.498479, 0, 4, 0, -3.498479, 0, 1.939238, 7, 0, 104)
 
-[node name="camp_trash_3" type="Node3D" parent="Pois/midden_dump_camp" unique_id=354047943 instance=ExtResource("13_px1y2")]
+[node name="camp_trash_3" type="Node3D" parent="Pois/midden_dump_camp" unique_id=200239696 instance=ExtResource("13_px1y2")]
 transform = Transform3D(-2.119677, 0, 3.392192, 0, 4, 0, -3.392192, 0, -2.119677, 15, 0, 98)
 
-[node name="camp_trash_4" type="Node3D" parent="Pois/midden_dump_camp" unique_id=840551773 instance=ExtResource("13_px1y2")]
+[node name="camp_trash_4" type="Node3D" parent="Pois/midden_dump_camp" unique_id=708305717 instance=ExtResource("13_px1y2")]
 transform = Transform3D(-3.994518, 0, -0.209344, 0, 4, 0, 0.209344, 0, -3.994518, -16, 0, 92)
 
-[node name="midden_filth_arena" type="Node3D" parent="Pois" unique_id=1476789265]
+[node name="midden_filth_arena" type="Node3D" parent="Pois" unique_id=222749048]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
 metadata/center = Vector3(576, 0, -240)
 metadata/radius = 22

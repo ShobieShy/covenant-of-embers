@@ -91,255 +91,255 @@ size = Vector3(36, 0.2, 32)
 [sub_resource type="BoxShape3D" id="BoxShape3D_10"]
 size = Vector3(36, 0.2, 32)
 
-[node name="Cell_0_0" type="Node3D" unique_id=1299385902]
+[node name="Cell_0_0" type="Node3D" unique_id=354674480]
 metadata/cell = Vector2i(0, 0)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=1576075542]
+[node name="Boxes" type="Node3D" parent="." unique_id=552110540]
 
-[node name="town_square_ground" type="StaticBody3D" parent="Boxes" unique_id=1370315070]
+[node name="town_square_ground" type="StaticBody3D" parent="Boxes" unique_id=1677044390]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 metadata/kind = "ground"
 metadata/toml_index = 0
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_ground" unique_id=2134168212]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_ground" unique_id=842594694]
 visible = false
 mesh = SubResource("BoxMesh_1")
 surface_material_override/0 = SubResource("StandardMaterial3D_1")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_ground" unique_id=1767836812]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_ground" unique_id=1188579022]
 shape = SubResource("BoxShape3D_1")
 
-[node name="town_square_wall_south_e" type="StaticBody3D" parent="Boxes" unique_id=1999910990]
+[node name="town_square_wall_south_e" type="StaticBody3D" parent="Boxes" unique_id=545806892]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 2, 19.5)
 metadata/kind = "wall"
 metadata/toml_index = 4
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_wall_south_e" unique_id=336514405]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_wall_south_e" unique_id=176784765]
 visible = false
 mesh = SubResource("BoxMesh_2")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_wall_south_e" unique_id=618018841]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_wall_south_e" unique_id=1794191872]
 shape = SubResource("BoxShape3D_2")
 
-[node name="town_square_wall_east_s" type="StaticBody3D" parent="Boxes" unique_id=1258687468]
+[node name="town_square_wall_east_s" type="StaticBody3D" parent="Boxes" unique_id=871156306]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.5, 2, 10.75)
 metadata/kind = "wall"
 metadata/toml_index = 8
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_wall_east_s" unique_id=1356690839]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_wall_east_s" unique_id=1090873903]
 visible = false
 mesh = SubResource("BoxMesh_3")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_wall_east_s" unique_id=136584744]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_wall_east_s" unique_id=979932453]
 shape = SubResource("BoxShape3D_3")
 
-[node name="town_square_ward_4" type="StaticBody3D" parent="Boxes" unique_id=1252386006]
+[node name="town_square_ward_4" type="StaticBody3D" parent="Boxes" unique_id=23653926]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3, 18)
 metadata/kind = "wall"
 metadata/toml_index = 12
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_ward_4" unique_id=1973218406]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_ward_4" unique_id=192820516]
 visible = false
 mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_ward_4" unique_id=171225477]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_ward_4" unique_id=1263278564]
 shape = SubResource("BoxShape3D_4")
 
-[node name="town_square_fountain" type="StaticBody3D" parent="Boxes" unique_id=803491308]
+[node name="town_square_fountain" type="StaticBody3D" parent="Boxes" unique_id=591622676]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 metadata/kind = "heap"
 metadata/toml_index = 14
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_fountain" unique_id=1569932220]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_fountain" unique_id=1874576017]
 visible = false
 mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_5")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_fountain" unique_id=780944691]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_fountain" unique_id=1478259123]
 shape = SubResource("BoxShape3D_6")
 
-[node name="town_square_market_road_x" type="StaticBody3D" parent="Boxes" unique_id=1518670252]
+[node name="town_square_market_road_x" type="StaticBody3D" parent="Boxes" unique_id=1471904971]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.5, -0.1, 0)
 metadata/kind = "ground"
 metadata/toml_index = 20
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_market_road_x" unique_id=45342827]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_market_road_x" unique_id=1856989255]
 visible = false
 mesh = SubResource("BoxMesh_9")
 surface_material_override/0 = SubResource("StandardMaterial3D_8")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_market_road_x" unique_id=1684009627]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_market_road_x" unique_id=328611257]
 shape = SubResource("BoxShape3D_9")
 
-[node name="town_square_market" type="StaticBody3D" parent="Boxes" unique_id=159233188]
+[node name="town_square_market" type="StaticBody3D" parent="Boxes" unique_id=334319230]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, -0.1, 0)
 metadata/kind = "ground"
 metadata/toml_index = 21
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_market" unique_id=1767998059]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/town_square_market" unique_id=911318641]
 visible = false
 mesh = SubResource("BoxMesh_10")
 surface_material_override/0 = SubResource("StandardMaterial3D_8")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_market" unique_id=805117001]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/town_square_market" unique_id=2044890111]
 shape = SubResource("BoxShape3D_10")
 
-[node name="Props" type="Node3D" parent="." unique_id=1957375590]
+[node name="Props" type="Node3D" parent="." unique_id=826069870]
 
-[node name="town_square_town_tree_1" type="Node3D" parent="Props" unique_id=649739166 instance=ExtResource("4_w6x3c")]
+[node name="town_square_town_tree_1" type="Node3D" parent="Props" unique_id=106301420 instance=ExtResource("4_w6x3c")]
 transform = Transform3D(3.57716, 0, 1.423525, 0, 3.85, 0, -1.423525, 0, 3.57716, 38.324, 0, 103.062)
 metadata/snap = true
 
-[node name="town_square_town_tree_2" type="Node3D" parent="Props" unique_id=192484018 instance=ExtResource("5_liq0f")]
+[node name="town_square_town_tree_2" type="Node3D" parent="Props" unique_id=807428467 instance=ExtResource("5_liq0f")]
 transform = Transform3D(-1.967665, 0, -2.395474, 0, 3.1, 0, 2.395474, 0, -1.967665, 93.322, 0, 53.837)
 metadata/snap = true
 
-[node name="town_square_town_tree_4" type="Node3D" parent="Props" unique_id=566085957 instance=ExtResource("6_w5liv")]
+[node name="town_square_town_tree_4" type="Node3D" parent="Props" unique_id=1296112736 instance=ExtResource("6_w5liv")]
 transform = Transform3D(3.866526, 0, 0.807759, 0, 3.95, 0, -0.807759, 0, 3.866526, 32.045, 0, 65.686)
 metadata/snap = true
 
-[node name="town_square_town_tree_6" type="Node3D" parent="Props" unique_id=706250089 instance=ExtResource("7_1d2ro")]
+[node name="town_square_town_tree_6" type="Node3D" parent="Props" unique_id=2126945845 instance=ExtResource("7_1d2ro")]
 transform = Transform3D(3.831684, 0, 2.203316, 0, 4.42, 0, -2.203316, 0, 3.831684, 50.761, 0, 85.381)
 metadata/snap = true
 
-[node name="town_square_town_tree_7" type="Node3D" parent="Props" unique_id=1162328937 instance=ExtResource("6_w5liv")]
+[node name="town_square_town_tree_7" type="Node3D" parent="Props" unique_id=1575801108 instance=ExtResource("6_w5liv")]
 transform = Transform3D(-3.456878, 0, -0.479681, 0, 3.49, 0, 0.479681, 0, -3.456878, 56.919, 0, 78.787)
 metadata/snap = true
 
-[node name="town_square_town_tree_8" type="Node3D" parent="Props" unique_id=1005479197 instance=ExtResource("6_w5liv")]
+[node name="town_square_town_tree_8" type="Node3D" parent="Props" unique_id=2034984416 instance=ExtResource("6_w5liv")]
 transform = Transform3D(0.25931, 0, 3.370038, 0, 3.38, 0, -3.370038, 0, 0.25931, 11.204, 0, 81.676)
 metadata/snap = true
 
-[node name="town_square_town_tree_14" type="Node3D" parent="Props" unique_id=1714227034 instance=ExtResource("5_liq0f")]
+[node name="town_square_town_tree_14" type="Node3D" parent="Props" unique_id=971874757 instance=ExtResource("5_liq0f")]
 transform = Transform3D(3.932884, 0, -1.293067, 0, 4.14, 0, 1.293067, 0, 3.932884, 56.429, 0, 80.651)
 metadata/snap = true
 
-[node name="town_square_town_tree_18" type="Node3D" parent="Props" unique_id=1838474689 instance=ExtResource("5_liq0f")]
+[node name="town_square_town_tree_18" type="Node3D" parent="Props" unique_id=417501373 instance=ExtResource("5_liq0f")]
 transform = Transform3D(-2.654004, 0, 3.521983, 0, 4.41, 0, -3.521983, 0, -2.654004, 94.035, 0, 66.606)
 metadata/snap = true
 
-[node name="town_square_town_tree_22" type="Node3D" parent="Props" unique_id=2046652879 instance=ExtResource("7_1d2ro")]
+[node name="town_square_town_tree_22" type="Node3D" parent="Props" unique_id=287761841 instance=ExtResource("7_1d2ro")]
 transform = Transform3D(-2.465957, 0, 3.111263, 0, 3.97, 0, -3.111263, 0, -2.465957, 84.26, 0, 78.347)
 metadata/snap = true
 
-[node name="town_square_town_tree_24" type="Node3D" parent="Props" unique_id=1598363350 instance=ExtResource("4_w6x3c")]
+[node name="town_square_town_tree_24" type="Node3D" parent="Props" unique_id=1477030940 instance=ExtResource("4_w6x3c")]
 transform = Transform3D(-0.734137, 0, -4.206417, 0, 4.27, 0, 4.206417, 0, -0.734137, 17.597, 0, 87.459)
 metadata/snap = true
 
-[node name="town_square_town_tree_26" type="Node3D" parent="Props" unique_id=1487625990 instance=ExtResource("4_w6x3c")]
+[node name="town_square_town_tree_26" type="Node3D" parent="Props" unique_id=955063468 instance=ExtResource("4_w6x3c")]
 transform = Transform3D(4.102098, 0, -0.947044, 0, 4.21, 0, 0.947044, 0, 4.102098, 75.719, 0, 66.414)
 metadata/snap = true
 
-[node name="town_square_town_tree_31" type="Node3D" parent="Props" unique_id=27025915 instance=ExtResource("4_w6x3c")]
+[node name="town_square_town_tree_31" type="Node3D" parent="Props" unique_id=706933464 instance=ExtResource("4_w6x3c")]
 transform = Transform3D(-0.353852, 0, -4.04455, 0, 4.06, 0, 4.04455, 0, -0.353852, 44.269, 0, 68.623)
 metadata/snap = true
 
-[node name="town_square_town_tree_32" type="Node3D" parent="Props" unique_id=592096310 instance=ExtResource("6_w5liv")]
+[node name="town_square_town_tree_32" type="Node3D" parent="Props" unique_id=1768649752 instance=ExtResource("6_w5liv")]
 transform = Transform3D(2.986044, 0, 0.451597, 0, 3.02, 0, -0.451597, 0, 2.986044, 85.059, 0, 8.102)
 metadata/snap = true
 
-[node name="town_square_town_tree_33" type="Node3D" parent="Props" unique_id=141850031 instance=ExtResource("7_1d2ro")]
+[node name="town_square_town_tree_33" type="Node3D" parent="Props" unique_id=1621083361 instance=ExtResource("7_1d2ro")]
 transform = Transform3D(1.833113, 0, 3.075076, 0, 3.58, 0, -3.075076, 0, 1.833113, 21.109, 0, 64.232)
 metadata/snap = true
 
-[node name="town_square_south_e_wall_1" type="Node3D" parent="Props" unique_id=54606649 instance=ExtResource("8_pxcrt")]
+[node name="town_square_south_e_wall_1" type="Node3D" parent="Props" unique_id=445746250 instance=ExtResource("8_pxcrt")]
 transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, 4.25, 0, 15)
 
-[node name="town_square_south_e_wall_2" type="Node3D" parent="Props" unique_id=490987802 instance=ExtResource("8_pxcrt")]
+[node name="town_square_south_e_wall_2" type="Node3D" parent="Props" unique_id=72218922 instance=ExtResource("8_pxcrt")]
 transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, 8.75, 0, 15)
 
-[node name="town_square_south_e_wall_3" type="Node3D" parent="Props" unique_id=109537300 instance=ExtResource("8_pxcrt")]
+[node name="town_square_south_e_wall_3" type="Node3D" parent="Props" unique_id=1105961796 instance=ExtResource("8_pxcrt")]
 transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, 13.25, 0, 15)
 
-[node name="town_square_south_e_wall_4" type="Node3D" parent="Props" unique_id=42330362 instance=ExtResource("8_pxcrt")]
+[node name="town_square_south_e_wall_4" type="Node3D" parent="Props" unique_id=1796808078 instance=ExtResource("8_pxcrt")]
 transform = Transform3D(0, 0, -4.5, 0, 4, 0, 10, 0, 0, 17.75, 0, 15)
 
-[node name="town_square_east_wall_s_1" type="Node3D" parent="Props" unique_id=1209444290 instance=ExtResource("8_pxcrt")]
+[node name="town_square_east_wall_s_1" type="Node3D" parent="Props" unique_id=1084657043 instance=ExtResource("8_pxcrt")]
 transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -4.125, 24, 0, 4.5625)
 
-[node name="town_square_east_wall_s_2" type="Node3D" parent="Props" unique_id=1327065982 instance=ExtResource("8_pxcrt")]
+[node name="town_square_east_wall_s_2" type="Node3D" parent="Props" unique_id=478197807 instance=ExtResource("8_pxcrt")]
 transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -4.125, 24, 0, 8.6875)
 
-[node name="town_square_east_wall_s_3" type="Node3D" parent="Props" unique_id=1674312842 instance=ExtResource("8_pxcrt")]
+[node name="town_square_east_wall_s_3" type="Node3D" parent="Props" unique_id=1746997367 instance=ExtResource("8_pxcrt")]
 transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -4.125, 24, 0, 12.8125)
 
-[node name="town_square_east_wall_s_4" type="Node3D" parent="Props" unique_id=385016362 instance=ExtResource("8_pxcrt")]
+[node name="town_square_east_wall_s_4" type="Node3D" parent="Props" unique_id=1958894632 instance=ExtResource("8_pxcrt")]
 transform = Transform3D(-10, 0, 0, 0, 4, 0, 0, 0, -4.125, 24, 0, 16.9375)
 
-[node name="town_square_ward_4" type="Node3D" parent="Props" unique_id=1032461002 instance=ExtResource("9_n84k0")]
+[node name="town_square_ward_4" type="Node3D" parent="Props" unique_id=1944370754 instance=ExtResource("9_n84k0")]
 transform = Transform3D(7.5, 0, 0, 0, 6, 0, 0, 0, 7.5, 18, 0, 18)
 
-[node name="town_square_ward_lantern_4" type="Node3D" parent="Props" unique_id=728346646 instance=ExtResource("10_w3vl4")]
+[node name="town_square_ward_lantern_4" type="Node3D" parent="Props" unique_id=282645628 instance=ExtResource("10_w3vl4")]
 transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 18, 6, 18)
 
-[node name="town_square_gate_lantern_s2" type="Node3D" parent="Props" unique_id=264046399 instance=ExtResource("10_w3vl4")]
+[node name="town_square_gate_lantern_s2" type="Node3D" parent="Props" unique_id=182192301 instance=ExtResource("10_w3vl4")]
 transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 2.6, 0, 18.7)
 
-[node name="town_square_gate_pillars_s_2" type="Node3D" parent="Props" unique_id=1028278437 instance=ExtResource("9_n84k0")]
+[node name="town_square_gate_pillars_s_2" type="Node3D" parent="Props" unique_id=253586291 instance=ExtResource("9_n84k0")]
 transform = Transform3D(6, 0, 0, 0, 5, 0, 0, 0, 6, 2, 0, 19.5)
 
-[node name="town_square_road_1" type="Node3D" parent="Props" unique_id=752584612 instance=ExtResource("11_ydyn4")]
+[node name="town_square_road_1" type="Node3D" parent="Props" unique_id=1305050847 instance=ExtResource("11_ydyn4")]
 transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, 17)
 
-[node name="town_square_road_2" type="Node3D" parent="Props" unique_id=1826301350 instance=ExtResource("11_ydyn4")]
+[node name="town_square_road_2" type="Node3D" parent="Props" unique_id=178893274 instance=ExtResource("11_ydyn4")]
 transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, 13)
 
-[node name="town_square_road_3" type="Node3D" parent="Props" unique_id=2076085824 instance=ExtResource("11_ydyn4")]
+[node name="town_square_road_3" type="Node3D" parent="Props" unique_id=1922779906 instance=ExtResource("11_ydyn4")]
 transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, 9)
 
-[node name="town_square_road_4" type="Node3D" parent="Props" unique_id=859032770 instance=ExtResource("11_ydyn4")]
+[node name="town_square_road_4" type="Node3D" parent="Props" unique_id=63986073 instance=ExtResource("11_ydyn4")]
 transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, 5)
 
-[node name="town_square_road_5" type="Node3D" parent="Props" unique_id=695481374 instance=ExtResource("11_ydyn4")]
+[node name="town_square_road_5" type="Node3D" parent="Props" unique_id=1665429564 instance=ExtResource("11_ydyn4")]
 transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0.001, 1)
 
-[node name="town_square_road_e_1" type="Node3D" parent="Props" unique_id=1351417216 instance=ExtResource("11_ydyn4")]
+[node name="town_square_road_e_1" type="Node3D" parent="Props" unique_id=104463322 instance=ExtResource("11_ydyn4")]
 transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 4, 0.001, 14)
 
-[node name="town_square_road_e_2" type="Node3D" parent="Props" unique_id=155741566 instance=ExtResource("11_ydyn4")]
+[node name="town_square_road_e_2" type="Node3D" parent="Props" unique_id=386692193 instance=ExtResource("11_ydyn4")]
 transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 8, 0.001, 14)
 
-[node name="town_square_road_e_3" type="Node3D" parent="Props" unique_id=1445280562 instance=ExtResource("11_ydyn4")]
+[node name="town_square_road_e_3" type="Node3D" parent="Props" unique_id=1041835747 instance=ExtResource("11_ydyn4")]
 transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 12, 0.001, 14)
 
-[node name="town_square_road_e_4" type="Node3D" parent="Props" unique_id=872108049 instance=ExtResource("11_ydyn4")]
+[node name="town_square_road_e_4" type="Node3D" parent="Props" unique_id=409767866 instance=ExtResource("11_ydyn4")]
 transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 16, 0.001, 14)
 
-[node name="town_square_fountain" type="Node3D" parent="Props" unique_id=1511294621 instance=ExtResource("12_wmgkk")]
+[node name="town_square_fountain" type="Node3D" parent="Props" unique_id=684966704 instance=ExtResource("12_wmgkk")]
 transform = Transform3D(2, 0, 0, 0, 1.667, 0, 0, 0, 2, 0, 0, 0)
 
-[node name="town_square_tree_5" type="Node3D" parent="Props" unique_id=132261592 instance=ExtResource("13_iy17i")]
+[node name="town_square_tree_5" type="Node3D" parent="Props" unique_id=2136683168 instance=ExtResource("13_iy17i")]
 transform = Transform3D(1.094464, 0, 3.007016, 0, 3.2, 0, -3.007016, 0, 1.094464, 25, 0, 0)
 
-[node name="town_square_tree_9" type="Node3D" parent="Props" unique_id=371827614 instance=ExtResource("14_ofxmw")]
+[node name="town_square_tree_9" type="Node3D" parent="Props" unique_id=1362598608 instance=ExtResource("14_ofxmw")]
 transform = Transform3D(1.6, 0, 2.771281, 0, 3.2, 0, -2.771281, 0, 1.6, 12, 0, 25)
 
-[node name="town_square_old_oak" type="Node3D" parent="Props" unique_id=634881414 instance=ExtResource("15_qvljp")]
+[node name="town_square_old_oak" type="Node3D" parent="Props" unique_id=389530207 instance=ExtResource("15_qvljp")]
 transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 29, 0, 14)
 
-[node name="Pois" type="Node3D" parent="." unique_id=486608420]
+[node name="Pois" type="Node3D" parent="." unique_id=462660643]
 
-[node name="town_square_market" type="Node3D" parent="Pois" unique_id=2102541039]
+[node name="town_square_market" type="Node3D" parent="Pois" unique_id=2102285523]
 metadata/center = Vector3(58, 0, 0)
 metadata/radius = 30
 
-[node name="market_stall_1" type="Node3D" parent="Pois/town_square_market" unique_id=1685658032 instance=ExtResource("16_o3gtu")]
+[node name="market_stall_1" type="Node3D" parent="Pois/town_square_market" unique_id=1362889375 instance=ExtResource("16_o3gtu")]
 transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 48, 0, -10)
 
-[node name="market_stall_2" type="Node3D" parent="Pois/town_square_market" unique_id=82253952 instance=ExtResource("17_3l7rf")]
+[node name="market_stall_2" type="Node3D" parent="Pois/town_square_market" unique_id=1986262661 instance=ExtResource("17_3l7rf")]
 transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 56, 0, -10)
 
-[node name="market_stall_3" type="Node3D" parent="Pois/town_square_market" unique_id=1182527550 instance=ExtResource("16_o3gtu")]
+[node name="market_stall_3" type="Node3D" parent="Pois/town_square_market" unique_id=1717405868 instance=ExtResource("16_o3gtu")]
 transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 64, 0, -10)
 
-[node name="market_stall_4" type="Node3D" parent="Pois/town_square_market" unique_id=366740214 instance=ExtResource("17_3l7rf")]
+[node name="market_stall_4" type="Node3D" parent="Pois/town_square_market" unique_id=477018448 instance=ExtResource("17_3l7rf")]
 transform = Transform3D(-2.5, 0, 0, 0, 2.5, 0, 0, 0, -2.5, 48, 0, 10)
 
-[node name="market_stall_5" type="Node3D" parent="Pois/town_square_market" unique_id=423839390 instance=ExtResource("16_o3gtu")]
+[node name="market_stall_5" type="Node3D" parent="Pois/town_square_market" unique_id=94325684 instance=ExtResource("16_o3gtu")]
 transform = Transform3D(-2.5, 0, 0, 0, 2.5, 0, 0, 0, -2.5, 56, 0, 10)
 
-[node name="market_stall_6" type="Node3D" parent="Pois/town_square_market" unique_id=1327729260 instance=ExtResource("17_3l7rf")]
+[node name="market_stall_6" type="Node3D" parent="Pois/town_square_market" unique_id=920219164 instance=ExtResource("17_3l7rf")]
 transform = Transform3D(-2.5, 0, 0, 0, 2.5, 0, 0, 0, -2.5, 64, 0, 10)

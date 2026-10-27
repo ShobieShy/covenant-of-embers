@@ -6,7 +6,9 @@ extends Node3D
 ## exit, and leaving through an interior exit moves the party back out to the linked
 ## marker in the world. Loads run on a thread; `slow_load` fires when one takes over
 ## SLOW_MS (the loading-screen hook), `fade` asks the UI for the 0.3 s fade.
-## Breach rooms join in OW5b.
+## OW5b: the Breach rooms are the breach level's greybox complex, instanced from the
+## breach scene with its crater parts (STRIP) dropped (the crater is seamless world
+## terrain); the portal is the complex's entrance road, and a Breach node runs the rooms.
 
 signal fade(seconds: float)
 signal slow_load(id: String)
@@ -23,6 +25,8 @@ const INSET := 2.5  ## landings sit this far inside a door, clear of its trigger
 const LINKS := {
 	"mage_association":
 	{
+		"scene": "mage_association",
+		"inside": "town_square",
 		"front": ["town_square", "to_association"],
 		"exits":
 		{
@@ -30,12 +34,26 @@ const LINKS := {
 			"midden": ["town_square", "to_landfill"],
 		},
 	},
+	"breach_rooms":
+	{
+		"scene": "breach",
+		"inside": "midden",
+		"front": ["breach", "to_midden"],
+		"exits": {"midden": ["breach", "to_midden"]},
+		"strip": ["Terrain", "Props", "Pois"],
+		"logic": "breach",
+	},
 }
+
+## OW5b: level groups that live in an instanced interior, so tools/build_cells.gd keeps
+## them out of the world cells.
+const CELL_SKIP := {"breach": ["Boxes"]}
 
 var current := ""
 var interior: Node3D
 var height_fn: Callable  ## (x, z) -> world height; OpenWorld.height_at
 var busy := false
+var breach: Breach  ## OW5b: the rooms' logic while breach_rooms is entered
 
 
 ## World position of a level's Exits marker (at the level's world_offset), on the ground.
@@ -88,12 +106,15 @@ func _move_party(p: Vector3) -> void:
 
 
 ## Enters `id` from `from_level` (the side of the front door). Returns the landing.
-func enter(id: String, from_level := "town_square") -> Vector3:
+func enter(id: String, from_level := "") -> Vector3:
 	if busy or current != "" or not LINKS.has(id):
 		return Vector3.INF
+	var link: Dictionary = LINKS[id]
+	if from_level == "":
+		from_level = link["inside"]
 	busy = true
 	fade.emit(FADE)
-	var path := GameFlow.level_scene(id)
+	var path := GameFlow.level_scene(link["scene"])
 	var t0 := Time.get_ticks_msec()
 	ResourceLoader.load_threaded_request(path, "PackedScene")
 	var slow := false
@@ -104,7 +125,8 @@ func enter(id: String, from_level := "town_square") -> Vector3:
 		await get_tree().process_frame
 	var ps := ResourceLoader.load_threaded_get(path) as PackedScene
 	interior = ps.instantiate() as Node3D
-	for n in ["WorldEnvironment", "Sun"]:  # the world's sky and sun stay
+	var strip: Array = ["WorldEnvironment", "Sun"] + link.get("strip", [])
+	for n in strip:  # the world's sky and sun stay
 		var e := interior.get_node_or_null(n)
 		if e:
 			interior.remove_child(e)
@@ -120,6 +142,12 @@ func enter(id: String, from_level := "town_square") -> Vector3:
 			if String(e.get_meta(&"to", "")) == from_level:
 				land = _inset((e as Node3D).global_position, interior.global_position)
 	_move_party(land)
+	if link.get("logic", "") == "breach":
+		breach = Breach.new()
+		breach.name = "Breach"
+		interior.add_child(breach)
+		var ps_party := party()
+		breach.setup(interior, ps_party[0] as Player if not ps_party.is_empty() else null)
 	busy = false
 	entered.emit(id)
 	return land
@@ -141,6 +169,7 @@ func leave(to_level := "town_square") -> Vector3:
 	var id := current
 	interior.queue_free()
 	interior = null
+	breach = null
 	current = ""
 	left.emit(id)
 	return land

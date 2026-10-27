@@ -21,20 +21,20 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_27"]
 size = Vector3(8, 0.2, 166)
 
-[node name="Cell_4_-1" type="Node3D" unique_id=655649707]
+[node name="Cell_4_-1" type="Node3D" unique_id=854458611]
 metadata/cell = Vector2i(4, -1)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=522325725]
+[node name="Boxes" type="Node3D" parent="." unique_id=394194395]
 
-[node name="midden_trunk_z" type="StaticBody3D" parent="Boxes" unique_id=1307845540]
+[node name="midden_trunk_z" type="StaticBody3D" parent="Boxes" unique_id=319983743]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, -69)
 metadata/kind = "ground"
 metadata/toml_index = 42
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_trunk_z" unique_id=1921262795]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_trunk_z" unique_id=697643277]
 visible = false
 mesh = SubResource("BoxMesh_27")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_trunk_z" unique_id=290241477]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_trunk_z" unique_id=213921243]
 shape = SubResource("BoxShape3D_27")

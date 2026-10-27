@@ -143,13 +143,13 @@
       "levels": [
         "breach"
       ],
-      "nodes": 117
+      "nodes": 36
     },
     "8_0": {
       "levels": [
         "breach"
       ],
-      "nodes": 55
+      "nodes": 19
     },
     "9_-1": {
       "levels": [
@@ -167,7 +167,7 @@
       "levels": [
         "breach"
       ],
-      "nodes": 9
+      "nodes": 6
     }
   }
 }

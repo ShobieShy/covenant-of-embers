@@ -157,548 +157,548 @@ albedo_color = Color(0.665185, 0.583831, 0.484529, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_22"]
 size = Vector3(8, 0.4, 8)
 
-[node name="Cell_-3_-1" type="Node3D" unique_id=558851643]
+[node name="Cell_-3_-1" type="Node3D" unique_id=726428247]
 metadata/cell = Vector2i(-3, -1)
 
-[node name="Boxes" type="Node3D" parent="." unique_id=792748227]
+[node name="Boxes" type="Node3D" parent="." unique_id=1434311422]
 
-[node name="old_oak_bark_north" type="StaticBody3D" parent="Boxes" unique_id=2071142794]
+[node name="old_oak_bark_north" type="StaticBody3D" parent="Boxes" unique_id=124836478]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272, 4, -7.5)
 metadata/kind = "wall"
 metadata/toml_index = 1
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_bark_north" unique_id=460777554]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_bark_north" unique_id=419972941]
 mesh = SubResource("BoxMesh_2")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_bark_north" unique_id=1377921407]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_bark_north" unique_id=1413792355]
 shape = SubResource("BoxShape3D_2")
 
-[node name="old_oak_bark_east" type="StaticBody3D" parent="Boxes" unique_id=29569761]
+[node name="old_oak_bark_east" type="StaticBody3D" parent="Boxes" unique_id=1854795300]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -264.5, 4, -4.25)
 metadata/kind = "wall"
 metadata/toml_index = 4
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_bark_east" unique_id=612165389]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_bark_east" unique_id=1709041]
 mesh = SubResource("BoxMesh_4")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_bark_east" unique_id=910149484]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_bark_east" unique_id=208990012]
 shape = SubResource("BoxShape3D_4")
 
-[node name="old_oak_moss_bed_1" type="StaticBody3D" parent="Boxes" unique_id=627061083]
+[node name="old_oak_moss_bed_1" type="StaticBody3D" parent="Boxes" unique_id=1897424231]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -277, 0.2, -5)
 metadata/kind = "platform"
 metadata/toml_index = 6
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_moss_bed_1" unique_id=692179306]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_moss_bed_1" unique_id=2082145671]
 mesh = SubResource("BoxMesh_5")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_moss_bed_1" unique_id=129189712]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_moss_bed_1" unique_id=13120183]
 shape = SubResource("BoxShape3D_5")
 
-[node name="old_oak_moss_bed_2" type="StaticBody3D" parent="Boxes" unique_id=2128067788]
+[node name="old_oak_moss_bed_2" type="StaticBody3D" parent="Boxes" unique_id=1913037655]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -274.5, 0.2, -5)
 metadata/kind = "platform"
 metadata/toml_index = 7
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_moss_bed_2" unique_id=1719013486]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_moss_bed_2" unique_id=1386572514]
 mesh = SubResource("BoxMesh_5")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_moss_bed_2" unique_id=1245859452]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_moss_bed_2" unique_id=1235330892]
 shape = SubResource("BoxShape3D_5")
 
-[node name="old_oak_moss_bed_3" type="StaticBody3D" parent="Boxes" unique_id=588283730]
+[node name="old_oak_moss_bed_3" type="StaticBody3D" parent="Boxes" unique_id=2099209934]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -269.5, 0.2, -5)
 metadata/kind = "platform"
 metadata/toml_index = 8
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_moss_bed_3" unique_id=1021327578]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_moss_bed_3" unique_id=2103973933]
 mesh = SubResource("BoxMesh_5")
 surface_material_override/0 = SubResource("StandardMaterial3D_3")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_moss_bed_3" unique_id=2144324210]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_moss_bed_3" unique_id=1270530296]
 shape = SubResource("BoxShape3D_5")
 
-[node name="old_oak_candle_3" type="StaticBody3D" parent="Boxes" unique_id=1626037301]
+[node name="old_oak_candle_3" type="StaticBody3D" parent="Boxes" unique_id=686925433]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -278, 0.5, -2)
 metadata/kind = "crate"
 metadata/toml_index = 11
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_candle_3" unique_id=2042654126]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_candle_3" unique_id=998695368]
 mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_candle_3" unique_id=2111402352]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_candle_3" unique_id=1851319456]
 shape = SubResource("BoxShape3D_6")
 
-[node name="old_oak_candle_4" type="StaticBody3D" parent="Boxes" unique_id=382622353]
+[node name="old_oak_candle_4" type="StaticBody3D" parent="Boxes" unique_id=720583874]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -266, 0.5, -2)
 metadata/kind = "crate"
 metadata/toml_index = 12
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_candle_4" unique_id=1124445808]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_candle_4" unique_id=343063395]
 mesh = SubResource("BoxMesh_6")
 surface_material_override/0 = SubResource("StandardMaterial3D_4")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_candle_4" unique_id=368127921]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_candle_4" unique_id=1245173664]
 shape = SubResource("BoxShape3D_6")
 
-[node name="old_oak_stash" type="StaticBody3D" parent="Boxes" unique_id=1384356589]
+[node name="old_oak_stash" type="StaticBody3D" parent="Boxes" unique_id=2053635912]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -266.5, 0.5, -5.5)
 metadata/kind = "crate"
 metadata/toml_index = 13
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_stash" unique_id=950756830]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_stash" unique_id=1207268200]
 mesh = SubResource("BoxMesh_7")
 surface_material_override/0 = SubResource("StandardMaterial3D_5")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_stash" unique_id=512663574]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_stash" unique_id=1134219661]
 shape = SubResource("BoxShape3D_7")
 
-[node name="old_oak_slot_potion_garden" type="StaticBody3D" parent="Boxes" unique_id=2007453352]
+[node name="old_oak_slot_potion_garden" type="StaticBody3D" parent="Boxes" unique_id=898686752]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272, 0.05, -1.5)
 metadata/kind = "platform"
 metadata/toml_index = 15
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_slot_potion_garden" unique_id=909006681]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_slot_potion_garden" unique_id=1639386331]
 mesh = SubResource("BoxMesh_8")
 surface_material_override/0 = SubResource("StandardMaterial3D_6")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_slot_potion_garden" unique_id=834537677]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_slot_potion_garden" unique_id=92382995]
 shape = SubResource("BoxShape3D_8")
 
-[node name="old_oak_cave_path_w_x" type="StaticBody3D" parent="Boxes" unique_id=1427706518]
+[node name="old_oak_cave_path_w_x" type="StaticBody3D" parent="Boxes" unique_id=1039817438]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -275, -0.1, -44)
 metadata/kind = "ground"
 metadata/toml_index = 22
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_path_w_x" unique_id=387854110]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_path_w_x" unique_id=2111558665]
 visible = false
 mesh = SubResource("BoxMesh_14")
 surface_material_override/0 = SubResource("StandardMaterial3D_7")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_path_w_x" unique_id=846657925]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_path_w_x" unique_id=1042212726]
 shape = SubResource("BoxShape3D_14")
 
-[node name="old_oak_root_caves" type="StaticBody3D" parent="Boxes" unique_id=878546151]
+[node name="old_oak_root_caves" type="StaticBody3D" parent="Boxes" unique_id=581877864]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -312, -0.1, -44)
 metadata/kind = "ground"
 metadata/toml_index = 23
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_root_caves" unique_id=658396794]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_root_caves" unique_id=1806411346]
 visible = false
 mesh = SubResource("BoxMesh_15")
 surface_material_override/0 = SubResource("StandardMaterial3D_10")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_root_caves" unique_id=587224122]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_root_caves" unique_id=79543973]
 shape = SubResource("BoxShape3D_15")
 
-[node name="old_oak_cave_wall_n" type="StaticBody3D" parent="Boxes" unique_id=1353558586]
+[node name="old_oak_cave_wall_n" type="StaticBody3D" parent="Boxes" unique_id=745580571]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -312, 2.5, -52.5)
 metadata/kind = "wall"
 metadata/toml_index = 24
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_wall_n" unique_id=275024627]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_wall_n" unique_id=2096986675]
 mesh = SubResource("BoxMesh_16")
 surface_material_override/0 = SubResource("StandardMaterial3D_11")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_wall_n" unique_id=946521693]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_wall_n" unique_id=480660795]
 shape = SubResource("BoxShape3D_16")
 
-[node name="old_oak_cave_wall_w" type="StaticBody3D" parent="Boxes" unique_id=1442111104]
+[node name="old_oak_cave_wall_w" type="StaticBody3D" parent="Boxes" unique_id=479254329]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -320.5, 2.5, -44)
 metadata/kind = "wall"
 metadata/toml_index = 25
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_wall_w" unique_id=1969098188]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_wall_w" unique_id=1383272495]
 mesh = SubResource("BoxMesh_17")
 surface_material_override/0 = SubResource("StandardMaterial3D_11")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_wall_w" unique_id=1365714102]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_wall_w" unique_id=2113807457]
 shape = SubResource("BoxShape3D_17")
 
-[node name="old_oak_cave_wall_s" type="StaticBody3D" parent="Boxes" unique_id=393966247]
+[node name="old_oak_cave_wall_s" type="StaticBody3D" parent="Boxes" unique_id=1776639580]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -312, 2.5, -35.5)
 metadata/kind = "wall"
 metadata/toml_index = 26
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_wall_s" unique_id=1793016357]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_wall_s" unique_id=254090109]
 mesh = SubResource("BoxMesh_16")
 surface_material_override/0 = SubResource("StandardMaterial3D_11")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_wall_s" unique_id=465648083]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_wall_s" unique_id=2093083558]
 shape = SubResource("BoxShape3D_16")
 
-[node name="old_oak_cave_roof" type="StaticBody3D" parent="Boxes" unique_id=703926287]
+[node name="old_oak_cave_roof" type="StaticBody3D" parent="Boxes" unique_id=1366807960]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -312, 5.2, -44)
 metadata/kind = "platform"
 metadata/toml_index = 27
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_roof" unique_id=1055550224]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_roof" unique_id=1221676929]
 mesh = SubResource("BoxMesh_18")
 surface_material_override/0 = SubResource("StandardMaterial3D_11")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_roof" unique_id=964623829]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_roof" unique_id=80068056]
 shape = SubResource("BoxShape3D_18")
 
-[node name="old_oak_cave_chest_spot" type="StaticBody3D" parent="Boxes" unique_id=540783714]
+[node name="old_oak_cave_chest_spot" type="StaticBody3D" parent="Boxes" unique_id=1592237557]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -318, 0.4, -49)
 metadata/kind = "crate"
 metadata/toml_index = 28
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_chest_spot" unique_id=505689479]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_cave_chest_spot" unique_id=1151505037]
 mesh = SubResource("BoxMesh_19")
 surface_material_override/0 = SubResource("StandardMaterial3D_12")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_chest_spot" unique_id=1704199644]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_cave_chest_spot" unique_id=143240043]
 shape = SubResource("BoxShape3D_19")
 
-[node name="old_oak_lookout_foot" type="StaticBody3D" parent="Boxes" unique_id=1394570161]
+[node name="old_oak_lookout_foot" type="StaticBody3D" parent="Boxes" unique_id=1291378972]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, -0.1, -20)
 metadata/kind = "ground"
 metadata/toml_index = 29
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_foot" unique_id=1680803672]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_foot" unique_id=620442505]
 visible = false
 mesh = SubResource("BoxMesh_20")
 surface_material_override/0 = SubResource("StandardMaterial3D_7")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_foot" unique_id=1798587324]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_foot" unique_id=1347363986]
 shape = SubResource("BoxShape3D_20")
 
-[node name="old_oak_lookout_step_1" type="StaticBody3D" parent="Boxes" unique_id=1078976640]
+[node name="old_oak_lookout_step_1" type="StaticBody3D" parent="Boxes" unique_id=2116803191]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 1.05, -24)
 metadata/kind = "platform"
 metadata/toml_index = 30
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_1" unique_id=178021448]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_1" unique_id=972796413]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_1" unique_id=997171996]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_1" unique_id=1437891785]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_2" type="StaticBody3D" parent="Boxes" unique_id=1704761424]
+[node name="old_oak_lookout_step_2" type="StaticBody3D" parent="Boxes" unique_id=511875646]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 2.3, -25)
 metadata/kind = "platform"
 metadata/toml_index = 31
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_2" unique_id=765449627]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_2" unique_id=2146595082]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_2" unique_id=1426534820]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_2" unique_id=1286907906]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_3" type="StaticBody3D" parent="Boxes" unique_id=2117689077]
+[node name="old_oak_lookout_step_3" type="StaticBody3D" parent="Boxes" unique_id=68809540]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 3.55, -26)
 metadata/kind = "platform"
 metadata/toml_index = 32
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_3" unique_id=235682734]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_3" unique_id=293532296]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_3" unique_id=1649089227]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_3" unique_id=1350567265]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_4" type="StaticBody3D" parent="Boxes" unique_id=839972383]
+[node name="old_oak_lookout_step_4" type="StaticBody3D" parent="Boxes" unique_id=1453234414]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 4.8, -27)
 metadata/kind = "platform"
 metadata/toml_index = 33
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_4" unique_id=1519623817]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_4" unique_id=653231535]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_4" unique_id=1468151400]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_4" unique_id=880878695]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_5" type="StaticBody3D" parent="Boxes" unique_id=805898910]
+[node name="old_oak_lookout_step_5" type="StaticBody3D" parent="Boxes" unique_id=562058668]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 6.05, -28)
 metadata/kind = "platform"
 metadata/toml_index = 34
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_5" unique_id=2129808304]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_5" unique_id=268034477]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_5" unique_id=1828696430]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_5" unique_id=495323303]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_6" type="StaticBody3D" parent="Boxes" unique_id=894203530]
+[node name="old_oak_lookout_step_6" type="StaticBody3D" parent="Boxes" unique_id=1830903639]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 7.3, -29)
 metadata/kind = "platform"
 metadata/toml_index = 35
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_6" unique_id=1195627906]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_6" unique_id=1213952392]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_6" unique_id=776623730]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_6" unique_id=1423580728]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_7" type="StaticBody3D" parent="Boxes" unique_id=1691818601]
+[node name="old_oak_lookout_step_7" type="StaticBody3D" parent="Boxes" unique_id=784256923]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 8.55, -30)
 metadata/kind = "platform"
 metadata/toml_index = 36
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_7" unique_id=273080510]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_7" unique_id=1799284745]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_7" unique_id=31803717]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_7" unique_id=1325767274]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_8" type="StaticBody3D" parent="Boxes" unique_id=765709341]
+[node name="old_oak_lookout_step_8" type="StaticBody3D" parent="Boxes" unique_id=1535070701]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 9.8, -31)
 metadata/kind = "platform"
 metadata/toml_index = 37
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_8" unique_id=378314099]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_8" unique_id=637953144]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_8" unique_id=954205602]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_8" unique_id=1068746663]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_9" type="StaticBody3D" parent="Boxes" unique_id=214514203]
+[node name="old_oak_lookout_step_9" type="StaticBody3D" parent="Boxes" unique_id=1444704159]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 11.05, -32)
 metadata/kind = "platform"
 metadata/toml_index = 38
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_9" unique_id=1310151556]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_9" unique_id=180110299]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_9" unique_id=47745479]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_9" unique_id=1655494358]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_10" type="StaticBody3D" parent="Boxes" unique_id=77450885]
+[node name="old_oak_lookout_step_10" type="StaticBody3D" parent="Boxes" unique_id=19727715]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 12.3, -33)
 metadata/kind = "platform"
 metadata/toml_index = 39
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_10" unique_id=1166352018]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_10" unique_id=1094115793]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_10" unique_id=730564012]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_10" unique_id=129393414]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_11" type="StaticBody3D" parent="Boxes" unique_id=625044065]
+[node name="old_oak_lookout_step_11" type="StaticBody3D" parent="Boxes" unique_id=1138444865]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 13.55, -34)
 metadata/kind = "platform"
 metadata/toml_index = 40
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_11" unique_id=1218023313]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_11" unique_id=1885559253]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_11" unique_id=1891890306]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_11" unique_id=1681436138]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_12" type="StaticBody3D" parent="Boxes" unique_id=1065512071]
+[node name="old_oak_lookout_step_12" type="StaticBody3D" parent="Boxes" unique_id=759287896]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 14.8, -35)
 metadata/kind = "platform"
 metadata/toml_index = 41
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_12" unique_id=477406815]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_12" unique_id=180684657]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_12" unique_id=1273468215]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_12" unique_id=909746333]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_13" type="StaticBody3D" parent="Boxes" unique_id=1848398321]
+[node name="old_oak_lookout_step_13" type="StaticBody3D" parent="Boxes" unique_id=978926352]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 16.05, -36)
 metadata/kind = "platform"
 metadata/toml_index = 42
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_13" unique_id=467685054]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_13" unique_id=1387107090]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_13" unique_id=1211647686]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_13" unique_id=1072054584]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_14" type="StaticBody3D" parent="Boxes" unique_id=344679233]
+[node name="old_oak_lookout_step_14" type="StaticBody3D" parent="Boxes" unique_id=138516352]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 17.3, -37)
 metadata/kind = "platform"
 metadata/toml_index = 43
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_14" unique_id=352862514]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_14" unique_id=1143860684]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_14" unique_id=338307982]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_14" unique_id=52094834]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_15" type="StaticBody3D" parent="Boxes" unique_id=312474876]
+[node name="old_oak_lookout_step_15" type="StaticBody3D" parent="Boxes" unique_id=1086928308]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 18.55, -38)
 metadata/kind = "platform"
 metadata/toml_index = 44
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_15" unique_id=1226234987]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_15" unique_id=1111485806]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_15" unique_id=306023456]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_15" unique_id=726443601]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout_step_16" type="StaticBody3D" parent="Boxes" unique_id=878354655]
+[node name="old_oak_lookout_step_16" type="StaticBody3D" parent="Boxes" unique_id=230573823]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 19.8, -39)
 metadata/kind = "platform"
 metadata/toml_index = 45
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_16" unique_id=663301971]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout_step_16" unique_id=1718717847]
 mesh = SubResource("BoxMesh_21")
 surface_material_override/0 = SubResource("StandardMaterial3D_13")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_16" unique_id=601456422]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout_step_16" unique_id=711922484]
 shape = SubResource("BoxShape3D_21")
 
-[node name="old_oak_lookout" type="StaticBody3D" parent="Boxes" unique_id=532601798]
+[node name="old_oak_lookout" type="StaticBody3D" parent="Boxes" unique_id=83924189]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 19.8, -44)
 metadata/kind = "platform"
 metadata/toml_index = 46
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout" unique_id=1469299990]
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_lookout" unique_id=1240669536]
 mesh = SubResource("BoxMesh_22")
 surface_material_override/0 = SubResource("StandardMaterial3D_14")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout" unique_id=239245454]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_lookout" unique_id=825716993]
 shape = SubResource("BoxShape3D_22")
 
-[node name="Props" type="Node3D" parent="." unique_id=1205374260]
+[node name="Props" type="Node3D" parent="." unique_id=2052903865]
 
-[node name="old_oak_grove_tree_1" type="Node3D" parent="Props" unique_id=1054561932 instance=ExtResource("4_bjeld")]
+[node name="old_oak_grove_tree_1" type="Node3D" parent="Props" unique_id=1365901679 instance=ExtResource("4_bjeld")]
 transform = Transform3D(-1.354983, 0, 2.987042, 0, 3.28, 0, -2.987042, 0, -1.354983, -335.832, 0, -32.878)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_15" type="Node3D" parent="Props" unique_id=351557290 instance=ExtResource("5_233rx")]
+[node name="old_oak_grove_tree_15" type="Node3D" parent="Props" unique_id=1970743270 instance=ExtResource("5_233rx")]
 transform = Transform3D(-0.480165, 0, 3.910632, 0, 3.94, 0, -3.910632, 0, -0.480165, -311.14, 0, -5.53)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_17" type="Node3D" parent="Props" unique_id=765728259 instance=ExtResource("4_bjeld")]
+[node name="old_oak_grove_tree_17" type="Node3D" parent="Props" unique_id=1222930555 instance=ExtResource("4_bjeld")]
 transform = Transform3D(2.970076, 0, -1.980795, 0, 3.57, 0, 1.980795, 0, 2.970076, -322.482, 0, -14.878)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_25" type="Node3D" parent="Props" unique_id=784566782 instance=ExtResource("6_wn8uf")]
+[node name="old_oak_grove_tree_25" type="Node3D" parent="Props" unique_id=539438755 instance=ExtResource("6_wn8uf")]
 transform = Transform3D(-0.855865, 0, 3.958534, 0, 4.05, 0, -3.958534, 0, -0.855865, -298.065, 0, -73.197)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_27" type="Node3D" parent="Props" unique_id=1888204293 instance=ExtResource("5_233rx")]
+[node name="old_oak_grove_tree_27" type="Node3D" parent="Props" unique_id=346593953 instance=ExtResource("5_233rx")]
 transform = Transform3D(-0.145476, 0, -3.967334, 0, 3.97, 0, 3.967334, 0, -0.145476, -330.877, 0, -51.562)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_30" type="Node3D" parent="Props" unique_id=1579201267 instance=ExtResource("7_t17cr")]
+[node name="old_oak_grove_tree_30" type="Node3D" parent="Props" unique_id=191486400 instance=ExtResource("7_t17cr")]
 transform = Transform3D(0.518189, 0, -3.936036, 0, 3.97, 0, 3.936036, 0, 0.518189, -268.059, 0, -57.962)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_31" type="Node3D" parent="Props" unique_id=422621408 instance=ExtResource("7_t17cr")]
+[node name="old_oak_grove_tree_31" type="Node3D" parent="Props" unique_id=582765964 instance=ExtResource("7_t17cr")]
 transform = Transform3D(-0.11361, 0, -4.648612, 0, 4.65, 0, 4.648612, 0, -0.11361, -277.526, 0, -33.725)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_32" type="Node3D" parent="Props" unique_id=296385933 instance=ExtResource("4_bjeld")]
+[node name="old_oak_grove_tree_32" type="Node3D" parent="Props" unique_id=2062971644 instance=ExtResource("4_bjeld")]
 transform = Transform3D(-4.472225, 0, -1.770679, 0, 4.81, 0, 1.770679, 0, -4.472225, -326.913, 0, -5.047)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_36" type="Node3D" parent="Props" unique_id=926851135 instance=ExtResource("4_bjeld")]
+[node name="old_oak_grove_tree_36" type="Node3D" parent="Props" unique_id=248011863 instance=ExtResource("4_bjeld")]
 transform = Transform3D(-4.049698, 0, -0.049479, 0, 4.05, 0, 0.049479, 0, -4.049698, -268.119, 0, -33.476)
 metadata/snap = true
 
-[node name="old_oak_grove_tree_41" type="Node3D" parent="Props" unique_id=1185622525 instance=ExtResource("7_t17cr")]
+[node name="old_oak_grove_tree_41" type="Node3D" parent="Props" unique_id=462516236 instance=ExtResource("7_t17cr")]
 transform = Transform3D(3.127918, 0, 2.157806, 0, 3.8, 0, -2.157806, 0, 3.127918, -307.561, 0, -23.111)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_1" type="Node3D" parent="Props" unique_id=1509746275 instance=ExtResource("8_pl7el")]
+[node name="old_oak_grove_stump_1" type="Node3D" parent="Props" unique_id=1354015884 instance=ExtResource("8_pl7el")]
 transform = Transform3D(1.553622, 0, 3.346992, 0, 3.69, 0, -3.346992, 0, 1.553622, -317.302, 0, -61.512)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_3" type="Node3D" parent="Props" unique_id=2038617487 instance=ExtResource("8_pl7el")]
+[node name="old_oak_grove_stump_3" type="Node3D" parent="Props" unique_id=998970794 instance=ExtResource("8_pl7el")]
 transform = Transform3D(0.810104, 0, 3.023348, 0, 3.13, 0, -3.023348, 0, 0.810104, -286.035, 0, -25.452)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_7" type="Node3D" parent="Props" unique_id=701263304 instance=ExtResource("8_pl7el")]
+[node name="old_oak_grove_stump_7" type="Node3D" parent="Props" unique_id=1499553072 instance=ExtResource("8_pl7el")]
 transform = Transform3D(-0.623654, 0, 2.482872, 0, 2.56, 0, -2.482872, 0, -0.623654, -307.158, 0, -11.078)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_9" type="Node3D" parent="Props" unique_id=349267352 instance=ExtResource("9_2psu7")]
+[node name="old_oak_grove_stump_9" type="Node3D" parent="Props" unique_id=1407383818 instance=ExtResource("9_2psu7")]
 transform = Transform3D(-2.565328, 0, -2.610497, 0, 3.66, 0, 2.610497, 0, -2.565328, -322.128, 0, -16.168)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_14" type="Node3D" parent="Props" unique_id=48235044 instance=ExtResource("10_6apes")]
+[node name="old_oak_grove_stump_14" type="Node3D" parent="Props" unique_id=1910460966 instance=ExtResource("10_6apes")]
 transform = Transform3D(-2.000172, 0, -1.813646, 0, 2.7, 0, 1.813646, 0, -2.000172, -276.468, 0, -10.558)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_16" type="Node3D" parent="Props" unique_id=2042400344 instance=ExtResource("8_pl7el")]
+[node name="old_oak_grove_stump_16" type="Node3D" parent="Props" unique_id=1513313653 instance=ExtResource("8_pl7el")]
 transform = Transform3D(-1.01882, 0, 3.484093, 0, 3.63, 0, -3.484093, 0, -1.01882, -282.242, 0, -79.051)
 metadata/snap = true
 
-[node name="old_oak_grove_stump_18" type="Node3D" parent="Props" unique_id=696206199 instance=ExtResource("10_6apes")]
+[node name="old_oak_grove_stump_18" type="Node3D" parent="Props" unique_id=1533015347 instance=ExtResource("10_6apes")]
 transform = Transform3D(-0.307103, 0, 2.873637, 0, 2.89, 0, -2.873637, 0, -0.307103, -339.276, 0, -69.934)
 metadata/snap = true
 
-[node name="old_oak_old_oak" type="Node3D" parent="Props" unique_id=690655588 instance=ExtResource("11_pu5rb")]
+[node name="old_oak_old_oak" type="Node3D" parent="Props" unique_id=325112054 instance=ExtResource("11_pu5rb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272, -0.1, -13)
 
-[node name="old_oak_root_1" type="Node3D" parent="Props" unique_id=2022394860 instance=ExtResource("12_on7tl")]
+[node name="old_oak_root_1" type="Node3D" parent="Props" unique_id=1708924473 instance=ExtResource("12_on7tl")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -278.6, 0.2, -6.6)
 
-[node name="old_oak_root_2" type="Node3D" parent="Props" unique_id=1515374536 instance=ExtResource("12_on7tl")]
+[node name="old_oak_root_2" type="Node3D" parent="Props" unique_id=246873328 instance=ExtResource("12_on7tl")]
 transform = Transform3D(0, 0, 3, 0, 3, 0, -3, 0, 0, -265.4, 0.2, -6.6)
 
-[node name="old_oak_bed_moss_1" type="Node3D" parent="Props" unique_id=299170402 instance=ExtResource("13_3h5jp")]
+[node name="old_oak_bed_moss_1" type="Node3D" parent="Props" unique_id=726173953 instance=ExtResource("13_3h5jp")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -277.5, 0.45, -5.6)
 
-[node name="old_oak_bed_flower_1" type="Node3D" parent="Props" unique_id=130706155 instance=ExtResource("14_gs3fn")]
+[node name="old_oak_bed_flower_1" type="Node3D" parent="Props" unique_id=387460892 instance=ExtResource("14_gs3fn")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -276.4, 0.45, -4)
 
-[node name="old_oak_bed_moss_2" type="Node3D" parent="Props" unique_id=2018502485 instance=ExtResource("13_3h5jp")]
+[node name="old_oak_bed_moss_2" type="Node3D" parent="Props" unique_id=1008484716 instance=ExtResource("13_3h5jp")]
 transform = Transform3D(1.732051, 0, 1, 0, 2, 0, -1, 0, 1.732051, -275, 0.45, -5.6)
 
-[node name="old_oak_bed_flower_2" type="Node3D" parent="Props" unique_id=953507012 instance=ExtResource("14_gs3fn")]
+[node name="old_oak_bed_flower_2" type="Node3D" parent="Props" unique_id=353480534 instance=ExtResource("14_gs3fn")]
 transform = Transform3D(1.931852, 0, 0.517638, 0, 2, 0, -0.517638, 0, 1.931852, -273.9, 0.45, -4)
 
-[node name="old_oak_bed_moss_3" type="Node3D" parent="Props" unique_id=1500836514 instance=ExtResource("13_3h5jp")]
+[node name="old_oak_bed_moss_3" type="Node3D" parent="Props" unique_id=1281377311 instance=ExtResource("13_3h5jp")]
 transform = Transform3D(1, 0, 1.732051, 0, 2, 0, -1.732051, 0, 1, -270, 0.45, -5.6)
 
-[node name="old_oak_bed_flower_3" type="Node3D" parent="Props" unique_id=1433599392 instance=ExtResource("14_gs3fn")]
+[node name="old_oak_bed_flower_3" type="Node3D" parent="Props" unique_id=1445026524 instance=ExtResource("14_gs3fn")]
 transform = Transform3D(1.732051, 0, 1, 0, 2, 0, -1, 0, 1.732051, -268.9, 0.45, -4)
 
-[node name="old_oak_deco_2" type="Node3D" parent="Props" unique_id=26332868 instance=ExtResource("15_yvgui")]
+[node name="old_oak_deco_2" type="Node3D" parent="Props" unique_id=524315552 instance=ExtResource("15_yvgui")]
 transform = Transform3D(2.298133, 0, 1.928363, 0, 3, 0, -1.928363, 0, 2.298133, -265.4, 0.15, -3.5)
 
-[node name="old_oak_deco_3" type="Node3D" parent="Props" unique_id=2007668434 instance=ExtResource("10_6apes")]
+[node name="old_oak_deco_3" type="Node3D" parent="Props" unique_id=1486920900 instance=ExtResource("10_6apes")]
 transform = Transform3D(0.520945, 0, 2.954423, 0, 3, 0, -2.954423, 0, 0.520945, -278.7, 0.15, -3.6)
 
-[node name="old_oak_stool" type="Node3D" parent="Props" unique_id=620250967 instance=ExtResource("16_uqg0g")]
+[node name="old_oak_stool" type="Node3D" parent="Props" unique_id=850880472 instance=ExtResource("16_uqg0g")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -268.2, 0.15, -5.5)
 
-[node name="Pois" type="Node3D" parent="." unique_id=295946644]
+[node name="Pois" type="Node3D" parent="." unique_id=1013386711]
 
-[node name="old_oak_root_caves" type="Node3D" parent="Pois" unique_id=1839770571]
+[node name="old_oak_root_caves" type="Node3D" parent="Pois" unique_id=1359123717]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272, 0, 0)
 metadata/center = Vector3(-312, 0, -44)
 metadata/radius = 24
 
-[node name="cave_mush_1" type="Node3D" parent="Pois/old_oak_root_caves" unique_id=1319990727 instance=ExtResource("17_0uu3l")]
+[node name="cave_mush_1" type="Node3D" parent="Pois/old_oak_root_caves" unique_id=790495865 instance=ExtResource("17_0uu3l")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -46, 0, -40)
 
-[node name="cave_mush_2" type="Node3D" parent="Pois/old_oak_root_caves" unique_id=1494356363 instance=ExtResource("17_0uu3l")]
+[node name="cave_mush_2" type="Node3D" parent="Pois/old_oak_root_caves" unique_id=1728738112 instance=ExtResource("17_0uu3l")]
 transform = Transform3D(1.02606, 0, 2.819078, 0, 3, 0, -2.819078, 0, 1.02606, -42, 0, -40)
 
-[node name="cave_mush_3" type="Node3D" parent="Pois/old_oak_root_caves" unique_id=1556062198 instance=ExtResource("17_0uu3l")]
+[node name="cave_mush_3" type="Node3D" parent="Pois/old_oak_root_caves" unique_id=1584879861 instance=ExtResource("17_0uu3l")]
 transform = Transform3D(-2.298133, 0, 1.928363, 0, 3, 0, -1.928363, 0, -2.298133, -38, 0, -40)
 
-[node name="cave_mush_4" type="Node3D" parent="Pois/old_oak_root_caves" unique_id=180481515 instance=ExtResource("17_0uu3l")]
+[node name="cave_mush_4" type="Node3D" parent="Pois/old_oak_root_caves" unique_id=726114064 instance=ExtResource("17_0uu3l")]
 transform = Transform3D(-2.598076, 0, -1.5, 0, 3, 0, 1.5, 0, -2.598076, -34, 0, -40)
 
-[node name="old_oak_lookout" type="Node3D" parent="Pois" unique_id=142050732]
+[node name="old_oak_lookout" type="Node3D" parent="Pois" unique_id=2126969374]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272, 0, 0)
 metadata/center = Vector3(-258, 20, -40)
 metadata/radius = 20
