@@ -1429,6 +1429,12 @@
       "step": "OW5a",
       "type": "feature",
       "summary": "Instanced interiors: Interiors (child of OpenWorld) loads an interior on a thread at y -2000 below the streamed world, emits fade (0.3 s) and slow_load (>250 ms, the loading-screen hook), lands the party inside the matching exit and back out at the linked world marker inset 2.5 m clear of the door; InteriorDoor triggers (host only in co-op). Mage Association front door at the town's to_association marker, back door at the town's to_landfill road. The interior's WorldEnvironment and Sun are dropped. tests/unit/test_interiors.gd. Breach rooms are OW5b; the fade/loading UI is not wired yet."
+    },
+    {
+      "time": "2026-10-27T02:56-05:00",
+      "step": "OW5a",
+      "type": "test",
+      "summary": "rt10 failed test_world_nav (the default navigation map held other tests' regions); the test now queries a private map (852d623). rt11: run_tests.sh 558 passed, 0 failed, EXIT 0."
     }
   ],
   "completed_steps": [
