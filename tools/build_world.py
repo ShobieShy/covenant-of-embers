@@ -95,10 +95,39 @@ def world_layers(zones):
     return out
 
 
+# Terrain3D renders a full 255 blend black at some texels; stay just under it.
+BLEND_MAX = 240
+# OW11 polish: the strip between two zones meets in a shared transition material (docs/OPEN_WORLD_PLAN.md
+# section 2: Eldoria -> mud -> Landfill; the dirt texture is near-flat tan and read as a placeholder, Landfill -> ash -> Breach), so each side blends its own flat
+# layer into it and the midline is the same on both sides: no seam, no straight two-texture smear.
+STRIP_MID = {
+    frozenset(("town_square", "old_oak")): "grass",
+    frozenset(("town_square", "midden")): "mud_filth",
+    frozenset(("old_oak", "midden")): "mud_filth",
+    frozenset(("midden", "breach")): "ash_scorched",
+    frozenset(("town_square", "breach")): "ash_scorched",
+}
+# OW11 polish: zone paint overrides for the world. "pad": [base, overlay] for the walkable pads (the
+# Landfill's flat tan dirt read as placeholder squares); "patch": a ground layer broken into noise
+# patches on the flats; "feather": metres the pad layer bleeds past the pad edge.
+ZONE_PAINT = {
+    "midden": {"pad": ["mud_filth", "rubble_junk"], "patch": "mud_filth", "feather": 3.0},
+}
+
+
+def smooth_noise(shape, cell, seed):
+    """Deterministic value noise in [-1, 1] with features about `cell` samples wide."""
+    from scipy import ndimage
+    rng = np.random.default_rng(seed)
+    n = ndimage.gaussian_filter(rng.standard_normal(shape).astype(np.float32), cell, mode="wrap")
+    return np.clip(n / max(float(np.abs(n).max()), 1e-6), -1, 1)
+
+
 def paint(zones, owner, xs, zs, layers):
-    """OW2 control map: zone cells keep their own paint (ids remapped to the world layer list,
-    auto-shader cells made explicit: flat layer 0 / slope layer 1 by the zone's own slope);
-    the strips between zones blend the nearest zone's flat layer into the next one's."""
+    """OW2 control map, OW11 polish: zone cells keep their own paint (ids remapped to the world layer
+    list, auto-shader cells made explicit: flat layer 0 / slope layer 1 by the zone's own slope, with
+    ZONE_PAINT overrides); the strips between zones blend each zone's flat layer into the pair's
+    STRIP_MID material, broken up by noise."""
     from scipy import ndimage
     t = [z for z in zones if z.get("terrain")]
     nz, nx = owner.shape
@@ -109,10 +138,20 @@ def paint(zones, owner, xs, zs, layers):
     order = np.argsort(dist, 0)
     d1 = np.take_along_axis(dist, order[:1], 0)[0]
     d2 = np.take_along_axis(dist, order[1:2], 0)[0] if len(t) > 1 else d1 + 1
+    noise = smooth_noise((nz, nx), 6.0, 11)
+    fine = smooth_noise((nz, nx), 2.0, 12)
     flat = np.array([layers.index(z["layers"][0]) for z in t], np.uint32)
-    blend = np.clip(255 * d1 / np.maximum(d1 + d2, 1e-3), 0, 127).astype(np.uint32)
-    ctl[:] = (flat[order[0]] << LAYER_SHIFT) | (flat[order[1] if len(t) > 1 else order[0]] << OVER_SHIFT)
-    ctl |= blend << BLEND_SHIFT | NAV  # 0 at the zone edge, 127 (even mix) at the midline: no seam
+    a = order[0]
+    b = order[1] if len(t) > 1 else order[0]
+    mid = np.zeros((len(t), len(t)), np.uint32)
+    for i, zi in enumerate(t):
+        for j, zj in enumerate(t):
+            m = STRIP_MID.get(frozenset((zi.get("id", ""), zj.get("id", ""))))
+            mid[i, j] = layers.index(m) if m in layers else flat[j]
+    f = d1 / np.maximum(d1 + d2, 1e-3)  # 0 at the zone edge, 0.5 at the midline
+    blend = np.clip(2 * f * 255 + noise * 70 + fine * 25, 0, BLEND_MAX).astype(np.uint32)
+    blend[f >= 0.45] = BLEND_MAX  # both sides show only the shared material at the midline
+    ctl[:] = (flat[a] << LAYER_SHIFT) | (mid[a, b] << OVER_SHIFT) | (blend << BLEND_SHIFT) | NAV
     for k, z in enumerate(t):
         if "c" not in z:
             continue
@@ -131,8 +170,28 @@ def paint(zones, owner, xs, zs, layers):
         sl = remap[min(1, len(z["layers"]) - 1)]
         fl = remap[0]
         bl = np.clip((slope - 0.6) / 0.8 * 255, 0, 255).astype(np.uint32)
-        out = np.where(auto, (fl << LAYER_SHIFT) | (sl << OVER_SHIFT) | (bl << BLEND_SHIFT) | NAV,
+        ov = np.full(bl.shape, sl, np.uint32)
+        cfg = ZONE_PAINT.get(z.get("id", ""), {})
+        nzk, fzk = noise[iz, ix], fine[iz, ix]
+        if "patch" in cfg:  # noise patches of a second ground layer where the slope layer is absent
+            pb = np.clip((nzk * 0.7 + fzk * 0.3 - 0.05) * 400, 0, 200).astype(np.uint32)
+            use = bl == 0
+            ov = np.where(use, layers.index(cfg["patch"]), ov)
+            bl = np.where(use, pb, bl)
+        out = np.where(auto, (fl << LAYER_SHIFT) | (ov << OVER_SHIFT) | (bl << BLEND_SHIFT) | NAV,
                        (base << LAYER_SHIFT) | (base << OVER_SHIFT) | NAV)
+        if "pad" in cfg:
+            pad = ~auto
+            pb_, po = layers.index(cfg["pad"][0]), layers.index(cfg["pad"][1])
+            pbl = np.clip(45 + nzk * 45 + fzk * 40, 0, 160).astype(np.uint32)
+            out = np.where(pad, (pb_ << LAYER_SHIFT) | (po << OVER_SHIFT) | (pbl << BLEND_SHIFT) | NAV, out)
+            grid = np.zeros((nz, nx), bool)
+            grid[iz[pad], ix[pad]] = True
+            dpad = ndimage.distance_transform_edt(~grid)[iz, ix] * SPACING
+            fe = cfg.get("feather", 0.0)
+            edge = auto & (dpad > 0) & (dpad < fe) & (bl < 128)
+            eb = np.clip(BLEND_MAX * (1 - dpad / max(fe, 1e-3)) + fzk * 60, 0, BLEND_MAX).astype(np.uint32)
+            out = np.where(edge, (fl << LAYER_SHIFT) | (pb_ << OVER_SHIFT) | (eb << BLEND_SHIFT) | NAV, out)
         ctl[iz, ix] = out
     return ctl
 

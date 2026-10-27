@@ -6,6 +6,9 @@ const VIEWS := [
 	["town_to_midden", Vector3(300, 120, 260), Vector3(420, 0, -100)],
 	["midden_to_breach", Vector3(1000, 90, 220), Vector3(980, 0, -60)],
 	["oak_to_town", Vector3(-150, 70, 180), Vector3(-150, 0, 0)],
+	["landfill", Vector3(576, 90, -120), Vector3(576, 0, 40)],  # OW11 polish
+	["landfill_pads_low", Vector3(565, 14, -205), Vector3(576, 0, -160)],
+	["town_pads_low", Vector3(-10, 10, 30), Vector3(0, 0, 0)],
 ]
 
 
