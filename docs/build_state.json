@@ -1488,6 +1488,11 @@
       "date": "2026-10-27",
       "step": "OW10a",
       "note": "Arena walls also drop on the Filth's death (914ec61); bot fights inside raised walls before return_to_bob, and skips allies in breach_fight/follow_host (rt23: unit 573 ok, intro ok, co-op host breach_fight timeout, suspected ally target). SaveMigration: 0.1.4 level saves -> progress.world_pos/region/fog/world_v=2 (additive; level_id kept, SaveGame.VERSION unchanged), test_save_migration over saves_v1 fixtures. Not wired into main.gd yet; intro flow pending."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "OW10b",
+      "note": "Restored step 118 test_save_migration.gd (bb4da55 had overwritten it: unit count 573->570); OW10 migration tests now test_world_save_migration.gd. WorldSession: start spot (fresh intro -> Mage Association interior, skip -> Old Oak entrance, saves -> migrated world_pos; mid-intro Association saves resume indoors), capture/restore of world_pos/region/fog/interior. main.gd: opt-in GameFlow.open_world / --open-world adds OpenWorld, restores fog, places the player, merges world keys into progress(); default stays on levels."
     }
   ],
   "completed_steps": [

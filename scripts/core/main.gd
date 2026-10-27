@@ -227,6 +227,8 @@ func _setup_flow(player: Player) -> void:
 				breach.restore_open()   # step 47: rooms cleared, gate + vault stay open
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
 	_spawn_at_anchor(player, saved_progress)
+	if GameFlow.open_world or OS.get_cmdline_user_args().has("--open-world"):
+		_enter_open_world(player, {"progress": saved_progress} if not saved_progress.is_empty() else {})
 	if fresh:
 		_apply_new_identity(player)
 		if not Coop.is_client():
@@ -507,10 +509,14 @@ func _on_coop_ended(reason: String) -> void:
 
 func progress() -> Dictionary:
 	var player := get_node_or_null("Player") as Node3D
-	return {"level_id": GameFlow.id_of($Level), "vault_open": breach.open if breach else false,
+	var d := {"level_id": GameFlow.id_of($Level), "vault_open": breach.open if breach else false,
 		"anchor": MapAnchors.nearest($Level, player.global_position) if player else "",
 		"map_version": MapAnchors.version_of($Level),
 		"flags": story_flags.to_dict(), "quests": quests.to_dict() if quests else {}}
+	var ow := get_node_or_null("OpenWorld") as OpenWorld
+	if ow and player:
+		d.merge(WorldSession.capture(ow, player.global_position), true)  # OW10
+	return d
 
 func save_game() -> Error:
 	var player := get_node_or_null("Player") as Player
@@ -528,6 +534,27 @@ func save_game() -> Error:
 	var err := SaveGame.write(SaveGame.capture(player, progress()), GameFlow.save_path)
 	print("[save] wrote %s: %s" % [GameFlow.save_path, error_string(err)])
 	return err
+
+## OW10: the seamless world around the player, its fog from the save, and the start spot
+## (plan section 9: a played intro opens in the Association interior).
+func _enter_open_world(player: Player, data: Dictionary) -> void:
+	var ow := OpenWorld.new()
+	ow.name = "OpenWorld"
+	add_child(ow)
+	WorldSession.restore(ow, data)
+	var mode := GameFlow.intro_mode if not GameFlow.intro_mode.is_empty() else GameFlow.INTRO_PLAY
+	var at := WorldSession.start_spot(data, mode)
+	if String(at["interior"]) != "":
+		ow.interiors.enter(String(at["interior"]))
+		print("[world] start inside %s" % at["interior"])
+		return
+	var p: Vector3 = at["pos"]
+	var h := ow.height_at(p.x, p.z)
+	if not is_nan(h):
+		p.y = h
+	player.spawn(p, player.rotation.y)
+	print("[world] start at (%.0f, %.0f, %.0f)" % [p.x, p.y, p.z])
+
 
 ## Autosave, then load `to` with the saved state.
 func travel(to: String, anchor := "") -> void:
