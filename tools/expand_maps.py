@@ -408,6 +408,9 @@ def breach() -> Map:
         m.box(f"ossuary_bones_{i + 1}", "heap", [x, 0.4, z], [2.4, 0.8, 1.6], [0.62, 0.58, 0.5])
     # The stair north (20 x 0.2 m steps under the nav climb) up to the 4 m upper level.
     m.stairs("annex_stair", -22, 59, 4.0, 20, (0.0, -0.6), 3.0, BRICK)
+    # OW11b: top step 0.2 m deeper so it meets annex_upper (z 46); the 0.1 m slit cut the loft off the navmesh
+    m.out[-1] = m.out[-1].replace("center = [-22.0, 3.8, 47.6]\nsize = [3.0, 0.4, 3.0]",
+                                  "center = [-22.0, 3.8, 47.5]\nsize = [3.0, 0.4, 3.2]")
     m.wall("stair_wall_w", [-24, 3, 52.5], [1, 6, 14], BRICK)
     m.wall("stair_wall_e", [-20, 3, 52.5], [1, 6, 14], BRICK)
     m.pad("annex_base", -21.5, 32, 17, 56, [0.3, 0.28, 0.3])  # keeps the heightfield flat under the upper level
