@@ -530,6 +530,8 @@ func _on_coop_ended(reason: String) -> void:
 	if coop and not coop.host:
 		save_game()  # step 91: the client keeps its character
 	Coop.end(reason)
+	if PlaytestBot.finished:  # OW11c-6: the bot is quitting; no menu, no re-host/re-join
+		return
 	GameFlow.to_menu(get_tree())
 
 

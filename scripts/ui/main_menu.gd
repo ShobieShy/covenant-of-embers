@@ -101,7 +101,7 @@ func _ready() -> void:
 	coop_menu.visible = false
 	add_child(coop_menu)
 	var coop_opts := Coop.parse_args(OS.get_cmdline_user_args())
-	if coop_opts["mode"] != "":  # step 88: --host / --join
+	if coop_opts["mode"] != "" and not PlaytestBot.finished:  # step 88: --host / --join
 		coop_menu.auto.call_deferred(coop_opts)
 	var launch_lobby := LobbyBackend.launch_lobby(OS.get_cmdline_args())  # step 89: Steam join-on-launch
 	if launch_lobby != 0:

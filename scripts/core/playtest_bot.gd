@@ -30,6 +30,7 @@ static var stats := {
 }
 static var log_lines := PackedStringArray()
 static var save_cleared := false  ## QA: main_menu cleared the bot save this process
+static var finished := false  ## OW11c-6: set once the bot has logged its result
 static var coop_started := false
 static var brand_turn := 0  ## step 143: next brand in the staff rotation
 static var brands_used := PackedStringArray()
@@ -223,6 +224,15 @@ func _finish(ok: bool, why := "") -> void:
 	if ok and Coop.is_host():
 		Coop.session.send("bot_done", {})  # step 93: let the joiner finish before we drop the link
 		await get_tree().create_timer(1.0).timeout
+	# OW11c-6: clean shutdown. End the co-op session (closes the ENet peer), then let a few
+	# frames run so queued frees settle before quit (joiner died with a heap double free).
+	if Coop.session != null and is_instance_valid(Coop.session):
+		if cw and is_instance_valid(cw):
+			cw.set_physics_process(false)
+		finished = true  # guard: main/menu must not re-host or re-join after this
+		Coop.end("done")
+		for i in 5:
+			await get_tree().process_frame
 	get_tree().quit.call_deferred(0 if ok else 1)
 
 

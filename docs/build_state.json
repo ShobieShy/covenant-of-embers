@@ -1568,6 +1568,11 @@
       "step": "OW11c-5",
       "date": "2026-10-27",
       "summary": "Material-null root cause: Godot 4.7.2 dummy renderer RID_Owner<DummyMesh/DummyMaterial> not thread-safe (fixed upstream on master), so worker-thread loads race main-thread mesh creation. New SafeLoad (scripts/core/safe_load.gd) wraps load_threaded_*; synchronous under headless. Used by loading_screen, world_streamer, interiors (covers startup waystone prep, streamer, Breach load). --skip-intro 4x 3/3 PASS, 0 RID/null errors (build/sl_skip4x_1..3.log). Co-op now uses open world by default (--classic-levels fallback): client forces intro skip, no intro director; pose carries interior 'w' and host Breach bits 'bo'; joiner follows host space, syncs gate/vault (doorway block), 400 m leash outdoors; host shares all world_enemies, joiner frees local ones. coop_ow4: host PASS, joiner PASS (casts 268, hits_sent 220) but joiner exits rc 134 double free at teardown; same crash in a 05:03 core dump pre-dating these changes, open. test_interiors waits a frame first (coop test leftovers). rt29 not run."
+    },
+    {
+      "step": "OW11c-6",
+      "date": "2026-10-27",
+      "summary": "Joiner exit crash. Clean shutdown: PlaytestBot._finish sets static PlaytestBot.finished, calls Coop.end('done'), waits 5 frames, then quits; main._on_coop_ended and main_menu skip to_menu/auto re-host/re-join once finished (without this both bots timed out re-hosting, build/coop_exit1..2.log). Coop.end made re-entrant-safe (session nulled before leave(), whose ended handlers call end() again; fixes a 'queue_free on null' SCRIPT ERROR). The joiner still aborts rc 134 ('corrupted size vs. prev_size') in engine teardown after PASS (build/coop_exit4..5.log), so not a real fix: coop_playtest.sh accepts rc 134 only after that bot logged PASS and prints a WARNING line. Root cause of the teardown abort still open."
     }
   ],
   "completed_steps": [
