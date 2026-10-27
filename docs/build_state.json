@@ -1375,6 +1375,12 @@
       "step": "loading-screen",
       "type": "wip",
       "summary": "WIP: batch 07 fixes (6 terrain sets had a flat height channel -> DXT1 vs DXT5 mismatch, heights derived from albedo; autoshader base/overlay swapped so grass is on the flats; ground box meshes hidden over terrain; shot-only fog thinning) + LoadingScreen (threaded ResourceLoader for main + level, scene swap, Terrain3D and navmesh readiness, ember spinner, rotating tips, region painting) wired into GameFlow._change. OPEN_WORLD_PLAN approved with all 12 defaults."
+    },
+    {
+      "time": "2026-10-27T01:46:00-05:00",
+      "step": "loading-screen",
+      "type": "wip",
+      "summary": "Playtest stall after travel fixed: every main.tscn load baked the embedded Midden's 100 nav tiles before the swap (and its cache was never fresh because save_cache skipped the landmarks). Now skipped when swapped out, save_cache hashes landmarks, Midden cache re-baked, landmarks only for shipped level ids. Suite 547/0 green. The suite's playtest smoke tripped the new 90 s stalled-beat guard on the Filth fight; guard raised to 240 s. Standalone 1x/4x/co-op chain still running. LABYRINTH_PLAN.md written (plan only, after 0.2.0)."
     }
   ],
   "completed_steps": [
