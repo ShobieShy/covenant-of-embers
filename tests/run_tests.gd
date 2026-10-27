@@ -27,6 +27,7 @@ func _physics_process(_delta: float) -> bool:
 
 
 func _run_all() -> void:
+	GameFlow.open_world = false  # OW11c-3: unit tests build classic levels unless they opt in
 	var dir := DirAccess.open("res://tests/unit")
 	var files: Array[String] = []
 	for f in dir.get_files():

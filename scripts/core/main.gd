@@ -185,9 +185,15 @@ func _swap_level(id: String) -> void:
 	move_child(lv, 0)
 	QualityPresets.apply_level(lv)  # step 134
 
-## OW11a: the open world (GameFlow.open_world or --open-world).
+## OW11a: the open world (GameFlow.open_world or --open-world). OW11c-3: on by default;
+## --classic-levels falls back to the zone-by-zone levels.
 static func open_world_on() -> bool:
-	return GameFlow.open_world or OS.get_cmdline_user_args().has("--open-world")
+	var args := OS.get_cmdline_user_args()
+	if args.has("--classic-levels"):
+		return false
+	if args.has("--host") or args.has("--join"):
+		return args.has("--open-world")  # co-op isn't ported to the open world yet (joiner never synced)
+	return GameFlow.open_world or args.has("--open-world")
 
 
 ## OW11a: swaps the level for WorldZones.merged so every level system (spawner, NPCs,

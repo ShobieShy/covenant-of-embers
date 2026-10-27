@@ -1553,6 +1553,11 @@
       "step": "OW11c-2",
       "date": "2026-10-27",
       "summary": "WorldZones.merged() clears the owner of each reparented node (and its zone-owned descendants, and PlayerStart) before add_child, then re-owns them to the merged level: 0 owner-inconsistency warnings in build/ow_play25.log (open world, --skip-intro: PASS, 36 kills, 2 saves; 82 warnings in ow_intro11). Targeted tests 16/16 (world_zones, world_session, interiors, save_migration). terrain_zone.gd:181 load('') is Terrain3D 1.0.2's known load(\"res://\") pair, already whitelisted by run_tests.sh: left as is."
+    },
+    {
+      "step": "OW11c-3",
+      "date": "2026-10-27",
+      "summary": "Open world is the default: GameFlow.open_world = true; --classic-levels falls back to the level flow (main.open_world_on). Co-op started with --host/--join stays on classic levels unless --open-world is passed: in the open world the joiner never cast (coop_def1 FAIL), co-op isn't ported yet. tests/run_tests.gd sets GameFlow.open_world = false before the unit tests (they build classic levels; world tests opt in). Verified: tools/playtest.sh with no flag runs the open world, 13/13 intro beats + PASS (build/def_play1.log); --classic-levels PASS with private user:// (build/classic_play2.log); tools/coop_playtest.sh PASS (build/coop_def2.log); targeted tests 20/20. classic_play1 FAIL was a shared user://playtest_save.json clash with parallel runs (playtest flake, logged)."
     }
   ],
   "completed_steps": [
