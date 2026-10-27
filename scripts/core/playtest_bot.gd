@@ -253,7 +253,7 @@ func _client_done(why: String) -> void:
 
 func _follow_host() -> void:
 	var cw: CoopWorld = main.get(&"coop")
-	var e := nearest_enemy()
+	var e := nearest_enemy(true)
 	if e and e.global_position.distance_to(player.global_position) < 25.0:
 		fight(e)
 		return
@@ -475,7 +475,7 @@ func _physics_process(delta: float) -> void:
 				note("walked %.1f m" % moved)
 				_goto("midden_fight")
 		"midden_fight", "breach_fight":
-			var e := nearest_enemy()
+			var e := nearest_enemy(true)
 			if e:
 				fight(e)
 			elif stage == "midden_fight":

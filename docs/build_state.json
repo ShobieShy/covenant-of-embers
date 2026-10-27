@@ -1483,6 +1483,11 @@
       "date": "2026-10-27",
       "step": "OW9",
       "summary": "Co-op leash (scripts/world/coop_leash.gd): joiners get one warning past 300 m from the host and are pulled to 5 m beside the host (on their side, ground height) past 400 m; checked twice a second outdoors on the joiner. Host-side streaming: WorldStreamer.viewers adds RemotePlayers when hosting (cap 4 players) so cells and nav load around partners; EnemySleep wakes enemies near RemotePlayers (the old coop_avatars group was never populated)."
+    },
+    {
+      "date": "2026-10-27",
+      "step": "OW10a",
+      "note": "Arena walls also drop on the Filth's death (914ec61); bot fights inside raised walls before return_to_bob, and skips allies in breach_fight/follow_host (rt23: unit 573 ok, intro ok, co-op host breach_fight timeout, suspected ally target). SaveMigration: 0.1.4 level saves -> progress.world_pos/region/fog/world_v=2 (additive; level_id kept, SaveGame.VERSION unchanged), test_save_migration over saves_v1 fixtures. Not wired into main.gd yet; intro flow pending."
     }
   ],
   "completed_steps": [
