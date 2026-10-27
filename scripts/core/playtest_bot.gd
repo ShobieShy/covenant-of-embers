@@ -19,7 +19,14 @@ const REPLAN := 0.5
 static var stage := "midden_walk"
 static var total_time := 0.0
 static var stats := {
-	"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0, "teleports": 0, "looted_parts": 0
+	"kills": 0,
+	"pickups": 0,
+	"casts": 0,
+	"crafted": "",
+	"saves": 0,
+	"deaths": 0,
+	"teleports": 0,
+	"looted_parts": 0
 }
 static var log_lines := PackedStringArray()
 static var coop_started := false
@@ -43,7 +50,14 @@ static func reset_run() -> void:
 	stage = "midden_walk"
 	total_time = 0.0
 	stats = {
-		"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0, "teleports": 0, "looted_parts": 0
+		"kills": 0,
+		"pickups": 0,
+		"casts": 0,
+		"crafted": "",
+		"saves": 0,
+		"deaths": 0,
+		"teleports": 0,
+		"looted_parts": 0
 	}
 	log_lines = PackedStringArray()
 	brand_turn = 0
@@ -118,7 +132,10 @@ func spend_points() -> void:
 			var t := SkillTree.element_tree(el)
 			if t != null:
 				for sid in t.skills:
-					if sk.el_why_not(el, sid, lv).is_empty() and player.spend_element_skill(el, sid):
+					if (
+						sk.el_why_not(el, sid, lv).is_empty()
+						and player.spend_element_skill(el, sid)
+					):
 						spent = true
 						_used(el)
 						break
@@ -148,7 +165,11 @@ func _on_kill(e: Enemy, _el) -> void:
 	if e and e.def and not e.def.ai.is_empty():
 		stats["kills"] += 1
 		note("killed %s (%d) at %.1f s" % [e.def.id, stats["kills"], total_time])
-		if stats["kills"] % 2 == 0 and not Coop.is_client() and stage not in ["intro", "breach_craft", "craft"]:
+		if (
+			stats["kills"] % 2 == 0
+			and not Coop.is_client()
+			and stage not in ["intro", "breach_craft", "craft"]
+		):
 			next_brand()
 
 
@@ -257,12 +278,13 @@ func look_at_point(at: Vector3) -> void:
 	player.set_look(yaw, pitch)
 
 
-func nearest_enemy() -> Enemy:
+## `foes_only` skips corrupted allies (a converted gnawer nearer than the Filth used to stall the beat).
+func nearest_enemy(foes_only := false) -> Enemy:
 	var best: Enemy = null
 	var bd := INF
 	for n in get_tree().get_nodes_in_group(Enemy.GROUP):
 		var e := n as Enemy
-		if e == null or not e.alive() or e.def.ai.is_empty():
+		if e == null or not e.alive() or e.def.ai.is_empty() or (foes_only and e.is_ally()):
 			continue
 		var d := e.global_position.distance_to(player.global_position)
 		if d < bd:
@@ -313,7 +335,11 @@ func fight(e: Enemy) -> void:
 	if not has_line_to(aim):
 		walk_to(e.global_position)
 		return
-	if Engine.time_scale > 1.0 and _fight_stall > STALL_S and flat_distance(e.global_position) > 2.0:
+	if (
+		Engine.time_scale > 1.0
+		and _fight_stall > STALL_S
+		and flat_distance(e.global_position) > 2.0
+	):
 		walk_to(e.global_position, ["action_primary"])
 		look_at_point(aim)
 		if _tick % 2 == 1:
@@ -324,7 +350,11 @@ func fight(e: Enemy) -> void:
 	if e.global_position.distance_to(player.global_position) > 10.0:
 		held.append("forward")
 	var m := player.caster.fire_mode() if player.caster != null else null
-	if player.mana.value < 5.0 and player.loadout.active == Loadout.Slot.STAFF and not (m is HeatMode):
+	if (
+		player.mana.value < 5.0
+		and player.loadout.active == Loadout.Slot.STAFF
+		and not (m is HeatMode)
+	):
 		_input = PlayerInput.hold(held, ["slot_2"])
 	elif m is ChargeMode:  # step 143: hold to a full charge, then let go for one tick
 		if m.charge >= 1.0:
@@ -366,7 +396,9 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		_path = PackedVector3Array()
 		var nav := main.get_node_or_null("Level/Navigation") as LevelNavigation
 		if nav and nav.map_ready():
-			_path = NavigationServer3D.map_get_path(nav.get_navigation_map(), player.global_position, at, true)
+			_path = NavigationServer3D.map_get_path(
+				nav.get_navigation_map(), player.global_position, at, true
+			)
 	var next := at
 	var feet := player.global_position
 	# Step 118: start from the waypoint nearest the feet (a long, wiggly path otherwise hands back
@@ -394,7 +426,9 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		_replan_left = 0.0
 	if _unstick_s > 0.0:
 		_unstick_s -= dt
-		_input = PlayerInput.hold(["forward", "right" if int(total_time / 3.0) % 2 == 0 else "left"] + held, ["jump"])
+		_input = PlayerInput.hold(
+			["forward", "right" if int(total_time / 3.0) % 2 == 0 else "left"] + held, ["jump"]
+		)
 		return
 	_input = PlayerInput.hold(["forward"] + held)
 
@@ -410,7 +444,9 @@ func _physics_process(delta: float) -> void:
 	if player.alive():
 		t += delta  # step 93: stage timers pause while down / respawning (co-op last stand)
 	total_time += delta
-	stats["casts"] = maxi(stats["casts"], player.loadout.casters[0].casts + player.loadout.casters[1].casts)
+	stats["casts"] = maxi(
+		stats["casts"], player.loadout.casters[0].casts + player.loadout.casters[1].casts
+	)
 	if total_time > SIM_LIMIT:
 		_finish(false, "run over %.0f s in stage %s" % [SIM_LIMIT, stage])
 		return
@@ -477,10 +513,17 @@ func _physics_process(delta: float) -> void:
 			if not _reach(st) and t < 60.0 * _walk_scale():
 				# Snagged (loot / chest in the way): circle round the station after 15 s.
 				var k := int(t / (5.0 * _walk_scale()))
-				var off := Vector3.ZERO if t < 15.0 * _walk_scale() else Vector3(1.5, 0, 0).rotated(Vector3.UP, k * 1.7)
+				var off := (
+					Vector3.ZERO
+					if t < 15.0 * _walk_scale()
+					else Vector3(1.5, 0, 0).rotated(Vector3.UP, k * 1.7)
+				)
 				walk_to(st.global_position + off)
 			elif not _reach(st):
-				_finish(false, "could not walk to the station (%.1f m)" % flat_distance(st.global_position))
+				_finish(
+					false,
+					"could not walk to the station (%.1f m)" % flat_distance(st.global_position)
+				)
 				return
 			else:
 				_craft(st)
@@ -504,14 +547,20 @@ func _physics_process(delta: float) -> void:
 			var c: VaultChest = main.breach.chest
 			if not _reach(c) and t < 60.0 * _walk_scale():
 				var front := c.global_position + c.global_transform.basis.z * 1.0
-				if flat_distance(front) < 1.0 or (t > 30.0 * _walk_scale() and flat_distance(c.global_position) < 8.0):
+				if (
+					flat_distance(front) < 1.0
+					or (t > 30.0 * _walk_scale() and flat_distance(c.global_position) < 8.0)
+				):
 					look_at_point(c.global_position + Vector3(0, 1.0, 0))  # last metres: straight in
 					player.set_look(player.yaw, 0.0)
 					_input = PlayerInput.hold(["forward"])
 				else:
 					walk_to(front)
 			elif not _reach(c):
-				_finish(false, "could not walk to the vault chest (%.1f m)" % flat_distance(c.global_position))
+				_finish(
+					false,
+					"could not walk to the vault chest (%.1f m)" % flat_distance(c.global_position)
+				)
 				return
 			else:
 				var drops := c.open_chest()
@@ -661,18 +710,30 @@ func _intro_tick() -> void:
 		if not intro_beats.has(b):
 			intro_beats.append(b)
 		t = 0.0
-		note("intro beat %s (%d/%d) in %s" % [b, intro_beats.size(), IntroDirector.BEATS.size(), d.here])
+		note(
+			(
+				"intro beat %s (%d/%d) in %s"
+				% [b, intro_beats.size(), IntroDirector.BEATS.size(), d.here]
+			)
+		)
 	_talk_cd -= get_physics_process_delta_time()
 	if t > 240.0:  # a stalled beat fails fast with where the bot was and what it aimed at
 		_finish(
 			false,
-			"intro beat %s stalled in %s: feet %s, target %s" % [b, d.here, player.global_position, d.target_point()]
+			(
+				"intro beat %s stalled in %s: feet %s, target %s"
+				% [b, d.here, player.global_position, d.target_point()]
+			)
 		)
 		return
 	_intro_shot(b)
 	if _intro_ui(d):
 		return
-	if d.here == IntroDirector.LEVEL.get(b, d.here) and b in ["combat", "filth"] and _intro_fight(d, b):
+	if (
+		d.here == IntroDirector.LEVEL.get(b, d.here)
+		and b in ["combat", "filth"]
+		and _intro_fight(d, b)
+	):
 		return
 	if b == "crafting" and d.here == "midden" and _intro_craft(d):
 		return
@@ -701,7 +762,11 @@ func _intro_ui(d: IntroDirector) -> bool:
 	_cine_t = 0.0
 	if d.creator:
 		d.choose_identity(
-			{"archetype": player.archetype, "name": player.character_name, "color": player.character_color}
+			{
+				"archetype": player.archetype,
+				"name": player.character_name,
+				"color": player.character_color
+			}
 		)
 		return true
 	var dlg: DialogueRunner = main.get(&"dialogue")
@@ -717,8 +782,8 @@ func _intro_ui(d: IntroDirector) -> bool:
 
 
 func _intro_fight(d: IntroDirector, b: String) -> bool:
-	var e := nearest_enemy()
-	if e and e.corrupted_left <= 0.0:
+	var e := nearest_enemy(true)
+	if e:
 		fight(e)
 		return true
 	if b != "filth":
