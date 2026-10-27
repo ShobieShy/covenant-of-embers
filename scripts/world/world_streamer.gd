@@ -6,17 +6,24 @@ extends Node3D
 ## ResourceLoader.load_threaded_request; finished loads are added at most one per frame and
 ## only while the frame's add budget (BUDGET_MS) lasts. A cell leaves once no viewer is
 ## within RING + 1 (hysteresis ring), so walking along a cell line never thrashes.
+## OW4b: each cell's baked NavigationMesh (res://world/nav/, tools/bake_world_nav.gd)
+## streams on the same rings as its own NavigationRegion3D child (one per frame); nav
+## exists for the strips between zones too, where there is no content cell.
 
 const CELL := 128.0
 const RING := 2  ## 5 x 5 cells loaded around each viewer
 const BUDGET_MS := 2.0
 const DIR := "res://world/cells/"
+const NAV_DIR := "res://world/nav/"
 
 var cells_dir := DIR
 var loaded := {}  ## Vector2i -> Node3D in the tree
 var _pending := {}  ## Vector2i -> path being loaded on a thread
 var _ready_q: Array[Vector2i] = []
 var _known := {}  ## Vector2i -> true for cells that exist on disk
+var nav_dir := NAV_DIR
+var nav := {}  ## Vector2i -> NavigationRegion3D in the tree
+var _nav_known := {}
 var viewer_override: Array[Vector3] = []  ## tests / tools
 
 
@@ -29,14 +36,19 @@ func _ready() -> void:
 
 
 func scan() -> void:
-	_known.clear()
-	if not DirAccess.dir_exists_absolute(cells_dir):
+	_scan_dir(cells_dir, ".tscn", _known)
+	_scan_dir(nav_dir, ".res", _nav_known)
+
+
+static func _scan_dir(dir: String, ext: String, out: Dictionary) -> void:
+	out.clear()
+	if not DirAccess.dir_exists_absolute(dir):
 		return
-	for f in DirAccess.get_files_at(cells_dir):
-		if f.ends_with(".tscn"):
+	for f in DirAccess.get_files_at(dir):
+		if f.ends_with(ext):
 			var p := f.get_basename().split("_")
 			if p.size() == 2:
-				_known[Vector2i(int(p[0]), int(p[1]))] = true
+				out[Vector2i(int(p[0]), int(p[1]))] = true
 
 
 func viewers() -> Array[Vector3]:
@@ -53,14 +65,16 @@ func viewers() -> Array[Vector3]:
 
 
 ## Cells within `ring` of any viewer (Chebyshev distance in cells), existing on disk only.
-func wanted(pts: Array[Vector3], ring: int) -> Dictionary:
+func wanted(pts: Array[Vector3], ring: int, known: Dictionary = {}) -> Dictionary:
+	if known.is_empty():
+		known = _known
 	var out := {}
 	for v in pts:
 		var c := cell_of(Vector2(v.x, v.z))
 		for dz in range(-ring, ring + 1):
 			for dx in range(-ring, ring + 1):
 				var k := c + Vector2i(dx, dz)
-				if _known.has(k):
+				if known.has(k):
 					out[k] = true
 	return out
 
@@ -74,6 +88,7 @@ func step() -> void:
 	var pts := viewers()
 	if pts.is_empty():
 		return
+	_step_nav(pts)
 	var want := wanted(pts, RING)
 	var keep := wanted(pts, RING + 1)
 	for k in want:
@@ -108,10 +123,35 @@ func step() -> void:
 		break  # at most one cell per frame
 
 
+func _step_nav(pts: Array[Vector3]) -> void:
+	if _nav_known.is_empty():
+		return
+	var keep := wanted(pts, RING + 1, _nav_known)
+	for k in nav.keys():
+		if not keep.has(k):
+			(nav[k] as Node).queue_free()
+			nav.erase(k)
+	for k in wanted(pts, RING, _nav_known):
+		if not nav.has(k):
+			var r := NavigationRegion3D.new()
+			r.name = "Nav_%d_%d" % [k.x, k.y]
+			r.navigation_mesh = load(nav_dir + "%d_%d.res" % [k.x, k.y]) as NavigationMesh
+			add_child(r)
+			nav[k] = r
+			return  # at most one nav tile per frame
+
+
+func nav_pending(pts: Array[Vector3]) -> bool:
+	for k in wanted(pts, RING, _nav_known):
+		if not nav.has(k):
+			return true
+	return false
+
+
 ## Blocks until every wanted cell is in (loading screen, tests).
 func flush(max_frames := 600) -> void:
 	for i in max_frames:
 		step()
-		if _pending.is_empty() and _ready_q.is_empty():
+		if _pending.is_empty() and _ready_q.is_empty() and not nav_pending(viewers()):
 			return
 		OS.delay_msec(1)

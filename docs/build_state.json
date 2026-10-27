@@ -1417,6 +1417,12 @@
       "step": "OW4a",
       "type": "wip",
       "summary": "EnemySleep (scripts/world/enemy_sleep.gd): enemies beyond 96 m of every viewer get PROCESS_MODE_DISABLED, wake inside 80 m, 0.5 s tick; only OpenWorld adds it. Dynamic collision already in OpenWorld (OW3b). test_enemy_sleep.gd. Remaining OW4: per-cell world navmesh tiles."
+    },
+    {
+      "time": "2026-10-27T02:26-05:00",
+      "step": "OW4b",
+      "type": "feature",
+      "summary": "Offline whole-world navmesh: tools/bake_world_nav.gd bakes one NavigationMesh per 128 m cell (84 cells over the zones' bbox +64 m, 157 s, 524 KB in world/nav/) from build/world/world_height.f32 (2 m quads) plus each cell's colliders; WorldStreamer streams nav tiles on the cell rings, including strip cells with no content. build_world.sh runs it last. tests/unit/test_world_nav.gd: tiles on disk, and a town-to-Midden path across cell seams and the strip."
     }
   ],
   "completed_steps": [
