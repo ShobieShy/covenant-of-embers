@@ -1,0 +1,1449 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ambientcg/PavingStones131/color.jpg" id="1_tkr3o"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/PavingStones131/normal.jpg" id="2_kkoml"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/PavingStones131/roughness.jpg" id="3_dm266"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Bricks076C/color.jpg" id="4_1jvb3"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Bricks076C/normal.jpg" id="5_bxcvt"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Bricks076C/roughness.jpg" id="6_t8ci7"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/color.jpg" id="7_c4v7t"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/normal.jpg" id="8_h5cfl"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/roughness.jpg" id="9_rqll0"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/color.jpg" id="10_ulsbq"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/normal.jpg" id="11_obhgd"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/roughness.jpg" id="12_i0u4s"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-small.glb" id="13_hehxf"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-large.glb" id="14_cfvk1"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-wide.glb" id="15_livrm"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/pillar-stone.glb" id="16_6h3r7"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-broken.glb" id="17_nsg0i"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/lantern.glb" id="18_n2dcj"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trash_Bags.glb" id="19_8dbon"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trash_Bag.glb" id="20_c7o7p"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Can_Broken.glb" id="21_s442h"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trashcan.glb" id="22_i0gv4"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(30, 0.2, 48)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
+albedo_color = Color(0.72, 0.707989, 0.695427, 1)
+albedo_texture = ExtResource("1_tkr3o")
+roughness_texture = ExtResource("3_dm266")
+normal_enabled = true
+normal_texture = ExtResource("2_kkoml")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(30, 0.2, 48)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
+size = Vector3(1, 4, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
+albedo_color = Color(0.972332, 0.972332, 1, 1)
+albedo_texture = ExtResource("4_1jvb3")
+roughness_texture = ExtResource("6_t8ci7")
+normal_enabled = true
+normal_texture = ExtResource("5_bxcvt")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+size = Vector3(1, 4, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(5, 4, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.939625, 0.865929, 1, 1)
+albedo_texture = ExtResource("4_1jvb3")
+roughness_texture = ExtResource("6_t8ci7")
+normal_enabled = true
+normal_texture = ExtResource("5_bxcvt")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3"]
+size = Vector3(5, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(16, 0.2, 56)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
+albedo_color = Color(0.72, 0.707516, 0.694435, 1)
+albedo_texture = ExtResource("1_tkr3o")
+roughness_texture = ExtResource("3_dm266")
+normal_enabled = true
+normal_texture = ExtResource("2_kkoml")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4"]
+size = Vector3(16, 0.2, 56)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5"]
+size = Vector3(1, 4, 39)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5"]
+size = Vector3(1, 4, 39)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
+size = Vector3(1, 4, 27)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7"]
+size = Vector3(1, 4, 27)
+
+[sub_resource type="BoxMesh" id="BoxMesh_10"]
+size = Vector3(10, 4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_10"]
+size = Vector3(10, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_11"]
+size = Vector3(1, 4, 26)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_11"]
+size = Vector3(1, 4, 26)
+
+[sub_resource type="BoxMesh" id="BoxMesh_12"]
+size = Vector3(4, 4, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
+albedo_color = Color(1, 0.891753, 0.748309, 1)
+albedo_texture = ExtResource("4_1jvb3")
+roughness_texture = ExtResource("6_t8ci7")
+normal_enabled = true
+normal_texture = ExtResource("5_bxcvt")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_12"]
+size = Vector3(4, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_13"]
+size = Vector3(1, 4, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_13"]
+size = Vector3(1, 4, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_14"]
+size = Vector3(6, 0.2, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
+albedo_color = Color(1, 0.966379, 0.929303, 1)
+albedo_texture = ExtResource("7_c4v7t")
+roughness_texture = ExtResource("9_rqll0")
+normal_enabled = true
+normal_texture = ExtResource("8_h5cfl")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_14"]
+size = Vector3(6, 0.2, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_15"]
+size = Vector3(1.5, 3, 1.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
+albedo_color = Color(1, 0.976749, 0.958302, 1)
+albedo_texture = ExtResource("10_ulsbq")
+roughness_texture = ExtResource("12_i0u4s")
+normal_enabled = true
+normal_texture = ExtResource("11_obhgd")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_15"]
+size = Vector3(1.5, 3, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_16"]
+size = Vector3(5.5, 4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_16"]
+size = Vector3(5.5, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_17"]
+size = Vector3(1.5, 1.2, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_17"]
+size = Vector3(1.5, 1.2, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_18"]
+size = Vector3(1.5, 1, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_18"]
+size = Vector3(1.5, 1, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_19"]
+size = Vector3(1.5, 1.5, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_19"]
+size = Vector3(1.5, 1.5, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_9"]
+size = Vector3(6, 4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_9"]
+size = Vector3(6, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_23"]
+size = Vector3(12, 4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_23"]
+size = Vector3(12, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_25"]
+size = Vector3(3, 0.4, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_10"]
+albedo_color = Color(0.972332, 0.972332, 1, 1)
+albedo_texture = ExtResource("7_c4v7t")
+roughness_texture = ExtResource("9_rqll0")
+normal_enabled = true
+normal_texture = ExtResource("8_h5cfl")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_25"]
+size = Vector3(3, 0.4, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_26"]
+size = Vector3(1, 6, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_26"]
+size = Vector3(1, 6, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_27"]
+size = Vector3(17, 0.2, 56)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8"]
+albedo_color = Color(0.72, 0.708837, 0.72, 1)
+albedo_texture = ExtResource("1_tkr3o")
+roughness_texture = ExtResource("3_dm266")
+normal_enabled = true
+normal_texture = ExtResource("2_kkoml")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_27"]
+size = Vector3(17, 0.2, 56)
+
+[sub_resource type="BoxMesh" id="BoxMesh_28"]
+size = Vector3(17, 4, 42)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_28"]
+size = Vector3(17, 4, 42)
+
+[sub_resource type="BoxMesh" id="BoxMesh_29"]
+size = Vector3(1, 4, 42)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_29"]
+size = Vector3(1, 4, 42)
+
+[sub_resource type="BoxMesh" id="BoxMesh_30"]
+size = Vector3(19, 4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_30"]
+size = Vector3(19, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_31"]
+size = Vector3(7.5, 4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_31"]
+size = Vector3(7.5, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_32"]
+size = Vector3(7, 4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_32"]
+size = Vector3(7, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_33"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11"]
+albedo_color = Color(1, 0.952287, 0.829452, 1)
+albedo_texture = ExtResource("10_ulsbq")
+roughness_texture = ExtResource("12_i0u4s")
+normal_enabled = true
+normal_texture = ExtResource("11_obhgd")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_33"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_34"]
+size = Vector3(7, 0.2, 4.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_34"]
+size = Vector3(7, 0.2, 4.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_35"]
+size = Vector3(20, 0.2, 22)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_12"]
+albedo_color = Color(0.708837, 0.685026, 0.72, 1)
+albedo_texture = ExtResource("1_tkr3o")
+roughness_texture = ExtResource("3_dm266")
+normal_enabled = true
+normal_texture = ExtResource("2_kkoml")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_35"]
+size = Vector3(20, 0.2, 22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_36"]
+size = Vector3(1, 4, 23)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_36"]
+size = Vector3(1, 4, 23)
+
+[sub_resource type="BoxMesh" id="BoxMesh_37"]
+size = Vector3(21, 4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_37"]
+size = Vector3(21, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_38"]
+size = Vector3(1, 4, 9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_38"]
+size = Vector3(1, 4, 9)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_13"]
+albedo_color = Color(0.981732, 0.949131, 1, 1)
+albedo_texture = ExtResource("10_ulsbq")
+roughness_texture = ExtResource("12_i0u4s")
+normal_enabled = true
+normal_texture = ExtResource("11_obhgd")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[node name="Cell_8_-1" type="Node3D" unique_id=955957348]
+metadata/cell = Vector2i(8, -1)
+
+[node name="Boxes" type="Node3D" parent="." unique_id=1158542864]
+
+[node name="breach_ground" type="StaticBody3D" parent="Boxes" unique_id=122334677]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1104, -0.1, -65)
+metadata/kind = "ground"
+metadata/toml_index = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_ground" unique_id=877628792]
+mesh = SubResource("BoxMesh_1")
+surface_material_override/0 = SubResource("StandardMaterial3D_1")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_ground" unique_id=1709061262]
+shape = SubResource("BoxShape3D_1")
+
+[node name="breach_corridor_west" type="StaticBody3D" parent="Boxes" unique_id=1380111520]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1101.5, 2, -46.5)
+metadata/kind = "wall"
+metadata/toml_index = 1
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_corridor_west" unique_id=760897614]
+mesh = SubResource("BoxMesh_2")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_corridor_west" unique_id=671762160]
+shape = SubResource("BoxShape3D_2")
+
+[node name="breach_corridor_east" type="StaticBody3D" parent="Boxes" unique_id=257449085]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1106.5, 2, -46.5)
+metadata/kind = "wall"
+metadata/toml_index = 2
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_corridor_east" unique_id=1598538307]
+mesh = SubResource("BoxMesh_2")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_corridor_east" unique_id=1311147855]
+shape = SubResource("BoxShape3D_2")
+
+[node name="breach_switch_gate" type="StaticBody3D" parent="Boxes" unique_id=1357049818]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1104, 2, -41.5)
+metadata/kind = "wall"
+metadata/toml_index = 3
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_switch_gate" unique_id=1104988615]
+mesh = SubResource("BoxMesh_3")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_switch_gate" unique_id=2100647769]
+shape = SubResource("BoxShape3D_3")
+
+[node name="breach_ground_south" type="StaticBody3D" parent="Boxes" unique_id=1321292007]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1104, -0.1, -14)
+metadata/kind = "ground"
+metadata/toml_index = 4
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_ground_south" unique_id=1150262307]
+mesh = SubResource("BoxMesh_4")
+surface_material_override/0 = SubResource("StandardMaterial3D_4")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_ground_south" unique_id=370570524]
+shape = SubResource("BoxShape3D_4")
+
+[node name="breach_wing_west" type="StaticBody3D" parent="Boxes" unique_id=1546659424]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1096.5, 2, -22.5)
+metadata/kind = "wall"
+metadata/toml_index = 5
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_wing_west" unique_id=2033781702]
+mesh = SubResource("BoxMesh_5")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_wing_west" unique_id=116298615]
+shape = SubResource("BoxShape3D_5")
+
+[node name="breach_wing_east" type="StaticBody3D" parent="Boxes" unique_id=1833226986]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1111.5, 2, -28.5)
+metadata/kind = "wall"
+metadata/toml_index = 7
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_wing_east" unique_id=940502375]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_wing_east" unique_id=1877160530]
+shape = SubResource("BoxShape3D_7")
+
+[node name="breach_wall_south_west" type="StaticBody3D" parent="Boxes" unique_id=1216439791]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1097, 2, -51.5)
+metadata/kind = "wall"
+metadata/toml_index = 11
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_wall_south_west" unique_id=348058665]
+mesh = SubResource("BoxMesh_10")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_wall_south_west" unique_id=621392118]
+shape = SubResource("BoxShape3D_10")
+
+[node name="breach_wall_south_east" type="StaticBody3D" parent="Boxes" unique_id=1394404214]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1111, 2, -51.5)
+metadata/kind = "wall"
+metadata/toml_index = 12
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_wall_south_east" unique_id=169781996]
+mesh = SubResource("BoxMesh_10")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_wall_south_east" unique_id=251447709]
+shape = SubResource("BoxShape3D_10")
+
+[node name="breach_wall_west" type="StaticBody3D" parent="Boxes" unique_id=17211459]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1091.5, 2, -64)
+metadata/kind = "wall"
+metadata/toml_index = 13
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_wall_west" unique_id=1004435881]
+mesh = SubResource("BoxMesh_11")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_wall_west" unique_id=1623259078]
+shape = SubResource("BoxShape3D_11")
+
+[node name="breach_wall_east" type="StaticBody3D" parent="Boxes" unique_id=568310880]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1116.5, 2, -64)
+metadata/kind = "wall"
+metadata/toml_index = 14
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_wall_east" unique_id=1440394272]
+mesh = SubResource("BoxMesh_11")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_wall_east" unique_id=1532323620]
+shape = SubResource("BoxShape3D_11")
+
+[node name="breach_wall_north_west" type="StaticBody3D" parent="Boxes" unique_id=1434541864]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1097, 2, -76.5)
+metadata/kind = "wall"
+metadata/toml_index = 15
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_wall_north_west" unique_id=1059085751]
+mesh = SubResource("BoxMesh_10")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_wall_north_west" unique_id=1631370513]
+shape = SubResource("BoxShape3D_10")
+
+[node name="breach_wall_north_east" type="StaticBody3D" parent="Boxes" unique_id=1940257426]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1111, 2, -76.5)
+metadata/kind = "wall"
+metadata/toml_index = 16
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_wall_north_east" unique_id=24442706]
+mesh = SubResource("BoxMesh_10")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_wall_north_east" unique_id=380324350]
+shape = SubResource("BoxShape3D_10")
+
+[node name="breach_vault_door" type="StaticBody3D" parent="Boxes" unique_id=1900689459]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1104, 2, -76.5)
+metadata/kind = "wall"
+metadata/toml_index = 17
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_vault_door" unique_id=1978964690]
+mesh = SubResource("BoxMesh_12")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_vault_door" unique_id=1451122214]
+shape = SubResource("BoxShape3D_12")
+
+[node name="breach_vault_west" type="StaticBody3D" parent="Boxes" unique_id=104526172]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1099.5, 2, -81)
+metadata/kind = "wall"
+metadata/toml_index = 18
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_vault_west" unique_id=285544280]
+mesh = SubResource("BoxMesh_13")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_vault_west" unique_id=2049490846]
+shape = SubResource("BoxShape3D_13")
+
+[node name="breach_vault_east" type="StaticBody3D" parent="Boxes" unique_id=1804854095]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1108.5, 2, -81)
+metadata/kind = "wall"
+metadata/toml_index = 19
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_vault_east" unique_id=1500768157]
+mesh = SubResource("BoxMesh_13")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_vault_east" unique_id=1474980689]
+shape = SubResource("BoxShape3D_13")
+
+[node name="breach_vault_back" type="StaticBody3D" parent="Boxes" unique_id=2104089667]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1104, 2, -85.5)
+metadata/kind = "wall"
+metadata/toml_index = 20
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_vault_back" unique_id=837669049]
+mesh = SubResource("BoxMesh_10")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_vault_back" unique_id=1751386014]
+shape = SubResource("BoxShape3D_10")
+
+[node name="breach_boss_dais" type="StaticBody3D" parent="Boxes" unique_id=1487117413]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1104, 0.1, -71)
+metadata/kind = "platform"
+metadata/toml_index = 21
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_boss_dais" unique_id=286027512]
+mesh = SubResource("BoxMesh_14")
+surface_material_override/0 = SubResource("StandardMaterial3D_6")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_boss_dais" unique_id=1558340954]
+shape = SubResource("BoxShape3D_14")
+
+[node name="breach_pillar_nw" type="StaticBody3D" parent="Boxes" unique_id=1631889370]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 1098, 1.5, -68)
+metadata/kind = "crate"
+metadata/toml_index = 22
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_pillar_nw" unique_id=878379039]
+mesh = SubResource("BoxMesh_15")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_pillar_nw" unique_id=2027694616]
+shape = SubResource("BoxShape3D_15")
+
+[node name="breach_pillar_ne" type="StaticBody3D" parent="Boxes" unique_id=736812775]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 1110, 1.5, -68)
+metadata/kind = "crate"
+metadata/toml_index = 23
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_pillar_ne" unique_id=896303942]
+mesh = SubResource("BoxMesh_15")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_pillar_ne" unique_id=206068991]
+shape = SubResource("BoxShape3D_15")
+
+[node name="breach_pillar_sw" type="StaticBody3D" parent="Boxes" unique_id=915965660]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 1098, 1.5, -59)
+metadata/kind = "crate"
+metadata/toml_index = 24
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_pillar_sw" unique_id=1930455275]
+mesh = SubResource("BoxMesh_15")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_pillar_sw" unique_id=729855486]
+shape = SubResource("BoxShape3D_15")
+
+[node name="breach_pillar_se" type="StaticBody3D" parent="Boxes" unique_id=176017340]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 1110, 1.5, -59)
+metadata/kind = "crate"
+metadata/toml_index = 25
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_pillar_se" unique_id=853237976]
+mesh = SubResource("BoxMesh_15")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_pillar_se" unique_id=839781865]
+shape = SubResource("BoxShape3D_15")
+
+[node name="breach_switch_n_w" type="StaticBody3D" parent="Boxes" unique_id=2124592961]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1099, 2, -41.5)
+metadata/kind = "wall"
+metadata/toml_index = 26
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_switch_n_w" unique_id=962770859]
+mesh = SubResource("BoxMesh_3")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_switch_n_w" unique_id=1515714328]
+shape = SubResource("BoxShape3D_3")
+
+[node name="breach_switch_n_e" type="StaticBody3D" parent="Boxes" unique_id=1866023947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1109, 2, -41.5)
+metadata/kind = "wall"
+metadata/toml_index = 27
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_switch_n_e" unique_id=307972359]
+mesh = SubResource("BoxMesh_3")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_switch_n_e" unique_id=651571888]
+shape = SubResource("BoxShape3D_3")
+
+[node name="breach_room3_s_w" type="StaticBody3D" parent="Boxes" unique_id=1287178287]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1099.25, 2, -31)
+metadata/kind = "wall"
+metadata/toml_index = 28
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_room3_s_w" unique_id=915730424]
+mesh = SubResource("BoxMesh_16")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_room3_s_w" unique_id=199327539]
+shape = SubResource("BoxShape3D_16")
+
+[node name="breach_room3_s_e" type="StaticBody3D" parent="Boxes" unique_id=793894780]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1108.75, 2, -31)
+metadata/kind = "wall"
+metadata/toml_index = 29
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_room3_s_e" unique_id=1477486810]
+mesh = SubResource("BoxMesh_16")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_room3_s_e" unique_id=2107915718]
+shape = SubResource("BoxShape3D_16")
+
+[node name="breach_room2_s_w" type="StaticBody3D" parent="Boxes" unique_id=497980932]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1099.25, 2, -19)
+metadata/kind = "wall"
+metadata/toml_index = 30
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_room2_s_w" unique_id=1582619537]
+mesh = SubResource("BoxMesh_16")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_room2_s_w" unique_id=510654072]
+shape = SubResource("BoxShape3D_16")
+
+[node name="breach_room2_s_e" type="StaticBody3D" parent="Boxes" unique_id=1140617443]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1108.75, 2, -19)
+metadata/kind = "wall"
+metadata/toml_index = 31
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_room2_s_e" unique_id=811015088]
+mesh = SubResource("BoxMesh_16")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_room2_s_e" unique_id=1643801998]
+shape = SubResource("BoxShape3D_16")
+
+[node name="breach_room1_s_w" type="StaticBody3D" parent="Boxes" unique_id=1554386033]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1099.25, 2, -7)
+metadata/kind = "wall"
+metadata/toml_index = 32
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_room1_s_w" unique_id=1826657426]
+mesh = SubResource("BoxMesh_16")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_room1_s_w" unique_id=1733414270]
+shape = SubResource("BoxShape3D_16")
+
+[node name="breach_room1_s_e" type="StaticBody3D" parent="Boxes" unique_id=1771946526]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1108.75, 2, -7)
+metadata/kind = "wall"
+metadata/toml_index = 33
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_room1_s_e" unique_id=263514563]
+mesh = SubResource("BoxMesh_16")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_room1_s_e" unique_id=99264528]
+shape = SubResource("BoxShape3D_16")
+
+[node name="breach_den_crate_w" type="StaticBody3D" parent="Boxes" unique_id=250227657]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1100, 0.6, -3)
+metadata/kind = "crate"
+metadata/toml_index = 36
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_den_crate_w" unique_id=1739474159]
+mesh = SubResource("BoxMesh_17")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_den_crate_w" unique_id=559083996]
+shape = SubResource("BoxShape3D_17")
+
+[node name="breach_gallery_pillar_w" type="StaticBody3D" parent="Boxes" unique_id=288543342]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1100.5, 0.5, -13)
+metadata/kind = "crate"
+metadata/toml_index = 38
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_gallery_pillar_w" unique_id=2118539790]
+mesh = SubResource("BoxMesh_18")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_gallery_pillar_w" unique_id=696195246]
+shape = SubResource("BoxShape3D_18")
+
+[node name="breach_gallery_pillar_e" type="StaticBody3D" parent="Boxes" unique_id=494299585]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1107.5, 0.5, -13)
+metadata/kind = "crate"
+metadata/toml_index = 39
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_gallery_pillar_e" unique_id=716814038]
+mesh = SubResource("BoxMesh_18")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_gallery_pillar_e" unique_id=301093247]
+shape = SubResource("BoxShape3D_18")
+
+[node name="breach_cistern_block" type="StaticBody3D" parent="Boxes" unique_id=410745231]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1104, 0.75, -25)
+metadata/kind = "crate"
+metadata/toml_index = 40
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_cistern_block" unique_id=905497184]
+mesh = SubResource("BoxMesh_19")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_cistern_block" unique_id=1826767831]
+shape = SubResource("BoxShape3D_19")
+
+[node name="breach_ossuary_n_w" type="StaticBody3D" parent="Boxes" unique_id=670905601]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1077, 2, -4.5)
+metadata/kind = "wall"
+metadata/toml_index = 44
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_ossuary_n_w" unique_id=178761277]
+mesh = SubResource("BoxMesh_9")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_ossuary_n_w" unique_id=1377636874]
+shape = SubResource("BoxShape3D_9")
+
+[node name="breach_ossuary_n_e" type="StaticBody3D" parent="Boxes" unique_id=1605408258]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1090, 2, -4.5)
+metadata/kind = "wall"
+metadata/toml_index = 45
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_ossuary_n_e" unique_id=1148042535]
+mesh = SubResource("BoxMesh_23")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_ossuary_n_e" unique_id=293467817]
+shape = SubResource("BoxShape3D_23")
+
+[node name="breach_annex_stair_1" type="StaticBody3D" parent="Boxes" unique_id=1902230489]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 0, -5)
+metadata/kind = "platform"
+metadata/toml_index = 49
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_1" unique_id=517735778]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_1" unique_id=1541147199]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_2" type="StaticBody3D" parent="Boxes" unique_id=393498546]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 0.2, -5.5999985)
+metadata/kind = "platform"
+metadata/toml_index = 50
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_2" unique_id=91427538]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_2" unique_id=492579219]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_3" type="StaticBody3D" parent="Boxes" unique_id=312323588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 0.4, -6.200001)
+metadata/kind = "platform"
+metadata/toml_index = 51
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_3" unique_id=982573388]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_3" unique_id=680872853]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_4" type="StaticBody3D" parent="Boxes" unique_id=216535419]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 0.6, -6.799999)
+metadata/kind = "platform"
+metadata/toml_index = 52
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_4" unique_id=19836088]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_4" unique_id=403420081]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_5" type="StaticBody3D" parent="Boxes" unique_id=1651359614]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 0.8, -7.4000015)
+metadata/kind = "platform"
+metadata/toml_index = 53
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_5" unique_id=858434677]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_5" unique_id=1614253262]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_6" type="StaticBody3D" parent="Boxes" unique_id=1948364203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 1, -8)
+metadata/kind = "platform"
+metadata/toml_index = 54
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_6" unique_id=1563717482]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_6" unique_id=953608851]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_7" type="StaticBody3D" parent="Boxes" unique_id=511451849]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 1.2, -8.599998)
+metadata/kind = "platform"
+metadata/toml_index = 55
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_7" unique_id=1695925149]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_7" unique_id=260088935]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_8" type="StaticBody3D" parent="Boxes" unique_id=548207867]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 1.4, -9.200001)
+metadata/kind = "platform"
+metadata/toml_index = 56
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_8" unique_id=1848493179]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_8" unique_id=15703088]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_9" type="StaticBody3D" parent="Boxes" unique_id=637142752]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 1.6, -9.799999)
+metadata/kind = "platform"
+metadata/toml_index = 57
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_9" unique_id=2042806035]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_9" unique_id=2036661841]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_10" type="StaticBody3D" parent="Boxes" unique_id=1496397528]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 1.8, -10.400002)
+metadata/kind = "platform"
+metadata/toml_index = 58
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_10" unique_id=1049717451]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_10" unique_id=1157838123]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_11" type="StaticBody3D" parent="Boxes" unique_id=1501356221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 2, -11)
+metadata/kind = "platform"
+metadata/toml_index = 59
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_11" unique_id=913662806]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_11" unique_id=296937109]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_12" type="StaticBody3D" parent="Boxes" unique_id=1393610976]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 2.2, -11.599998)
+metadata/kind = "platform"
+metadata/toml_index = 60
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_12" unique_id=1070009659]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_12" unique_id=1063187858]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_13" type="StaticBody3D" parent="Boxes" unique_id=1286008237]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 2.4, -12.200001)
+metadata/kind = "platform"
+metadata/toml_index = 61
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_13" unique_id=149646393]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_13" unique_id=1629570939]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_14" type="StaticBody3D" parent="Boxes" unique_id=657400592]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 2.6, -12.799999)
+metadata/kind = "platform"
+metadata/toml_index = 62
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_14" unique_id=1863192640]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_14" unique_id=555341340]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_15" type="StaticBody3D" parent="Boxes" unique_id=1329615773]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 2.8, -13.400002)
+metadata/kind = "platform"
+metadata/toml_index = 63
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_15" unique_id=899939260]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_15" unique_id=1127687371]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_16" type="StaticBody3D" parent="Boxes" unique_id=1420105257]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 3, -14)
+metadata/kind = "platform"
+metadata/toml_index = 64
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_16" unique_id=1175454044]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_16" unique_id=733970486]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_17" type="StaticBody3D" parent="Boxes" unique_id=2114456368]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 3.2, -14.599998)
+metadata/kind = "platform"
+metadata/toml_index = 65
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_17" unique_id=12577237]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_17" unique_id=2090126036]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_18" type="StaticBody3D" parent="Boxes" unique_id=1251653100]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 3.4, -15.200001)
+metadata/kind = "platform"
+metadata/toml_index = 66
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_18" unique_id=1249145482]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_18" unique_id=1584209442]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_19" type="StaticBody3D" parent="Boxes" unique_id=1700201625]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 3.6, -15.799999)
+metadata/kind = "platform"
+metadata/toml_index = 67
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_19" unique_id=721730084]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_19" unique_id=475972595]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_annex_stair_20" type="StaticBody3D" parent="Boxes" unique_id=599002450]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082, 3.8, -16.400002)
+metadata/kind = "platform"
+metadata/toml_index = 68
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_stair_20" unique_id=1555974873]
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_stair_20" unique_id=1360573980]
+shape = SubResource("BoxShape3D_25")
+
+[node name="breach_stair_wall_w" type="StaticBody3D" parent="Boxes" unique_id=1262990388]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1080, 3, -11.5)
+metadata/kind = "wall"
+metadata/toml_index = 69
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_stair_wall_w" unique_id=943603018]
+mesh = SubResource("BoxMesh_26")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_stair_wall_w" unique_id=1271744142]
+shape = SubResource("BoxShape3D_26")
+
+[node name="breach_stair_wall_e" type="StaticBody3D" parent="Boxes" unique_id=1792301137]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1084, 3, -11.5)
+metadata/kind = "wall"
+metadata/toml_index = 70
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_stair_wall_e" unique_id=1308406257]
+mesh = SubResource("BoxMesh_26")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_stair_wall_e" unique_id=1061938432]
+shape = SubResource("BoxShape3D_26")
+
+[node name="breach_annex_base" type="StaticBody3D" parent="Boxes" unique_id=724326514]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082.5, -0.1, -32)
+metadata/kind = "ground"
+metadata/toml_index = 71
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_base" unique_id=1030595240]
+mesh = SubResource("BoxMesh_27")
+surface_material_override/0 = SubResource("StandardMaterial3D_8")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_base" unique_id=1454781119]
+shape = SubResource("BoxShape3D_27")
+
+[node name="breach_annex_upper" type="StaticBody3D" parent="Boxes" unique_id=695207015]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082.5, 2, -39)
+metadata/kind = "platform"
+metadata/toml_index = 72
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_annex_upper" unique_id=2112098620]
+mesh = SubResource("BoxMesh_28")
+surface_material_override/0 = SubResource("StandardMaterial3D_10")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_annex_upper" unique_id=1585983216]
+shape = SubResource("BoxShape3D_28")
+
+[node name="breach_upper_w" type="StaticBody3D" parent="Boxes" unique_id=1367287266]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1073.5, 6, -39)
+metadata/kind = "wall"
+metadata/toml_index = 73
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_upper_w" unique_id=1420098458]
+mesh = SubResource("BoxMesh_29")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_upper_w" unique_id=1421614757]
+shape = SubResource("BoxShape3D_29")
+
+[node name="breach_upper_e" type="StaticBody3D" parent="Boxes" unique_id=276826824]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1091.5, 6, -39)
+metadata/kind = "wall"
+metadata/toml_index = 74
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_upper_e" unique_id=307513236]
+mesh = SubResource("BoxMesh_29")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_upper_e" unique_id=1747944280]
+shape = SubResource("BoxShape3D_29")
+
+[node name="breach_upper_n" type="StaticBody3D" parent="Boxes" unique_id=2132040567]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1082.5, 6, -60.5)
+metadata/kind = "wall"
+metadata/toml_index = 75
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_upper_n" unique_id=1244000541]
+mesh = SubResource("BoxMesh_30")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_upper_n" unique_id=448817698]
+shape = SubResource("BoxShape3D_30")
+
+[node name="breach_upper_s_w" type="StaticBody3D" parent="Boxes" unique_id=1367780795]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1076.75, 6, -17.5)
+metadata/kind = "wall"
+metadata/toml_index = 76
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_upper_s_w" unique_id=61261733]
+mesh = SubResource("BoxMesh_16")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_upper_s_w" unique_id=944337181]
+shape = SubResource("BoxShape3D_16")
+
+[node name="breach_upper_s_e" type="StaticBody3D" parent="Boxes" unique_id=2068567048]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1087.75, 6, -17.5)
+metadata/kind = "wall"
+metadata/toml_index = 77
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_upper_s_e" unique_id=357895621]
+mesh = SubResource("BoxMesh_31")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_upper_s_e" unique_id=217372144]
+shape = SubResource("BoxShape3D_31")
+
+[node name="breach_loft_part_w" type="StaticBody3D" parent="Boxes" unique_id=768606694]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1077.5, 6, -38)
+metadata/kind = "wall"
+metadata/toml_index = 78
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_loft_part_w" unique_id=1904054905]
+mesh = SubResource("BoxMesh_32")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_loft_part_w" unique_id=269253958]
+shape = SubResource("BoxShape3D_32")
+
+[node name="breach_loft_part_e" type="StaticBody3D" parent="Boxes" unique_id=1652070642]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1088, 6, -38)
+metadata/kind = "wall"
+metadata/toml_index = 79
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_loft_part_e" unique_id=563973106]
+mesh = SubResource("BoxMesh_9")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_loft_part_e" unique_id=1484975110]
+shape = SubResource("BoxShape3D_9")
+
+[node name="breach_loft_bell" type="StaticBody3D" parent="Boxes" unique_id=591740781]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1083, 5, -30)
+metadata/kind = "crate"
+metadata/toml_index = 80
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_loft_bell" unique_id=521153378]
+mesh = SubResource("BoxMesh_33")
+surface_material_override/0 = SubResource("StandardMaterial3D_11")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_loft_bell" unique_id=2124594315]
+shape = SubResource("BoxShape3D_33")
+
+[node name="breach_side_hall" type="StaticBody3D" parent="Boxes" unique_id=971211757]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1115, -0.1, -13)
+metadata/kind = "ground"
+metadata/toml_index = 81
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_hall" unique_id=302942079]
+mesh = SubResource("BoxMesh_34")
+surface_material_override/0 = SubResource("StandardMaterial3D_8")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_hall" unique_id=2042507235]
+shape = SubResource("BoxShape3D_34")
+
+[node name="breach_side_hall_n" type="StaticBody3D" parent="Boxes" unique_id=256723551]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1115, 2, -15.5)
+metadata/kind = "wall"
+metadata/toml_index = 82
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_hall_n" unique_id=437508396]
+mesh = SubResource("BoxMesh_9")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_hall_n" unique_id=1166622525]
+shape = SubResource("BoxShape3D_9")
+
+[node name="breach_side_hall_s" type="StaticBody3D" parent="Boxes" unique_id=605597710]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1115, 2, -10.5)
+metadata/kind = "wall"
+metadata/toml_index = 83
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_hall_s" unique_id=460724755]
+mesh = SubResource("BoxMesh_9")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_hall_s" unique_id=2105548234]
+shape = SubResource("BoxShape3D_9")
+
+[node name="breach_side_wing" type="StaticBody3D" parent="Boxes" unique_id=2040508034]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1128, -0.1, -13)
+metadata/kind = "ground"
+metadata/toml_index = 84
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_wing" unique_id=270634263]
+mesh = SubResource("BoxMesh_35")
+surface_material_override/0 = SubResource("StandardMaterial3D_12")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_wing" unique_id=1831571564]
+shape = SubResource("BoxShape3D_35")
+
+[node name="breach_side_e" type="StaticBody3D" parent="Boxes" unique_id=957178687]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1138.5, 2, -13)
+metadata/kind = "wall"
+metadata/toml_index = 85
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_e" unique_id=1603736174]
+mesh = SubResource("BoxMesh_36")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_e" unique_id=565046723]
+shape = SubResource("BoxShape3D_36")
+
+[node name="breach_side_n" type="StaticBody3D" parent="Boxes" unique_id=1221911375]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1128, 2, -24.5)
+metadata/kind = "wall"
+metadata/toml_index = 86
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_n" unique_id=87500919]
+mesh = SubResource("BoxMesh_37")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_n" unique_id=858867891]
+shape = SubResource("BoxShape3D_37")
+
+[node name="breach_side_s" type="StaticBody3D" parent="Boxes" unique_id=202575963]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1128, 2, -1.5)
+metadata/kind = "wall"
+metadata/toml_index = 87
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_s" unique_id=1145146893]
+mesh = SubResource("BoxMesh_37")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_s" unique_id=1684007621]
+shape = SubResource("BoxShape3D_37")
+
+[node name="breach_side_w_n" type="StaticBody3D" parent="Boxes" unique_id=404749460]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1117.5, 2, -19.5)
+metadata/kind = "wall"
+metadata/toml_index = 88
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_w_n" unique_id=773516996]
+mesh = SubResource("BoxMesh_38")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_w_n" unique_id=462942097]
+shape = SubResource("BoxShape3D_38")
+
+[node name="breach_side_w_s" type="StaticBody3D" parent="Boxes" unique_id=56574633]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1117.5, 2, -6.5)
+metadata/kind = "wall"
+metadata/toml_index = 89
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_w_s" unique_id=378677697]
+mesh = SubResource("BoxMesh_38")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_w_s" unique_id=874563055]
+shape = SubResource("BoxShape3D_38")
+
+[node name="breach_side_pillar_1" type="StaticBody3D" parent="Boxes" unique_id=77313599]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1124, 1.5, -19)
+metadata/kind = "crate"
+metadata/toml_index = 90
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_pillar_1" unique_id=505663436]
+mesh = SubResource("BoxMesh_15")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_pillar_1" unique_id=1799870231]
+shape = SubResource("BoxShape3D_15")
+
+[node name="breach_side_pillar_2" type="StaticBody3D" parent="Boxes" unique_id=914520189]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1132, 1.5, -7)
+metadata/kind = "crate"
+metadata/toml_index = 91
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_pillar_2" unique_id=1847633009]
+mesh = SubResource("BoxMesh_15")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_pillar_2" unique_id=402078453]
+shape = SubResource("BoxShape3D_15")
+
+[node name="breach_side_pillar_3" type="StaticBody3D" parent="Boxes" unique_id=259266632]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1124, 1.5, -7)
+metadata/kind = "crate"
+metadata/toml_index = 92
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_pillar_3" unique_id=778222420]
+mesh = SubResource("BoxMesh_15")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_pillar_3" unique_id=1374635624]
+shape = SubResource("BoxShape3D_15")
+
+[node name="breach_side_pillar_4" type="StaticBody3D" parent="Boxes" unique_id=882905660]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1132, 1.5, -19)
+metadata/kind = "crate"
+metadata/toml_index = 93
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/breach_side_pillar_4" unique_id=49164238]
+mesh = SubResource("BoxMesh_15")
+surface_material_override/0 = SubResource("StandardMaterial3D_13")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/breach_side_pillar_4" unique_id=522270816]
+shape = SubResource("BoxShape3D_15")
+
+[node name="Props" type="Node3D" parent="." unique_id=1655421487]
+
+[node name="breach_crater_rock_17" type="Node3D" parent="Props" unique_id=622684398 instance=ExtResource("13_hehxf")]
+transform = Transform3D(1.328254, 0, 2.487598, 0, 2.82, 0, -2.487598, 0, 1.328254, 1147.677, 0, -123.477005)
+metadata/snap = true
+
+[node name="breach_crater_rock_22" type="Node3D" parent="Props" unique_id=1049290524 instance=ExtResource("14_cfvk1")]
+transform = Transform3D(3.372595, 0, -2.132066, 0, 3.99, 0, 2.132066, 0, 3.372595, 1110.269, 0, -102.1)
+metadata/snap = true
+
+[node name="breach_crater_rock_23" type="Node3D" parent="Props" unique_id=1149250071 instance=ExtResource("15_livrm")]
+transform = Transform3D(2.744574, 0, -0.172674, 0, 2.75, 0, 0.172674, 0, 2.744574, 1128.507, 0, -92.279)
+metadata/snap = true
+
+[node name="breach_crater_rock_27" type="Node3D" parent="Props" unique_id=2046017331 instance=ExtResource("14_cfvk1")]
+transform = Transform3D(-0.829506, 0, 2.537877, 0, 2.67, 0, -2.537877, 0, -0.829506, 1045.467, 0, -14.66)
+metadata/snap = true
+
+[node name="breach_crater_rock_29" type="Node3D" parent="Props" unique_id=1346960705 instance=ExtResource("15_livrm")]
+transform = Transform3D(0.374815, 0, 2.42116, 0, 2.45, 0, -2.42116, 0, 0.374815, 1078.307, 0, -91.125)
+metadata/snap = true
+
+[node name="breach_crater_rock_30" type="Node3D" parent="Props" unique_id=999334533 instance=ExtResource("13_hehxf")]
+transform = Transform3D(-0.910991, 0, 3.472491, 0, 3.59, 0, -3.472491, 0, -0.910991, 1063.213, 0, -112.486)
+metadata/snap = true
+
+[node name="breach_pillar_cap_1" type="Node3D" parent="Props" unique_id=2093693544 instance=ExtResource("16_6h3r7")]
+transform = Transform3D(6.5, 0, 0, 0, 3.2, 0, 0, 0, 6.5, 1098, 0, -68)
+
+[node name="breach_pillar_cap_2" type="Node3D" parent="Props" unique_id=1975486065 instance=ExtResource("16_6h3r7")]
+transform = Transform3D(6.5, 0, 0, 0, 3.2, 0, 0, 0, 6.5, 1110, 0, -68)
+
+[node name="breach_pillar_cap_3" type="Node3D" parent="Props" unique_id=2049746398 instance=ExtResource("16_6h3r7")]
+transform = Transform3D(6.5, 0, 0, 0, 3.2, 0, 0, 0, 6.5, 1098, 0, -59)
+
+[node name="breach_pillar_cap_4" type="Node3D" parent="Props" unique_id=1324732597 instance=ExtResource("16_6h3r7")]
+transform = Transform3D(6.5, 0, 0, 0, 3.2, 0, 0, 0, 6.5, 1110, 0, -59)
+
+[node name="breach_rubble_1" type="Node3D" parent="Props" unique_id=1236240122 instance=ExtResource("14_cfvk1")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 1092.6, 0, -74.8)
+
+[node name="breach_rubble_2" type="Node3D" parent="Props" unique_id=1773001163 instance=ExtResource("15_livrm")]
+transform = Transform3D(1.1, 0, 1.905256, 0, 2.2, 0, -1.905256, 0, 1.1, 1115.2, 0, -53.4)
+
+[node name="breach_rubble_3" type="Node3D" parent="Props" unique_id=1751639667 instance=ExtResource("13_hehxf")]
+transform = Transform3D(2.255262, 0, 0.820848, 0, 2.4, 0, -0.820848, 0, 2.255262, 1092.4, 0, -56)
+
+[node name="breach_rubble_4" type="Node3D" parent="Props" unique_id=378200747 instance=ExtResource("13_hehxf")]
+transform = Transform3D(0.347296, 0, 1.969616, 0, 2, 0, -1.969616, 0, 0.347296, 1114.8, 0, -72.5)
+
+[node name="breach_rubble_5" type="Node3D" parent="Props" unique_id=1528067145 instance=ExtResource("15_livrm")]
+transform = Transform3D(1.385641, 0, 0.8, 0, 1.6, 0, -0.8, 0, 1.385641, 1097.6, 0, -35.5)
+
+[node name="breach_rubble_6" type="Node3D" parent="Props" unique_id=200274671 instance=ExtResource("14_cfvk1")]
+transform = Transform3D(-1.072462, 0, 0.899903, 0, 1.4, 0, -0.899903, 0, -1.072462, 1110.5, 0, -28.5)
+
+[node name="breach_rubble_7" type="Node3D" parent="Props" unique_id=215612112 instance=ExtResource("13_hehxf")]
+transform = Transform3D(1.969616, 0, 0.347296, 0, 2, 0, -0.347296, 0, 1.969616, 1097.6, 0, -16.5)
+
+[node name="breach_rubble_8" type="Node3D" parent="Props" unique_id=886951850 instance=ExtResource("15_livrm")]
+transform = Transform3D(-1.503508, 0, -0.547232, 0, 1.6, 0, 0.547232, 0, -1.503508, 1110.3, 0, -4.5)
+
+[node name="breach_rubble_10" type="Node3D" parent="Props" unique_id=1118488685 instance=ExtResource("13_hehxf")]
+transform = Transform3D(1.131371, 0, 1.131371, 0, 1.6, 0, -1.131371, 0, 1.131371, 1106, 0, -75.6)
+
+[node name="breach_broken_wall_1" type="Node3D" parent="Props" unique_id=1214475539 instance=ExtResource("17_nsg0i")]
+transform = Transform3D(1, 0, 0, 0, 3, 0, 0, 0, 3, 1092.05, 0, -70)
+
+[node name="breach_broken_wall_2" type="Node3D" parent="Props" unique_id=562958115 instance=ExtResource("17_nsg0i")]
+transform = Transform3D(-1, 0, 0, 0, 3, 0, 0, 0, -3, 1115.95, 0, -62)
+
+[node name="breach_broken_wall_3" type="Node3D" parent="Props" unique_id=1088274648 instance=ExtResource("17_nsg0i")]
+transform = Transform3D(1, 0, 0, 0, 3, 0, 0, 0, 3, 1097.05, 0, -24)
+
+[node name="breach_broken_wall_4" type="Node3D" parent="Props" unique_id=2009975758 instance=ExtResource("17_nsg0i")]
+transform = Transform3D(-1, 0, 0, 0, 3, 0, 0, 0, -3, 1110.95, 0, -2)
+
+[node name="breach_breach_lantern_1" type="Node3D" parent="Props" unique_id=385847965 instance=ExtResource("18_n2dcj")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 1092.4, 0, -75.6)
+
+[node name="breach_breach_lantern_2" type="Node3D" parent="Props" unique_id=464481223 instance=ExtResource("18_n2dcj")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 1115.6, 0, -75.6)
+
+[node name="breach_breach_lantern_5" type="Node3D" parent="Props" unique_id=821458122 instance=ExtResource("18_n2dcj")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 1097.4, 0, -18)
+
+[node name="breach_breach_lantern_6" type="Node3D" parent="Props" unique_id=789446462 instance=ExtResource("18_n2dcj")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 1110.6, 0, -30)
+
+[node name="breach_breach_trash_1" type="Node3D" parent="Props" unique_id=82145582 instance=ExtResource("19_8dbon")]
+transform = Transform3D(4.228617, 0, 1.539091, 0, 4.5, 0, -1.539091, 0, 4.228617, 1098.2, 0, -0.5)
+
+[node name="breach_breach_trash_2" type="Node3D" parent="Props" unique_id=1152012543 instance=ExtResource("20_c7o7p")]
+transform = Transform3D(1.368081, 0, 3.75877, 0, 4, 0, -3.75877, 0, 1.368081, 1109.6, 0, -4)
+
+[node name="breach_breach_trash_3" type="Node3D" parent="Props" unique_id=589785940 instance=ExtResource("21_s442h")]
+transform = Transform3D(2.8, 0, 0, 0, 2.8, 0, 0, 0, 2.8, 1109.9, 0, -15)
+
+[node name="breach_breach_trash_4" type="Node3D" parent="Props" unique_id=569350641 instance=ExtResource("22_i0gv4")]
+transform = Transform3D(0.952628, 0, 0.55, 0, 1.1, 0, -0.55, 0, 0.952628, 1098.3, 0, -27)
+
+[node name="breach_breach_trash_5" type="Node3D" parent="Props" unique_id=828052787 instance=ExtResource("19_8dbon")]
+transform = Transform3D(-2.1, 0, 3.637307, 0, 4.2, 0, -3.637307, 0, -2.1, 1109.5, 0, -22.5)
+
+[node name="breach_breach_trash_6" type="Node3D" parent="Props" unique_id=956124422 instance=ExtResource("20_c7o7p")]
+transform = Transform3D(-3.75877, 0, -1.368081, 0, 4, 0, 1.368081, 0, -3.75877, 1093.5, 0, -61.5)
+
+[node name="Pois" type="Node3D" parent="." unique_id=248070185]
+
+[node name="breach_bell_loft" type="Node3D" parent="Pois" unique_id=163952564]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1104, 0, -64)
+metadata/center = Vector3(1083, 4, -28)
+metadata/radius = 12
+
+[node name="breach_reliquary" type="Node3D" parent="Pois" unique_id=2093695806]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1104, 0, -64)
+metadata/center = Vector3(1083, 4, -49)
+metadata/radius = 12
+
+[node name="breach_side_wing" type="Node3D" parent="Pois" unique_id=1248496968]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1104, 0, -64)
+metadata/center = Vector3(1128, 0, -13)
+metadata/radius = 14

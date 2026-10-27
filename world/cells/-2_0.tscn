@@ -1,0 +1,163 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="1_k2ug7"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="2_sfelg"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_gc53k"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_detailed.glb" id="4_luwqw"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_fat.glb" id="5_otah1"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_oak_dark.glb" id="6_2xhyf"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_old.glb" id="7_us1u3"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/grass_large.glb" id="8_se65c"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_9"]
+size = Vector3(32, 0.2, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
+albedo_color = Color(0.72, 0.688519, 0.646087, 1)
+albedo_texture = ExtResource("1_k2ug7")
+roughness_texture = ExtResource("3_gc53k")
+normal_enabled = true
+normal_texture = ExtResource("2_sfelg")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_9"]
+size = Vector3(32, 0.2, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_10"]
+size = Vector3(4, 0.2, 22)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_10"]
+size = Vector3(4, 0.2, 22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_11"]
+size = Vector3(22, 0.2, 18)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8"]
+albedo_color = Color(0.709574, 0.72, 0.650116, 1)
+albedo_texture = ExtResource("1_k2ug7")
+roughness_texture = ExtResource("3_gc53k")
+normal_enabled = true
+normal_texture = ExtResource("2_sfelg")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_11"]
+size = Vector3(22, 0.2, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_12"]
+size = Vector3(14, 0.04, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_9"]
+albedo_color = Color(0.461356, 0.583831, 0.649956, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_12"]
+size = Vector3(14, 0.04, 10)
+
+[node name="Cell_-2_0" type="Node3D" unique_id=417437478]
+metadata/cell = Vector2i(-2, 0)
+
+[node name="Boxes" type="Node3D" parent="." unique_id=1666000201]
+
+[node name="old_oak_grove_path" type="StaticBody3D" parent="Boxes" unique_id=256495788]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -248, -0.1, 0)
+metadata/kind = "ground"
+metadata/toml_index = 17
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_grove_path" unique_id=1726305461]
+mesh = SubResource("BoxMesh_9")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_grove_path" unique_id=1126285956]
+shape = SubResource("BoxShape3D_9")
+
+[node name="old_oak_pond_path_z" type="StaticBody3D" parent="Boxes" unique_id=1032285015]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -232, -0.1, 9)
+metadata/kind = "ground"
+metadata/toml_index = 18
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_pond_path_z" unique_id=202979637]
+mesh = SubResource("BoxMesh_10")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_pond_path_z" unique_id=685845809]
+shape = SubResource("BoxShape3D_10")
+
+[node name="old_oak_pond_shore" type="StaticBody3D" parent="Boxes" unique_id=2128264113]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -232, -0.1, 28)
+metadata/kind = "ground"
+metadata/toml_index = 19
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_pond_shore" unique_id=1536515161]
+mesh = SubResource("BoxMesh_11")
+surface_material_override/0 = SubResource("StandardMaterial3D_8")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_pond_shore" unique_id=338446228]
+shape = SubResource("BoxShape3D_11")
+
+[node name="old_oak_pond_water" type="StaticBody3D" parent="Boxes" unique_id=1001886238]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -232, 0.02, 30)
+metadata/kind = "platform"
+metadata/toml_index = 20
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/old_oak_pond_water" unique_id=69312945]
+mesh = SubResource("BoxMesh_12")
+surface_material_override/0 = SubResource("StandardMaterial3D_9")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/old_oak_pond_water" unique_id=722771345]
+shape = SubResource("BoxShape3D_12")
+
+[node name="Props" type="Node3D" parent="." unique_id=1044934381]
+
+[node name="old_oak_grove_tree_8" type="Node3D" parent="Props" unique_id=385963111 instance=ExtResource("4_luwqw")]
+transform = Transform3D(2.732575, 0, 3.268124, 0, 4.26, 0, -3.268124, 0, 2.732575, -248.215, 0, 36.076)
+metadata/snap = true
+
+[node name="old_oak_grove_tree_12" type="Node3D" parent="Props" unique_id=668192367 instance=ExtResource("5_otah1")]
+transform = Transform3D(-2.180806, 0, 4.050196, 0, 4.6, 0, -4.050196, 0, -2.180806, -246.844, 0, 13.319)
+metadata/snap = true
+
+[node name="old_oak_grove_tree_14" type="Node3D" parent="Props" unique_id=351718355 instance=ExtResource("6_2xhyf")]
+transform = Transform3D(4.608684, 0, -0.443766, 0, 4.63, 0, 0.443766, 0, 4.608684, -238.571, 0, 52.463)
+metadata/snap = true
+
+[node name="old_oak_grove_tree_20" type="Node3D" parent="Props" unique_id=1579002576 instance=ExtResource("4_luwqw")]
+transform = Transform3D(-3.767079, 0, -0.691388, 0, 3.83, 0, 0.691388, 0, -3.767079, -213.409, 0, 30.066)
+metadata/snap = true
+
+[node name="old_oak_grove_tree_24" type="Node3D" parent="Props" unique_id=1482771732 instance=ExtResource("6_2xhyf")]
+transform = Transform3D(3.881387, 0, -0.380573, 0, 3.9, 0, 0.380573, 0, 3.881387, -254.804, 0, 13.885)
+metadata/snap = true
+
+[node name="old_oak_grove_stump_2" type="Node3D" parent="Props" unique_id=212336667 instance=ExtResource("7_us1u3")]
+transform = Transform3D(-3.149693, 0, -0.043981, 0, 3.15, 0, 0.043981, 0, -3.149693, -255.106, 0, 53.681)
+metadata/snap = true
+
+[node name="Pois" type="Node3D" parent="." unique_id=1937097381]
+
+[node name="old_oak_pond" type="Node3D" parent="Pois" unique_id=1383188700]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272, 0, 0)
+metadata/center = Vector3(-232, 0, 28)
+metadata/radius = 24
+
+[node name="pond_reed_1" type="Node3D" parent="Pois/old_oak_pond" unique_id=629544 instance=ExtResource("8_se65c")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 33, 0, 22)
+
+[node name="pond_reed_2" type="Node3D" parent="Pois/old_oak_pond" unique_id=2121116229 instance=ExtResource("8_se65c")]
+transform = Transform3D(1.606969, 0, 1.915111, 0, 2.5, 0, -1.915111, 0, 1.606969, 35.6, 0, 22)
+
+[node name="pond_reed_3" type="Node3D" parent="Pois/old_oak_pond" unique_id=7726389 instance=ExtResource("8_se65c")]
+transform = Transform3D(-0.43412, 0, 2.462019, 0, 2.5, 0, -2.462019, 0, -0.43412, 38.2, 0, 22)
+
+[node name="pond_reed_4" type="Node3D" parent="Pois/old_oak_pond" unique_id=1907310377 instance=ExtResource("8_se65c")]
+transform = Transform3D(-2.165064, 0, 1.25, 0, 2.5, 0, -1.25, 0, -2.165064, 40.8, 0, 22)
+
+[node name="pond_reed_5" type="Node3D" parent="Pois/old_oak_pond" unique_id=151878930 instance=ExtResource("8_se65c")]
+transform = Transform3D(-2.349232, 0, -0.85505, 0, 2.5, 0, 0.85505, 0, -2.349232, 43.4, 0, 22)
+
+[node name="pond_reed_6" type="Node3D" parent="Pois/old_oak_pond" unique_id=422838235 instance=ExtResource("8_se65c")]
+transform = Transform3D(-0.85505, 0, -2.349232, 0, 2.5, 0, 2.349232, 0, -0.85505, 46, 0, 22)

@@ -1,0 +1,131 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="1_tibgc"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="2_uq3tt"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_v40w7"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Metal032/color.jpg" id="4_l7wb4"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Metal032/normal.jpg" id="5_qfx7e"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Metal032/roughness.jpg" id="6_03tmm"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_28"]
+size = Vector3(44, 0.2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_15"]
+albedo_color = Color(0.72, 0.697058, 0.666568, 1)
+albedo_texture = ExtResource("1_tibgc")
+roughness_texture = ExtResource("3_v40w7")
+normal_enabled = true
+normal_texture = ExtResource("2_uq3tt")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_28"]
+size = Vector3(44, 0.2, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_32"]
+size = Vector3(6, 0.2, 56)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14"]
+albedo_color = Color(0.72, 0.688519, 0.646087, 1)
+albedo_texture = ExtResource("1_tibgc")
+roughness_texture = ExtResource("3_v40w7")
+normal_enabled = true
+normal_texture = ExtResource("2_uq3tt")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_32"]
+size = Vector3(6, 0.2, 56)
+
+[sub_resource type="BoxMesh" id="BoxMesh_41"]
+size = Vector3(8, 0.1, 6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_19"]
+albedo_color = Color(0.876728, 1, 0.813576, 1)
+albedo_texture = ExtResource("4_l7wb4")
+roughness_texture = ExtResource("6_03tmm")
+normal_enabled = true
+normal_texture = ExtResource("5_qfx7e")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_41"]
+size = Vector3(8, 0.1, 6)
+
+[node name="Cell_2_0" type="Node3D" unique_id=2032400397]
+metadata/cell = Vector2i(2, 0)
+
+[node name="Boxes" type="Node3D" parent="." unique_id=1889353300]
+
+[node name="midden_toxic_pools" type="StaticBody3D" parent="Boxes" unique_id=1781702052]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 376, -0.1, 60)
+metadata/kind = "ground"
+metadata/toml_index = 49
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pools" unique_id=1849248173]
+mesh = SubResource("BoxMesh_28")
+surface_material_override/0 = SubResource("StandardMaterial3D_15")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pools" unique_id=385526126]
+shape = SubResource("BoxShape3D_28")
+
+[node name="midden_toxic_pools_road_z" type="StaticBody3D" parent="Boxes" unique_id=1987870677]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 376, -0.1, 85)
+metadata/kind = "ground"
+metadata/toml_index = 51
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pools_road_z" unique_id=780563015]
+mesh = SubResource("BoxMesh_32")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pools_road_z" unique_id=2018723311]
+shape = SubResource("BoxShape3D_32")
+
+[node name="midden_toxic_pool_1" type="StaticBody3D" parent="Boxes" unique_id=1176586698]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 370, 0.05, 52)
+metadata/kind = "platform"
+metadata/toml_index = 86
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pool_1" unique_id=1894042583]
+mesh = SubResource("BoxMesh_41")
+surface_material_override/0 = SubResource("StandardMaterial3D_19")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pool_1" unique_id=849330586]
+shape = SubResource("BoxShape3D_41")
+
+[node name="midden_toxic_pool_2" type="StaticBody3D" parent="Boxes" unique_id=1662299369]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 382, 0.05, 70)
+metadata/kind = "platform"
+metadata/toml_index = 87
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pool_2" unique_id=1309454858]
+mesh = SubResource("BoxMesh_41")
+surface_material_override/0 = SubResource("StandardMaterial3D_19")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pool_2" unique_id=403736413]
+shape = SubResource("BoxShape3D_41")
+
+[node name="midden_toxic_pool_3" type="StaticBody3D" parent="Boxes" unique_id=1989631500]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 366, 0.05, 72)
+metadata/kind = "platform"
+metadata/toml_index = 88
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pool_3" unique_id=842197452]
+mesh = SubResource("BoxMesh_41")
+surface_material_override/0 = SubResource("StandardMaterial3D_19")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pool_3" unique_id=1686901233]
+shape = SubResource("BoxShape3D_41")
+
+[node name="Pois" type="Node3D" parent="." unique_id=1715108761]
+
+[node name="midden_toxic_pools" type="Node3D" parent="Pois" unique_id=1101975073]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
+metadata/center = Vector3(376, 0, 60)
+metadata/radius = 22

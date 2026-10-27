@@ -1393,6 +1393,12 @@
       "step": "OW2",
       "type": "done",
       "summary": "One Terrain3DData for the world: export_zone_heights.gd also writes control maps + layers; build_world.py at 1 m (2305x1537), coarse-to-fine Laplace fill, world layer list (8), control map remaps zone paint and makes auto-shader cells explicit (flat/slope blend), transition strips blend nearest zone's flat layer into the next; tools/save_world_terrain.gd saves 70 region files to res://world/terrain/ (13 MB) + world_terrain.json; tools/build_world.sh runs all three. test_world_terrain.gd: offsets on 16 m grid, world heights match each zone (<=5 mm). Strip paint is a placeholder until roads/ridges."
+    },
+    {
+      "time": "2026-10-27T02:00:00-05:00",
+      "step": "OW3a",
+      "type": "wip",
+      "summary": "tools/build_cells.gd cuts each terrain level's Boxes/Props/Pois into 128 m cells (world/cells/<cx>_<cz>.tscn, 28 cells, 416 KB, cells.json) at world_offset; gameplay groups stay with the level. scripts/world/world_streamer.gd: 5x5 ring per viewer, load_threaded_request, one add per frame within 2 ms, RING+1 unload hysteresis, flush() for loading screens. test_world_streamer.gd (fresh cells, ring, hysteresis, cell_of). Not wired into main yet (OW3b: world scene)."
     }
   ],
   "completed_steps": [

@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="1_ogbkh"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="2_158mp"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_c05hj"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_53"]
+size = Vector3(140, 0.2, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14"]
+albedo_color = Color(0.72, 0.688519, 0.646087, 1)
+albedo_texture = ExtResource("1_ogbkh")
+roughness_texture = ExtResource("3_c05hj")
+normal_enabled = true
+normal_texture = ExtResource("2_158mp")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_53"]
+size = Vector3(140, 0.2, 10)
+
+[node name="Cell_4_2" type="Node3D" unique_id=969099261]
+metadata/cell = Vector2i(4, 2)
+
+[node name="Boxes" type="Node3D" parent="." unique_id=491351686]
+
+[node name="midden_portal_field" type="StaticBody3D" parent="Boxes" unique_id=1272354153]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, 260)
+metadata/kind = "ground"
+metadata/toml_index = 135
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_portal_field" unique_id=351443966]
+mesh = SubResource("BoxMesh_53")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_portal_field" unique_id=1872630399]
+shape = SubResource("BoxShape3D_53")

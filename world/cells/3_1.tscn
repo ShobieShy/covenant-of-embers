@@ -1,0 +1,149 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="1_hw18m"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="2_ivhav"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_cekr2"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/color.jpg" id="4_4nx8c"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/normal.jpg" id="5_17eun"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/roughness.jpg" id="6_ssskq"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_28"]
+size = Vector3(44, 0.2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_15"]
+albedo_color = Color(0.72, 0.697058, 0.666568, 1)
+albedo_texture = ExtResource("1_hw18m")
+roughness_texture = ExtResource("3_cekr2")
+normal_enabled = true
+normal_texture = ExtResource("2_ivhav")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_28"]
+size = Vector3(44, 0.2, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_33"]
+size = Vector3(6, 0.2, 86)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14"]
+albedo_color = Color(0.72, 0.688519, 0.646087, 1)
+albedo_texture = ExtResource("1_hw18m")
+roughness_texture = ExtResource("3_cekr2")
+normal_enabled = true
+normal_texture = ExtResource("2_ivhav")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_33"]
+size = Vector3(6, 0.2, 86)
+
+[sub_resource type="BoxMesh" id="BoxMesh_44"]
+size = Vector3(2, 4, 26)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_22"]
+albedo_color = Color(0.989641, 0.989641, 1, 1)
+albedo_texture = ExtResource("4_4nx8c")
+roughness_texture = ExtResource("6_ssskq")
+normal_enabled = true
+normal_texture = ExtResource("5_17eun")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_44"]
+size = Vector3(2, 4, 26)
+
+[sub_resource type="BoxMesh" id="BoxMesh_45"]
+size = Vector3(26, 4, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_45"]
+size = Vector3(26, 4, 2)
+
+[node name="Cell_3_1" type="Node3D" unique_id=1551887737]
+metadata/cell = Vector2i(3, 1)
+
+[node name="Boxes" type="Node3D" parent="." unique_id=1797789104]
+
+[node name="midden_compactor_pit" type="StaticBody3D" parent="Boxes" unique_id=509767728]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, -0.1, 190)
+metadata/kind = "ground"
+metadata/toml_index = 55
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_pit" unique_id=1509343617]
+mesh = SubResource("BoxMesh_28")
+surface_material_override/0 = SubResource("StandardMaterial3D_15")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_pit" unique_id=439696779]
+shape = SubResource("BoxShape3D_28")
+
+[node name="midden_compactor_pit_road_z" type="StaticBody3D" parent="Boxes" unique_id=1450093105]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, -0.1, 150)
+metadata/kind = "ground"
+metadata/toml_index = 57
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_pit_road_z" unique_id=599879624]
+mesh = SubResource("BoxMesh_33")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_pit_road_z" unique_id=519163214]
+shape = SubResource("BoxShape3D_33")
+
+[node name="midden_compactor_wall_-1_0" type="StaticBody3D" parent="Boxes" unique_id=169508483]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 412, 2, 190)
+metadata/kind = "wall"
+metadata/toml_index = 105
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_-1_0" unique_id=189223779]
+mesh = SubResource("BoxMesh_44")
+surface_material_override/0 = SubResource("StandardMaterial3D_22")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_-1_0" unique_id=431671776]
+shape = SubResource("BoxShape3D_44")
+
+[node name="midden_compactor_wall_1_0" type="StaticBody3D" parent="Boxes" unique_id=886356368]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 440, 2, 190)
+metadata/kind = "wall"
+metadata/toml_index = 106
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_1_0" unique_id=2103769263]
+mesh = SubResource("BoxMesh_44")
+surface_material_override/0 = SubResource("StandardMaterial3D_22")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_1_0" unique_id=902125606]
+shape = SubResource("BoxShape3D_44")
+
+[node name="midden_compactor_wall_0_-1" type="StaticBody3D" parent="Boxes" unique_id=258697765]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, 2, 176)
+metadata/kind = "wall"
+metadata/toml_index = 107
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_0_-1" unique_id=929417688]
+mesh = SubResource("BoxMesh_45")
+surface_material_override/0 = SubResource("StandardMaterial3D_22")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_0_-1" unique_id=600266179]
+shape = SubResource("BoxShape3D_45")
+
+[node name="midden_compactor_wall_0_1" type="StaticBody3D" parent="Boxes" unique_id=1171735881]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, 2, 204)
+metadata/kind = "wall"
+metadata/toml_index = 108
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_wall_0_1" unique_id=1941805362]
+mesh = SubResource("BoxMesh_45")
+surface_material_override/0 = SubResource("StandardMaterial3D_22")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_wall_0_1" unique_id=303963643]
+shape = SubResource("BoxShape3D_45")
+
+[node name="Pois" type="Node3D" parent="." unique_id=962546048]
+
+[node name="midden_compactor_pit" type="Node3D" parent="Pois" unique_id=1439424584]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
+metadata/center = Vector3(426, 0, 190)
+metadata/radius = 22

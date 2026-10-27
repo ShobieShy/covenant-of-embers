@@ -1,0 +1,107 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="1_plwor"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="2_i3d8n"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_yjn1p"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/color.jpg" id="4_6u2g8"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/normal.jpg" id="5_7bxms"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/roughness.jpg" id="6_t8ctu"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_28"]
+size = Vector3(44, 0.2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_15"]
+albedo_color = Color(0.72, 0.697058, 0.666568, 1)
+albedo_texture = ExtResource("1_plwor")
+roughness_texture = ExtResource("3_yjn1p")
+normal_enabled = true
+normal_texture = ExtResource("2_i3d8n")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_28"]
+size = Vector3(44, 0.2, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_36"]
+size = Vector3(6, 0.2, 106)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14"]
+albedo_color = Color(0.72, 0.688519, 0.646087, 1)
+albedo_texture = ExtResource("1_plwor")
+roughness_texture = ExtResource("3_yjn1p")
+normal_enabled = true
+normal_texture = ExtResource("2_i3d8n")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_36"]
+size = Vector3(6, 0.2, 106)
+
+[sub_resource type="BoxMesh" id="BoxMesh_50"]
+size = Vector3(10, 4, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_24"]
+albedo_color = Color(1, 0.989124, 0.977926, 1)
+albedo_texture = ExtResource("4_6u2g8")
+roughness_texture = ExtResource("6_t8ctu")
+normal_enabled = true
+normal_texture = ExtResource("5_7bxms")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_50"]
+size = Vector3(10, 4, 2)
+
+[node name="Cell_6_1" type="Node3D" unique_id=1902481880]
+metadata/cell = Vector2i(6, 1)
+
+[node name="Boxes" type="Node3D" parent="." unique_id=1859369601]
+
+[node name="midden_joes_old_stash" type="StaticBody3D" parent="Boxes" unique_id=335246347]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 836, -0.1, 210)
+metadata/kind = "ground"
+metadata/toml_index = 66
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_joes_old_stash" unique_id=520320552]
+mesh = SubResource("BoxMesh_28")
+surface_material_override/0 = SubResource("StandardMaterial3D_15")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_joes_old_stash" unique_id=1619958428]
+shape = SubResource("BoxShape3D_28")
+
+[node name="midden_joes_old_stash_road_z" type="StaticBody3D" parent="Boxes" unique_id=1794349907]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 836, -0.1, 160)
+metadata/kind = "ground"
+metadata/toml_index = 68
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_joes_old_stash_road_z" unique_id=291173303]
+mesh = SubResource("BoxMesh_36")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_joes_old_stash_road_z" unique_id=1626838732]
+shape = SubResource("BoxShape3D_36")
+
+[node name="midden_stash_vault_back" type="StaticBody3D" parent="Boxes" unique_id=697171641]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 836, 2, 222)
+metadata/kind = "wall"
+metadata/toml_index = 122
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_stash_vault_back" unique_id=588890353]
+mesh = SubResource("BoxMesh_50")
+surface_material_override/0 = SubResource("StandardMaterial3D_24")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_stash_vault_back" unique_id=1978923974]
+shape = SubResource("BoxShape3D_50")
+
+[node name="Pois" type="Node3D" parent="." unique_id=805399419]
+
+[node name="midden_joes_old_stash" type="Node3D" parent="Pois" unique_id=1819619684]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
+metadata/center = Vector3(836, 0, 210)
+metadata/radius = 22

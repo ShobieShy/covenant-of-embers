@@ -1,0 +1,119 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="1_d2qql"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="2_cw8mx"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_ru0nf"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/color.jpg" id="4_4tp4j"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/normal.jpg" id="5_1utho"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/roughness.jpg" id="6_6yedh"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_29"]
+size = Vector3(156, 0.2, 6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14"]
+albedo_color = Color(0.72, 0.688519, 0.646087, 1)
+albedo_texture = ExtResource("1_d2qql")
+roughness_texture = ExtResource("3_ru0nf")
+normal_enabled = true
+normal_texture = ExtResource("2_cw8mx")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_29"]
+size = Vector3(156, 0.2, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_31"]
+size = Vector3(206, 0.2, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_31"]
+size = Vector3(206, 0.2, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_35"]
+size = Vector3(266, 0.2, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_35"]
+size = Vector3(266, 0.2, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_42"]
+size = Vector3(2, 14, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_20"]
+albedo_color = Color(1, 0.939625, 0.80369, 1)
+albedo_texture = ExtResource("4_4tp4j")
+roughness_texture = ExtResource("6_6yedh")
+normal_enabled = true
+normal_texture = ExtResource("5_1utho")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_42"]
+size = Vector3(2, 14, 2)
+
+[node name="Cell_5_0" type="Node3D" unique_id=881665144]
+metadata/cell = Vector2i(5, 0)
+
+[node name="Boxes" type="Node3D" parent="." unique_id=2061477594]
+
+[node name="midden_scrap_bridge_road_x" type="StaticBody3D" parent="Boxes" unique_id=360942546]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 651, -0.1, 10)
+metadata/kind = "ground"
+metadata/toml_index = 47
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_scrap_bridge_road_x" unique_id=1583240752]
+mesh = SubResource("BoxMesh_29")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_scrap_bridge_road_x" unique_id=1098811493]
+shape = SubResource("BoxShape3D_29")
+
+[node name="midden_crane_yard_road_x" type="StaticBody3D" parent="Boxes" unique_id=229675867]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 676, -0.1, 110)
+metadata/kind = "ground"
+metadata/toml_index = 53
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crane_yard_road_x" unique_id=278306616]
+mesh = SubResource("BoxMesh_31")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crane_yard_road_x" unique_id=1418559287]
+shape = SubResource("BoxShape3D_31")
+
+[node name="midden_burned_shacks_road_x" type="StaticBody3D" parent="Boxes" unique_id=1513899660]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 651, -0.1, 110)
+metadata/kind = "ground"
+metadata/toml_index = 59
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_burned_shacks_road_x" unique_id=1434387121]
+mesh = SubResource("BoxMesh_29")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_burned_shacks_road_x" unique_id=1912094921]
+shape = SubResource("BoxShape3D_29")
+
+[node name="midden_joes_old_stash_road_x" type="StaticBody3D" parent="Boxes" unique_id=1652449074]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 706, -0.1, 110)
+metadata/kind = "ground"
+metadata/toml_index = 67
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_joes_old_stash_road_x" unique_id=1605032219]
+mesh = SubResource("BoxMesh_35")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_joes_old_stash_road_x" unique_id=1390656810]
+shape = SubResource("BoxShape3D_35")
+
+[node name="midden_crane_1" type="StaticBody3D" parent="Boxes" unique_id=1070482370]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 766, 7, 50)
+metadata/kind = "wall"
+metadata/toml_index = 89
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_crane_1" unique_id=1372847350]
+mesh = SubResource("BoxMesh_42")
+surface_material_override/0 = SubResource("StandardMaterial3D_20")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_crane_1" unique_id=2115862941]
+shape = SubResource("BoxShape3D_42")

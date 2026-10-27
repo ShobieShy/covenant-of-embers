@@ -1,0 +1,169 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="1_k4opm"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="2_vlxox"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_sjglk"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/color.jpg" id="4_24wpr"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/normal.jpg" id="5_eng8u"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/roughness.jpg" id="6_2ob07"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Metal032/color.jpg" id="7_4fr1c"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Metal032/normal.jpg" id="8_vchva"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Metal032/roughness.jpg" id="9_7v7dg"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_28"]
+size = Vector3(44, 0.2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_15"]
+albedo_color = Color(0.72, 0.697058, 0.666568, 1)
+albedo_texture = ExtResource("1_k4opm")
+roughness_texture = ExtResource("3_sjglk")
+normal_enabled = true
+normal_texture = ExtResource("2_vlxox")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_28"]
+size = Vector3(44, 0.2, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_34"]
+size = Vector3(6, 0.2, 126)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14"]
+albedo_color = Color(0.72, 0.688519, 0.646087, 1)
+albedo_texture = ExtResource("1_k4opm")
+roughness_texture = ExtResource("3_sjglk")
+normal_enabled = true
+normal_texture = ExtResource("2_vlxox")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_34"]
+size = Vector3(6, 0.2, 126)
+
+[sub_resource type="BoxMesh" id="BoxMesh_36"]
+size = Vector3(6, 0.2, 106)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_36"]
+size = Vector3(6, 0.2, 106)
+
+[sub_resource type="BoxMesh" id="BoxMesh_47"]
+size = Vector3(2, 4, 18)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_24"]
+albedo_color = Color(1, 0.989124, 0.977926, 1)
+albedo_texture = ExtResource("4_24wpr")
+roughness_texture = ExtResource("6_2ob07")
+normal_enabled = true
+normal_texture = ExtResource("5_eng8u")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_47"]
+size = Vector3(2, 4, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_48"]
+size = Vector3(18, 0.4, 14)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_25"]
+albedo_color = Color(1, 0.976502, 0.933675, 1)
+albedo_texture = ExtResource("7_4fr1c")
+roughness_texture = ExtResource("9_7v7dg")
+normal_enabled = true
+normal_texture = ExtResource("8_vchva")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_48"]
+size = Vector3(18, 0.4, 14)
+
+[node name="Cell_4_1" type="Node3D" unique_id=201414152]
+metadata/cell = Vector2i(4, 1)
+
+[node name="Boxes" type="Node3D" parent="." unique_id=739361816]
+
+[node name="midden_sunken_tip" type="StaticBody3D" parent="Boxes" unique_id=1540609180]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, 230)
+metadata/kind = "ground"
+metadata/toml_index = 61
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_tip" unique_id=168946046]
+mesh = SubResource("BoxMesh_28")
+surface_material_override/0 = SubResource("StandardMaterial3D_15")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_tip" unique_id=280773120]
+shape = SubResource("BoxShape3D_28")
+
+[node name="midden_sunken_tip_road_z" type="StaticBody3D" parent="Boxes" unique_id=1865130113]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, 170)
+metadata/kind = "ground"
+metadata/toml_index = 62
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_tip_road_z" unique_id=448355271]
+mesh = SubResource("BoxMesh_34")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_tip_road_z" unique_id=113946361]
+shape = SubResource("BoxShape3D_34")
+
+[node name="midden_south_road_z" type="StaticBody3D" parent="Boxes" unique_id=499844735]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, -0.1, 160)
+metadata/kind = "ground"
+metadata/toml_index = 69
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_south_road_z" unique_id=939495835]
+mesh = SubResource("BoxMesh_36")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_south_road_z" unique_id=1722082778]
+shape = SubResource("BoxShape3D_36")
+
+[node name="midden_sunken_wall_w" type="StaticBody3D" parent="Boxes" unique_id=1413793612]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 568, 2, 230)
+metadata/kind = "wall"
+metadata/toml_index = 113
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_wall_w" unique_id=499006602]
+mesh = SubResource("BoxMesh_47")
+surface_material_override/0 = SubResource("StandardMaterial3D_24")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_wall_w" unique_id=1526058874]
+shape = SubResource("BoxShape3D_47")
+
+[node name="midden_sunken_wall_e" type="StaticBody3D" parent="Boxes" unique_id=270132729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 584, 2, 230)
+metadata/kind = "wall"
+metadata/toml_index = 114
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_wall_e" unique_id=1347689314]
+mesh = SubResource("BoxMesh_47")
+surface_material_override/0 = SubResource("StandardMaterial3D_24")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_wall_e" unique_id=749127494]
+shape = SubResource("BoxShape3D_47")
+
+[node name="midden_sunken_roof" type="StaticBody3D" parent="Boxes" unique_id=677351982]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 4.2, 232)
+metadata/kind = "platform"
+metadata/toml_index = 115
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_sunken_roof" unique_id=327018395]
+mesh = SubResource("BoxMesh_48")
+surface_material_override/0 = SubResource("StandardMaterial3D_25")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_sunken_roof" unique_id=534228836]
+shape = SubResource("BoxShape3D_48")
+
+[node name="Pois" type="Node3D" parent="." unique_id=1666006630]
+
+[node name="midden_sunken_tip" type="Node3D" parent="Pois" unique_id=727350817]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
+metadata/center = Vector3(576, 0, 230)
+metadata/radius = 22

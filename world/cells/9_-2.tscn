@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-large.glb" id="1_cjhh1"]
+
+[node name="Cell_9_-2" type="Node3D" unique_id=843011520]
+metadata/cell = Vector2i(9, -2)
+
+[node name="Props" type="Node3D" parent="." unique_id=1741801797]
+
+[node name="breach_crater_rock_25" type="Node3D" parent="Props" unique_id=650768661 instance=ExtResource("1_cjhh1")]
+transform = Transform3D(-2.293816, 0, -1.570608, 0, 2.78, 0, 1.570608, 0, -2.293816, 1183.093, 0, -134.541)
+metadata/snap = true

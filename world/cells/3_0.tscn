@@ -1,0 +1,87 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="1_5qx8o"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="2_ktrfc"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_q0nx0"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_29"]
+size = Vector3(156, 0.2, 6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14"]
+albedo_color = Color(0.72, 0.688519, 0.646087, 1)
+albedo_texture = ExtResource("1_5qx8o")
+roughness_texture = ExtResource("3_q0nx0")
+normal_enabled = true
+normal_texture = ExtResource("2_ktrfc")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_29"]
+size = Vector3(156, 0.2, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_31"]
+size = Vector3(206, 0.2, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_31"]
+size = Vector3(206, 0.2, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_35"]
+size = Vector3(266, 0.2, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_35"]
+size = Vector3(266, 0.2, 6)
+
+[node name="Cell_3_0" type="Node3D" unique_id=2054798003]
+metadata/cell = Vector2i(3, 0)
+
+[node name="Boxes" type="Node3D" parent="." unique_id=443427392]
+
+[node name="midden_gnawer_warren_road_x" type="StaticBody3D" parent="Boxes" unique_id=1020369203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 501, -0.1, 10)
+metadata/kind = "ground"
+metadata/toml_index = 44
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_gnawer_warren_road_x" unique_id=927560850]
+mesh = SubResource("BoxMesh_29")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_gnawer_warren_road_x" unique_id=1041431334]
+shape = SubResource("BoxShape3D_29")
+
+[node name="midden_toxic_pools_road_x" type="StaticBody3D" parent="Boxes" unique_id=1477075129]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 476, -0.1, 110)
+metadata/kind = "ground"
+metadata/toml_index = 50
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_toxic_pools_road_x" unique_id=891874746]
+mesh = SubResource("BoxMesh_31")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_toxic_pools_road_x" unique_id=1732461118]
+shape = SubResource("BoxShape3D_31")
+
+[node name="midden_compactor_pit_road_x" type="StaticBody3D" parent="Boxes" unique_id=95004410]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 501, -0.1, 110)
+metadata/kind = "ground"
+metadata/toml_index = 56
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_compactor_pit_road_x" unique_id=938357819]
+mesh = SubResource("BoxMesh_29")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_compactor_pit_road_x" unique_id=2089197768]
+shape = SubResource("BoxShape3D_29")
+
+[node name="midden_heap_graveyard_road_x" type="StaticBody3D" parent="Boxes" unique_id=1442378375]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 446, -0.1, 110)
+metadata/kind = "ground"
+metadata/toml_index = 64
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_heap_graveyard_road_x" unique_id=1008633578]
+mesh = SubResource("BoxMesh_35")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_heap_graveyard_road_x" unique_id=2016941015]
+shape = SubResource("BoxShape3D_35")

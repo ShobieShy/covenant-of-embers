@@ -1,0 +1,152 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="1_dykem"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="2_8lfrl"]
+[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_smpcd"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_28"]
+size = Vector3(44, 0.2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_15"]
+albedo_color = Color(0.72, 0.697058, 0.666568, 1)
+albedo_texture = ExtResource("1_dykem")
+roughness_texture = ExtResource("3_smpcd")
+normal_enabled = true
+normal_texture = ExtResource("2_8lfrl")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_28"]
+size = Vector3(44, 0.2, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_30"]
+size = Vector3(6, 0.2, 76)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14"]
+albedo_color = Color(0.72, 0.688519, 0.646087, 1)
+albedo_texture = ExtResource("1_dykem")
+roughness_texture = ExtResource("3_smpcd")
+normal_enabled = true
+normal_texture = ExtResource("2_8lfrl")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_30"]
+size = Vector3(6, 0.2, 76)
+
+[sub_resource type="BoxMesh" id="BoxMesh_37"]
+size = Vector3(5, 3, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_9"]
+albedo_color = Color(1, 0.967179, 0.931101, 1)
+albedo_texture = ExtResource("1_dykem")
+roughness_texture = ExtResource("3_smpcd")
+normal_enabled = true
+normal_texture = ExtResource("2_8lfrl")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_37"]
+size = Vector3(5, 3, 5)
+
+[node name="Cell_3_-1" type="Node3D" unique_id=652966773]
+metadata/cell = Vector2i(3, -1)
+
+[node name="Boxes" type="Node3D" parent="." unique_id=333220699]
+
+[node name="midden_gnawer_warren" type="StaticBody3D" parent="Boxes" unique_id=1192938088]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, -0.1, -60)
+metadata/kind = "ground"
+metadata/toml_index = 43
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_gnawer_warren" unique_id=331369980]
+mesh = SubResource("BoxMesh_28")
+surface_material_override/0 = SubResource("StandardMaterial3D_15")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_gnawer_warren" unique_id=1650310828]
+shape = SubResource("BoxShape3D_28")
+
+[node name="midden_gnawer_warren_road_z" type="StaticBody3D" parent="Boxes" unique_id=809913303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 426, -0.1, -25)
+metadata/kind = "ground"
+metadata/toml_index = 45
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_gnawer_warren_road_z" unique_id=248941343]
+mesh = SubResource("BoxMesh_30")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_gnawer_warren_road_z" unique_id=1214874254]
+shape = SubResource("BoxShape3D_30")
+
+[node name="midden_warren_mound_1" type="StaticBody3D" parent="Boxes" unique_id=1696444524]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 435, 1.5, -60)
+metadata/kind = "heap"
+metadata/toml_index = 70
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_1" unique_id=1300146255]
+mesh = SubResource("BoxMesh_37")
+surface_material_override/0 = SubResource("StandardMaterial3D_9")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_1" unique_id=2143622409]
+shape = SubResource("BoxShape3D_37")
+
+[node name="midden_warren_mound_2" type="StaticBody3D" parent="Boxes" unique_id=17060437]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 428.838, 1.5, -51.459)
+metadata/kind = "heap"
+metadata/toml_index = 71
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_2" unique_id=1332937975]
+mesh = SubResource("BoxMesh_37")
+surface_material_override/0 = SubResource("StandardMaterial3D_9")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_2" unique_id=1196309606]
+shape = SubResource("BoxShape3D_37")
+
+[node name="midden_warren_mound_3" type="StaticBody3D" parent="Boxes" unique_id=15677342]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 418.78998, 1.5, -54.614)
+metadata/kind = "heap"
+metadata/toml_index = 72
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_3" unique_id=389827230]
+mesh = SubResource("BoxMesh_37")
+surface_material_override/0 = SubResource("StandardMaterial3D_9")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_3" unique_id=227100709]
+shape = SubResource("BoxShape3D_37")
+
+[node name="midden_warren_mound_4" type="StaticBody3D" parent="Boxes" unique_id=867813627]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 418.615, 1.5, -65.144)
+metadata/kind = "heap"
+metadata/toml_index = 73
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_4" unique_id=421255291]
+mesh = SubResource("BoxMesh_37")
+surface_material_override/0 = SubResource("StandardMaterial3D_9")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_4" unique_id=1956367973]
+shape = SubResource("BoxShape3D_37")
+
+[node name="midden_warren_mound_5" type="StaticBody3D" parent="Boxes" unique_id=1986024898]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 428.55298, 1.5, -68.630005)
+metadata/kind = "heap"
+metadata/toml_index = 74
+
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_warren_mound_5" unique_id=1180934087]
+mesh = SubResource("BoxMesh_37")
+surface_material_override/0 = SubResource("StandardMaterial3D_9")
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/midden_warren_mound_5" unique_id=352475231]
+shape = SubResource("BoxShape3D_37")
+
+[node name="Pois" type="Node3D" parent="." unique_id=2099186825]
+
+[node name="midden_gnawer_warren" type="Node3D" parent="Pois" unique_id=969670674]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 576, 0, -240)
+metadata/center = Vector3(426, 0, -60)
+metadata/radius = 22

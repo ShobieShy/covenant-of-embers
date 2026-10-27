@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-large.glb" id="1_lwjs5"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-small.glb" id="2_e84xi"]
+
+[node name="Cell_9_-1" type="Node3D" unique_id=1307061148]
+metadata/cell = Vector2i(9, -1)
+
+[node name="Props" type="Node3D" parent="." unique_id=722243712]
+
+[node name="breach_crater_rock_5" type="Node3D" parent="Props" unique_id=635741922 instance=ExtResource("1_lwjs5")]
+transform = Transform3D(3.362022, 0, -1.996223, 0, 3.91, 0, 1.996223, 0, 3.362022, 1153.263, 0, -126.576996)
+metadata/snap = true
+
+[node name="breach_crater_rock_11" type="Node3D" parent="Props" unique_id=279487684 instance=ExtResource("2_e84xi")]
+transform = Transform3D(-0.083766, 0, -3.198903, 0, 3.2, 0, 3.198903, 0, -0.083766, 1158.06, 0, -82.149)
+metadata/snap = true
+
+[node name="breach_crater_rock_26" type="Node3D" parent="Props" unique_id=1531940744 instance=ExtResource("2_e84xi")]
+transform = Transform3D(-2.324958, 0, -0.264896, 0, 2.34, 0, 0.264896, 0, -2.324958, 1183.033, 0, -91.927)
+metadata/snap = true

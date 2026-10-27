@@ -1,0 +1,173 @@
+{
+  "cell_size": 128.0,
+  "cells": {
+    "-1_-1": {
+      "levels": [
+        "town_square"
+      ],
+      "nodes": 54
+    },
+    "-1_0": {
+      "levels": [
+        "town_square"
+      ],
+      "nodes": 47
+    },
+    "-2_-1": {
+      "levels": [
+        "old_oak"
+      ],
+      "nodes": 15
+    },
+    "-2_0": {
+      "levels": [
+        "old_oak"
+      ],
+      "nodes": 11
+    },
+    "-3_-1": {
+      "levels": [
+        "old_oak"
+      ],
+      "nodes": 65
+    },
+    "-3_0": {
+      "levels": [
+        "old_oak"
+      ],
+      "nodes": 38
+    },
+    "0_-1": {
+      "levels": [
+        "town_square"
+      ],
+      "nodes": 39
+    },
+    "0_0": {
+      "levels": [
+        "town_square"
+      ],
+      "nodes": 47
+    },
+    "2_0": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 6
+    },
+    "2_1": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 9
+    },
+    "3_-1": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 8
+    },
+    "3_0": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 4
+    },
+    "3_1": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 7
+    },
+    "4_-1": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 1
+    },
+    "4_-2": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 55
+    },
+    "4_0": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 20
+    },
+    "4_1": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 7
+    },
+    "4_2": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 1
+    },
+    "5_-1": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 14
+    },
+    "5_0": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 5
+    },
+    "5_1": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 7
+    },
+    "6_0": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 18
+    },
+    "6_1": {
+      "levels": [
+        "midden"
+      ],
+      "nodes": 4
+    },
+    "8_-1": {
+      "levels": [
+        "breach"
+      ],
+      "nodes": 117
+    },
+    "8_0": {
+      "levels": [
+        "breach"
+      ],
+      "nodes": 55
+    },
+    "9_-1": {
+      "levels": [
+        "breach"
+      ],
+      "nodes": 3
+    },
+    "9_-2": {
+      "levels": [
+        "breach"
+      ],
+      "nodes": 1
+    },
+    "9_0": {
+      "levels": [
+        "breach"
+      ],
+      "nodes": 9
+    }
+  }
+}
