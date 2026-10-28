@@ -73,6 +73,7 @@ func _run() -> void:
 		for o in line:
 			o.visible = o == e
 		var h := maxf(e.def.size.y, 1.2)
+		h *= 1.5 if e.def.id == "goblin_grunt" else 1.0
 		var p := e.position
 		await _shot(
 			"hand_%s_front" % e.def.id,
@@ -104,11 +105,12 @@ func _run() -> void:
 		for r in f.rooms:
 			var kind := String(r.get_meta(&"kind"))
 			var c: Vector3 = r.global_position
+			var sz := _size(f, kit, r)
 			if kind in ["rest", "exit", "elite", "start"] or (kind == "normal" and r == f.rooms[1]):
 				await _shot(
 					"floor%d_%s_%s" % [n, kind, r.name],
-					c + Vector3(5, 3.2, 6),
-					c + Vector3(-1, 0.5, -2)
+					c + Vector3(sz.x / 2 - 1.2, 2.6, sz.y / 2 - 1.2),
+					c + Vector3(-sz.x / 6, 0.4, -sz.y / 6)
 				)
 			if kind == "boss":
 				await _shot("floor5_throne_hall", c + Vector3(0, 6, 15), c + Vector3(0, 1.5, -8))
@@ -121,3 +123,16 @@ func _run() -> void:
 		f.queue_free()
 		await process_frame
 	quit()
+
+
+## The room's footprint, as LabyrinthFloor._build_rooms sizes it (kit size, rotated).
+func _size(f: LabyrinthFloor, kit: Dictionary, r: Node3D) -> Vector2:
+	var i := f.rooms.find(r)
+	if not f.layout.has("rooms"):
+		return Vector2(12, 12)
+	var rs: Array = f.layout["rooms"]
+	if i < 0 or i >= rs.size():
+		return Vector2(12, 12)
+	var kr: Dictionary = f._kit_room(kit, String(rs[i]["room"]))
+	var sz := Vector2(float(kr["size"][0]), float(kr["size"][1]))
+	return Vector2(sz.y, sz.x) if int(rs[i]["rot"]) % 2 == 1 else sz

@@ -1640,6 +1640,11 @@
       "time": "2026-10-28T02:37-05:00",
       "step": "L3b",
       "summary": "Goblin King brain (rock throw, slam, roar summoning 2 grunts, crown drop prop); seeded goblin packs + King spawn on labyrinth floors with elite/boss persistence via LabyrinthState; warrens exit-room stair_down hole with landing and repositioned StairsDown trigger; tools/l3_shots.gd review shots; test_goblin_king (8)."
+    },
+    {
+      "time": "2026-10-28T02:39-05:00",
+      "step": "L3c",
+      "summary": "l3_shots: room cameras framed from the room's kit footprint, grunt close-up pulled back; test_lab_enemies (main.gd _lab_enemies/_on_lab_kill on a stubbed main: floor spawns, spawner replace, elite pack + King saved)."
     }
   ],
   "completed_steps": [
