@@ -70,7 +70,7 @@ static func today() -> int:
 func open(v: Vendor) -> void:
 	vendor = v
 	vendor.restock(today())
-	visible = true
+	UiAnim.open(self)  # 0.3.1 P1
 	status.text = ""
 	player.ui_open = true
 	if DisplayServer.get_name() != "headless":
@@ -80,7 +80,7 @@ func open(v: Vendor) -> void:
 
 
 func close() -> void:
-	visible = false
+	UiAnim.close(self)  # 0.3.1 P1
 	if player:
 		player.ui_open = false
 	if DisplayServer.get_name() != "headless":
@@ -96,12 +96,16 @@ func refresh() -> void:
 	if player == null or vendor == null:
 		return
 	wallet.text = (
-		"%s   -   %d Gold   %d Arcane Dust" % [vendor.id.capitalize(), player.inventory.gold, player.inventory.dust]
+		"%s   -   %d Gold   %d Arcane Dust"
+		% [vendor.id.capitalize(), player.inventory.gold, player.inventory.dust]
 	)
 	stock_list.clear()
 	for s in vendor.stock:
 		var si := stock_list.add_item(
-			"%s   %d Gold" % [name_of(s["item"]), Archetype.discounted(int(s["price"]), player.archetype)],
+			(
+				"%s   %d Gold"
+				% [name_of(s["item"]), Archetype.discounted(int(s["price"]), player.archetype)]
+			),
 			ItemIcons.for_item(s["item"])
 		)
 		stock_list.set_item_icon_modulate(si, ItemIcons.tint_for(s["item"]))

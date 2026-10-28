@@ -138,6 +138,7 @@ func apply_to(p: Player) -> void:
 		clampi(colorblind, 0, Accessibility.MODE_NAMES.size() - 1) as Accessibility.Mode
 	)
 	Accessibility.subtitles = subtitles
+	UiAnim.reduced_motion = reduced_motion  # 0.3.1 P1
 	Accessibility.subtitle_scale = subtitle_scale
 	var tree := Engine.get_main_loop() as SceneTree
 	if tree:

@@ -203,7 +203,7 @@ func is_open() -> bool:
 
 
 func open() -> void:
-	visible = true
+	UiAnim.open(self)  # 0.3.1 P1
 	if player:
 		player.ui_open = true
 	if DisplayServer.get_name() != "headless":
@@ -213,7 +213,7 @@ func open() -> void:
 
 
 func close() -> void:
-	visible = false
+	UiAnim.close(self)  # 0.3.1 P1
 	if player:
 		player.ui_open = false
 	if DisplayServer.get_name() != "headless":
@@ -273,7 +273,9 @@ func refresh() -> void:
 			slot_buttons[i].tooltip_text += " (junk)"
 		_junk_badge(slot_buttons[i], it if it and player.inventory.is_junk(it) else null)
 	var pot := player.equipment.potion
-	potion_button.text = ("Potions: %s x%d" % [name_of(pot), player.equipment.potion_count] if pot else "Potions: -")
+	potion_button.text = (
+		"Potions: %s x%d" % [name_of(pot), player.equipment.potion_count] if pot else "Potions: -"
+	)
 	for c in quest_box.get_children():
 		c.queue_free()
 	for q in player.quest_items:
@@ -285,7 +287,11 @@ func refresh() -> void:
 	qty.visible = is_pot
 	qty.max_value = maxi(1, player.equipment.potion_count) if is_pot else 1
 	junk_button.disabled = not (selected is Resource and player.inventory.has(selected))
-	junk_button.text = ("Unmark junk" if selected is Resource and player.inventory.is_junk(selected) else "Mark junk")
+	junk_button.text = (
+		"Unmark junk"
+		if selected is Resource and player.inventory.is_junk(selected)
+		else "Mark junk"
+	)
 	trash_button.disabled = selected == null
 	card.text = card_text(selected)
 
@@ -341,7 +347,9 @@ func toggle_junk() -> bool:
 		return false
 	var on := not player.inventory.is_junk(selected)
 	var ok := player.inventory.set_junk(selected, on)
-	status.text = (("Marked as junk." if on else "Unmarked.") if ok else "Only backpack items can be junk.")
+	status.text = (
+		("Marked as junk." if on else "Unmarked.") if ok else "Only backpack items can be junk."
+	)
 	refresh()
 	return ok
 
@@ -355,13 +363,19 @@ func card_text(item: Variant) -> String:
 	if not (item is WieldableInstance or item is WieldablePart or item is EquipmentItem):
 		return "[b]%s[/b]" % name_of(item)
 	var c := CompareCard.for_item(item, player)
-	var s := "[color=#%s][b]%s[/b][/color]\n%s %s\n" % [c.color.to_html(false), c.title, c.rarity_name, c.kind]
+	var s := (
+		"[color=#%s][b]%s[/b][/color]\n%s %s\n"
+		% [c.color.to_html(false), c.title, c.rarity_name, c.kind]
+	)
 	if not c.compared_to.is_empty():
 		s += "[i]vs %s[/i]\n" % c.compared_to
 	for r in c.rows:
 		s += "%s: %s" % [r.label, snapped(r.value, 0.01)]
 		if r.compared and not is_zero_approx(r.delta):
-			s += (" [color=#%s](%+.2f)[/color]" % [(BETTER if r.better else WORSE).to_html(false), r.delta])
+			s += (
+				" [color=#%s](%+.2f)[/color]"
+				% [(BETTER if r.better else WORSE).to_html(false), r.delta]
+			)
 		s += "\n"
 	return s + c.extra_lines()
 
@@ -398,7 +412,9 @@ func unequip_selected() -> bool:
 func copy_selected() -> String:
 	last_code = ItemCodes.encode(selected) if selected is Resource else ""
 	if last_code.is_empty():
-		status.text = (ItemCodes.encode_error(selected) if selected is Resource else "Nothing selected.")
+		status.text = (
+			ItemCodes.encode_error(selected) if selected is Resource else "Nothing selected."
+		)
 		return ""
 	code_field.text = last_code
 	if DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):

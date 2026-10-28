@@ -31,11 +31,12 @@ func bind(r: DialogueRunner) -> void:
 	runner = r
 	r.line_shown.connect(_on_line)
 	r.choices_shown.connect(_on_choices)
-	r.ended.connect(func(_id: String) -> void: visible = false)
+	r.ended.connect(func(_id: String) -> void: UiAnim.close(self))  # 0.3.1 P1
 
 
 func _on_line(sp: String, t: String) -> void:
-	visible = true
+	if not visible:
+		UiAnim.open(self)  # 0.3.1 P1
 	speaker_label.text = sp
 	text_label.text = t
 	text_label.visible = Accessibility.subtitles  # step 76
@@ -69,6 +70,12 @@ func button_texts() -> PackedStringArray:
 
 
 func _unhandled_input(e: InputEvent) -> void:
-	if visible and runner and runner.active and not runner.awaiting_choice() and e.is_action_pressed(&"interact"):
+	if (
+		visible
+		and runner
+		and runner.active
+		and not runner.awaiting_choice()
+		and e.is_action_pressed(&"interact")
+	):
 		runner.advance()
 		get_viewport().set_input_as_handled()

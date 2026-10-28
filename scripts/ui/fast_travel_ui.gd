@@ -50,7 +50,7 @@ func show_map(ft: FastTravel, here_point: String) -> void:
 		b.pressed.connect(press.bind(p))
 		list.add_child(b)
 		buttons[p] = b
-	visible = true
+	UiAnim.open(self)  # 0.3.1 P1
 	Gamepad.focus_first(self)  # step 77
 
 
@@ -63,5 +63,5 @@ func press(point: String) -> bool:
 
 
 func hide_map() -> void:
-	visible = false
+	UiAnim.close(self)  # 0.3.1 P1
 	closed.emit()

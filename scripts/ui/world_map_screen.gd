@@ -45,12 +45,12 @@ func open() -> void:
 	if size.x > 0.0 and tex:  # fit the world to the screen
 		zoom = clampf(minf(size.x / tex.get_width(), size.y / tex.get_height()), ZOOM_MIN, ZOOM_MAX)
 		pan = (size - Vector2(tex.get_size()) * zoom) * 0.5
-	visible = true
+	UiAnim.open(self)  # 0.3.1 P1
 	queue_redraw()
 
 
 func close() -> void:
-	visible = false
+	UiAnim.close(self)  # 0.3.1 P1
 	closed.emit()
 
 
