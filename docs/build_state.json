@@ -1645,6 +1645,16 @@
       "time": "2026-10-28T02:39-05:00",
       "step": "L3c",
       "summary": "l3_shots: room cameras framed from the room's kit footprint, grunt close-up pulled back; test_lab_enemies (main.gd _lab_enemies/_on_lab_kill on a stubbed main: floor spawns, spawner replace, elite pack + King saved)."
+    },
+    {
+      "time": "2026-10-28T02:52-05:00",
+      "step": "rt33",
+      "summary": "L3 milestone full suite: 609 passed, 0 failed (build/rt33.log)."
+    },
+    {
+      "time": "2026-10-28T02:52-05:00",
+      "step": "L4a",
+      "summary": "LabyrinthSync: host-authoritative co-op floors ('lab' state push on floor entry / roster change, joiner plays a copy of the host's LabyrinthState and follows its floor, own block restored), joiner stairs inert, host stairs need the party within 10 m or a 10 s vote ('lab_vote'); joiners skip _lab_enemies (puppets); test_labyrinth_sync (4)."
     }
   ],
   "completed_steps": [

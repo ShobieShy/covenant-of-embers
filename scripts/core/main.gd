@@ -509,6 +509,12 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 	var sync := IntroSync.new()  # step 117: host-authoritative intro beats
 	add_child(sync)
 	sync.setup(Coop.session, story_flags, player, coop.host)
+	var ow := get_node_or_null("OpenWorld") as OpenWorld
+	if ow:  # L4: host-authoritative Labyrinth floors
+		var ls := LabyrinthSync.new()
+		ls.name = "LabyrinthSync"
+		add_child(ls)
+		ls.setup(Coop.session, ow.interiors, coop.host)
 	if coop.host:
 		sync.push()
 		## 0.1.4: the lobby level comes from the host's save, which can be stale (or the host
@@ -634,6 +640,8 @@ func _lab_waystone(fl: LabyrinthFloor, ow: OpenWorld) -> void:
 ## L3: the floor's goblins (and the King) under their own spawner, freed with the floor. An
 ## elite room is saved dead once its whole pack is down; the King's kill opens the waystone.
 func _lab_enemies(fl: LabyrinthFloor, player: Player) -> void:
+	if coop and not coop.host:
+		return  # L4: a joiner's goblins are the host's puppets (CoopWorld snapshots)
 	var old := get_node_or_null("LabyrinthEnemies")
 	if old:
 		old.name = "LabyrinthEnemies_old"

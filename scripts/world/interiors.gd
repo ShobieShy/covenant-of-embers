@@ -72,6 +72,10 @@ var labyrinth: LabyrinthState
 var floor_no := 1
 var kit := {}
 var lab_floor: LabyrinthFloor
+## L4 co-op (LabyrinthSync): a joiner's stairs down are the host's call (follow_only); the
+## host's go through stair_gate () -> bool first (the whole party nearby, or a vote).
+var follow_only := false
+var stair_gate: Callable
 signal floor_entered(n: int)
 signal rested(at: Vector3)
 
@@ -297,6 +301,10 @@ func _enter_floor(id: String, n: int) -> Vector3:
 func _on_stairs(dir: int) -> void:
 	if dir == LabyrinthStairs.UP:
 		leave("breach")
+	elif follow_only:
+		print("[coop] the host takes the stairs")
+	elif stair_gate.is_valid() and not bool(stair_gate.call()):
+		pass
 	else:
 		descend()
 
