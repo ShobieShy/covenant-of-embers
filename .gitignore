@@ -22,3 +22,13 @@ dist/
 # Raw art deliveries (imported copies live under assets/)
 incoming_art/
 tools/__pycache__/
+
+# Unused upstream pack extras kept on disk only (0.3.0 cleanup audit)
+assets/kenney/blaster-kit/Models/FBX format/
+assets/kenney/blaster-kit/Models/OBJ format/
+assets/kenney/blaster-kit/Previews/
+assets/quaternius/**/*_preview.png
+assets/quaternius/**/*_preview.png.import
+assets/kenney/ui-pack/Vector/
+assets/kenney/ui-pack/PNG/*/Double/
+archive/cpp-engine/
