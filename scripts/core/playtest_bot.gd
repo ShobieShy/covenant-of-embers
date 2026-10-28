@@ -417,6 +417,22 @@ func fight(e: Enemy) -> void:
 		held.append("back")  # L5: back out of a boss's telegraphed slam instead of eating it
 	var m := player.caster.fire_mode() if player.caster != null else null
 	if (
+		_dry(m)
+		and not (
+			player.mana.value < 5.0
+			and player.loadout.active == Loadout.Slot.STAFF
+			and player.loadout.wieldable(Loadout.Slot.WAND) != null
+		)
+	):
+		# QA r7: no casts the mana can't pay for (they were refused by the thousand); keep
+		# out of reach and let mana regenerate, then fire again
+		held.erase("action_primary")
+		held.erase("forward")
+		if flat_distance(e.global_position) < 8.0:
+			held.append("back")
+		_input = PlayerInput.hold(held, [])
+		return
+	if (
 		player.mana.value < 5.0
 		and player.loadout.active == Loadout.Slot.STAFF
 		and not (m is HeatMode)
@@ -440,6 +456,18 @@ func fight(e: Enemy) -> void:
 		_input = PlayerInput.hold(held, ["action_primary"] if _tick % 30 == 0 else [])
 	else:
 		_input = PlayerInput.hold(held, ["action_primary"] if _tick % 2 == 0 else [])
+
+
+## QA r7: true when the slot in hand can't pay for its next cast (HeatMode/zero-cost modes never are).
+func _dry(m: FireMode) -> bool:
+	if (
+		player.caster == null
+		or player.caster.wieldable == null
+		or m == null
+		or m.cost_mult() <= 0.0
+	):
+		return false
+	return player.mana.value < player.caster.wieldable.mana_cost() * m.cost_mult()
 
 
 ## Walk towards `at` along the level navmesh (straight when the map has no path).
@@ -1043,7 +1071,11 @@ func _craft(st: AssemblyStation) -> void:
 				_finish(false, "craft refused: %s" % st.last_error)
 				return
 			player.equip_from_inventory(built)
-		stats["crafted"] = built.display_name()
+		# QA r7: keep every craft in the summary (the prologue staff and the Breach wand)
+		var was := String(stats["crafted"])
+		stats["crafted"] = (
+			built.display_name() if was.is_empty() else was + " + " + built.display_name()
+		)
 		note(
 			(
 				"crafted + equipped %s from %d looted part(s) (dmg %.1f)"

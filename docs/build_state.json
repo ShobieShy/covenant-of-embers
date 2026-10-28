@@ -1745,6 +1745,11 @@
       "time": "2026-10-28 08:58 CDT",
       "step": "L5d",
       "summary": "Correction to the L5d GPU note: floor 1 worst frame 59.6 ms (first floor built: 578 ms build, likely shader/pipeline compile on first draw); floors 2-5 worst 9.2-11.4 ms, means 6.9-7.1 ms."
+    },
+    {
+      "time": "2026-10-28T09:05-05:00",
+      "step": "L5e",
+      "summary": "QA r7 bot notes: fight() no longer presses fire when the slot in hand can't pay for its cast (_dry: mana < cost x mode cost_mult; zero-cost modes exempt); it backs out of reach to 8 m and waits for regen, still swapping to the wand first when one is held. Summary 'crafted' now lists every craft (prologue staff + Breach wand), so the staff craft is visible again. Solo lab 1x 2/2, 4x 2/2 PASS; King refused casts 0/1/92/17 (was 16602)."
     }
   ],
   "completed_steps": [
