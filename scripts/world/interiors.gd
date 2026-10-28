@@ -278,7 +278,7 @@ func _enter_floor(id: String, n: int) -> Vector3:
 	interior.position = Vector3(0, DEPTH, 0)
 	add_child(interior)
 	for c in lab_floor.find_children("*", "LabyrinthStairs", true, false):
-		(c as LabyrinthStairs).used.connect(_on_stairs)
+		(c as LabyrinthStairs).used.connect(_on_stairs, CONNECT_DEFERRED)  # QA-5: not mid-physics
 	var ps := party()
 	for c in lab_floor.find_children("*", "RestShrine", true, false):
 		(c as RestShrine).player = (
@@ -316,6 +316,9 @@ func descend() -> Vector3:
 	var last := int(_kit()["kit"]["boss_floor"])
 	if floor_no >= last:
 		return Vector3.INF
+	if Engine.is_in_physics_frame():  # QA-5: never free the floor inside a physics callback
+		busy = true
+		await get_tree().process_frame
 	busy = true
 	labyrinth.clear_floor(floor_no)
 	fade.emit(FADE)

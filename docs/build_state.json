@@ -1670,6 +1670,11 @@
       "time": "2026-10-28T02:59-05:00",
       "step": "L5a",
       "summary": "Labyrinth perf: LabyrinthFloor room culling (rooms within 2 doorways of the viewer drawn; collision kept). tools/lab_perf.gd headless census: floor 1 visible meshes 443->139, lights 21->6 (floors 2-4 similar); CPU frame ~6.9 ms flat; build 6-13 ms (124 ms first, resource load). GPU capture deferred (Ember QA on the display). test_labyrinth_floor +1."
+    },
+    {
+      "time": "2026-10-28 03:18",
+      "step": "QA-5 lab fixes",
+      "summary": "Ember QA r5 labyrinth bugs: drops parent to the floor (no stale loot across floors), stairs/descend deferred out of physics callbacks, rest shrine in the King floor's entry room; LabyrinthFloor.route (room-graph walk) + test; tools/qa_lab_run.gd QA harness (patch 06). qa_lab_run 0 fails."
     }
   ],
   "completed_steps": [

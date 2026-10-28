@@ -269,6 +269,45 @@ func near_rooms(i: int) -> Dictionary:
 	return seen
 
 
+## L5 (playtest bot): a walk from `from` to `to` (world) through the doorways: the room
+## centres along the shortest room-graph path (doorways and corridors sit on the line
+## between adjacent centres; secret edges are left out), then `to`. The handmade boss floor
+## is a straight entry -> arena run.
+func route(from: Vector3, to: Vector3) -> PackedVector3Array:
+	var out := PackedVector3Array()
+	var a := room_at(from)
+	var b := room_at(to)
+	if a < 0 or b < 0:
+		return out
+	var chain: Array = []
+	if layout.is_empty():
+		for i in range(a, b + (1 if b >= a else -1), 1 if b >= a else -1):
+			chain.append(i)
+	else:
+		var prev := {a: -1}
+		var q := [a]
+		while not q.is_empty() and not prev.has(b):
+			var cur: int = q.pop_front()
+			for e: Array in layout.get("edges", []):
+				if int(e[2]) == 1:
+					continue
+				for k in 2:
+					if int(e[k]) == cur and not prev.has(int(e[1 - k])):
+						prev[int(e[1 - k])] = cur
+						q.append(int(e[1 - k]))
+		if not prev.has(b):
+			return out
+		var c := b
+		while c != -1:
+			chain.push_front(c)
+			c = int(prev[c])
+	for i in chain.slice(1):
+		var p := rooms[int(i)].global_position
+		out.append(Vector3(p.x, from.y, p.z))
+	out.append(to)
+	return out
+
+
 ## Shows the rooms near the viewer's room, hides the rest; returns how many are shown.
 func cull_to(world_pos: Vector3) -> int:
 	var i := room_at(world_pos)
@@ -300,6 +339,7 @@ func _build_boss(state: LabyrinthState) -> void:
 	)
 	_marker(self, "PlayerStart", entry.position)
 	_stairs("StairsUp", LabyrinthStairs.UP, Vector3(-5, 0, 5))
+	_shrine(entry.position + Vector3(-2, 0, -3))  # QA-5: the rest room before the arena (plan 7)
 	var hall := WarrensKit.throne_hall() if dressed else null
 	var arena: Node3D
 	if hall:

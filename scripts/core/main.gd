@@ -628,8 +628,26 @@ func _on_floor_entered(_n: int, ow: OpenWorld) -> void:
 	if st and at:
 		st.global_transform = at.global_transform
 	_lab_waystone(fl, ow)
+	_lab_loot_parent(fl, ow)
 	_lab_enemies(fl, player)
 	_lab_chests(fl, player)
+
+
+## QA-5: every floor is built in the same space (DEPTH), so its drops are the floor's
+## children and go with it on the stairs; outdoors they land under main again.
+func _lab_loot_parent(fl: LabyrinthFloor, ow: OpenWorld) -> void:
+	var ld := get_node_or_null("LootDropper") as LootDropper
+	if ld == null:
+		return
+	ld.parent = fl
+	if not ow.interiors.left.is_connected(_lab_loot_home):
+		ow.interiors.left.connect(_lab_loot_home)
+
+
+func _lab_loot_home(_id: String) -> void:
+	var ld := get_node_or_null("LootDropper") as LootDropper
+	if ld:
+		ld.parent = self
 
 
 ## L2: a boss floor whose boss is down gets its waystone (FastTravel.DEEP_POINTS).

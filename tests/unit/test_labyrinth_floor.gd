@@ -167,3 +167,35 @@ func test_room_culling() -> void:
 	check(far.visible, "moving shows the new room")
 	check(fl.get_node("EnemySpawns") != null, "markers untouched")
 	fl.free()
+
+
+func test_route_walks_doorways() -> void:
+	for n in [1, 3, 5]:
+		var fl := LabyrinthFloor.build(FloorGen.load_kit(), n, LabyrinthState.fresh(42))
+		runner_tree.root.add_child(fl)
+		var a := (fl.get_node("PlayerStart") as Node3D).global_position
+		var goal := fl.get_node_or_null(^"StairsDown") as Node3D
+		if goal == null:
+			goal = fl.get_node(^"BossSpawn") as Node3D
+		var r := fl.route(a, goal.global_position)
+		check(
+			r.size() >= 1 and r[r.size() - 1].is_equal_approx(goal.global_position),
+			"floor %d: route ends at the goal" % n
+		)
+		var prev := fl.room_at(a)
+		for k in r.size() - 1:
+			var cur := fl.room_at(r[k])
+			var linked := fl.layout.is_empty()
+			for e: Array in fl.layout.get("edges", []):
+				if (
+					int(e[2]) != 1
+					and (
+						(int(e[0]) == prev and int(e[1]) == cur)
+						or (int(e[1]) == prev and int(e[0]) == cur)
+					)
+				):
+					linked = true
+			check(linked, "floor %d: hop %d->%d is a doorway" % [n, prev, cur])
+			prev = cur
+		check(fl.room_at(r[r.size() - 1]) == prev, "floor %d: last hop stays in the goal room" % n)
+		fl.free()
