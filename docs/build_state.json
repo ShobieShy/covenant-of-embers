@@ -1715,6 +1715,11 @@
       "time": "2026-10-28T06:00",
       "step": "rt34 exit-leak bisect (in progress)",
       "summary": "Exit leak (~487 ObjectDB, 315-328 resources, one pathless orphan Node3D) is order/combination-dependent: none of the 8 tests added/changed since rt33 leak together (34 passed, clean); no suite quarter leaks alone. Reproduces with test_equipment..test_goblin_king + test_loading_screen..test_loot_meshes (70 tests); smaller pairings did not reproduce. No code changed yet. Lists/logs in build/leak_bisect/."
+    },
+    {
+      "time": "2026-10-28T06:23-05:00",
+      "step": "rt34 exit-leak investigation",
+      "summary": "Leak is not an orphan node or SafeLoad cache: ~189 GDScript + 98 native-class objects stay alive at exit (script cycle or a static holder). Any GAME instance freed in test_fast_travel::test_in_game_waystone_and_map (midden/old_oak/town_square, even freed right after add_child) plus test_flow + test_lobby leaks 369 objects; queue_free + 10 frames and lobby teardown frames did not help. Clearing SpellFX/SkillTree/table statics at exit drops it to 295, DialogueDB._default to 368, so they are holders, not the root. test_world_session + flow + lobby leaks 4; test_town + flow + lobby is clean. Not fixed; rt34c not run."
     }
   ],
   "completed_steps": [
