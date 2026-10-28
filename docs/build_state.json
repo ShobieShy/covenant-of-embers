@@ -1675,6 +1675,11 @@
       "time": "2026-10-28 03:18",
       "step": "QA-5 lab fixes",
       "summary": "Ember QA r5 labyrinth bugs: drops parent to the floor (no stale loot across floors), stairs/descend deferred out of physics callbacks, rest shrine in the King floor's entry room; LabyrinthFloor.route (room-graph walk) + test; tools/qa_lab_run.gd QA harness (patch 06). qa_lab_run 0 fails."
+    },
+    {
+      "time": "2026-10-28T03:50:00-05:00",
+      "step": "L5b-ground",
+      "summary": "Fix the fall outside the Breach: Terrain3D Dynamic collision now follows the player (viewport camera when present, else a fallback camera kept on the local player; was fixed at the origin and picked once at build), and is rebuilt on leaving an interior and on fast-travel arrival. v0.2.0 (227db89) has the same fall. New tests/unit/test_breach_ground.gd checks ground collision at the Breach exit, along the path and at the crater gate."
     }
   ],
   "completed_steps": [

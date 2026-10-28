@@ -19,6 +19,8 @@ var leash: CoopLeash
 var _fog_t := 0.0
 var info := {}
 var story_flags: StoryFlags  ## main.gd sets it before adding the world (fast travel flags)
+var _fallback_cam: Camera3D
+var _terrain_cam: Camera3D
 var first_loaded := false  ## OW10: the initial world load (loading screen) has run
 signal first_load_done
 signal host_space(interior: String)  ## OW11c: a joiner whose host is in another space
@@ -44,6 +46,7 @@ func _ready() -> void:
 	travel.name = "Travel"
 	travel.streamer = streamer
 	travel.height_fn = height_at
+	travel.arrived.connect(func(_p: String) -> void: ground_now())
 	if story_flags:  # the save's attunement and crystal (else a blank FastTravel)
 		travel.fast_travel = FastTravel.new(story_flags)
 	travel.deep_travel = _deep_travel  # Labyrinth L2
@@ -100,7 +103,41 @@ func first_load(dest: Vector3, level := "") -> void:
 	first_load_done.emit()
 
 
+## L5b: Terrain3D builds its Dynamic collision around its camera only, so that camera must be
+## where the players are. The viewport camera is used when there is one (it follows the player);
+## otherwise (headless, or before the player's camera exists) a fallback camera is kept on the
+## local player. Before L5b the fallback stayed at the origin and the camera was picked once at
+## build time, so the ground outside the Breach (which has no box pads) had no collision.
+func _physics_process(_dt: float) -> void:
+	_track_terrain_camera()
+
+
+func _track_terrain_camera() -> void:
+	if terrain == null or not is_instance_valid(terrain) or _fallback_cam == null:
+		return
+	var cam := get_viewport().get_camera_3d()
+	if cam == null or DisplayServer.get_name() == "headless" or not cam.is_inside_tree():
+		cam = _fallback_cam
+		var p := get_tree().get_first_node_in_group(Player.GROUP) as Node3D
+		if p and p.is_inside_tree() and (interiors == null or interiors.current == ""):
+			_fallback_cam.global_position = p.global_position
+	if cam != _terrain_cam:
+		_terrain_cam = cam
+		terrain.call(&"set_camera", cam)
+
+
+## Builds the terrain collision around the players now (a party move: leaving an interior,
+## fast travel), so nobody stands on a heightmap whose collision has not been built yet.
+func ground_now() -> void:
+	_track_terrain_camera()
+	if terrain and is_instance_valid(terrain) and terrain.is_inside_tree():
+		var c: Object = terrain.get(&"collision")
+		if c and c.has_method(&"update"):
+			c.call(&"update")
+
+
 func _on_left_interior(_id: String) -> void:
+	ground_now()
 	if not first_loaded:  # a run that started indoors (the intro): its first look outside
 		var p := interiors.party()
 		if not p.is_empty():
@@ -205,13 +242,12 @@ static func load_info() -> Dictionary:
 func _build_terrain() -> void:
 	var t: Node3D = ClassDB.instantiate(&"Terrain3D")
 	t.name = "Terrain3D"
-	var cam := get_viewport().get_camera_3d()
-	if cam == null or DisplayServer.get_name() == "headless":
-		cam = Camera3D.new()
-		cam.name = "TerrainFallbackCamera"
-		cam.current = false
-		add_child(cam)
-	t.call(&"set_camera", cam)
+	_fallback_cam = Camera3D.new()
+	_fallback_cam.name = "TerrainFallbackCamera"
+	_fallback_cam.current = false
+	add_child(_fallback_cam)
+	terrain = t
+	_track_terrain_camera()
 	t.set(&"vertex_spacing", float(info.get("spacing", 1.0)))
 	t.set(&"material", ClassDB.instantiate(&"Terrain3DMaterial"))
 	t.set(&"data_directory", TERRAIN_DIR)
