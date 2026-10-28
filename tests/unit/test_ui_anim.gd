@@ -180,3 +180,43 @@ func test_vote_panel_grows_both_ways() -> void:  # QA round 10 (2)
 	var vw := b.panel.get_viewport_rect().size.x
 	check_near(b.panel.position.x + b.panel.size.x / 2.0, vw / 2.0, 1.0, "centred after sizing")
 	b.free()
+
+
+class FakeSync:
+	extends LabyrinthSync
+	var t := 9.0
+
+	func left() -> float:
+		return t
+
+	func missing() -> Array[String]:
+		return ["Somebody With A Long Name"]
+
+	func party_size() -> int:
+		return 2
+
+
+func test_vote_banner_centred_through_refresh() -> void:  # QA round 11 (1) and (2)
+	UiAnim.force_motion = true
+	var s := FakeSync.new()
+	var b := VoteBanner.new()
+	b.sync = s
+	runner_tree.root.add_child(b)
+	b.set_process(false)
+	b.refresh()  # the real path: text, size, then open() with the slide
+	await _wait(UiAnim.OPEN_S + 0.1)
+	var vw := b.panel.get_viewport_rect().size.x
+	check(b.panel.size.x > 200.0, "sized to the long text: %.0f" % b.panel.size.x)
+	check_near(b.panel.position.x + b.panel.size.x / 2.0, vw / 2.0, 1.0, "centred after the slide")
+	s.t = -1.0
+	var ends := 0
+	for i in 20:  # every frame of the close fade
+		var was := UiAnim.closing(b.panel) or not b.panel.visible
+		b.refresh()
+		if not was and UiAnim.closing(b.panel):
+			ends += 1
+		await _wait(1.0 / 60.0)
+	check(ends == 1 and not b.panel.visible, "closed once (%d)" % ends)
+	UiAnim.force_motion = false
+	b.free()
+	s.free()

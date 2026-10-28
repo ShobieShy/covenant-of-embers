@@ -66,3 +66,5 @@ Goblin and Orc models by Quaternius (CC0), batch 08b: the goblin grunt, archer a
 Ember Art polish (0.3.1 work, batch 09b): the stairs vote chip bar and chips (assets/original/ember_art/ui/vote/) and the dialogue continue arrow (ui/typewriter/) are original pixel art made for Covenant of Embers, CC0 1.0. See docs/credits/ember_art_batch_09b_CREDITS.md. The vote tick is Kenney Interface Sounds tick_001 (CC0).
 
 Ember Art polish (0.3.1 work, batch 09c): the 4 x 4 m warrens spiral stair (assets/original/ember_art/warrens/stairs_warrens_4x4.glb, warrens atlas) is original work made for Covenant of Embers, CC0 1.0. See docs/credits/ember_art_batch_09c_CREDITS.md.
+
+Ember Art polish (0.3.1 work, batch 09_polish): the level-up sound and the six rarity pickup sounds (assets/original/ember_art/sfx/level_up.ogg, pickup_basic … pickup_unique.ogg) are original synthesised work made for Covenant of Embers, CC0 1.0. See docs/credits/ember_art_batch_09_polish_CREDITS.md.

@@ -25,6 +25,21 @@ const MARKER_SECONDS := 0.25
 const FLASH_SECONDS := 0.3
 const BANNER_SECONDS := 2.5
 const BAR_SIZE := Vector2(260, 14)
+const CHIP_COLOR := Color(1.0, 0.93, 0.72, 0.85)  ## 0.3.1 P4 (M3): trailing damage chip
+const TOAST_S := 3.0  ## M2: pickup toast life
+const TOAST_FADE_S := 0.5
+const TOAST_MAX := 5
+const LEVEL_BANNER_S := 2.8  ## M4
+const BADGE_COLOR := Color(1.0, 0.82, 0.25)
+const VIGNETTE_SHADER := """
+shader_type canvas_item;
+uniform float strength = 0.0;
+uniform vec4 tint : source_color = vec4(0.75, 0.0, 0.05, 1.0);
+void fragment() {
+	float d = distance(UV, vec2(0.5));
+	COLOR = vec4(tint.rgb, strength * smoothstep(0.32, 0.72, d));
+}
+"""
 
 var player: Player
 var spawner: EnemySpawner
@@ -58,6 +73,18 @@ var banner_left := 0.0
 var markers := 0
 var kill_markers := 0
 var font: Font
+var chips := {}  ## M3: ProgressBar -> HudFx.Chip
+var chip_rects := {}  ## M3: ProgressBar -> ColorRect (the trailing segment)
+var chip_boss: Object  ## M3: the boss the boss chip belongs to
+var vignette: ColorRect  ## M3: low-health heartbeat
+var beat_t := 0.0
+var toast_box: VBoxContainer  ## M2: pickup toast stack
+var toasts: Array[Dictionary] = []  ## {label, text, count, age}
+var level_banner: Label  ## M4
+var level_burst: CPUParticles2D  ## M4
+var level_left := 0.0
+var level_ups := 0
+var skill_badge: Label  ## M4: unspent skill points
 
 
 ## Tick marks around the screen centre.
@@ -131,6 +158,14 @@ func _init() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 	hurt_flash = _rect(Color(0.8, 0, 0, 0), Control.PRESET_FULL_RECT)
+	vignette = _rect(Color.WHITE, Control.PRESET_FULL_RECT)
+	vignette.name = "HeartbeatVignette"
+	var vm := ShaderMaterial.new()
+	var vs := Shader.new()
+	vs.code = VIGNETTE_SHADER
+	vm.shader = vs
+	vignette.material = vm
+	vignette.visible = false
 	var bars := VBoxContainer.new()
 	bars.position = Vector2(24, 24)
 	root.add_child(bars)
@@ -141,6 +176,10 @@ func _init() -> void:
 	pip_box = HBoxContainer.new()
 	bars.add_child(pip_box)
 	level_label = _label(14, bars)
+	skill_badge = _label(14, bars)
+	skill_badge.name = "SkillBadge"
+	skill_badge.add_theme_color_override(&"font_color", BADGE_COLOR)
+	skill_badge.visible = false
 	crosshair = Crosshair.new()
 	crosshair.set_anchors_preset(Control.PRESET_FULL_RECT)
 	crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -201,6 +240,41 @@ func _init() -> void:
 	boss_bar = _bar(Color(0.55, 0.75, 0.2), boss_box)
 	boss_bar.custom_minimum_size = Vector2(440, 14)
 	boss_box.visible = false
+	for b in [health_bar, shield_bar, boss_bar]:
+		_add_chip(b)
+	toast_box = VBoxContainer.new()
+	toast_box.name = "Toasts"
+	toast_box.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
+	toast_box.position = Vector2(-340, 40)
+	toast_box.custom_minimum_size = Vector2(320, 0)
+	toast_box.alignment = BoxContainer.ALIGNMENT_END
+	toast_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(toast_box)
+	level_banner = _label(40, root)
+	level_banner.name = "LevelBanner"
+	level_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	level_banner.position = Vector2(-300, 120)
+	level_banner.size = Vector2(600, 56)
+	level_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	level_banner.add_theme_color_override(&"font_color", BADGE_COLOR)
+	level_banner.visible = false
+	level_burst = CPUParticles2D.new()
+	level_burst.name = "LevelBurst"
+	level_burst.emitting = false
+	level_burst.one_shot = true
+	level_burst.amount = 48
+	level_burst.lifetime = 0.9
+	level_burst.explosiveness = 1.0
+	level_burst.direction = Vector2(0, -1)
+	level_burst.spread = 180.0
+	level_burst.initial_velocity_min = 120.0
+	level_burst.initial_velocity_max = 320.0
+	level_burst.gravity = Vector2(0, 260)
+	level_burst.scale_amount_min = 3.0
+	level_burst.scale_amount_max = 6.0
+	level_burst.color = BADGE_COLOR
+	level_burst.position = Vector2(300, 28)
+	level_banner.add_child(level_burst)
 	death_overlay = _rect(Color(0, 0, 0, 0.6), Control.PRESET_FULL_RECT)
 	death_overlay.visible = false
 	death_label = _label(36, death_overlay)
@@ -255,6 +329,93 @@ func _set_bar_color(b: ProgressBar, c: Color) -> void:
 	(b.get_theme_stylebox(&"fill") as StyleBoxFlat).bg_color = c
 
 
+## M3: a trailing chip segment drawn over the empty part of `b`.
+func _add_chip(b: ProgressBar) -> void:
+	var r := ColorRect.new()
+	r.name = "Chip"
+	r.color = CHIP_COLOR
+	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	r.visible = false
+	b.add_child(r)
+	chips[b] = HudFx.Chip.new()
+	chip_rects[b] = r
+
+
+## M3: step `b`'s chip toward `target` and draw the bar from it.
+func _set_chip(b: ProgressBar, target: float, dt: float) -> void:
+	var c: HudFx.Chip = chips[b]
+	c.step(target, dt)
+	b.value = c.shown
+	var r: ColorRect = chip_rects[b]
+	var w := b.size.x if b.size.x > 0.0 else b.custom_minimum_size.x
+	var hgt := b.size.y if b.size.y > 0.0 else b.custom_minimum_size.y
+	r.visible = c.chip > c.shown + 1e-3
+	r.position = Vector2(c.shown * w, 0)
+	r.size = Vector2(maxf(0.0, c.chip - c.shown) * w, hgt)
+
+
+## M2: a pickup toast; a repeat of the newest live toast counts up instead ("x3").
+func add_toast(text: String, color := Color.WHITE) -> void:
+	if not toasts.is_empty():
+		var last: Dictionary = toasts[-1]
+		if last["text"] == text and last["age"] < TOAST_S - TOAST_FADE_S:
+			last["count"] += 1
+			last["age"] = 0.0
+			(last["label"] as Label).text = "%s  x%d" % [text, last["count"]]
+			UiAnim.pulse(last["label"], 0.1)
+			return
+	var l := _label(16, toast_box)
+	l.text = text
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	l.add_theme_color_override(&"font_color", color)
+	toasts.append({"label": l, "text": text, "count": 1, "age": 0.0})
+	while toasts.size() > TOAST_MAX:
+		(toasts.pop_front()["label"] as Label).queue_free()
+
+
+func _tick_toasts(dt: float) -> void:
+	for i in range(toasts.size() - 1, -1, -1):
+		var t: Dictionary = toasts[i]
+		t["age"] += dt
+		var l: Label = t["label"]
+		if t["age"] >= TOAST_S:
+			l.queue_free()
+			toasts.remove_at(i)
+		else:
+			l.modulate.a = clampf((TOAST_S - t["age"]) / TOAST_FADE_S, 0.0, 1.0)
+
+
+static func toast_text(lp: LootPickup, what: String) -> String:
+	match what:
+		"item":
+			return lp.drop.describe() if lp != null and lp.drop != null else "Item"
+		"gold":
+			return "+%d Gold" % lp.amount
+		"dust":
+			return "+%d Arcane Dust" % lp.amount
+		"potion":
+			return lp.potion.display_name if lp != null and lp.potion != null else "Potion"
+	return ""  # mana orbs: the bar says it
+
+
+func _on_collected(lp: LootPickup, what: String) -> void:
+	var t := toast_text(lp, what)
+	if t != "":
+		add_toast(t, lp.color if lp != null else Color.WHITE)
+
+
+## M4: the level-up moment (GameAudio plays level_up).
+func _on_level_up(lv: int) -> void:
+	level_ups += 1
+	level_banner.text = "Level %d!" % lv
+	level_left = LEVEL_BANNER_S
+	level_banner.visible = true
+	level_banner.modulate.a = 1.0
+	UiAnim.pulse(level_banner, 0.25)
+	if not UiAnim.instant():
+		level_burst.restart()
+
+
 ## Hooks the player (and optionally the spawner for the wave counter).
 func bind(p: Player, sp: EnemySpawner = null) -> void:
 	player = p
@@ -265,6 +426,8 @@ func bind(p: Player, sp: EnemySpawner = null) -> void:
 		c.out_of_mana.connect(func(_c: float) -> void: mana_flash_left = FLASH_SECONDS)
 	if p.bolts:
 		p.bolts.bolt_hit.connect(_on_bolt_hit)
+	p.pickups.collected.connect(_on_collected)  # 0.3.1 P4
+	p.progression.leveled_up.connect(_on_level_up)
 	var bus := GameEvents.bus()
 	bus.wave_started.connect(func(i: int, id: String) -> void: show_banner("Wave %d: %s" % [i + 1, id.capitalize()]))
 	bus.wave_cleared.connect(func(i: int, _id: String) -> void: show_banner("Wave %d cleared" % (i + 1)))
@@ -327,8 +490,16 @@ func refresh(dt: float) -> void:
 	if player == null:
 		return
 	var h := player.health
-	health_bar.value = h.fraction()
-	shield_bar.value = h.shield_fraction()
+	_set_chip(health_bar, h.fraction(), dt)  # 0.3.1 P4 (M3)
+	_set_chip(shield_bar, h.shield_fraction(), dt)
+	beat_t += dt
+	var va := HudFx.heartbeat(h.fraction(), beat_t, UiAnim.reduced_motion) if player.alive() else 0.0
+	vignette.visible = va > 0.0
+	(vignette.material as ShaderMaterial).set_shader_parameter(&"strength", va)
+	_tick_toasts(dt)
+	level_left = maxf(0.0, level_left - dt)
+	level_banner.visible = level_left > 0.0
+	level_banner.modulate.a = clampf(level_left / 0.6, 0.0, 1.0)
 	shield_bar.modulate.a = 0.6 + 0.4 * absf(sin(Time.get_ticks_msec() * 0.006)) if h.regenerating() else 1.0
 	mana_bar.value = player.mana.fraction()
 	mana_flash_left = maxf(0.0, mana_flash_left - dt)
@@ -376,6 +547,10 @@ func refresh(dt: float) -> void:
 	_refresh_boss()
 	var pr := player.progression
 	level_label.text = "Level %d   %d / %d XP   %d Gold" % [pr.level, pr.xp, pr.xp_to_next, player.inventory.gold]
+	var sp := player.skills.available(pr.level)
+	skill_badge.visible = sp > 0
+	if sp > 0:
+		skill_badge.text = skill_badge_text(sp)
 	death_overlay.visible = not player.alive()
 	if death_overlay.visible:
 		if player.downed:
@@ -396,7 +571,10 @@ func _refresh_boss() -> void:
 	boss_bar.get_parent().visible = boss != null
 	if boss == null:
 		return
-	boss_bar.value = boss.health / boss.max_health()
+	if chip_boss != boss:
+		chip_boss = boss
+		(chips[boss_bar] as HudFx.Chip).started = false  # a new boss starts full, no chip
+	_set_chip(boss_bar, boss.health / boss.max_health(), get_process_delta_time())
 	boss_label.text = "%s  %s" % [boss.def.display_name, "◆".repeat(boss.phase) + "◇".repeat(3 - boss.phase)]
 
 
@@ -419,3 +597,8 @@ func _refresh_pips() -> void:
 			pips[i].value = player.dash.recharge_progress()
 		else:
 			pips[i].value = 0.0
+
+
+## M4: "◆ 2 skill points  [K]" (the same text on the pause menu's Skills entry count).
+static func skill_badge_text(n: int) -> String:
+	return "◆ %d skill point%s  [K]" % [n, "" if n == 1 else "s"]

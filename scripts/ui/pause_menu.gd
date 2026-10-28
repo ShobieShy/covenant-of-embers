@@ -31,7 +31,7 @@ func _init() -> void:
 	t.text = "Paused"
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(t)
-	for id in ["resume", "settings", "save", "main_menu", "quit"]:
+	for id in ["resume", "skills", "settings", "save", "main_menu", "quit"]:
 		var b := Button.new()
 		b.text = id.capitalize()
 		b.pressed.connect(press.bind(id))
@@ -58,6 +58,9 @@ func open() -> void:
 	if player:
 		player.ui_open = true
 	get_tree().paused = true
+	(buttons["skills"] as Button).text = skills_label(
+		player.skills.available(player.progression.level) if player else 0
+	)
 	(buttons["resume"] as Button).grab_focus()  # keyboard/gamepad navigation
 	if DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -84,6 +87,17 @@ func press(id: String) -> void:
 	match id:
 		"resume":
 			close()
+		"skills":  # 0.3.1 P4 (M4): opens the K panel once the menu is gone
+			var sk := get_tree().root.find_child("SkillsUi", true, false)
+			if settings_ui and settings_ui.visible:
+				settings_ui.close()
+			UiAnim.close(
+				self,
+				func() -> void:
+					_closed()
+					if sk and sk.has_method(&"open"):
+						sk.call(&"open")
+			)
 		"settings":
 			if settings_ui:
 				settings_ui.open()
@@ -115,3 +129,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif player == null or not player.ui_open:
 		open()
 		get_viewport().set_input_as_handled()
+
+
+## M4: the Skills entry, with the unspent point count as a badge.
+static func skills_label(points: int) -> String:
+	return "Skills  ◆ %d" % points if points > 0 else "Skills"

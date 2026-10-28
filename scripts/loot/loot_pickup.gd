@@ -10,7 +10,12 @@ extends Area3D
 const PICKUP_LAYER := 5  ## physics layer 5 = pickups (1 world, 2 player, 3 enemies)
 const GROUP := &"loot_pickups"
 const BEAM_BASE := 1.5  ## m, Basic
-const BEAM_PER_TIER := 0.5  ## m per rarity tier above Basic
+const BEAM_PER_TIER := 0.5  ## m per rarity tier above Basic (pre-0.3.1; see BEAM_HEIGHTS)
+## 0.3.1 P4 (M2): beam height per Rarity.Tier (batch_09_polish HANDOFF: 2.5 / 3.5 / 4.5 / 6,
+## Primordial a step under Unique so every tier still reads taller).
+const BEAM_HEIGHTS: PackedFloat64Array = [1.5, 2.5, 3.5, 4.5, 5.5, 6.0]
+const MAGNET_SPEED := 6.0  ## m/s across the ground while pulled
+const MAGNET_ARC := 0.35  ## m hop height over a full pull
 const BEAM_FADE_NEAR := 0.6  ## m from the camera: beam fully faded
 const BEAM_FADE_FAR := 3.0  ## m: beam at full strength beyond this
 const GEM_SIZE := 0.25
@@ -33,6 +38,8 @@ var gem: MeshInstance3D  ## rarity glow pad (step 123; was the gem box)
 var prop: Node3D  ## step 123 ground prop (LootMeshes)
 var light: OmniLight3D
 var label: Label3D
+var pull_from := Vector3.ZERO  ## M2: where the magnet pull started
+var pulled := 0.0  ## M2: m travelled toward the player (0 = not pulled)
 
 
 static func create(d: LootDrop, at: Vector3) -> LootPickup:
@@ -173,4 +180,22 @@ func _build(n: String, c: Color, text: String, kind := "") -> void:
 
 func beam_height() -> float:
 	var t := Rarity.parse(drop.rarity_id) if drop else 0
-	return BEAM_BASE + BEAM_PER_TIER * maxi(t, 0)
+	return BEAM_HEIGHTS[clampi(t, 0, BEAM_HEIGHTS.size() - 1)]
+
+
+## M2: one magnet step toward `to` (the player's feet): slides across the ground at
+## MAGNET_SPEED on a little hop that peaks halfway. Returns the new global position.
+func pull_toward(to: Vector3, dt: float) -> Vector3:
+	if pulled <= 0.0:
+		pull_from = global_position
+	var span := maxf((to - pull_from).length(), 1e-3)
+	pulled = minf(pulled + MAGNET_SPEED * dt, span)
+	global_position = magnet_point(pull_from, to, pulled / span)
+	return global_position
+
+
+## M2: the arc point at `t` (0..1) between `from` and `to`.
+static func magnet_point(from: Vector3, to: Vector3, t: float) -> Vector3:
+	var k := clampf(t, 0.0, 1.0)
+	var e := 1.0 - (1.0 - k) * (1.0 - k)  # ease out
+	return from.lerp(to, e) + Vector3(0, MAGNET_ARC * sin(PI * k), 0)

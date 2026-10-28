@@ -877,7 +877,7 @@ func tick(input: PlayerInput, dt: float) -> void:
 	if input.was_pressed(&"use_potion"):  # step 24 (H since step 136): the quick-slot potion
 		use_potion()
 	# Pickups (step 23): walk-over auto-collect, then Interact on the looked-at item.
-	pickups.tick(self, input.was_pressed(&"interact"))
+	pickups.tick(self, input.was_pressed(&"interact"), dt)
 	# Mana regen (step 8) before the cast, so a pool back at the cost casts this tick.
 	mana.tick(dt)
 	# Focus (step 9): action_secondary held with a wieldable; costs no mana. A swap while

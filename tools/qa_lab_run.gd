@@ -180,7 +180,9 @@ func _run() -> void:
 			# stairs up -> Breach
 			if su:
 				player.global_position = (su as Node3D).global_position + Vector3(0, 0.5, 0)
+				Input.action_press(&"interact")
 				await frames(120)
+				Input.action_release(&"interact")
 				check(it.current != "labyrinth", "stairs up leave to the Breach (current=%s)" % it.current)
 			break
 		check(sd != null, "floor %d has stairs down" % n)
@@ -188,9 +190,11 @@ func _run() -> void:
 			break
 		player.global_position = (sd as Node3D).global_position + Vector3(0, 0.5, 0)
 		var w := 0
+		Input.action_press(&"interact")  # 0.3.1 P2: the stairs take a 0.5 s Interact hold
 		while it.floor_no == n and w < 600:
 			await frames(1)
 			w += 1
+		Input.action_release(&"interact")
 		check(it.floor_no == n + 1, "stairs down floor %d -> %d in %d frames" % [n, it.floor_no, w])
 		check(st.cleared.has(n), "floor %d marked cleared" % n)
 		var stale := pickups().filter(func(p): return p.global_position.y < -100.0 or p.global_position.y > 1000.0).size()

@@ -70,20 +70,26 @@ func refresh() -> void:
 	var left := sync.left() if sync and is_instance_valid(sync) else -1.0
 	if left <= 0.0:
 		_last_sec = -1
-		if panel.visible:
+		# QA round 11: the panel stays visible through the close fade; log the end once.
+		if panel.visible and not UiAnim.closing(panel):
 			UiAnim.close(panel)
 			_log_end()
 		return
-	if not panel.visible:
-		UiAnim.open(panel)
-		_shown_at = Time.get_ticks_msec() / 1000.0
-		print("[vote] start: %.1f s left" % left)
 	_last_left = left
 	var sec := ceili(left)
 	var away: Array[String] = sync.missing()
 	label.text = "Waiting for party: %d s" % sec
 	if not away.is_empty():
 		label.text += "\nNot at the stairs: " + ", ".join(away)
+	if not panel.visible or UiAnim.closing(panel):
+		# QA round 11: size to the text before open() reads the rest position, or the slide
+		# home is the narrow width and the banner sits ~112 px off-centre.
+		var w := panel.get_combined_minimum_size().x
+		panel.offset_left = -ceilf(w / 2.0)
+		panel.offset_right = ceilf(w / 2.0)
+		UiAnim.open(panel)
+		_shown_at = Time.get_ticks_msec() / 1000.0
+		print("[vote] start: %.1f s left" % left)
 	var total := maxi(sync.party_size(), 1)
 	var sig := "%d/%d" % [total - away.size(), total]
 	if sig != _sig:

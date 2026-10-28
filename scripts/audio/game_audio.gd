@@ -10,6 +10,7 @@ extends Node
 const IMPACT := "res://assets/kenney/impact-sounds/Audio/"
 const IFACE := "res://assets/kenney/interface-sounds/Audio/"
 const UIPACK := "res://assets/kenney/ui-pack/Sounds/"
+const EMBER_SFX := "res://assets/original/ember_art/sfx/"
 const BUSES: PackedStringArray = ["Master", "SFX", "UI", "Music"]
 const SOUNDS := {
 	"cast": IFACE + "glass_002.ogg",
@@ -33,6 +34,14 @@ const SOUNDS := {
 	"ui_click": UIPACK + "click-a.ogg",
 	"pickup": IFACE + "drop_002.ogg",
 	"vote_tick": IFACE + "tick_001.ogg",  # 0.3.1 P2: the stairs vote's last 3 s
+	# 0.3.1 P4 (M2/M4): Ember Art batch_09_polish, original CC0 synth
+	"level_up": EMBER_SFX + "level_up.ogg",
+	"pickup_basic": EMBER_SFX + "pickup_basic.ogg",
+	"pickup_uncommon": EMBER_SFX + "pickup_uncommon.ogg",
+	"pickup_rare": EMBER_SFX + "pickup_rare.ogg",
+	"pickup_mythic": EMBER_SFX + "pickup_mythic.ogg",
+	"pickup_primordial": EMBER_SFX + "pickup_primordial.ogg",
+	"pickup_unique": EMBER_SFX + "pickup_unique.ogg",
 	# step 141 (Brands B7): brand fire-mode sounds, same Kenney CC0 packs
 	"brand_overheat": IFACE + "error_006.ogg",
 	"brand_vent": IFACE + "scratch_004.ogg",
@@ -122,7 +131,8 @@ func bind(p: Player) -> void:
 	for c in p.loadout.casters:
 		c.out_of_mana.connect(func(_c): play("cast_fail"))
 		c.brand_event.connect(_on_brand_event)
-	p.pickups.collected.connect(func(_a, _b): play("pickup"))
+	p.pickups.collected.connect(func(lp, what): play(pickup_key(lp, what)))
+	p.progression.leveled_up.connect(func(_lv): play("level_up"))
 	_last = _snapshot()
 
 
@@ -266,3 +276,11 @@ func _on_gnawer_attacked(g: Gnawer, _b) -> void:
 func _on_gnawer_state(g: Gnawer, _from, to) -> void:
 	if g is Heap and to == Gnawer.State.ATTACK:
 		play_at("slam_windup", g.global_position, -4.0)
+
+
+## 0.3.1 P4 (M2): items play their rarity's pickup sound (each tier longer, more notes);
+## walk-over gold, dust, mana and potions keep the light Kenney blip.
+static func pickup_key(lp: LootPickup, what: String) -> String:
+	if what == "item" and lp != null and lp.drop != null and Rarity.parse(lp.drop.rarity_id) >= 0:
+		return "pickup_" + lp.drop.rarity_id
+	return "pickup"

@@ -73,7 +73,7 @@ func test_kill_spawns_coloured_drops() -> void:
 			check(p.label.text == x.describe(), "label '%s'" % p.label.text)
 			check_near(
 				p.beam_height(),
-				LootPickup.BEAM_BASE + LootPickup.BEAM_PER_TIER * Rarity.parse(x.rarity_id),
+				LootPickup.BEAM_HEIGHTS[Rarity.parse(x.rarity_id)],
 				1e-6,
 				"beam height"
 			)

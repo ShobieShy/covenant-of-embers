@@ -13,6 +13,7 @@ extends RefCounted
 signal collected(pickup: LootPickup, what: String)
 
 const AUTO_RADIUS := 1.2
+const MAGNET_RADIUS := 3.0  ## 0.3.1 P4 (M2): auto pickups this close fly in on an arc
 const REACH := 3.0
 const LOOK_CONE_DEG := 12.0
 const HINT_FULL := "Inventory full."
@@ -23,7 +24,7 @@ var items_picked := 0
 var refused_full := 0
 
 
-func tick(p: Player, interact_pressed: bool) -> void:
+func tick(p: Player, interact_pressed: bool, dt := 1.0 / 60.0) -> void:
 	if not p.is_inside_tree():
 		return
 	var all := p.get_tree().get_nodes_in_group(LootPickup.GROUP)
@@ -33,8 +34,11 @@ func tick(p: Player, interact_pressed: bool) -> void:
 		if lp == null or lp.is_queued_for_deletion() or not lp.is_auto():
 			continue
 		var d := lp.global_position - feet
-		if Vector2(d.x, d.z).length() <= AUTO_RADIUS and d.y > -0.5 and d.y < 1.8:
+		var flat := Vector2(d.x, d.z).length()
+		if flat <= AUTO_RADIUS and d.y > -0.5 and d.y < 1.8:
 			_auto(p, lp)
+		elif flat <= MAGNET_RADIUS and d.y > -1.0 and d.y < 2.5 and wants(p, lp):
+			lp.pull_toward(feet, dt)
 	focused = look_target(p, all)
 	if interact_pressed and focused != null:
 		pick(p, focused)
@@ -76,6 +80,17 @@ func pick(p: Player, lp: LootPickup) -> bool:
 	collected.emit(lp, "item")
 	_consume(lp)
 	return true
+
+
+## M2: whether an auto pickup should fly to the player. Not potions (what does not fit
+## stays where it fell) and not mana orbs while mana is full.
+static func wants(p: Player, lp: LootPickup) -> bool:
+	match lp.auto:
+		LootPickup.Auto.MANA:
+			return p.mana.value < p.mana.max_value()
+		LootPickup.Auto.DUST, LootPickup.Auto.GOLD:
+			return true
+	return false
 
 
 func _auto(p: Player, lp: LootPickup) -> void:

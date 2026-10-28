@@ -32,6 +32,14 @@ const SUPER_COLOR := Color(1.0, 0.8, 0.0)  ## Magewar's callout colours
 const NOT_VERY_COLOR := Color(0.5, 0.5, 0.5)
 const CALLOUT_FONT_SIZE := 28
 const HEAL_COLOR := Color(0.35, 1.0, 0.45)  ## step 50: heal numbers
+## 0.3.1 P4 (L4): hits on one target within MERGE_S add into its newest number; later
+## numbers on a target that still has live ones stack STACK_STEP m higher each.
+const MERGE_S := 0.2
+const STACK_STEP := 0.22  ## m
+const STACK_MAX := 4  ## at most this many steps up
+const POP_S := 0.15  ## s of the crit / merge pop
+const CRIT_POP := 0.6  ## extra scale at the start of a crit pop
+const MERGE_POP := 0.25  ## extra scale when a hit merges in
 
 
 class Number:
@@ -46,6 +54,11 @@ class Number:
 	var callout_color := Color.WHITE
 	var label: Label3D  ## null when not drawn (tests)
 	var callout_label: Label3D  ## child of label, null without a callout
+	var target: Object  ## L4: what was hit (null: never merges)
+	var hits := 1  ## L4: hits merged into this number
+	var stack := 0  ## L4: steps up the per-target stack
+	var pop_age := 0.0  ## L4: time since the last pop
+	var pop := 0.0  ## L4: extra scale at pop_age 0
 
 
 var elements: ElementTable  ## colours (default table when null)
@@ -82,18 +95,34 @@ func add_heal(world: Vector3, amount: float) -> Number:
 
 func _on_bolt_hit(h: SpellBolts.Hit) -> void:
 	if h.result != null:
-		add(h.point, h.result, h.element)
+		add(h.point, h.result, h.element, h.collider)
 
 
 ## A number for a resolved hit at `world` (global position).
-func add(world: Vector3, r: Damage.Result, element: ElementTable.Element) -> Number:
+func add(world: Vector3, r: Damage.Result, element: ElementTable.Element, target: Object = null) -> Number:
+	var m := merge_target(target)
+	if m != null:
+		m.amount += r.amount
+		m.hits += 1
+		m.age = 0.0
+		m.pop_age = 0.0
+		m.pop = CRIT_POP if r.crit > 1.0 else MERGE_POP
+		if r.crit > 1.0:
+			m.scale = maxf(m.scale, CRIT_SCALE)
+		if m.label:
+			m.label.text = format(m.amount)
+			_place(m)
+		return m
 	var n := Number.new()
+	n.target = target
+	n.stack = stack_for(target)
 	n.world = world
 	n.amount = r.amount
 	var t := elements if elements != null else ElementTable.load_default()
 	n.color = t.color(element) if t else Color.WHITE
 	n.scale = CRIT_SCALE if r.crit > 1.0 else STRONG_SCALE if r.strong() else WEAK_SCALE if r.weak() else 1.0
 	n.drift_x = DRIFT[spawned % DRIFT.size()]
+	n.pop = CRIT_POP if r.crit > 1.0 else 0.0
 	if r.strong():
 		n.callout = SUPER_EFFECTIVE
 		n.callout_color = SUPER_COLOR
@@ -147,6 +176,7 @@ func tick(dt: float) -> void:
 	for i in range(numbers.size() - 1, -1, -1):
 		var n := numbers[i]
 		n.age += dt
+		n.pop_age += dt
 		if n.age >= LIFETIME:
 			_drop(i)
 		else:
@@ -174,6 +204,7 @@ func _place(n: Number) -> void:
 		n.label.global_position = position_of(n)
 	else:
 		n.label.position = position_of(n)
+	n.label.pixel_size = PIXEL_SIZE * n.scale * pop_scale(n)
 	var c := n.color
 	c.a = alpha_of(n)
 	n.label.modulate = c
@@ -185,11 +216,41 @@ func _place(n: Number) -> void:
 		n.callout_label.outline_modulate = Color(0, 0, 0, c.a)
 
 
-## Current world position (rising, drifting).
+## L4: the live number on `target` that a hit now merges into (null: start a new one).
+func merge_target(target: Object) -> Number:
+	if target == null:
+		return null
+	for i in range(numbers.size() - 1, -1, -1):
+		var n := numbers[i]
+		if n.target == target:
+			return n if n.age < MERGE_S else null
+	return null
+
+
+## L4: the stack step for a new number on `target` (one above its highest live number).
+func stack_for(target: Object) -> int:
+	if target == null:
+		return 0
+	var top := -1
+	for n in numbers:
+		if n.target == target:
+			top = maxi(top, n.stack)
+	return mini(top + 1, STACK_MAX) if top >= 0 else 0
+
+
+## L4: 1 + a pop that eases back to 1 over POP_S.
+static func pop_scale(n: Number) -> float:
+	if n.pop <= 0.0 or n.pop_age >= POP_S:
+		return 1.0
+	var k := 1.0 - n.pop_age / POP_S
+	return 1.0 + n.pop * k * k
+
+
+## Current world position (rising, drifting, stacked per target).
 static func position_of(n: Number) -> Vector3:
 	var t := clampf(n.age / LIFETIME, 0.0, 1.0)
 	var rise := RISE * (1.0 - (1.0 - t) * (1.0 - t))
-	return n.world + Vector3(n.drift_x * t, rise, 0.0)
+	return n.world + Vector3(n.drift_x * t, rise + STACK_STEP * n.stack, 0.0)
 
 
 static func alpha_of(n: Number) -> float:
