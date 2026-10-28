@@ -17,6 +17,7 @@ var hip_fov := 75.0
 var focus_toggle := false
 var crouch_toggle := false
 var reduced_motion := false
+var instant_text := false  ## 0.3.1 P3: dialogue without the typewriter
 var head_bob := 1.0
 var aim_sensitivity := 1.0
 var master_volume := 1.0  ## step 37 buses
@@ -139,6 +140,7 @@ func apply_to(p: Player) -> void:
 	)
 	Accessibility.subtitles = subtitles
 	UiAnim.reduced_motion = reduced_motion  # 0.3.1 P1
+	DialogueUI.instant_text = instant_text  # 0.3.1 P3
 	Accessibility.subtitle_scale = subtitle_scale
 	var tree := Engine.get_main_loop() as SceneTree
 	if tree:
@@ -202,6 +204,7 @@ func _options() -> PackedStringArray:
 		"focus_toggle",
 		"crouch_toggle",
 		"reduced_motion",
+		"instant_text",
 		"head_bob",
 		"aim_sensitivity",
 		"master_volume",

@@ -75,3 +75,49 @@ func test_choice_and_ui() -> void:
 	r.advance()
 	check(not r.active and not ui.visible, "ended, UI hidden")
 	ui.queue_free()
+
+
+func test_typewriter_skip_and_advance() -> void:  # 0.3.1 P3
+	UiAnim.force_motion = true
+	var r := DialogueRunner.new()
+	var ui := DialogueUI.new()
+	runner_tree.root.add_child(ui)
+	ui.bind(r)
+	r.start("Bob")
+	var first := r.text()
+	check(ui.typing() and ui.text_label.visible_characters == 0, "a line starts typing")
+	check(not ui.arrow.visible, "no continue arrow while typing")
+	ui._process(0.1)
+	check(ui.text_label.visible_characters == int(DialogueUI.CPS * 0.1), "45 chars/s")
+	check(ui.press_interact() and not ui.typing() and r.text() == first, "1st press completes")
+	check(ui.arrow.visible, "the continue arrow shows once the line is done")
+	ui.press_interact()
+	check(r.text() != first or not r.active, "2nd press advances")
+	while r.active and not r.awaiting_choice():
+		ui.complete()
+		r.advance()
+	ui.complete()
+	check(ui.button_texts().size() == 2 and not ui.arrow.visible, "choices after the line")
+	check(DialogueUI.speaker_color("Bob") == DialogueUI.speaker_color("Bob"), "stable colour")
+	DialogueUI.instant_text = true
+	r.choose(0)
+	check(not ui.typing(), "instant text setting skips the typewriter")
+	DialogueUI.instant_text = false
+	UiAnim.force_motion = false
+	ui.free()
+
+
+func test_choices_wait_for_typing() -> void:  # 0.3.1 P3
+	UiAnim.force_motion = true
+	var r := DialogueRunner.new()
+	var ui := DialogueUI.new()
+	runner_tree.root.add_child(ui)
+	ui.bind(r)
+	r.start("Bob")
+	while r.active and not r.awaiting_choice():
+		r.advance()
+	check(ui.typing() and ui.button_texts().is_empty(), "choices held while the line types")
+	ui._process(100.0)
+	check(not ui.typing() and ui.button_texts().size() == 2, "shown when the line finishes")
+	UiAnim.force_motion = false
+	ui.free()

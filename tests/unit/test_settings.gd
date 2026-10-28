@@ -38,7 +38,7 @@ func test_each_option_saved() -> void:
 	var l := Settings.load_from(FILE)
 	for k in s._options():
 		check(l.get(k) == s.get(k), "option %s round-trips" % k)
-	check(Settings.new()._options().size() == 18, "18 options (OW8: minimap_north)")
+	check(Settings.new()._options().size() == 19, "19 options (0.3.1 P3: instant_text)")
 	_cleanup()
 
 

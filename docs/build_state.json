@@ -1787,6 +1787,11 @@
       "time": "2026-10-28T10:19-05:00",
       "step": "0.3.1 P1 QA9 fixes",
       "summary": "UiAnim (Ember QA round 9 on P1a): closing flag + is_shown() so a toggle during the close fade reopens, mouse ignored while closing (panels' is_open/toggle/cancel checks use it); tweens ignore time_scale; open() re-reads the resting position each time and pause_menu sets anchors before tweening; pulse/shake/count_up stop their previous tween; force_motion for tests; 3 new test_ui_anim tests. Fast tier green, 0 teleports."
+    },
+    {
+      "time": "2026-10-28T10:25-05:00",
+      "step": "P3",
+      "summary": "Dialogue typewriter (45 cps, first press completes, second advances), animated continue arrow, speaker colours, Instant text setting; fast tier green"
     }
   ],
   "completed_steps": [

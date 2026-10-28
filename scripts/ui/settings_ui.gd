@@ -40,7 +40,13 @@ func _init() -> void:
 	var opts := VBoxContainer.new()
 	h.add_child(opts)
 	for o in [
-		"invert_y", "focus_toggle", "crouch_toggle", "reduced_motion", "subtitles", "minimap_north"
+		"invert_y",
+		"focus_toggle",
+		"crouch_toggle",
+		"reduced_motion",
+		"instant_text",
+		"subtitles",
+		"minimap_north"
 	]:
 		var c := CheckBox.new()
 		c.text = o.capitalize()

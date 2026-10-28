@@ -63,4 +63,4 @@ Ember Art Labyrinth Act I (0.3.0 work, batch 08a): the Goblin Warrens tile kit (
 
 Goblin and Orc models by Quaternius (CC0), batch 08b: the goblin grunt, archer and shaman and the Goblin King are recoloured and modified from Quaternius "Goblin" and "Orc" (poly.pizza, CC0 1.0); the Club, Bow, Quiver, Hood, Staff, Beads, Crown and the Roar animation are original CC0 additions by Ember Art. See docs/credits/ember_art_batch_08b_CREDITS.md.
 
-Ember Art polish (0.3.1 work, batch 09b): the stairs vote chip bar and chips (assets/original/ember_art/ui/vote/) are original pixel art made for Covenant of Embers, CC0 1.0. See docs/credits/ember_art_batch_09b_CREDITS.md. The vote tick is Kenney Interface Sounds tick_001 (CC0).
+Ember Art polish (0.3.1 work, batch 09b): the stairs vote chip bar and chips (assets/original/ember_art/ui/vote/) and the dialogue continue arrow (ui/typewriter/) are original pixel art made for Covenant of Embers, CC0 1.0. See docs/credits/ember_art_batch_09b_CREDITS.md. The vote tick is Kenney Interface Sounds tick_001 (CC0).
