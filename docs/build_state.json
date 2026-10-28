@@ -1792,6 +1792,11 @@
       "time": "2026-10-28T10:25-05:00",
       "step": "P3",
       "summary": "Dialogue typewriter (45 cps, first press completes, second advances), animated continue arrow, speaker colours, Instant text setting; fast tier green"
+    },
+    {
+      "time": "2026-10-28T10:37-05:00",
+      "step": "P3+09c",
+      "summary": "Import Ember Art batch 09c stairs_warrens_4x4 (own -colonly collision, trimesh pass only on fallback); StairsDown trigger moved to BottomExit; solo labyrinth bot PASS (King down, floor 5, 0 teleports)"
     }
   ],
   "completed_steps": [

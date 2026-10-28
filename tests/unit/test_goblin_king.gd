@@ -195,6 +195,9 @@ func test_exit_room_stair_hole() -> void:
 	f.position = Vector3(0, 900, 4000)
 	await runner_tree.physics_frame
 	await runner_tree.physics_frame
+	var be := ex.find_child("BottomExit", true, false) as Node3D
+	if be:  # P3: batch 09c spiral stair; the trigger sits 0.4 m over its BottomExit
+		check_near(be.global_position.distance_to(s.global_position), 0.4, 0.05, "trigger on BottomExit")
 	var h := ex.global_position + WarrensKit.stair_hole(Vector2.ZERO)
 	var q := PhysicsRayQueryParameters3D.create(
 		s.global_position + Vector3(0, 6, 0), s.global_position + Vector3(0, -3, 0)

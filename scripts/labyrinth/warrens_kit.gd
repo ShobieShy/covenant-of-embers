@@ -56,9 +56,19 @@ static func stair_hole(size: Vector2) -> Vector3:
 	return Vector3(-size.x / 2 + MODULE * 1.5, 0, -size.y / 2 + MODULE * 0.5)
 
 
-## Places stair_down in its hole with trimesh collision (steps and shaft sides).
+## L3/P3: room-local foot of the stairs (the model's BottomExit (-0.6, -4.2, -1.0) under yaw PI),
+## relative to stair_hole(). Batch 09c's 4x4 spiral ends in the SW corner of the well.
+const STAIR_EXIT := Vector3(0.6, -STAIR_DEPTH, 1.0)
+
+
+## Places stairs_warrens_4x4 in its hole; it ships its own -colonly collision.
+## Falls back to the old stair_down (with trimesh collision) if the glb is missing.
 static func stair_down(parent: Node3D, size: Vector2) -> Node3D:
-	var n := _put(parent, "stair_down", stair_hole(size), PI)
+	var n := _put(parent, "stairs_warrens_4x4", stair_hole(size), PI)
+	if n:
+		n.name = "stair_down"  # callers and tests look it up by this name
+		return n
+	n = _put(parent, "stair_down", stair_hole(size), PI)
 	if n:
 		for mi in [n] + n.find_children("*", "MeshInstance3D", true, false):
 			if mi is MeshInstance3D:

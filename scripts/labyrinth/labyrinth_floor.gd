@@ -217,11 +217,9 @@ func _build_rooms(kit: Dictionary) -> void:
 					"StairsUp", LabyrinthStairs.UP, c + Vector3(-sz.x / 2 + 2.0, 0, -sz.y / 2 + 2.0)
 				)
 			"exit":
-				# L3: dressed, the trigger sits on the last steps of stair_down (north end of the hole)
+				# L3: dressed, the trigger sits at the stair's BottomExit (SW corner of the well)
 				var h := WarrensKit.stair_hole(sz)
-				var foot := (
-					c + h + Vector3(0, 0.4 - WarrensKit.STAIR_DEPTH, -WarrensKit.MODULE / 2 + 0.6)
-				)
+				var foot := c + h + WarrensKit.STAIR_EXIT + Vector3(0, 0.4, 0)
 				_stairs("StairsDown", LabyrinthStairs.DOWN, foot if dressed else c)
 			"rest":
 				_shrine(c)
