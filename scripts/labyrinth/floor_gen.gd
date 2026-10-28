@@ -106,7 +106,14 @@ static func generate(kit: Dictionary, seed_value: int) -> Dictionary:
 				pool.append(String(kr["id"]))
 		var room := pool[g._below(pool.size())]
 		out.append({"kind": r[0], "room": room, "cell": r[1], "rot": g._below(4)})
-	return {"seed": seed_value, "rooms": out, "edges": edges}
+	return {"seed": seed_value, "rooms": out, "edges": edges, "stair_row": stair_row(path)}
+
+
+## Exit room's stair hole row (0 north, 1 the southmost full row), as tools/labyrinth_gen.py.
+## The exit's only doorway faces path[-2]; a north doorway would open onto a north-row hole.
+## Uses no RNG, so room layouts are unchanged.
+static func stair_row(path: Array[Vector2i]) -> int:
+	return 1 if DIRS.find(path[-2] - path[-1]) == 0 else 0
 
 
 ## Same text as tools/labyrinth_gen.py signature(), for the golden comparison.
@@ -117,7 +124,7 @@ static func signature(fl: Dictionary) -> String:
 	var es: PackedStringArray = []
 	for e: Array in fl["edges"]:
 		es.append("%d-%d%s" % [e[0], e[1], "s" if e[2] else ""])
-	return "%d %s %s" % [fl["seed"], "|".join(rs), " ".join(es)]
+	return "%d %s %s stair=%d" % [fl["seed"], "|".join(rs), " ".join(es), fl["stair_row"]]
 
 
 ## Open sides (0 N, 1 E, 2 S, 3 W) of room `i`; the floor builder walls the others off.

@@ -1797,6 +1797,11 @@
       "time": "2026-10-28T10:37-05:00",
       "step": "P3+09c",
       "summary": "Import Ember Art batch 09c stairs_warrens_4x4 (own -colonly collision, trimesh pass only on fallback); StairsDown trigger moved to BottomExit; solo labyrinth bot PASS (King down, floor 5, 0 teleports)"
+    },
+    {
+      "time": "2026-10-28T10:54:21-05:00",
+      "step": "0.3.1 exit-room fix",
+      "summary": "Exit doorway never opens onto the stair well: RNG-free stair_row in Python+GD FloorGen (hole moves to the south row when the exit door is north); golden regenerated, layouts unchanged; 2000-seed and per-floor geometry tests; solo labyrinth bot PASS, 0 teleports; fast tier green."
     }
   ],
   "completed_steps": [

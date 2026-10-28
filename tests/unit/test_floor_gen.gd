@@ -83,3 +83,23 @@ func test_seed_is_stable_and_remix_changes() -> void:
 		a != FloorGen.signature(FloorGen.generate(kit, FloorGen.floor_seed(7, "warrens", 2))),
 		"floors differ"
 	)
+
+
+func test_exit_doorway_never_opens_onto_stair_well() -> void:
+	var kit := FloorGen.load_kit()
+	var bad := 0
+	var south := 0
+	for s in 2000:
+		for fno: int in kit["kit"]["floors"]:
+			var fl := FloorGen.generate(kit, FloorGen.floor_seed(s, "warrens", fno))
+			var ex := -1
+			for i in fl["rooms"].size():
+				if fl["rooms"][i]["kind"] == "exit":
+					ex = i
+			var d := FloorGen.doors(fl, ex)
+			var row := int(fl["stair_row"])
+			south += row
+			if d.size() != 1 or (row == 0 and d.has(0)) or (row == 1 and d.has(2)):
+				bad += 1
+	check(bad == 0, "exit doorway clear of the stair row on 8000 floors (%d bad)" % bad)
+	check(south > 0, "some floors move the hole south (%d)" % south)

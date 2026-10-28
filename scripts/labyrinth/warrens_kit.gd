@@ -44,16 +44,30 @@ static func _put(
 	return n
 
 
-## L3: the exit room's stair_down sits in floor tile (1, 0): the second full 4 m tile of
-## the north row (every kit room is >= 10 m, so fill() makes it whole). Yaw PI puts its top
-## step on the tile's south edge, so it descends 4.2 m toward the north wall.
+## L3: the exit room's stair_down sits in the second full 4 m tile of a row (every kit room
+## is >= 10 m, so fill() makes it whole). Row 0 (FloorGen stair_row 0) is the north row: yaw
+## PI puts the top step on the tile's south edge, descending 4.2 m toward the north wall.
+## Row 1 is the southmost full row, used when the exit's doorway is in the north wall so the
+## doorway never opens onto the well: yaw 0, top step on the north edge, descending south.
 const STAIR_TILE := Vector2i(1, 0)
 const STAIR_DEPTH := 4.2
 
 
+## Floor tile (fill() indices) holding the stair hole for FloorGen stair_row `row`.
+static func stair_tile(size: Vector2, row := 0) -> Vector2i:
+	if row == 0:
+		return STAIR_TILE
+	return Vector2i(1, int(floor(size.y / MODULE + 0.01)) - 1)
+
+
 ## Room-local centre of the stair hole (4 x 4 m) for a room of `size`.
-static func stair_hole(size: Vector2) -> Vector3:
-	return Vector3(-size.x / 2 + MODULE * 1.5, 0, -size.y / 2 + MODULE * 0.5)
+static func stair_hole(size: Vector2, row := 0) -> Vector3:
+	var t := stair_tile(size, row)
+	return Vector3(-size.x / 2 + MODULE * 1.5, 0, -size.y / 2 + MODULE * (t.y + 0.5))
+
+
+static func stair_yaw(row := 0) -> float:
+	return PI if row == 0 else 0.0
 
 
 ## L3/P3: room-local foot of the stairs (the model's BottomExit (-0.6, -4.2, -1.0) under yaw PI),
@@ -61,14 +75,18 @@ static func stair_hole(size: Vector2) -> Vector3:
 const STAIR_EXIT := Vector3(0.6, -STAIR_DEPTH, 1.0)
 
 
+static func stair_exit(row := 0) -> Vector3:
+	return STAIR_EXIT if row == 0 else Vector3(-0.6, -STAIR_DEPTH, -1.0)
+
+
 ## Places stairs_warrens_4x4 in its hole; it ships its own -colonly collision.
 ## Falls back to the old stair_down (with trimesh collision) if the glb is missing.
-static func stair_down(parent: Node3D, size: Vector2) -> Node3D:
-	var n := _put(parent, "stairs_warrens_4x4", stair_hole(size), PI)
+static func stair_down(parent: Node3D, size: Vector2, row := 0) -> Node3D:
+	var n := _put(parent, "stairs_warrens_4x4", stair_hole(size, row), stair_yaw(row))
 	if n:
 		n.name = "stair_down"  # callers and tests look it up by this name
 		return n
-	n = _put(parent, "stair_down", stair_hole(size), PI)
+	n = _put(parent, "stair_down", stair_hole(size, row), stair_yaw(row))
 	if n:
 		for mi in [n] + n.find_children("*", "MeshInstance3D", true, false):
 			if mi is MeshInstance3D:
@@ -137,14 +155,14 @@ static func floor_tiles(
 
 ## Dresses one greybox room built by LabyrinthFloor._room (walls, floor, corridors, props).
 static func dress_room(
-	r: Node3D, size: Vector2, open: Array[int], slot: float, stairs := false
+	r: Node3D, size: Vector2, open: Array[int], slot: float, stairs := false, stair_row := 0
 ) -> void:
 	var d := Node3D.new()
 	d.name = "Dress"
 	r.add_child(d)
-	floor_tiles(d, Vector3.ZERO, size, STAIR_TILE if stairs else Vector2i(-1, -1))
+	floor_tiles(d, Vector3.ZERO, size, stair_tile(size, stair_row) if stairs else Vector2i(-1, -1))
 	if stairs:
-		stair_down(d, size)
+		stair_down(d, size, stair_row)
 	for side in 4:
 		var horiz := side == 0 or side == 2
 		var sgn := -1.0 if side == 0 or side == 3 else 1.0

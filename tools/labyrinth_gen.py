@@ -87,13 +87,23 @@ def generate(kit, seed):
     for kind, c in rooms:
         pool = [r["id"] for r in kit["room"] if r["kind"] == kind]
         out.append({"kind": kind, "room": pool[rng.below(len(pool))], "cell": c, "rot": rng.below(4)})
-    return {"seed": seed, "rooms": out, "edges": edges}
+    return {"seed": seed, "rooms": out, "edges": edges, "stair_row": stair_row(path)}
+
+
+def stair_row(path):
+    """Exit room's stair hole row: 0 = north row, 1 = the southmost full row.
+
+    The exit is the path's last room and its only doorway faces path[-2]; a north doorway
+    would open straight onto a north-row hole, so the hole moves south. No RNG is used, so
+    room layouts are unchanged."""
+    d = (path[-2][0] - path[-1][0], path[-2][1] - path[-1][1])
+    return 1 if DIRS.index(d) == 0 else 0
 
 
 def signature(fl):
     r = "|".join("%s:%s:%d,%d:%d" % (x["kind"], x["room"], x["cell"][0], x["cell"][1], x["rot"]) for x in fl["rooms"])
     e = " ".join("%d-%d%s" % (a, b, "s" if s else "") for a, b, s in fl["edges"])
-    return "%d %s %s" % (fl["seed"], r, e)
+    return "%d %s %s stair=%d" % (fl["seed"], r, e, fl["stair_row"])
 
 
 GOLDEN_CASES = [(s, fl, rm) for s in (1, 42, 1337, 20261028, 4294967295) for fl in (1, 2, 3, 4) for rm in (0, 1)]
@@ -123,6 +133,11 @@ def validate(kit, fl):
             seen.add(j); todo.append(j)
     assert len(seen) == len(rooms), "disconnected"
     assert len(edges) == len(rooms) - 1, "not a tree"
+    ex = kinds.index("exit")
+    sides = [DIRS.index((cells[b][0] - cells[a][0], cells[b][1] - cells[a][1])) for a, b, _ in edges if a == ex] + [
+        DIRS.index((cells[a][0] - cells[b][0], cells[a][1] - cells[b][1])) for a, b, _ in edges if b == ex]
+    assert sides and not (fl["stair_row"] == 0 and 0 in sides), "doorway opens onto the stair well"
+    assert not (fl["stair_row"] == 1 and 2 in sides), "doorway opens onto the stair well"
 
 
 def load_kit(path=KIT):

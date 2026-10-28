@@ -29,6 +29,7 @@ const COLORS := {
 var floor_no := 1
 var kit_id := ""
 var layout := {}  ## FloorGen.generate output (normal floors), {} on the boss floor
+var stair_row := 0  ## FloorGen stair_row: the exit's stair hole row (0 north, 1 south)
 var rooms: Array[Node3D] = []
 var dressed := false  ## L3: Ember Art kit pieces placed (greybox meshes hidden)
 var _mats := {}
@@ -61,6 +62,7 @@ static func build(kit: Dictionary, n: int, state: LabyrinthState) -> LabyrinthFl
 		f._build_boss(state)
 	else:
 		f.layout = FloorGen.generate(kit, state.floor_seed(n))
+		f.stair_row = int(f.layout.get("stair_row", 0))
 		f._build_rooms(kit)
 	return f
 
@@ -162,20 +164,29 @@ func _room(
 	r.set_meta(&"kind", kind)
 	r.set_meta(&"doors", open)
 	if dressed:
-		WarrensKit.dress_room(r, size, open, slot, kind == "exit")
+		WarrensKit.dress_room(r, size, open, slot, kind == "exit", stair_row)
 		WarrensKit.props(r, kind, size)
 	rooms.append(r)
 	return r
 
 
-## L3: the exit room's slab with the 4 x 4 m stair hole cut out (Floor = everything south of
-## the hole's row; FloorW / FloorE flank the hole) and a landing at the stair foot.
+## L3: the exit room's slab with the 4 x 4 m stair hole cut out (Floor = the strip on the
+## far side of the hole's row from the stair top, FloorS / FloorN the strip on the other side
+## when there is one; FloorW / FloorE flank the hole) and a landing at the stair foot.
 func _holed_slab(r: Node3D, size: Vector2, kind: String) -> void:
 	var m := WarrensKit.MODULE
-	var h := WarrensKit.stair_hole(size)
+	var h := WarrensKit.stair_hole(size, stair_row)
 	var z0 := -size.y / 2
-	var rest := size.y - m
-	_box(r, Vector3(0, -0.25, z0 + m + rest / 2), Vector3(size.x, 0.5, rest), kind, "Floor")
+	var n_len := h.z - m / 2 - z0  # slab north of the hole
+	var s_len := size.y / 2 - (h.z + m / 2)  # slab south of the hole
+	var big := "Floor"
+	for part: Array in [[n_len, z0 + n_len / 2, "FloorN"], [s_len, size.y / 2 - s_len / 2, "FloorS"]]:
+		if float(part[0]) <= 0.01:
+			continue
+		var nm := String(part[2])
+		if (stair_row == 0 and nm == "FloorS") or (stair_row != 0 and nm == "FloorN"):
+			nm = big
+		_box(r, Vector3(0, -0.25, float(part[1])), Vector3(size.x, 0.5, float(part[0])), kind, nm)
 	var w := h.x - m / 2 + size.x / 2
 	_box(r, Vector3(-size.x / 2 + w / 2, -0.25, h.z), Vector3(w, 0.5, m), kind, "FloorW")
 	var e := size.x / 2 - (h.x + m / 2)
@@ -218,8 +229,8 @@ func _build_rooms(kit: Dictionary) -> void:
 				)
 			"exit":
 				# L3: dressed, the trigger sits at the stair's BottomExit (SW corner of the well)
-				var h := WarrensKit.stair_hole(sz)
-				var foot := c + h + WarrensKit.STAIR_EXIT + Vector3(0, 0.4, 0)
+				var h := WarrensKit.stair_hole(sz, stair_row)
+				var foot := c + h + WarrensKit.stair_exit(stair_row) + Vector3(0, 0.4, 0)
 				_stairs("StairsDown", LabyrinthStairs.DOWN, foot if dressed else c)
 			"rest":
 				_shrine(c)
