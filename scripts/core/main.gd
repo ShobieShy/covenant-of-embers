@@ -515,6 +515,9 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 		ls.name = "LabyrinthSync"
 		add_child(ls)
 		ls.setup(Coop.session, ow.interiors, coop.host)
+	_party_loot()  # L4: drop chance follows party size (ActLoot.party_chance)
+	if not Coop.session.roster_changed.is_connected(_party_loot):
+		Coop.session.roster_changed.connect(_party_loot)
 	if coop.host:
 		sync.push()
 		## 0.1.4: the lobby level comes from the host's save, which can be stale (or the host
@@ -523,6 +526,12 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 	if not Coop.session.ended.is_connected(_on_coop_ended):
 		Coop.session.ended.connect(_on_coop_ended)
 	print("[coop] %s, %d player(s)" % ["hosting" if coop.host else "joined", Coop.session.roster.size()])
+
+
+func _party_loot() -> void:
+	var d := get_node_or_null("LootDropper") as LootDropper
+	if d:
+		d.party = maxi(1, Coop.session.roster.size()) if Coop.session else 1
 
 
 ## Step 91: the host's travel moves everyone; clients follow with their character.
@@ -657,6 +666,7 @@ func _lab_enemies(fl: LabyrinthFloor, player: Player) -> void:
 		var boss := String(m.get_meta(&"lab_boss", "")) if m else ""
 		if elite != "":
 			packs[elite] = int(packs.get(elite, 0)) + 1
+		ActLoot.tag(e, fl.floor_no)  # L4: floor item level, Act element and luck
 		e.died.connect(_on_lab_kill.bind(fl, elite, boss, packs))
 	fl.tree_exiting.connect(sp.queue_free, CONNECT_ONE_SHOT)
 
@@ -667,11 +677,32 @@ func _on_lab_kill(_e: Enemy, _el: ElementTable.Element, fl: LabyrinthFloor, elit
 		if int(packs[elite]) <= 0:
 			labyrinth.kill_elite(fl.floor_no, elite)
 	if boss != "":
+		var first := not labyrinth.bosses.has(boss)
 		labyrinth.defeat_boss(boss)
+		if is_instance_valid(fl):
+			_lab_boss_chest(fl, _e, first)
 		var ow := get_node_or_null("OpenWorld") as OpenWorld
 		if ow and is_instance_valid(fl):
 			_lab_waystone(fl, ow)
 		print("[labyrinth] %s defeated" % boss)
+
+
+## L4: the Act boss leaves an open chest where it fell: Unique floor on the first clear,
+## Rare on repeats (ActLoot.boss_rarity), in the boss's element.
+func _lab_boss_chest(fl: LabyrinthFloor, e: Enemy, first: bool) -> VaultChest:
+	var c := VaultChest.new()
+	c.name = "BossChest"
+	c.player = get_node_or_null("Player") as Player
+	c.dropper = get_node_or_null("LootDropper") as LootDropper
+	c.floor_rarity = ActLoot.boss_rarity(fl.floor_no, first)
+	c.set_meta(&"tier", "boss")
+	if e and e.def:
+		c.element = e.def.affinity
+	c.unlock()
+	fl.add_child(c)
+	if e and e.is_inside_tree():
+		c.global_position = e.global_position + Vector3(0, 0, 1.5)
+	return c
 
 
 ## OW11b: where the party is: the zone nearest the player in the open world ("breach" in

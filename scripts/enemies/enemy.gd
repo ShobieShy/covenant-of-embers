@@ -48,6 +48,7 @@ const FX_SLOW := 2
 const FX_STAGGER := 4
 var net_fx := 0  ## step 134: host status bits on a co-op puppet
 var health_scale := 1.0  ## step 80: co-op enemy health multiplier
+var level_override := 0  ## L4: a Labyrinth floor's item level (ActLoot); 0 = def.level
 ## Step 94: a co-op client puppet only shows predicted damage; it never dies from it (it
 ## stays at >= 1 HP, so later hits still go to the host). Only the host's kill ends it.
 var hold_death := false
@@ -186,6 +187,13 @@ func get_element() -> ElementTable.Element:
 
 func display_name() -> String:
 	return def.display_name if def else "Enemy"
+
+
+## The level its drops roll at (L4: the Labyrinth floor's band, else the def's).
+func level() -> int:
+	if level_override > 0:
+		return level_override
+	return def.level if def else 1
 
 
 func max_health() -> float:

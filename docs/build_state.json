@@ -1655,6 +1655,11 @@
       "time": "2026-10-28T02:52-05:00",
       "step": "L4a",
       "summary": "LabyrinthSync: host-authoritative co-op floors ('lab' state push on floor entry / roster change, joiner plays a copy of the host's LabyrinthState and follows its floor, own block restored), joiner stairs inert, host stairs need the party within 10 m or a 10 s vote ('lab_vote'); joiners skip _lab_enemies (puppets); test_labyrinth_sync (4)."
+    },
+    {
+      "time": "2026-10-28T02:55-05:00",
+      "step": "L4b",
+      "summary": "Act I loot: ActLoot (floor item levels 5/7/9/10/12, Act element share, party drop-chance +25%/extra player), act1_goblins + act1_goblin_king pools, Enemy.level_override, King leaves an open boss chest (Unique first clear, Rare repeats); test_act_loot (4)."
     }
   ],
   "completed_steps": [

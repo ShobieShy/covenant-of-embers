@@ -19,6 +19,7 @@ const LIFT := 0.05  ## m above the corpse's feet
 @export var peer_id := 1
 var parent: Node3D  ## where pickups go (defaults to this node's parent)
 var luck := 0.0  ## from the player (0 until a stat gives luck)
+var party := 1  ## L4: players in the session (ActLoot.party_chance)
 var vigil: Vigil  ## step 28: null/tier 0 = shipped weights; else a shifted copy
 var _vigil_table: RarityTable
 var _vigil_key := ""
@@ -74,12 +75,26 @@ func _on_enemy_killed(enemy: Enemy, _element: ElementTable.Element) -> void:
 		kills_skipped += 1
 		return
 	var at := parent.to_local(enemy.global_position)
-	spawn_drops(DropRoller.roll_enemy(rng, enemy.def, luck, null, rarity_table()), at, enemy.def.id)
+	spawn_drops(roll_for(enemy), at, enemy.def.id)
 	var g := gold_for(enemy.def, gold_rng)
 	if g > 0:
 		var gp := LootPickup.create_gold(g, at + Vector3(0.0, LIFT, -SCATTER * 0.5))
 		parent.add_child(gp)
 		gold_spawned += 1
+
+
+## The kill's drops. L4: a Labyrinth enemy (ActLoot.tag) rolls at its floor's level, with
+## the Act's luck, and half the time in the Act's element; party size raises the chance.
+func roll_for(enemy: Enemy) -> Array[LootDrop]:
+	var el: int = enemy.def.affinity
+	var lk := luck
+	if enemy.has_meta(&"act_element"):
+		lk += float(enemy.get_meta(&"act_luck", 0.0))
+		if rng.randf() < ActLoot.ELEMENT_SHARE:
+			el = int(enemy.get_meta(&"act_element"))
+	return DropRoller.roll_kill(
+		rng, enemy.def.id, enemy.level(), el, lk, null, rarity_table(), party
+	)
 
 
 ## Step 28: the rarity table drops roll on (null = shipped default).

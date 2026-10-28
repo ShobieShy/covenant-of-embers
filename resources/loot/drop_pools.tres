@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DropTable" load_steps=17 format=3]
+[gd_resource type="Resource" script_class="DropTable" load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://scripts/loot/drop_table.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/loot/drop_pool.gd" id="2"]
@@ -88,6 +88,72 @@ max_level = 50
 drop_chance = 0.3
 entries = Array[ExtResource("3")]([SubResource("midden_heap_apprentice_fire_staff"), SubResource("midden_heap_novice_arcane_wand"), SubResource("midden_heap_earthward_battlestaff"), SubResource("midden_heap_swift_wind_wand"), SubResource("midden_heap_earthward_battlestaff_rare"), SubResource("midden_heap_apprentice_fire_staff_rare"), SubResource("midden_heap_earthward_battlestaff_mythic")])
 
+[sub_resource type="Resource" id="act1_goblins_earthward_battlestaff"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 40.0
+rarity = ""
+
+[sub_resource type="Resource" id="act1_goblins_swift_wind_wand"]
+script = ExtResource("3")
+wieldable_id = "swift_wind_wand"
+weight = 25.0
+rarity = ""
+
+[sub_resource type="Resource" id="act1_goblins_apprentice_fire_staff"]
+script = ExtResource("3")
+wieldable_id = "apprentice_fire_staff"
+weight = 25.0
+rarity = ""
+
+[sub_resource type="Resource" id="act1_goblins_earthward_battlestaff_rare"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 8.0
+rarity = "rare"
+
+[sub_resource type="Resource" id="act1_goblins"]
+script = ExtResource("2")
+id = "act1_goblins"
+enemy_ids = PackedStringArray("goblin_grunt", "goblin_archer", "goblin_shaman")
+min_level = 1
+max_level = 50
+drop_chance = 0.2
+entries = Array[ExtResource("3")]([SubResource("act1_goblins_earthward_battlestaff"), SubResource("act1_goblins_swift_wind_wand"), SubResource("act1_goblins_apprentice_fire_staff"), SubResource("act1_goblins_earthward_battlestaff_rare")])
+
+[sub_resource type="Resource" id="act1_goblin_king_earthward_battlestaff_rare"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 40.0
+rarity = "rare"
+
+[sub_resource type="Resource" id="act1_goblin_king_apprentice_fire_staff_rare"]
+script = ExtResource("3")
+wieldable_id = "apprentice_fire_staff"
+weight = 20.0
+rarity = "rare"
+
+[sub_resource type="Resource" id="act1_goblin_king_earthward_battlestaff_mythic"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 15.0
+rarity = "mythic"
+
+[sub_resource type="Resource" id="act1_goblin_king_swift_wind_wand_mythic"]
+script = ExtResource("3")
+wieldable_id = "swift_wind_wand"
+weight = 10.0
+rarity = "mythic"
+
+[sub_resource type="Resource" id="act1_goblin_king"]
+script = ExtResource("2")
+id = "act1_goblin_king"
+enemy_ids = PackedStringArray("goblin_king")
+min_level = 1
+max_level = 50
+drop_chance = 1.0
+entries = Array[ExtResource("3")]([SubResource("act1_goblin_king_earthward_battlestaff_rare"), SubResource("act1_goblin_king_apprentice_fire_staff_rare"), SubResource("act1_goblin_king_earthward_battlestaff_mythic"), SubResource("act1_goblin_king_swift_wind_wand_mythic")])
+
 [resource]
 script = ExtResource("1")
-pools = Array[ExtResource("2")]([SubResource("midden_gnawer"), SubResource("midden_heap")])
+pools = Array[ExtResource("2")]([SubResource("midden_gnawer"), SubResource("midden_heap"), SubResource("act1_goblins"), SubResource("act1_goblin_king")])
