@@ -1812,6 +1812,11 @@
       "time": "2026-10-28 11:09",
       "step": "0.3.1 P4",
       "summary": "HUD feedback: chip bars, low-health heartbeat vignette, pickup toasts, level-up banner + burst, skill-point badge and pause Skills entry, damage-number merge/stack/crit pop, loot beam heights by rarity, pickup magnet (mana/dust/gold), rarity pickup + level_up sfx (batch 09_polish CC0, credited). QA r11: vote banner centred through refresh (offsets set before open), '[vote] cleared' logged once, QA patch 11 (qa_lab_run holds Interact on stairs). Fast tier green."
+    },
+    {
+      "time": "2026-10-28 11:22",
+      "step": "0.3.1 P4 fix",
+      "summary": "P4 full tier at 0a44992: 630 unit passed, 1 failed (test_enemy fire staff: hits merged into one damage number because the test never ticks the numbers clock). DamageNumbers.merge_s (default MERGE_S 0.2); test_enemy sets 0 for one number per hit. qa_lab_run at 0a44992 DONE fails=0."
     }
   ],
   "completed_steps": [

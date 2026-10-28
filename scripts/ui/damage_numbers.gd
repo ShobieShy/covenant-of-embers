@@ -63,6 +63,7 @@ class Number:
 
 var elements: ElementTable  ## colours (default table when null)
 var auto_tick := true  ## false: the owner (tests) calls tick()
+var merge_s := MERGE_S  ## L4: 0 = never merge (a test driving hits with no clock)
 var draw_labels := true  ## false: logic only
 var numbers: Array[Number] = []
 var spawned := 0
@@ -223,7 +224,7 @@ func merge_target(target: Object) -> Number:
 	for i in range(numbers.size() - 1, -1, -1):
 		var n := numbers[i]
 		if n.target == target:
-			return n if n.age < MERGE_S else null
+			return n if n.age < merge_s else null
 	return null
 
 

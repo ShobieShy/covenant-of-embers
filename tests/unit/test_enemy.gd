@@ -163,6 +163,7 @@ func test_fire_staff_kills_earth_dummy() -> void:
 	p.caster.equip(WieldableInstance.load_base("apprentice_fire_staff"))
 	var numbers := DamageNumbers.new()
 	numbers.auto_tick = false
+	numbers.merge_s = 0.0  # 0.3.1 P4: no clock runs here, so keep one number per hit
 	w.add_child(numbers)
 	numbers.connect_bolts(bolts)
 	var deaths: Array = []
