@@ -12,6 +12,10 @@ const ACTION := &"inventory"
 const BETTER := Color(0.35, 0.9, 0.35)
 const WORSE := Color(0.95, 0.35, 0.3)
 const TRASH_ACTION := &"inventory_trash"
+## 0.3.1 P6 (M6): the confirm focuses Keep; pad Y must be held PAD_HOLD_S to trash; the
+## last trashed item can be put back for UNDO_S ("Undo" toast); the card fades in.
+const PAD_HOLD_S := 0.5
+const UNDO_S := 5.0
 
 var player: Player
 var root: PanelContainer
@@ -32,6 +36,14 @@ var confirm_label: Label
 var potion_button: Button
 var quest_box: VBoxContainer
 var pending_trash: Variant = null
+var keep_button: Button
+var undo_row: HBoxContainer
+var undo_label: Label
+var undo_left := 0.0
+var undo_item: Resource  ## the last trashed item (a potion: its ConsumableItem)
+var undo_count := 0
+var pad_hold := -1.0  ## s pad Y has been held (< 0 = not holding)
+var _card_for: Variant = null
 var last_code := ""
 
 
@@ -130,6 +142,16 @@ func _init() -> void:
 	no.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	no.pressed.connect(cancel_trash)
 	yn.add_child(no)
+	keep_button = no
+	undo_row = HBoxContainer.new()
+	undo_row.visible = false
+	right.add_child(undo_row)
+	undo_label = _label("")
+	undo_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	undo_row.add_child(undo_label)
+	var ub := _button("Undo")
+	ub.pressed.connect(undo_trash)
+	undo_row.add_child(ub)
 	var cp := _button("Copy Ember Mark")
 	cp.pressed.connect(copy_selected)
 	right.add_child(cp)
@@ -249,8 +271,38 @@ func _unhandled_input(event: InputEvent) -> void:
 			target = player.inventory.at(i) if player and i >= 0 else null
 		if target != null:
 			select(target)
-			request_trash(target)
+			if event is InputEventJoypadButton:
+				pad_hold = 0.0  # P6: pad Y trashes on a hold (tick_pad_hold)
+			else:
+				request_trash(target)
 		get_viewport().set_input_as_handled()
+
+
+func _process(dt: float) -> void:
+	tick(dt, InputMap.has_action(TRASH_ACTION) and Input.is_action_pressed(TRASH_ACTION))
+
+
+## P6: the undo timer and the pad hold-to-trash (`trash_held`: the action still down).
+func tick(dt: float, trash_held: bool) -> void:
+	if undo_left > 0.0:
+		undo_left = maxf(0.0, undo_left - dt)
+		if undo_left <= 0.0:
+			_clear_undo()
+	if pad_hold < 0.0:
+		return
+	if not trash_held:
+		pad_hold = -1.0
+		return
+	pad_hold += dt
+	if pad_hold >= PAD_HOLD_S:
+		pad_hold = -1.0
+		if selected != null:
+			request_trash(selected)
+
+
+## P6: 0..1 progress of a pad hold (for the Trash button text).
+func pad_hold_progress() -> float:
+	return 0.0 if pad_hold < 0.0 else clampf(pad_hold / PAD_HOLD_S, 0.0, 1.0)
 
 
 func refresh() -> void:
@@ -296,6 +348,9 @@ func refresh() -> void:
 	)
 	trash_button.disabled = selected == null
 	card.text = card_text(selected)
+	if selected != _card_for:  # P6: the card fades in on a new item
+		_card_for = selected
+		UiAnim.fade_in(card)
 
 
 func select(item: Variant) -> void:
@@ -315,6 +370,8 @@ func request_trash(item: Variant) -> bool:
 		pending_trash = item
 		confirm_label.text = "Trash %s for good?" % name_of(item)
 		confirm_row.visible = true
+		if keep_button.is_inside_tree():
+			keep_button.grab_focus()  # P6: the safe answer is the default
 		return false
 	return _do_trash(item)
 
@@ -334,14 +391,51 @@ func cancel_trash() -> void:
 func _do_trash(item: Variant) -> bool:
 	var n := int(qty.value) if item is ConsumableItem else 1
 	var label := name_of(item)
+	var had := player.equipment.potion_count if item is ConsumableItem else 1
 	var err := player.trash_item(item, n)
 	status.text = err if not err.is_empty() else "Trashed %s." % label
+	if err.is_empty() and item is Resource:
+		undo_item = item
+		undo_count = mini(n, had)
+		undo_left = UNDO_S
+		undo_label.text = "Trashed %s." % label
+		undo_row.visible = true
+		UiAnim.fade_in(undo_row)
 	if err.is_empty():
 		if not (item is ConsumableItem and player.equipment.potion == item):
 			selected = null
 		hovered = null
 	refresh()
 	return err.is_empty()
+
+
+## P6: puts the last trashed item back (inside UNDO_S); false when it can't.
+func undo_trash() -> bool:
+	if player == null or undo_item == null or undo_left <= 0.0:
+		return false
+	var ok := false
+	if undo_item is ConsumableItem:
+		var e := player.equipment
+		if e.potion == null or e.potion == undo_item:
+			e.potion = undo_item
+			e.potion_count += undo_count
+			e.changed.emit(-1)
+			ok = true
+	else:
+		ok = player.inventory.add(undo_item)
+	status.text = ("Put back %s." % name_of(undo_item)) if ok else "No room to put it back."
+	if ok:
+		_clear_undo()
+	refresh()
+	return ok
+
+
+func _clear_undo() -> void:
+	undo_item = null
+	undo_count = 0
+	undo_left = 0.0
+	if undo_row:
+		undo_row.visible = false
 
 
 func toggle_junk() -> bool:

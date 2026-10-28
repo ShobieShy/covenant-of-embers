@@ -127,3 +127,50 @@ func test_junk_sold_together_and_saved() -> void:
 		check(p.inventory.junk_items().is_empty() and p.inventory.size() > 0, "old saves load without junk")
 	p.queue_free()
 	ui.queue_free()
+
+
+## 0.3.1 P6 (M6): Keep is the default focus, pad Y trashes on a hold, Undo puts it back.
+func test_keep_focus_pad_hold_and_undo() -> void:
+	var s := _setup()
+	var p: Player = s[0]
+	var ui: InventoryUi = s[1]
+	ui.open()
+	var r := _hat("rare", 7)
+	p.inventory.add(r)
+	ui.select(r)
+	ui.request_trash(r)
+	check(ui.keep_button.has_focus(), "the confirm focuses Keep")
+	ui.cancel_trash()
+	var b := _hat("basic", 8)
+	p.inventory.add(b)
+	ui.select(b)
+	ui.pad_hold = 0.0
+	ui.tick(0.2, true)
+	check(p.inventory.has(b) and ui.pad_hold_progress() > 0.0, "a short hold does nothing yet")
+	ui.tick(0.2, false)
+	check(p.inventory.has(b) and ui.pad_hold < 0.0, "letting go cancels")
+	ui.pad_hold = 0.0
+	for i in 4:
+		ui.tick(0.15, true)
+	check(not p.inventory.has(b), "a full hold trashes")
+	check(ui.undo_row.visible and ui.undo_left > 0.0, "Undo toast up")
+	check(ui.undo_trash() and p.inventory.has(b), "Undo puts it back")
+	check(not ui.undo_row.visible and not ui.undo_trash(), "one undo only")
+	ui.select(b)
+	ui.request_trash(b)
+	ui.tick(InventoryUi.UNDO_S + 0.1, false)
+	check(not ui.undo_row.visible and not ui.undo_trash(), "undo expires after UNDO_S")
+	check(not p.inventory.has(b), "still gone")
+	var pot := ConsumableItem.load_item("health_potion")
+	if pot:
+		p.equipment.potion = null
+		p.equipment.potion_count = 0
+		p.equipment.add_potions(pot, 3)
+		ui.select(pot)
+		ui.qty.value = 3
+		ui.request_trash(pot)
+		check(p.equipment.potion == null, "all potions gone")
+		check(ui.undo_trash() and p.equipment.potion_count == 3, "potions come back (3)")
+	ui.close()
+	p.queue_free()
+	ui.queue_free()

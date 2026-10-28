@@ -77,3 +77,42 @@ func test_capstone_confirm_and_lock() -> void:
 	check(ui.tab_buttons["water"].get_node("TabLock").visible, "tab padlock")
 	check(ui.tab_buttons["fire"].get_node("TabCrown").visible, "tab crown")
 	s[0].free()
+
+
+## 0.3.1 P6 (M8): hover pop, purchase pulse along the owned path, respec confirm, counter.
+func test_polish_pulse_respec_counter() -> void:
+	var s := _player()
+	var p: Player = s[1]
+	var ui := SkillsUi.new()
+	s[0].add_child(ui)
+	ui.bind(p)
+	ui.refresh()
+	var before := p.skills.available(p.progression.level)
+	check(ui.points_label.text.begins_with("Skill points: %d " % before), "counter shows points")
+	var t := SkillTree.element_tree("fire")
+	var t0 := ""
+	var t1 := ""
+	for sk in t.skills.values():
+		if int(sk["tier"]) == 0 and t0.is_empty():
+			t0 = sk["id"]
+	check(ui.take_element("fire", t0), "tier-0 bought")
+	check(ui.path_pulses == 1, "pulse on the bought node")
+	check(ui.points_label.text.begins_with("Skill points: %d " % (before - 1)), "counter lands")
+	for sk in t.skills.values():
+		if int(sk["tier"]) == 1 and t1.is_empty() and p.skills.el_why_not("fire", sk["id"], 40).is_empty():
+			t1 = sk["id"]
+	if not t1.is_empty():
+		ui.path_pulses = 0
+		check(ui.take_element("fire", t1) and ui.path_pulses >= 2, "pulse runs down the path")
+	(ui.el_buttons["fire/" + t0] as Button).mouse_entered.emit()
+	check(ui.hovers >= 1, "hover pops")
+	ui.can_respec = func() -> bool: return true
+	p.inventory.gold = 100000
+	var spent := p.skills.el_spent("fire")
+	check(ui.request_respec() and ui.confirm.visible, "respec asks first")
+	check(ui.confirm_label.text.contains("refunds"), "refund text")
+	check(not ui.confirm_pending(false) and p.skills.el_spent("fire") == spent, "cancel keeps")
+	check(ui.confirm_take.text == "Take", "button text reset")
+	ui.request_respec()
+	check(ui.confirm_pending(true) and p.skills.el_spent("fire") == 0, "confirm refunds")
+	s[0].free()

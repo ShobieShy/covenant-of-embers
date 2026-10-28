@@ -152,6 +152,17 @@ static func close(n: Node, done := Callable()) -> void:
 	)
 
 
+## 0.3.1 P6: a quick fade in (tooltips, cards); instant under headless/reduced motion.
+static func fade_in(c: CanvasItem, seconds := 0.12) -> void:
+	if c == null:
+		return
+	if instant() or not c.is_inside_tree():
+		c.modulate.a = 1.0
+		return
+	c.modulate.a = 0.0
+	_tween(c, &"ui_anim_fade").tween_property(c, "modulate:a", 1.0, seconds)
+
+
 ## A quick scale pop (badges, counters).
 static func pulse(c: Control, amount := 0.15) -> void:
 	if c == null or instant() or not c.is_inside_tree():

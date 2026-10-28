@@ -75,3 +75,38 @@ func test_muzzle_flare() -> void:
 		v.tick_flare(DT)
 	check(not v.flare.visible, "flare gone after FLARE_SECONDS")
 	v.free()
+
+
+## QA round 13: a real bolt flown through the physics space into an enemy flinches it (not a
+## hand-made Hit).
+func test_real_bolt_flinches() -> void:
+	var w := Node3D.new()
+	w.position = Vector3(-2600, 0, 3300)
+	runner_tree.root.add_child(w)
+	var e := Enemy.create(
+		EnemyTable.load_default().find("gnawer"), Transform3D(Basis.IDENTITY, Vector3.ZERO)
+	)
+	e.auto_tick = false
+	w.add_child(e)
+	var bolts := SpellBolts.new()
+	bolts.auto_tick = false
+	w.add_child(bolts)
+	for i in 3:
+		await runner_tree.physics_frame  # Jolt sees the enemy's body
+	var s := SpellBolts.Spawn.new()
+	s.origin = w.global_position + Vector3(-3, 0.15, 0)
+	s.direction = Vector3(1, 0, 0)
+	s.speed = 60.0
+	s.range_m = 20.0
+	s.element = E.ARCANE
+	s.damage = 5.0
+	bolts.spawn(s)
+	var hits: Array[SpellBolts.Hit] = []
+	for i in 30:
+		hits.append_array(bolts.tick(DT))
+	check(
+		hits.size() == 1 and hits[0].collider == e, "the bolt hit the enemy (%d hits)" % hits.size()
+	)
+	check(e.flinches == 1 and e.flinch_left > 0.0, "the real hit flinched it")
+	check(e.flinch_dir.x > 0.5 or e.flinch_dir.length() > 0.5, "lean along the bolt")
+	w.free()

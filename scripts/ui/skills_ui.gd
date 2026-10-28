@@ -17,6 +17,12 @@ var can_respec := Callable()  ## () -> bool; main.gd binds Main.can_respec
 var root: PanelContainer
 var columns: HBoxContainer
 var points_label: Label
+## 0.3.1 P6 (M8): hover pop, a pulse along the owned path on a purchase, a refund (respec)
+## confirm and the points counter counting.
+const RESPEC_KEY := "respec"
+var path_pulses := 0  ## buttons pulsed by purchases (tests)
+var hovers := 0
+var _last_points := -1
 var respec_button: Button
 var buttons := {}  ## skill id -> Button
 var tabs: HBoxContainer
@@ -91,7 +97,7 @@ func _init() -> void:
 	top.add_child(points_label)
 	respec_button = Button.new()
 	respec_button.text = "Respec (Old Oak)"
-	respec_button.pressed.connect(respec)
+	respec_button.pressed.connect(request_respec)
 	top.add_child(respec_button)
 	tabs = HBoxContainer.new()
 	v.add_child(tabs)
@@ -143,6 +149,8 @@ func bind(p: Player) -> void:
 			var btn := Button.new()
 			btn.custom_minimum_size = Vector2(280, 36)
 			btn.pressed.connect(func(): take(sid))
+			btn.mouse_entered.connect(func(): _hover(btn))
+			btn.focus_entered.connect(func(): _hover(btn))
 			col.add_child(btn)
 			buttons[sid] = btn
 	_build_tabs()
@@ -231,6 +239,8 @@ func _el_button(el: String, s: Dictionary, col: Color, sz: Vector2) -> Button:
 	b.pressed.connect(func(): take_element(el, sid))
 	b.focus_entered.connect(func(): _card(el, sid))
 	b.mouse_entered.connect(func(): _card(el, sid))
+	b.mouse_entered.connect(func(): _hover(b))
+	b.focus_entered.connect(func(): _hover(b))
 	el_buttons["%s/%s" % [el, sid]] = b
 	return b
 
@@ -285,20 +295,81 @@ func take_element(el: String, sid: String) -> bool:
 		return false
 	var ok := player.spend_element_skill(el, sid)
 	refresh()
+	if ok:
+		_pulse_path(el, sid)
 	return ok
+
+
+## P6: a small pop on hover/focus.
+func _hover(b: Button) -> void:
+	hovers += 1
+	UiAnim.pulse(b, 0.06)
+
+
+## P6: pulses the bought skill and the owned lower-tier skills of its tree (the path).
+func _pulse_path(el: String, sid: String) -> void:
+	var t := SkillTree.element_tree(el) if not el.is_empty() else player.skills.tree
+	if t == null:
+		return
+	var tier := int(t.skill(sid).get("tier", 0))
+	var owned := func(id: String) -> bool:
+		return (player.skills.el_rank(el, id) if not el.is_empty() else player.skills.rank(id)) > 0
+	var path: Array[Button] = []
+	var me: Variant = el_buttons.get("%s/%s" % [el, sid]) if not el.is_empty() else buttons.get(sid)
+	if me != null:
+		path.append(me)
+	for k in t.skills:
+		var id := String(k)
+		if id == sid or int(t.skill(id).get("tier", 0)) >= tier or not owned.call(id):
+			continue
+		var b: Variant = (
+			el_buttons.get("%s/%s" % [el, id]) if not el.is_empty() else buttons.get(id)
+		)
+		if b != null:
+			path.append(b)
+	for b in path:
+		UiAnim.pulse(b, 0.12)
+	path_pulses += path.size()
+
+
+## P6: the Respec button asks first (it refunds every point and costs Gold).
+func request_respec() -> bool:
+	if player == null or not (can_respec.is_valid() and bool(can_respec.call())):
+		return false
+	var price := player.respec_price()
+	pending = RESPEC_KEY
+	confirm_label.text = (
+		"Respec refunds all your skill points%s. Continue?"
+		% (" for %d Gold" % price if price > 0 else "")
+	)
+	confirm_take.text = "Respec"
+	confirm.visible = true
+	UiAnim.fade_in(confirm)
+	if confirm_take.is_inside_tree():
+		confirm_take.grab_focus.call_deferred()
+	return true
 
 
 func confirm_pending(yes: bool) -> bool:
 	var key := pending
 	confirm.visible = false
+	confirm_take.text = "Take"
 	if key.is_empty():
 		return false
+	if key == RESPEC_KEY:
+		pending = ""
+		var n := respec() if yes else -1
+		if visible and respec_button.is_inside_tree():
+			respec_button.grab_focus.call_deferred()
+		return n >= 0
 	var parts := key.split("/")
 	var ok := false
 	if yes:
 		ok = player.spend_element_skill(parts[0], parts[1])
 	pending = ""
 	refresh()
+	if ok:
+		_pulse_path(parts[0], parts[1])
 	if is_instance_valid(el_buttons.get(key)) and visible:
 		(el_buttons[key] as Button).grab_focus.call_deferred()
 	return ok
@@ -322,6 +393,8 @@ func locked_text(own: String) -> String:
 func take(sid: String) -> bool:
 	var ok := player != null and player.spend_skill(sid)
 	refresh()
+	if ok:
+		_pulse_path("", sid)
 	return ok
 
 
@@ -337,7 +410,10 @@ func refresh() -> void:
 	if player == null or player.skills.tree == null:
 		return
 	var lv := player.progression.level
-	points_label.text = "Skill points: %d   (level %d)" % [player.skills.available(lv), lv]
+	var pts := player.skills.available(lv)
+	var fmt := "Skill points: %%d   (level %d)" % lv
+	UiAnim.count_up(points_label, pts if _last_points < 0 else _last_points, pts, fmt, 0.3)
+	_last_points = pts
 	var price := player.respec_price()
 	respec_button.text = "Respec (Old Oak, %d Gold)" % price if price > 0 else "Respec (Old Oak)"
 	respec_button.disabled = (
