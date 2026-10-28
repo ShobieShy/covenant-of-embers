@@ -105,7 +105,8 @@ func add(world: Vector3, r: Damage.Result, element: ElementTable.Element, target
 	if m != null:
 		m.amount += r.amount
 		m.hits += 1
-		m.age = 0.0
+		# QA r12: a merge re-pops but keeps the age, so a number under constant fire still
+		# rises and fades on its LIFETIME (merging stops at merge_s; the next hit starts a new one).
 		m.pop_age = 0.0
 		m.pop = CRIT_POP if r.crit > 1.0 else MERGE_POP
 		if r.crit > 1.0:

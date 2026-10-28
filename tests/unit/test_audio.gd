@@ -34,8 +34,13 @@ func test_hooks() -> void:
 	p.loadout.casters[0].casts += 1
 	await runner_tree.physics_frame
 	await runner_tree.physics_frame
-	for k in ["dash", "land", "cast"]:
+	for k in ["dash", "land"]:
 		check(int(a.played.get(k, 0)) == 1, "%s played once (%s)" % [k, a.played])
+	var casts := 0  # P5: the cast plays its element's sound ("cast" with none)
+	for k in a.played:
+		if String(k) == "cast" or String(k).begins_with("cast_") and String(k) != "cast_fail":
+			casts += int(a.played[k])
+	check(casts == 1, "cast played once (%s)" % [a.played])
 	GameEvents.bus().wave_started.emit(0, "x")
 	check(int(a.played.get("wave_start", 0)) == 1, "wave stinger")
 	var e := Enemy.create(EnemyTable.load_default().find("heap"), Transform3D(Basis.IDENTITY, Vector3(4, 0, 0)))

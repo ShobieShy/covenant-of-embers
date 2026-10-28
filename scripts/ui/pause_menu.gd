@@ -131,6 +131,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## M4: the Skills entry, with the unspent point count as a badge.
+## M4: the Skills entry, with the unspent point count as a badge. QA r12: a plain space
+## before the ◆ (a fallback-font glyph) was eaten at the run break ("Skills◆ 15"); a
+## no-break space keeps the gap: "Skills ◆ 15".
 static func skills_label(points: int) -> String:
-	return "Skills  ◆ %d" % points if points > 0 else "Skills"
+	return "Skills\u00a0◆ %d" % points if points > 0 else "Skills"

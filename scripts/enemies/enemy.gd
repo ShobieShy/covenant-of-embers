@@ -27,6 +27,15 @@ signal died(enemy: Enemy, element: ElementTable.Element)
 
 const ENEMY_LAYER := 3  ## physics layer "enemy" (bit 3)
 const FLASH_TIME := 0.12  ## s of hit flash (C++ kFlashTime)
+## 0.3.1 P5 (M1): a hit flinches the body (scale punch + a lean along the hit), a
+## weak-point crit leans harder and roots a non-boss for CRIT_STUN_S. Visual only
+## (the body/head shapes never move); death keeps the StatusFX dissolve.
+const FLINCH_S := 0.18
+const FLINCH_PUNCH := 0.1
+const FLINCH_LEAN := 0.12  ## rad
+const CRIT_PUNCH := 0.18
+const CRIT_LEAN := 0.28
+const CRIT_STUN_S := 0.2
 const WEAK_POINT_BRIGHTEN := 0.35  ## weak point tint = body colour lightened by this
 const GROUP := &"enemies"  ## Magewar's group
 ## ai.kind -> the Enemy subclass that runs it (loaded by path: no class cycle).
@@ -59,6 +68,12 @@ var dead := false
 var hits := 0
 var damage_taken := 0.0  ## health actually lost
 var flash := 0.0
+var flinch_left := 0.0  ## P5
+var flinch_crit := false
+var flinch_dir := Vector3.FORWARD  ## local, flat: the way the hit travelled
+var crit_stun_left := 0.0  ## P5: rooted after a weak-point crit
+var flinches := 0
+var _vis_base := {}  ## node -> its rest Transform3D
 var last_hit: SpellBolts.Hit
 var last_weak_point := false  ## the last resolved hit struck the weak point
 var last_killing_element: ElementTable.Element = ElementTable.Element.ARCANE
@@ -248,6 +263,8 @@ func take_hit(h: SpellBolts.Hit) -> void:
 	last_hit = h
 	last_weak_point = h.result.crit > 1.0
 	apply_damage(h.result.amount, h.element, false)
+	if not dead:
+		_flinch(h.direction, last_weak_point)
 	damage_received.emit(h.result.amount, h.direction, h.point)
 	damaged.emit(self, h)
 	if dead:
@@ -299,6 +316,59 @@ func _announce_death() -> void:
 ## Step 14 (respawning training dummies): back to full health at `xform` (in the parent's
 ## space), visible, colliding, in the "enemies" group again; the next death is announced
 ## again. Called from a physics tick, not from inside a physics query callback.
+## P5 (M1): starts a flinch away along `dir` (world); a crit leans harder and roots.
+func _flinch(dir: Vector3, crit: bool) -> void:
+	flinches += 1
+	flinch_left = FLINCH_S
+	flinch_crit = crit
+	var local := global_basis.inverse() * dir if is_inside_tree() else dir
+	local.y = 0.0
+	flinch_dir = local.normalized() if local.length() > 1e-4 else Vector3.FORWARD
+	if crit and not is_boss():
+		crit_stun_left = CRIT_STUN_S
+
+
+## P5: (scale punch, lean rad) for a flinch `left` s from its end (0, 0 when done).
+static func flinch_pose(left: float, crit: bool) -> Vector2:
+	if left <= 0.0:
+		return Vector2.ZERO
+	var k := clampf(left / FLINCH_S, 0.0, 1.0)
+	var e := k * k  # full at the hit, eases back to rest
+	return Vector2(CRIT_PUNCH if crit else FLINCH_PUNCH, CRIT_LEAN if crit else FLINCH_LEAN) * e
+
+
+func _visual_nodes() -> Array[Node3D]:
+	var out: Array[Node3D] = []
+	if model:
+		out.append(model)
+	else:
+		if _body_mesh:
+			out.append(_body_mesh)
+		if _head_mesh:
+			out.append(_head_mesh)
+	return out
+
+
+func _apply_flinch(dt: float) -> void:
+	if flinch_left <= 0.0 and _vis_base.is_empty():
+		return
+	flinch_left = maxf(0.0, flinch_left - dt)
+	var p := flinch_pose(flinch_left, flinch_crit)
+	var axis := Vector3.UP.cross(flinch_dir)
+	var b := Basis.IDENTITY
+	if axis.length() > 1e-4 and p.y != 0.0:
+		b = Basis(axis.normalized(), p.y)
+	var t := Transform3D(
+		b.scaled(Vector3(1.0 + p.x * 0.5, 1.0 - p.x, 1.0 + p.x * 0.5)), Vector3.ZERO
+	)
+	for n in _visual_nodes():
+		if not _vis_base.has(n):
+			_vis_base[n] = n.transform
+		n.transform = t * (_vis_base[n] as Transform3D)
+	if flinch_left <= 0.0:
+		_vis_base.clear()
+
+
 func reset(xform: Variant = null) -> void:
 	dead = false
 	corrupted_left = 0.0
@@ -325,6 +395,9 @@ func reset(xform: Variant = null) -> void:
 	if not is_in_group(GROUP):
 		add_to_group(GROUP)
 	visible = true
+	flinch_left = 0.0
+	crit_stun_left = 0.0
+	_apply_flinch(0.0)
 	if _body_mat:
 		_body_mat.albedo_color = def.color
 	if _head_mat:
@@ -374,6 +447,7 @@ func fx_flags() -> int:
 func tick(dt: float) -> void:
 	_fall_guard()
 	_status_tick(dt)
+	_apply_flinch(dt)
 	_sync_overlay()
 	var f := fx_flags() | net_fx  # step 134: a co-op puppet shows the host's statuses
 	StatusFX.sync(
@@ -460,7 +534,7 @@ func _uncorrupt() -> void:
 
 ## Step 53: walk speed multiplier from statuses (0 while staggered).
 func move_scale() -> float:
-	if stagger_left > 0.0:
+	if stagger_left > 0.0 or crit_stun_left > 0.0:
 		return 0.0
 	return slow_factor if slow_left > 0.0 else 1.0
 
@@ -507,6 +581,7 @@ func clear_statuses() -> void:
 func _status_tick(dt: float) -> void:
 	slow_left = maxf(0.0, slow_left - dt)
 	stagger_left = maxf(0.0, stagger_left - dt)
+	crit_stun_left = maxf(0.0, crit_stun_left - dt)
 	soaked_left = maxf(0.0, soaked_left - dt)
 	hex_left = maxf(0.0, hex_left - dt)
 	if burn_left <= 0.0 or dead:

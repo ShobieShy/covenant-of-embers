@@ -152,6 +152,7 @@ func test_level_up_and_badge() -> void:
 		PauseMenu.skills_label(0) == "Skills" and PauseMenu.skills_label(2).contains("2"),
 		"pause entry"
 	)
+	check(PauseMenu.skills_label(15) == "Skills\u00a0◆ 15", "QA r12: a gap before the ◆")
 	hud.free()
 	p.free()
 
@@ -168,7 +169,8 @@ func test_damage_numbers_merge_and_pop() -> void:
 	var b := dn.add(Vector3.ZERO, r, ElementTable.Element.FIRE, foe)
 	check(a == b and dn.numbers.size() == 1, "merged inside MERGE_S")
 	check_near(a.amount, 20.0, 1e-6, "amounts add")
-	check(a.hits == 2 and a.age == 0.0, "restarted")
+	check(a.hits == 2 and a.pop_age == 0.0, "re-popped")
+	check_near(a.age, 0.1, 1e-6, "QA r12: a merge keeps the age (it keeps rising)")
 	dn.tick(DamageNumbers.MERGE_S + 0.05)
 	var c := dn.add(Vector3.ZERO, r, ElementTable.Element.FIRE, foe)
 	check(c != a and c.stack == 1, "later hit stacks above")
@@ -186,5 +188,28 @@ func test_damage_numbers_merge_and_pop() -> void:
 	var y := dn.add(Vector3.ZERO, r, ElementTable.Element.FIRE)
 	check(x != y, "no target: never merges")
 	other.target.free()
+	foe.free()
+	dn.free()
+
+
+## QA r12: under constant fire (a hit every 0.05 s) a number still rises and expires on
+## its LIFETIME; the later hits start new numbers instead of holding one in place.
+func test_damage_number_under_constant_fire_rises() -> void:
+	var dn := DamageNumbers.new()
+	dn.auto_tick = false
+	dn.draw_labels = false
+	var foe := Node.new()
+	var r := Damage.Result.new()
+	r.amount = 1.0
+	var first := dn.add(Vector3.ZERO, r, ElementTable.Element.FIRE, foe)
+	var y0 := DamageNumbers.position_of(first).y
+	for i in 12:
+		dn.tick(0.05)
+		dn.add(Vector3.ZERO, r, ElementTable.Element.FIRE, foe)
+	check(DamageNumbers.position_of(first).y > y0 + 0.2, "the first number rose")
+	check(first.hits < 13, "merging stopped after MERGE_S (%d hits)" % first.hits)
+	for i in 30:
+		dn.tick(0.05)
+	check(not dn.numbers.has(first), "gone after its LIFETIME")
 	foe.free()
 	dn.free()

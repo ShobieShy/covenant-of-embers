@@ -129,6 +129,8 @@ var health: Health  # step 13: shield first, then health
 var damage_target := Damage.Target.new(ElementTable.Element.ARCANE)  ## bolts + enemy melee resolve on it
 var spawn_feet := Vector3.ZERO  # the last spawn() point: respawns go back there
 var spawn_yaw := 0.0
+var _seen_dashes := 0  ## P5: dash.dashes at the last tick (FOV kick)
+var _death_tint: DeathTint  ## P5: game only (headless has no renderer)
 var respawn_left := 0.0  # s until the respawn while dead
 ## Step 80 (co-op): > 0 = falling leaves you downed for this many s (last stand) before
 ## you bleed out and the normal respawn countdown starts; a teammate can revive you.
@@ -216,6 +218,8 @@ func _ready() -> void:
 	head.add_child(viewmodel)
 	if input_enabled and DisplayServer.get_name() != "headless":
 		viewmodel.enable_render(camera)
+		_death_tint = DeathTint.new()  # P5 (L5): desaturate while dead
+		add_child(_death_tint)
 	eye_height = tuning.standing_eye
 	head.position = Vector3(0.0, eye_height, 0.0)
 	set_look(rotation.y, 0.0)
@@ -273,7 +277,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Render frames: the camera FOV between the last two ticks of the focus tween.
 func _process(_delta: float) -> void:
-	camera.fov = focus.fov_at(Engine.get_physics_interpolation_fraction())
+	camera.fov = focus.fov_at(Engine.get_physics_interpolation_fraction()) + feel.fov_kick
+	if _death_tint:
+		_death_tint.sync(feel.death())
 
 
 ## Reseeds the spread RNG (tests, replays).
@@ -743,6 +749,8 @@ func tick(input: PlayerInput, dt: float) -> void:
 				bleed_out()
 			return
 		respawn_left -= dt
+		feel.tick_death(true, dt)  # P5 (L5): the eye sinks while dead
+		head.position = Vector3(0.0, eye_height + feel.offset().y, 0.0)
 		if respawn_left <= 1e-7:
 			respawn()
 		return
@@ -858,7 +866,11 @@ func tick(input: PlayerInput, dt: float) -> void:
 	if _airborne:
 		_air_vy = v.y
 	var gait := CameraFeel.Gait.CROUCH if crouched else (CameraFeel.Gait.SPRINT if sprinting else CameraFeel.Gait.WALK)
+	if dash.dashes > _seen_dashes:  # P5 (M5): the dash FOV kick
+		feel.add_fov_kick()
+	_seen_dashes = dash.dashes
 	feel.tick(grounded and moving and not sliding() and dash_cover <= 0.0, gait, landed, last_landing_speed, dt)
+	feel.tick_death(false, dt)  # P5 (L5): the respawn rise
 	var o := feel.offset()
 	head.position = Vector3(o.x, eye_height + o.y, 0.0)
 
@@ -883,7 +895,7 @@ func tick(input: PlayerInput, dt: float) -> void:
 	# Focus (step 9): action_secondary held with a wieldable; costs no mana. A swap while
 	# focused retargets to the drawn slot's type FOV.
 	focus.tick(input.down(&"action_secondary"), caster.wieldable, dt)
-	camera.fov = focus.fov
+	camera.fov = focus.fov + feel.fov_kick
 	# Casting (step 7): semi-auto on the press, from where the eye is after this tick.
 	# Spread (step 9): bloom decays, a press that wants to cast is spread inside the cone;
 	# bloom grows only on a real cast (not on a cooldown/mana refusal).
@@ -907,7 +919,10 @@ func tick(input: PlayerInput, dt: float) -> void:
 			var is_wand := w.type() == WieldableDef.Type.WAND
 			feel.add_recoil(tuning.recoil_wand if is_wand else tuning.recoil_staff)
 			feel.add_shake(tuning.shake_wand if is_wand else tuning.shake_staff)
+			if viewmodel != null:
+				viewmodel.flash_muzzle()  # P5 (M5)
 	if viewmodel != null:
+		viewmodel.tick_flare(dt)
 		viewmodel.update_pose(caster.wieldable, focus.amount(), loadout.draw_progress(), feel.recoil_offset())
 		viewmodel.update_brand(caster.fire_mode())
 

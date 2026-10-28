@@ -47,6 +47,13 @@ var brand_fx: BrandFX  ## step 141: heat/charge/spin look on the Head
 var render_viewport: SubViewport  ## enable_render()
 var render_camera: Camera3D
 var _overlay: CanvasLayer
+## 0.3.1 P5 (M5): a short element-coloured muzzle flare at the cast point.
+const FLARE_SECONDS := 0.08
+const FLARE_RADIUS := 0.06
+var flare: MeshInstance3D
+var flare_left := 0.0
+var flares := 0
+var _flare_mat: StandardMaterial3D
 var _main_camera: Camera3D
 
 
@@ -62,6 +69,23 @@ func _init() -> void:
 	model.add_child(cast_point)
 	brand_fx = BrandFX.new(LAYER_MASK)
 	cast_point.add_child(brand_fx)
+	flare = MeshInstance3D.new()
+	flare.name = "MuzzleFlare"
+	flare.layers = LAYER_MASK
+	flare.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var sm := SphereMesh.new()
+	sm.radius = FLARE_RADIUS
+	sm.height = FLARE_RADIUS * 2.0
+	sm.radial_segments = 8
+	sm.rings = 4
+	flare.mesh = sm
+	_flare_mat = StandardMaterial3D.new()
+	_flare_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_flare_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_flare_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	flare.material_override = _flare_mat
+	flare.visible = false
+	cast_point.add_child(flare)
 	visible = false
 
 
@@ -174,6 +198,26 @@ func update_brand(m: FireMode) -> void:
 	# t69u: the crystal reload rolls the staff over to the eject port and back.
 	var p := brand_fx.progress
 	model.rotation = Vector3(0.25, 0.0, 0.55) * sin(PI * p) if p >= 0.0 else Vector3.ZERO
+
+
+## P5 (M5): a cast lights the flare in the gem's colour for FLARE_SECONDS.
+func flash_muzzle() -> void:
+	flare_left = FLARE_SECONDS
+	flares += 1
+	var c := gem_color()
+	_flare_mat.albedo_color = Color(c.r, c.g, c.b, 1.0)
+	flare.scale = Vector3.ONE
+	flare.visible = true
+
+
+func tick_flare(dt: float) -> void:
+	if flare_left <= 0.0:
+		return
+	flare_left = maxf(0.0, flare_left - dt)
+	var k := flare_left / FLARE_SECONDS
+	flare.visible = k > 0.0
+	flare.scale = Vector3.ONE * (1.6 - 0.6 * k)
+	_flare_mat.albedo_color.a = k
 
 
 ## Cast point in world space (the visible tracer start).

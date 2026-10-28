@@ -233,3 +233,35 @@ func test_player_step_up_and_down_smoothed() -> void:
 	check(p.feet().y < 0.01 and p.feet().z < -6.0 and p.on_ground(), "back on the floor")
 	check(max_jump < 0.05, "no camera jump stepping down (%.4f)" % max_jump)
 	w.free()
+
+
+## 0.3.1 P5 (M5): the dash FOV kick eases back; none under reduced motion.
+func test_dash_fov_kick() -> void:
+	var f := CameraFeel.new()
+	f.add_fov_kick()
+	check_near(f.fov_kick, CameraFeel.DASH_FOV_KICK, 1e-6, "kick on")
+	for i in 30:
+		f.tick(false, CameraFeel.Gait.WALK, false, 0.0, 1.0 / 60.0)
+	check_near(f.fov_kick, 0.0, 1e-6, "eased back in FOV_KICK_SECONDS")
+	f.set_reduced_motion(true)
+	f.add_fov_kick()
+	check_near(f.fov_kick, 0.0, 1e-6, "no kick under reduced motion")
+
+
+## 0.3.1 P5 (L5): dead, the eye sinks DEATH_DROP; alive again it rises in RISE_SECONDS.
+func test_death_fall_and_rise() -> void:
+	var f := CameraFeel.new()
+	for i in 90:
+		f.tick_death(true, 1.0 / 60.0)
+	check_near(f.death(), 1.0, 1e-6, "fully fallen")
+	check_near(f.offset().y, -CameraFeel.DEATH_DROP, 1e-6, "eye dropped")
+	for i in 12:
+		f.tick_death(false, 1.0 / 60.0)
+	check(f.death() > 0.0 and f.death() < 1.0, "rising")
+	for i in 20:
+		f.tick_death(false, 1.0 / 60.0)
+	check_near(f.offset().y, 0.0, 1e-6, "back at the eye")
+	f.set_reduced_motion(true)
+	f.tick_death(true, 1.0)
+	check_near(f.offset().y, 0.0, 1e-6, "no fall under reduced motion")
+	check(f.death() > 0.0, "desaturate still runs")

@@ -14,6 +14,14 @@ const EMBER_SFX := "res://assets/original/ember_art/sfx/"
 const BUSES: PackedStringArray = ["Master", "SFX", "UI", "Music"]
 const SOUNDS := {
 	"cast": IFACE + "glass_002.ogg",
+	# 0.3.1 P5 (M5): one cast sound per element (batch 09, CC0); "cast" is the fallback.
+	"cast_arcane": EMBER_SFX + "cast_arcane.ogg",
+	"cast_fire": EMBER_SFX + "cast_fire.ogg",
+	"cast_water": EMBER_SFX + "cast_water.ogg",
+	"cast_earth": EMBER_SFX + "cast_earth.ogg",
+	"cast_air": EMBER_SFX + "cast_air.ogg",
+	"cast_light": EMBER_SFX + "cast_light.ogg",
+	"cast_dark": EMBER_SFX + "cast_dark.ogg",
 	"cast_fail": IFACE + "error_004.ogg",
 	"focus": IFACE + "maximize_003.ogg",
 	"equip": UIPACK + "switch-a.ogg",
@@ -136,11 +144,27 @@ func bind(p: Player) -> void:
 	_last = _snapshot()
 
 
+## 0.3.1 P5 (M5): the cast sound key for an element ("cast" when it has none).
+static func cast_key_for(element: int) -> String:
+	if element < 0 or element >= ElementTable.IDS.size():
+		return "cast"
+	var k := "cast_" + ElementTable.IDS[element]
+	return k if SOUNDS.has(k) else "cast"
+
+
 func _snapshot() -> Dictionary:
 	var casts := 0
+	var cast_key := "cast"
 	for c in player.loadout.casters:
 		casts += c.casts
+		if c.casts > int(_last.get("casts_by", {}).get(c.get_instance_id(), c.casts)):
+			cast_key = cast_key_for(c.wieldable.element() if c.wieldable else -1)
+	var by := {}
+	for c in player.loadout.casters:
+		by[c.get_instance_id()] = c.casts
 	return {
+		"cast_key": cast_key,
+		"casts_by": by,
 		"landings": player.landings,
 		"dashes": player.dash.dashes if player.dash else 0,
 		"casts": casts,
@@ -160,7 +184,7 @@ func _physics_process(_dt: float) -> void:
 	if now["dashes"] > _last["dashes"]:
 		play("dash")
 	if now["casts"] > _last["casts"]:
-		play_at("cast", player.viewmodel.cast_point_position() if player.viewmodel else player.global_position)
+		play_at(now["cast_key"], player.viewmodel.cast_point_position() if player.viewmodel else player.global_position)
 	if now["focus"] and not _last["focus"]:
 		play("focus", -6.0)
 	if now["blasts"] > _last.get("blasts", now["blasts"]):

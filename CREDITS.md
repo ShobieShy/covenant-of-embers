@@ -67,4 +67,4 @@ Ember Art polish (0.3.1 work, batch 09b): the stairs vote chip bar and chips (as
 
 Ember Art polish (0.3.1 work, batch 09c): the 4 x 4 m warrens spiral stair (assets/original/ember_art/warrens/stairs_warrens_4x4.glb, warrens atlas) is original work made for Covenant of Embers, CC0 1.0. See docs/credits/ember_art_batch_09c_CREDITS.md.
 
-Ember Art polish (0.3.1 work, batch 09_polish): the level-up sound and the six rarity pickup sounds (assets/original/ember_art/sfx/level_up.ogg, pickup_basic … pickup_unique.ogg) are original synthesised work made for Covenant of Embers, CC0 1.0. See docs/credits/ember_art_batch_09_polish_CREDITS.md.
+Ember Art polish (0.3.1 work, batch 09_polish): the level-up sound, the six rarity pickup sounds and the seven element cast sounds (assets/original/ember_art/sfx/level_up.ogg, pickup_basic … pickup_unique.ogg, cast_arcane … cast_dark.ogg; cast_earth layers Kenney Impact Sounds impactMining_003, CC0) are original synthesised work made for Covenant of Embers, CC0 1.0. See docs/credits/ember_art_batch_09_polish_CREDITS.md.

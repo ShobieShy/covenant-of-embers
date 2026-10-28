@@ -28,7 +28,19 @@ extends RefCounted
 ## Reduced motion (PLAN accessibility; persisted by step 32's settings): no bob, no dip, no
 ## recoil kick, no shake (add_recoil/add_shake are ignored and current values zeroed).
 
+## 0.3.1 P5 (M5): a dash kicks the FOV out by DASH_FOV_KICK deg, easing back in
+## FOV_KICK_SECONDS; none under reduced motion.
+## 0.3.1 P5 (L5): dead, the eye sinks DEATH_DROP m over DEATH_FALL_SECONDS (death()
+## 0 -> 1 also drives the screen desaturate); after the respawn it rises back in
+## RISE_SECONDS. Under reduced motion the eye stays put (the desaturate still runs).
+
 enum Gait { WALK, SPRINT, CROUCH }
+
+const DASH_FOV_KICK := 6.0
+const FOV_KICK_SECONDS := 0.25
+const DEATH_DROP := 1.1
+const DEATH_FALL_SECONDS := 1.2
+const RISE_SECONDS := 0.4
 
 var walk_intensity := 0.03
 var walk_rate := 12.0
@@ -61,6 +73,8 @@ var shake_decay := 2.0
 var shake_offset := Vector2.ZERO  ## camera offset from the shake (x right, y up)
 var recoils := 0
 var _shake_time := 0.0
+var fov_kick := 0.0  ## deg added to the camera FOV (P5)
+var death_t := 0.0  ## 0 alive .. 1 fully fallen (P5)
 var _phase := 0.0
 var _dip_time := -1.0  ## seconds since the landing, < 0 = no dip running
 
@@ -88,9 +102,34 @@ static func from_tuning(t: PlayerTuning) -> CameraFeel:
 	return f
 
 
-## Eye offset after the last tick: x along the view's right, y up (bob + shake + dip + step).
+## Eye offset after the last tick: x along the view's right, y up (bob + shake + dip + step
+## + the death fall).
 func offset() -> Vector2:
-	return bob + shake_offset + Vector2(0.0, dip + step)
+	return bob + shake_offset + Vector2(0.0, dip + step + death_offset())
+
+
+## P5: the dash FOV kick (ignored under reduced motion).
+func add_fov_kick(deg := DASH_FOV_KICK) -> void:
+	if reduced_motion or deg <= 0.0:
+		return
+	fov_kick = maxf(fov_kick, deg)
+
+
+## P5: 0..1, eased; how far the death fall / desaturate has gone.
+func death() -> float:
+	return death_t * death_t * (3.0 - 2.0 * death_t)
+
+
+func death_offset() -> float:
+	return 0.0 if reduced_motion else -DEATH_DROP * death()
+
+
+## P5: one tick of the death fall (dead) or the respawn rise (alive).
+func tick_death(dead: bool, dt: float) -> void:
+	if dead:
+		death_t = minf(1.0, death_t + dt / DEATH_FALL_SECONDS)
+	else:
+		death_t = maxf(0.0, death_t - dt / RISE_SECONDS)
 
 
 ## Viewmodel recoil offset in view space (x right, y up, +z back toward the eye).
@@ -122,6 +161,7 @@ func set_reduced_motion(on: bool) -> void:
 		recoil = 0.0
 		shake = 0.0
 		shake_offset = Vector2.ZERO
+		fov_kick = 0.0
 
 
 func set_bob_scale(s: float) -> void:
@@ -138,6 +178,7 @@ func add_step(dy: float) -> void:
 ## `landed`: touched down this tick at `landing_speed` m/s (downward, positive).
 func tick(bobbing: bool, gait: Gait, landed: bool, landing_speed: float, dt: float) -> void:
 	step = lerpf(step, 0.0, minf(1.0, dt * step_lerp))
+	fov_kick = 0.0 if reduced_motion else move_toward(fov_kick, 0.0, dt * DASH_FOV_KICK / FOV_KICK_SECONDS)
 	if absf(step) < 1e-4:
 		step = 0.0
 	if reduced_motion:

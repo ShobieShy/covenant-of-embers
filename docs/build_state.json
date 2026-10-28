@@ -1817,6 +1817,11 @@
       "time": "2026-10-28 11:22",
       "step": "0.3.1 P4 fix",
       "summary": "P4 full tier at 0a44992: 630 unit passed, 1 failed (test_enemy fire staff: hits merged into one damage number because the test never ticks the numbers clock). DamageNumbers.merge_s (default MERGE_S 0.2); test_enemy sets 0 for one number per hit. qa_lab_run at 0a44992 DONE fails=0."
+    },
+    {
+      "time": "2026-10-28 11:56",
+      "step": "0.3.1 P5",
+      "summary": "P5 feel: enemy flinch (scale punch + lean along the hit) and a 0.2 s root on weak-point crits (non-boss, not Earth stagger); death keeps the StatusFX dissolve. Per-element cast sounds (batch 09, CC0, credited), a muzzle flare at the cast point, a dash FOV kick (0 under reduced motion). Death camera: eye sinks + screen desaturate while dead, short rise after respawn. QA r12: damage-number merges keep their age (keep rising), pause Skills label uses a no-break space before the diamond. New tests: test_hit_feel, camera feel fov/death, constant-fire number test."
     }
   ],
   "completed_steps": [
