@@ -2,6 +2,17 @@
 
 From 0.2.0-prealpha. Steps L1 to L5 in docs/build_state.json.
 
+## Added
+- The Labyrinth, Act I: the Goblin Warrens. Enter through the Breach crater gate and go down
+  five floors: four generated from the Warrens room kit (seeded per save, so a floor is the
+  same when you come back) and the Goblin King's throne hall on floor 5.
+- Rest shrines on every floor (heal, save, respawn point, crafting), stairs up and down, and
+  floor progress kept in your save (old saves load with an empty Labyrinth).
+- The Goblin King: rock throw, ground slam and a roar that calls in grunts.
+- Act I loot: item levels rise with depth, secret-room chests a tier above the floor, and
+  bigger drop chances with more players.
+- Co-op: the host's floor decides; the party goes down the stairs together.
+
 ## Fixed
 - Leaving the Breach rooms no longer drops you through the ground outside. Terrain collision
   now follows the player when no camera is active, and it is rebuilt as soon as you leave an

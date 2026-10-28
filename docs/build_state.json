@@ -1730,6 +1730,11 @@
       "time": "2026-10-28T07:04-05:00",
       "step": "rt34c",
       "summary": "tools/run_tests.sh all green: units 624 passed 0 failed (exit leak back to rt33's 1 ObjectDB instance); solo playtests PASS x2 (deaths 1/0, teleports 0); co-op PASS (joiner SIGABRT at teardown after its bot PASSed, the known accepted exit crash). Not released."
+    },
+    {
+      "time": "2026-10-28T07:25-05:00",
+      "step": "L5c",
+      "summary": "Labyrinth playtest matrix through Act I at 28e0b8e (PLAYTEST_LABYRINTH=1, logs build/l5c/): solo 1x 2/2 PASS (106/104 kills, deaths 4/2), solo 4x 2/2 PASS (117/125 kills, deaths 6/5), co-op PASS (host 113 kills, stairs vote 1; joiner PASS, King down on floor 5; known joiner rc 134 at teardown). All King down, deepest floor 5, 0 teleports. L5 done except the GPU capture (deferred while Ember QA has the display)."
     }
   ],
   "completed_steps": [
