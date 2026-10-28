@@ -85,6 +85,7 @@ func _ready() -> void:
 	var fader := InteriorFade.new()
 	fader.name = "InteriorFade"
 	fader.interiors = interiors
+	fader.travel = travel  # 0.3.1 P1: fast-travel arrival fades in
 	add_child(fader)
 
 

@@ -1772,6 +1772,11 @@
       "time": "2026-10-28T10:00-05:00",
       "step": "0.3.1 P1a",
       "summary": "UiAnim helper (open fade+8px slide 0.15 s, close fade 0.1 s, pulse/shake/count_up; instant headless and under reduced motion, synced from Settings.apply_to); pause, inventory, skills, vendor, station, world map, fast travel and dialogue panels use it; test_ui_anim.gd. Transitions (interior_fade reuse) still to do."
+    },
+    {
+      "time": "2026-10-28T10:05-05:00",
+      "step": "0.3.1 P1b",
+      "summary": "InteriorFade also fades in from black after a fast-travel arrival (after ground_now) and after a respawn; stairs keep the Interiors fade; co-op menu opens with UiAnim; test_interiors arrival/respawn test"
     }
   ],
   "completed_steps": [

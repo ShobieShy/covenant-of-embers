@@ -153,7 +153,7 @@ func press(id: String) -> void:
 			if not GameFlow.continue_run(get_tree()):
 				GameFlow.new_run(get_tree())
 		"coop":
-			coop_menu.show()
+			UiAnim.open(coop_menu)  # 0.3.1 P1
 		"settings":
 			settings_ui.open()
 		"credits":

@@ -134,3 +134,23 @@ func test_interior_nav_cached_and_fresh() -> void:
 			"%s cache fresh (%d vs %d): rerun tools/bake_interior_nav.gd" % [id, cached, fresh]
 		)
 		n.free()
+
+
+func test_arrival_and_respawn_fade_in() -> void:  # 0.3.1 P1
+	var t := WorldTravel.new()
+	var f := InteriorFade.new()
+	f.travel = t
+	runner_tree.root.add_child(f)
+	f.rect.color.a = 1.0
+	t.arrived.emit("x")
+	check(f.rect.color.a == 0.0, "arrival fades in (instant headless)")
+	var p: Player = (load("res://scenes/player/player.tscn") as PackedScene).instantiate()
+	p.position = Vector3(0, 900, 4000)
+	runner_tree.root.add_child(p)
+	check(p.respawned.is_connected(f._on_respawned), "a new player's respawn is watched")
+	f.rect.color.a = 1.0
+	p.respawned.emit(p)
+	check(f.rect.color.a == 0.0, "respawn fades in")
+	p.free()
+	f.free()
+	t.free()
