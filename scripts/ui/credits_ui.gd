@@ -35,11 +35,11 @@ func _init() -> void:
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		list.add_child(l)
-	var close := Button.new()
-	close.text = "Back"
-	close.custom_minimum_size = Vector2(0, 40)
-	close.pressed.connect(hide)
-	v.add_child(close)
+	var back := Button.new()
+	back.text = "Back"
+	back.custom_minimum_size = Vector2(0, 40)
+	back.pressed.connect(close)
+	v.add_child(back)
 
 
 static func load_lines() -> Array[String]:
@@ -53,10 +53,14 @@ static func load_lines() -> Array[String]:
 
 
 func open() -> void:
-	show()
+	UiAnim.open(self)  # QA r14: the ui_open cue + fade like the other panels
+
+
+func close() -> void:
+	UiAnim.close(self)
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed(&"ui_cancel"):
-		hide()
+		close()
 		get_viewport().set_input_as_handled()

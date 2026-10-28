@@ -31,6 +31,8 @@ var _hosting_lobby := false
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	custom_minimum_size = Vector2(460, 0)
+	grow_horizontal = Control.GROW_DIRECTION_BOTH  # QA r14: centred, not hanging off to the right
+	grow_vertical = Control.GROW_DIRECTION_BOTH
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 8)
 	add_child(v)
@@ -159,7 +161,7 @@ func press(id: String) -> void:
 			if session and session.state != NetSession.State.IN_GAME:
 				Coop.end("left")
 				session = null
-			hide()
+			UiAnim.close(self)
 			closed.emit()
 	_refresh()
 

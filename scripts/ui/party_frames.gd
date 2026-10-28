@@ -12,6 +12,7 @@ var waiting: Label
 var _no_host := 0.0
 
 var coop: CoopWorld
+var hud: Hud  ## QA r14: found beside us when unset; the frames stack below its stats
 var box: VBoxContainer
 var rows := {}  ## peer -> {label, bar}
 
@@ -50,7 +51,22 @@ static func chip_step(chip: float, hp: float, hold: float, dt: float, hp_max: fl
 	return [maxf(hp, chip - CHIP_RATE * maxf(hp_max, 1.0) * dt), hold]
 
 
+## The frames' top: below the HUD's stats column (`hud_bottom` px), never above 96.
+static func frames_y(hud_bottom: float) -> float:
+	return maxf(96.0, hud_bottom + 12.0)
+
+
+func _place() -> void:
+	if hud == null and get_parent():
+		for c in get_parent().get_children():
+			if c is Hud:
+				hud = c
+	if hud and is_instance_valid(hud) and hud.stats_box and hud.stats_box.is_inside_tree():
+		box.position.y = frames_y(hud.stats_box.get_global_rect().end.y)
+
+
 func refresh(dt := 0.0) -> void:
+	_place()
 	if coop == null or not is_instance_valid(coop):
 		return
 	var client := (

@@ -114,13 +114,13 @@ func setup(s: Settings, p: Player = null) -> void:
 
 
 func open() -> void:
-	visible = true
+	UiAnim.open(self)  # QA r14: the ui_open cue + fade like the other panels
 	refresh()
 	Gamepad.focus_first(self)  # step 77
 
 
 func close() -> void:
-	visible = false
+	UiAnim.close(self)  # QA r14
 	listening = &""
 	closed.emit()
 

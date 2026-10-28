@@ -64,3 +64,35 @@ func test_world_cues() -> void:
 	GameEvents.bus().sfx.emit("nope", Vector3.INF)
 	check(not a.played.has("nope"), "unknown keys are ignored")
 	a.free()
+
+
+func test_settings_and_credits_cues() -> void:  # QA r14
+	var a := _audio()
+	var st := SettingsUi.new()
+	runner_tree.root.add_child(st)
+	st.setup(Settings.new())
+	st.visible = false
+	st.open()
+	check(st.visible and int(a.played.get("ui_open", 0)) == 1, "settings open (%s)" % [a.played])
+	st.close()
+	check(not st.visible and int(a.played.get("ui_close", 0)) == 1, "settings close")
+	st.free()
+	var cr := CreditsUi.new()
+	runner_tree.root.add_child(cr)
+	cr.visible = false
+	cr.open()
+	check(cr.visible and int(a.played.get("ui_open", 0)) == 2, "credits open")
+	cr.close()
+	check(not cr.visible and int(a.played.get("ui_close", 0)) == 2, "credits close")
+	cr.free()
+	a.free()
+
+
+func test_r14_layout_and_hooks() -> void:
+	check(PartyFrames.frames_y(40.0) == 96.0, "frames keep their old spot under a short HUD")
+	check(PartyFrames.frames_y(130.0) == 142.0, "frames sit below a taller HUD stats block")
+	check(Coop.host_load_delay("5", true) == 5.0, "debug host delay read")
+	check(Coop.host_load_delay("5", false) == 0.0, "release ignores the host delay")
+	check(Coop.host_load_delay("999", true) == 60.0, "delay capped")
+	check(Coop.host_load_delay("x", true) == 0.0, "junk ignored")
+	check(Coop.session != null or LoadingScreen.coop_phase() == "", "no co-op note solo")

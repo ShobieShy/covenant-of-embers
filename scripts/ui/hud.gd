@@ -59,6 +59,7 @@ var prompt_label: Label  ## step 46: the shared "[E] station" prompt
 var marker: Label
 var banner: Label
 var level_label: Label
+var stats_box: VBoxContainer  ## the top-left bars + level line (QA r14: party frames sit below it)
 var hurt_flash: ColorRect
 var death_overlay: ColorRect
 var death_label: Label
@@ -169,6 +170,7 @@ func _init() -> void:
 	var bars := VBoxContainer.new()
 	bars.position = Vector2(24, 24)
 	root.add_child(bars)
+	stats_box = bars
 	shield_bar = _bar(SHIELD_COLOR, bars)
 	health_bar = _bar(HEALTH_COLOR, bars)
 	mana_bar = _bar(MANA_COLOR, bars)

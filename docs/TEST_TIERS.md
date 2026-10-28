@@ -31,3 +31,11 @@ To run only the classic group:
 - The Labyrinth playtest's default timeout is 2400 s. Set `PLAYTEST_TIMEOUT` to change it.
 - A run fails on any `ERROR`/`SCRIPT ERROR` log line, except the known Terrain3D res:// pair.
 - Headless runs skip UI animations (UiAnim is instant when DisplayServer is headless).
+
+## QA debug hooks
+
+- `COE_DEBUG_HOST_LOAD_DELAY_S=<seconds>` (0 to 60): the co-op host waits this long after
+  Start before loading the world, so a joiner's "The host is loading ..." overlay (party
+  frames, 0.3.1 L2) can be captured. Set it on the host process only. Debug builds only:
+  `Coop.host_load_delay()` returns 0 when `OS.is_debug_build()` is false, so release exports
+  ignore it. The host logs a `[coop] COE_DEBUG_HOST_LOAD_DELAY_S` warning when it applies.

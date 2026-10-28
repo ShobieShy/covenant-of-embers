@@ -16,6 +16,7 @@ var intro_ask: ConfirmationDialog
 var _new_mode := ""
 var settings_ui: SettingsUi
 var coop_menu: CoopMenu  ## step 88
+var menu_column: Control  ## QA r14: hidden while the co-op panel is up (no overlap)
 var _seconds := -1.0
 var _elapsed := 0.0
 var creator: CharacterCreator  ## step 73 / 111
@@ -53,6 +54,7 @@ func _ready() -> void:
 	var c := CenterContainer.new()
 	c.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(c)
+	menu_column = c
 	var v := VBoxContainer.new()
 	v.custom_minimum_size = Vector2(320, 0)
 	v.add_theme_constant_override("separation", 10)
@@ -121,6 +123,9 @@ func _ready() -> void:
 	coop_menu = CoopMenu.new()
 	coop_menu.visible = false
 	add_child(coop_menu)
+	coop_menu.visibility_changed.connect(
+		func() -> void: menu_column.visible = not coop_menu.visible
+	)
 	var coop_opts := Coop.parse_args(OS.get_cmdline_user_args())
 	if coop_opts["mode"] != "" and not PlaytestBot.finished:  # step 88: --host / --join
 		coop_menu.auto.call_deferred(coop_opts)

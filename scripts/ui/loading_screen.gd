@@ -106,6 +106,17 @@ static func painting_for(level: String) -> Texture2D:
 	return EmberArt.texture("map_" + region)
 
 
+## QA r14 (L2): the co-op join phase lives here, since the co-op menu is gone by now:
+## "Co-op: loading the world - " while a session is live, else "".
+static func coop_phase() -> String:
+	var ss: NetSession = Coop.session
+	if ss == null or not is_instance_valid(ss):
+		return ""
+	if ss.state == NetSession.State.LOBBY or ss.state == NetSession.State.IN_GAME:
+		return "Co-op: loading the world - "
+	return ""
+
+
 static func level_path(level: String) -> String:
 	return GameFlow.level_scene(level) if level != "" else ""
 
@@ -206,7 +217,7 @@ func _build_ui() -> void:
 func _refresh() -> void:
 	if stage_label == null:
 		return  # before _ready
-	stage_label.text = "%s... %d%%" % [STAGE_TEXT[stage], int(progress * 100.0)]
+	stage_label.text = coop_phase() + "%s... %d%%" % [STAGE_TEXT[stage], int(progress * 100.0)]
 	var tip := "Tip: " + String(TIPS[tip_index])
 	if tip_label.text != tip:
 		tip_label.text = tip

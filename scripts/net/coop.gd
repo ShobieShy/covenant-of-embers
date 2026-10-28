@@ -111,10 +111,25 @@ static func host_anchor() -> String:
 
 ## session.started: everyone loads the game scene in the host's level. The host plays
 ## from its own save (world + quests); clients bring their character (step 91).
+## QA hook: COE_DEBUG_HOST_LOAD_DELAY_S=<seconds> (0..60) delays the host's world load.
+## Debug builds only; release exports ignore it (docs/TEST_TIERS.md).
+static func host_load_delay(env := "", debug := OS.is_debug_build()) -> float:
+	var v := env if env != "" else OS.get_environment("COE_DEBUG_HOST_LOAD_DELAY_S")
+	if not debug or not v.is_valid_float():
+		return 0.0
+	return clampf(v.to_float(), 0.0, 60.0)
+
+
 static func begin(tree: SceneTree) -> void:
 	if session == null:
 		return
 	if session.is_host():
+		var wait := host_load_delay()
+		if wait > 0.0:  # QA: hold the host back so joiners see "The host is loading"
+			push_warning("[coop] COE_DEBUG_HOST_LOAD_DELAY_S: host load delayed %.1f s" % wait)
+			await tree.create_timer(wait).timeout
+			if session == null:
+				return
 		if not GameFlow.continue_run(tree):
 			GameFlow.new_run(tree, GameFlow.intro_mode_from_args(OS.get_cmdline_user_args()))
 		return

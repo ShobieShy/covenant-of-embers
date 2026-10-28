@@ -139,6 +139,14 @@ func ground_now() -> void:
 
 func _on_left_interior(_id: String) -> void:
 	ground_now()
+	if not first_loaded and travel.busy:
+		# QA r14: a waystone trip out of the starting interior already streams and lands the
+		# party; a queued first_load ran after it and yanked them back (a 2nd "town_square"
+		# loading screen, arrival in town). The trip is the first load.
+		first_loaded = true
+		await travel.arrived
+		first_load_done.emit()
+		return
 	if not first_loaded:  # a run that started indoors (the intro): its first look outside
 		var p := interiors.party()
 		if not p.is_empty():
