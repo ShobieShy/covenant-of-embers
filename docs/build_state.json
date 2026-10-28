@@ -1605,6 +1605,11 @@
       "type": "release",
       "summary": "Version 0.2.0-prealpha: the open world (Old Oak, Town Square, Landfill, Breach as one streamed Terrain3D world), waystone fast travel, world map + fog + minimap, intro in the open world, open-world co-op (400 m leash), terrain paint polish, shader warmup. rt31 green at d3550fd (581 unit, solo PASS 48/48, co-op host+joiner PASS, joiner rc 134 known teardown crash).",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-28T02:05:00-05:00",
+      "step": "L1",
+      "summary": "Labyrinth L1: Act I Warrens room kit (data/labyrinth/warrens.toml: start, 5 normal, elite, rest, 2 secret, exit rooms on a 24 m slot grid), seeded floor generator in python (tools/labyrinth_gen.py --self-test/--check/--write-golden) and GDScript (FloorGen), FNV-1a floor seed per save/kit/floor/remix + xorshift32, tree layout: start->exit main path 6-9 rooms with the elite halfway, rest + 1-2 secret branches. Golden file of 40 floors shared by both; test_floor_gen.gd 4/4. run_tests.sh runs the python self-test and check."
     }
   ],
   "completed_steps": [

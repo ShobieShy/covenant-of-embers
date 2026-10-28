@@ -1,0 +1,80 @@
+# Labyrinth Act I room kit: the Goblin Warrens (LABYRINTH_PLAN sections 4 and 6, step L1).
+# A normal floor is a seeded graph of rooms on a square slot grid (slot = [kit] slot metres).
+# Every room fits inside one slot and has a 4 m doorway centred on each side; the floor
+# builder (L2) walls off the sides with no edge. `kind` is one of start, normal, elite,
+# rest, secret, exit. Rooms are picked from the kit in file order, so append new rooms at
+# the end of each kind or old floor seeds change their layout.
+# tools/labyrinth_gen.py reads this file; scripts/labyrinth/floor_gen.gd reads it too and
+# must produce the same floors (tests/fixtures/labyrinth/warrens_golden.txt).
+
+[kit]
+id = "warrens"
+act = 1
+name = "Goblin Warrens"
+slot = 24
+floors = [1, 2, 3, 4]        # floor 5 is the handmade Goblin King floor
+boss_floor = 5
+
+[floor]
+main_min = 6                 # rooms on the start -> exit path, start and exit included
+main_max = 9
+secrets_min = 1
+secrets_max = 2
+rest = 1
+
+[[room]]
+id = "warren_gate"
+kind = "start"
+size = [14, 14]
+
+[[room]]
+id = "burrow_hall"
+kind = "normal"
+size = [16, 12]
+
+[[room]]
+id = "timber_crossing"
+kind = "normal"
+size = [12, 18]
+
+[[room]]
+id = "trap_gallery"
+kind = "normal"
+size = [18, 10]
+tags = ["traps"]
+
+[[room]]
+id = "ambush_pit"
+kind = "normal"
+size = [16, 16]
+tags = ["ambush"]
+
+[[room]]
+id = "gnawer_nest"
+kind = "normal"
+size = [14, 14]
+
+[[room]]
+id = "war_chief_hall"
+kind = "elite"
+size = [20, 20]
+
+[[room]]
+id = "fungus_cellar"
+kind = "rest"
+size = [12, 12]
+
+[[room]]
+id = "hoard_nook"
+kind = "secret"
+size = [10, 10]
+
+[[room]]
+id = "collapsed_shrine"
+kind = "secret"
+size = [10, 12]
+
+[[room]]
+id = "deep_stair"
+kind = "exit"
+size = [12, 12]
