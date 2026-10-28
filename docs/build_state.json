@@ -1755,6 +1755,13 @@
       "time": "2026-10-28T09:55-05:00",
       "step": "rt35",
       "summary": "Final 0.3.0 full suite at 1a3b017 (QA holding): tools/run_tests.sh all green: units 624 passed 0 failed (1 ObjectDB instance at exit, as rt33/rt34c); solo playtests PASS x2 (deaths 0/1, teleports 0, crafted staff + wand); co-op PASS (joiner SIGABRT at teardown after its bot PASSed, the known accepted exit crash); license/credits/world map/path lints OK. Not released; awaiting the user's go."
+    },
+    {
+      "time": "2026-10-28T09:27:00-05:00",
+      "step": "release-0.3.0",
+      "type": "release",
+      "summary": "Version 0.3.0-prealpha (approved 9:09 AM CDT): the Labyrinth Act I (Goblin Warrens floors 1-4, Goblin King on floor 5, rest shrines, Act I loot, co-op stairs), Breach ground fix, co-op teammate-bolt fix. rt35 green at 1a3b017 (624 unit, solo PASS x2, co-op PASS, joiner rc 134 known teardown crash). Exports via tools/package.sh (Linux export + AppImage smoke, Windows wine smoke): green. No Steam upload.",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -1987,5 +1994,5 @@
     "2026-10-26: steps 135-143 (part brands B1-B9) planned, waiting on user go; see docs/BRANDS_PLAN.md; open Q35-Q46",
     "2026-10-26: Q35-Q46 answered (defaults): Head brand, flat bonus per bolt, Pyrowning no mana, overheat lockout only, straight boulders, Coltara R toggle no shield, weak points + chance fallback, Water chain full charge only, element kept in names, Head-only brand, Windchester clamps at 0.1 s, wands scaled-down brand effects; steps 135-143 still waiting on user go"
   ],
-  "version": "0.2.0-prealpha"
+  "version": "0.3.0-prealpha"
 }

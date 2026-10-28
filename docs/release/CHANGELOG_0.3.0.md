@@ -1,4 +1,4 @@
-# Changelog: 0.3.0-prealpha (DRAFT, not released)
+# Changelog: 0.3.0-prealpha (2026-10-28)
 
 From 0.2.0-prealpha. Steps L1 to L5 in docs/build_state.json.
 
@@ -26,3 +26,8 @@ From 0.2.0-prealpha. Steps L1 to L5 in docs/build_state.json.
 - **0.2.0: falling through the ground outside the Breach.** When you leave the Breach rooms,
   the crater floor outside can have no collision yet, so you fall through the world. This is
   fixed in 0.3.0 (see Fixed above).
+
+## Known issues
+- Co-op: the joining game can exit with code 134 (SIGABRT) while shutting down, after the
+  session has ended. Progress is already saved; nothing is lost.
+- The first Labyrinth floor you enter can hitch once (about 60 ms) while its shaders compile.
