@@ -445,6 +445,8 @@ var _unstick_s := 0.0
 var _route: RouteGraph
 var _route_level: Node
 
+var _path_ordered := false
+
 
 func walk_to(at: Vector3, held: Array = []) -> void:
 	var lvl := main.get_node_or_null("Level")
@@ -470,8 +472,10 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 			if ow and ow.get(&"interiors") and ow.interiors.current == "labyrinth"
 			else null
 		)
+		_path_ordered = false
 		if lf and is_instance_valid(lf):  # L5: the floors have no navmesh; room-graph route
 			_path = lf.route(player.global_position, at)
+			_path_ordered = true
 		elif nav and nav.map_ready():
 			_path = NavigationServer3D.map_get_path(
 				nav.get_navigation_map(), player.global_position, at, true
@@ -488,8 +492,10 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 	var feet := player.global_position
 	# Step 118: start from the waypoint nearest the feet (a long, wiggly path otherwise hands back
 	# an already-passed point and the bot turns round every few ticks).
+	# L5b: not for a labyrinth room route, which loops round: a later room (or the stairs) is
+	# often nearer through a wall than the next doorway, and the bot walked into that wall.
 	var from := 0
-	for i in _path.size():
+	for i in _path.size() if not _path_ordered else 0:
 		if _path[i].distance_squared_to(feet) < _path[from].distance_squared_to(feet):
 			from = i
 	for i in range(from, _path.size()):

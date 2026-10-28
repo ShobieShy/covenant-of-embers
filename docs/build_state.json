@@ -1685,6 +1685,11 @@
       "time": "2026-10-28T03:59:00-05:00",
       "step": "L5b-bot",
       "summary": "Labyrinth playtest bot (--labyrinth): Breach -> walks out of the rooms (around their door trigger) -> crater gate -> floors 1-5 by room-graph route -> King kill -> save check; no teleports, no enter() shortcut. Solo PASS (117 kills, King down, 0 teleports). Co-op fix found by the bot: LabyrinthSync.all_near ignored RemotePlayer proxies, so the stairs vote never ran and the host descended alone; test now uses RemotePlayer.GROUP. Co-op bot run not yet passing (host bot stuck on room-centre walls on floor 1). Note: the L5b-ground entry's time should read 03:27."
+    },
+    {
+      "time": "2026-10-28 04:14 CDT",
+      "step": "L5 bot path order",
+      "summary": "Playtest bot: labyrinth room-graph routes are followed in order (no nearest-waypoint skip through walls), which stuck the host at room centres. Solo PASS (122 kills, 0 teleports, King down). Co-op: live stairs vote ran on floors 2 and 3, joiner PASS, host FAIL on floor 5 (King hp 1716 after 600 s), under investigation."
     }
   ],
   "completed_steps": [
