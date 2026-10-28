@@ -1710,6 +1710,11 @@
       "time": "2026-10-28T05:15",
       "step": "rt34b",
       "summary": "rt34b unit suite 624 passed, 0 failed, but run_tests stopped on exit-leak ERRORs (315 resources in use, RendererDummy RID leaks, 489 ObjectDB leaked; rt33 had 1). test_breach_ground alone leaks 16 objects/2 resources; other sources not yet bisected. Smoke/playtest/coop legs not reached (build/rt34b.log)."
+    },
+    {
+      "time": "2026-10-28T06:00",
+      "step": "rt34 exit-leak bisect (in progress)",
+      "summary": "Exit leak (~487 ObjectDB, 315-328 resources, one pathless orphan Node3D) is order/combination-dependent: none of the 8 tests added/changed since rt33 leak together (34 passed, clean); no suite quarter leaks alone. Reproduces with test_equipment..test_goblin_king + test_loading_screen..test_loot_meshes (70 tests); smaller pairings did not reproduce. No code changed yet. Lists/logs in build/leak_bisect/."
     }
   ],
   "completed_steps": [
