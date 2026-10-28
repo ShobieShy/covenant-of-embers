@@ -1725,6 +1725,11 @@
       "time": "2026-10-28T06:31-05:00",
       "step": "rt34 exit-leak fix",
       "summary": "Root cause: FakeLobbyBackend.invite typed a local as its own class_name (FakeLobbyBackend). That script self-reference, once the game scene had been loaded earlier in the run, kept ~190 scripts and ~240 resources alive at exit (369 ObjectDB leak with test_fast_travel + test_flow + test_lobby). Now typed as LobbyBackend; the reproducer is clean."
+    },
+    {
+      "time": "2026-10-28T07:04-05:00",
+      "step": "rt34c",
+      "summary": "tools/run_tests.sh all green: units 624 passed 0 failed (exit leak back to rt33's 1 ObjectDB instance); solo playtests PASS x2 (deaths 1/0, teleports 0); co-op PASS (joiner SIGABRT at teardown after its bot PASSed, the known accepted exit crash). Not released."
     }
   ],
   "completed_steps": [
