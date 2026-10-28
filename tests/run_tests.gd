@@ -14,6 +14,17 @@ extends SceneTree
 ## tools/run_tests.sh runs it with --fixed-fps 60 so every frame is exactly one 1/60 s
 ## physics tick, run as fast as the CPU allows.
 
+## 0.3.1 test tiers: the classic level-flow tests run only at releases
+## (TEST_CLASSIC=1 adds them, TEST_CLASSIC=only runs just them; tools/run_tests.sh --classic).
+## A file maps to the test methods that are classic, or [] for the whole file.
+const CLASSIC := {
+	"test_level.gd": [],
+	"test_flow.gd": [],
+	"test_hub.gd": [],
+	"test_town.gd": ["test_all_exits_link"],
+	"test_vault.gd": ["test_chest_opens_after_boss"],
+}
+
 var failures := 0
 var passed := 0
 var _frames := 0
@@ -37,6 +48,13 @@ func _run_all() -> void:
 	var only := OS.get_environment("TEST_ONLY")  # step 95: e.g. TEST_ONLY=test_player.gd
 	if only != "":
 		files = files.filter(func(f: String) -> bool: return f in only.split(","))
+	var classic := OS.get_environment("TEST_CLASSIC")
+	if classic == "only":
+		files = files.filter(func(f: String) -> bool: return CLASSIC.has(f))
+	elif classic != "1":
+		files = files.filter(
+			func(f: String) -> bool: return not (CLASSIC.has(f) and CLASSIC[f].is_empty())
+		)
 	for f in files:
 		var script := load("res://tests/unit/" + f) as GDScript
 		if script == null or not script.can_instantiate():
@@ -48,6 +66,13 @@ func _run_all() -> void:
 			var name: String = m["name"]
 			if not name.begins_with("test_"):
 				continue
+			if CLASSIC.has(f) and not CLASSIC[f].is_empty():
+				var is_classic: bool = name in CLASSIC[f]
+				if (
+					(classic == "only" and not is_classic)
+					or (classic != "1" and classic != "only" and is_classic)
+				):
+					continue
 			var t = script.new()
 			t.set_meta("errors", [])
 			t.runner_tree = self
@@ -61,6 +86,12 @@ func _run_all() -> void:
 				print("  FAIL %s::%s: %s" % [f, name, "; ".join(errs)])
 	print("[tests] %d passed, %d failed" % [passed, failures])
 	_sweep_user_leftovers()
+	# 0.3.1 tiers: let queued frees land and short sounds finish before quitting, so a
+	# TEST_ONLY subset doesn't end on "resources still in use at exit" (a playing Ogg
+	# playback still holds its stream).
+	for _i in 4:
+		await process_frame
+	await create_timer(1.0, true, false, true).timeout
 	quit(1 if failures > 0 else 0)
 
 

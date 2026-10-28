@@ -36,3 +36,17 @@ credited in game; textures can be CC0 ambientCG/Poly Haven sets credited in CRED
 | Goblins x3 | assets/original/ember_art/goblin_{grunt,archer,shaman}.glb | ~1.3 m, rigged with the Quaternius-style anim names the enemy code already uses |
 | Boss arena | assets/original/ember_art/warrens/throne_hall.glb | ~32x32 m handmade floor 5 hall with a raised throne, 3 LODs |
 | Warrens map painting | assets/original/ember_art/map_warrens.png | 512x300, for the Labyrinth tab of the world map |
+
+## 0.3.1 (polish)
+
+Requested for docs/POLISH_0.3.1_PLAN.md. CC0 (original or Kenney), credited in CREDITS.md. No music.
+
+| Slot | Path | Status |
+|---|---|---|
+| Warrens stair | assets/original/ember_art/warrens/stairs_warrens.glb | arrived (batch_09_polish), P2 |
+| Loot beam + ring | assets/original/ember_art/fx/loot_beam{,_ring}.png | arrived, P4 |
+| Act I loading backdrops | assets/original/ember_art/loading/loading_{town_square,old_oak,warrens,midden}.png | arrived, P6 |
+| Breach + Mage Association loading backdrops | assets/original/ember_art/loading/loading_{breach,mage_association}.png | arrived (batch_09b_polish), P6: loader tries loading_<level>, then loading_<region>, then map_<region> |
+| Vote banner chip-bar style | ui/vote/chip_bar.png (9-slice, margin 4) + 8x8 chips (empty/waiting/yes/no/local) | arrived (batch_09b_polish), P2 |
+| Dialogue continue arrow | ui/typewriter/continue_arrow (6 frames, 8 fps loop) | arrived (batch_09b_polish), P3 |
+| Sounds: 7 casts, 6 rarity pickups, chest, shrine, stairs, level-up, ui hover/click/open/close, vote_tick | assets/original/ember_art/sfx/*.ogg (Kenney reuses point at the repo copies) | arrived, P5/P7 |

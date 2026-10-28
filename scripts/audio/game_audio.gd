@@ -83,8 +83,8 @@ static func _set_bus(n: String, v: float) -> void:
 
 
 func _ready() -> void:
-	if DisplayServer.get_name() == "headless" and OS.get_cmdline_user_args().has("--autoplay"):
-		muted_output = true  # headless bot runs: no audio device, and a 3D sound alive at quit leaks
+	if DisplayServer.get_name() == "headless":
+		muted_output = true  # headless runs: no audio device, and a sound alive at quit leaks (0.3.1: tests too)
 	for i in POOL:
 		var p := AudioStreamPlayer.new()
 		add_child(p)

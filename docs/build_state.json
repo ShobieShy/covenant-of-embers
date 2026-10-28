@@ -1762,6 +1762,11 @@
       "type": "release",
       "summary": "Version 0.3.0-prealpha (approved 9:09 AM CDT): the Labyrinth Act I (Goblin Warrens floors 1-4, Goblin King on floor 5, rest shrines, Act I loot, co-op stairs), Breach ground fix, co-op teammate-bolt fix. rt35 green at 1a3b017 (624 unit, solo PASS x2, co-op PASS, joiner rc 134 known teardown crash). Exports via tools/package.sh (Linux export + AppImage smoke, Windows wine smoke): green. No Steam upload.",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-10-28T09:59-05:00",
+      "step": "0.3.1 tiers",
+      "summary": "run_tests.sh --fast/full/--classic tiers; CLASSIC group in tests/run_tests.gd (test_level/flow/hub + town exits + vault chest); headless GameAudio mutes output (no Ogg playback leak at exit); runner waits before quit; build/world regenerated when missing; docs/TEST_TIERS.md; 0.3.1 art requests (batch_09/09b arrived)"
     }
   ],
   "completed_steps": [
