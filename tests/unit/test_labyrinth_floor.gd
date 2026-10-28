@@ -148,3 +148,22 @@ func test_save_inside_resumes_inside() -> void:
 	var at := WorldSession.start_spot(d, GameFlow.INTRO_SKIP)
 	check(String(at["interior"]) == "labyrinth", "a save on a floor starts in the Labyrinth")
 	check(LabyrinthState.from_save(d).current == 3, "on the saved floor")
+
+
+## L5 perf: only rooms within two doorways of the viewer's room are drawn.
+func test_room_culling() -> void:
+	var fl := LabyrinthFloor.build(FloorGen.load_kit(), 1, LabyrinthState.fresh(42))
+	runner_tree.root.add_child(fl)
+	var start := fl.get_node("PlayerStart") as Node3D
+	var shown := fl.cull_to(start.global_position)
+	check(shown < fl.rooms.size(), "some rooms hidden (%d / %d)" % [shown, fl.rooms.size()])
+	var i := fl.room_at(start.global_position)
+	check(fl.rooms[i].visible, "the viewer's room is drawn")
+	for e: Array in fl.layout["edges"]:
+		if int(e[0]) == i:
+			check(fl.rooms[int(e[1])].visible, "a doorway neighbour is drawn")
+	var far := fl.rooms[fl.rooms.size() - 1]
+	fl.cull_to(far.global_position)
+	check(far.visible, "moving shows the new room")
+	check(fl.get_node("EnemySpawns") != null, "markers untouched")
+	fl.free()

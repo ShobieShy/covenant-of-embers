@@ -34,6 +34,12 @@ var dressed := false  ## L3: Ember Art kit pieces placed (greybox meshes hidden)
 var _mats := {}
 var _spawns: Node3D
 var _state: LabyrinthState
+## L5 perf: only rooms within CULL_DEPTH doorways of the viewer's room are drawn (meshes and
+## their lights; collision stays). A doorway line of sight runs at most two rooms deep.
+const CULL_DEPTH := 2
+var cull := true
+var viewer: Node3D  ## null: the first Player, else the viewport camera
+var shown_from := -1  ## the room the visible set was last built around
 ## L3: the Act I goblin pool and how many a room kind gets (min, max).
 const GOBLINS := ["goblin_grunt", "goblin_grunt", "goblin_archer", "goblin_shaman"]
 const PACK := {"normal": [2, 3], "elite": [4, 5]}
@@ -219,6 +225,61 @@ func _build_rooms(kit: Dictionary) -> void:
 				_stairs("StairsDown", LabyrinthStairs.DOWN, foot if dressed else c)
 			"rest":
 				_shrine(c)
+
+
+func _process(_dt: float) -> void:
+	if not cull or layout.is_empty() or not is_inside_tree():
+		return
+	var v := viewer
+	if v == null:
+		v = get_tree().get_first_node_in_group(Player.GROUP) as Node3D
+	if v == null:
+		v = get_viewport().get_camera_3d()
+	if v != null:
+		cull_to(v.global_position)
+
+
+## The room nearest `world_pos` (by centre, in floor space).
+func room_at(world_pos: Vector3) -> int:
+	var p := to_local(world_pos)
+	var best := -1
+	var bd := INF
+	for i in rooms.size():
+		var d := Vector2(rooms[i].position.x - p.x, rooms[i].position.z - p.z).length_squared()
+		if d < bd:
+			bd = d
+			best = i
+	return best
+
+
+## Rooms within CULL_DEPTH doorways of room `i` (FloorGen edges, secret ones too).
+func near_rooms(i: int) -> Dictionary:
+	var seen := {i: true}
+	var ring := [i]
+	for _d in CULL_DEPTH:
+		var nxt := []
+		for e: Array in layout.get("edges", []):
+			for k in 2:
+				var a := int(e[k])
+				var b := int(e[1 - k])
+				if a in ring and not seen.has(b):
+					seen[b] = true
+					nxt.append(b)
+		ring = nxt
+	return seen
+
+
+## Shows the rooms near the viewer's room, hides the rest; returns how many are shown.
+func cull_to(world_pos: Vector3) -> int:
+	var i := room_at(world_pos)
+	if i < 0:
+		return rooms.size()
+	var near := near_rooms(i)
+	if i != shown_from:
+		shown_from = i
+		for j in rooms.size():
+			rooms[j].visible = near.has(j)
+	return near.size()
 
 
 ## L4: the Chests marker group (created on first use).

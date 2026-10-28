@@ -1665,6 +1665,11 @@
       "time": "2026-10-28T02:57-05:00",
       "step": "L4c",
       "summary": "Secret-room chests: LabyrinthFloor Chests markers in secret rooms, main._lab_chests spawns open-able VaultChests a tier above the floor (ActLoot.chest_rarity), opened ones kept per floor in the save; test_act_loot +1. L4 done (later Acts left out of ActLoot)."
+    },
+    {
+      "time": "2026-10-28T02:59-05:00",
+      "step": "L5a",
+      "summary": "Labyrinth perf: LabyrinthFloor room culling (rooms within 2 doorways of the viewer drawn; collision kept). tools/lab_perf.gd headless census: floor 1 visible meshes 443->139, lights 21->6 (floors 2-4 similar); CPU frame ~6.9 ms flat; build 6-13 ms (124 ms first, resource load). GPU capture deferred (Ember QA on the display). test_labyrinth_floor +1."
     }
   ],
   "completed_steps": [
