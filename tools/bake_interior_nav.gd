@@ -10,6 +10,8 @@ func _initialize() -> void:
 
 func _run() -> void:
 	for id in Interiors.LINKS:
+		if String(Interiors.LINKS[id]["scene"]) == "":
+			continue  # Labyrinth floors are built at runtime
 		var n := (
 			(load(GameFlow.level_scene(Interiors.LINKS[id]["scene"])) as PackedScene).instantiate()
 			as Node3D

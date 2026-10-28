@@ -18,6 +18,7 @@ var minimap: Minimap
 var leash: CoopLeash
 var _fog_t := 0.0
 var info := {}
+var story_flags: StoryFlags  ## main.gd sets it before adding the world (fast travel flags)
 var first_loaded := false  ## OW10: the initial world load (loading screen) has run
 signal first_load_done
 signal host_space(interior: String)  ## OW11c: a joiner whose host is in another space
@@ -43,6 +44,14 @@ func _ready() -> void:
 	travel.name = "Travel"
 	travel.streamer = streamer
 	travel.height_fn = height_at
+	if story_flags:  # the save's attunement and crystal (else a blank FastTravel)
+		travel.fast_travel = FastTravel.new(story_flags)
+	travel.deep_travel = _deep_travel  # Labyrinth L2
+	travel.deep_world = func(_p: String) -> Vector3:
+		return interiors.link_world(Interiors.LINKS["labyrinth"]["front"])
+	travel.leave_interior = func() -> void:
+		if interiors.current != "":
+			interiors.leave()
 	add_child(travel)
 	var layer := CanvasLayer.new()
 	layer.name = "MapLayer"
@@ -74,6 +83,11 @@ func _ready() -> void:
 	fader.name = "InteriorFade"
 	fader.interiors = interiors
 	add_child(fader)
+
+
+## Labyrinth L2: a deep waystone enters its floor.
+func _deep_travel(point: String) -> void:
+	await interiors.enter_floor(int(FastTravel.info(point).get("floor", 1)))
 
 
 ## OW10 (plan section 9): the one initial world load, behind the loading screen; later

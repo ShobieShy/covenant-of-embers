@@ -1620,6 +1620,11 @@
       "time": "2026-10-28T01:57:12-05:00",
       "step": "L2b",
       "summary": "Running-game save test: save_game writes progress.labyrinth, reload restores it"
+    },
+    {
+      "time": "2026-10-28T02:04-05:00",
+      "step": "L2c",
+      "summary": "Labyrinth floor loader (greybox FloorGen rooms/doors as instanced interior behind loading screen), stairs down/up, rest shrines (heal, save, respawn, crafting station), boss-floor waystone (warrens_hall deep point in OW6 travel), Breach crater gate to floor 1, leave resets to floor start; OW FastTravel now uses real story flags."
     }
   ],
   "completed_steps": [

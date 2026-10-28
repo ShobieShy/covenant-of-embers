@@ -16,6 +16,9 @@ var cleared: Array[int] = []
 var floors := {}  ## str(floor) -> {"remix": int, "chests": [ids], "elites": [ids]}
 var bosses: Array[String] = []
 var shortcuts: Array[String] = []
+## L2: the floor the party is on (0 = not in the Labyrinth); a save made on a floor
+## resumes at that floor's start (plan section 7).
+var current := 0
 
 
 static func fresh(seed_value: int = -1) -> LabyrinthState:
@@ -60,6 +63,7 @@ static func from_dict(d: Dictionary) -> LabyrinthState:
 		s.bosses.append(b)
 	for g: String in _strings(d.get("shortcuts", [])):
 		s.shortcuts.append(g)
+	s.current = maxi(0, int(d.get("current", 0)))
 	return s
 
 
@@ -81,6 +85,7 @@ func to_dict() -> Dictionary:
 		"floors": floors.duplicate(true),
 		"bosses": bosses.duplicate(),
 		"shortcuts": shortcuts.duplicate(),
+		"current": current,
 	}
 
 

@@ -17,6 +17,12 @@ var height_fn := Callable()
 var in_combat := Callable()  ## -> bool; travel is refused while it is true
 var party := Callable()  ## -> Array of Node3D to move; default: the Player group
 var waystones := {}  ## point -> Waystone
+## Labyrinth L2: deep waystones (FastTravel.DEEP_POINTS) have no world marker. OpenWorld
+## sets deep_travel (point -> enter its floor, awaitable), deep_world (point -> the map spot:
+## the crater gate) and leave_interior (outdoor travel from inside an interior).
+var deep_travel := Callable()
+var deep_world := Callable()
+var leave_interior := Callable()
 var markers := {}
 var busy := false
 var last_error := ""
@@ -56,8 +62,18 @@ func ground(x: float, z: float) -> Vector3:
 
 
 func point_world(point: String) -> Vector3:
+	if FastTravel.is_deep(point):
+		return deep_world.call(point) if deep_world.is_valid() else Vector3.ZERO
 	var xz: Array = markers.get("waystones", {}).get(point, [0.0, 0.0])
 	return ground(float(xz[0]), float(xz[1]))
+
+
+## Every waystone on the map: the world's, then the deep ones.
+func points() -> Array:
+	var out: Array = waystones.keys()
+	for p in FastTravel.DEEP_POINTS:
+		out.append(p)
+	return out
 
 
 ## [{level, name, to, kind ("road" / "door"), pos: Vector3}] for the map screen.
@@ -74,7 +90,7 @@ func can_travel(point: String) -> bool:
 	last_error = ""
 	if busy:
 		last_error = "Already travelling."
-	elif not waystones.has(point):
+	elif not waystones.has(point) and not (FastTravel.is_deep(point) and deep_travel.is_valid()):
 		last_error = "That waystone isn't in the world."
 	elif in_combat.is_valid() and in_combat.call():
 		last_error = "You can't travel while fighting."
@@ -88,9 +104,17 @@ func can_travel(point: String) -> bool:
 func travel_to(point: String) -> bool:
 	if not can_travel(point):
 		return false
+	if FastTravel.is_deep(point):
+		busy = true
+		await deep_travel.call(point)
+		busy = false
+		arrived.emit(point)
+		return true
 	busy = true
+	if leave_interior.is_valid():
+		leave_interior.call()
 	var dest := point_world(point) + LAND
-	var screen := LoadingScreen.overlay(get_tree(), String(FastTravel.POINTS[point]["level"]))
+	var screen := LoadingScreen.overlay(get_tree(), String(FastTravel.info(point)["level"]))
 	await _stream(dest, screen)
 	var who := _party()
 	var lead := (who[0] as Node3D).global_position if not who.is_empty() else dest

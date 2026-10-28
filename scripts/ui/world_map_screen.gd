@@ -81,7 +81,7 @@ func zoom_at(s: Vector2, factor: float) -> void:
 func waystone_at(s: Vector2) -> String:
 	if travel == null:
 		return ""
-	for p in travel.waystones:
+	for p in travel.points():
 		if (
 			travel.fast_travel.attuned(p)
 			and world_to_screen(travel.point_world(p)).distance_to(s) <= HIT
@@ -196,7 +196,7 @@ func _draw() -> void:
 		for e in travel.exit_markers():
 			var c := Color(0.9, 0.8, 0.5) if e["kind"] == "road" else Color(0.6, 0.8, 1.0)
 			draw_circle(world_to_screen(e["pos"]), 4.0, c)
-		for p in travel.waystones:
+		for p in travel.points():
 			var on := travel.fast_travel.attuned(p)
 			var s := world_to_screen(travel.point_world(p))
 			draw_circle(s, 7.0, Color(1.0, 0.55, 0.15) if on else Color(0.4, 0.4, 0.4))
@@ -204,7 +204,7 @@ func _draw() -> void:
 				draw_string(
 					font,
 					s + Vector2(9, 5),
-					String(FastTravel.POINTS.get(p, {}).get("name", p)),
+					String(FastTravel.info(p).get("name", p)),
 					HORIZONTAL_ALIGNMENT_LEFT,
 					-1,
 					14

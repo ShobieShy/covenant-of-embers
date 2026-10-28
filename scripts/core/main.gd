@@ -576,7 +576,11 @@ func save_game() -> Error:
 func _enter_open_world(player: Player, data: Dictionary) -> void:
 	var ow := OpenWorld.new()
 	ow.name = "OpenWorld"
+	ow.story_flags = story_flags
 	add_child(ow)
+	ow.interiors.labyrinth = labyrinth  # L2: the save's block drives the floors
+	ow.interiors.rested.connect(func(_at: Vector3) -> void: save_game())
+	ow.interiors.floor_entered.connect(_on_floor_entered.bind(ow))
 	ow.interiors.entered.connect(_bind_interior_gates.bind(ow))  # OW11b
 	WorldSession.restore(ow, data)
 	var mode := GameFlow.intro_mode if not GameFlow.intro_mode.is_empty() else GameFlow.INTRO_PLAY
@@ -595,6 +599,29 @@ func _enter_open_world(player: Player, data: Dictionary) -> void:
 	player.spawn(p, player.rotation.y)
 	print("[world] start at (%.0f, %.0f, %.0f)" % [p.x, p.y, p.z])
 	ow.first_load(p, WorldSession.nearest_level(p))  # the loading screen, once
+
+
+## Labyrinth L2: a floor was built. The craft station moves to its rest room, and a boss
+## floor whose boss is down gets its waystone (OW6 network, FastTravel.DEEP_POINTS).
+func _on_floor_entered(_n: int, ow: OpenWorld) -> void:
+	var fl := ow.interiors.lab_floor
+	var player := get_node_or_null("Player") as Player
+	if fl == null:
+		return
+	var st := get_node_or_null("AssemblyStation") as Node3D
+	var at := fl.get_node_or_null(AssemblyStation.MARKER) as Node3D
+	if st and at:
+		st.global_transform = at.global_transform
+	var spot := fl.get_node_or_null("WaystoneSpot") as Node3D
+	if spot and labyrinth.bosses.has(String(spot.get_meta(&"boss", ""))):
+		for p in FastTravel.DEEP_POINTS:
+			if int(FastTravel.DEEP_POINTS[p]["floor"]) == fl.floor_no:
+				var w := Waystone.new(p, ow.travel.fast_travel)
+				w.name = "Waystone_" + p
+				w.player = player
+				fl.add_child(w)
+				w.global_position = spot.global_position
+				w.opened.connect(func(_p: String) -> void: ow.map_screen.open())
 
 
 ## OW11b: where the party is: the zone nearest the player in the open world ("breach" in

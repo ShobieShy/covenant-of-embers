@@ -22,8 +22,15 @@ const POINTS := {
 	"landfill_overlook": {"name": "The Landfill - Overlook", "level": "midden"},
 	"breach": {"name": "The Breach", "level": "breach"},
 }
+## Labyrinth L2 (plan section 7): waystones below ground, on boss floors (attuned once the
+## boss is down). Same attunement flags; WorldTravel enters the floor instead of a spot.
+const DEEP_POINTS := {
+	"warrens_hall": {"name": "The Warrens - Goblin King's Hall", "level": "labyrinth", "floor": 5},
+}
 ## GameFlow level id -> the waystone point in it.
-const LEVEL_POINT := {"old_oak": "old_oak", "town_square": "town_gate", "midden": "landfill", "breach": "breach"}
+const LEVEL_POINT := {
+	"old_oak": "old_oak", "town_square": "town_gate", "midden": "landfill", "breach": "breach"
+}
 
 var flags: StoryFlags
 var last_error := ""
@@ -42,7 +49,7 @@ func unlocked() -> bool:
 
 
 func attune(point: String) -> bool:
-	if not POINTS.has(point) or attuned(point):
+	if not (POINTS.has(point) or DEEP_POINTS.has(point)) or attuned(point):
 		return false
 	flags.set_flag(PREFIX + point)
 	return true
@@ -58,7 +65,19 @@ func destinations() -> PackedStringArray:
 	for p in POINTS:
 		if attuned(p):
 			out.append(p)
+	for p in DEEP_POINTS:
+		if attuned(p):
+			out.append(p)
 	return out
+
+
+## A point's {name, level[, floor]}, outdoors or below ground ({} when unknown).
+static func info(point: String) -> Dictionary:
+	return POINTS.get(point, DEEP_POINTS.get(point, {}))
+
+
+static func is_deep(point: String) -> bool:
+	return DEEP_POINTS.has(point)
 
 
 func can_travel(point: String) -> bool:
@@ -76,5 +95,5 @@ func can_travel(point: String) -> bool:
 func travel(point: String) -> bool:
 	if not can_travel(point):
 		return false
-	traveled.emit(point, String(POINTS[point]["level"]))
+	traveled.emit(point, String(info(point)["level"]))
 	return true

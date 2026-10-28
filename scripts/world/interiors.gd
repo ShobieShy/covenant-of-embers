@@ -43,6 +43,17 @@ const LINKS := {
 		"strip": ["Terrain", "Props", "Pois"],
 		"logic": "breach",
 	},
+	# Labyrinth L2: the Breach crater is the gate to floor 1 (LABYRINTH_PLAN section 2).
+	# No scene: floors are built (LabyrinthFloor); the front door is the crater floor's
+	# centre (breach level coords, third entry) and every way out lands back there.
+	"labyrinth":
+	{
+		"scene": "",
+		"inside": "breach",
+		"front": ["breach", "", [0.0, 125.0]],
+		"exits": {},
+		"logic": "labyrinth",
+	},
 }
 
 ## OW5b: level groups that live in an instanced interior, so tools/build_cells.gd keeps
@@ -55,6 +66,14 @@ var height_fn: Callable  ## (x, z) -> world height; OpenWorld.height_at
 var busy := false
 var streamer: WorldStreamer  ## OW11b: held while the interior loads
 var breach: Breach  ## OW5b: the rooms' logic while breach_rooms is entered
+## Labyrinth L2: the save's block (main.gd sets it), the floor to enter next / being played,
+## and the Act kit. floor_entered fires after each floor build (entering or the stairs).
+var labyrinth: LabyrinthState
+var floor_no := 1
+var kit := {}
+var lab_floor: LabyrinthFloor
+signal floor_entered(n: int)
+signal rested(at: Vector3)
 
 
 ## World position of a level's Exits marker (at the level's world_offset), on the ground.
@@ -65,6 +84,18 @@ func marker_world(level: String, marker: String) -> Vector3:
 	var p := m.position if m else Vector3.ZERO
 	lvl.free()
 	var w := Vector3(p.x + wo.x, 0.0, p.z + wo.y)
+	var h: float = height_fn.call(w.x, w.z) if height_fn.is_valid() else NAN
+	w.y = 0.0 if is_nan(h) else h
+	return w
+
+
+## World position of a LINKS door entry [level, Exits marker] or [level, "", [x, z]]
+## (a spot in level coords, for doors with no Exits marker: the Labyrinth's crater gate).
+func link_world(link: Array) -> Vector3:
+	if link.size() < 3:
+		return marker_world(link[0], link[1])
+	var wo: Vector2 = SaveMigration.world_offset(String(link[0]))
+	var w := Vector3(float(link[2][0]) + wo.x, 0.0, float(link[2][1]) + wo.y)
 	var h: float = height_fn.call(w.x, w.z) if height_fn.is_valid() else NAN
 	w.y = 0.0 if is_nan(h) else h
 	return w
@@ -84,7 +115,7 @@ func add_doors() -> void:
 		d.name = "Door_" + id
 		d.interior = id
 		d.interiors = self
-		d.position = marker_world(f[0], f[1])
+		d.position = link_world(f)
 		add_child(d)
 
 
@@ -149,6 +180,10 @@ func enter(id: String, from_level := "") -> Vector3:
 		from_level = link["inside"]
 	busy = true
 	fade.emit(FADE)
+	if link.get("logic", "") == "labyrinth":
+		return await _enter_floor(
+			id, labyrinth.current if labyrinth and labyrinth.current > 0 else floor_no
+		)
 	var path := GameFlow.level_scene(link["scene"])
 	var t0 := Time.get_ticks_msec()
 	# OW11b: two threaded loads sharing materials raced in the dummy renderer ("material is
@@ -200,7 +235,7 @@ func leave(to_level := "town_square") -> Vector3:
 	var ex: Dictionary = LINKS[current]["exits"]
 	var link: Array = ex.get(to_level, LINKS[current]["front"])
 	fade.emit(FADE)
-	var p := marker_world(link[0], link[1])
+	var p := link_world(link)
 	var lvl := (load(GameFlow.level_scene(link[0])) as PackedScene).instantiate() as Node3D
 	var wo: Vector2 = lvl.get_meta(&"world_offset", Vector2.ZERO)
 	lvl.free()
@@ -210,6 +245,87 @@ func leave(to_level := "town_square") -> Vector3:
 	interior.queue_free()
 	interior = null
 	breach = null
+	lab_floor = null
+	if labyrinth and id == "labyrinth":
+		labyrinth.current = 0  # leaving mid-floor: the next visit starts at a floor's start
+		floor_no = 1  # the crater gate leads to floor 1; waystones go deeper (enter_floor)
 	current = ""
 	left.emit(id)
 	return land
+
+
+func _kit() -> Dictionary:
+	if kit.is_empty():
+		kit = FloorGen.load_kit()
+	return kit
+
+
+## Labyrinth L2: builds floor `n` (behind the fade; slow_load shows the loading screen for
+## a slow build) and lands the party at its start. Deaths respawn there until a rest.
+func _enter_floor(id: String, n: int) -> Vector3:
+	if labyrinth == null:
+		labyrinth = LabyrinthState.fresh()
+	var t0 := Time.get_ticks_msec()
+	slow_load.emit(id)  # a floor build is one frame of work, but the stairs swap is a load
+	await get_tree().process_frame
+	lab_floor = LabyrinthFloor.build(_kit(), n, labyrinth)
+	interior = lab_floor
+	interior.name = "Interior"
+	interior.position = Vector3(0, DEPTH, 0)
+	add_child(interior)
+	for c in lab_floor.find_children("*", "LabyrinthStairs", true, false):
+		(c as LabyrinthStairs).used.connect(_on_stairs)
+	var ps := party()
+	for c in lab_floor.find_children("*", "RestShrine", true, false):
+		(c as RestShrine).player = (
+			ps[0] as Player if not ps.is_empty() and ps[0] is Player else null
+		)
+		(c as RestShrine).rested.connect(func(at: Vector3) -> void: rested.emit(at))
+	floor_no = n
+	current = id
+	labyrinth.reach(n)
+	labyrinth.current = n
+	var land := lab_floor.start_pos() + Vector3(0, 0.5, 0)
+	_move_party(land)
+	busy = false
+	print("[labyrinth] floor %d (%d ms)" % [n, Time.get_ticks_msec() - t0])
+	floor_entered.emit(n)
+	entered.emit(id)
+	return land
+
+
+func _on_stairs(dir: int) -> void:
+	if dir == LabyrinthStairs.UP:
+		leave("breach")
+	else:
+		descend()
+
+
+## The exit room's stairs: this floor counts as cleared, the next one is built.
+func descend() -> Vector3:
+	if current != "labyrinth" or busy:
+		return Vector3.INF
+	var last := int(_kit()["kit"]["boss_floor"])
+	if floor_no >= last:
+		return Vector3.INF
+	busy = true
+	labyrinth.clear_floor(floor_no)
+	fade.emit(FADE)
+	var old := interior
+	remove_child(old)
+	old.queue_free()
+	interior = null
+	lab_floor = null
+	return await _enter_floor("labyrinth", floor_no + 1)
+
+
+## Waystone travel straight to floor `n` (the boss floor's waystone, OW6).
+func enter_floor(n: int) -> Vector3:
+	if current == "labyrinth":
+		if floor_no == n:
+			return lab_floor.start_pos()
+		leave("breach")
+	floor_no = n
+	if labyrinth:
+		labyrinth.current = n
+	return await enter("labyrinth")

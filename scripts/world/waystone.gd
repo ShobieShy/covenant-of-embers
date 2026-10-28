@@ -38,14 +38,14 @@ func _ready() -> void:
 	c.material = m
 	add_child(c)
 	var l := Label3D.new()
-	l.text = "Waystone: %s  [F]" % String(FastTravel.POINTS.get(point, {}).get("name", point))
+	l.text = "Waystone: %s  [F]" % String(FastTravel.info(point).get("name", point))
 	l.position.y = 2.0
 	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	add_child(l)
 
 
 func interact_prompt() -> String:
-	return "[F] Waystone: %s" % String(FastTravel.POINTS.get(point, {}).get("name", point))
+	return "[F] Waystone: %s" % String(FastTravel.info(point).get("name", point))
 
 
 ## Looked at (t60u camera-centre cone/sphere-cast, Interaction) and within range.
@@ -55,7 +55,9 @@ func in_reach(p: Player) -> bool:
 
 ## Plain proximity (attunement, bot walking); interaction itself goes by look (t60u).
 func near(p: Player) -> bool:
-	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
+	return (
+		p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
+	)
 
 
 ## Attunes when the player is in reach; true when it newly attuned.

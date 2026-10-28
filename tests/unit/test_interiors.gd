@@ -6,6 +6,8 @@ extends TestCase
 
 func test_links_resolve() -> void:
 	for id in Interiors.LINKS:
+		if String(Interiors.LINKS[id]["scene"]) == "":
+			continue  # Labyrinth floors are built (test_labyrinth_floor.gd)
 		var lvl := (
 			(load(GameFlow.level_scene(Interiors.LINKS[id]["scene"])) as PackedScene).instantiate()
 		)
@@ -38,7 +40,10 @@ func test_enter_and_leave() -> void:
 	var land: Vector3 = await i.enter("mage_association")
 	check(i.current == "mage_association" and i.interior != null, "interior loaded")
 	check(absf(land.y - Interiors.DEPTH) < 5.0, "landing below the world (%s)" % land)
-	check(p.global_position.distance_to(land) < 1.0, "player moved inside (%s vs %s)" % [p.global_position, land])
+	check(
+		p.global_position.distance_to(land) < 1.0,
+		"player moved inside (%s vs %s)" % [p.global_position, land]
+	)
 	check(i.interior.get_node_or_null("WorldEnvironment") == null, "world sky kept")
 	var out := i.leave("midden")
 	check(i.current == "", "left")
@@ -112,6 +117,8 @@ func test_breach_rooms() -> void:
 
 func test_interior_nav_cached_and_fresh() -> void:
 	for id in Interiors.LINKS:
+		if String(Interiors.LINKS[id]["scene"]) == "":
+			continue
 		check(ResourceLoader.exists(Interiors.nav_cache(id)), "%s nav cache present" % id)
 		var ps := load(GameFlow.level_scene(Interiors.LINKS[id]["scene"])) as PackedScene
 		var n := ps.instantiate() as Node3D

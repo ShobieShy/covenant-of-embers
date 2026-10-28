@@ -38,10 +38,14 @@ func show_map(ft: FastTravel, here_point: String) -> void:
 		c.queue_free()
 	buttons.clear()
 	var ok := ft.unlocked()
-	status.text = "" if ok else ("No crystal." if not ft.has_crystal() else "The crystal hasn't been activated yet.")
+	status.text = (
+		""
+		if ok
+		else ("No crystal." if not ft.has_crystal() else "The crystal hasn't been activated yet.")
+	)
 	for p in ft.destinations():
 		var b := Button.new()
-		b.text = String(FastTravel.POINTS[p]["name"]) + ("  (here)" if p == here else "")
+		b.text = String(FastTravel.info(p)["name"]) + ("  (here)" if p == here else "")
 		b.disabled = not ok or p == here
 		b.pressed.connect(press.bind(p))
 		list.add_child(b)
