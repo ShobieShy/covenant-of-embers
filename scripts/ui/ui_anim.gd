@@ -86,6 +86,21 @@ static func _tween(n: Node, key := &"ui_anim_tween") -> Tween:
 	return t
 
 
+## QA round 10: put `ctl` in the middle of its viewport at its real (content) size, scaled
+## down to fit if it is larger than the window. Call before open(), which reads the rest spot.
+static func centre(ctl: Control, margin := 16.0) -> void:
+	if ctl == null or not ctl.is_inside_tree():
+		return
+	ctl.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	ctl.scale = Vector2.ONE
+	ctl.reset_size()
+	var vp := ctl.get_viewport_rect().size
+	var room := vp - Vector2(margin, margin) * 2.0
+	var k := minf(1.0, minf(room.x / maxf(ctl.size.x, 1.0), room.y / maxf(ctl.size.y, 1.0)))
+	ctl.scale = Vector2(k, k)
+	ctl.position = ((vp - ctl.size * k) / 2.0).floor()
+
+
 ## Show `n` with the open motion.
 static func open(n: Node) -> void:
 	if n == null:

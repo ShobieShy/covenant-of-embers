@@ -64,9 +64,14 @@ func open() -> void:
 
 
 func close() -> void:
-	UiAnim.close(self)  # 0.3.1 P1
 	if settings_ui and settings_ui.visible:
 		settings_ui.close()
+	# QA round 10: unpause once the fade is done, not at its start (the game ran 8 frames
+	# under a still-visible menu).
+	UiAnim.close(self, _closed)  # 0.3.1 P1
+
+
+func _closed() -> void:
 	if player:
 		player.ui_open = false
 	if is_inside_tree():

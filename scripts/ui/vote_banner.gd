@@ -16,6 +16,8 @@ var chips: HBoxContainer
 var ticks := 0
 var _last_sec := -1
 var _sig := ""
+var _shown_at := -1.0
+var _last_left := 0.0
 
 
 func _ready() -> void:
@@ -24,8 +26,14 @@ func _ready() -> void:
 	panel = PanelContainer.new()
 	panel.name = "VotePanel"
 	panel.visible = false
-	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	panel.position.y = 90
+	# QA round 10: a preset set before the panel has a size left it ~113 px right of centre.
+	# Anchor at the top centre and grow both ways so it stays centred as the text changes.
+	panel.anchor_left = 0.5
+	panel.anchor_right = 0.5
+	panel.offset_left = 0.0
+	panel.offset_right = 0.0
+	panel.offset_top = 90.0
+	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.17, 0.12, 0.15, 0.85)
 	sb.set_content_margin_all(8)
@@ -64,9 +72,13 @@ func refresh() -> void:
 		_last_sec = -1
 		if panel.visible:
 			UiAnim.close(panel)
+			_log_end()
 		return
 	if not panel.visible:
 		UiAnim.open(panel)
+		_shown_at = Time.get_ticks_msec() / 1000.0
+		print("[vote] start: %.1f s left" % left)
+	_last_left = left
 	var sec := ceili(left)
 	var away: Array[String] = sync.missing()
 	label.text = "Waiting for party: %d s" % sec
@@ -96,3 +108,13 @@ func _chips(here: int, total: int) -> void:
 		t.custom_minimum_size = Vector2(8, 8) * CHIP_SCALE
 		t.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		chips.add_child(t)
+
+
+## QA round 10: log how the vote ended and how long the banner was up.
+func _log_end() -> void:
+	var up := Time.get_ticks_msec() / 1000.0 - _shown_at if _shown_at >= 0.0 else 0.0
+	var why := (
+		"ended (timer ran out)" if _last_left < 1.0 else "cleared (party gathered or floor changed)"
+	)
+	print("[vote] %s after %.1f s" % [why, up])
+	_shown_at = -1.0

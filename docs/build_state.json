@@ -1802,6 +1802,11 @@
       "time": "2026-10-28T10:54:21-05:00",
       "step": "0.3.1 exit-room fix",
       "summary": "Exit doorway never opens onto the stair well: RNG-free stair_row in Python+GD FloorGen (hole moves to the south row when the exit door is north); golden regenerated, layouts unchanged; 2000-seed and per-floor geometry tests; solo labyrinth bot PASS, 0 teleports; fast tier green."
+    },
+    {
+      "time": "2026-10-28T10:54:21-05:00",
+      "step": "0.3.1 QA r10",
+      "summary": "Pause menu unpauses in the close-fade callback; vote banner anchored top-centre growing both ways; inventory/skills centred (and scaled to fit) at every resolution via UiAnim.centre; vote start/end/clear logged with elapsed time; tests in test_ui_anim.gd."
     }
   ],
   "completed_steps": [

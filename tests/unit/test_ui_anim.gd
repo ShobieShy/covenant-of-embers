@@ -129,3 +129,54 @@ func test_pulse_shake_count_restart() -> void:  # QA round 9 (1)
 	check(l.text == "5", "the newer count wins")
 	UiAnim.force_motion = false
 	l.free()
+
+
+func test_pause_menu_unpauses_after_fade() -> void:  # QA round 10 (1)
+	UiAnim.force_motion = true
+	var p := PauseMenu.new()
+	runner_tree.root.add_child(p)
+	p.open()
+	check(runner_tree.paused, "open pauses")
+	await _wait(0.3)
+	p.close()
+	check(runner_tree.paused and p.visible, "still paused while the menu fades")
+	await _wait(0.4)
+	check(not runner_tree.paused and not p.visible, "unpaused once the fade is done")
+	UiAnim.force_motion = false
+	runner_tree.paused = false
+	p.free()
+
+
+func test_centre_at_any_size() -> void:  # QA round 10 (3)
+	for res in [
+		Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(1024, 600)
+	]:
+		var vp := SubViewport.new()
+		vp.size = res
+		runner_tree.root.add_child(vp)
+		var c := PanelContainer.new()
+		c.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+		c.custom_minimum_size = Vector2(1040, 600)
+		c.position = Vector2(-520, -300)
+		vp.add_child(c)
+		UiAnim.centre(c)
+		var sz := c.size * c.scale
+		var mid := c.position + sz / 2.0
+		check_near(mid.x, res.x / 2.0, 1.0, "%s: centred across" % res)
+		check_near(mid.y, res.y / 2.0, 1.0, "%s: centred down" % res)
+		check(c.position.x >= 0.0 and c.position.y >= 0.0, "%s: on screen" % res)
+		check(c.position.x + sz.x <= res.x and c.position.y + sz.y <= res.y, "%s: fits" % res)
+		vp.free()
+
+
+func test_vote_panel_grows_both_ways() -> void:  # QA round 10 (2)
+	var b := VoteBanner.new()
+	runner_tree.root.add_child(b)
+	check(b.panel.anchor_left == 0.5 and b.panel.anchor_right == 0.5, "top-centre anchors")
+	check(b.panel.grow_horizontal == Control.GROW_DIRECTION_BOTH, "grows both ways")
+	b.panel.visible = true
+	b.label.text = "Waiting for party: 9 s\nNot at the stairs: Somebody Long"
+	await _wait(0.1)
+	var vw := b.panel.get_viewport_rect().size.x
+	check_near(b.panel.position.x + b.panel.size.x / 2.0, vw / 2.0, 1.0, "centred after sizing")
+	b.free()

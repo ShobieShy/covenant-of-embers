@@ -408,6 +408,8 @@ func is_open() -> bool:
 
 
 func open() -> void:
+	refresh()  # size the content first, then centre it (QA round 10)
+	UiAnim.centre(root)
 	UiAnim.open(self)  # 0.3.1 P1
 	if player:
 		player.ui_open = true
