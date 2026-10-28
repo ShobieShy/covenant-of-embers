@@ -1750,6 +1750,11 @@
       "time": "2026-10-28T09:05-05:00",
       "step": "L5e",
       "summary": "QA r7 bot notes: fight() no longer presses fire when the slot in hand can't pay for its cast (_dry: mana < cost x mode cost_mult; zero-cost modes exempt); it backs out of reach to 8 m and waits for regen, still swapping to the wand first when one is held. Summary 'crafted' now lists every craft (prologue staff + Breach wand), so the staff craft is visible again. Solo lab 1x 2/2, 4x 2/2 PASS; King refused casts 0/1/92/17 (was 16602)."
+    },
+    {
+      "time": "2026-10-28T09:55-05:00",
+      "step": "rt35",
+      "summary": "Final 0.3.0 full suite at 1a3b017 (QA holding): tools/run_tests.sh all green: units 624 passed 0 failed (1 ObjectDB instance at exit, as rt33/rt34c); solo playtests PASS x2 (deaths 0/1, teleports 0, crafted staff + wand); co-op PASS (joiner SIGABRT at teardown after its bot PASSed, the known accepted exit crash); license/credits/world map/path lints OK. Not released; awaiting the user's go."
     }
   ],
   "completed_steps": [
