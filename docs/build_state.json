@@ -1610,6 +1610,11 @@
       "time": "2026-10-28T02:05:00-05:00",
       "step": "L1",
       "summary": "Labyrinth L1: Act I Warrens room kit (data/labyrinth/warrens.toml: start, 5 normal, elite, rest, 2 secret, exit rooms on a 24 m slot grid), seeded floor generator in python (tools/labyrinth_gen.py --self-test/--check/--write-golden) and GDScript (FloorGen), FNV-1a floor seed per save/kit/floor/remix + xorshift32, tree layout: start->exit main path 6-9 rooms with the elite halfway, rest + 1-2 secret branches. Golden file of 40 floors shared by both; test_floor_gen.gd 4/4. run_tests.sh runs the python self-test and check."
+    },
+    {
+      "time": "2026-10-28T02:25:00-05:00",
+      "step": "L2a",
+      "summary": "Labyrinth L2a: LabyrinthState (progress.labyrinth v1: save_seed, deepest, cleared, per-floor remix/chests/elites, bosses, shortcuts); old saves get a fresh block, a save that visited the Breach starts with floor 1 reached; remix only on cleared floors and restocks them; main.gd loads and saves it. Fixture tests/fixtures/saves_v1/labyrinth.json; test_labyrinth_state.gd 4/4 (+ save, world save migration, world session, map anchors green). Act I art requests added to docs/EMBER_ART_REQUESTS.md. SaveGame.VERSION unchanged (additive key)."
     }
   ],
   "completed_steps": [

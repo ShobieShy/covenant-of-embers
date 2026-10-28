@@ -19,3 +19,20 @@ until a file lands; the slot list is `EmberArt.SLOTS`.
 
 Earlier gaps still open: the element tree icons and the trash / junk item icons noted in the
 step 150-159 build log.
+
+## Labyrinth Act I: Goblin Warrens (0.3.0, steps L1-L3)
+
+Rooms are built from greybox boxes until these land (the kit is data/labyrinth/warrens.toml;
+each room fits a 24 m slot with 4 m doorways centred on each side). Original, CC0, or CC-BY
+credited in game; textures can be CC0 ambientCG/Poly Haven sets credited in CREDITS.md.
+
+| Slot | Path | Spec |
+|---|---|---|
+| Warrens tile kit | assets/original/ember_art/warrens/{wall_4m,wall_door_4m,pillar,floor_4m,ceiling_4m,stair_down}.glb | packed earth + timber shoring, 4 m grid, under 1.5k tris each, one shared 2k atlas |
+| Props | assets/original/ember_art/warrens/{torch_sconce,barricade,bone_pile,crate_stack,spike_trap,goblin_banner,mushroom_cluster}.glb | under 1k tris each; torch has an `Emit` node for the light |
+| Rest room set | assets/original/ember_art/warrens/{bedroll,cook_fire,craft_bench}.glb | the fungus cellar rest room (save, heal, craft station) |
+| Labyrinth gate | assets/original/ember_art/labyrinth_gate.glb | ~8 m portal arch for the Breach crater (floor 1 entrance), violet emissive |
+| Goblin King | assets/original/ember_art/goblin_king.glb | ~2.4 m, rigged (idle, walk, slam, throw, roar, death); crown as a separate `Crown` node (boss drop) |
+| Goblins x3 | assets/original/ember_art/goblin_{grunt,archer,shaman}.glb | ~1.3 m, rigged with the Quaternius-style anim names the enemy code already uses |
+| Boss arena | assets/original/ember_art/warrens/throne_hall.glb | ~32x32 m handmade floor 5 hall with a raised throne, 3 LODs |
+| Warrens map painting | assets/original/ember_art/map_warrens.png | 512x300, for the Labyrinth tab of the world map |

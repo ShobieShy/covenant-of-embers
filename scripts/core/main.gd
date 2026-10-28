@@ -17,6 +17,7 @@ var vendor_ui: VendorUi
 var shop_pending := ""
 var npcs: Array[Npc] = []  # step 65: level [[npc]]s
 var story_flags := StoryFlags.new()
+var labyrinth := LabyrinthState.fresh()  # L2a: progress["labyrinth"]
 var dialogue: DialogueRunner
 var quests: QuestLog  # step 67: the tutorial chain (saved in progress["quests"])
 var quest_driver: QuestDriver
@@ -247,6 +248,7 @@ func _setup_flow(player: Player) -> void:
 			saved_progress = (r["data"] as Dictionary).get("progress", {})
 			story_flags.from_dict((r["data"] as Dictionary).get("progress", {}).get("flags", {}))
 			_loaded_quests = (r["data"] as Dictionary).get("progress", {}).get("quests", {})
+			labyrinth = LabyrinthState.from_save(r["data"])
 			if breach and (r["data"] as Dictionary).get("progress", {}).get("vault_open", false):
 				breach.restore_open()   # step 47: rooms cleared, gate + vault stay open
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
@@ -545,7 +547,8 @@ func progress() -> Dictionary:
 	var d := {"level_id": GameFlow.id_of($Level), "vault_open": breach.open if breach else false,
 		"anchor": MapAnchors.nearest($Level, player.global_position) if player else "",
 		"map_version": MapAnchors.version_of($Level),
-		"flags": story_flags.to_dict(), "quests": quests.to_dict() if quests else {}}
+		"flags": story_flags.to_dict(), "quests": quests.to_dict() if quests else {},
+		"labyrinth": labyrinth.to_dict()}
 	var ow := get_node_or_null("OpenWorld") as OpenWorld
 	if ow and player:
 		d.merge(WorldSession.capture(ow, player.global_position), true)  # OW10
