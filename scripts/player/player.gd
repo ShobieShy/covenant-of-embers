@@ -89,6 +89,7 @@ var jumps := 0
 var steps_climbed := 0
 var direction := Vector3.ZERO  # smoothed move direction (Magewar `direction`)
 var speed := 4.0  # Magewar `current_speed`
+var interact_held := false  ## 0.3.1 P2: Interact held this tick
 var input_enabled := true  # false in tests: no Input polling in _physics_process
 var ui_open := false  # step 30: a menu screen is up: no actions, no mouse look
 # Step 32 settings (Settings.apply_to): look + hold/toggle modes.
@@ -731,6 +732,7 @@ func current_slow() -> float:
 
 ## One fixed tick (dt must be the physics step: move_and_slide uses the physics delta).
 func tick(input: PlayerInput, dt: float) -> void:
+	interact_held = input.down(&"interact")  # 0.3.1 P2: hold-to-use (Labyrinth stairs)
 	_apply_toggles(input)
 	slow_left = maxf(0.0, slow_left - dt)
 	# Dead (step 13): no input, no movement; respawn after respawn_delay.

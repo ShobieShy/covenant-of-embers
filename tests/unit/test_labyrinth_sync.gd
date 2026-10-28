@@ -120,3 +120,39 @@ func test_roster_change_pushes() -> void:
 	d["hs"].roster_changed.emit()
 	check(d["h"].pushes == n + 1, "a new partner gets the floor")
 	_free(d)
+
+
+func test_vote_banner_shows_names_and_ticks() -> void:  # 0.3.1 P2
+	var d := _pair()
+	var hi: Interiors = d["hi"]
+	var h: LabyrinthSync = d["h"]
+	var j: LabyrinthSync = d["j"]
+	await hi.enter("labyrinth")
+	var sd := h.stairs_pos()
+	var mate := RemotePlayer.new()
+	mate.display_name = "Wren"
+	runner_tree.root.add_child(mate)
+	mate.add_to_group(RemotePlayer.GROUP)
+	d["me"].global_position = sd
+	mate.global_position = sd + Vector3(40, 0, 0)
+	hi._on_stairs(LabyrinthStairs.DOWN)
+	h.tick(0.1)
+	h.banner.refresh()
+	check(h.banner.panel.visible, "the host's banner shows during the vote")
+	check(h.banner.label.text.contains("Waiting for party: 10 s"), "countdown on the banner")
+	check(h.banner.label.text.contains("Wren"), "the straggler is named")
+	check(h.banner.chips.get_child_count() == 2, "a chip per party member")
+	check(j.banner_left > 9.9, "the joiner's banner counts from the host's vote")
+	var t0 := h.banner.ticks
+	h.tick(7.0)
+	h.banner.refresh()
+	check(h.banner.ticks == t0 + 1, "the last 3 s tick")
+	mate.global_position = sd + Vector3(2, 0, 0)
+	h.tick(0.1)
+	h.tick(0.0)
+	h.banner.refresh()
+	check(not h.banner.panel.visible, "the party gathered: the banner goes")
+	while hi.busy:
+		await runner_tree.process_frame
+	mate.free()
+	_free(d)

@@ -32,6 +32,7 @@ const SOUNDS := {
 	"slam": IMPACT + "impactPlate_heavy_000.ogg",
 	"ui_click": UIPACK + "click-a.ogg",
 	"pickup": IFACE + "drop_002.ogg",
+	"vote_tick": IFACE + "tick_001.ogg",  # 0.3.1 P2: the stairs vote's last 3 s
 	# step 141 (Brands B7): brand fire-mode sounds, same Kenney CC0 packs
 	"brand_overheat": IFACE + "error_006.ogg",
 	"brand_vent": IFACE + "scratch_004.ogg",
@@ -46,7 +47,9 @@ const SOUNDS := {
 	"brand_orb": IFACE + "maximize_008.ogg",
 	"brand_crit": IMPACT + "impactGlass_light_002.ogg",
 }
-const UI_KEYS: PackedStringArray = ["ui_click", "kill", "wave_start", "wave_clear", "cast_fail", "equip", "pickup"]
+const UI_KEYS: PackedStringArray = [
+	"ui_click", "kill", "wave_start", "wave_clear", "cast_fail", "equip", "pickup", "vote_tick"
+]
 const LAND_MIN := 2.0  ## m/s: Cogito's min landing velocity (quiet)
 const LAND_MAX := 8.0  ## m/s: loudest
 const STEP_DIST := 2.2  ## m of grounded travel per footstep

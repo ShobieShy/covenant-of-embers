@@ -913,7 +913,9 @@ func _lab_tick() -> void:
 			_lab_side = player.global_position + perp - ahead.normalized() * 1.5
 		_lab_stuck_t = 0.0
 		_lab_stuck_at = player.global_position
-	walk_to(down.global_position)
+	# 0.3.1 P2: the stairs take a 0.5 s Interact hold; hold it once standing on them.
+	var on := flat_distance(down.global_position) < LabyrinthStairs.RADIUS
+	walk_to(down.global_position, ["interact"] if on else [])
 
 
 func _on_died(_p) -> void:

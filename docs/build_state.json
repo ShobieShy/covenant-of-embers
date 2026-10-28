@@ -1777,6 +1777,11 @@
       "time": "2026-10-28T10:05-05:00",
       "step": "0.3.1 P1b",
       "summary": "InteriorFade also fades in from black after a fast-travel arrival (after ground_now) and after a respawn; stairs keep the Interiors fade; co-op menu opens with UiAnim; test_interiors arrival/respawn test"
+    },
+    {
+      "time": "2026-10-28T10:15-05:00",
+      "step": "0.3.1 P2",
+      "summary": "Labyrinth stairs: 'E: go down' prompt, 0.5 s Interact hold (fires once per hold), pad glow pulse; VoteBanner (Waiting for party N s, missing names, batch_09b chip bar, vote_tick on the last 3 s); gate() unchanged; bot holds Interact on the stairs. Fast tier green; solo Labyrinth bot PASS, 0 teleports. stairs_warrens.glb not imported (4x8 m / 4.0 m drop does not fit the 4x4 / 4.2 m stair hole)."
     }
   ],
   "completed_steps": [

@@ -21,6 +21,8 @@ var host_state: LabyrinthState
 var vote_left := -1.0  ## s; < 0 = no countdown
 var follows := 0  ## joiner: floor moves made for the host
 var pushes := 0
+var banner_left := -1.0  ## 0.3.1 P2 joiner: s on the vote banner, from "lab_vote"
+var banner: VoteBanner
 
 
 func setup(s: Object, ints: Interiors, is_host: bool) -> void:
@@ -28,6 +30,11 @@ func setup(s: Object, ints: Interiors, is_host: bool) -> void:
 	interiors = ints
 	host = is_host
 	s.connect(&"message", _on_message)
+	if banner == null:
+		banner = VoteBanner.new()
+		banner.name = "VoteBanner"
+		banner.sync = self
+		add_child(banner)
 	if host:
 		ints.floor_entered.connect(func(_n: int) -> void: push())
 		ints.stair_gate = gate
@@ -65,6 +72,35 @@ func gate() -> bool:
 	return false
 
 
+## 0.3.1 P2: the names of the party not within STAIR_RANGE of the stairs (for the banner).
+func missing() -> Array[String]:
+	var out: Array[String] = []
+	var sd := stairs_pos()
+	if sd == Vector3.INF or interiors == null:
+		return out
+	for p: Node3D in _voters():
+		var d := Vector2(p.global_position.x - sd.x, p.global_position.z - sd.z)
+		if d.length() > STAIR_RANGE:
+			var n: Variant = p.get(&"display_name")
+			out.append(String(n) if n != null else String(p.name))
+	return out
+
+
+## s left on the vote banner: the host's own countdown, or the one the host sent a joiner.
+func left() -> float:
+	return vote_left if host else banner_left
+
+
+func party_size() -> int:
+	return _voters().size() if interiors else 0
+
+
+func _voters() -> Array:
+	var who: Array = interiors.party()
+	who.append_array(interiors.get_tree().get_nodes_in_group(RemotePlayer.GROUP))
+	return who
+
+
 func all_near() -> bool:
 	var sd := stairs_pos()
 	if sd == Vector3.INF:
@@ -91,6 +127,10 @@ func _process(dt: float) -> void:
 
 
 func tick(dt: float) -> void:
+	if not host and banner_left > 0.0:
+		banner_left -= dt
+		if interiors and interiors.current != "labyrinth":
+			banner_left = -1.0
 	if not host or vote_left < 0.0:
 		return
 	if interiors.current != "labyrinth":
@@ -109,6 +149,7 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 		"lab":
 			follow(int(data.get("n", 1)), data.get("st", {}))
 		"lab_vote":
+			banner_left = float(data.get("t", VOTE_S))
 			print("[labyrinth] the host is at the stairs: %.0f s" % float(data.get("t", VOTE_S)))
 
 
@@ -118,6 +159,8 @@ func follow(n: int, st: Variant) -> void:
 		return
 	host_state = LabyrinthState.from_dict(st)
 	host_state.current = n
+	if interiors.floor_no != n:
+		banner_left = -1.0  # the host went down: the vote is over
 	interiors.labyrinth = host_state
 	if interiors.current == "labyrinth" and interiors.floor_no != n and not interiors.busy:
 		follows += 1
