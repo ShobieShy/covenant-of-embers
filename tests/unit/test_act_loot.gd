@@ -74,3 +74,28 @@ func test_tagged_enemies_and_boss_chest() -> void:
 	var c2 := fl.get_node_or_null("BossChest") as VaultChest
 	check(c2 != null and c2.floor_rarity == "rare", "repeat clear: Rare chest")
 	m.free()
+
+
+func test_secret_chests_a_tier_above() -> void:
+	check(ActLoot.chest_rarity(1) == "basic", "floor 1 chests Basic")
+	check(ActLoot.chest_rarity(1, true) == "uncommon", "floor 1 secret Uncommon")
+	check(ActLoot.chest_rarity(3, true) == "rare", "floor 3 secret Rare")
+	var m := StubMain.new()
+	m.labyrinth = LabyrinthState.fresh(42)
+	m.position = Vector3(0, 900, -4200)
+	runner_tree.root.add_child(m)
+	var fl := LabyrinthFloor.build(FloorGen.load_kit(), 1, m.labyrinth)
+	m.add_child(fl)
+	var cs: Array[VaultChest] = m._lab_chests(fl, null)
+	check(not cs.is_empty(), "floor 1 has a secret chest (%d)" % cs.size())
+	var c := cs[0]
+	check(c.floor_rarity == "uncommon" and not c.locked, "open-able, a tier above")
+	c.open_chest()
+	var id := String(c.get_meta(&"chest_id"))
+	check(m.labyrinth.chest_open(1, id), "opening is saved")
+	fl.free()
+	var fl2 := LabyrinthFloor.build(FloorGen.load_kit(), 1, m.labyrinth)
+	m.add_child(fl2)
+	var again: Array[VaultChest] = m._lab_chests(fl2, null)
+	check(again[0].is_open, "re-entry: already open")
+	m.free()

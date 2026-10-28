@@ -18,6 +18,7 @@ const ACTS := {
 		"name": "Goblin Warrens",
 		"floors": [1, 5],
 		"levels": [5, 7, 9, 10, 12],
+		"chests": ["basic", "basic", "uncommon", "uncommon", "rare"],
 		"element": ElementTable.Element.EARTH,
 		"luck": 0.0,
 		"boss_first": "unique",
@@ -57,6 +58,20 @@ static func boss_rarity(floor_no: int, first_clear: bool) -> String:
 	if a == 0:
 		return VaultChest.DEFAULT_FLOOR
 	return String(ACTS[a]["boss_first" if first_clear else "boss_repeat"])
+
+
+## A floor's chest rarity floor; secret rooms hold chests one tier above it (plan section 9).
+static func chest_rarity(floor_no: int, secret := false) -> String:
+	var a := act_of(floor_no)
+	if a == 0:
+		return "basic"
+	var cs: Array = ACTS[a]["chests"]
+	var t := Rarity.parse(
+		String(cs[clampi(floor_no - int(ACTS[a]["floors"][0]), 0, cs.size() - 1)])
+	)
+	if secret:
+		t = mini(t + 1, Rarity.parse("primordial"))
+	return Rarity.IDS[t]
 
 
 static func party_chance(base: float, players: int) -> float:

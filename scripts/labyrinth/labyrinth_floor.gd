@@ -201,6 +201,9 @@ func _build_rooms(kit: Dictionary) -> void:
 		r.set_meta(&"cell", cell)
 		var c := r.position
 		_goblins(r, kind, sz, i)
+		if kind == "secret":  # L4: a chest a tier above the floor (main._lab_chests)
+			var ch := _marker(_chests(), "secret%d" % i, c + Vector3(0, 0, -sz.y / 2 + 1.5))
+			ch.set_meta(&"secret", true)
 		match kind:
 			"start":
 				_marker(self, "PlayerStart", c + Vector3(0, 0, 0))
@@ -216,6 +219,16 @@ func _build_rooms(kit: Dictionary) -> void:
 				_stairs("StairsDown", LabyrinthStairs.DOWN, foot if dressed else c)
 			"rest":
 				_shrine(c)
+
+
+## L4: the Chests marker group (created on first use).
+func _chests() -> Node3D:
+	var n := get_node_or_null(^"Chests") as Node3D
+	if n == null:
+		n = Node3D.new()
+		n.name = "Chests"
+		add_child(n)
+	return n
 
 
 func _build_boss(state: LabyrinthState) -> void:

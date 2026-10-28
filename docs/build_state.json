@@ -1660,6 +1660,11 @@
       "time": "2026-10-28T02:55-05:00",
       "step": "L4b",
       "summary": "Act I loot: ActLoot (floor item levels 5/7/9/10/12, Act element share, party drop-chance +25%/extra player), act1_goblins + act1_goblin_king pools, Enemy.level_override, King leaves an open boss chest (Unique first clear, Rare repeats); test_act_loot (4)."
+    },
+    {
+      "time": "2026-10-28T02:57-05:00",
+      "step": "L4c",
+      "summary": "Secret-room chests: LabyrinthFloor Chests markers in secret rooms, main._lab_chests spawns open-able VaultChests a tier above the floor (ActLoot.chest_rarity), opened ones kept per floor in the save; test_act_loot +1. L4 done (later Acts left out of ActLoot)."
     }
   ],
   "completed_steps": [

@@ -629,6 +629,7 @@ func _on_floor_entered(_n: int, ow: OpenWorld) -> void:
 		st.global_transform = at.global_transform
 	_lab_waystone(fl, ow)
 	_lab_enemies(fl, player)
+	_lab_chests(fl, player)
 
 
 ## L2: a boss floor whose boss is down gets its waystone (FastTravel.DEEP_POINTS).
@@ -685,6 +686,33 @@ func _on_lab_kill(_e: Enemy, _el: ElementTable.Element, fl: LabyrinthFloor, elit
 		if ow and is_instance_valid(fl):
 			_lab_waystone(fl, ow)
 		print("[labyrinth] %s defeated" % boss)
+
+
+## L4: secret-room chests, one tier above the floor (ActLoot.chest_rarity); opened ones
+## are kept per floor in the save (shown open, no loot) until the floor is remixed.
+func _lab_chests(fl: LabyrinthFloor, player: Player) -> Array[VaultChest]:
+	var out: Array[VaultChest] = []
+	var marks := fl.get_node_or_null(^"Chests")
+	if marks == null:
+		return out
+	for m in marks.get_children():
+		var id := String(m.name)
+		var c := VaultChest.new()
+		c.name = "Chest_" + id
+		c.player = player
+		c.dropper = get_node_or_null("LootDropper") as LootDropper
+		c.floor_rarity = ActLoot.chest_rarity(fl.floor_no, bool(m.get_meta(&"secret", false)))
+		c.set_meta(&"tier", "secret" if m.get_meta(&"secret", false) else "normal")
+		c.set_meta(&"chest_id", id)
+		c.unlock()
+		fl.add_child(c)
+		c.global_transform = (m as Node3D).global_transform
+		if labyrinth and labyrinth.chest_open(fl.floor_no, id):
+			c.open_chest_quiet()
+		else:
+			c.opened.connect(func(_d: Array[LootDrop]) -> void: labyrinth.open_chest(fl.floor_no, id))
+		out.append(c)
+	return out
 
 
 ## L4: the Act boss leaves an open chest where it fell: Unique floor on the first clear,
