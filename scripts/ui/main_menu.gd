@@ -20,6 +20,17 @@ var _seconds := -1.0
 var _elapsed := 0.0
 var creator: CharacterCreator  ## step 73 / 111
 var credits_ui: CreditsUi  ## batch_01/02 art credits
+## 0.3.1 P6 (L1): title fade-in, a hover tick and nudge on buttons, save-slot cards.
+const LOCATION_NAMES := {
+	"midden": "The Midden",
+	"breach": "The Breach",
+	"town_square": "Town Square",
+	"mage_association": "Mage Association",
+	"old_oak": "The Old Oak",
+}
+var title_label: Label
+var hover_player: AudioStreamPlayer
+var hovers := 0
 
 
 ## "v0.1.0" from application/config/version (step 84; also stamped into the Windows exe).
@@ -47,11 +58,19 @@ func _ready() -> void:
 	v.add_theme_constant_override("separation", 10)
 	c.add_child(v)
 	var title := Label.new()
+	title_label = title
 	title.text = "Covenant of Embers"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 40)
 	title.add_theme_color_override("font_color", Color(1.0, 0.55, 0.2))
 	v.add_child(title)
+	UiAnim.fade_in(title, 0.8)
+	hover_player = AudioStreamPlayer.new()
+	hover_player.stream = GameAudio.load_stream("ui_click")
+	hover_player.volume_db = -14.0
+	hover_player.pitch_scale = 1.5
+	hover_player.bus = &"UI" if AudioServer.get_bus_index(&"UI") >= 0 else &"Master"
+	add_child(hover_player)
 	version_label = Label.new()  # step 84
 	version_label.text = "%s  (%s)" % [release_name(), version_string()]
 	version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -63,8 +82,10 @@ func _ready() -> void:
 	for n in range(1, SaveGame.SLOTS + 1):
 		var sb := Button.new()
 		sb.toggle_mode = true
-		sb.custom_minimum_size = Vector2(96, 32)
+		sb.custom_minimum_size = Vector2(150, 92)
+		sb.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		sb.pressed.connect(select_slot.bind(n))
+		_hoverable(sb)
 		slots.add_child(sb)
 		slot_buttons.append(sb)
 	_build_identity(v)  # step 73
@@ -73,6 +94,7 @@ func _ready() -> void:
 		b.text = "Co-op" if id == "coop" else id.capitalize()
 		b.custom_minimum_size = Vector2(0, 40)
 		b.pressed.connect(press.bind(id))
+		_hoverable(b)
 		v.add_child(b)
 		buttons[id] = b
 	for f in UserDir.migrate_legacy():  # step 83
@@ -190,7 +212,7 @@ func select_slot(n: int) -> void:
 	for i in slot_buttons.size():
 		var b := slot_buttons[i]
 		b.button_pressed = i + 1 == GameFlow.slot
-		b.text = "Slot %d%s" % [i + 1, "" if GameFlow.slot_has_save(i + 1) else " (empty)"]
+		b.text = slot_card(i + 1)
 	(buttons["continue"] as Button).disabled = not GameFlow.has_save()
 	(buttons["skip_prologue"] as Button).visible = SaveGame.any_intro_done()
 
@@ -200,3 +222,52 @@ func _process(delta: float) -> void:
 	if _seconds > 0.0 and _elapsed >= _seconds:
 		print("[menu] quit after %.2f s on the menu" % _elapsed)
 		get_tree().quit(0)
+
+
+func _hoverable(b: Button) -> void:
+	b.mouse_entered.connect(hover.bind(b))
+	b.focus_entered.connect(hover.bind(b))
+
+
+## P6 (L1): a quiet tick and a small pop when a button is hovered or focused.
+func hover(b: Button) -> void:
+	hovers += 1
+	UiAnim.pulse(b, 0.04)
+	if (
+		hover_player
+		and hover_player.stream
+		and hover_player.is_inside_tree()
+		and not UiAnim.instant()
+	):
+		hover_player.play()
+
+
+## P6 (L1): "Slot N" plus the character, level, location and last save time. The save has
+## no playtime field (no save-format change in 0.3.1), so the card shows when it was saved.
+static func slot_card(n: int) -> String:
+	var r := SaveGame.read(SaveGame.slot_path(n))
+	if r.has("error"):
+		return "Slot %d\n(empty)" % n
+	var d: Dictionary = r["data"]
+	var pl: Dictionary = d.get("player", {})
+	var pr: Dictionary = d.get("progress", {})
+	var who := String(pl.get("name", ""))
+	var lines := ["Slot %d" % n]
+	lines.append(
+		(
+			("%s, Lv %d" % [who, int(pl.get("level", 1))])
+			if who != ""
+			else "Lv %d" % int(pl.get("level", 1))
+		)
+	)
+	var lid := String(pr.get("level_id", ""))
+	if lid != "":
+		lines.append(String(LOCATION_NAMES.get(lid, lid.capitalize())))
+	var at := String(d.get("saved_at", ""))
+	if at.length() >= 16:  # saved_at is UTC; show it in local time
+		var bias := int(Time.get_time_zone_from_system().get("bias", 0)) * 60
+		var loc := Time.get_datetime_string_from_unix_time(
+			Time.get_unix_time_from_datetime_string(at) + bias, true
+		)
+		lines.append("Saved " + loc.substr(0, 16))
+	return "\n".join(lines)
