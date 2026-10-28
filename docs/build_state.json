@@ -1735,6 +1735,11 @@
       "time": "2026-10-28T07:25-05:00",
       "step": "L5c",
       "summary": "Labyrinth playtest matrix through Act I at 28e0b8e (PLAYTEST_LABYRINTH=1, logs build/l5c/): solo 1x 2/2 PASS (106/104 kills, deaths 4/2), solo 4x 2/2 PASS (117/125 kills, deaths 6/5), co-op PASS (host 113 kills, stairs vote 1; joiner PASS, King down on floor 5; known joiner rc 134 at teardown). All King down, deepest floor 5, 0 teleports. L5 done except the GPU capture (deferred while Ember QA has the display)."
+    },
+    {
+      "time": "2026-10-28 08:55 CDT",
+      "step": "L5d",
+      "summary": "QA r6 King timeout fixed: Joe's wind wand (joe_landfill) is optional and the playtest bot never talked to him, so it had no wand all game and fight()'s slot_2 low-mana swap did nothing (wand none at the King in QA's and my runs alike; pass/fail was brand/LOS variance). Bot now talks to Joe at his Landfill camp before using his bench (_visit_joe); King status line logs staff/mode/wand/refused. Verify: solo lab 4x 3/3 PASS, 1x 2/3 PASS (1 FAIL at breach_fight: died to the Warden, pre-existing margin also seen pre-fix). test_tutorial*.gd 4/4. L5 GPU capture (tools/lab_perf.gd on the display, build/l5/lab_perf_gpu.json): floors 1-5 mean ~6.9 ms, worst <=11.4 ms (possibly vsync-capped)."
     }
   ],
   "completed_steps": [

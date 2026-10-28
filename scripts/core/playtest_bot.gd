@@ -913,7 +913,7 @@ func _log_king(floor_node: Node) -> void:
 			continue
 		note(
 			(
-				"king hp %.0f/%.0f taken %.0f hits %d dist %.1f los %s target %s | me hp %.0f mana %.0f slot %s casts %d"
+				"king hp %.0f/%.0f taken %.0f hits %d dist %.1f los %s target %s | me hp %.0f mana %.0f slot %s casts %d | staff %s (%s) wand %s refused %d"
 				% [
 					gk.health,
 					gk.max_health(),
@@ -925,10 +925,26 @@ func _log_king(floor_node: Node) -> void:
 					player.health.value,
 					player.mana.value,
 					"staff" if player.loadout.active == Loadout.Slot.STAFF else "wand",
-					player.loadout.casters[0].casts + player.loadout.casters[1].casts
+					player.loadout.casters[0].casts + player.loadout.casters[1].casts,
+					_slot_name(Loadout.Slot.STAFF),
+					_mode_name(Loadout.Slot.STAFF),
+					_slot_name(Loadout.Slot.WAND),
+					player.loadout.casters[0].mana_refused + player.loadout.casters[1].mana_refused
 				]
 			)
 		)
+
+
+func _slot_name(slot: int) -> String:
+	var w := player.loadout.wieldable(slot)
+	return w.display_name() if w else "none"
+
+
+func _mode_name(slot: int) -> String:
+	var m: Object = (
+		player.loadout.casters[slot].fire_mode() if player.loadout.wieldable(slot) else null
+	)
+	return m.get_script().get_global_name() if m and m.get_script() else "-"
 
 
 ## Step 47: clear the rooms in order, pull every lever, then on to the arena.
@@ -1181,6 +1197,8 @@ func _arena_held(d: IntroDirector) -> bool:
 
 
 func _intro_craft(d: IntroDirector) -> bool:
+	if _visit_joe(d):
+		return true
 	var pk := d.next_pickup()
 	if pk:
 		if pk.global_position.distance_to(player.eye_position()) < 2.5:
@@ -1192,6 +1210,29 @@ func _intro_craft(d: IntroDirector) -> bool:
 	var st := d.station()
 	if st and _reach(st):
 		_craft(st)
+		return true
+	return false
+
+
+## QA r6: Joe's wind wand (joe_landfill, Q21) is optional, so the bot never had a wand and
+## fought the King on a dry staff (fight()'s slot_2 swap did nothing; 3 of 4 solo runs timed
+## out). Like a player, talk to Joe at his Landfill camp before using his bench.
+func _visit_joe(d: IntroDirector) -> bool:
+	if player.loadout.wieldable(Loadout.Slot.WAND) != null or d.flags.has("joe_wand_given"):
+		return false
+	if not d.flags.has("landfill_route_open"):
+		return false
+	for n in main.find_children("*", "", true, false):
+		var j := n as Npc
+		if j == null or j.speaker != "Crazy Joe" or not j.is_visible_in_tree() or j.talks >= 3:
+			continue
+		if j.global_position.distance_to(player.global_position) > 60.0:
+			continue
+		if not _reach(j):
+			walk_to(j.global_position)
+		elif _talk_cd <= 0.0:
+			_talk_cd = 1.0
+			j.talk()
 		return true
 	return false
 
