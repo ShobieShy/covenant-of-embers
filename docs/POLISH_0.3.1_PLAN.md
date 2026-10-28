@@ -1,6 +1,7 @@
 # 0.3.1 Polish Round (plan only)
 
-Status: DRAFT, awaiting approval. Requested 2026-10-28 ~08:05 CDT (t102u: "UX improvements
+Status: APPROVED 2026-10-28 ~08:12 CDT (all defaults in section 7 except music, which is
+dropped; t103u). Build P1 onward only after 0.3.0 ships. Requested 2026-10-28 ~08:05 CDT (t102u: "UX improvements
 and general UI and gameplay animations and fluidity. Stuff that smooths rough edges.").
 Build P1 onward only after 0.3.0 (Labyrinth Act I) ships. No new content, no balance
 changes, no save-format changes: 0.3.1 is feel, clarity and flow only.
@@ -59,7 +60,6 @@ Size: S = under half a day, M = about 1 day, L = 2 days.
 | H3 | UI open/close motion | Every panel pops | `UiAnim` helper: fade+8 px slide in 0.15 s, fade out 0.1 s; apply to pause, inventory, skills, vendor, station, map, fast travel, dialogue, co-op | M |
 | H4 | Dialogue flow | Instant text, no prompt | Typewriter (skippable with Interact, 1st press completes, 2nd advances), "E" continue arrow, speaker name colour per NPC, fade in/out | M |
 | H5 | Transitions | Hard cuts on fast travel, stairs, death | Reuse interior_fade for every scene change: fade to black, loading screen, fade in once ground_now() is true | S |
-| H6 | Music pass | Silent game | Ambient loops per area (town, overworld, Warrens) + boss track with crossfade on the Music bus; volume slider already exists | M |
 
 ### Medium (feel and feedback)
 
@@ -95,15 +95,13 @@ Size: S = under half a day, M = about 1 day, L = 2 days.
 | P4 | HUD feedback: chip bars, level-up, damage numbers, pickups | M2, M3, M4, L4 | 2 days |
 | P5 | Combat feel: hit reactions, casting, camera death/respawn | M1, M5, L5 | 3 days |
 | P6 | Menus: inventory/trash, skill trees, fast travel on the map, main menu, lobby, loading tips | M6, M7, M8, L1, L2, L3 | 3.5 days |
-| P7 | Audio: music loops + crossfade, missing UI/world cues | H6, L6 | 1.5 days |
+| P7 | Audio: missing UI/world sound cues (no music) | L6 | 0.5 days |
 | P8 | Ember QA pass, screenshot diff, full suite, 0.3.1 changelog and release | all | 1 day |
 
-Total: about 15 days. A "high only" cut (P1, P2, P3, P7 music, P8) is about 6.5 days.
+Total: about 14 days. A "high only" cut (P1, P2, P3, P8) is about 5 days.
 
 ## 5. Art and audio needs (Ember Art; CC0, CC-BY with in-game credit, or original)
 
-- Music: 4 loops (town, overworld, Warrens, Goblin King boss), 1-3 min, seamless.
-  First choice original from Ember Art; otherwise CC0 (e.g. OpenGameArt CC0 tag).
 - SFX: per-element cast (6), chest open, shrine use, stairs, level-up, rarity pickup
   (3 tiers), UI hover/open/close, vote tick. Kenney CC0 packs cover most; new ones go
   into docs/credits.
@@ -115,7 +113,7 @@ Total: about 15 days. A "high only" cut (P1, P2, P3, P7 music, P8) is about 6.5 
 
 - Unit tests per step: UiAnim (instant under headless and reduced motion), vote UI state
   (countdown, missing names, cancel), stairs hold prompt, typewriter skip/advance,
-  trash undo, chip bar math, music crossfade bus state.
+  trash undo, chip bar math, new sound keys present.
 - tools/ui_shots.gd, menu_shot.gd, skills_shots.gd, trash_shots.gd, loading_shot.gd re-run
   for before/after screenshots each step (mid-animation frames captured too).
 - Playtest bots (solo labyrinth, co-op labyrinth, open world) must stay green: the stairs
@@ -124,15 +122,15 @@ Total: about 15 days. A "high only" cut (P1, P2, P3, P7 music, P8) is about 6.5 
   vote with a lagging joiner). Full suite only at P4 and P8 milestones, as now.
 - GPU check: tween and particle cost on the integrated-GPU target once allowed.
 
-## 7. Open questions (recommended defaults)
+## 7. Decisions (approved 2026-10-28)
 
-1. Scope: full round (~15 days) or high-priority only (~6.5 days)? Default: full, ship the high cut early as 0.3.1 and the rest as 0.3.2 if it runs long.
-2. Stairs: hold Interact to descend instead of touch? Default: yes, 0.5 s hold, and the vote still runs in co-op.
-3. Dialogue typewriter speed? Default: 45 chars/s, setting to make it instant.
-4. Music source: original from Ember Art, CC0 fallback? Default: yes.
-5. Fast travel moves into the world map screen? Default: yes, keep the list as a fallback tab.
-6. Trash undo window? Default: 5 s, last item only, local only.
-7. Enemy death: dissolve shader vs. quick sink-and-fade? Default: sink-and-fade (cheaper on Deck).
-8. FOV kick on dash/sprint? Default: on, +4 degrees, off under reduced motion.
-9. Should animations affect the playtest bots' timing? Default: no, headless skips all tweens.
-10. Release cadence: polish lands after 0.3.0 ships and before Act II? Default: yes.
+1. Scope: full round (~14 days) or high-priority only (~5 days)? Decided: full, ship the high cut early as 0.3.1 and the rest as 0.3.2 if it runs long.
+2. Stairs: hold Interact to descend instead of touch? Decided: yes, 0.5 s hold, and the vote still runs in co-op.
+3. Dialogue typewriter speed? Decided: 45 chars/s, setting to make it instant.
+4. Music: DROPPED for 0.3.1 (no loops, no Ember Art request; the Music bus stays empty).
+5. Fast travel moves into the world map screen? Decided: yes, keep the list as a fallback tab.
+6. Trash undo window? Decided: 5 s, last item only, local only.
+7. Enemy death: dissolve shader vs. quick sink-and-fade? Decided: sink-and-fade (cheaper on Deck).
+8. FOV kick on dash/sprint? Decided: on, +4 degrees, off under reduced motion.
+9. Should animations affect the playtest bots' timing? Decided: no, headless skips all tweens.
+10. Release cadence: polish lands after 0.3.0 ships and before Act II? Decided: yes.
