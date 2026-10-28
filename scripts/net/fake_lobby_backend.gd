@@ -58,7 +58,9 @@ func join_lobby(id: int) -> bool:
 func invite(friend: String) -> bool:
 	if lobby_id == 0:
 		return _fail("no lobby to invite to")
-	var f: FakeLobbyBackend = hub.users.get(friend)
+	# Typed as the base class on purpose: naming its own class_name here made a script self-reference that,
+	# once the game scene had loaded, kept ~190 scripts alive at exit (the rt34 exit leak).
+	var f: LobbyBackend = hub.users.get(friend)
 	if f == null:
 		return _fail("%s is not online" % friend)
 	f.join_requested.emit(lobby_id, user)
