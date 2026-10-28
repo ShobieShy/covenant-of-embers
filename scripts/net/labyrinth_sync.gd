@@ -69,7 +69,11 @@ func all_near() -> bool:
 	var sd := stairs_pos()
 	if sd == Vector3.INF:
 		return true
-	for p in interiors.party():
+	var who: Array = interiors.party()
+	# L5b: the joiners are RemotePlayer proxies on the host (not in the local party), so
+	# before this the vote never ran and the host went down without them
+	who.append_array(interiors.get_tree().get_nodes_in_group(RemotePlayer.GROUP))
+	for p: Node3D in who:
 		var d := Vector2(p.global_position.x - sd.x, p.global_position.z - sd.z)
 		if d.length() > STAIR_RANGE:
 			return false

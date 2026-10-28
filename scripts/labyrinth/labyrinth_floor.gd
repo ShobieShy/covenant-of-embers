@@ -301,7 +301,15 @@ func route(from: Vector3, to: Vector3) -> PackedVector3Array:
 		while c != -1:
 			chain.push_front(c)
 			c = int(prev[c])
-	for i in chain.slice(1):
+	var start := 1
+	if chain.size() > 1:  # off the centre line (a fight in a corner): back to the centre first
+		var c0 := rooms[int(chain[0])].global_position
+		var c1 := rooms[int(chain[1])].global_position
+		var d := Vector2(c1.x - c0.x, c1.z - c0.z).normalized()
+		var r := Vector2(from.x - c0.x, from.z - c0.z)
+		if absf(r.cross(d)) > 1.5:
+			start = 0
+	for i in chain.slice(start):
 		var p := rooms[int(i)].global_position
 		out.append(Vector3(p.x, from.y, p.z))
 	out.append(to)

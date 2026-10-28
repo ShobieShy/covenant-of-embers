@@ -19,10 +19,10 @@ EXTRA=()
 [ -n "${COOP_LAG:-}" ] && EXTRA+=("--net-lag=${COOP_LAG}")
 [ -n "${COOP_LOSS:-}" ] && EXTRA+=("--net-loss=${COOP_LOSS}")
 dir="$(mktemp -d)"
-timeout 600 "$G" --headless --fixed-fps 60 --path . -- --autoplay --host "$PORT" --name HostBot "${EXTRA[@]}" >"$dir/host.log" 2>&1 &
+timeout "${PLAYTEST_TIMEOUT:-600}" "$G" --headless --fixed-fps 60 --path . -- --autoplay --host "$PORT" --name HostBot ${PLAYTEST_LABYRINTH:+--labyrinth} "${EXTRA[@]}" >"$dir/host.log" 2>&1 &
 hp=$!
 sleep 2
-timeout 600 "$G" --headless --fixed-fps 60 --path . -- --autoplay --join "127.0.0.1:$PORT" --name JoinBot "${EXTRA[@]}" >"$dir/join.log" 2>&1 &
+timeout "${PLAYTEST_TIMEOUT:-600}" "$G" --headless --fixed-fps 60 --path . -- --autoplay --join "127.0.0.1:$PORT" --name JoinBot ${PLAYTEST_LABYRINTH:+--labyrinth} "${EXTRA[@]}" >"$dir/join.log" 2>&1 &
 jp=$!
 wait "$hp"; hrc=$?
 wait "$jp"; jrc=$?

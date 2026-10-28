@@ -15,6 +15,9 @@ const MIDDEN_KILLS := 2
 const SIM_LIMIT := 2400.0  ## simulated seconds for the whole run
 const STAGE_LIMIT := 600.0
 const REPLAN := 0.5
+const LAB_LIMIT := 2400.0  ## L5: extra simulated seconds for the Labyrinth leg
+const LAB_FIGHT_RANGE := 16.0
+const KING := "goblin_king"
 
 static var stage := "midden_walk"
 static var total_time := 0.0
@@ -462,7 +465,14 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		var ow := main.get_node_or_null("OpenWorld")
 		if ow and ow.get(&"interiors") and ow.interiors.interior:  # OW11b: indoors
 			nav = ow.interiors.interior.get_node_or_null("Navigation") as LevelNavigation
-		if nav and nav.map_ready():
+		var lf: LabyrinthFloor = (
+			ow.interiors.lab_floor
+			if ow and ow.get(&"interiors") and ow.interiors.current == "labyrinth"
+			else null
+		)
+		if lf and is_instance_valid(lf):  # L5: the floors have no navmesh; room-graph route
+			_path = lf.route(player.global_position, at)
+		elif nav and nav.map_ready():
 			_path = NavigationServer3D.map_get_path(
 				nav.get_navigation_map(), player.global_position, at, true
 			)
@@ -522,8 +532,9 @@ func _physics_process(delta: float) -> void:
 	stats["casts"] = maxi(
 		stats["casts"], player.loadout.casters[0].casts + player.loadout.casters[1].casts
 	)
-	if total_time > SIM_LIMIT:
-		_finish(false, "run over %.0f s in stage %s" % [SIM_LIMIT, stage])
+	var limit := SIM_LIMIT + (LAB_LIMIT if labyrinth_run() else 0.0)
+	if total_time > limit:
+		_finish(false, "run over %.0f s in stage %s" % [limit, stage])
 		return
 	if t > STAGE_LIMIT and stage != "coop_follow":  # the joiner follows as long as the host plays
 		_finish(
@@ -543,6 +554,8 @@ func _physics_process(delta: float) -> void:
 	_input = PlayerInput.hold()
 	match stage:
 		"coop_follow":
+			if _lab_straggle():
+				return
 			_follow_host()
 		"intro":
 			_intro_tick()
@@ -651,7 +664,12 @@ func _physics_process(delta: float) -> void:
 				if r.has("error") or not r["data"]["progress"].get("vault_open", false):
 					_finish(false, "final save missing vault state")
 					return
+				if labyrinth_run():  # L5: on through the crater gate to the Goblin King
+					_goto("lab_gate")
+					return
 				_finish(true)
+		"lab_gate", "lab_floor", "lab_save":
+			_lab_tick()
 		"breach_chest":
 			var c: VaultChest = main.breach.chest
 			if not _reach(c) and t < 60.0 * _walk_scale():
@@ -678,6 +696,178 @@ func _physics_process(delta: float) -> void:
 					_finish(false, "vault chest gave nothing")
 					return
 				_goto("breach_loot")
+
+
+## --- L5: the Labyrinth leg (`--autoplay --labyrinth`) --------------------------------
+## Breach -> out of the rooms -> walk into the crater gate -> each floor: fight foes in
+## range, walk the room graph to StairsDown (the co-op stairs gate waits for the joiner)
+## -> floor 5: kill the Goblin King -> save; PASS once the save holds his kill.
+
+
+static func labyrinth_run() -> bool:
+	return OS.get_cmdline_user_args().has("--labyrinth")
+
+
+var _lab_n := 0
+var _lab_votes := 0
+var _voting := false
+const VOTE_FLOOR := 2  ## co-op: the joiner hangs back here so the host's 10 s vote runs live
+
+
+## Co-op joiner, `--labyrinth`: on VOTE_FLOOR stand still (far from the stairs) so the host's
+## stairs start the vote countdown and the floor sync carries this player down when it ends.
+func _lab_straggle() -> bool:
+	if not labyrinth_run():
+		return false
+	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
+	if ow == null or ow.interiors.current != "labyrinth" or ow.interiors.floor_no != VOTE_FLOOR:
+		return false
+	if _lab_n != VOTE_FLOOR:
+		_lab_n = VOTE_FLOOR
+		note("joiner hangs back on floor %d for the stairs vote" % VOTE_FLOOR)
+	_input = PlayerInput.new()
+	return true
+
+
+## True when the flat segment a->b comes within r of c.
+static func _passes_near(a: Vector3, b: Vector3, c: Vector3, r: float) -> bool:
+	var a2 := Vector2(a.x, a.z)
+	var b2 := Vector2(b.x, b.z)
+	var c2 := Vector2(c.x, c.z)
+	var ab := b2 - a2
+	var k := clampf((c2 - a2).dot(ab) / maxf(ab.length_squared(), 0.0001), 0.0, 1.0)
+	return (a2 + ab * k).distance_to(c2) < r
+
+
+var _lab_stuck_t := 0.0
+var _lab_stuck_at := Vector3.ZERO
+var _lab_unstick := 0.0
+var _lab_side := Vector3.ZERO
+var _lab_flip := false
+
+
+func _lab_tick() -> void:
+	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
+	if ow == null:
+		_finish(false, "the Labyrinth needs the open world")
+		return
+	var inn := ow.interiors
+	if inn.busy or ow.travel.busy:
+		return
+	var lab: LabyrinthState = main.get(&"labyrinth")
+	var ls := main.get_node_or_null(^"LabyrinthSync") as LabyrinthSync
+	if ls and ls.vote_left > 0.0:
+		if not _voting:
+			_voting = true
+			_lab_votes += 1
+			note("stairs vote running on floor %d (%.0f s)" % [inn.floor_no, ls.vote_left])
+		return  # stand on the stairs while the party is counted down
+	_voting = false
+	if stage == "lab_save":
+		if main.save_game() != OK:
+			_finish(false, "save failed after the King")
+			return
+		stats["saves"] += 1
+		var r := SaveGame.read(GameFlow.save_path)
+		var saved := LabyrinthState.from_save(r["data"]) if not r.has("error") else null
+		if saved == null or not saved.bosses.has(KING):
+			_finish(false, "save missing the King's kill")
+			return
+		note(
+			"labyrinth: King down, deepest floor %d, stairs votes %d" % [saved.deepest, _lab_votes]
+		)
+		if Coop.is_host() and _lab_votes == 0:
+			_finish(false, "co-op run never exercised the stairs vote")
+			return
+		_finish(true)
+		return
+	if inn.current == "breach_rooms":
+		if _tick % 120 == 0:
+			note("leaving the Breach rooms for the crater gate")
+			var land := inn.leave()
+			note("out of the Breach rooms at %s" % land)
+			t = 0.0
+		return
+	var foe := nearest_enemy(true)
+	if inn.current == "" and foe and flat_distance(foe.global_position) < LAB_FIGHT_RANGE:
+		fight(foe)  # a camp on the way to the gate
+		return
+	if inn.current == "":
+		var door := inn.get_node_or_null(^"Door_labyrinth") as Node3D
+		if door == null:
+			_finish(false, "no Labyrinth gate")
+			return
+		if t < 1.0:
+			return
+		var rooms := inn.get_node_or_null(^"Door_breach_rooms") as Node3D
+		var me := player.global_position
+		if rooms and _passes_near(me, door.global_position, rooms.global_position, 2.5):
+			# walk around the rooms' door trigger rather than straight back through it
+			var side := (
+				rooms.global_position
+				+ Vector3(3.5 if me.x >= rooms.global_position.x else -3.5, 0, 0)
+			)
+			if (
+				flat_distance(side) > 0.8
+				and _passes_near(me, door.global_position, rooms.global_position, 2.5)
+			):
+				walk_to(side)
+				return
+		walk_to(door.global_position)
+		return
+	if inn.current != "labyrinth":
+		return
+	if inn.floor_no != _lab_n:
+		_lab_n = inn.floor_no
+		_goto("lab_floor")
+		note("labyrinth floor %d" % _lab_n)
+	if lab and lab.bosses.has(KING):
+		_goto("lab_save")
+		return
+	var e := nearest_enemy(true)
+	var boss_floor := inn.lab_floor.layout.is_empty()
+	if e and flat_distance(e.global_position) < (60.0 if boss_floor else LAB_FIGHT_RANGE):
+		_watch_target(e)
+		fight(e)
+		return
+	if boss_floor:
+		var bs := inn.lab_floor.get_node_or_null(^"BossSpawn") as Node3D
+		if bs:
+			walk_to(bs.global_position)
+		return
+	var down := inn.lab_floor.get_node_or_null(^"StairsDown") as Node3D
+	if down == null:
+		return
+	_lab_stuck_t += get_physics_process_delta_time()
+	if _lab_unstick > 0.0:  # stuck on a wall or doorway edge: back to the room's centre
+		_lab_unstick -= get_physics_process_delta_time()
+		walk_to(_lab_side)
+		return
+	if _lab_stuck_t > 5.0:
+		if player.global_position.distance_to(_lab_stuck_at) < 1.0:
+			note(
+				(
+					"stuck on floor %d at %s (room %d), stairs %s, route %s"
+					% [
+						inn.floor_no,
+						player.global_position,
+						inn.lab_floor.room_at(player.global_position),
+						down.global_position,
+						inn.lab_floor.route(player.global_position, down.global_position)
+					]
+				)
+			)
+			_lab_unstick = 2.0
+			var rt := inn.lab_floor.route(player.global_position, down.global_position)
+			var ahead := (
+				(rt[0] if not rt.is_empty() else down.global_position) - player.global_position
+			)
+			var perp := Vector3(-ahead.z, 0, ahead.x).normalized() * (3.0 if _lab_flip else -3.0)
+			_lab_flip = not _lab_flip
+			_lab_side = player.global_position + perp - ahead.normalized() * 1.5
+		_lab_stuck_t = 0.0
+		_lab_stuck_at = player.global_position
+	walk_to(down.global_position)
 
 
 ## Step 47: clear the rooms in order, pull every lever, then on to the arena.

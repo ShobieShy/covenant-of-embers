@@ -1680,6 +1680,11 @@
       "time": "2026-10-28T03:50:00-05:00",
       "step": "L5b-ground",
       "summary": "Fix the fall outside the Breach: Terrain3D Dynamic collision now follows the player (viewport camera when present, else a fallback camera kept on the local player; was fixed at the origin and picked once at build), and is rebuilt on leaving an interior and on fast-travel arrival. v0.2.0 (227db89) has the same fall. New tests/unit/test_breach_ground.gd checks ground collision at the Breach exit, along the path and at the crater gate."
+    },
+    {
+      "time": "2026-10-28T03:59:00-05:00",
+      "step": "L5b-bot",
+      "summary": "Labyrinth playtest bot (--labyrinth): Breach -> walks out of the rooms (around their door trigger) -> crater gate -> floors 1-5 by room-graph route -> King kill -> save check; no teleports, no enter() shortcut. Solo PASS (117 kills, King down, 0 teleports). Co-op fix found by the bot: LabyrinthSync.all_near ignored RemotePlayer proxies, so the stairs vote never ran and the host descended alone; test now uses RemotePlayer.GROUP. Co-op bot run not yet passing (host bot stuck on room-centre walls on floor 1). Note: the L5b-ground entry's time should read 03:27."
     }
   ],
   "completed_steps": [

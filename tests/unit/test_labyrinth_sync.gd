@@ -88,8 +88,8 @@ func test_stairs_wait_for_the_party_or_the_vote() -> void:
 	await hi.enter("labyrinth")
 	var sd := h.stairs_pos()
 	check(sd != Vector3.INF, "floor 1 has stairs down")
-	var mate := Node3D.new()
-	mate.add_to_group(&"coop_avatars")
+	var mate := Node3D.new()  # a joiner is a RemotePlayer proxy on the host
+	mate.add_to_group(RemotePlayer.GROUP)
 	runner_tree.root.add_child(mate)
 	d["me"].global_position = sd
 	mate.global_position = sd + Vector3(40, 0, 0)
