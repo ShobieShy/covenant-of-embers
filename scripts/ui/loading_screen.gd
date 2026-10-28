@@ -57,6 +57,9 @@ var ember: Control
 
 static var active: LoadingScreen = null
 static var dry_run := false  ## tests: build the screen but never change scenes
+## QA r15: set by Coop.begin on a joiner; the "Co-op: loading the world" prefix shows only on
+## that initial join load (the scene change, then the world's first overlay), not later loads.
+static var join_load := false
 ## OW5: an overlay screen driven by its caller (advance / done), never changing scenes:
 ## instanced interiors show it over the world when a load runs long.
 var manual := false
@@ -107,8 +110,10 @@ static func painting_for(level: String) -> Texture2D:
 
 
 ## QA r14 (L2): the co-op join phase lives here, since the co-op menu is gone by now:
-## "Co-op: loading the world - " while a session is live, else "".
+## "Co-op: loading the world - " during a joiner's initial join load, else "".
 static func coop_phase() -> String:
+	if not join_load:
+		return ""
 	var ss: NetSession = Coop.session
 	if ss == null or not is_instance_valid(ss):
 		return ""
@@ -337,6 +342,8 @@ static func nav_ready(scene: Node) -> bool:
 
 
 func _finish() -> void:
+	if target == "":  # the first overlay closing ends the initial join load
+		join_load = false
 	var tw := create_tween()
 	tw.tween_property(get_node("Root"), "modulate:a", 0.0, 0.35)
 	tw.tween_callback(queue_free)

@@ -34,7 +34,8 @@ To run only the classic group:
 
 ## QA debug hooks
 
-- `COE_DEBUG_HOST_LOAD_DELAY_S=<seconds>` (0 to 60): the co-op host waits this long after
+- `COE_DEBUG_HOST_LOAD_DELAY_S=<seconds>` (0 to 10; larger values are capped at 10 because
+  the joiner's ENet peer times out at about 20 s and reports "host left"): the co-op host waits this long after
   Start before loading the world, so a joiner's "The host is loading ..." overlay (party
   frames, 0.3.1 L2) can be captured. Set it on the host process only. Debug builds only:
   `Coop.host_load_delay()` returns 0 when `OS.is_debug_build()` is false, so release exports

@@ -129,3 +129,60 @@ func test_main_open_world() -> void:
 	for f in [FILE, STASH]:
 		if FileAccess.file_exists(f):
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(f))
+
+
+## QA r14 bug 5 (fixed 91e5997): a waystone trip out of the starting interior (intro, in the
+## Mage Association) is the first load. Before the fix a queued first_load ran after the trip:
+## a second "town_square" loading screen and the party yanked back to town.
+func test_fast_travel_from_start_interior_is_first_load() -> void:
+	const FILE := "user://test_world_session_ft_save.json"
+	const STASH := "user://test_world_session_ft_stash.json"
+	GameFlow.dry_run = true
+	GameFlow.save_path = FILE
+	Stash.shared_path = STASH
+	GameFlow.load_save = false
+	GameFlow.open_world = true
+	GameFlow.intro_mode = GameFlow.INTRO_PLAY
+	var screens: Array[String] = []
+	var spy := func(c: Node) -> void:
+		if c is LoadingScreen:
+			screens.append((c as LoadingScreen).level_id)
+	runner_tree.root.child_entered_tree.connect(spy)
+	var g: Node = (load(GameFlow.GAME) as PackedScene).instantiate()
+	runner_tree.root.add_child(g)
+	var ow := g.get_node("OpenWorld") as OpenWorld
+	var p := g.get_node("Player") as Player
+	var n := 0
+	while ow.travel.busy and n < 1400:
+		await runner_tree.process_frame
+		n += 1
+	check(ow.interiors.current == "mage_association", "starts in the Association")
+	check(not ow.first_loaded, "no first load yet")
+	screens.clear()
+	var ft := ow.travel.fast_travel
+	ft.flags.set_flag(FastTravel.CRYSTAL)
+	ft.flags.set_flag(FastTravel.TUTORIAL_DONE)
+	ft.attune("breach")
+	check(await ow.travel.travel_to("breach"), "trip to breach (%s)" % ow.travel.last_error)
+	for i in 300:  # a queued first_load would fire in here
+		await runner_tree.process_frame
+	check(screens == ["breach"], "one loading screen, breach (%s)" % [screens])
+	check(ow.first_loaded and ow.interiors.current == "", "the trip was the first load")
+	check(
+		p.global_position.distance_to(ow.travel.point_world("breach")) < 40.0,
+		"landed at breach, not town (%s)" % p.global_position
+	)
+	runner_tree.root.child_entered_tree.disconnect(spy)
+	g.queue_free()
+	for i in 10:
+		await runner_tree.process_frame
+	GameFlow.open_world = false
+	GameFlow.dry_run = false
+	GameFlow.intro_mode = ""
+	GameFlow.level_id = "midden"
+	GameFlow.save_path = SaveGame.PATH
+	GameFlow.select_slot(1)
+	Stash.shared_path = Stash.PATH
+	for f in [FILE, STASH]:
+		if FileAccess.file_exists(f):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(f))

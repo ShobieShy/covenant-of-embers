@@ -1857,6 +1857,11 @@
       "time": "2026-10-28T13:57:27-05:00",
       "step": "0.3.1 QA r14 fixes",
       "summary": "Settings/Credits use UiAnim (ui_open/ui_close cues, test); party frames placed below the HUD stats block; co-op panel centred (grow both) and main menu column hidden behind it; joiner loading screen shows 'Co-op: loading the world'; fixed queued first_load after fast travel out of the starting interior pulling the party back to town (2nd town_square loading screen, real bug not harness); debug-only COE_DEBUG_HOST_LOAD_DELAY_S (docs/TEST_TIERS.md). Fast tier all green. Draft 0.3.1 changelog/release notes (unpublished)."
+    },
+    {
+      "time": "2026-10-28T14:58:03-05:00",
+      "step": "0.3.1 QA r15 follow-ups",
+      "summary": "Applied QA's regression test for the interior fast-travel first_load bug (test_world_session); COE_DEBUG_HOST_LOAD_DELAY_S capped at 10 s (ENet peer timeout ~20 s), docs updated; 'Co-op: loading the world' prefix only on the joiner's initial join load (LoadingScreen.join_load). Fast tier all green; release drafts updated."
     }
   ],
   "completed_steps": [

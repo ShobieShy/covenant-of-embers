@@ -93,6 +93,13 @@ func test_r14_layout_and_hooks() -> void:
 	check(PartyFrames.frames_y(130.0) == 142.0, "frames sit below a taller HUD stats block")
 	check(Coop.host_load_delay("5", true) == 5.0, "debug host delay read")
 	check(Coop.host_load_delay("5", false) == 0.0, "release ignores the host delay")
-	check(Coop.host_load_delay("999", true) == 60.0, "delay capped")
+	check(Coop.host_load_delay("20", true) == 10.0, "delay capped at 10 s")
 	check(Coop.host_load_delay("x", true) == 0.0, "junk ignored")
 	check(Coop.session != null or LoadingScreen.coop_phase() == "", "no co-op note solo")
+	LoadingScreen.join_load = false
+	check(LoadingScreen.coop_phase() == "", "no co-op note outside the initial join load")
+	LoadingScreen.join_load = true
+	var ls := LoadingScreen.overlay(runner_tree, "town_square")
+	ls.done()
+	check(not LoadingScreen.join_load, "the first overlay closing ends the join load")
+	LoadingScreen.join_load = false

@@ -20,7 +20,8 @@ docs/build_state.json. No save-format change; 0.3.0 saves load unchanged.
   smooth their bar, and have new Labyrinth, brand and co-op tips. Fast travel from the world
   map has a confirm card.
 - Co-op lobby (P6): join phases, a "The host is loading" overlay, and a damage chip on party
-  frames. While a joiner loads, its loading screen reads "Co-op: loading the world".
+  frames. While a joiner makes its first load into the world, its loading screen reads
+  "Co-op: loading the world".
 - Sound (P7): new cues for UI hover, open and close, chests, rest shrines and stairs. The
   crystal-set and enemy-death sounds were replaced.
 
@@ -34,7 +35,7 @@ docs/build_state.json. No save-format change; 0.3.0 saves load unchanged.
   vote banner and panels, damage-number age, and the Skills label.
 
 ## For testers
-- `COE_DEBUG_HOST_LOAD_DELAY_S` delays the co-op host's world load in debug builds only
+- `COE_DEBUG_HOST_LOAD_DELAY_S` delays the co-op host's world load (up to 10 s) in debug builds only
   (docs/TEST_TIERS.md). Release exports ignore it.
 
 ## Known issues

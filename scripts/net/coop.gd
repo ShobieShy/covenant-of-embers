@@ -111,13 +111,17 @@ static func host_anchor() -> String:
 
 ## session.started: everyone loads the game scene in the host's level. The host plays
 ## from its own save (world + quests); clients bring their character (step 91).
-## QA hook: COE_DEBUG_HOST_LOAD_DELAY_S=<seconds> (0..60) delays the host's world load.
+## QA r15: capped at 10 s; past ~20 s the joiner's ENet peer times out ("host left").
+const MAX_HOST_DELAY_S := 10.0
+
+
+## QA hook: COE_DEBUG_HOST_LOAD_DELAY_S=<seconds> (0..10) delays the host's world load.
 ## Debug builds only; release exports ignore it (docs/TEST_TIERS.md).
 static func host_load_delay(env := "", debug := OS.is_debug_build()) -> float:
 	var v := env if env != "" else OS.get_environment("COE_DEBUG_HOST_LOAD_DELAY_S")
 	if not debug or not v.is_valid_float():
 		return 0.0
-	return clampf(v.to_float(), 0.0, 60.0)
+	return clampf(v.to_float(), 0.0, MAX_HOST_DELAY_S)
 
 
 static func begin(tree: SceneTree) -> void:
@@ -139,4 +143,5 @@ static func begin(tree: SceneTree) -> void:
 	GameFlow.level_id = lvl if GameFlow.LEVELS.has(lvl) else "midden"
 	GameFlow.spawn_anchor = String(host_info.get("anchor", ""))
 	GameFlow.load_save = false
+	LoadingScreen.join_load = true
 	GameFlow._change(tree, GameFlow.GAME)
