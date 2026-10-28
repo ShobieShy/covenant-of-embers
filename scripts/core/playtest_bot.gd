@@ -83,7 +83,7 @@ func setup(m: Node, p: Player) -> void:
 	GameEvents.bus().enemy_killed.connect(_on_kill)
 	player.progression.leveled_up.connect(func(_l): spend_points())  # step 151
 	player.pickups.collected.connect(func(_pk, _w): stats["pickups"] += 1)
-	player.died.connect(func(_p): stats["deaths"] += 1)
+	player.died.connect(_on_died)
 	if Coop.is_client():  # step 93: the joiner follows the host and fights its enemies
 		stage = "coop_follow"
 		Coop.session.message.connect(_on_coop_bot_message)
@@ -413,6 +413,8 @@ func fight(e: Enemy) -> void:
 	var held := ["action_primary"]
 	if e.global_position.distance_to(player.global_position) > 10.0:
 		held.append("forward")
+	elif e is Heap and (e as Heap).winding_up() and flat_distance(e.global_position) < 5.0:
+		held.append("back")  # L5: back out of a boss's telegraphed slam instead of eating it
 	var m := player.caster.fire_mode() if player.caster != null else null
 	if (
 		player.mana.value < 5.0
@@ -832,6 +834,8 @@ func _lab_tick() -> void:
 		return
 	var e := nearest_enemy(true)
 	var boss_floor := inn.lab_floor.layout.is_empty()
+	if boss_floor and _tick % 600 == 0:
+		_log_king(inn.lab_floor)
 	if e and flat_distance(e.global_position) < (60.0 if boss_floor else LAB_FIGHT_RANGE):
 		_watch_target(e)
 		fight(e)
@@ -874,6 +878,47 @@ func _lab_tick() -> void:
 		_lab_stuck_t = 0.0
 		_lab_stuck_at = player.global_position
 	walk_to(down.global_position)
+
+
+func _on_died(_p) -> void:
+	stats["deaths"] += 1
+	var foe := nearest_enemy(true)
+	note(
+		(
+			"died (%d) at %.0f s, %s, nearest foe %s (%.1f m)"
+			% [
+				stats["deaths"],
+				total_time,
+				stage,
+				foe.name if foe else "-",
+				flat_distance(foe.global_position) if foe else -1.0
+			]
+		)
+	)
+
+
+## L5: the boss fight's progress every 10 s (King health, his hits taken, our casts/health).
+func _log_king(floor_node: Node) -> void:
+	for k in floor_node.get_tree().get_nodes_in_group(Enemy.GROUP):
+		var gk := k as GoblinKing
+		if gk == null:
+			continue
+		note(
+			(
+				"king hp %.0f/%.0f taken %.0f hits %d dist %.1f los %s target %s | me hp %.0f casts %d"
+				% [
+					gk.health,
+					gk.max_health(),
+					gk.damage_taken,
+					gk.hits,
+					flat_distance(gk.global_position),
+					has_line_to(gk.global_position + Vector3.UP),
+					gk.get(&"target").name if gk.get(&"target") else "-",
+					player.health.value,
+					player.loadout.casters[0].casts + player.loadout.casters[1].casts
+				]
+			)
+		)
 
 
 ## Step 47: clear the rooms in order, pull every lever, then on to the arena.

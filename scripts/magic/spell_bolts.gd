@@ -249,7 +249,7 @@ func _cast(space: PhysicsDirectSpaceState3D, s: Spawn, from: Vector3, to: Vector
 	for i in MAX_PASS_THROUGH + 1:
 		var q := PhysicsRayQueryParameters3D.create(from, to, s.collision_mask, exclude)
 		r = space.intersect_ray(q)
-		if r.is_empty() or not _passes(r["collider"]):
+		if r.is_empty() or not (_passes(r["collider"]) or _through_teammate(s, r["collider"])):
 			break
 		exclude.append(r["rid"])
 		r = {}
@@ -264,6 +264,12 @@ func _cast(space: PhysicsDirectSpaceState3D, s: Spawn, from: Vector3, to: Vector
 	return r
 
 
+## L5: only a Light bolt stops on a co-op teammate (MagicEffects.intercept heals them);
+## any other bolt flies on through, so a teammate in melee no longer soaks your shots.
+func _through_teammate(s: Spawn, o: Object) -> bool:
+	return s.element != ElementTable.Element.LIGHT and MagicEffects.remote_of(o) != null
+
+
 func _passes(o: Object) -> bool:
 	return is_instance_valid(o) and o.has_method(&"passes_bolts") and bool(o.call(&"passes_bolts"))
 
@@ -274,7 +280,9 @@ func _is_enemy(o: Object) -> bool:
 
 ## Sweeps a graze sphere from -> to against the enemy layer: {} or a ray-like dict at the
 ## first enemy (not passing bolts) it touches.
-func _graze(space: PhysicsDirectSpaceState3D, s: Spawn, from: Vector3, to: Vector3, exclude: Array[RID]) -> Dictionary:
+func _graze(
+	space: PhysicsDirectSpaceState3D, s: Spawn, from: Vector3, to: Vector3, exclude: Array[RID]
+) -> Dictionary:
 	var sphere := SphereShape3D.new()
 	sphere.radius = s.graze_radius
 	var q := PhysicsShapeQueryParameters3D.new()

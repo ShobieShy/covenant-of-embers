@@ -1690,6 +1690,11 @@
       "time": "2026-10-28 04:14 CDT",
       "step": "L5 bot path order",
       "summary": "Playtest bot: labyrinth room-graph routes are followed in order (no nearest-waypoint skip through walls), which stuck the host at room centres. Solo PASS (122 kills, 0 teleports, King down). Co-op: live stairs vote ran on floors 2 and 3, joiner PASS, host FAIL on floor 5 (King hp 1716 after 600 s), under investigation."
+    },
+    {
+      "time": "2026-10-28 04:41 CDT",
+      "step": "L5 co-op boss fix",
+      "summary": "Co-op: non-Light bolts pass through a teammate's RemotePlayer hitbox (they used to stop on it, so the host barely damaged the Goblin King while the joiner tanked); new test_bolts_teammate.gd. Playtest bot logs King hp/casts every 10 s on floor 5 and each death with its cause, and backs out of a boss's telegraphed slam. Co-op labyrinth PASS for both bots twice (live stairs vote, deaths host 2 / joiner 4, were 9 / 16-53); solo PASS. Draft docs/release/CHANGELOG_0.3.0.md with the 0.2.0 Breach ground-fall known issue."
     }
   ],
   "completed_steps": [
