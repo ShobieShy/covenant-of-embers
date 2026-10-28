@@ -80,7 +80,7 @@ func _ready() -> void:
 	minimap.lock_north = Settings.load_from().minimap_north
 	layer.add_child(minimap)
 	for w in travel.waystones.values():
-		(w as Waystone).opened.connect(func(_p: String) -> void: map_screen.open())
+		(w as Waystone).opened.connect(func(_p: String) -> void: map_screen.open_travel())
 	interiors.left.connect(_on_left_interior)
 	var fader := InteriorFade.new()
 	fader.name = "InteriorFade"

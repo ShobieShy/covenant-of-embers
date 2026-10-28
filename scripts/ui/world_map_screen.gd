@@ -13,6 +13,15 @@ const ZOOM_MIN := 0.5
 const ZOOM_MAX := 6.0
 const HIT := 10.0  ## px: how close a click must be to a marker
 const FOG := Color(0.05, 0.05, 0.07, 0.92)
+## 0.3.1 M7: the enemy levels a destination's zone holds (data/levels + data/labyrinth spawns).
+const LEVEL_BAND := {
+	"town_square": "Safe",
+	"mage_association": "Safe",
+	"old_oak": "Safe",
+	"midden": "Lv 1-4",
+	"breach": "Lv 1-5",
+	"labyrinth": "Lv 5-12",
+}
 
 var tex: Texture2D
 var fog: WorldFog
@@ -25,6 +34,14 @@ var pan := Vector2.ZERO  ## screen offset of the map's top-left corner
 var _fog_tex: ImageTexture
 var _drag := false
 var status := ""
+var travel_mode := false  ## 0.3.1 M7: opened from a waystone; pins pick, a card confirms
+var pending := ""  ## the waystone the confirm card is asking about
+var card := PanelContainer.new()
+var card_title := Label.new()
+var card_info := Label.new()
+var go_button := Button.new()
+var list := VBoxContainer.new()  ## fallback: one button per attuned waystone
+var list_buttons := {}
 
 
 func _init() -> void:
@@ -34,6 +51,114 @@ func _init() -> void:
 	visible = false
 	if ResourceLoader.exists(TEX):
 		tex = load(TEX)
+	card.name = "TravelCard"
+	card.set_anchors_preset(Control.PRESET_CENTER)
+	var v := VBoxContainer.new()
+	card.add_child(v)
+	card_title.add_theme_font_size_override(&"font_size", 20)
+	v.add_child(card_title)
+	v.add_child(card_info)
+	var h := HBoxContainer.new()
+	v.add_child(h)
+	go_button.text = "Travel"
+	go_button.pressed.connect(confirm)
+	h.add_child(go_button)
+	var no := Button.new()
+	no.text = "Cancel"
+	no.pressed.connect(cancel)
+	h.add_child(no)
+	card.visible = false
+	add_child(card)
+	list.name = "TravelList"
+	list.position = Vector2(16, 16)
+	list.visible = false
+	add_child(list)
+
+
+## 0.3.1 M7: "Region" and "level band" lines for a destination's confirm card.
+static func card_lines(point: String) -> PackedStringArray:
+	var info := FastTravel.info(point)
+	var level := String(info.get("level", ""))
+	var reg := String(WorldMap.LEVEL_REGION.get(level, ""))
+	var region := (
+		String(WorldMap.REGIONS[reg]["name"])
+		if WorldMap.REGIONS.has(reg)
+		else ("The Warrens" if level == "labyrinth" else "Unknown")
+	)
+	return PackedStringArray(
+		[
+			String(info.get("name", point)),
+			"Region: " + region,
+			String(LEVEL_BAND.get(level, "Lv ?"))
+		]
+	)
+
+
+## Open from a waystone: travel mode (pins pick a destination; the list is the fallback).
+func open_travel() -> void:
+	travel_mode = true
+	open()
+	_build_list()
+
+
+func _build_list() -> void:
+	for c in list.get_children():
+		c.free()
+	list_buttons.clear()
+	var title := Label.new()
+	title.text = "Travel to:"
+	list.add_child(title)
+	for p in travel.points() if travel else []:
+		if not travel.fast_travel.attuned(p):
+			continue
+		var b := Button.new()
+		b.text = String(FastTravel.info(p).get("name", p))
+		b.pressed.connect(select.bind(p))
+		list.add_child(b)
+		list_buttons[p] = b
+	list.visible = travel_mode and not list_buttons.is_empty()
+	if list.visible:
+		Gamepad.focus_first(list)
+
+
+## Show the confirm card for `point` (from a pin or the list).
+func select(point: String) -> bool:
+	if travel == null or not travel.fast_travel.attuned(point):
+		return false
+	pending = point
+	var l := card_lines(point)
+	card_title.text = l[0]
+	card_info.text = l[1] + "\n" + l[2]
+	var ok := travel.can_travel(point)
+	go_button.disabled = not ok
+	if not ok:
+		card_info.text += "\n" + travel.last_error
+	card.visible = true
+	UiAnim.fade_in(card)
+	if ok and is_inside_tree():
+		go_button.grab_focus.call_deferred()
+	queue_redraw()
+	return true
+
+
+func cancel() -> void:
+	pending = ""
+	card.visible = false
+	queue_redraw()
+
+
+## Travel to the card's destination.
+func confirm() -> bool:
+	var p := pending
+	if p.is_empty() or not travel.can_travel(p):
+		status = travel.last_error if travel else ""
+		queue_redraw()
+		return false
+	cancel()
+	travel_requested.emit(p)
+	close()
+	travel.travel_to(p)
+	return true
 
 
 func open() -> void:
@@ -50,6 +175,9 @@ func open() -> void:
 
 
 func close() -> void:
+	cancel()
+	travel_mode = false
+	list.visible = false
 	UiAnim.close(self)  # 0.3.1 P1
 	closed.emit()
 
@@ -94,14 +222,7 @@ func click(s: Vector2) -> bool:
 	var p := waystone_at(s)
 	if p.is_empty():
 		return false
-	if not travel.can_travel(p):
-		status = travel.last_error
-		queue_redraw()
-		return false
-	travel_requested.emit(p)
-	close()
-	travel.travel_to(p)
-	return true
+	return select(p)  # 0.3.1 M7: a confirm card, not an instant jump
 
 
 func right_click(s: Vector2) -> void:
@@ -145,7 +266,10 @@ func _gui_input(e: InputEvent) -> void:
 
 
 func _unhandled_input(e: InputEvent) -> void:
-	if (
+	if visible and card.visible and e.is_action_pressed(&"ui_cancel"):
+		cancel()
+		get_viewport().set_input_as_handled()
+	elif (
 		visible
 		and (
 			e.is_action_pressed(&"ui_cancel")
@@ -200,6 +324,16 @@ func _draw() -> void:
 			var on := travel.fast_travel.attuned(p)
 			var s := world_to_screen(travel.point_world(p))
 			draw_circle(s, 7.0, Color(1.0, 0.55, 0.15) if on else Color(0.4, 0.4, 0.4))
+			if on and (travel_mode or p == pending):  # M7: clickable pins get a ring
+				draw_arc(
+					s,
+					11.0,
+					0.0,
+					TAU,
+					24,
+					Color(1, 0.9, 0.6) if p == pending else Color(1, 0.7, 0.3, 0.7),
+					2.0
+				)
 			if on:
 				draw_string(
 					font,

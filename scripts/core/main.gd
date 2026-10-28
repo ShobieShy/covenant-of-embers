@@ -662,7 +662,7 @@ func _lab_waystone(fl: LabyrinthFloor, ow: OpenWorld) -> void:
 				w.player = player
 				fl.add_child(w)
 				w.global_position = spot.global_position
-				w.opened.connect(func(_p: String) -> void: ow.map_screen.open())
+				w.opened.connect(func(_p: String) -> void: ow.map_screen.open_travel())
 
 
 ## L3: the floor's goblins (and the King) under their own spawner, freed with the floor. An

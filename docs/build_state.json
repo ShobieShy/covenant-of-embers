@@ -1842,6 +1842,11 @@
       "time": "2026-10-28T12:55:55-05:00",
       "step": "0.3.1 P6 L2",
       "summary": "Lobby/co-op polish: join phase line (connecting / loading the world / in the lobby / in the world), joiner 'The host is loading ...' overlay on the party frames until the host's proxy arrives, party frame damage chip (0.4 s hold, then drains). New tests/unit/test_lobby_polish.gd. No protocol or save change. Fast tier green."
+    },
+    {
+      "time": "2026-10-28T13:06:12-05:00",
+      "step": "0.3.1 P6 M7",
+      "summary": "Fast travel on the world map: waystones open WorldMapScreen in travel mode (attuned pins ringed and clickable, plus a fallback button list); picking one shows a confirm card with name, region and level band (Safe / Lv 1-4 / Lv 1-5 / Lv 5-12 from zone spawns) and Travel / Cancel (Esc closes the card first). The crystal's FastTravelUI list is unchanged. Tests in test_world_map_screen.gd. P6 complete. Fast tier green."
     }
   ],
   "completed_steps": [

@@ -65,7 +65,9 @@ func test_screen() -> void:
 	t.fast_travel.attune("landfill")
 	var asked := []
 	m.travel_requested.connect(func(p: String) -> void: asked.append(p))
-	check(m.click(at) and asked == ["landfill"], "clicking an attuned waystone travels")
+	check(m.click(at) and asked.is_empty(), "clicking an attuned waystone asks first (M7)")
+	check(m.card.visible and m.pending == "landfill", "the confirm card is up")
+	check(m.confirm() and asked == ["landfill"], "confirming travels")
 	check(not m.visible, "and closes the map")
 	m.open()
 	var here := m.world_to_screen(Vector3(300, 0, 0))
@@ -79,5 +81,37 @@ func test_screen() -> void:
 			break
 		await runner_tree.process_frame
 	LoadingScreen.dry_run = false
+	m.free()
+	t.free()
+
+
+func test_travel_card() -> void:  # 0.3.1 M7
+	var l := WorldMapScreen.card_lines("landfill")
+	check(l[0] == "The Landfill" and l[1] == "Region: The Landfill", "name + region (%s)" % [l])
+	check(l[2] == "Lv 1-4", "level band from the zone's spawns")
+	check(WorldMapScreen.card_lines("old_oak")[2] == "Safe", "towns are safe")
+	check(WorldMapScreen.card_lines("warrens_hall")[1] == "Region: The Warrens", "deep points")
+	LoadingScreen.dry_run = true
+	var t := WorldTravel.new()
+	t.fast_travel = FastTravel.new()
+	t.fast_travel.flags.set_flag(FastTravel.CRYSTAL)
+	t.fast_travel.flags.set_flag(FastTravel.TUTORIAL_DONE)
+	runner_tree.root.add_child(t)
+	t.fast_travel.attune("landfill")
+	var m := WorldMapScreen.new()
+	m.travel = t
+	m.size = Vector2(1280, 720)
+	runner_tree.root.add_child(m)
+	m.open_travel()
+	check(m.travel_mode and m.list.visible, "travel mode shows the fallback list")
+	check(m.list_buttons.has("landfill") and m.list_buttons.size() == 1, "attuned points only")
+	(m.list_buttons["landfill"] as Button).pressed.emit()
+	check(m.card.visible and m.pending == "landfill", "a list button opens the same card")
+	m.cancel()
+	check(not m.card.visible and m.pending == "", "cancel drops it")
+	check(not m.confirm(), "nothing to confirm")
+	m.close()
+	check(not m.travel_mode and not m.list.visible, "closing leaves travel mode")
+	await runner_tree.process_frame
 	m.free()
 	t.free()
