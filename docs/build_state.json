@@ -1700,6 +1700,11 @@
       "time": "2026-10-28T04:47",
       "step": "bot wand swap-back",
       "summary": "Playtest bot returns from wand to staff at >=60% mana (solo8 King flake: stuck on wand with no boss-floor kills). Stage limit kept at 600 s. solo10a/b/c + coop10 PASS."
+    },
+    {
+      "time": "2026-10-28T05:03",
+      "step": "rt34 attempt 1",
+      "summary": "rt34 unit suite: 623 passed, 1 failed (test_pools::test_shipped_pools still expected 2 pools; L4b added act1_goblins/act1_goblin_king). Test updated to the 4 shipped pool ids; rerunning as rt34b (build/rt34.log kept)."
     }
   ],
   "completed_steps": [
