@@ -36,6 +36,12 @@ const SLOTS := {
 	"map_shattered_peaks": {"kind": "texture", "level": ""},
 	"map_crimson_sea": {"kind": "texture", "level": ""},
 	"map_warrens": {"kind": "texture", "level": ""},
+	"loading/loading_town_square": {"kind": "texture", "level": ""},  ## 0.3.1 P6 (L3)
+	"loading/loading_old_oak": {"kind": "texture", "level": ""},  ## 0.3.1 P6 (L3)
+	"loading/loading_warrens": {"kind": "texture", "level": ""},  ## 0.3.1 P6 (L3)
+	"loading/loading_midden": {"kind": "texture", "level": ""},  ## 0.3.1 P6 (L3)
+	"loading/loading_breach": {"kind": "texture", "level": ""},  ## 0.3.1 P6 (L3)
+	"loading/loading_mage_association": {"kind": "texture", "level": ""},  ## 0.3.1 P6 (L3)
 }
 ## Batch 06: LOD switch distances (m) per model with <id>_LOD0/1/2 (+ _Impostor) siblings,
 ## and the landmark scale (junk_mountain arrives ~190 m wide x 63 m tall).

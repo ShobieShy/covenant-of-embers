@@ -27,12 +27,23 @@ const TIPS := [
 	"Brands stack with gem slots. Check the compare card before you swap.",
 	"Filth slows you. Burn it away with fire spells.",
 	"Press M for the world map.",
+	# 0.3.1 P6 (L3): Labyrinth, brands and co-op.
+	"Labyrinth stairs need every player on them: hold Interact to vote to go down.",
+	"Each Labyrinth Act ends in a boss; its first kill drops a unique.",
+	"Each save has its own Labyrinth layout; cleared floors can be re-rolled for farming.",
+	"A Moss & Berg brand bursts on impact; Sigil Sauer chains when fully charged.",
+	"Hexler & Koch brands hit weak points harder. Aim for the glow.",
+	"In co-op, Light bolts heal your partner instead of hurting them.",
+	"In co-op, a downed partner bleeds out slowly. Get to them and revive them.",
 ]
+const SMOOTH_RATE := 1.5  ## P6: bar fill per second at most, so a jump eases in
+const SMOOTH_EASE := 8.0  ## and an exponential catch-up on top
 
 var target := ""
 var level_id := ""
 var stage := Stage.SCENE
 var progress := 0.0  ## 0..1, monotonic
+var shown := 0.0  ## P6 (L3): the bar's smoothed value, never ahead of progress
 var tip_index := 0
 var _t_stage := 0.0
 var _t_tip := 0.0
@@ -82,8 +93,16 @@ static func start(tree: SceneTree, path: String, level := "") -> LoadingScreen:
 	return s
 
 
+## P6 (L3): the Act art for the level (loading_<level>, then loading_<region>), else the
+## region's map painting.
 static func painting_for(level: String) -> Texture2D:
 	var region := String(WorldMap.LEVEL_REGION.get(level, "eldoria"))
+	var keys := ["loading/loading_" + level, "loading/loading_" + region]
+	if level.contains("warrens") or level.contains("labyrinth"):
+		keys.push_front("loading/loading_warrens")
+	for k in keys:
+		if EmberArt.has_art(k):
+			return EmberArt.texture(k)
 	return EmberArt.texture("map_" + region)
 
 
@@ -188,8 +207,13 @@ func _refresh() -> void:
 	if stage_label == null:
 		return  # before _ready
 	stage_label.text = "%s... %d%%" % [STAGE_TEXT[stage], int(progress * 100.0)]
-	tip_label.text = "Tip: " + String(TIPS[tip_index])
-	bar.value = progress
+	var tip := "Tip: " + String(TIPS[tip_index])
+	if tip_label.text != tip:
+		tip_label.text = tip
+		UiAnim.fade_in(tip_label, 0.3)
+	if UiAnim.instant() or not is_inside_tree():
+		shown = progress
+	bar.value = shown
 
 
 ## Moves to stage `s` at sub-progress `f` (0..1). Progress never goes back.
@@ -202,7 +226,21 @@ func advance(s: int, f := 0.0) -> void:
 	_refresh()
 
 
+## P6 (L3): eases `shown` toward `progress` (capped rate plus exponential catch-up).
+func smooth(delta: float) -> void:
+	if UiAnim.instant():
+		shown = progress
+	else:
+		var step := maxf(
+			SMOOTH_RATE * delta, (progress - shown) * (1.0 - exp(-SMOOTH_EASE * delta))
+		)
+		shown = minf(progress, shown + minf(step, SMOOTH_RATE * delta * 4.0))
+	if bar:
+		bar.value = shown
+
+
 func _process(delta: float) -> void:
+	smooth(delta)
 	_t_tip += delta
 	if _t_tip >= TIP_SECONDS:
 		_t_tip = 0.0

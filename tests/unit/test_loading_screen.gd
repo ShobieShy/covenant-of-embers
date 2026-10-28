@@ -15,8 +15,8 @@ func test_loading_screen_stages() -> void:
 	)
 	check(s.backdrop.texture == LoadingScreen.painting_for("midden"), "landfill painting backdrop")
 	check(
-		LoadingScreen.painting_for("old_oak") == EmberArt.texture("map_eldoria"),
-		"old oak -> eldoria"
+		LoadingScreen.painting_for("old_oak") == EmberArt.texture("loading/loading_old_oak"),
+		"old oak -> its Act I backdrop"
 	)
 	s.advance(LoadingScreen.Stage.SCENE, 0.5)
 	check(is_equal_approx(s.progress, 0.175), "half the scene stage: %s" % s.progress)
@@ -57,3 +57,29 @@ func test_flow_uses_loading_screen() -> void:
 	)
 	var src := FileAccess.get_file_as_string("res://scripts/ui/loading_screen.gd")
 	check(src.contains("SafeLoad.request") and not src.contains("OS.delay"), "threaded, no stalls")
+
+
+## 0.3.1 P6 (L3): Act art per level, new tips, and the bar easing toward real progress.
+func test_act_art_tips_smoothing() -> void:
+	for lv in ["town_square", "old_oak", "midden", "breach", "mage_association"]:
+		check(EmberArt.has_art("loading/loading_" + lv), "%s has a loading backdrop" % lv)
+	check(
+		LoadingScreen.painting_for("warrens_1") == EmberArt.texture("loading/loading_warrens"),
+		"warrens -> the warrens backdrop"
+	)
+	var joined := " ".join(LoadingScreen.TIPS)
+	check(
+		joined.contains("Labyrinth") and joined.contains("co-op") and joined.contains("brand"),
+		"tips cover the Labyrinth, brands and co-op"
+	)
+	LoadingScreen.dry_run = true
+	var s := LoadingScreen.new()
+	s.level_id = "midden"
+	runner_tree.root.add_child(s)
+	s.advance(LoadingScreen.Stage.NAV, 0.5)
+	check(
+		is_equal_approx(s.shown, s.progress) and is_equal_approx(s.bar.value, s.progress),
+		"instant under headless"
+	)
+	s.free()
+	LoadingScreen.dry_run = false

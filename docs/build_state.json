@@ -1827,6 +1827,11 @@
       "time": "2026-10-28T12:28-05:00",
       "step": "0.3.1 P6 (M6+M8)",
       "summary": "M6: trash confirm focuses Keep, pad Y trashes on a 0.5 s hold, 5 s Undo toast puts the last trash back (potions too), item card fades in (UiAnim.fade_in). M8: skill buttons pop on hover/focus, a purchase pulses the owned path, Respec asks first (refund confirm), points counter counts. QA r13: real-bolt flinch test in test_hit_feel. Fast tier green."
+    },
+    {
+      "time": "2026-10-28T12:40-05:00",
+      "step": "0.3.1 P6 (L3)",
+      "summary": "Loading screen: Act I backdrops (batches 09_polish/09b, 480x270, CC0) via loading_<level> -> loading_<region> -> map_<region>, warrens levels to the warrens art; 7 new tips (Labyrinth, brands, co-op) with a fade; bar eases toward real progress (instant headless). Fast tier green."
     }
   ],
   "completed_steps": [
