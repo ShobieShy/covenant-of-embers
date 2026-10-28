@@ -1625,6 +1625,11 @@
       "time": "2026-10-28T02:04-05:00",
       "step": "L2c",
       "summary": "Labyrinth floor loader (greybox FloorGen rooms/doors as instanced interior behind loading screen), stairs down/up, rest shrines (heal, save, respawn, crafting station), boss-floor waystone (warrens_hall deep point in OW6 travel), Breach crater gate to floor 1, leave resets to floor start; OW FastTravel now uses real story flags."
+    },
+    {
+      "time": "2026-10-28T02:22-05:00",
+      "step": "rt32",
+      "summary": "Milestone full suite at daf477d: 594/595; only test_loadout wheel binding failed (Gamepad.install adds LB/RB to the quickslot actions; also fails at 227db89). Test now checks mouse events only."
     }
   ],
   "completed_steps": [

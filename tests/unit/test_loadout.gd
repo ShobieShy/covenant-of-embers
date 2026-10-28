@@ -42,7 +42,9 @@ func _world(at: Vector3) -> Array:
 	return [w, p, bolts]
 
 
-func _armed(at: Vector3, staff_id := "apprentice_fire_staff", wand_id := "swift_wind_wand") -> Array:
+func _armed(
+	at: Vector3, staff_id := "apprentice_fire_staff", wand_id := "swift_wind_wand"
+) -> Array:
 	var r := _world(at)
 	var p: Player = r[1]
 	p.equip(WieldableInstance.load_base(staff_id))
@@ -66,7 +68,10 @@ func test_slots_by_type_and_selection() -> void:
 	var wand := WieldableInstance.load_base("swift_wind_wand")
 	check(p.caster.wieldable == null and not p.viewmodel.visible, "empty hands, viewmodel hidden")
 	check(p.equip(wand) == Loadout.Slot.WAND, "a wand goes into the wand slot")
-	check(p.loadout.active == Loadout.Slot.WAND and not p.loadout.swapping(), "empty hands: drawn at once")
+	check(
+		p.loadout.active == Loadout.Slot.WAND and not p.loadout.swapping(),
+		"empty hands: drawn at once"
+	)
 	check(
 		p.equip(staff) == Loadout.Slot.STAFF and p.loadout.active == Loadout.Slot.WAND,
 		"staff stored, wand stays in hand"
@@ -96,16 +101,33 @@ func test_slots_by_type_and_selection() -> void:
 		"wheel prev mid-swap -> staff (restarts the draw)"
 	)
 	p.loadout.unequip(Loadout.Slot.WAND)
-	check(not p.loadout.cycle(1) and not p.loadout.select(Loadout.Slot.WAND), "an empty slot can't be drawn")
-	var up := InputMap.action_get_events(&"quickslot_prev_wieldable")
-	var down := InputMap.action_get_events(&"quickslot_next_wieldable")
-	check(up.size() == 1 and (up[0] as InputEventMouseButton).button_index == MOUSE_BUTTON_WHEEL_UP, "prev = wheel up")
 	check(
-		down.size() == 1 and (down[0] as InputEventMouseButton).button_index == MOUSE_BUTTON_WHEEL_DOWN,
+		not p.loadout.cycle(1) and not p.loadout.select(Loadout.Slot.WAND),
+		"an empty slot can't be drawn"
+	)
+	# Mouse events only: Gamepad.install() adds the LB/RB bumpers to the same actions.
+	var up := InputMap.action_get_events(&"quickslot_prev_wieldable").filter(
+		func(e): return e is InputEventMouseButton
+	)
+	var down := InputMap.action_get_events(&"quickslot_next_wieldable").filter(
+		func(e): return e is InputEventMouseButton
+	)
+	check(
+		up.size() == 1 and (up[0] as InputEventMouseButton).button_index == MOUSE_BUTTON_WHEEL_UP,
+		"prev = wheel up"
+	)
+	check(
+		(
+			down.size() == 1
+			and (down[0] as InputEventMouseButton).button_index == MOUSE_BUTTON_WHEEL_DOWN
+		),
 		"next = wheel down"
 	)
 	check(
-		PlayerInput.ACTIONS.has(&"quickslot_next_wieldable") and PlayerInput.ACTIONS.has(&"quickslot_prev_wieldable"),
+		(
+			PlayerInput.ACTIONS.has(&"quickslot_next_wieldable")
+			and PlayerInput.ACTIONS.has(&"quickslot_prev_wieldable")
+		),
 		"wheel actions read"
 	)
 	r[0].free()
@@ -130,7 +152,9 @@ func test_swap_24_ticks_no_cast() -> void:
 		)
 	)
 	check(first == 24, "first cast 24 ticks (0.4 s) after the swap press (got %d)" % first)
-	check(p.loadout.swap_blocked == 24, "24 presses blocked by the draw (%d)" % p.loadout.swap_blocked)
+	check(
+		p.loadout.swap_blocked == 24, "24 presses blocked by the draw (%d)" % p.loadout.swap_blocked
+	)
 	check(p.loadout.casters[0].casts == 0, "the holstered staff never cast")
 	check(
 		p.not_enough_mana_cues == 0 and p.caster.mana_refused == 0 and refused_before == 0,
@@ -159,7 +183,8 @@ func test_earthward_cooldown_survives_swap() -> void:
 	check(staff.casts == 1, "cast at tick 0")
 	p.tick(PlayerInput.hold([], ["slot_2"]), DT)
 	check(
-		staff.cooldown_left > 0.0 and staff.cooldown_left < 0.55, "holstered: still counting (%f)" % staff.cooldown_left
+		staff.cooldown_left > 0.0 and staff.cooldown_left < 0.55,
+		"holstered: still counting (%f)" % staff.cooldown_left
 	)
 	p.tick(PlayerInput.hold([], ["slot_1"]), DT)
 	var second := -1
@@ -226,13 +251,22 @@ func test_staff_and_wand_share_one_mana_pool() -> void:
 	p.tick(PlayerInput.hold([], ["slot_1", "action_primary"]), DT)
 	for t in 23:
 		p.tick(fire, DT)
-	check(p.not_enough_mana_cues == cues and staff.mana_refused == 0, "presses during a swap: no mana cue")
+	check(
+		p.not_enough_mana_cues == cues and staff.mana_refused == 0,
+		"presses during a swap: no mana cue"
+	)
 	p.tick(fire, DT)
-	check(p.not_enough_mana_cues == cues + 1 and staff.mana_refused == 1, "after the draw the staff is refused too")
+	check(
+		p.not_enough_mana_cues == cues + 1 and staff.mana_refused == 1,
+		"after the draw the staff is refused too"
+	)
 	# set_mana rebinds every slot.
 	var m := Mana.new()
 	p.set_mana(m)
-	check(staff.mana_spender.get_object() == m and wand.mana_spender.get_object() == m, "set_mana rebinds both slots")
+	check(
+		staff.mana_spender.get_object() == m and wand.mana_spender.get_object() == m,
+		"set_mana rebinds both slots"
+	)
 	r[0].free()
 
 
@@ -240,7 +274,10 @@ func test_own_accuracy_and_bloom_survives_swap() -> void:
 	var r := _armed(Vector3(3500, 0, -3000))
 	var p: Player = r[1]
 	p.tick(PlayerInput.hold([], ["action_primary"]), DT)
-	check(p.accuracy() == p.loadout.wieldable(Loadout.Slot.STAFF).accuracy(), "staff in hand: staff accuracy")
+	check(
+		p.accuracy() == p.loadout.wieldable(Loadout.Slot.STAFF).accuracy(),
+		"staff in hand: staff accuracy"
+	)
 	var b0 := p.spread.bloom
 	check(b0 > 0.0, "a cast blooms (%f)" % b0)
 	# Control decay without a swap.
@@ -256,7 +293,10 @@ func test_own_accuracy_and_bloom_survives_swap() -> void:
 		p.tick(PlayerInput.hold(["action_primary"], ["action_primary"]), DT)
 		s.tick(DT)
 	check(is_equal_approx(p.spread.bloom, s.bloom), "presses during the draw add no bloom")
-	check(p.accuracy() == p.loadout.wieldable(Loadout.Slot.WAND).accuracy(), "wand in hand: wand accuracy")
+	check(
+		p.accuracy() == p.loadout.wieldable(Loadout.Slot.WAND).accuracy(),
+		"wand in hand: wand accuracy"
+	)
 	r[0].free()
 
 
@@ -269,7 +309,10 @@ func test_viewmodel_poses_focus_slide_and_draw() -> void:
 	var vm := p.viewmodel
 	check(vm.get_parent() == p.head, "the viewmodel follows the Head")
 	check(
-		Viewmodel.STAFF_POSE == Vector3(0.33, -0.26, -0.53) and Viewmodel.WAND_POSE == Vector3(0.3, -0.24, -0.5),
+		(
+			Viewmodel.STAFF_POSE == Vector3(0.33, -0.26, -0.53)
+			and Viewmodel.WAND_POSE == Vector3(0.3, -0.24, -0.5)
+		),
 		"Magewar default_position poses"
 	)
 	p.tick(PlayerInput.hold(), DT)
@@ -281,7 +324,9 @@ func test_viewmodel_poses_focus_slide_and_draw() -> void:
 	var aim := PlayerInput.hold(["action_secondary"])
 	for t in 6:
 		p.tick(aim, DT)
-	check_near(vm.model.position.x, 0.165, 1e-6, "half focused: half slid (%f)" % vm.model.position.x)
+	check_near(
+		vm.model.position.x, 0.165, 1e-6, "half focused: half slid (%f)" % vm.model.position.x
+	)
 	for t in 6:
 		p.tick(aim, DT)
 	check(p.focus.amount() == 1.0 and vm.model.position.x == 0.0, "focus amount 1 -> slide x = 0")
@@ -297,7 +342,8 @@ func test_viewmodel_poses_focus_slide_and_draw() -> void:
 	for t in 24:
 		p.tick(aim, DT)
 	check(
-		vm.model.position.is_equal_approx(Vector3(0.0, -0.24, -0.5)), "drawn: wand focus pose (%s)" % vm.model.position
+		vm.model.position.is_equal_approx(Vector3(0.0, -0.24, -0.5)),
+		"drawn: wand focus pose (%s)" % vm.model.position
 	)
 	check(p.camera.fov == 55.0 and vm.fov == 75.0, "camera zooms, viewmodel stays at 75")
 	for t in 12:
@@ -308,7 +354,9 @@ func test_viewmodel_poses_focus_slide_and_draw() -> void:
 
 func test_gem_colour_render_or_fallback() -> void:
 	var table := ElementTable.load_default()
-	for id in ["apprentice_fire_staff", "earthward_battlestaff", "novice_arcane_wand", "swift_wind_wand"]:
+	for id in [
+		"apprentice_fire_staff", "earthward_battlestaff", "novice_arcane_wand", "swift_wind_wand"
+	]:
 		var vm := Viewmodel.new()
 		var w := WieldableInstance.load_base(id)
 		vm.show_wieldable(w)
@@ -316,7 +364,10 @@ func test_gem_colour_render_or_fallback() -> void:
 		var c := _cos(vm.gem_color(), want)
 		check(c >= 0.97, "%s gem colour cos %.4f" % [id, c])
 		check(
-			(vm.gem.material_override as StandardMaterial3D).shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED,
+			(
+				(vm.gem.material_override as StandardMaterial3D).shading_mode
+				== BaseMaterial3D.SHADING_MODE_UNSHADED
+			),
 			"%s gem unshaded" % id
 		)
 		check(
@@ -335,7 +386,10 @@ func test_gem_colour_render_or_fallback() -> void:
 		"main camera culls only the viewmodel layer"
 	)
 	check(
-		p.viewmodel.render_camera.cull_mask == Viewmodel.LAYER_MASK and p.viewmodel.render_camera.fov == 75.0,
+		(
+			p.viewmodel.render_camera.cull_mask == Viewmodel.LAYER_MASK
+			and p.viewmodel.render_camera.fov == 75.0
+		),
 		"viewmodel camera: its layer, 75 deg"
 	)
 	check(p.viewmodel.render_viewport.transparent_bg, "transparent overlay")
@@ -343,14 +397,22 @@ func test_gem_colour_render_or_fallback() -> void:
 		p.viewmodel.render_camera.global_transform.is_equal_approx(p.camera.global_transform),
 		"viewmodel camera on the eye"
 	)
-	check(p.viewmodel.gem_in_view(), "gem inside the viewmodel image (%s)" % p.viewmodel.gem_screen_position())
+	check(
+		p.viewmodel.gem_in_view(),
+		"gem inside the viewmodel image (%s)" % p.viewmodel.gem_screen_position()
+	)
 	var want_fire := table.color(ElementTable.Element.FIRE)
 	if RenderingServer.get_video_adapter_name() != "":
 		RenderingServer.force_draw(false)
 		var img := p.viewmodel.render_viewport.get_texture().get_image()
 		var px := p.viewmodel.gem_screen_position()
 		var got := img.get_pixelv(Vector2i(px)) if img != null else Color.BLACK
-		print("    viewmodel: rendered gem pixel %s (want %s), cos %.4f" % [got, want_fire, _cos(got, want_fire)])
+		print(
+			(
+				"    viewmodel: rendered gem pixel %s (want %s), cos %.4f"
+				% [got, want_fire, _cos(got, want_fire)]
+			)
+		)
 		check(_cos(got, want_fire) >= 0.97, "rendered gem colour cos >= 0.97")
 	else:
 		print(
@@ -374,7 +436,8 @@ func test_ray_at_eye_tracer_from_cast_point() -> void:
 	check(bolts.live.size() == 1, "one bolt")
 	var s: SpellBolts.Spawn = bolts.live[0].spawn
 	check(
-		s.origin.is_equal_approx(p.eye_position()) and s.origin.is_equal_approx(eye), "the bolt ray starts at the eye"
+		s.origin.is_equal_approx(p.eye_position()) and s.origin.is_equal_approx(eye),
+		"the bolt ray starts at the eye"
 	)
 	check(s.has_visual_origin, "visual origin set")
 	check(
@@ -383,9 +446,15 @@ func test_ray_at_eye_tracer_from_cast_point() -> void:
 	)
 	bolts.tick(DT)
 	var lines := bolts.tracer_lines(1.0)
-	check(lines.size() == 1 and lines[0].a.is_equal_approx(s.visual_origin), "tracer starts at the cast point")
+	check(
+		lines.size() == 1 and lines[0].a.is_equal_approx(s.visual_origin),
+		"tracer starts at the cast point"
+	)
 	var far := SpellBolts.drawn_point(s, SpellBolts.CONVERGE)
-	check(far.is_equal_approx(s.origin + s.direction * SpellBolts.CONVERGE), "tracer merges into the ray by CONVERGE m")
+	check(
+		far.is_equal_approx(s.origin + s.direction * SpellBolts.CONVERGE),
+		"tracer merges into the ray by CONVERGE m"
+	)
 	r[0].free()
 
 
@@ -412,13 +481,19 @@ func test_recoil_shake_and_reduced_motion() -> void:
 	f.add_recoil(1.0)
 	f.add_shake(1.0)
 	f.tick(false, CameraFeel.Gait.WALK, false, 0.0, DT)
-	check(f.recoil == 0.0 and f.shake == 0.0 and f.offset() == Vector2.ZERO, "reduced motion: kicks ignored")
+	check(
+		f.recoil == 0.0 and f.shake == 0.0 and f.offset() == Vector2.ZERO,
+		"reduced motion: kicks ignored"
+	)
 	# Through the player: a staff cast kicks + shakes, none under reduced motion.
 	var r := _armed(Vector3(3900, 0, -3000))
 	var p: Player = r[1]
 	p.tick(PlayerInput.hold(), DT)
 	p.tick(PlayerInput.hold([], ["action_primary"]), DT)
-	check(p.feel.recoil == 1.0 and p.feel.shake > 0.0 and p.feel.recoils == 1, "a staff cast: recoil + shake")
+	check(
+		p.feel.recoil == 1.0 and p.feel.shake > 0.0 and p.feel.recoils == 1,
+		"a staff cast: recoil + shake"
+	)
 	check(
 		p.viewmodel.model.position.z > Viewmodel.STAFF_POSE.z + 0.04,
 		"viewmodel kicked back (%s)" % p.viewmodel.model.position
@@ -433,7 +508,10 @@ func test_recoil_shake_and_reduced_motion() -> void:
 	pq.set_reduced_motion(true)
 	pq.tick(PlayerInput.hold(), DT)
 	pq.tick(PlayerInput.hold([], ["action_primary"]), DT)
-	check(pq.caster.casts == 1 and pq.feel.recoil == 0.0 and pq.feel.shake == 0.0, "reduced motion: no recoil/shake")
+	check(
+		pq.caster.casts == 1 and pq.feel.recoil == 0.0 and pq.feel.shake == 0.0,
+		"reduced motion: no recoil/shake"
+	)
 	check(pq.viewmodel.model.position == Viewmodel.STAFF_POSE, "viewmodel exactly at its pose")
 	pq.tick(PlayerInput.hold(), DT)
 	check(pq.head.position.x == 0.0, "no head shake")
@@ -444,7 +522,11 @@ func test_recoil_shake_and_reduced_motion() -> void:
 		pq.tick(PlayerInput.hold(), DT)
 	pq.tick(PlayerInput.hold([], ["action_primary"]), DT)
 	check(
-		pq.loadout.casters[1].casts == 1 and is_equal_approx(pq.feel.recoil, 0.6) and pq.feel.shake == 0.0,
+		(
+			pq.loadout.casters[1].casts == 1
+			and is_equal_approx(pq.feel.recoil, 0.6)
+			and pq.feel.shake == 0.0
+		),
 		"wand: 0.6 kick, no shake"
 	)
 	q[0].free()
