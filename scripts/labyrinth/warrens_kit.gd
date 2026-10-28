@@ -44,6 +44,28 @@ static func _put(
 	return n
 
 
+## L3: the exit room's stair_down sits in floor tile (1, 0): the second full 4 m tile of
+## the north row (every kit room is >= 10 m, so fill() makes it whole). Yaw PI puts its top
+## step on the tile's south edge, so it descends 4.2 m toward the north wall.
+const STAIR_TILE := Vector2i(1, 0)
+const STAIR_DEPTH := 4.2
+
+
+## Room-local centre of the stair hole (4 x 4 m) for a room of `size`.
+static func stair_hole(size: Vector2) -> Vector3:
+	return Vector3(-size.x / 2 + MODULE * 1.5, 0, -size.y / 2 + MODULE * 0.5)
+
+
+## Places stair_down in its hole with trimesh collision (steps and shaft sides).
+static func stair_down(parent: Node3D, size: Vector2) -> Node3D:
+	var n := _put(parent, "stair_down", stair_hole(size), PI)
+	if n:
+		for mi in [n] + n.find_children("*", "MeshInstance3D", true, false):
+			if mi is MeshInstance3D:
+				(mi as MeshInstance3D).create_trimesh_collision()
+	return n
+
+
 ## [centre, width] runs filling `length` m from one end with 4 m modules then one remainder.
 static func fill(length: float) -> Array:
 	var out := []
@@ -85,10 +107,18 @@ static func wall_line(
 
 
 ## Floor tiles over a size.x x size.y rectangle centred on `centre` (edge tiles scaled).
-static func floor_tiles(parent: Node3D, centre: Vector3, size: Vector2) -> int:
+static func floor_tiles(
+	parent: Node3D, centre: Vector3, size: Vector2, hole := Vector2i(-1, -1)
+) -> int:
 	var n := 0
-	for a: Array in fill(size.x):
-		for b: Array in fill(size.y):
+	var fx := fill(size.x)
+	var fz := fill(size.y)
+	for i in fx.size():
+		for j in fz.size():
+			if Vector2i(i, j) == hole:
+				continue
+			var a: Array = fx[i]
+			var b: Array = fz[j]
 			var at := centre + Vector3(-size.x / 2 + float(a[0]), 0, -size.y / 2 + float(b[0]))
 			_put(parent, "floor_4m", at, 0.0, float(a[1]) / MODULE, float(b[1]) / MODULE)
 			n += 1
@@ -96,11 +126,15 @@ static func floor_tiles(parent: Node3D, centre: Vector3, size: Vector2) -> int:
 
 
 ## Dresses one greybox room built by LabyrinthFloor._room (walls, floor, corridors, props).
-static func dress_room(r: Node3D, size: Vector2, open: Array[int], slot: float) -> void:
+static func dress_room(
+	r: Node3D, size: Vector2, open: Array[int], slot: float, stairs := false
+) -> void:
 	var d := Node3D.new()
 	d.name = "Dress"
 	r.add_child(d)
-	floor_tiles(d, Vector3.ZERO, size)
+	floor_tiles(d, Vector3.ZERO, size, STAIR_TILE if stairs else Vector2i(-1, -1))
+	if stairs:
+		stair_down(d, size)
 	for side in 4:
 		var horiz := side == 0 or side == 2
 		var sgn := -1.0 if side == 0 or side == 3 else 1.0

@@ -218,6 +218,11 @@ func current_wave_id() -> String:
 	return String(waves[wave_index]["id"]) if wave_index >= 0 and wave_index < waves.size() else ""
 
 
+## L3: an enemy another enemy added under this spawner (the Goblin King's grunts).
+func adopt(e: Enemy) -> void:
+	_adopt(e)
+
+
 func _adopt(e: Enemy) -> void:
 	e.died.connect(_on_died)
 	if e is Ooze:  # step 55: its halves join the spawner (and the wave it was in)

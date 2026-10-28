@@ -1635,6 +1635,11 @@
       "time": "2026-10-28T02:28-05:00",
       "step": "L3a",
       "summary": "Ember Art batch 08a/08b: WarrensKit dresses Labyrinth rooms (centred 4 m door + 2 m flanks, greybox collision kept), throne hall is floor-5 arena with LOD ranges, rest-room set + craft bench, labyrinth gate slot with walk-through posts; goblin grunt/archer/shaman/king defs + models, King crown hidden on death, Throw release at 40%; credits."
+    },
+    {
+      "time": "2026-10-28T02:37-05:00",
+      "step": "L3b",
+      "summary": "Goblin King brain (rock throw, slam, roar summoning 2 grunts, crown drop prop); seeded goblin packs + King spawn on labyrinth floors with elite/boss persistence via LabyrinthState; warrens exit-room stair_down hole with landing and repositioned StairsDown trigger; tools/l3_shots.gd review shots; test_goblin_king (8)."
     }
   ],
   "completed_steps": [

@@ -8,6 +8,8 @@ extends Node3D
 ## room), RestShrine (rest room; WaveSpawns/station is its craft station spot) and, on the
 ## handmade boss floor, WaystoneSpot. L3: WarrensKit dresses the greybox with Ember Art's
 ## Act I tile kit (batch 08a) when it is present; the throne hall is the floor 5 arena.
+## L3: EnemySpawns holds the goblins (normal and elite rooms, seeded by the floor seed) and,
+## on floor 5 until he is in the save, the Goblin King at BossSpawn (EnemySpawner reads it).
 
 const H := 4.0
 const WALL := 0.5
@@ -30,6 +32,11 @@ var layout := {}  ## FloorGen.generate output (normal floors), {} on the boss fl
 var rooms: Array[Node3D] = []
 var dressed := false  ## L3: Ember Art kit pieces placed (greybox meshes hidden)
 var _mats := {}
+var _spawns: Node3D
+var _state: LabyrinthState
+## L3: the Act I goblin pool and how many a room kind gets (min, max).
+const GOBLINS := ["goblin_grunt", "goblin_grunt", "goblin_archer", "goblin_shaman"]
+const PACK := {"normal": [2, 3], "elite": [4, 5]}
 
 
 ## Builds floor `n` for `state` from `kit` (FloorGen.load_kit()).
@@ -40,6 +47,10 @@ static func build(kit: Dictionary, n: int, state: LabyrinthState) -> LabyrinthFl
 	f.kit_id = String(kit["kit"]["id"])
 	f.set_meta(&"level_id", "labyrinth")
 	f.dressed = WarrensKit.available()
+	f._state = state
+	f._spawns = Node3D.new()
+	f._spawns.name = "EnemySpawns"
+	f.add_child(f._spawns)
 	if n == int(kit["kit"]["boss_floor"]):
 		f._build_boss(state)
 	else:
@@ -102,7 +113,10 @@ func _room(
 	r.name = nm
 	r.position = centre
 	add_child(r)
-	_box(r, Vector3(0, -0.25, 0), Vector3(size.x, 0.5, size.y), kind, "Floor")
+	if kind == "exit" and dressed:
+		_holed_slab(r, size, kind)
+	else:
+		_box(r, Vector3(0, -0.25, 0), Vector3(size.x, 0.5, size.y), kind, "Floor")
 	for side in 4:
 		var horiz := side == 0 or side == 2  # north/south walls run along x
 		var length := size.x if horiz else size.y
@@ -142,10 +156,26 @@ func _room(
 	r.set_meta(&"kind", kind)
 	r.set_meta(&"doors", open)
 	if dressed:
-		WarrensKit.dress_room(r, size, open, slot)
+		WarrensKit.dress_room(r, size, open, slot, kind == "exit")
 		WarrensKit.props(r, kind, size)
 	rooms.append(r)
 	return r
+
+
+## L3: the exit room's slab with the 4 x 4 m stair hole cut out (Floor = everything south of
+## the hole's row; FloorW / FloorE flank the hole) and a landing at the stair foot.
+func _holed_slab(r: Node3D, size: Vector2, kind: String) -> void:
+	var m := WarrensKit.MODULE
+	var h := WarrensKit.stair_hole(size)
+	var z0 := -size.y / 2
+	var rest := size.y - m
+	_box(r, Vector3(0, -0.25, z0 + m + rest / 2), Vector3(size.x, 0.5, rest), kind, "Floor")
+	var w := h.x - m / 2 + size.x / 2
+	_box(r, Vector3(-size.x / 2 + w / 2, -0.25, h.z), Vector3(w, 0.5, m), kind, "FloorW")
+	var e := size.x / 2 - (h.x + m / 2)
+	_box(r, Vector3(size.x / 2 - e / 2, -0.25, h.z), Vector3(e, 0.5, m), kind, "FloorE")
+	var d := WarrensKit.STAIR_DEPTH
+	_box(r, h + Vector3(0, -d - 0.25, 0), Vector3(m, 0.5, m), kind, "StairLanding")
 
 
 func _build_rooms(kit: Dictionary) -> void:
@@ -170,6 +200,7 @@ func _build_rooms(kit: Dictionary) -> void:
 		r.set_meta(&"room", String(rd["room"]))
 		r.set_meta(&"cell", cell)
 		var c := r.position
+		_goblins(r, kind, sz, i)
 		match kind:
 			"start":
 				_marker(self, "PlayerStart", c + Vector3(0, 0, 0))
@@ -177,7 +208,12 @@ func _build_rooms(kit: Dictionary) -> void:
 					"StairsUp", LabyrinthStairs.UP, c + Vector3(-sz.x / 2 + 2.0, 0, -sz.y / 2 + 2.0)
 				)
 			"exit":
-				_stairs("StairsDown", LabyrinthStairs.DOWN, c)
+				# L3: dressed, the trigger sits on the last steps of stair_down (north end of the hole)
+				var h := WarrensKit.stair_hole(sz)
+				var foot := (
+					c + h + Vector3(0, 0.4 - WarrensKit.STAIR_DEPTH, -WarrensKit.MODULE / 2 + 0.6)
+				)
+				_stairs("StairsDown", LabyrinthStairs.DOWN, foot if dressed else c)
 			"rest":
 				_shrine(c)
 
@@ -206,11 +242,40 @@ func _build_boss(state: LabyrinthState) -> void:
 		arena = _room(
 			"Room1_boss_arena", "boss", Vector3(0, 0, -30), BOSS_ARENA, [2] as Array[int], 24.0
 		)
-	_marker(self, "BossSpawn", arena.position + Vector3(0, 0, -8))
+	var bs := _marker(self, "BossSpawn", arena.position + Vector3(0, 0, -8))
+	if not (state and state.bosses.has(boss_id())):
+		var k := _marker(_spawns, "GoblinKing", bs.position)
+		k.set_meta(&"enemy", boss_id())
+		k.set_meta(&"lab_boss", boss_id())
+		k.rotation.y = PI  # faces the south door (+z): yaw 0 faces -z
 	var w := _marker(self, "WaystoneSpot", arena.position + Vector3(6, 0, 10))
 	w.set_meta(&"boss", boss_id())
 	if state and state.bosses.has(boss_id()):
 		w.set_meta(&"active", true)
+
+
+## L3: a room's goblin pack at seeded spots inside it (one metre clear of the walls); an
+## elite room's pack stays dead once its elites are in the save (marker meta lab_elite).
+func _goblins(r: Node3D, kind: String, sz: Vector2, i: int) -> void:
+	if not PACK.has(kind):
+		return
+	var id := String(r.name)
+	if kind == "elite" and _state and _state.elite_dead(floor_no, id):
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([_state.floor_seed(floor_no) if _state else floor_no, i, "goblins"])
+	var n := rng.randi_range(int(PACK[kind][0]), int(PACK[kind][1]))
+	for k in n:
+		var at := Vector3(
+			rng.randf_range(-sz.x / 2 + 2.0, sz.x / 2 - 2.0),
+			0,
+			rng.randf_range(-sz.y / 2 + 2.0, sz.y / 2 - 2.0)
+		)
+		var m := _marker(_spawns, "%s_g%d" % [id, k], r.position + at)
+		m.set_meta(&"enemy", GOBLINS[rng.randi() % GOBLINS.size()])
+		m.rotation.y = rng.randf() * TAU
+		if kind == "elite":
+			m.set_meta(&"lab_elite", id)
 
 
 func boss_id() -> String:

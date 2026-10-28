@@ -612,16 +612,58 @@ func _on_floor_entered(_n: int, ow: OpenWorld) -> void:
 	var at := fl.get_node_or_null(AssemblyStation.MARKER) as Node3D
 	if st and at:
 		st.global_transform = at.global_transform
+	_lab_waystone(fl, ow)
+	_lab_enemies(fl, player)
+
+
+## L2: a boss floor whose boss is down gets its waystone (FastTravel.DEEP_POINTS).
+func _lab_waystone(fl: LabyrinthFloor, ow: OpenWorld) -> void:
+	var player := get_node_or_null("Player") as Player
 	var spot := fl.get_node_or_null("WaystoneSpot") as Node3D
 	if spot and labyrinth.bosses.has(String(spot.get_meta(&"boss", ""))):
 		for p in FastTravel.DEEP_POINTS:
-			if int(FastTravel.DEEP_POINTS[p]["floor"]) == fl.floor_no:
+			if int(FastTravel.DEEP_POINTS[p]["floor"]) == fl.floor_no and not fl.has_node("Waystone_" + p):
 				var w := Waystone.new(p, ow.travel.fast_travel)
 				w.name = "Waystone_" + p
 				w.player = player
 				fl.add_child(w)
 				w.global_position = spot.global_position
 				w.opened.connect(func(_p: String) -> void: ow.map_screen.open())
+
+
+## L3: the floor's goblins (and the King) under their own spawner, freed with the floor. An
+## elite room is saved dead once its whole pack is down; the King's kill opens the waystone.
+func _lab_enemies(fl: LabyrinthFloor, player: Player) -> void:
+	var old := get_node_or_null("LabyrinthEnemies")
+	if old:
+		old.name = "LabyrinthEnemies_old"
+		old.queue_free()
+	var sp := EnemySpawner.new()
+	sp.name = "LabyrinthEnemies"
+	add_child(sp)
+	var marks := fl.get_node_or_null("EnemySpawns")
+	var packs := {}
+	for e in sp.setup(fl, player):
+		var m := marks.get_node_or_null(NodePath(String(e.name))) if marks else null
+		var elite := String(m.get_meta(&"lab_elite", "")) if m else ""
+		var boss := String(m.get_meta(&"lab_boss", "")) if m else ""
+		if elite != "":
+			packs[elite] = int(packs.get(elite, 0)) + 1
+		e.died.connect(_on_lab_kill.bind(fl, elite, boss, packs))
+	fl.tree_exiting.connect(sp.queue_free, CONNECT_ONE_SHOT)
+
+
+func _on_lab_kill(_e: Enemy, _el: ElementTable.Element, fl: LabyrinthFloor, elite: String, boss: String, packs: Dictionary) -> void:
+	if elite != "":
+		packs[elite] = int(packs[elite]) - 1
+		if int(packs[elite]) <= 0:
+			labyrinth.kill_elite(fl.floor_no, elite)
+	if boss != "":
+		labyrinth.defeat_boss(boss)
+		var ow := get_node_or_null("OpenWorld") as OpenWorld
+		if ow and is_instance_valid(fl):
+			_lab_waystone(fl, ow)
+		print("[labyrinth] %s defeated" % boss)
 
 
 ## OW11b: where the party is: the zone nearest the player in the open world ("breach" in

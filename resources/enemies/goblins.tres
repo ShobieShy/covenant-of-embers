@@ -108,7 +108,7 @@ ai = {
 "attack_range": 2.6,
 "attack_windup": 0.8,
 "detect_range": 26.0,
-"kind": "tank",
+"kind": "king",
 "knockback_strength": 16.0,
 "knockback_threshold": 80.0,
 "knockback_time": 0.25,

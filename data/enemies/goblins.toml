@@ -1,7 +1,7 @@
 # Goblins (Labyrinth L3, LABYRINTH_PLAN section 4: Act I Goblin Warrens). Bodies are Ember
 # Art batch 08b (Quaternius "Goblin" / "Orc", CC0, recoloured). Act I band is level 5-12;
 # numbers are plan design tuned against the Act I Brands (to be balanced in L5 playtests).
-# The Goblin King's brain (Slam, Throw, Roar; crown drop) lands with the boss floor.
+# The Goblin King: ai kind "king" (scripts/enemies/goblin_king.gd: Slam, Throw, Roar, crown drop).
 
 [[enemy]]
 id = "goblin_grunt"
@@ -53,4 +53,4 @@ gold_drop = 300
 size = [1.6, 2.4, 1.6]
 color = [0.32, 0.45, 0.2]
 weak_point = { offset = [0.0, 2.15, -0.3], size = [0.6, 0.5, 0.5] }
-ai = { kind = "tank", detect_range = 26.0, aggro_range = 20.0, walk_speed = 1.6, sprint_speed = 3.0, attack_range = 2.6, attack_damage = 18.0, attack_cooldown = 2.2, attack_windup = 0.8, knockback_strength = 16.0, knockback_time = 0.25, knockback_threshold = 80.0, turn_rate_deg = 100.0 }
+ai = { kind = "king", detect_range = 26.0, aggro_range = 20.0, walk_speed = 1.6, sprint_speed = 3.0, attack_range = 2.6, attack_damage = 18.0, attack_cooldown = 2.2, attack_windup = 0.8, knockback_strength = 16.0, knockback_time = 0.25, knockback_threshold = 80.0, turn_rate_deg = 100.0 }

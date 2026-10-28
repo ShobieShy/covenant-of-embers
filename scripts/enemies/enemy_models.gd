@@ -101,3 +101,19 @@ static func throw_release(m: Node) -> float:
 	if ap == null or not ap.has_animation(&"Throw"):
 		return 0.0
 	return ap.get_animation(&"Throw").length * THROW_RELEASE
+
+
+## L3: a loose copy of the King's Crown mesh (a static prop, ground at y = 0), or null.
+static func crown_drop(m: Node) -> Node3D:
+	var c := m.find_child("Crown", true, false) as MeshInstance3D if m else null
+	if c == null or c.mesh == null:
+		return null
+	var root := Node3D.new()
+	var mi := MeshInstance3D.new()
+	mi.mesh = c.mesh
+	var ab := c.mesh.get_aabb()
+	var s := c.global_transform.basis.get_scale() if c.is_inside_tree() else Vector3.ONE
+	mi.scale = s
+	mi.position = -Vector3(ab.get_center().x, ab.position.y, ab.get_center().z) * s
+	root.add_child(mi)
+	return root
