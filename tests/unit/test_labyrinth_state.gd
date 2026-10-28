@@ -64,3 +64,57 @@ func test_progress_rules() -> void:
 	s.defeat_boss("goblin_king")
 	s.open_shortcut("willowbrook")
 	check(s.bosses == ["goblin_king"] and s.shortcuts.size() == 1, "boss and gate")
+
+
+const GAME_FILE := "user://test_labyrinth_save.json"
+const GAME_STASH := "user://test_labyrinth_stash.json"
+
+
+func _game(load_save: bool) -> Node:
+	GameFlow.dry_run = true
+	GameFlow.save_path = GAME_FILE
+	Stash.shared_path = GAME_STASH
+	GameFlow.level_id = "old_oak"
+	GameFlow.load_save = load_save
+	var g: Node = (load(GameFlow.GAME) as PackedScene).instantiate()
+	g.position = Vector3(0, 0, -9000)
+	runner_tree.root.add_child(g)
+	return g
+
+
+func test_running_game_saves_and_loads_the_block() -> void:
+	var g := _game(false)
+	var lab: LabyrinthState = g.labyrinth
+	check(lab != null and lab.save_seed > 0, "a fresh run has a labyrinth block")
+	lab.clear_floor(2)
+	lab.open_chest(2, "hoard_nook")
+	lab.defeat_boss("goblin_king")
+	var seed_value := lab.save_seed
+	check(g.save_game() == OK, "saved")
+	g.free()
+	var r := SaveGame.read(GAME_FILE)
+	var blk: Dictionary = r["data"]["progress"].get("labyrinth", {})
+	check(
+		int(blk.get("v", 0)) == LabyrinthState.V and int(blk.get("save_seed", 0)) == seed_value,
+		"block in the file"
+	)
+	check(
+		int(blk.get("deepest", 0)) == 2 and blk.get("bosses", []) == ["goblin_king"],
+		"progress in the file"
+	)
+	var g2 := _game(true)
+	var lab2: LabyrinthState = g2.labyrinth
+	check(
+		lab2.save_seed == seed_value and lab2.cleared == [2] and lab2.chest_open(2, "hoard_nook"),
+		"loaded back"
+	)
+	g2.free()
+	GameFlow.dry_run = false
+	GameFlow.level_id = "midden"
+	GameFlow.load_save = false
+	GameFlow.save_path = SaveGame.PATH
+	GameFlow.select_slot(1)
+	Stash.shared_path = Stash.PATH
+	for f in [GAME_FILE, GAME_STASH]:
+		if FileAccess.file_exists(f):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(f))
