@@ -35,7 +35,7 @@ func bind(r: DialogueRunner) -> void:
 
 
 func _on_line(sp: String, t: String) -> void:
-	if not visible:
+	if not UiAnim.is_shown(self):
 		UiAnim.open(self)  # 0.3.1 P1
 	speaker_label.text = sp
 	text_label.text = t

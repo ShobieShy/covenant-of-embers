@@ -199,7 +199,7 @@ static func color_of(item: Variant) -> Color:
 
 
 func is_open() -> bool:
-	return visible
+	return UiAnim.is_shown(self)
 
 
 func open() -> void:
@@ -221,7 +221,7 @@ func close() -> void:
 
 
 func toggle() -> void:
-	if visible:
+	if UiAnim.is_shown(self):
 		close()
 	elif not IntroDirector.refuse(self, "inventory"):  # step 112: locked early in the intro
 		open()
@@ -231,13 +231,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(ACTION):
 		toggle()
 		get_viewport().set_input_as_handled()
-	elif visible and event.is_action_pressed(&"ui_cancel"):
+	elif UiAnim.is_shown(self) and event.is_action_pressed(&"ui_cancel"):
 		if pending_trash != null:
 			cancel_trash()
 		else:
 			close()
 		get_viewport().set_input_as_handled()
-	elif visible and InputMap.has_action(TRASH_ACTION) and event.is_action_pressed(TRASH_ACTION):
+	elif UiAnim.is_shown(self) and InputMap.has_action(TRASH_ACTION) and event.is_action_pressed(TRASH_ACTION):
 		if code_field.has_focus():
 			return  # typing an X into the Ember Mark field
 		var target: Variant = hovered if hovered != null else selected

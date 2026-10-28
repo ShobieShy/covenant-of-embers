@@ -404,7 +404,7 @@ func _refresh_elements(lv: int) -> void:
 
 
 func is_open() -> bool:
-	return visible
+	return UiAnim.is_shown(self)
 
 
 func open() -> void:
@@ -426,14 +426,14 @@ func close() -> void:
 
 
 func toggle() -> void:
-	if visible:
+	if UiAnim.is_shown(self):
 		close()
 	elif not IntroDirector.refuse(self, "skills"):  # step 112: locked early in the intro
 		open()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if visible and confirm.visible:
+	if UiAnim.is_shown(self) and confirm.visible:
 		if (
 			event.is_action_pressed(&"ui_cancel")
 			or (
@@ -445,7 +445,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			confirm_pending(false)
 			get_viewport().set_input_as_handled()
 		return
-	if visible and event is InputEventJoypadButton and event.pressed:
+	if UiAnim.is_shown(self) and event is InputEventJoypadButton and event.pressed:
 		if event.button_index in [JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER]:
 			cycle_tab(-1 if event.button_index == JOY_BUTTON_LEFT_SHOULDER else 1)
 			get_viewport().set_input_as_handled()
@@ -453,6 +453,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(ACTION):
 		toggle()
 		get_viewport().set_input_as_handled()
-	elif visible and event.is_action_pressed(&"ui_cancel"):
+	elif UiAnim.is_shown(self) and event.is_action_pressed(&"ui_cancel"):
 		close()
 		get_viewport().set_input_as_handled()

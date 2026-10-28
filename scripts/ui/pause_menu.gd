@@ -49,10 +49,11 @@ func bind(p: Player, s: SettingsUi) -> void:
 func open() -> void:
 	if Cinematic.playing:  # step 110: Esc held during a cinematic skips it instead
 		return
-	UiAnim.open(self)  # 0.3.1 P1
 	# Anchors set in _init (before entering the tree) resolve against a zero rect; re-apply
 	# now so the panel sits in the middle of the real window (found in the step-41 playtest).
+	# Before UiAnim.open, which reads the resting position (QA round 9).
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	UiAnim.open(self)  # 0.3.1 P1
 	status.text = ""
 	if player:
 		player.ui_open = true
@@ -100,7 +101,7 @@ func press(id: String) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed(&"menu"):
 		return
-	if visible:
+	if UiAnim.is_shown(self):
 		if settings_ui and settings_ui.visible:
 			settings_ui.close()
 		else:
