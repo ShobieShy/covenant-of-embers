@@ -1705,6 +1705,11 @@
       "time": "2026-10-28T05:03",
       "step": "rt34 attempt 1",
       "summary": "rt34 unit suite: 623 passed, 1 failed (test_pools::test_shipped_pools still expected 2 pools; L4b added act1_goblins/act1_goblin_king). Test updated to the 4 shipped pool ids; rerunning as rt34b (build/rt34.log kept)."
+    },
+    {
+      "time": "2026-10-28T05:15",
+      "step": "rt34b",
+      "summary": "rt34b unit suite 624 passed, 0 failed, but run_tests stopped on exit-leak ERRORs (315 resources in use, RendererDummy RID leaks, 489 ObjectDB leaked; rt33 had 1). test_breach_ground alone leaks 16 objects/2 resources; other sources not yet bisected. Smoke/playtest/coop legs not reached (build/rt34b.log)."
     }
   ],
   "completed_steps": [
