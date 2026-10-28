@@ -6,12 +6,14 @@ extends Node3D
 ## corridor to the slot edge on each side FloorGen.doors opens. Marker nodes for the
 ## runtime (Interiors): PlayerStart, StairsUp (back to the Breach crater), StairsDown (exit
 ## room), RestShrine (rest room; WaveSpawns/station is its craft station spot) and, on the
-## handmade boss floor, WaystoneSpot. Ember Art's Act I kit replaces the greybox in L3.
+## handmade boss floor, WaystoneSpot. L3: WarrensKit dresses the greybox with Ember Art's
+## Act I tile kit (batch 08a) when it is present; the throne hall is the floor 5 arena.
 
 const H := 4.0
 const WALL := 0.5
 const DOOR := 4.0
 const BOSS_ARENA := Vector2(36, 36)
+const HALL := 32.0  ## L3: throne_hall.glb is 32 x 32 m
 const COLORS := {
 	"start": Color(0.45, 0.42, 0.36),
 	"normal": Color(0.38, 0.33, 0.27),
@@ -26,6 +28,7 @@ var floor_no := 1
 var kit_id := ""
 var layout := {}  ## FloorGen.generate output (normal floors), {} on the boss floor
 var rooms: Array[Node3D] = []
+var dressed := false  ## L3: Ember Art kit pieces placed (greybox meshes hidden)
 var _mats := {}
 
 
@@ -36,6 +39,7 @@ static func build(kit: Dictionary, n: int, state: LabyrinthState) -> LabyrinthFl
 	f.floor_no = n
 	f.kit_id = String(kit["kit"]["id"])
 	f.set_meta(&"level_id", "labyrinth")
+	f.dressed = WarrensKit.available()
 	if n == int(kit["kit"]["boss_floor"]):
 		f._build_boss(state)
 	else:
@@ -137,6 +141,9 @@ func _room(
 			_box(c, at, sz, kind, "Wall%d" % k)
 	r.set_meta(&"kind", kind)
 	r.set_meta(&"doors", open)
+	if dressed:
+		WarrensKit.dress_room(r, size, open, slot)
+		WarrensKit.props(r, kind, size)
 	rooms.append(r)
 	return r
 
@@ -183,9 +190,22 @@ func _build_boss(state: LabyrinthState) -> void:
 	)
 	_marker(self, "PlayerStart", entry.position)
 	_stairs("StairsUp", LabyrinthStairs.UP, Vector3(-5, 0, 5))
-	var arena := _room(
-		"Room1_boss_arena", "boss", Vector3(0, 0, -30), BOSS_ARENA, [2] as Array[int], 24.0
-	)
+	var hall := WarrensKit.throne_hall() if dressed else null
+	var arena: Node3D
+	if hall:
+		# The 32 m throne hall (its own walls, dais and collision); its south door meets the
+		# entry corridor at z = -12.
+		arena = Node3D.new()
+		arena.name = "Room1_boss_arena"
+		arena.position = Vector3(0, 0, -12 - HALL / 2)
+		add_child(arena)
+		arena.add_child(hall)
+		arena.set_meta(&"kind", "boss")
+		rooms.append(arena)
+	else:
+		arena = _room(
+			"Room1_boss_arena", "boss", Vector3(0, 0, -30), BOSS_ARENA, [2] as Array[int], 24.0
+		)
 	_marker(self, "BossSpawn", arena.position + Vector3(0, 0, -8))
 	var w := _marker(self, "WaystoneSpot", arena.position + Vector3(6, 0, 10))
 	w.set_meta(&"boss", boss_id())
@@ -213,7 +233,9 @@ func _shrine(at: Vector3) -> void:
 	var ws := Node3D.new()
 	ws.name = "WaveSpawns"
 	add_child(ws)
-	_marker(ws, "station", at + Vector3(3, 0, 0))
+	var st := _marker(ws, "station", at + Vector3(3, 0, 0))
+	if dressed:
+		WarrensKit.bench(st, Vector3(0, 0, 1.2))
 
 
 func start_pos() -> Vector3:

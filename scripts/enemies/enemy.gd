@@ -328,6 +328,8 @@ func _die(element: ElementTable.Element) -> void:
 	health = 0.0
 	last_killing_element = element
 	remove_from_group(GROUP)
+	if model:
+		EnemyModels.on_death(def.id if def else "", model)  # L3: the King's Crown drops
 	# Deferred: this runs inside SpellBolts' physics tick; bolts already pass through via
 	# passes_bolts(), the player stops colliding after the next physics step.
 	set_deferred(&"collision_layer", 0)

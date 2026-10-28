@@ -12,7 +12,16 @@ const MODELS := {
 	"heap": "garbage_golems/GarbageGolem_Bags.glb",
 	"breach_warden": "garbage_golems/GarbageGolem_Bin.glb",
 	"the_filth": "filth/Filth_Brute.glb",
+	# L3 (Ember Art batch 08b, Quaternius Goblin / Orc CC0, recoloured): Act I goblins.
+	"goblin_grunt": "res://assets/original/ember_art/goblin_grunt.glb",
+	"goblin_archer": "res://assets/original/ember_art/goblin_archer.glb",
+	"goblin_shaman": "res://assets/original/ember_art/goblin_shaman.glb",
+	"goblin_king": "res://assets/original/ember_art/goblin_king.glb",
 }
+## Batch 08b: nodes freed when the body dies (the King's Crown becomes his drop).
+const DEATH_HIDE := {"goblin_king": ["Crown"]}
+## Batch 08b: Throw reuses Punch and has no release marker; the rock leaves at 40%.
+const THROW_RELEASE := 0.4
 ## Step 125 (Art A7): extra bodies picked at random per spawn (visual only).
 const VARIANTS := {"gnawer": ["rats/Rat_Mutated_Sickly.glb", "rats/Rat_Mutated_Plague.glb"]}
 ## Step 125: procedural bodies for types with no CC0 model.
@@ -21,7 +30,10 @@ const WARDEN_EYES := Color(0.75, 0.3, 1.0)
 
 
 static func path_for(id: String) -> String:
-	return DIR + String(MODELS[id]) if MODELS.has(id) else ""
+	if not MODELS.has(id):
+		return ""
+	var p := String(MODELS[id])
+	return p if p.begins_with("res://") else DIR + p
 
 
 ## Fit the model to the enemy's box height; null when there is none (caller keeps the box).
@@ -68,3 +80,24 @@ static func _warden_eyes(m: CharacterModel, height: float) -> void:
 	l.omni_range = height * 1.6
 	l.position = Vector3(0, height * 0.8, -height * 0.3)
 	m.add_child(l)
+
+
+## Batch 08b: hides the model parts that drop on death (the Goblin King's Crown); returns
+## how many were hidden.
+static func on_death(id: String, m: Node3D) -> int:
+	var n := 0
+	if m == null:
+		return 0
+	for part: String in DEATH_HIDE.get(id, []):
+		for c in m.find_children(part, "Node3D", true, false):
+			(c as Node3D).visible = false
+			n += 1
+	return n
+
+
+## Seconds into the model's Throw clip at which the King's rock spawns (0 with no clip).
+static func throw_release(m: Node) -> float:
+	var ap := m.find_child("AnimationPlayer", true, false) as AnimationPlayer if m else null
+	if ap == null or not ap.has_animation(&"Throw"):
+		return 0.0
+	return ap.get_animation(&"Throw").length * THROW_RELEASE

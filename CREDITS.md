@@ -31,6 +31,7 @@
 | ambientCG Grass 004 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Grass004 | 2026-10-26 |
 | ambientCG Gravel 022 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Gravel022 | 2026-10-26 |
 | ambientCG Ground 054 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground054 | 2026-10-26 |
+| Quaternius "Goblin" and "Orc" (recoloured; Ember Art batch 08b goblin grunt/archer/shaman, Goblin King) | Quaternius | CC0 1.0 | https://poly.pizza/m/OdCOFSmEhl, https://poly.pizza/m/5vO2YJsPEf | 2026-10-28 |
 
 3D models: Kenney (www.kenney.nl) — Fantasy Town Kit, Nature Kit (CC0). Delivered by Ember Art as batch 01; the full per-file list is in docs/credits/kenney_batch_01.md.
 
@@ -57,3 +58,7 @@ Development uses Steam's public test app id 480 (steam_appid.txt); Steam is opti
 
 ## Engine
 Built with Godot Engine 4.7.2 (MIT, https://godotengine.org/license), Jolt Physics module (MIT).
+
+Ember Art Labyrinth Act I (0.3.0 work, batch 08a): the Goblin Warrens tile kit (floor, ceiling, 4 m / 2 m / door walls, pillar, stairs), props (torch sconce, barricade, bone pile, crate stack, spike trap, goblin banner, mushrooms), the fungus-cellar rest set (bedroll, cook fire, craft bench), the throne hall, the labyrinth gate and the Warrens map are original work made for Covenant of Embers (Blender 4.5 script + PIL), CC0 1.0. See docs/credits/ember_art_batch_08a_CREDITS.md.
+
+Goblin and Orc models by Quaternius (CC0), batch 08b: the goblin grunt, archer and shaman and the Goblin King are recoloured and modified from Quaternius "Goblin" and "Orc" (poly.pizza, CC0 1.0); the Club, Bow, Quiver, Hood, Staff, Beads, Crown and the Roar animation are original CC0 additions by Ember Art. See docs/credits/ember_art_batch_08b_CREDITS.md.

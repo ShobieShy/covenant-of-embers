@@ -16,6 +16,8 @@ const SLOTS := {
 	"association_spire": {"kind": "model", "level": "mage_association", "at": Vector3(0, 0, -15)},
 	"oak_lod": {"kind": "model", "level": "old_oak", "at": Vector3(0, 0, -13)},
 	"breach_crater_rim": {"kind": "model", "level": "breach", "at": Vector3(0, 0, 125)},
+	# L3 (batch 08a): the Labyrinth gate stands on the crater door (Interiors LINKS labyrinth).
+	"labyrinth_gate": {"kind": "model", "level": "breach", "at": Vector3(0, 0, 125)},
 	"waystone_town": {"kind": "model", "level": ""},
 	"waystone_landfill": {"kind": "model", "level": ""},
 	"waystone_oak": {"kind": "model", "level": ""},
@@ -33,6 +35,7 @@ const SLOTS := {
 	"map_whispering_woods": {"kind": "texture", "level": ""},
 	"map_shattered_peaks": {"kind": "texture", "level": ""},
 	"map_crimson_sea": {"kind": "texture", "level": ""},
+	"map_warrens": {"kind": "texture", "level": ""},
 }
 ## Batch 06: LOD switch distances (m) per model with <id>_LOD0/1/2 (+ _Impostor) siblings,
 ## and the landmark scale (junk_mountain arrives ~190 m wide x 63 m tall).
@@ -60,7 +63,11 @@ const SKYLINE_N := 12
 
 
 static func path(id: String) -> String:
-	return DIR + id + (".png" if String(SLOTS.get(id, {}).get("kind", "model")) == "texture" else ".glb")
+	return (
+		DIR
+		+ id
+		+ (".png" if String(SLOTS.get(id, {}).get("kind", "model")) == "texture" else ".glb")
+	)
 
 
 static func has_art(id: String) -> bool:
@@ -254,7 +261,10 @@ static func landmark_bodies(id: String) -> Array[StaticBody3D]:
 			"SouthW": [Vector3(side, t, w), Vector3(-h + side / 2, t / 2, h - w / 2)],
 			"SouthE": [Vector3(side, t, w), Vector3(h - side / 2, t / 2, h - w / 2)],
 			"Lintel":
-			[Vector3(SPIRE_DOOR.x, t - SPIRE_DOOR.y, w), Vector3(0, SPIRE_DOOR.y + (t - SPIRE_DOOR.y) / 2, h - w / 2)],
+			[
+				Vector3(SPIRE_DOOR.x, t - SPIRE_DOOR.y, w),
+				Vector3(0, SPIRE_DOOR.y + (t - SPIRE_DOOR.y) / 2, h - w / 2)
+			],
 		}
 		for k in walls:
 			var bs := BoxShape3D.new()
@@ -299,15 +309,38 @@ static func _collide(m: Node3D, id: String) -> void:
 		for b in landmark_bodies(id):
 			m.add_child(b)
 		return
+	if id == "labyrinth_gate":
+		_gate_posts(m)  # the portal face must stay walk-through (it is the door trigger)
+		return
 	var small := id.begins_with("waystone_") or id.begins_with("chest_")
 	var meshes := m.find_children("*", "MeshInstance3D", true, false)
 	var lod0 := meshes.filter(
-		func(n: Node) -> bool: return String(n.name).contains("_LOD0") or String(n.get_parent().name).ends_with("_LOD0")
+		func(n: Node) -> bool:
+			return (
+				String(n.name).contains("_LOD0") or String(n.get_parent().name).ends_with("_LOD0")
+			)
 	)
 	for mi in lod0 if not lod0.is_empty() else meshes:
-		if String(mi.name).contains("Impostor") or (small and String(mi.get_parent().name) == "Lid"):
+		if (
+			String(mi.name).contains("Impostor")
+			or (small and String(mi.get_parent().name) == "Lid")
+		):
 			continue
 		if small:
 			(mi as MeshInstance3D).create_convex_collision(true, true)
 		else:
 			(mi as MeshInstance3D).create_trimesh_collision()
+
+
+## L3: labyrinth_gate.glb is ~9 m wide with a 5.6 m opening: one box per post, no portal.
+static func _gate_posts(m: Node3D) -> void:
+	for sx: float in [-1.0, 1.0]:
+		var b := StaticBody3D.new()
+		b.name = "GatePostL" if sx < 0.0 else "GatePostR"
+		var cs := CollisionShape3D.new()
+		var sh := BoxShape3D.new()
+		sh.size = Vector3(1.7, 8.6, 2.4)
+		cs.shape = sh
+		b.add_child(cs)
+		b.position = Vector3(sx * 3.65, 4.3, 0)
+		m.add_child(b)
