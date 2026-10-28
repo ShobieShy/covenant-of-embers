@@ -422,6 +422,14 @@ func fight(e: Enemy) -> void:
 		and not (m is HeatMode)
 	):
 		_input = PlayerInput.hold(held, ["slot_2"])
+	elif (
+		player.loadout.active == Loadout.Slot.WAND
+		and player.mana.value >= 0.6 * player.mana.max_value()
+	):
+		# L5: back to the staff once mana is up again; before this the bot stayed on the
+		# wand until its next brand swap (every second kill), so a long boss fight with no
+		# kills was fought with the wand alone (solo8: the King at 148 hp after 600 s)
+		_input = PlayerInput.hold(held, ["slot_1"])
 	elif m is ChargeMode:  # step 143: hold to a full charge, then let go for one tick
 		if m.charge >= 1.0:
 			held.erase("action_primary")
@@ -905,7 +913,7 @@ func _log_king(floor_node: Node) -> void:
 			continue
 		note(
 			(
-				"king hp %.0f/%.0f taken %.0f hits %d dist %.1f los %s target %s | me hp %.0f casts %d"
+				"king hp %.0f/%.0f taken %.0f hits %d dist %.1f los %s target %s | me hp %.0f mana %.0f slot %s casts %d"
 				% [
 					gk.health,
 					gk.max_health(),
@@ -915,6 +923,8 @@ func _log_king(floor_node: Node) -> void:
 					has_line_to(gk.global_position + Vector3.UP),
 					gk.get(&"target").name if gk.get(&"target") else "-",
 					player.health.value,
+					player.mana.value,
+					"staff" if player.loadout.active == Loadout.Slot.STAFF else "wand",
 					player.loadout.casters[0].casts + player.loadout.casters[1].casts
 				]
 			)

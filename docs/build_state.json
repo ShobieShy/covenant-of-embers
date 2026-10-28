@@ -1695,6 +1695,11 @@
       "time": "2026-10-28 04:41 CDT",
       "step": "L5 co-op boss fix",
       "summary": "Co-op: non-Light bolts pass through a teammate's RemotePlayer hitbox (they used to stop on it, so the host barely damaged the Goblin King while the joiner tanked); new test_bolts_teammate.gd. Playtest bot logs King hp/casts every 10 s on floor 5 and each death with its cause, and backs out of a boss's telegraphed slam. Co-op labyrinth PASS for both bots twice (live stairs vote, deaths host 2 / joiner 4, were 9 / 16-53); solo PASS. Draft docs/release/CHANGELOG_0.3.0.md with the 0.2.0 Breach ground-fall known issue."
+    },
+    {
+      "time": "2026-10-28T04:47",
+      "step": "bot wand swap-back",
+      "summary": "Playtest bot returns from wand to staff at >=60% mana (solo8 King flake: stuck on wand with no boss-floor kills). Stage limit kept at 600 s. solo10a/b/c + coop10 PASS."
     }
   ],
   "completed_steps": [
