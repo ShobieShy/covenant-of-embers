@@ -66,9 +66,8 @@ func _ready() -> void:
 	v.add_child(title)
 	UiAnim.fade_in(title, 0.8)
 	hover_player = AudioStreamPlayer.new()
-	hover_player.stream = GameAudio.load_stream("ui_click")
-	hover_player.volume_db = -14.0
-	hover_player.pitch_scale = 1.5
+	hover_player.stream = GameAudio.load_stream("ui_hover")  # 0.3.1 P7
+	hover_player.volume_db = -10.0
 	hover_player.bus = &"UI" if AudioServer.get_bus_index(&"UI") >= 0 else &"Master"
 	add_child(hover_player)
 	version_label = Label.new()  # step 84

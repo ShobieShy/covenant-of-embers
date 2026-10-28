@@ -29,7 +29,7 @@ const SOUNDS := {
 	"land": IMPACT + "footstep_concrete_000.ogg",
 	"footstep": IMPACT + "footstep_concrete_001.ogg",
 	"hit": IMPACT + "impactGeneric_light_000.ogg",
-	"enemy_death": IMPACT + "impactMetal_heavy_000.ogg",
+	"enemy_death": IMPACT + "impactSoft_heavy_000.ogg",  # 0.3.1 P7: was a metal clang
 	"kill": IFACE + "confirmation_001.ogg",
 	"hurt": IMPACT + "impactPunch_medium_000.ogg",
 	"shield_break": IMPACT + "impactGlass_heavy_000.ogg",
@@ -42,6 +42,13 @@ const SOUNDS := {
 	"ui_click": UIPACK + "click-a.ogg",
 	"pickup": IFACE + "drop_002.ogg",
 	"vote_tick": IFACE + "tick_001.ogg",  # 0.3.1 P2: the stairs vote's last 3 s
+	# 0.3.1 P7 (L6): UI and world cues, Kenney CC0 packs already in the repo
+	"ui_hover": UIPACK + "tap-a.ogg",
+	"ui_open": IFACE + "open_001.ogg",
+	"ui_close": IFACE + "close_001.ogg",
+	"chest_open": IMPACT + "impactWood_medium_000.ogg",
+	"shrine_use": IFACE + "confirmation_004.ogg",
+	"stairs": IMPACT + "footstep_wood_000.ogg",
 	# 0.3.1 P4 (M2/M4): Ember Art batch_09_polish, original CC0 synth
 	"level_up": EMBER_SFX + "level_up.ogg",
 	"pickup_basic": EMBER_SFX + "pickup_basic.ogg",
@@ -54,7 +61,7 @@ const SOUNDS := {
 	"brand_overheat": IFACE + "error_006.ogg",
 	"brand_vent": IFACE + "scratch_004.ogg",
 	"brand_crystal_eject": IMPACT + "impactGlass_light_000.ogg",  # t69u
-	"brand_crystal_set": IFACE + "glass_002.ogg",
+	"brand_crystal_set": IFACE + "glass_003.ogg",  # 0.3.1 P7: no longer shares "cast"
 	"brand_charge_full": IFACE + "maximize_005.ogg",
 	"brand_charge_release": IFACE + "glass_005.ogg",
 	"brand_blast": IMPACT + "impactMining_002.ogg",
@@ -65,8 +72,9 @@ const SOUNDS := {
 	"brand_crit": IMPACT + "impactGlass_light_002.ogg",
 }
 const UI_KEYS: PackedStringArray = [
-	"ui_click", "kill", "wave_start", "wave_clear", "cast_fail", "equip", "pickup", "vote_tick"
+	"ui_click", "kill", "wave_start", "wave_clear", "cast_fail", "equip", "pickup", "vote_tick", "ui_hover", "ui_open", "ui_close"
 ]
+const CUE_DB := {"ui_hover": -10.0, "ui_open": -6.0, "ui_close": -8.0}  ## P7: quiet UI cues
 const LAND_MIN := 2.0  ## m/s: Cogito's min landing velocity (quiet)
 const LAND_MAX := 8.0  ## m/s: loudest
 const STEP_DIST := 2.2  ## m of grounded travel per footstep
@@ -114,6 +122,7 @@ func _ready() -> void:
 	bus.enemy_killed.connect(func(_e, _el): play("kill"))
 	bus.wave_started.connect(func(_i, _id): play("wave_start"))
 	bus.wave_cleared.connect(func(_i, _id): play("wave_clear"))
+	bus.sfx.connect(_on_sfx)  # 0.3.1 P7
 
 
 func _exit_tree() -> void:
@@ -124,7 +133,7 @@ func _exit_tree() -> void:
 	var bus := GameEvents.bus()
 	if bus.enemy_spawned.is_connected(_on_enemy_spawned):
 		bus.enemy_spawned.disconnect(_on_enemy_spawned)
-	for s in ["enemy_killed", "wave_started", "wave_cleared"]:
+	for s in ["enemy_killed", "wave_started", "wave_cleared", "sfx"]:
 		for c in bus.get_signal_connection_list(s):
 			if c["callable"].get_object() == self:
 				bus.disconnect(s, c["callable"])
@@ -229,6 +238,17 @@ func _on_brand_event(kind: StringName, value: float) -> void:
 			play("brand_toggle")
 		&"orb_thrown":
 			play("brand_orb")
+
+
+## 0.3.1 P7 (L6): GameEvents.sfx -> a 2D sound, or 3D at `at`.
+func _on_sfx(key: String, at: Vector3) -> void:
+	if not SOUNDS.has(key):
+		return
+	var db := float(CUE_DB.get(key, 0.0))
+	if at.is_finite():
+		play_at(key, at, db)
+	else:
+		play(key, db)
 
 
 func _on_hurt(p: Player, _r: Damage.Result) -> void:

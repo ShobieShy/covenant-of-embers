@@ -304,6 +304,7 @@ func take_element(el: String, sid: String) -> bool:
 func _hover(b: Button) -> void:
 	hovers += 1
 	UiAnim.pulse(b, 0.06)
+	GameEvents.bus().sfx.emit("ui_hover", Vector3.INF)  # 0.3.1 P7
 
 
 ## P6: pulses the bought skill and the owned lower-tier skills of its tree (the path).

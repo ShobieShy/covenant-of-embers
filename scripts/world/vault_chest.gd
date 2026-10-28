@@ -140,6 +140,7 @@ func open_chest() -> Array[LootDrop]:
 	if dropper != null and dropper.parent != null:
 		dropper.spawn_drops(drops, dropper.parent.to_local(global_position + Vector3(0, 0.2, 1.0)), "vault_chest")
 	_swing_lid(true)
+	GameEvents.bus().sfx.emit("chest_open", global_position if is_inside_tree() else Vector3.INF)  # P7
 	opened.emit(drops)
 	return drops
 

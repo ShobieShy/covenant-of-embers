@@ -112,6 +112,7 @@ func tick(dt: float) -> void:
 		_fired = true
 		hold = 0.0
 		_refresh()
+		GameEvents.bus().sfx.emit("stairs", global_position if is_inside_tree() else Vector3.INF)  # P7
 		if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 			return  # a joiner's stairs are the host's call
 		fires += 1

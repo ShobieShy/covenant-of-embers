@@ -24,6 +24,8 @@ signal wave_cleared(index: int, wave_id: String)
 signal waves_completed
 signal quest_item_collected(player: Player, item_id: String)  ## step 57
 signal player_healed(player: Player, amount: float)  ## step 50: Light heal etc.
+## 0.3.1 P7 (L6): a one-shot sound cue (GameAudio plays it; `at` INF = 2D).
+signal sfx(key: String, at: Vector3)
 signal crafting_completed(player: Player, item: WieldableInstance)  ## step 25 (Magewar station signal)
 
 const AUTOLOAD := ^"/root/EventBus"

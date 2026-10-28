@@ -72,7 +72,7 @@ func refresh() -> void:
 		_last_sec = -1
 		# QA round 11: the panel stays visible through the close fade; log the end once.
 		if panel.visible and not UiAnim.closing(panel):
-			UiAnim.close(panel)
+			UiAnim.close(panel, Callable(), false)
 			_log_end()
 		return
 	_last_left = left
@@ -87,7 +87,7 @@ func refresh() -> void:
 		var w := panel.get_combined_minimum_size().x
 		panel.offset_left = -ceilf(w / 2.0)
 		panel.offset_right = ceilf(w / 2.0)
-		UiAnim.open(panel)
+		UiAnim.open(panel, false)
 		_shown_at = Time.get_ticks_msec() / 1000.0
 		print("[vote] start: %.1f s left" % left)
 	var total := maxi(sync.party_size(), 1)

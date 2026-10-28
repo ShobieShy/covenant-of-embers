@@ -1847,6 +1847,11 @@
       "time": "2026-10-28T13:06:12-05:00",
       "step": "0.3.1 P6 M7",
       "summary": "Fast travel on the world map: waystones open WorldMapScreen in travel mode (attuned pins ringed and clickable, plus a fallback button list); picking one shows a confirm card with name, region and level band (Safe / Lv 1-4 / Lv 1-5 / Lv 5-12 from zone spawns) and Travel / Cancel (Esc closes the card first). The crystal's FastTravelUI list is unchanged. Tests in test_world_map_screen.gd. P6 complete. Fast tier green."
+    },
+    {
+      "time": "2026-10-28T13:18:21-05:00",
+      "step": "0.3.1 P7 L6",
+      "summary": "Audio UI set (no music): new keys ui_hover, ui_open, ui_close, chest_open, shrine_use, stairs from the Kenney CC0 packs already in the repo, played via a new GameEvents.sfx(key, at) signal. UiAnim.open/close play ui_open/ui_close on real opens/closes (vote banner opts out); main menu and skill tree hovers use ui_hover; chests, rest shrines and the Labyrinth stairs play their cues. brand_crystal_set no longer shares glass_002 with cast; enemy_death is impactSoft_heavy instead of a metal clang. Tests in tests/unit/test_audio_cues.gd. Fast tier green. P7 complete."
     }
   ],
   "completed_steps": [

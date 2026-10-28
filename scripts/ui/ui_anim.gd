@@ -102,9 +102,11 @@ static func centre(ctl: Control, margin := 16.0) -> void:
 
 
 ## Show `n` with the open motion.
-static func open(n: Node) -> void:
+static func open(n: Node, sound := true) -> void:
 	if n == null:
 		return
+	if sound and not (n.visible and not closing(n)):  # 0.3.1 P7: a real open, not a refresh
+		GameEvents.bus().sfx.emit("ui_open", Vector3.INF)
 	var ts := _targets(n)
 	_settle(n, ts)  # a reopen during the close fade: back to rest first
 	n.visible = true
@@ -122,12 +124,14 @@ static func open(n: Node) -> void:
 
 
 ## Hide `n` after the close fade; `done` (optional) runs once it is hidden.
-static func close(n: Node, done := Callable()) -> void:
+static func close(n: Node, done := Callable(), sound := true) -> void:
 	if n == null:
 		return
 	var ts := _targets(n)
 	if closing(n):
 		return  # already fading out
+	if sound and n.visible:  # 0.3.1 P7
+		GameEvents.bus().sfx.emit("ui_close", Vector3.INF)
 	if instant() or not n.is_inside_tree() or not n.visible or ts.is_empty():
 		_settle(n, ts)
 		n.visible = false
