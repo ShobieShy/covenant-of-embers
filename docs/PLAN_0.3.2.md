@@ -49,6 +49,98 @@ level-up feel worse. So the scaling goes **with** a matching player term (§3) a
 effect at "same level" is 1.0: an enemy at your level always takes the same number of
 hits and hurts the same fraction of your health, whatever the level.
 
+## 2b. Stat-by-stat scaling table (every EnemyDef stat and subtype tunable)
+
+ShobieShy: all enemy stats scale with level. This audit covers every stat in the code
+at 0cce536. "Scales" means multiplied by `LevelScale.mult(curve, L - L0)`, then capped.
+`L0` is `EnemyDef.level`. Movement and AI timings stay fixed by default (flagged as Q9).
+
+Curves (in `LevelScale.CURVES`, tuned in S8):
+- **hp**: `1.09^dL`, cap x60 at level 50.
+- **dmg**: `1.07^dL`, cap x25.
+- **res**: `+0.005 * dL` added to a resistance, capped by the existing 60 % applied cap.
+- **xp**: `xp_curve(L)/xp_curve(L0)`, Magewar's level curve, cap x40.
+- **gold**: `3 x L`, or `gold_drop x 1.06^dL` when authored, cap x20.
+- **thr**: same as hp, so a hit that broke the threshold at L0 still breaks it at a
+  matching level.
+- **fixed**: not scaled.
+
+### EnemyDef (enemy_def.gd)
+
+| Stat | Today | Scales? | Curve / cap | Note |
+|------|-------|---------|-------------|------|
+| id, display_name | data | no (identity) | - | |
+| affinity | element | no | - | the element never changes |
+| max_health | 1..100000 | yes | hp, x60 | also x co-op health_scale, x ELITE_HEALTH |
+| level | 1..50 | is L0 | - | becomes the base level |
+| xp_reward | 0..10000 | yes | xp, x40 | per peer at its own level |
+| gold_drop | -1 / 0..100000 | yes | gold, x20 | per peer |
+| size, color | visuals | no | - | |
+| resist{} | 0..1 per element | yes | res, 60 % applied cap | small, so gear stays meaningful |
+| has_weak_point, weak_point_offset, weak_point_size | geometry | no | - | the x2 multiplier stays x2 |
+| ai{} | see RusherDef | per key | below | |
+
+### RusherDef ai keys (rusher_def.gd RANGES)
+
+| Key | Scales? | Curve / cap | Note |
+|-----|---------|-------------|------|
+| attack_damage | yes | dmg, x25 | the core enemy-to-player damage |
+| knockback_threshold | yes | thr | otherwise a high-level enemy staggers on every hit |
+| attack_cooldown | no (default) | - | attack rate; Q9. If yes: `0.99^dL`, floor x0.7 |
+| attack_windup | no (default) | - | readable telegraphs; Q9 |
+| detect_range, aggro_range, attack_range, min_range | no | - | AI geometry |
+| walk_speed, sprint_speed, turn_rate_deg | no (default) | - | movement; Q9 |
+| knockback_strength, knockback_time | no | - | this is what it does to the player |
+| projectile_speed | no (default) | - | dodgeability; Q9 |
+| flee_below | no | - | already a fraction |
+| kind | no | - | brain choice |
+
+### Subtype and brain constants
+
+| Constant | Scales? | Curve / cap | Note |
+|----------|---------|-------------|------|
+| Elites: BASE_CHANCE, PER_TIER | no | - | spawn odds |
+| Elites: ELITE_HEALTH x1.5, ELITE_XP x2 | no (these multiply scaled values) | - | the elite offset (+1 level) covers it |
+| GoblinKing THROW_DAMAGE 14 | yes | dmg, x25 | |
+| GoblinKing THROW_MIN/MAX, THROW_COOLDOWN, ROCK_SPEED/HIT/LIFE, ROAR_S, THROW_FALLBACK | no (default) | - | timings and geometry; Q9 |
+| Filth REGEN_PER_S 4 | yes | hp, x60 | regen in HP has to keep pace with HP |
+| Filth PHASE_2_AT/3_AT, BLOB_*, REGEN_DELAY, CORE_GROW | no | - | fractions, geometry, timings |
+| Warden PHASE_2_AT, ENRAGE_SPEED, ENRAGE_TEMPO | no | - | fractions and tempo (Q9) |
+| Ooze SPLIT_COUNT, SPLIT_SCALE | no | - | split health = SPLIT_SCALE x scaled max |
+| Ooze PUDDLE_SLOW 0.6, PUDDLE_TIME 6, PUDDLE_RADIUS | no (default) | - | status strength on the player; Q10 |
+| Scorchling EMBER_HIT/LIFE, Gnawer HUNT_TIME, BITE_HEIGHT, separation etc. | no | - | AI and geometry |
+| Enemy BURN_TICK, FLASH_TIME, statuses received | no | - | statuses the player puts on enemies follow player stats |
+| Projectile and blob damage (Scorchling ember, Filth blob = attack_damage) | yes | dmg, x25 | through attack_damage |
+
+### Stats that don't exist on enemies today
+
+Armor, shields, mana, a cast rate separate from attack_cooldown, status chance and
+duration on enemy attacks (only the ooze puddle slow exists), crit and accuracy: enemies
+have none of these. If any is added in 0.3.2 or later, it must get a row in
+`LevelScale.TABLE` (the coverage test below enforces that). The defaults if added:
+- armor: res-style, additive with a cap.
+- shield: hp curve.
+- mana: fixed.
+- status chance: `+0.2 %/level`, cap +10 %.
+- status duration: fixed.
+- crit chance: fixed.
+- accuracy: fixed.
+
+### Coverage test (fast tier): `tests/unit/test_level_scale_coverage.gd`
+
+- Lists every script variable of `EnemyDef` (via `get_property_list()`, filtered on
+  PROPERTY_USAGE_SCRIPT_VARIABLE).
+- Lists every key in `RusherDef.RANGES` plus `kind`.
+- Lists every numeric constant of each enemy subtype script (Elites, GoblinKing, Filth,
+  Warden, Ooze, Scorchling, Gnawer, Heap, Enemy), via `get_script_constant_map()`.
+- Fails, with the stat's name, if any of these has no entry in `LevelScale.TABLE`. Every
+  entry is `{"scale": curve_id}` or `{"fixed": reason}`.
+- Fails if a TABLE entry names an unknown curve or a stat that no longer exists, so
+  nothing stale is left behind.
+- Checks that every curve hits 1.0 at dL 0 and respects its cap at levels 1 and 50.
+
+So a new stat added to any enemy without a scaling decision breaks the fast tier.
+
 ## 3. Damage, both ways
 
 Key idea: the host keeps everything in **normalised units** (fractions of base), and
@@ -144,7 +236,7 @@ Co-op (full tier; not while QA runs co-op):
 
 | # | Step | Est. |
 |---|------|------|
-| S1 | `LevelScale` pure class + unit tests | 0.5 d |
+| S1 | `LevelScale` pure class + TABLE for every stat (2b) + coverage test + unit tests | 0.75 d |
 | S2 | Effective level resolver per peer (solo, elite/boss/floor offsets) | 0.5 d |
 | S3 | Enemy health/damage through `LevelScale` in solo (and player damage term) | 1 d |
 | S4 | Co-op: normalised hits/bites/heals, client display at local level, protocol bump | 1.5 d |
@@ -153,7 +245,7 @@ Co-op (full tier; not while QA runs co-op):
 | S7 | Labyrinth: depth offsets + item level floor | 0.5 d |
 | S8 | Balance pass with the playtest bot (hits-to-kill, time-to-die by level) + full tier and co-op run | 1 d |
 
-About 5.75 days in total. Each step lands with a fast-tier run and the full tier at S4 and S8.
+About 6 days in total. Each step lands with a fast-tier run and the full tier at S4 and S8.
 
 ## 12. Scaling defaults and questions for ShobieShy
 
@@ -168,6 +260,13 @@ About 5.75 days in total. Each step lands with a fast-tier run and the full tier
 7. Co-op party health bonus (+60 % per extra player) unchanged? Default yes.
 8. Do level-1 players in a level-50 friend's game see level-1 enemies (pure Borderlands)?
    Default yes. That is the point of the feature.
+9. Movement and AI timings (walk/sprint speed, turn rate, attack cooldown and windup,
+   projectile speed, boss throw and enrage timings) stay fixed by level? Default yes: no
+   scaling, so fights stay readable. If no, attack cooldown would be `0.99^dL`, floor x0.7.
+10. Status effects enemies put on players (the ooze puddle slow and time) stay fixed?
+    Default yes.
+11. Resistances grow +0.5 % per level, under the 60 % applied cap? Default yes.
+12. Caps at level 50: health x60, damage x25, XP x40, gold x20? Default yes, tuned in S8.
 
 # Part B: co-op polish
 
@@ -241,7 +340,7 @@ About 5.75 days in total. Each step lands with a fast-tier run and the full tier
 | # | Steps | Est. |
 |---|-------|------|
 | Q1 | C1 joiner exit crash (first, so every later co-op run is clean) | 1.5 d |
-| Q2 | S1-S3 scaling core, solo | 2 d |
+| Q2 | S1-S3 scaling core (every stat, 2b), solo | 2.25 d |
 | Q3 | S4 co-op normalised damage and protocol bump, plus C3 latency smoothing (the same messages) | 3 d |
 | Q4 | S5-S7 XP and loot, nameplate, Labyrinth | 1.25 d |
 | Q5 | C2, C8 join, leave and disconnect | 2 d |
@@ -249,7 +348,7 @@ About 5.75 days in total. Each step lands with a fast-tier run and the full tier
 | Q7 | C6, C7 loot clarity, vote | 1.5 d |
 | Q8 | S8 balance, full tier and co-op matrix, release prep (release only on ShobieShy's go) | 1 d |
 
-About 14.5 days in total. Fast tier on every step, and the full tier at Q3 and Q8.
+About 14.75 days in total. Fast tier on every step, and the full tier at Q3 and Q8.
 
 ## 17. Co-op defaults and questions for ShobieShy
 
