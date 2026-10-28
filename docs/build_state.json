@@ -1837,6 +1837,11 @@
       "time": "2026-10-28T12:46-05:00",
       "step": "0.3.1 P6 (L1)",
       "summary": "Main menu: title fades in, buttons nudge and tick quietly on hover/focus, save slots are cards (name, level, location, last save in local time; the save has no playtime field and 0.3.1 keeps the format). test_menu_polish. Fast tier green."
+    },
+    {
+      "time": "2026-10-28T12:55:55-05:00",
+      "step": "0.3.1 P6 L2",
+      "summary": "Lobby/co-op polish: join phase line (connecting / loading the world / in the lobby / in the world), joiner 'The host is loading ...' overlay on the party frames until the host's proxy arrives, party frame damage chip (0.4 s hold, then drains). New tests/unit/test_lobby_polish.gd. No protocol or save change. Fast tier green."
     }
   ],
   "completed_steps": [

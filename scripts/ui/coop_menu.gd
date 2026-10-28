@@ -13,6 +13,8 @@ var port_edit: LineEdit
 var address_edit: LineEdit
 var upnp_check: CheckBox
 var status: Label
+var phase_label: Label  ## 0.3.1 P6 (L2): Connecting / In the lobby / Loading the world / In the world
+var _started := false
 var roster_label: Label
 var ready_button: Button
 var start_button: Button
@@ -57,6 +59,9 @@ func _ready() -> void:
 		b.pressed.connect(press.bind(id))
 		row.add_child(b)
 		buttons[id] = b
+	phase_label = Label.new()
+	phase_label.add_theme_color_override(&"font_color", Color(1.0, 0.8, 0.4))
+	v.add_child(phase_label)
 	status = Label.new()
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	v.add_child(status)
@@ -253,6 +258,8 @@ func _on_ended(reason: String) -> void:
 
 
 func _on_started() -> void:
+	_started = true
+	_refresh()
 	set_status("Starting ...")
 	Coop.begin(get_tree())
 
@@ -272,8 +279,27 @@ func auto(opts: Dictionary) -> void:
 		press("join_ip")
 
 
+## P6 (L2): the join step in words, from the session state (started: Coop.begin ran).
+static func join_phase(state: int, started: bool) -> String:
+	match state:
+		NetSession.State.CONNECTING:
+			return "Connecting ..."
+		NetSession.State.LOBBY:
+			return "Loading the world ..." if started else "In the lobby"
+		NetSession.State.IN_GAME:
+			return "In the world"
+	return ""
+
+
 func _refresh() -> void:
 	var s := session if session and is_instance_valid(session) else null
+	if phase_label:
+		var ph := join_phase(s.state, _started) if s else ""
+		if phase_label.text != ph:
+			phase_label.text = ph
+			UiAnim.fade_in(phase_label, 0.2)
+	if s == null or s.state == NetSession.State.IDLE or s.state == NetSession.State.ENDED:
+		_started = false
 	var in_lobby := s != null and s.state == NetSession.State.LOBBY
 	var busy := s != null and (s.state == NetSession.State.CONNECTING or in_lobby)
 	for id in ["host_ip", "join_ip", "host_steam"]:
