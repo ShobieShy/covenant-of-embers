@@ -22,6 +22,16 @@ func test_slot_card() -> void:
 		c.contains("Ash, Lv 12") and c.contains("The Old Oak") and c.contains("Saved 2026-10-28"),
 		"card: %s" % c
 	)
+	check(not c.contains("0m") and not c.contains("h "), "no playtime line when the save has none: %s" % c)
+	d["playtime_s"] = 0.0
+	check(SaveGame.write(d, path) == OK, "wrote a zero playtime")
+	var zero := MainMenu.slot_card(n)
+	check(not zero.contains("0m"), "zero playtime stays off the card: %s" % zero)
+	d["playtime_s"] = 3600 + 23 * 60
+	check(SaveGame.write(d, path) == OK, "wrote an hour of play")
+	var played := MainMenu.slot_card(n)
+	check(played.contains("1h 23m"), "playtime on the card: %s" % played)
+	check(played.contains("Ash, Lv 12") and played.contains("Saved 2026-10-28"), "the rest of the card stays")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	for f in [path + ".bak", path + ".tmp"]:
 		if FileAccess.file_exists(f):

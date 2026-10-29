@@ -71,6 +71,32 @@ func test_round_trip() -> void:
 			n.free()
 
 
+func test_playtime_format_and_round_trip() -> void:
+	check(SaveGame.format_playtime(0.0) == "0m", "zero")
+	check(SaveGame.format_playtime(59.9) == "0m", "under a minute")
+	check(SaveGame.format_playtime(60.0) == "1m", "one minute")
+	check(SaveGame.format_playtime(23 * 60) == "23m", "minutes only")
+	check(SaveGame.format_playtime(3600 + 23 * 60) == "1h 23m", "hours and minutes")
+	check(SaveGame.format_playtime(2 * 3600) == "2h 0m", "exact hours keep the minutes")
+	check(SaveGame.format_playtime(-4.0) == "0m", "negative clamps")
+	var w := _world(4800)
+	var p := _player(w)
+	var d := SaveGame.capture(p, {"level_id": "midden"}, 4980.0)
+	check(is_equal_approx(float(d["playtime_s"]), 4980.0), "capture stores seconds")
+	check(SaveGame.write(d, FILE) == OK, "wrote playtime")
+	var r := SaveGame.read(FILE)
+	check(not r.has("error"), "v1 save with playtime_s loads")
+	check(is_equal_approx(float(r["data"].get("playtime_s", -1)), 4980.0), "seconds round trip")
+	var bare := SaveGame.capture(p, {})
+	check(not bare.has("playtime_s"), "omitted when the session does not pass it")
+	d.erase("playtime_s")
+	SaveGame.write(d, FILE)
+	var old := SaveGame.read(FILE)
+	check(not old.has("error") and not (old["data"] as Dictionary).has("playtime_s"), "old saves stay version 1")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(FILE))
+	w.free()
+
+
 func test_old_version_and_bad_codes() -> void:
 	var w := _world(4500)
 	var p := _player(w)

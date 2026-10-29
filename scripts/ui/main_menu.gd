@@ -83,7 +83,7 @@ func _ready() -> void:
 	for n in range(1, SaveGame.SLOTS + 1):
 		var sb := Button.new()
 		sb.toggle_mode = true
-		sb.custom_minimum_size = Vector2(150, 92)
+		sb.custom_minimum_size = Vector2(150, 114)
 		sb.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		sb.pressed.connect(select_slot.bind(n))
 		_hoverable(sb)
@@ -251,8 +251,9 @@ func hover(b: Button) -> void:
 		hover_player.play()
 
 
-## P6 (L1): "Slot N" plus the character, level, location and last save time. The save has
-## no playtime field (no save-format change in 0.3.1), so the card shows when it was saved.
+## "Slot N" plus the character, level, location, playtime and last save time.
+## playtime_s is optional (0.3.4, still save version 1). Missing or under a minute stays off
+## the card so an old slot looks the same.
 static func slot_card(n: int) -> String:
 	var r := SaveGame.read(SaveGame.slot_path(n))
 	if r.has("error"):
@@ -272,6 +273,9 @@ static func slot_card(n: int) -> String:
 	var lid := String(pr.get("level_id", ""))
 	if lid != "":
 		lines.append(String(LOCATION_NAMES.get(lid, lid.capitalize())))
+	var played := float(d.get("playtime_s", 0.0))
+	if played >= 60.0:
+		lines.append(SaveGame.format_playtime(played))
 	var at := String(d.get("saved_at", ""))
 	if at.length() >= 16:  # saved_at is UTC; show it in local time
 		var bias := int(Time.get_time_zone_from_system().get("bias", 0)) * 60

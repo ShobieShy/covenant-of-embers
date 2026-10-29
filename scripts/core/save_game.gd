@@ -20,7 +20,19 @@ static func slot_path(slot: int) -> String:
 	return PATH if slot == 1 else "user://save_%d.json" % slot
 
 
-static func capture(p: Player, progress := {}) -> Dictionary:
+## "1h 23m", "23m", or "0m". Hours always keep the minutes. Negative times read as zero.
+static func format_playtime(seconds: float) -> String:
+	var total := maxi(0, int(floor(seconds)))
+	var hours := int(total / 3600)
+	var minutes := int((total % 3600) / 60)
+	if hours > 0:
+		return "%dh %dm" % [hours, minutes]
+	return "%dm" % minutes
+
+
+## `playtime_s` < 0 omits the key, so callers that do not track a session keep the old shape.
+## The loader already keeps unknown keys, and read() only checks `version`, so this stays v1.
+static func capture(p: Player, progress := {}, playtime_s := -1.0) -> Dictionary:
 	var dead := not p.alive()
 	var eq: Array = []
 	for i in EquipmentItem.SLOT_COUNT:
@@ -36,7 +48,7 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 			inv.append(c)
 	var staff := p.loadout.wieldable(Loadout.Slot.STAFF)
 	var wand := p.loadout.wieldable(Loadout.Slot.WAND)
-	return {
+	var data := {
 		"version": VERSION,
 		"saved_at": Time.get_datetime_string_from_system(true),
 		"player":
@@ -73,6 +85,9 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 		},
 		"progress": progress.duplicate(true),
 	}
+	if playtime_s >= 0.0:
+		data["playtime_s"] = maxf(0.0, playtime_s)
+	return data
 
 
 static func write(data: Dictionary, path := PATH) -> Error:
