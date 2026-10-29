@@ -28,10 +28,12 @@ wait "$hp"; hrc=$?
 wait "$jp"; jrc=$?
 grep -E '^\[(playtest|coop)\]' "$dir/host.log" | sed 's/^/host   /' | tail -12
 grep -E '^\[(playtest|coop|character)\]' "$dir/join.log" | sed 's/^/joiner /' | tail -12
-# The joiner can still SIGABRT (rc 134, glibc "corrupted size vs. prev_size") at the
-# end of a full slice, after PASS. A short session (COE_PLAYTEST_MAX_S) exits 0. Calling
-# get_unique_id() on a closed ENet peer was a separate abort and is guarded. The heap
-# smash itself is still open, so 134 after PASS stays a warning, not a gameplay failure.
+# The joiner can still SIGABRT (rc 134, glibc "corrupted size vs. prev_size in fastbins")
+# at process exit after a full slice that reached the breach, even when the bot logged PASS.
+# Door-follow no longer instantiates levels just to read markers (that path exits 0).
+# Calling get_unique_id() on a closed ENet peer was a separate abort and is guarded.
+# A short session (COE_PLAYTEST_MAX_S) exits 0. The breach-fight heap abort is still open,
+# so 134 after PASS stays a warning, not a gameplay failure.
 for f in host join; do
 	rc=$hrc; [ $f = join ] && rc=$jrc
 	if [ "$rc" -eq 134 ] && grep -q '^\[playtest\] PASS' "$dir/$f.log"; then

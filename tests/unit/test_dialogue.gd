@@ -107,6 +107,79 @@ func test_typewriter_skip_and_advance() -> void:  # 0.3.1 P3
 	ui.free()
 
 
+## 0.3.3: left click completes then advances, and Interact still advances while the
+## camera is aimed at the speaking NPC (that used to swallow the key and restart talk).
+func test_click_advances_while_looking_at_npc() -> void:
+	UiAnim.force_motion = true
+	DialogueUI.instant_text = false
+	var p: Player = (load("res://scenes/player/player.tscn") as PackedScene).instantiate()
+	p.input_enabled = false
+	runner_tree.root.add_child(p)
+	var base := Vector3(200, 400, -700)
+	p.spawn(base, 0.0)
+	var npc := Npc.new("Bob")
+	npc.player = p
+	runner_tree.root.add_child(npc)  # after the UI would be; the game adds NPCs after DialogueUI
+	npc.global_position = base + Vector3(0, 0, -2.2)
+	var r := DialogueRunner.new()
+	var ui := DialogueUI.new()
+	runner_tree.root.add_child(ui)
+	# Match main.gd: the NPC enters the tree after the dialogue box, so its
+	# _unhandled_input runs first unless the box takes the press in _input.
+	runner_tree.root.move_child(npc, runner_tree.root.get_child_count() - 1)
+	ui.bind(r)
+	Interaction.face(p, npc)
+	check(npc.in_reach(p) and Interaction.is_target(p, npc), "looking at the speaking NPC")
+	r.start("Bob")
+	var first := r.text()
+	check(ui.typing() and DialogueUI.capturing(), "line is typing under the crosshair")
+	_feed(_click())
+	check(not ui.typing() and r.text() == first and npc.talks == 0, "click completes; NPC does not steal it")
+	check(not Input.is_action_pressed(&"action_primary"), "click is not left held as a cast")
+	_feed(_interact())
+	check((r.text() != first or not r.active) and npc.talks == 0, "Interact advances while looking at the NPC")
+	var mid := r.text()
+	DialogueUI.instant_text = true
+	ui.complete()
+	_feed(_click())
+	check(not ui.typing() and (r.text() != mid or not r.active), "Instant text: a click advances a whole line")
+	var guard := 0
+	while r.active and ui.button_texts().is_empty() and guard < 12:
+		ui.complete()
+		if r.awaiting_choice():
+			break
+		r.advance()
+		guard += 1
+	check(ui.button_texts().size() == 2, "choices are up")
+	var choice_line := r.text()
+	_feed(_click())
+	check(r.awaiting_choice() and r.text() == choice_line and npc.talks == 0, "a click does not skip a choice")
+	DialogueUI.instant_text = false
+	UiAnim.force_motion = false
+	ui.free()
+	npc.free()
+	p.free()
+
+
+func _feed(e: InputEvent) -> void:
+	Input.parse_input_event(e)
+	Input.flush_buffered_events()
+
+
+func _click() -> InputEventMouseButton:
+	var e := InputEventMouseButton.new()
+	e.button_index = MOUSE_BUTTON_LEFT
+	e.pressed = true
+	return e
+
+
+func _interact() -> InputEventAction:
+	var e := InputEventAction.new()
+	e.action = &"interact"
+	e.pressed = true
+	return e
+
+
 func test_choices_wait_for_typing() -> void:  # 0.3.1 P3
 	UiAnim.force_motion = true
 	var r := DialogueRunner.new()

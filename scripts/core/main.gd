@@ -841,7 +841,10 @@ func _world_travel(ow: OpenWorld, to: String) -> void:
 		var at := ow.interiors.interior.get_node_or_null(AssemblyStation.MARKER) as Node3D if ow.interiors.interior else null
 		if st and at:  # OW11b: the station stands at the Breach entrance, as in the classic level
 			st.global_transform = at.global_transform
-		if breach and get_node_or_null("BreachEnemies") == null:
+		# The joiner does not simulate a second breach population. The host's puppets
+		# are the fight, same as the Labyrinth. Freeing that extra set from the
+		# physics step is heap-unsafe.
+		if breach and get_node_or_null("BreachEnemies") == null and not (coop and not coop.host):
 			var sp := EnemySpawner.new()
 			sp.name = "BreachEnemies"
 			add_child(sp)

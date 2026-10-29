@@ -21,17 +21,17 @@ static func is_migrated(data: Dictionary) -> bool:
 
 
 ## World spot of `level`'s entrance (PlayerStart + world_offset), y = local start height.
+## Read from the packed scene's state. Instantiating the level just to read a marker
+## and then free()ing it, while the open world is already up, corrupts the heap
+## (joiner rc 134 at process exit).
 static func entrance(level: String) -> Vector3:
 	if _spots.has(level):
 		return _spots[level]
 	var path := GameFlow.level_scene(level)
 	if not GameFlow.LEVELS.has(level) or not ResourceLoader.exists(path):
 		return entrance(FALLBACK_LEVEL) if level != FALLBACK_LEVEL else Vector3.ZERO
-	var lvl := (load(path) as PackedScene).instantiate() as Node3D
-	var wo: Vector2 = lvl.get_meta(&"world_offset", Vector2.ZERO)
-	var st := lvl.get_node_or_null(^"PlayerStart") as Node3D
-	var p := st.position if st else Vector3.ZERO
-	lvl.free()
+	var wo := world_offset(level)
+	var p := marker_origin(level, "./PlayerStart")
 	_spots[level] = Vector3(p.x + wo.x, p.y, p.z + wo.y)
 	return _spots[level]
 
@@ -43,27 +43,46 @@ static var _offsets := {}
 static func world_offset(level: String) -> Vector2:
 	if _offsets.has(level):
 		return _offsets[level]
-	var path := GameFlow.level_scene(level)
 	var wo := Vector2.ZERO
-	if GameFlow.LEVELS.has(level) and ResourceLoader.exists(path):
-		var lvl := (load(path) as PackedScene).instantiate() as Node3D
-		wo = lvl.get_meta(&"world_offset", Vector2.ZERO)
-		lvl.free()
+	var v: Variant = _node_prop(level, ".", "metadata/world_offset")
+	if v is Vector2:
+		wo = v
 	_offsets[level] = wo
 	return wo
+
+
+## Local origin of a node in `level`'s packed scene (`./PlayerStart`, `./Exits/to_town`).
+static func marker_origin(level: String, node_path: String) -> Vector3:
+	var v: Variant = _node_prop(level, node_path, "transform")
+	return (v as Transform3D).origin if v is Transform3D else Vector3.ZERO
+
+
+static func _node_prop(level: String, node_path: String, prop: String) -> Variant:
+	var path := GameFlow.level_scene(level)
+	if not GameFlow.LEVELS.has(level) or not ResourceLoader.exists(path):
+		return null
+	var ps := load(path) as PackedScene
+	if ps == null:
+		return null
+	var st := ps.get_state()
+	var want := NodePath(node_path)
+	for i in st.get_node_count():
+		if st.get_node_path(i) != want:
+			continue
+		for p in st.get_node_property_count(i):
+			if String(st.get_node_property_name(i, p)) == prop:
+				return st.get_node_property_value(i, p)
+		return null
+	return null
 
 
 ## Where a save at `level` (optionally with a level-local position) stands in the world.
 static func world_spot(level: String, local: Variant = null) -> Vector3:
 	var e := entrance(level)
 	if local is Array and (local as Array).size() == 3 and not INTERIORS.has(level):
-		var path := GameFlow.level_scene(level)
-		if GameFlow.LEVELS.has(level) and ResourceLoader.exists(path):
-			var lvl := (load(path) as PackedScene).instantiate() as Node3D
-			var wo: Vector2 = lvl.get_meta(&"world_offset", Vector2.ZERO)
-			lvl.free()
-			var a: Array = local
-			return Vector3(float(a[0]) + wo.x, float(a[1]), float(a[2]) + wo.y)
+		var wo := world_offset(level)
+		var a: Array = local
+		return Vector3(float(a[0]) + wo.x, float(a[1]), float(a[2]) + wo.y)
 	return e
 
 

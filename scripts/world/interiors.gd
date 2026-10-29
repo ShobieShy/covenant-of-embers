@@ -81,12 +81,11 @@ signal rested(at: Vector3)
 
 
 ## World position of a level's Exits marker (at the level's world_offset), on the ground.
+## The packed-scene state, not an instantiate/free: freeing a whole level while the
+## open world is live is the joiner's rc 134 heap abort at exit.
 func marker_world(level: String, marker: String) -> Vector3:
-	var lvl := (load(GameFlow.level_scene(level)) as PackedScene).instantiate() as Node3D
-	var wo: Vector2 = lvl.get_meta(&"world_offset", Vector2.ZERO)
-	var m := lvl.get_node_or_null(NodePath("Exits/" + marker)) as Node3D
-	var p := m.position if m else Vector3.ZERO
-	lvl.free()
+	var wo := SaveMigration.world_offset(level)
+	var p := SaveMigration.marker_origin(level, "./Exits/" + marker)
 	var w := Vector3(p.x + wo.x, 0.0, p.z + wo.y)
 	var h: float = height_fn.call(w.x, w.z) if height_fn.is_valid() else NAN
 	w.y = 0.0 if is_nan(h) else h
@@ -240,9 +239,7 @@ func leave(to_level := "town_square") -> Vector3:
 	var link: Array = ex.get(to_level, LINKS[current]["front"])
 	fade.emit(FADE)
 	var p := link_world(link)
-	var lvl := (load(GameFlow.level_scene(link[0])) as PackedScene).instantiate() as Node3D
-	var wo: Vector2 = lvl.get_meta(&"world_offset", Vector2.ZERO)
-	lvl.free()
+	var wo := SaveMigration.world_offset(String(link[0]))
 	var land := _inset(p, Vector3(wo.x, p.y, wo.y))
 	_move_party(land)
 	var id := current
