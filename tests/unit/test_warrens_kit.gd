@@ -111,6 +111,19 @@ func test_hand_props_at_hand_height() -> void:
 		e.free()
 
 
+func test_labyrinth_warmup_lists_the_kit() -> void:
+	var paths := ShaderWarmup.labyrinth_mesh_paths()
+	check(paths.size() >= 12, "warrens and goblin meshes (%d)" % paths.size())
+	for p in paths:
+		check(ResourceLoader.exists(p), p)
+	check(paths.has(WarrensKit.DIR + "wall_4m.glb"), "walls")
+	check(paths.has(WarrensKit.DIR + "throne_hall.glb"), "throne hall")
+	check(paths.has("res://assets/original/ember_art/goblin_grunt.glb"), "skinned grunt")
+	check(paths.has("res://assets/original/ember_art/goblin_king.glb"), "skinned king")
+	var n: int = await ShaderWarmup.warm_labyrinth(runner_tree)
+	check(n == 0, "headless dummy renderer does not draw (%d)" % n)
+
+
 func _mesh_mid_y(n: Node3D) -> float:
 	var ab := AABB()
 	var first := true

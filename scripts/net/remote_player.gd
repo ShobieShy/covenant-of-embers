@@ -40,6 +40,7 @@ var shield := 0.0
 var ping_at := Vector3.INF
 var ping_left := 0.0
 var _buf := NetInterp.new()
+var _interp := {}  ## NetInterp.watch totals, printed once on the way out
 
 
 func _ready() -> void:
@@ -140,14 +141,25 @@ func _set_archetype(id: String) -> void:
 func smooth(dt: float, now_ms := -1.0) -> void:
 	if ping_left > 0.0:
 		ping_left = maxf(0.0, ping_left - dt)
+	var before := global_position
 	if now_ms >= 0.0 and not _buf.samples.is_empty():
 		var sm := _buf.sample_sender(now_ms, global_position)
 		global_position = sm["pos"]
 		rotation.y = float(sm["yaw"])
+		NetInterp.watch(_interp, before, global_position, bool(sm["snap"]))
 		return
 	var k := 1.0 - exp(-SMOOTH * dt)
 	global_position = global_position.lerp(target_pos, k)
 	rotation.y = lerp_angle(rotation.y, target_yaw, k)
+
+
+func _exit_tree() -> void:
+	if int(_interp.get("steps", 0)) <= 0:
+		return
+	print(
+		"[net] player interp steps %d snaps %d big %d"
+		% [int(_interp["steps"]), int(_interp.get("snaps", 0)), int(_interp.get("big", 0))]
+	)
 
 
 func alive() -> bool:

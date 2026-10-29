@@ -66,3 +66,16 @@ func sample(now_ms: float, current: Vector3) -> Dictionary:
 		yaw = lerp_angle(float(a0["y"]), float(b0["y"]), k)
 	var snap := current.distance_to(pos) > SNAP_M
 	return {"pos": pos, "yaw": yaw, "snap": snap}
+
+
+## The first call places; later calls count a step. `big` is a jump over 1 m that was
+## not a snap (the buffer should not do that on a steady walk).
+static func watch(stats: Dictionary, before: Vector3, after: Vector3, snap: bool) -> void:
+	if not bool(stats.get("seen", false)):
+		stats["seen"] = true
+		return
+	stats["steps"] = int(stats.get("steps", 0)) + 1
+	if snap:
+		stats["snaps"] = int(stats.get("snaps", 0)) + 1
+	elif before.distance_to(after) > 1.0:
+		stats["big"] = int(stats.get("big", 0)) + 1

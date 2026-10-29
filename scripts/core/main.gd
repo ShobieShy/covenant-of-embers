@@ -5,6 +5,8 @@ extends Node3D
 var _boss_spawner: EnemySpawner  # step 57
 var _seconds := -1.0
 var _elapsed := 0.0
+## Cumulative seconds in this slot, loaded from playtime_s and written on every save.
+var play_seconds := 0.0
 var _frames := 0
 var _ticks := 0
 var settings: Settings   # step 32
@@ -249,6 +251,7 @@ func _setup_flow(player: Player) -> void:
 			story_flags.from_dict((r["data"] as Dictionary).get("progress", {}).get("flags", {}))
 			_loaded_quests = (r["data"] as Dictionary).get("progress", {}).get("quests", {})
 			labyrinth = LabyrinthState.from_save(r["data"])
+			play_seconds = maxf(0.0, float((r["data"] as Dictionary).get("playtime_s", 0.0)))
 			if breach and (r["data"] as Dictionary).get("progress", {}).get("vault_open", false):
 				breach.restore_open()   # step 47: rooms cleared, gate + vault stay open
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
@@ -582,7 +585,7 @@ func save_game() -> Error:
 		return cerr
 	if stash:
 		stash.save()
-	var err := SaveGame.write(SaveGame.capture(player, progress()), GameFlow.save_path)
+	var err := SaveGame.write(SaveGame.capture(player, progress(), play_seconds), GameFlow.save_path)
 	print("[save] wrote %s: %s" % [GameFlow.save_path, error_string(err)])
 	return err
 
@@ -903,7 +906,7 @@ func travel(to: String, anchor := "") -> void:
 		Coop.session.send("travel", {"to": to})
 	var player := get_node_or_null("Player") as Player
 	if player:
-		var d := SaveGame.capture(player, progress())
+		var d := SaveGame.capture(player, progress(), play_seconds)
 		d["progress"]["level_id"] = to
 		d["progress"]["anchor"] = anchor  # step 155: "" = the new level's PlayerStart
 		d["progress"].erase("map_version")
@@ -915,6 +918,8 @@ func _notification(what: int) -> void:
 		save_game()
 
 func _process(delta: float) -> void:
+	if not get_tree().paused:
+		play_seconds += delta
 	_frames += 1
 	if _frames % 15 == 0:
 		_ow_intro_sync()

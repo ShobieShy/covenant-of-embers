@@ -103,6 +103,89 @@ func test_xp_and_gold_follow_local_level() -> void:
 	LevelScale.bind(0, true)
 
 
+## 0.3.4 S8: hits-to-kill and burst time-to-die at levels 1, 25 and 50, plus the
+## same-level (player level == L0) row against an unscaled fight. Prints [s8] lines.
+## Apprentice Fire Staff is 10 damage. Burst TTD spends health 100 + shield 50 with
+## no shield regen (a gnawer resets the regen delay on every bite).
+func test_s8_hits_and_time_to_die() -> void:
+	check(is_equal_approx(float(LevelScale.CURVES["hp"]["growth"]), 1.09), "hp growth stays 1.09")
+	check(is_equal_approx(float(LevelScale.CURVES["dmg"]["growth"]), 1.07), "dmg growth stays 1.07")
+	check(is_equal_approx(float(LevelScale.CURVES["hp"]["cap"]), 60.0), "hp cap x60")
+	check(is_equal_approx(float(LevelScale.CURVES["dmg"]["cap"]), 25.0), "dmg cap x25")
+	check(Progression.HEALTH_PER_LEVEL == 0.0, "player health still does not grow per level")
+	var tune := PlayerTuning.new()
+	var ehp := tune.health_max + tune.shield_max
+	check(is_equal_approx(ehp, 150.0), "naked EHP is 150")
+	var table := EnemyTable.load_default()
+	var gnawer_hits := {}
+	for id in ["gnawer", "heap", "breach_warden", "goblin_grunt", "goblin_king"]:
+		var d := table.find(id)
+		check(d != null, id)
+		if d == null:
+			continue
+		var cd := float(d.ai.get("attack_cooldown", 1.0))
+		var bite0 := float(d.ai.get("attack_damage", 0.0))
+		LevelScale.bind(0, true)
+		var bare := Enemy.create(d)
+		var today := _bolt_hits(bare, 10.0)
+		bare.free()
+		LevelScale.bind(d.level, true)
+		var at_l0 := Enemy.create(d)
+		at_l0.apply_level_scale()
+		# Bosses and the King keep +2 at the authored level. Everyone else is dL 0,
+		# so pool and bite match today before the player's level-1 damage term.
+		var off := LevelScale.BOSS_OFFSET if Enemy._authored_boss(d) else 0
+		var dl0 := at_l0.combat_dl(d.level)
+		check(dl0 == off, "%s dL at player==L0 is the tier offset (%d, got %d)" % [id, off, dl0])
+		check_near(
+			at_l0.max_health(),
+			d.max_health * LevelScale.mult("hp", off),
+			0.05,
+			"%s hp at player==L0" % id
+		)
+		var same_bite := bite0 * LevelScale.mult("dmg", dl0)
+		check_near(same_bite, bite0 * LevelScale.mult("dmg", off), 0.05, "%s bite at player==L0" % id)
+		var same := _bolt_hits(at_l0, 10.0 * LevelScale.player_dmg_mult(d.level))
+		at_l0.free()
+		if d.level == 1 and off == 0:
+			check_near(same, today, 0.02, "%s same-level hits match today" % id)
+		else:
+			check(same < today, "%s same-level kills faster than unscaled (player damage from level 1)" % id)
+		print(
+			"[s8] %s L0 %d off %d today_hits %.2f same_hits %.2f same_bite %.2f"
+			% [id, d.level, off, today, same, same_bite]
+		)
+		for lv in [1, 25, 50]:
+			LevelScale.bind(lv, true)
+			var e := Enemy.create(d)
+			e.apply_level_scale()
+			var spell := 10.0 * LevelScale.player_dmg_mult(lv)
+			var hits := _bolt_hits(e, spell)
+			var bite := bite0 * LevelScale.mult("dmg", e.combat_dl(lv))
+			var ttd := (ehp / bite) * cd if bite > 0.0 else -1.0
+			print(
+				"[s8] %s lv %d eff %d dL %d hits %.2f bite %.2f ttd %.2f"
+				% [id, lv, e.combat_level(lv), e.combat_dl(lv), hits, bite, ttd]
+			)
+			if id == "gnawer":
+				gnawer_hits[lv] = hits
+			e.free()
+		LevelScale.bind(0, true)
+	check_near(float(gnawer_hits[1]), 2.0, 0.05, "gnawer is two fire bolts at level 1")
+	check(float(gnawer_hits[25]) / float(gnawer_hits[1]) < 1.5, "level 25 gnawer hits stay near level 1")
+	check(float(gnawer_hits[50]) / float(gnawer_hits[1]) < 1.6, "level 50 gnawer hits stay near level 1")
+	check(float(gnawer_hits[25]) / float(gnawer_hits[1]) > 0.95, "resist does not make the gnawer softer")
+	LevelScale.bind(0, true)
+
+
+func _bolt_hits(e: Enemy, spell: float) -> float:
+	e.damage_target.weak_point = false
+	var hit := Damage.resolve_hit(spell, ElementTable.Element.FIRE, e.damage_target)
+	if hit.amount <= 0.0:
+		return -1.0
+	return e.max_health() / hit.amount
+
+
 func test_boss_phase_fraction_is_level_invariant() -> void:
 	var d := EnemyTable.load_default().find("the_filth")
 	for lv in [1, 25, 50]:
