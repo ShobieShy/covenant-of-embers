@@ -1,4 +1,4 @@
-# Changelog: 0.3.1-prealpha (DRAFT, not released)
+# Changelog: 0.3.1-prealpha (2026-10-28)
 
 From 0.3.0-prealpha. Polish round P1 to P8 in docs/POLISH_0.3.1_PLAN.md and
 docs/build_state.json. No save-format change; 0.3.0 saves load unchanged.
@@ -42,3 +42,4 @@ docs/build_state.json. No save-format change; 0.3.0 saves load unchanged.
 - Co-op: the joining game can still exit with code 134 while shutting down, after the session
   ends. Progress is already saved.
 - Save-slot cards do not show playtime yet.
+- The first Labyrinth floor you enter can hitch once (about 60 ms) while its shaders compile.

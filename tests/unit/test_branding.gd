@@ -4,9 +4,9 @@ extends TestCase
 
 func test_version_string() -> void:
 	var v := String(ProjectSettings.get_setting("application/config/version", ""))
-	check(v == "0.3.0-prealpha", "project version is 0.3.0-prealpha (got %s)" % v)
+	check(v == "0.3.1-prealpha", "project version is 0.3.1-prealpha (got %s)" % v)
 	check(
-		MainMenu.version_string() == "v0.3.0-prealpha" and MainMenu.release_name() == "Pre-Alpha 0.3",
+		MainMenu.version_string() == "v0.3.1-prealpha" and MainMenu.release_name() == "Pre-Alpha 0.3.1",
 		"menu version string"
 	)
 
@@ -18,7 +18,7 @@ func test_version_suffix_parsing() -> void:
 	check(VersionInfo.numeric("0.1.1-prealpha") == "0.1.1.0", "numeric PE version drops the suffix")
 	var p := VersionInfo.parse("0.1.1-prealpha")
 	check(p.patch == 1 and p.pre == "prealpha", "parse")
-	check(NetSession.version() == "0.3.0-prealpha/p%d" % NetSession.PROTOCOL, "co-op gate keeps the suffix")
+	check(NetSession.version() == "0.3.1-prealpha/p%d" % NetSession.PROTOCOL, "co-op gate keeps the suffix")
 
 
 func test_export_presets_version() -> void:

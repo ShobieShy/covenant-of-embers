@@ -1862,6 +1862,13 @@
       "time": "2026-10-28T14:58:03-05:00",
       "step": "0.3.1 QA r15 follow-ups",
       "summary": "Applied QA's regression test for the interior fast-travel first_load bug (test_world_session); COE_DEBUG_HOST_LOAD_DELAY_S capped at 10 s (ENet peer timeout ~20 s), docs updated; 'Co-op: loading the world' prefix only on the joiner's initial join load (LoadingScreen.join_load). Fast tier all green; release drafts updated."
+    },
+    {
+      "time": "2026-10-28T21:31:21-05:00",
+      "step": "release-0.3.1",
+      "type": "release",
+      "summary": "Version 0.3.1-prealpha (approved): 0.3.1 polish round P1-P8 plus QA r14/r15 fixes, from 477d70a. Classic release group 18/18, test_branding green; P8 full tier green at 91e5997, fast tier green at 477d70a. Exports via tools/package.sh (Linux export + AppImage smoke, Windows wine smoke): green. No Steam upload.",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -2094,5 +2101,5 @@
     "2026-10-26: steps 135-143 (part brands B1-B9) planned, waiting on user go; see docs/BRANDS_PLAN.md; open Q35-Q46",
     "2026-10-26: Q35-Q46 answered (defaults): Head brand, flat bonus per bolt, Pyrowning no mana, overheat lockout only, straight boulders, Coltara R toggle no shield, weak points + chance fallback, Water chain full charge only, element kept in names, Head-only brand, Windchester clamps at 0.1 s, wands scaled-down brand effects; steps 135-143 still waiting on user go"
   ],
-  "version": "0.3.0-prealpha"
+  "version": "0.3.1-prealpha"
 }

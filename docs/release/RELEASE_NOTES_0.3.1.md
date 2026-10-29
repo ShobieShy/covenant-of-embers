@@ -1,5 +1,5 @@
 A polish update. The game looks, sounds and feels smoother, from the main menu to the
-Labyrinth stairs. (DRAFT, not released)
+Labyrinth stairs.
 
 **What's new**
 - Panels fade and slide, menus react to hover, and save slots are cards.
@@ -19,5 +19,7 @@ Labyrinth stairs. (DRAFT, not released)
 
 **Known issues**
 - In co-op, the joining game can close with an error code (134) on exit. Your progress is already saved.
+- Save-slot cards don't show playtime yet.
+- The first Labyrinth floor can hitch once while its shaders compile.
 
 Full changelog: docs/release/CHANGELOG_0.3.1.md
