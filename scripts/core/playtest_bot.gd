@@ -232,6 +232,7 @@ func _finish(ok: bool, why := "") -> void:
 	if Coop.session != null and is_instance_valid(Coop.session):
 		if cw and is_instance_valid(cw):
 			cw.set_physics_process(false)
+			cw.set_process(false)
 		finished = true  # guard: main/menu must not re-host or re-join after this
 		Coop.end("done")
 		for i in 5:

@@ -28,13 +28,14 @@ wait "$hp"; hrc=$?
 wait "$jp"; jrc=$?
 grep -E '^\[(playtest|coop)\]' "$dir/host.log" | sed 's/^/host   /' | tail -12
 grep -E '^\[(playtest|coop|character)\]' "$dir/join.log" | sed 's/^/joiner /' | tail -12
-# OW11c-6: the joiner can abort with SIGABRT (rc 134, glibc heap "double free"/"corrupted size")
-# in engine teardown after its bot finished; clean shutdown (Coop.end + 5 frames) did not stop it.
-# Accept 134 ONLY when that bot already logged PASS, and say so loudly.
+# The joiner can still SIGABRT (rc 134, glibc "corrupted size vs. prev_size in fastbins")
+# at process exit after a full slice that reached the breach, even when the bot logged PASS.
+# A session that only follows the host through doors exits 0 (that instantiate/free path is
+# fixed). 134 after PASS is still a teardown failure, not a gameplay failure.
 for f in host join; do
 	rc=$hrc; [ $f = join ] && rc=$jrc
 	if [ "$rc" -eq 134 ] && grep -q '^\[playtest\] PASS' "$dir/$f.log"; then
-		echo "[coop_playtest] WARNING: $f exited rc 134 (SIGABRT at teardown) AFTER its bot PASSed; accepted as the known exit crash, not a pass of teardown"
+		echo "[coop_playtest] WARNING: $f exited rc 134 (SIGABRT at teardown) AFTER its bot PASSed; the breach-fight exit abort is still open"
 		[ $f = join ] && jrc=0 || hrc=0
 	fi
 done

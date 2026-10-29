@@ -1,10 +1,12 @@
 class_name DialogueUI
 extends Control
 ## Dialogue box (BUILD_PLAN step 62): speaker name, line text, choice buttons. Follows a
-## DialogueRunner; Interact / click advances, a choice button chooses. Also the dialogue
+## DialogueRunner; Interact or left click advances, a choice button chooses. Also the dialogue
 ## subtitle surface (step 76).
 ## 0.3.1 P3: lines type out at CPS chars/s (instant under Settings.instant_text, reduced
-## motion or headless). Interact while typing completes the line; the next press advances.
+## motion or headless). Interact or click while typing completes the line; the next
+## press advances. 0.3.3: that still happens while the crosshair is on the speaker
+## (the NPC used to consume Interact), and a left click does the same as Interact.
 ## Choices wait for the line to finish. A "continue" arrow (Ember Art batch_09b, CC0) bobs
 ## at 8 fps once a line is done; each speaker gets a stable name colour.
 
@@ -21,6 +23,10 @@ const SPEAKER_COLORS: Array[Color] = [
 ]
 
 static var instant_text := false  ## Settings.apply_to() keeps this in sync
+## The dialogue box that is on screen, if any. World interactables (an NPC you are
+## looking at) must not swallow Interact while this is active — that press advances
+## the line. See Npc._unhandled_input.
+static var open_ui: DialogueUI
 
 var runner: DialogueRunner
 var speaker_label := Label.new()
@@ -119,6 +125,7 @@ func bind(r: DialogueRunner) -> void:
 
 
 func _on_line(sp: String, t: String) -> void:
+	open_ui = self
 	if not UiAnim.is_shown(self):
 		UiAnim.open(self)  # 0.3.1 P1
 	speaker_label.text = sp
@@ -168,13 +175,52 @@ func button_texts() -> PackedStringArray:
 	return out
 
 
-func _unhandled_input(e: InputEvent) -> void:
-	if visible and runner and runner.active and e.is_action_pressed(&"interact"):
-		if press_interact():
-			get_viewport().set_input_as_handled()
+## True while a line is up. Looking at the speaker must not eat the advance key.
+static func capturing() -> bool:
+	return (
+		open_ui != null
+		and is_instance_valid(open_ui)
+		and open_ui.visible
+		and open_ui.runner != null
+		and open_ui.runner.active
+	)
 
 
-## Interact: complete a typing line, else advance (not while a choice is up).
+func _exit_tree() -> void:
+	if open_ui == self:
+		open_ui = null
+
+
+## Runs before world _unhandled_input, so an NPC under the crosshair cannot consume
+## the key first. Left click matches Interact: complete a typing line, then advance.
+## Choice buttons keep the click (GUI is after this, and only if we leave it unhandled).
+func _input(e: InputEvent) -> void:
+	if not _is_advance_press(e):
+		return
+	if not press_interact():
+		return
+	get_viewport().set_input_as_handled()
+	# Input.is_action_just_pressed ignores "handled". Drop the edge so the same
+	# press does not also cast (left click) or pick up loot (Interact).
+	if e.is_action(&"interact"):
+		Input.action_release(&"interact")
+	if e is InputEventMouseButton and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+		Input.action_release(&"action_primary")
+
+
+func _is_advance_press(e: InputEvent) -> bool:
+	if not visible or runner == null or not runner.active or not e.is_pressed() or e.is_echo():
+		return false
+	var click := (
+		e is InputEventMouseButton
+		and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT
+	)
+	if click and choice_box.get_child_count() > 0:
+		return false
+	return click or e.is_action_pressed(&"interact")
+
+
+## Interact or click: complete a typing line, else advance (not while a choice is up).
 func press_interact() -> bool:
 	if typing():
 		complete()

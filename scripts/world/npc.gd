@@ -63,5 +63,10 @@ func talk() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if player and not player.ui_open and event.is_action_pressed(&"interact") and in_reach(player):
+		# DialogueUI._input takes this press while a line is up (complete, then
+		# advance). Swallowing it here used to restart talk() and drop the advance
+		# whenever the crosshair was on the speaker.
+		if DialogueUI.capturing():
+			return
 		talk()
 		get_viewport().set_input_as_handled()

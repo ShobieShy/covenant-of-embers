@@ -76,10 +76,22 @@ func setup(s: NetSession, p: Node3D, enemy_root: Node, t: EnemyTable = null) -> 
 
 func _physics_process(dt: float) -> void:
 	if auto_tick:
-		tick(dt)
+		tick(dt, false)
 
 
-func tick(dt: float) -> void:
+func _process(dt: float) -> void:
+	if not auto_tick:
+		return
+	# Outside the physics step: Jolt corrupts if bodies are moved or freed inside it,
+	# and the joiner used to abort at process exit after a long fight.
+	for pr: RemotePlayer in proxies.values():
+		pr.smooth(dt)
+	if not host:
+		_move_puppets(dt)
+		_drop_world_enemies()
+
+
+func tick(dt: float, move_puppets := true) -> void:
 	if (
 		session == null
 		or not is_instance_valid(session)
@@ -96,19 +108,36 @@ func tick(dt: float) -> void:
 		_wire_and_target()
 	_tick_revive(dt)
 	_flush_puppet_hits()
-	for pr: RemotePlayer in proxies.values():
-		pr.smooth(dt)
-	if not host and world_enemies:
-		for c in get_tree().get_nodes_in_group(Enemy.GROUP):
-			if c is Enemy and not is_ancestor_of(c) and not c.is_queued_for_deletion():
-				c.queue_free()  # the host's world decides; only puppets fight here
-	if not host:
-		for e: Enemy in puppets.values():
-			var want: Variant = e.get_meta(&"net_pos", null)
-			if want is Vector3:
-				e.global_position = e.global_position.lerp(
-					want, 1.0 - exp(-RemotePlayer.SMOOTH * dt)
-				)
+	if move_puppets:
+		for pr: RemotePlayer in proxies.values():
+			pr.smooth(dt)
+		if not host:
+			_move_puppets(dt)
+			_drop_world_enemies()
+
+
+## Idle-frame puppet motion. Tests call tick(), which still moves them.
+func _move_puppets(dt: float) -> void:
+	for e: Enemy in puppets.values():
+		if not is_instance_valid(e) or e.is_queued_for_deletion():
+			continue
+		var want: Variant = e.get_meta(&"net_pos", null)
+		if want is Vector3:
+			e.global_position = e.global_position.lerp(
+				want, 1.0 - exp(-RemotePlayer.SMOOTH * dt)
+			)
+
+
+## The host's world is authoritative. Drop local enemies outside the physics step.
+func _drop_world_enemies() -> void:
+	if not world_enemies:
+		return
+	for c in get_tree().get_nodes_in_group(Enemy.GROUP):
+		if c is Enemy and not is_ancestor_of(c) and not c.is_queued_for_deletion():
+			var e := c as Enemy
+			e.set_physics_process(false)
+			e.process_mode = Node.PROCESS_MODE_DISABLED
+			e.call_deferred(&"queue_free")
 
 
 ## --- poses -------------------------------------------------------------------------
@@ -400,8 +429,10 @@ func _apply_snapshot(list: Array) -> void:
 	for id in puppets.keys():
 		if not seen.has(id):
 			var gone: Enemy = puppets[id]
-			if is_instance_valid(gone):
-				gone.queue_free()
+			if is_instance_valid(gone) and not gone.is_queued_for_deletion():
+				gone.set_physics_process(false)
+				gone.process_mode = Node.PROCESS_MODE_DISABLED
+				gone.call_deferred(&"queue_free")
 			puppets.erase(id)
 			puppet_hp.erase(id)
 			_snap_dead.erase(id)
