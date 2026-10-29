@@ -40,6 +40,9 @@ var light: OmniLight3D
 var label: Label3D
 var pull_from := Vector3.ZERO  ## M2: where the magnet pull started
 var pulled := 0.0  ## M2: m travelled toward the player (0 = not pulled)
+var shared := false  ## 0.3.2: dropped for the whole party
+var share_id := 0
+var _caption := ""
 
 
 static func create(d: LootDrop, at: Vector3) -> LootPickup:
@@ -170,12 +173,26 @@ func _build(n: String, c: Color, text: String, kind := "") -> void:
 	add_child(light)
 	label = Label3D.new()
 	label.name = "Label"
+	_caption = text
 	label.text = text
 	label.modulate = color
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.pixel_size = 0.004
 	label.position.y = 0.75
 	add_child(label)
+	refresh_caption()
+
+
+## Instanced drops say so. A shared drop is visible to the party.
+func refresh_caption() -> void:
+	if label == null:
+		return
+	if shared:
+		label.text = "Shared · " + _caption
+	elif Coop.active():
+		label.text = "Yours · " + _caption
+	else:
+		label.text = _caption
 
 
 func beam_height() -> float:

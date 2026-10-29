@@ -78,11 +78,21 @@ static func party_chance(base: float, players: int) -> float:
 	return clampf(base * (1.0 + PARTY_BONUS * maxf(0.0, players - 1)), 0.0, 1.0)
 
 
+## Depth offset +0 on floor 1 through +2 on the King, on top of the player.
+## The old band stays the minimum item level and the solo zone floor.
+static func depth_offset(floor_no: int) -> int:
+	return LevelScale.labyrinth_offset(floor_no)
+
+
 ## Tags a Labyrinth enemy for its floor (LootDropper reads these).
 static func tag(e: Enemy, floor_no: int) -> void:
 	var lv := item_level(floor_no)
 	if lv > 0:
-		e.level_override = lv
+		e.item_floor = lv
+		e.zone_floor = lv
+		e.level_override = lv  # tests and saves that still read the band
+	var elite := 1 if Elites.affix_of(e.def) != "" else 0
+	e.level_offset = depth_offset(floor_no) + elite
 	if element(floor_no) >= 0:
 		e.set_meta(&"act_element", element(floor_no))
 		e.set_meta(&"act_luck", luck(floor_no))

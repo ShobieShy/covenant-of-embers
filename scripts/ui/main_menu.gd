@@ -127,6 +127,11 @@ func _ready() -> void:
 		func() -> void: menu_column.visible = not coop_menu.visible
 	)
 	var coop_opts := Coop.parse_args(OS.get_cmdline_user_args())
+	if Coop.last_end_reason != "":
+		var why := CoopFlow.error_text(Coop.last_end_reason)
+		Coop.last_end_reason = ""
+		coop_menu.show()
+		coop_menu.set_status(why)
 	if coop_opts["mode"] != "" and not PlaytestBot.finished:  # step 88: --host / --join
 		coop_menu.auto.call_deferred(coop_opts)
 	var launch_lobby := LobbyBackend.launch_lobby(OS.get_cmdline_args())  # step 89: Steam join-on-launch

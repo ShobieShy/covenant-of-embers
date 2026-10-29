@@ -26,7 +26,11 @@ func _on_killed(e: Enemy, _element: ElementTable.Element) -> void:
 	kills_seen += 1
 	if e == null or e.def == null or e.def.id.ends_with("training_dummy") or not is_inside_tree():
 		return
-	var amount := int(e.def.xp_reward * xp_multiplier)
+	var viewer := LevelScale.player_level
+	var xp_scale := 1.0
+	if viewer > 0 and e.def != null:
+		xp_scale = LevelScale.mult("xp", e.combat_dl(viewer))
+	var amount := int(round(e.def.xp_reward * xp_scale * xp_multiplier))
 	if amount <= 0:
 		return
 	var near: Array[Player] = []

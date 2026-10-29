@@ -32,6 +32,13 @@ var by_id := {}  ## id -> Enemy (host)
 var puppet_hp := {}  ## id -> health the host last reported (client)
 var _snap_dead := {}  ## id -> true once a host snapshot showed it dead (client, step 94)
 var kills_seen := 0  ## puppet deaths counted on this client (step 94)
+var _hit_seq := 0
+var _await_ack := 0
+var _pred_hp := {}
+var _puppet_buf := {}  ## id -> NetInterp
+var revive_holding := false
+var _revive_helper := ""
+var loot_note_shown := false
 var _ids := {}  ## Enemy -> id (host)
 var _wired := {}  ## Enemy -> true (attacks rerouted, death hooked)
 var _next_id := 1
@@ -96,19 +103,29 @@ func tick(dt: float) -> void:
 		_wire_and_target()
 	_tick_revive(dt)
 	_flush_puppet_hits()
+	var now_ms := session._clock_ms if session != null else 0.0
 	for pr: RemotePlayer in proxies.values():
-		pr.smooth(dt)
+		pr.smooth(dt, now_ms)
 	if not host and world_enemies:
+		# Freeing a physics body inside _physics_process corrupts the heap; the joiner
+		# used to abort at shutdown ("corrupted size vs. prev_size") after a long slice.
 		for c in get_tree().get_nodes_in_group(Enemy.GROUP):
 			if c is Enemy and not is_ancestor_of(c) and not c.is_queued_for_deletion():
-				c.queue_free()  # the host's world decides; only puppets fight here
+				c.call_deferred(&"queue_free")
 	if not host:
-		for e: Enemy in puppets.values():
-			var want: Variant = e.get_meta(&"net_pos", null)
-			if want is Vector3:
-				e.global_position = e.global_position.lerp(
-					want, 1.0 - exp(-RemotePlayer.SMOOTH * dt)
-				)
+		for id in puppets:
+			var e: Enemy = puppets[id]
+			var buf: NetInterp = _puppet_buf.get(id)
+			if buf != null and not buf.samples.is_empty():
+				var sm := buf.sample_sender(now_ms, e.global_position)
+				e.global_position = sm["pos"]
+				e.rotation.y = float(sm["yaw"])
+			else:
+				var want: Variant = e.get_meta(&"net_pos", null)
+				if want is Vector3:
+					e.global_position = e.global_position.lerp(
+						want, 1.0 - exp(-RemotePlayer.SMOOTH * dt)
+					)
 
 
 ## --- poses -------------------------------------------------------------------------
@@ -136,6 +153,14 @@ func local_pose() -> Dictionary:
 	if h is Health:
 		d["h"] = (h as Health).value
 		d["m"] = (h as Health).max_value()
+		d["sh"] = (h as Health).shield
+	if bool(player.get(&"downed")):
+		var left: Variant = player.get(&"downed_left")
+		d["dtl"] = float(left) if left is float or left is int else 0.0
+	if session:
+		d["t"] = session._clock_ms
+	if session and session.roster.has(session.my_id()) and bool(session.roster[session.my_id()].get("reconnecting", false)):
+		d["rc"] = true
 	var pr: Variant = player.get(&"progression")
 	if pr != null:
 		d["l"] = int(pr.get(&"level"))
@@ -218,21 +243,111 @@ func health_scale() -> float:
 
 ## Step 80: a downed local player is revived by a living teammate standing beside them
 ## for REVIVE_TIME (each peer decides for its own player).
+func prepare_shutdown() -> void:
+	set_physics_process(false)
+	set_process(false)
+	for id in puppets.keys():
+		var e: Enemy = puppets[id]
+		if is_instance_valid(e):
+			e.queue_free()
+	puppets.clear()
+	for peer in proxies.keys():
+		var r: Node = proxies[peer]
+		if is_instance_valid(r):
+			r.queue_free()
+	proxies.clear()
+
+
 func _tick_revive(dt: float) -> void:
-	if player == null or not bool(player.get(&"downed")):
-		revive_progress = 0.0
+	if player == null or session == null:
 		return
-	var helper := false
-	for pr: RemotePlayer in proxies.values():
-		if pr.alive() and pr.global_position.distance_to(player.global_position) <= REVIVE_RANGE:
-			helper = true
-			break
-	revive_progress = revive_progress + dt if helper else maxf(0.0, revive_progress - dt)
+	var downed := bool(player.get(&"downed"))
+	if not downed:
+		var hold := _local_revive_hold()
+		var target := _downed_friend()
+		var step := CoopFlow.revive_step(revive_progress if hold and target >= 0 else 0.0, hold and target >= 0, dt, REVIVE_TIME)
+		revive_progress = float(step["p"])
+		if hold and target >= 0:
+			session.send("revive", {"p": revive_progress, "id": target, "by": _my_name()}, target, false)
+			if bool(step["done"]):
+				revive_progress = 0.0
+				revives += 1
+				session.send("revived", {"by": _my_name()}, target)
+		return
 	if revive_progress >= REVIVE_TIME and player.has_method(&"revive"):
 		revive_progress = 0.0
 		if bool(player.call(&"revive", REVIVE_HEALTH)):
 			revives += 1
-			session.send("revived", {})
+			_toast("Revived by %s" % (_revive_helper if _revive_helper != "" else "a friend"))
+
+
+func _my_name() -> String:
+	return String(session.local_info.get("name", "Player")) if session else "Player"
+
+
+func _local_revive_hold() -> bool:
+	if revive_holding:
+		return true
+	return Input.is_action_pressed(&"interact") if InputMap.has_action(&"interact") else false
+
+
+func _downed_friend() -> int:
+	if player == null:
+		return -1
+	for peer in proxies:
+		var pr: RemotePlayer = proxies[peer]
+		if pr.downed and pr.global_position.distance_to(player.global_position) <= REVIVE_RANGE:
+			return int(peer)
+	return -1
+
+
+func _on_revive_msg(_from: int, data: Dictionary) -> void:
+	if player == null or session == null or not bool(player.get(&"downed")):
+		return
+	if int(data.get("id", -1)) != session.my_id():
+		return
+	revive_progress = maxf(revive_progress, float(data.get("p", 0.0)))
+	_revive_helper = String(data.get("by", _revive_helper))
+
+
+func _toast(text: String) -> void:
+	var hud := get_parent().get_node_or_null("Hud") if get_parent() else null
+	if hud and hud.has_method(&"add_toast"):
+		hud.call(&"add_toast", text)
+
+
+func _on_share(data: Dictionary) -> void:
+	var code := String(data.get("code", ""))
+	if code.is_empty():
+		return
+	var mark := ItemCodes.decode(code)
+	if mark == null or not mark.ok():
+		return
+	var drop := LootDrop.new()
+	drop.item = mark.item
+	if mark.item is WieldableInstance:
+		drop.kind = LootDrop.Kind.WIELDABLE
+	elif mark.item is EquipmentItem:
+		drop.kind = LootDrop.Kind.EQUIPMENT
+	var lp := LootPickup.create(drop, data.get("at", Vector3.ZERO))
+	lp.shared = true
+	lp.share_id = int(data.get("sid", 0))
+	var parent_n := get_parent()
+	if parent_n:
+		parent_n.add_child(lp)
+
+
+func share_pickup(lp: LootPickup) -> void:
+	if session == null or lp == null or lp.drop == null or lp.shared:
+		return
+	var code := ItemCodes.encode(lp.drop.item)
+	if code.is_empty():
+		return
+	lp.shared = true
+	lp.share_id = _hit_seq + 1
+	_hit_seq += 1
+	session.send("share", {"code": code, "at": lp.global_position, "sid": lp.share_id})
+	_toast("Shared with the party")
 
 
 ## --- host: enemies -------------------------------------------------------------------
@@ -267,7 +382,9 @@ func _wire_and_target() -> void:
 			_wired[e] = true
 			e.died.connect(_on_host_died)
 			e.tree_exiting.connect(_forget.bind(e))
+			e.authoritative_base = true
 			e.scale_health(health_scale())
+			e.apply_level_scale()
 			if e is Gnawer and player and player.has_method(&"on_enemy_attack"):
 				var g := e as Gnawer
 				var own := Callable(player, &"on_enemy_attack")
@@ -296,8 +413,19 @@ func _on_attack(g: Gnawer, bite: Gnawer.Bite) -> void:
 func route_attack(target: Node3D, bite: Gnawer.Bite, from: Gnawer = null) -> void:
 	if target is RemotePlayer:
 		hurts_sent += 1
+		var dl := 0
+		if from != null and from.def != null:
+			var viewer := LevelScale.player_level
+			if target is RemotePlayer and (target as RemotePlayer).level > 0:
+				viewer = (target as RemotePlayer).level
+			dl = from.combat_dl(viewer)
 		var d := {
-			"dmg": bite.damage, "el": int(bite.element), "dodged": bite.dodged, "from": bite.from
+			"dmg": bite.damage,
+			"el": int(bite.element),
+			"dodged": bite.dodged,
+			"from": bite.from,
+			"norm": true,
+			"dl": dl,
 		}
 		session.send("hurt", d, (target as RemotePlayer).peer)
 	elif player and player.has_method(&"on_enemy_attack"):
@@ -312,11 +440,22 @@ func send_snapshot() -> void:
 	for peer in session.roster:
 		if int(peer) == session.my_id():
 			continue
+		if bool(session.roster[peer].get("reconnecting", false)):
+			continue
 		var p: RemotePlayer = proxies.get(int(peer))
 		var at: Variant = (
 			p.global_position if p and is_instance_valid(p) and p.is_inside_tree() else null
 		)
-		session.send("snap", {"e": interest_rows(all, at)}, int(peer), false)
+		session.send(
+			"snap",
+			{
+				"e": interest_rows(all, at),
+				"t": session._clock_ms,
+				"ack": session.ack_for(int(peer)),
+			},
+			int(peer),
+			false,
+		)
 	snaps_sent += 1
 
 
@@ -353,7 +492,7 @@ func _on_host_died(e: Enemy, element: ElementTable.Element) -> void:
 ## --- client: puppets -----------------------------------------------------------------
 
 
-func _apply_snapshot(list: Array) -> void:
+func _apply_snapshot(list: Array, ack := 0, t_ms := 0.0) -> void:
 	snaps_seen += 1
 	var seen := {}
 	for row: Array in list:
@@ -378,8 +517,14 @@ func _apply_snapshot(list: Array) -> void:
 			e.health_scale = maxf(0.01, float(row[5]) / e.def.max_health)
 		e.set_meta(&"net_pos", row[2])
 		e.rotation.y = float(row[3])
+		if t_ms > 0.0:
+			var buf: NetInterp = _puppet_buf.get(id, NetInterp.new())
+			buf.push_remote(t_ms, session._clock_ms, row[2], float(row[3]))
+			_puppet_buf[id] = buf
 		var hp := float(row[4])
+		var base_max := maxf(0.01, float(row[5]))
 		puppet_hp[id] = hp
+		var frac := clampf(hp / base_max, 0.0, 1.0)
 		var host_dead := bool(row[6])
 		if host_dead and not e.dead:
 			e.confirm_kill(e.def.affinity)
@@ -392,7 +537,15 @@ func _apply_snapshot(list: Array) -> void:
 			e.global_position = row[2]
 		_snap_dead[id] = host_dead
 		if not e.dead:
-			e.health = minf(e.health, hp) if e.health > 0.0 else hp
+			var predicted := ack < _await_ack and _pred_hp.has(id)
+			if predicted:
+				e.health = float(_pred_hp[id])
+			elif LevelScale.player_level > 0:
+				e.health = frac * e.max_health()
+			else:
+				e.health = minf(e.health, hp) if e.health > 0.0 else hp
+			if not predicted:
+				_pred_hp.erase(id)
 			# step 108: the host's ally flag (the puppet never times out on its own)
 			var ally := row.size() > 7 and bool(row[7])
 			e.corrupted_left = PUPPET_ALLY_SECONDS if ally else 0.0
@@ -405,6 +558,8 @@ func _apply_snapshot(list: Array) -> void:
 			puppets.erase(id)
 			puppet_hp.erase(id)
 			_snap_dead.erase(id)
+			_puppet_buf.erase(id)
+			_pred_hp.erase(id)
 
 
 func _on_puppet_hit(e: Enemy, h: SpellBolts.Hit) -> void:
@@ -426,8 +581,18 @@ func send_hit(
 	e: Enemy, amount: float, element: ElementTable.Element, dark_bonus := 0.0, sm := {}
 ) -> void:
 	hits_sent += 1
+	_hit_seq += 1
+	_await_ack = _hit_seq
+	var dl := e.combat_dl(LevelScale.player_level) if e.def != null else 0
+	var amt := LevelScale.normalise(amount, dl) if LevelScale.player_level > 0 else amount
+	_pred_hp[int(e.get_meta(&"net_id", 0))] = e.health
 	var d := {
-		"id": int(e.get_meta(&"net_id", 0)), "amt": amount, "el": int(element), "db": dark_bonus
+		"id": int(e.get_meta(&"net_id", 0)),
+		"amt": amt,
+		"el": int(element),
+		"db": dark_bonus,
+		"norm": true,
+		"seq": _hit_seq,
 	}
 	if not sm.is_empty():
 		d["sm"] = sm
@@ -470,10 +635,23 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 	match kind:
 		"pose":
 			poses_seen += 1
-			proxy(from).apply_pose(data)
+			data["rt"] = session._clock_ms
+			var pr := proxy(from)
+			pr.apply_pose(data)
+			if session.roster.has(from):
+				pr.reconnecting = bool(session.roster[from].get("reconnecting", false))
 		"snap":
 			if not host and from == 1:
-				_apply_snapshot(data.get("e", []))
+				_apply_snapshot(data.get("e", []), int(data.get("ack", 0)), float(data.get("t", 0.0)))
+		"ping":
+			if proxies.has(from):
+				var prp: RemotePlayer = proxies[from]
+				prp.ping_at = data.get("at", Vector3.ZERO)
+				prp.ping_left = 4.0
+		"revive":
+			_on_revive_msg(from, data)
+		"share":
+			_on_share(data)
 		"kill":
 			if not host:
 				var e: Enemy = puppets.get(int(data.get("id", 0)))
@@ -485,7 +663,8 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 				if e and is_instance_valid(e) and not e.dead:
 					hits_applied += 1
 					var el := int(data.get("el", 0)) as ElementTable.Element
-					e.apply_damage(maxf(0.0, float(data.get("amt", 0.0))), el)
+					e.apply_damage(maxf(0.0, float(data.get("amt", 0.0))), el, true, true)
+					session.note_hit(from, int(data.get("seq", 0)))
 					if el == ElementTable.Element.DARK and float(data.get("amt", 0.0)) > 0.0:
 						MagicEffects.try_corrupt(e, float(data.get("db", 0.0)))
 					if data.has("sm"):
@@ -517,4 +696,5 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 				b.element = int(data.get("el", 0)) as ElementTable.Element
 				b.dodged = bool(data.get("dodged", false))
 				b.from = data.get("from", Vector3.ZERO)
+				b.dl = int(data.get("dl", 0))
 				player.call(&"on_enemy_attack", null, b)

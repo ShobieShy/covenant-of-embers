@@ -29,6 +29,19 @@ func _pair() -> Array:
 	return [w, h, c]
 
 
+func test_release_peer_unregisters_multiplayer() -> void:
+	var s := _pair()
+	var h: NetSession = s[1]
+	check(h.host(EnetTransport.new(), _port, {"name": "Host"}), "host")
+	var custom := h.get_tree().get_multiplayer(h.get_path())
+	check(custom == h.api, "custom multiplayer is registered")
+	h.release_peer()
+	check(not h.is_host(), "released session is not a live host")
+	var after := h.get_tree().get_multiplayer(h.get_path())
+	check(after != custom, "tree no longer holds the session API")
+	s[0].queue_free()
+
+
 func test_address_parse() -> void:
 	check(NetAddress.parse("10.0.0.5:7777") == {"host": "10.0.0.5", "port": 7777}, "ip:port")
 	check(NetAddress.parse("example.org")["port"] == NetTransport.DEFAULT_PORT, "default port")

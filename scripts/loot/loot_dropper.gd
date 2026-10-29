@@ -29,11 +29,13 @@ var spawned := 0  ## pickups spawned (all time)
 var kills_seen := 0
 var kills_skipped := 0
 var gold_spawned := 0  ## gold pickups (not counted in `spawned`)
+var loot_noted := false  ## 0.3.2: one "your loot" toast per session
 
 
 ## Step 59: gold for one kill: base +-25 % (0 stays 0).
-static func gold_for(def: EnemyDef, r: RandomNumberGenerator) -> int:
-	var b := def.gold_base()
+static func gold_for(def: EnemyDef, r: RandomNumberGenerator, at_level := -1) -> int:
+	var lv := at_level if at_level > 0 else (LevelScale.player_level if LevelScale.player_level > 0 else def.level)
+	var b := LevelScale.gold_amount(def, lv) if LevelScale.player_level > 0 or at_level > 0 else def.gold_base()
 	if b <= 0:
 		return 0
 	return maxi(1, int(round(b * r.randf_range(0.75, 1.25))))
@@ -76,7 +78,12 @@ func _on_enemy_killed(enemy: Enemy, _element: ElementTable.Element) -> void:
 		return
 	var at := parent.to_local(enemy.global_position)
 	spawn_drops(roll_for(enemy), at, enemy.def.id)
-	var g := gold_for(enemy.def, gold_rng)
+	var g := gold_for(enemy.def, gold_rng, enemy.level())
+	if Coop.active() and not loot_noted:
+		loot_noted = true
+		var hud := get_parent().get_node_or_null("Hud") if get_parent() else null
+		if hud and hud.has_method(&"add_toast"):
+			hud.call(&"add_toast", "Your loot — drops are instanced, so nobody takes yours")
 	if g > 0:
 		var gp := LootPickup.create_gold(g, at + Vector3(0.0, LIFT, -SCATTER * 0.5))
 		parent.add_child(gp)

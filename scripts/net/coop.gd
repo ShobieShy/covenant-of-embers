@@ -37,9 +37,14 @@ static func is_client() -> bool:
 	return active() and not session.is_host()
 
 
+static var last_end_reason := ""
+
+
 static func end(reason := "left") -> void:
 	var s := session
 	session = null  # OW11c-6: leave() emits ended, whose handlers call end() again
+	last_end_reason = reason
+	SafeLoad.clear()
 	if s != null and is_instance_valid(s):
 		s.leave(reason)
 		s.queue_free()
