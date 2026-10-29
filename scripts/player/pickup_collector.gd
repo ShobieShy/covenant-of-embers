@@ -41,6 +41,11 @@ func tick(p: Player, interact_pressed: bool, dt := 1.0 / 60.0) -> void:
 			lp.pull_toward(feet, dt)
 	focused = look_target(p, all)
 	if interact_pressed and focused != null:
+		if p.crouched and Coop.active():
+			var cw := p.get_parent().get_node_or_null("CoopWorld") if p.get_parent() else null
+			if cw and cw.has_method(&"share_pickup"):
+				cw.call(&"share_pickup", focused)
+				return
 		pick(p, focused)
 
 

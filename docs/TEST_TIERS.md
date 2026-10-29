@@ -26,8 +26,9 @@ To run only the classic group:
 
 ## Notes
 
-- The co-op joiner can exit with rc 134 at teardown. That's a known issue and the run still
-  counts as a pass.
+- The co-op joiner can still exit with rc 134 at teardown after a full slice, even when the
+  bot logged PASS. `coop_playtest.sh` warns and accepts that. A short session does exit 0.
+  Do not treat 134 as a gameplay failure; the heap abort at shutdown is still open.
 - The Labyrinth playtest's default timeout is 2400 s. Set `PLAYTEST_TIMEOUT` to change it.
 - A run fails on any `ERROR`/`SCRIPT ERROR` log line, except the known Terrain3D res:// pair.
 - Headless runs skip UI animations (UiAnim is instant when DisplayServer is headless).

@@ -18,7 +18,7 @@ signal message(from: int, kind: String, data: Dictionary)  ## step 79+: game tra
 
 enum State { IDLE, CONNECTING, LOBBY, IN_GAME, ENDED }
 
-const PROTOCOL := 3  ## step 142: 2 = staff brands; step 150: 3 = element trees ("hit" sm status mods)
+const PROTOCOL := 4  ## 0.3.2: normalised hits, pose timestamps. 0.3.1 (p3) cannot join.
 const CONNECT_TIMEOUT := 8.0
 
 var state := State.IDLE
@@ -30,6 +30,9 @@ var last_reason := ""
 var _connect_left := 0.0
 var conditioner: LinkConditioner = LinkConditioner.from_args(OS.get_cmdline_user_args())  ## step 92
 var _clock_ms := 0.0  ## game-time clock for the conditioner (frame deltas, so --fixed-fps tests are exact)
+var _released := false
+var reconnect := {}  ## peer id -> seconds left in the 30s window (host)
+var hit_ack := {}  ## peer id -> last hit seq applied (0.3.2)
 
 
 static func version() -> String:
@@ -53,12 +56,20 @@ func _ensure_api() -> void:
 	api.server_disconnected.connect(func(): _end("host left"))
 
 
+func _peer_live() -> bool:
+	if api == null or _released or not api.has_multiplayer_peer():
+		return false
+	# A closed ENet peer still counts as "has a peer". get_unique_id() on it aborts
+	# the joiner ("multiplayer instance isn't currently active" then a fastbin smash).
+	return api.multiplayer_peer.get_connection_status() != MultiplayerPeer.CONNECTION_DISCONNECTED
+
+
 func is_host() -> bool:
-	return api != null and api.has_multiplayer_peer() and api.is_server() and state != State.IDLE
+	return _peer_live() and state != State.IDLE and state != State.ENDED and api.is_server()
 
 
 func my_id() -> int:
-	return api.get_unique_id() if api and api.has_multiplayer_peer() else 0
+	return api.get_unique_id() if _peer_live() else 0
 
 
 func host(t: NetTransport, where: Variant, info: Dictionary) -> bool:
@@ -134,7 +145,7 @@ func send(kind: String, data: Dictionary, to := 0, reliable := true) -> void:
 
 
 func _send_now(kind: String, data: Dictionary, to: int, reliable: bool) -> void:
-	if state == State.IDLE or state == State.ENDED or not api.has_multiplayer_peer():
+	if api == null or state == State.IDLE or state == State.ENDED or not api.has_multiplayer_peer():
 		return
 	var f: Callable = _msg if reliable else _msg_fast
 	if to != 0:
@@ -148,10 +159,31 @@ func leave(reason := "left") -> void:
 	_end(reason)
 
 
+## Close the ENet host once and leave it assigned. Assigning null frees it again from
+## the destructor. Unregistering stops the tree calling get_unique_id() on a closed
+## peer, which aborts. A full-slice joiner can still SIGABRT at process exit; that
+## remains a warned teardown failure in coop_playtest.sh.
+func release_peer() -> void:
+	if _released:
+		return
+	_released = true
+	if api == null:
+		return
+	var path := get_path() if is_inside_tree() else NodePath()
+	if api.has_multiplayer_peer():
+		var peer := api.multiplayer_peer
+		if peer.get_connection_status() != MultiplayerPeer.CONNECTION_DISCONNECTED:
+			peer.close()
+	if is_inside_tree() and not path.is_empty():
+		get_tree().set_multiplayer(null, path)
+
+
 func _close_peer() -> void:
-	if api and api.has_multiplayer_peer():
-		api.multiplayer_peer.close()
-		api.multiplayer_peer = null
+	release_peer()
+
+
+func _exit_tree() -> void:
+	release_peer()
 
 
 func _process(delta: float) -> void:
@@ -166,6 +198,7 @@ func _process(delta: float) -> void:
 		if _connect_left <= 0.0:
 			_close_peer()
 			_fail("the host did not answer (check the address, port and firewall)")
+	_tick_reconnect(delta)
 
 
 func _fail(reason: String) -> bool:
@@ -189,10 +222,43 @@ func _on_peer_connected(_id: int) -> void:
 
 
 func _on_peer_disconnected(id: int) -> void:
+	if is_host() and state == State.IN_GAME and roster.has(id):
+		roster[id]["reconnecting"] = true
+		reconnect[id] = CoopFlow.RECONNECT_S
+		roster_changed.emit()
+		_roster.rpc(roster)
+		return
 	if roster.erase(id):
-		if is_host():
+		reconnect.erase(id)
+		if is_host() and api != null:
 			_roster.rpc(roster)
 		roster_changed.emit()
+
+
+func _tick_reconnect(delta: float) -> void:
+	if reconnect.is_empty() or api == null:
+		return
+	var drop: Array[int] = []
+	for id in reconnect.keys():
+		reconnect[id] = CoopFlow.reconnect_left(float(reconnect[id]), delta)
+		if not CoopFlow.reconnect_open(float(reconnect[id])):
+			drop.append(int(id))
+	if drop.is_empty():
+		return
+	for id in drop:
+		reconnect.erase(id)
+		roster.erase(id)
+	if is_host():
+		_roster.rpc(roster)
+	roster_changed.emit()
+
+
+func note_hit(peer: int, seq: int) -> void:
+	hit_ack[peer] = maxi(int(hit_ack.get(peer, 0)), seq)
+
+
+func ack_for(peer: int) -> int:
+	return int(hit_ack.get(peer, 0))
 
 
 func _on_connected() -> void:
@@ -233,6 +299,15 @@ func _hello(info: Dictionary) -> void:
 		return
 	var d := info.duplicate()
 	d["ready"] = false
+	var nm := String(d.get("name", ""))
+	for old_id in roster.keys():
+		if int(old_id) == id:
+			continue
+		var prev: Dictionary = roster[old_id]
+		if bool(prev.get("reconnecting", false)) and String(prev.get("name", "")) == nm and nm != "":
+			roster.erase(old_id)
+			reconnect.erase(old_id)
+			break
 	roster[id] = d
 	_roster.rpc(roster)
 	roster_changed.emit()

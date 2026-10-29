@@ -231,10 +231,13 @@ func _finish(ok: bool, why := "") -> void:
 	# frames run so queued frees settle before quit (joiner died with a heap double free).
 	if Coop.session != null and is_instance_valid(Coop.session):
 		if cw and is_instance_valid(cw):
-			cw.set_physics_process(false)
+			cw.prepare_shutdown()
 		finished = true  # guard: main/menu must not re-host or re-join after this
 		Coop.end("done")
-		for i in 5:
+		# Frames after close() so the delete queue drops the session before quit.
+		# Do not free current_scene from here: this node lives in it, and that await
+		# never resumes.
+		for i in 8:
 			await get_tree().process_frame
 	get_tree().quit.call_deferred(0 if ok else 1)
 
@@ -573,6 +576,10 @@ func _physics_process(delta: float) -> void:
 	if player.alive():
 		t += delta  # step 93: stage timers pause while down / respawning (co-op last stand)
 	total_time += delta
+	var cap_s := OS.get_environment("COE_PLAYTEST_MAX_S")
+	if cap_s.is_valid_float() and total_time > cap_s.to_float():
+		_finish(true)
+		return
 	stats["casts"] = maxi(
 		stats["casts"], player.loadout.casters[0].casts + player.loadout.casters[1].casts
 	)

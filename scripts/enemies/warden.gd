@@ -18,8 +18,8 @@ var phase := 1
 var phase_2_tick := -1
 
 
-func apply_damage(amount: float, element: ElementTable.Element, announce := true) -> bool:
-	var killed := super.apply_damage(amount, element, announce)
+func apply_damage(amount: float, element: ElementTable.Element, announce := true, normalised := false) -> bool:
+	var killed := super.apply_damage(amount, element, announce, normalised)
 	if not dead and phase == 1 and health <= max_health() * PHASE_2_AT:
 		_enrage()
 	return killed

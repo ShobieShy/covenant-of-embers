@@ -965,7 +965,47 @@ func _process(delta: float) -> void:
 				coop.hits_sent, coop.hits_applied, coop.hurts_sent, coop.hurts_taken, coop.poses_sent, coop.poses_seen])
 		get_tree().quit(0)
 
+var _ls_level := -1
+var _ls_solo := true
+var _roster_names := {}
+
+
+func _sync_level_scale() -> void:
+	var p := get_node_or_null("Player") as Player
+	if p == null:
+		return
+	var is_solo := not Coop.active()
+	if p.progression.level == _ls_level and is_solo == _ls_solo:
+		return
+	_ls_level = p.progression.level
+	_ls_solo = is_solo
+	LevelScale.bind(_ls_level, is_solo)
+	for n in get_tree().get_nodes_in_group(Enemy.GROUP):
+		if n is Enemy and is_instance_valid(n):
+			(n as Enemy).apply_level_scale()
+
+
+func _note_roster() -> void:
+	if Coop.session == null or not is_instance_valid(Coop.session):
+		return
+	var hud := get_node_or_null("Hud")
+	var now := {}
+	for id in Coop.session.roster:
+		now[int(id)] = String(Coop.session.roster[id].get("name", "Player"))
+	if hud and hud.has_method(&"add_toast"):
+		for id in now:
+			if not _roster_names.has(id) and id != Coop.session.my_id() and not _roster_names.is_empty():
+				hud.call(&"add_toast", "%s joined" % now[id])
+		for id in _roster_names:
+			if not now.has(id):
+				hud.call(&"add_toast", "%s left" % _roster_names[id])
+	_roster_names = now
+
+
 func _physics_process(_delta: float) -> void:
+	_sync_level_scale()
+	if _ticks % 30 == 0:
+		_note_roster()
 	_ticks += 1
 
 

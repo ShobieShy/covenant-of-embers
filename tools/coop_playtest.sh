@@ -28,13 +28,14 @@ wait "$hp"; hrc=$?
 wait "$jp"; jrc=$?
 grep -E '^\[(playtest|coop)\]' "$dir/host.log" | sed 's/^/host   /' | tail -12
 grep -E '^\[(playtest|coop|character)\]' "$dir/join.log" | sed 's/^/joiner /' | tail -12
-# OW11c-6: the joiner can abort with SIGABRT (rc 134, glibc heap "double free"/"corrupted size")
-# in engine teardown after its bot finished; clean shutdown (Coop.end + 5 frames) did not stop it.
-# Accept 134 ONLY when that bot already logged PASS, and say so loudly.
+# The joiner can still SIGABRT (rc 134, glibc "corrupted size vs. prev_size") at the
+# end of a full slice, after PASS. A short session (COE_PLAYTEST_MAX_S) exits 0. Calling
+# get_unique_id() on a closed ENet peer was a separate abort and is guarded. The heap
+# smash itself is still open, so 134 after PASS stays a warning, not a gameplay failure.
 for f in host join; do
 	rc=$hrc; [ $f = join ] && rc=$jrc
 	if [ "$rc" -eq 134 ] && grep -q '^\[playtest\] PASS' "$dir/$f.log"; then
-		echo "[coop_playtest] WARNING: $f exited rc 134 (SIGABRT at teardown) AFTER its bot PASSed; accepted as the known exit crash, not a pass of teardown"
+		echo "[coop_playtest] WARNING: $f exited rc 134 (SIGABRT at teardown) AFTER its bot PASSed; the gameplay run passed, teardown abort is still open"
 		[ $f = join ] && jrc=0 || hrc=0
 	fi
 done

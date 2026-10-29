@@ -11,6 +11,8 @@ var settings_ui: SettingsUi
 var panel: PanelContainer
 var buttons := {}
 var status: Label
+var party: Label
+var _leave_armed := false
 var center: CenterContainer
 
 
@@ -37,6 +39,15 @@ func _init() -> void:
 		b.pressed.connect(press.bind(id))
 		v.add_child(b)
 		buttons[id] = b
+	party = Label.new()
+	party.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	party.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(party)
+	var leave := Button.new()
+	leave.text = "Leave co-op"
+	leave.pressed.connect(press.bind("leave"))
+	v.add_child(leave)
+	buttons["leave"] = leave
 	status = Label.new()
 	v.add_child(status)
 
@@ -55,6 +66,15 @@ func open() -> void:
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	UiAnim.open(self)  # 0.3.1 P1
 	status.text = ""
+	_leave_armed = false
+	if party:
+		var n := 1
+		if Coop.session and is_instance_valid(Coop.session):
+			n = Coop.session.roster.size()
+		party.text = CoopFlow.party_line(n)
+	if buttons.has("leave"):
+		(buttons["leave"] as Button).visible = Coop.active()
+		(buttons["leave"] as Button).text = "Leave co-op"
 	if player:
 		player.ui_open = true
 	get_tree().paused = true
@@ -87,6 +107,17 @@ func press(id: String) -> void:
 	match id:
 		"resume":
 			close()
+		"leave":
+			if not Coop.active():
+				return
+			if not _leave_armed:
+				_leave_armed = true
+				status.text = "Leave the session? Press again to confirm."
+				return
+			var tree := get_tree()
+			close()
+			Coop.end("left")
+			GameFlow.to_menu(tree)
 		"skills":  # 0.3.1 P4 (M4): opens the K panel once the menu is gone
 			var sk := get_tree().root.find_child("SkillsUi", true, false)
 			if settings_ui and settings_ui.visible:

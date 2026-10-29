@@ -192,6 +192,8 @@ func _cast(m: FireMode, aim: Aim, bolts: SpellBolts) -> void:
 		s.dark_bonus = wieldable.dark_chance_bonus()
 		m.modify(s)
 		_apply_mods(s)
+		if LevelScale.player_level > 1:
+			s.damage *= LevelScale.player_dmg_mult(LevelScale.player_level)
 		_fill_aim(s, aim)
 		bolts.spawn(s)
 	casts += 1

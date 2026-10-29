@@ -9,6 +9,11 @@ extends RefCounted
 static var _done := {}  # path -> Resource (or null when the load failed), headless only
 
 
+## Drop anything a quit interrupted. A leftover Resource is the ObjectDB leak of one.
+static func clear() -> void:
+	_done.clear()
+
+
 static func threaded() -> bool:
 	return DisplayServer.get_name() != "headless"
 

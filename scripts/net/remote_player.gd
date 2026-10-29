@@ -34,6 +34,12 @@ var archetype := ""  ## pose "k": batch_02 player model for gal / buff
 var _body: Node3D
 var _model: CharacterModel
 var brand_fx: BrandFX  ## step 142: the other player's staff-brand FX (pose "bf")
+var reconnecting := false
+var downed_left := 0.0
+var shield := 0.0
+var ping_at := Vector3.INF
+var ping_left := 0.0
+var _buf := NetInterp.new()
 
 
 func _ready() -> void:
@@ -90,7 +96,12 @@ func apply_pose(d: Dictionary) -> void:
 		_set_archetype(String(d["k"]))
 	if _tag:
 		_tag.text = "%s%s" % [display_name, " (down)" if downed else ""]
+	reconnecting = bool(d.get("rc", false))
+	downed_left = float(d.get("dtl", 0.0))
+	shield = float(d.get("sh", 0.0))
 	poses += 1
+	if d.has("t"):
+		_buf.push_remote(float(d["t"]), float(d.get("rt", d["t"])), target_pos, target_yaw)
 	if not _placed:
 		_placed = true
 		if is_inside_tree():
@@ -126,7 +137,14 @@ func _set_archetype(id: String) -> void:
 		_body.visible = _model == null
 
 
-func smooth(dt: float) -> void:
+func smooth(dt: float, now_ms := -1.0) -> void:
+	if ping_left > 0.0:
+		ping_left = maxf(0.0, ping_left - dt)
+	if now_ms >= 0.0 and not _buf.samples.is_empty():
+		var sm := _buf.sample_sender(now_ms, global_position)
+		global_position = sm["pos"]
+		rotation.y = float(sm["yaw"])
+		return
 	var k := 1.0 - exp(-SMOOTH * dt)
 	global_position = global_position.lerp(target_pos, k)
 	rotation.y = lerp_angle(rotation.y, target_yaw, k)
