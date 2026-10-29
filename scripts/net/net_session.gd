@@ -149,6 +149,10 @@ func _send_now(kind: String, data: Dictionary, to: int, reliable: bool) -> void:
 		return
 	var f: Callable = _msg if reliable else _msg_fast
 	if to != 0:
+		# A delayed conditioner packet can name a peer the API has already dropped
+		# (or never registered). rpc_id would error; the packet cannot be delivered.
+		if not api.get_peers().has(to):
+			return
 		f.rpc_id(to, kind, data)
 	else:
 		f.rpc(kind, data)

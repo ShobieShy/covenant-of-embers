@@ -59,6 +59,20 @@ the 0.3.2 default. A player-health curve is a separate decision. Caps stay x60 /
 
 Latency: `test_walk_stays_smooth_at_150ms_5pct` pushes a 6 m/s, 20 Hz walk through
 `LinkConditioner` at 150 ms and 5 % loss into `NetInterp`. Result: 466 steps, 0 snaps,
-0 jumps over 1 m, 3 poses dropped. Remote players and puppets print
+0 jumps over 1 m, 3 poses dropped. The in-process fight in
+`test_fight_hashes_match_at_150ms_2pct` also logged 0 snaps and 0 jumps (956 puppet
+steps) at 150 ms and 2 % loss. Remote players and puppets print
 `[net] player interp` / `[net] puppet interp` (steps, snaps, big) when a session ends.
 The live co-op hook is `COOP_LAG=150 COOP_LOSS=0.05 tools/coop_playtest.sh`.
+A 20 s headless session (both bots PASS) logged:
+
+| Side | steps | snaps | jumps over 1 m |
+|---|---:|---:|---:|
+| Host, remote player | 971 | 2 | 0 |
+| Joiner, remote player | 1198 | 0 | 0 |
+| Joiner, puppets | 120 | 0 | 0 |
+
+Those snaps are the >4 m corrections on intro travel, which is the one intended teleport.
+Walk steps did not jump. A delayed packet addressed to a peer the multiplayer API no
+longer lists is dropped in `NetSession._send_now` instead of raising
+"unknown peer ID".
