@@ -32,6 +32,14 @@ To run only the classic group:
 - The Labyrinth playtest's default timeout is 2400 s. Set `PLAYTEST_TIMEOUT` to change it.
 - A run fails on any `ERROR`/`SCRIPT ERROR` log line, except the known Terrain3D res:// pair.
 - Headless runs skip UI animations (UiAnim is instant when DisplayServer is headless).
+- Labyrinth shader prewarm (0.3.4): `ShaderWarmup.warm_labyrinth` draws the warrens kit and
+  the Act I goblins for a few frames while the floor loading screen is up, before the floor
+  is parented. The dummy renderer used by `--headless` compiles nothing, so a frame-time
+  capture of the old ~60 ms hitch is not available here. `test_warrens_kit.gd` checks the
+  mesh list (walls, throne hall, skinned goblins) and that the headless call returns 0.
+  On a GPU, the same path as the open-world warmup in `docs/perf_ow11.md` is what moves
+  that compile off the first visible floor frame. `tools/perf_cold.sh` is the capture if
+  a display and a cold Mesa cache are available.
 
 ## QA debug hooks
 

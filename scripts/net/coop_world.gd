@@ -36,6 +36,7 @@ var _hit_seq := 0
 var _await_ack := 0
 var _pred_hp := {}
 var _puppet_buf := {}  ## id -> NetInterp
+var _puppet_interp := {}  ## id -> NetInterp.watch totals
 var revive_holding := false
 var _revive_helper := ""
 var loot_note_shown := false
@@ -117,15 +118,32 @@ func tick(dt: float) -> void:
 			var e: Enemy = puppets[id]
 			var buf: NetInterp = _puppet_buf.get(id)
 			if buf != null and not buf.samples.is_empty():
+				var before := e.global_position
 				var sm := buf.sample_sender(now_ms, e.global_position)
 				e.global_position = sm["pos"]
 				e.rotation.y = float(sm["yaw"])
+				var st: Dictionary = _puppet_interp.get(id, {})
+				NetInterp.watch(st, before, e.global_position, bool(sm["snap"]))
+				_puppet_interp[id] = st
 			else:
 				var want: Variant = e.get_meta(&"net_pos", null)
 				if want is Vector3:
 					e.global_position = e.global_position.lerp(
 						want, 1.0 - exp(-RemotePlayer.SMOOTH * dt)
 					)
+
+
+func _exit_tree() -> void:
+	var steps := 0
+	var snaps := 0
+	var big := 0
+	for id in _puppet_interp:
+		var st: Dictionary = _puppet_interp[id]
+		steps += int(st.get("steps", 0))
+		snaps += int(st.get("snaps", 0))
+		big += int(st.get("big", 0))
+	if steps > 0:
+		print("[net] puppet interp steps %d snaps %d big %d" % [steps, snaps, big])
 
 
 ## --- poses -------------------------------------------------------------------------

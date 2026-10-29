@@ -272,6 +272,9 @@ func _enter_floor(id: String, n: int) -> Vector3:
 	var t0 := Time.get_ticks_msec()
 	slow_load.emit(id)  # a floor build is one frame of work, but the stairs swap is a load
 	await get_tree().process_frame
+	# 0.3.4: compile warrens and goblin pipelines while the loading screen is up.
+	# The first floor otherwise hitches once (~60 ms) on the frame those shaders first draw.
+	await ShaderWarmup.warm_labyrinth(get_tree(), get_viewport().get_camera_3d())
 	lab_floor = LabyrinthFloor.build(_kit(), n, labyrinth)
 	interior = lab_floor
 	interior.name = "Interior"
