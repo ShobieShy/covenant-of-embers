@@ -74,6 +74,7 @@ class Bite:
 	var from := Vector3.ZERO  ## its feet
 	var dodged := false
 	var tick := 0
+	var dl := 0  ## 0.3.2: level delta the defender applies to this base damage
 
 
 class Transition:
@@ -482,7 +483,7 @@ func _on_damaged(_e: Enemy, h: SpellBolts.Hit) -> void:
 		return
 	provoked = true
 	hunt_left = HUNT_TIME
-	if h.result == null or h.result.amount <= rusher.knockback_threshold:
+	if h.result == null or h.result.amount <= stagger_threshold(rusher.knockback_threshold):
 		return
 	if rusher.knockback_time <= 0.0 or rusher.knockback_strength <= 0.0:
 		return

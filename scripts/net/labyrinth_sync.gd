@@ -116,6 +116,58 @@ func all_near() -> bool:
 	return true
 
 
+## The player who opened the vote (the host, standing on the stairs). Walking away cancels.
+func starter_near() -> bool:
+	var sd := stairs_pos()
+	if sd == Vector3.INF or interiors == null:
+		return false
+	for p: Node3D in interiors.party():
+		var d := Vector2(p.global_position.x - sd.x, p.global_position.z - sd.z)
+		if d.length() <= STAIR_RANGE:
+			return true
+	return false
+
+
+var _pin: MeshInstance3D
+
+
+func _marker(on: bool) -> void:
+	if not on:
+		if _pin:
+			_pin.visible = false
+		return
+	var at := stairs_pos()
+	if at == Vector3.INF:
+		return
+	if _pin == null:
+		_pin = MeshInstance3D.new()
+		_pin.name = "StairsPing"
+		var mesh := SphereMesh.new()
+		mesh.radius = 0.25
+		mesh.height = 0.5
+		_pin.mesh = mesh
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = Color(1.0, 0.7, 0.2)
+		mat.emission_enabled = true
+		mat.emission = Color(1.0, 0.6, 0.1)
+		_pin.material_override = mat
+		add_child(_pin)
+	_pin.visible = true
+	_pin.global_position = at + Vector3.UP * 2.2
+
+
+func near_count() -> int:
+	var sd := stairs_pos()
+	if sd == Vector3.INF:
+		return 0
+	var n := 0
+	for p: Node3D in _voters():
+		var d := Vector2(p.global_position.x - sd.x, p.global_position.z - sd.z)
+		if d.length() <= STAIR_RANGE:
+			n += 1
+	return n
+
+
 func stairs_pos() -> Vector3:
 	var f := interiors.lab_floor
 	var sd := f.get_node_or_null("StairsDown") as Node3D if f and is_instance_valid(f) else null
@@ -131,10 +183,16 @@ func tick(dt: float) -> void:
 		banner_left -= dt
 		if interiors and interiors.current != "labyrinth":
 			banner_left = -1.0
+	_marker(host and vote_left >= 0.0 or (not host and banner_left > 0.0))
 	if not host or vote_left < 0.0:
 		return
 	if interiors.current != "labyrinth":
 		vote_left = -1.0
+		return
+	if not starter_near():
+		vote_left = -1.0
+		session.call(&"send", "lab_vote", {"t": -1.0})
+		print("[labyrinth] vote cancelled (left the stairs)")
 		return
 	vote_left -= dt
 	if vote_left <= 0.0 or all_near():
@@ -150,7 +208,10 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 			follow(int(data.get("n", 1)), data.get("st", {}))
 		"lab_vote":
 			banner_left = float(data.get("t", VOTE_S))
-			print("[labyrinth] the host is at the stairs: %.0f s" % float(data.get("t", VOTE_S)))
+			if banner_left < 0.0:
+				print("[labyrinth] the stairs vote was cancelled")
+			else:
+				print("[labyrinth] the host is at the stairs: %.0f s" % banner_left)
 
 
 ## Joiner: play the host's floor `n` from its state `st`.

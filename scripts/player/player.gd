@@ -420,11 +420,17 @@ func take_enemy_hit(damage: float, element: ElementTable.Element) -> Damage.Resu
 
 
 ## Gnawer.attacked / Heap slams (main.gd connects them): dodged attacks do nothing.
-func on_enemy_attack(_from: Gnawer, bite: Gnawer.Bite) -> void:
+func on_enemy_attack(from: Variant, bite: Gnawer.Bite) -> void:
 	if bite.dodged:
 		hits_ignored += 1
 		return
-	take_enemy_hit(bite.damage, bite.element)
+	var dmg := bite.damage
+	if LevelScale.player_level > 0:
+		var dl := bite.dl
+		if from is Enemy:
+			dl = (from as Enemy).combat_dl(LevelScale.player_level)
+		dmg *= LevelScale.mult("dmg", dl)
+	take_enemy_hit(dmg, bite.element)
 
 
 ## A bolt (SpellBolts already resolved it on damage_target): same i-frame/dead rules.

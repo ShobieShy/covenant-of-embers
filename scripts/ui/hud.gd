@@ -577,7 +577,8 @@ func _refresh_boss() -> void:
 		chip_boss = boss
 		(chips[boss_bar] as HudFx.Chip).started = false  # a new boss starts full, no chip
 	_set_chip(boss_bar, boss.health / boss.max_health(), get_process_delta_time())
-	boss_label.text = "%s  %s" % [boss.def.display_name, "◆".repeat(boss.phase) + "◇".repeat(3 - boss.phase)]
+	var lv := boss.combat_level(LevelScale.player_level) if LevelScale.player_level > 0 else boss.level()
+	boss_label.text = "%s  Lv %d  %s" % [boss.def.display_name, lv, "◆".repeat(boss.phase) + "◇".repeat(3 - boss.phase)]
 
 
 func _refresh_pips() -> void:

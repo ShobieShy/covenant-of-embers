@@ -57,7 +57,13 @@ const FX_SLOW := 2
 const FX_STAGGER := 4
 var net_fx := 0  ## step 134: host status bits on a co-op puppet
 var health_scale := 1.0  ## step 80: co-op enemy health multiplier
-var level_override := 0  ## L4: a Labyrinth floor's item level (ActLoot); 0 = def.level
+var level_override := 0  ## kept; loot uses item_floor / combat level (0.3.2)
+var level_offset := 0  ## elite +1, boss +2, Labyrinth depth +0..+2
+var zone_floor := 0  ## solo minimum combat level; 0 = authored def.level
+var item_floor := 0  ## loot never drops below this (Act band)
+var authoritative_base := false  ## co-op host pool is unscaled; peers normalise hits
+var _level_ready := false
+var _last_max := 0.0
 ## Step 94: a co-op client puppet only shows predicted damage; it never dies from it (it
 ## stays at >= 1 HP, so later hits still go to the host). Only the host's kill ends it.
 var hold_death := false
@@ -128,6 +134,10 @@ func setup(d: EnemyDef) -> void:
 	name = d.id
 	health = d.max_health
 	damage_target = d.make_target()
+	if Elites.affix_of(d) != "":
+		level_offset = LevelScale.ELITE_OFFSET
+	elif _authored_boss(d):
+		level_offset = LevelScale.BOSS_OFFSET
 	collision_layer = 1 << (ENEMY_LAYER - 1)
 	collision_mask = 1
 	add_to_group(GROUP)
@@ -140,6 +150,7 @@ func setup(d: EnemyDef) -> void:
 		_head_mat = _material(d.color.lerp(Color.WHITE, WEAK_POINT_BRIGHTEN))
 		_head_mesh = _mesh("HeadMesh", d.weak_point_size, d.weak_point_offset, _head_mat)
 	_attach_model()
+	apply_level_scale()
 
 
 ## Step 121: swap the greybox mesh for the batch_04 model; tints go to an overlay.
@@ -204,15 +215,85 @@ func display_name() -> String:
 	return def.display_name if def else "Enemy"
 
 
-## The level its drops roll at (L4: the Labyrinth floor's band, else the def's).
+## Combat level for `viewer` (0 = scaling off, the authored level).
+func combat_level(viewer: int) -> int:
+	if def == null:
+		return 1
+	if viewer <= 0:
+		return def.level
+	var floor := zone_floor if zone_floor > 0 else def.level
+	var is_solo := LevelScale.solo and not Coop.active()
+	var eff := LevelScale.effective(viewer, level_offset, floor, is_solo)
+	return eff if eff > 0 else def.level
+
+
+func combat_dl(viewer: int) -> int:
+	if def == null or viewer <= 0:
+		return 0
+	return combat_level(viewer) - def.level
+
+
+## The level its drops roll at: local effective level, never under the Act band.
 func level() -> int:
-	if level_override > 0:
+	if def == null:
+		return 1
+	if level_override > 0 and LevelScale.player_level <= 0:
 		return level_override
-	return def.level if def else 1
+	var viewer := LevelScale.player_level
+	var eff := combat_level(viewer) if viewer > 0 else (item_floor if item_floor > 0 else def.level)
+	if item_floor > 0:
+		return maxi(eff, item_floor)
+	return eff
+
+
+func level_hp_mult() -> float:
+	if LevelScale.player_level <= 0 or def == null:
+		return 1.0
+	return LevelScale.mult("hp", combat_dl(LevelScale.player_level))
 
 
 func max_health() -> float:
-	return def.max_health * health_scale if def else 0.0
+	if def == null:
+		return 0.0
+	var base := def.max_health * health_scale
+	if authoritative_base or LevelScale.player_level <= 0:
+		return base
+	return base * level_hp_mult()
+
+
+## Keep the health fraction across a level-scale or pool change. First call fills the bar.
+func apply_level_scale() -> void:
+	var frac := 1.0
+	if _level_ready and _last_max > 0.0:
+		frac = clampf(health / _last_max, 0.0, 1.0)
+	var m := max_health()
+	if not dead:
+		health = m * frac
+	_last_max = m
+	_level_ready = true
+	_refresh_resist()
+
+
+func _refresh_resist() -> void:
+	if def == null:
+		return
+	damage_target = def.make_target()
+	if LevelScale.player_level <= 0:
+		return
+	var d_l := combat_dl(LevelScale.player_level)
+	for i in ElementTable.COUNT:
+		var el := i as ElementTable.Element
+		damage_target.set_resist(el, LevelScale.resist_of(def.resist_of(el), d_l))
+
+
+func stagger_threshold(base: float) -> float:
+	if LevelScale.player_level <= 0:
+		return base
+	return base * LevelScale.mult("thr", combat_dl(LevelScale.player_level))
+
+
+static func _authored_boss(d: EnemyDef) -> bool:
+	return d != null and String(d.ai.get("kind", "")) in ["boss", "filth", "king"]
 
 
 ## Step 80: co-op scaling (x1.6 with 2 players, ...); keeps the current health fraction.
@@ -221,6 +302,8 @@ func scale_health(k: float) -> void:
 	health_scale = maxf(0.01, k)
 	if not dead:
 		health = max_health() * frac
+	_last_max = max_health()
+	_level_ready = true
 
 
 ## Bosses (the Warden, The Filth) are immune to Dark corruption (step 52).
@@ -252,6 +335,8 @@ func is_weak_point_shape(shape_index: int) -> bool:
 
 ## SpellBolts: the Damage.Target for this hit (weak_point from the struck shape).
 func damage_target_for(h: SpellBolts.Hit) -> Damage.Target:
+	if LevelScale.player_level > 0:
+		_refresh_resist()
 	damage_target.weak_point = is_weak_point_shape(h.shape)
 	return damage_target
 
@@ -274,17 +359,20 @@ func take_hit(h: SpellBolts.Hit) -> void:
 ## Lowers health by `amount` (>= 0), clamped at 0; true when this killed it. A kill is
 ## announced (`died` + EventBus.enemy_killed) at once unless `announce` is false
 ## (take_hit announces after `damaged`, so listeners see the hit before the death).
-func apply_damage(amount: float, element: ElementTable.Element, announce := true) -> bool:
+func apply_damage(amount: float, element: ElementTable.Element, announce := true, normalised := false) -> bool:
 	if dead:
 		return false
+	var amt := amount
+	if authoritative_base and not normalised:
+		amt = LevelScale.normalise(amount, combat_dl(LevelScale.player_level))
 	var before := health
-	if hold_death and health - maxf(0.0, amount) <= 0.0:
+	if hold_death and health - maxf(0.0, amt) <= 0.0:
 		health = minf(health, 1.0)
 		damage_taken += before - health
 		hits += 1
 		flash = FLASH_TIME
 		return false
-	health = maxf(0.0, health - maxf(0.0, amount))
+	health = maxf(0.0, health - maxf(0.0, amt))
 	damage_taken += before - health
 	hits += 1
 	flash = FLASH_TIME

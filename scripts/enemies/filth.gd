@@ -81,10 +81,10 @@ func reset(xform: Variant = null) -> void:
 			(_head_mesh.mesh as BoxMesh).size = def.weak_point_size
 
 
-func apply_damage(amount: float, element: ElementTable.Element, announce := true) -> bool:
+func apply_damage(amount: float, element: ElementTable.Element, announce := true, normalised := false) -> bool:
 	if amount > 0.0:
 		since_hit = 0.0
-	var killed := super.apply_damage(amount, element, announce)
+	var killed := super.apply_damage(amount, element, announce, normalised)
 	if not dead:
 		_update_phase()
 	return killed
@@ -124,7 +124,10 @@ func think(dt: float) -> void:
 	since_hit += dt
 	if phase == 2 and since_hit >= REGEN_DELAY:
 		var cap := max_health() * PHASE_2_AT
-		var add := minf(REGEN_PER_S * dt, cap - health)
+		var rate := REGEN_PER_S
+		if not authoritative_base and LevelScale.player_level > 0:
+			rate *= level_hp_mult()
+		var add := minf(rate * dt, cap - health)
 		if add > 0.0:
 			health += add
 			regenerated += add

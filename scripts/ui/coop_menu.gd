@@ -230,6 +230,8 @@ func _map_port(port: int) -> void:
 
 
 func _on_mapped(r: Dictionary) -> void:
+	if not is_inside_tree():
+		return
 	if _upnp_thread:
 		_upnp_thread.wait_to_finish()
 		_upnp_thread = null
@@ -250,12 +252,12 @@ func _on_roster() -> void:
 
 
 func _on_failed(reason: String) -> void:
-	set_status("Could not connect: " + reason)
+	set_status(CoopFlow.error_text(reason))
 	_refresh()
 
 
 func _on_ended(reason: String) -> void:
-	set_status("Session ended: " + reason)
+	set_status(CoopFlow.error_text(reason))
 	_refresh()
 
 
@@ -283,14 +285,25 @@ func auto(opts: Dictionary) -> void:
 
 ## P6 (L2): the join step in words, from the session state (started: Coop.begin ran).
 static func join_phase(state: int, started: bool) -> String:
-	match state:
-		NetSession.State.CONNECTING:
+	match CoopFlow.phase(state, started, false, false):
+		CoopFlow.PHASE_CONNECTING:
 			return "Connecting ..."
-		NetSession.State.LOBBY:
-			return "Loading the world ..." if started else "In the lobby"
-		NetSession.State.IN_GAME:
+		CoopFlow.PHASE_HANDSHAKE:
+			return "In the lobby"
+		CoopFlow.PHASE_HOST_LOADING:
+			return "The host is loading ..."
+		CoopFlow.PHASE_WORLD:
+			return "Loading the world ..."
+		CoopFlow.PHASE_IN_WORLD:
 			return "In the world"
-	return ""
+		_:
+			return ""
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE and _upnp_thread != null and _upnp_thread.is_started():
+		_upnp_thread.wait_to_finish()
+		_upnp_thread = null
 
 
 func _refresh() -> void:
