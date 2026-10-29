@@ -83,10 +83,23 @@ func setup(s: NetSession, p: Node3D, enemy_root: Node, t: EnemyTable = null) -> 
 
 func _physics_process(dt: float) -> void:
 	if auto_tick:
-		tick(dt)
+		tick(dt, false)
 
 
-func tick(dt: float) -> void:
+func _process(dt: float) -> void:
+	if not auto_tick:
+		return
+	# Outside the physics step: Jolt corrupts if bodies are moved or freed inside it,
+	# and the joiner used to abort at process exit after a long fight.
+	var now_ms := session._clock_ms if session != null and is_instance_valid(session) else 0.0
+	for pr: RemotePlayer in proxies.values():
+		pr.smooth(dt, now_ms)
+	if not host:
+		_move_puppets(dt, now_ms)
+		_drop_world_enemies()
+
+
+func tick(dt: float, move_puppets := true) -> void:
 	if (
 		session == null
 		or not is_instance_valid(session)
@@ -104,28 +117,44 @@ func tick(dt: float) -> void:
 	_tick_revive(dt)
 	_flush_puppet_hits()
 	var now_ms := session._clock_ms if session != null else 0.0
-	for pr: RemotePlayer in proxies.values():
-		pr.smooth(dt, now_ms)
-	if not host and world_enemies:
-		# Freeing a physics body inside _physics_process corrupts the heap; the joiner
-		# used to abort at shutdown ("corrupted size vs. prev_size") after a long slice.
-		for c in get_tree().get_nodes_in_group(Enemy.GROUP):
-			if c is Enemy and not is_ancestor_of(c) and not c.is_queued_for_deletion():
-				c.call_deferred(&"queue_free")
-	if not host:
-		for id in puppets:
-			var e: Enemy = puppets[id]
-			var buf: NetInterp = _puppet_buf.get(id)
-			if buf != null and not buf.samples.is_empty():
-				var sm := buf.sample_sender(now_ms, e.global_position)
-				e.global_position = sm["pos"]
-				e.rotation.y = float(sm["yaw"])
-			else:
-				var want: Variant = e.get_meta(&"net_pos", null)
-				if want is Vector3:
-					e.global_position = e.global_position.lerp(
-						want, 1.0 - exp(-RemotePlayer.SMOOTH * dt)
-					)
+	if move_puppets:
+		for pr: RemotePlayer in proxies.values():
+			pr.smooth(dt, now_ms)
+		if not host:
+			_move_puppets(dt, now_ms)
+			_drop_world_enemies()
+
+
+## Idle-frame puppet motion (0.3.2 interpolation buffer when samples exist).
+## Tests call tick(), which still moves them.
+func _move_puppets(dt: float, now_ms := -1.0) -> void:
+	for id in puppets:
+		var e: Enemy = puppets[id]
+		if not is_instance_valid(e) or e.is_queued_for_deletion():
+			continue
+		var buf: NetInterp = _puppet_buf.get(id)
+		if now_ms >= 0.0 and buf != null and not buf.samples.is_empty():
+			var sm := buf.sample_sender(now_ms, e.global_position)
+			e.global_position = sm["pos"]
+			e.rotation.y = float(sm["yaw"])
+		else:
+			var want: Variant = e.get_meta(&"net_pos", null)
+			if want is Vector3:
+				e.global_position = e.global_position.lerp(
+					want, 1.0 - exp(-RemotePlayer.SMOOTH * dt)
+				)
+
+
+## The host's world is authoritative. Drop local enemies outside the physics step.
+func _drop_world_enemies() -> void:
+	if not world_enemies:
+		return
+	for c in get_tree().get_nodes_in_group(Enemy.GROUP):
+		if c is Enemy and not is_ancestor_of(c) and not c.is_queued_for_deletion():
+			var e := c as Enemy
+			e.set_physics_process(false)
+			e.process_mode = Node.PROCESS_MODE_DISABLED
+			e.call_deferred(&"queue_free")
 
 
 ## --- poses -------------------------------------------------------------------------
@@ -553,8 +582,10 @@ func _apply_snapshot(list: Array, ack := 0, t_ms := 0.0) -> void:
 	for id in puppets.keys():
 		if not seen.has(id):
 			var gone: Enemy = puppets[id]
-			if is_instance_valid(gone):
-				gone.queue_free()
+			if is_instance_valid(gone) and not gone.is_queued_for_deletion():
+				gone.set_physics_process(false)
+				gone.process_mode = Node.PROCESS_MODE_DISABLED
+				gone.call_deferred(&"queue_free")
 			puppets.erase(id)
 			puppet_hp.erase(id)
 			_snap_dead.erase(id)
