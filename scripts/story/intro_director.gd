@@ -309,7 +309,15 @@ func _dress_association() -> void:
 	_spawn("Clerk", spot("clerk", CLERK_SPOT), 180.0)
 	var others := Array(Archetype.IDS).filter(func(a: String) -> bool: return a != player.archetype)
 	for i in mini(3, others.size()):
-		_spawn("Summoned " + Archetype.label(others[i]), SUMMONED_SPOTS[i], 0.0)
+		# Level-local spots. Classic loads the hall at the origin; the open world
+		# instances it at Interiors.DEPTH, so without `at()` the cast stands on the
+		# surface while the camera looks at the hall.
+		_spawn("Summoned " + Archetype.label(others[i]), at(SUMMONED_SPOTS[i]), 0.0)
+	# Joe is an [[npc]] on the hall. Classic _setup_npcs builds him with the level;
+	# the open-world interior is not $Level, so the summoning had nobody on the dais.
+	if joe() == null:
+		var placed := _joe_hall_spot()
+		_spawn("Crazy Joe", placed[0], float(placed[1]))
 	if flags.has("joe_expelled"):
 		_hide_joe()
 	match current():
@@ -333,6 +341,20 @@ func _spawn(speaker: String, at: Vector3, yaw_deg: float) -> Npc:
 	main.npcs.append(n)
 	cast[speaker] = n
 	return n
+
+
+## Crazy Joe's hall spot: the interior's NPCs/crazy_joe marker, else the greybox dais.
+func _joe_hall_spot() -> Array:
+	var hall: Node3D = null
+	var ow := main.get_node_or_null("OpenWorld") as OpenWorld if main else null
+	if ow and ow.interiors and ow.interiors.current == here:
+		hall = ow.interiors.interior
+	var m: Node3D = null
+	if hall:
+		m = hall.get_node_or_null(^"NPCs/crazy_joe") as Node3D
+	if m:
+		return [m.global_position, m.rotation_degrees.y]
+	return [at(Vector3(0.0, 0.3, -10.0)), 0.0]
 
 
 func joe() -> Npc:

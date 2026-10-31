@@ -94,9 +94,54 @@ func test_ember_art_dress() -> void:
 	var sky := h.get_children().filter(func(n: Node) -> bool: return String(n.name).begins_with("Skyline"))
 	check(sky.size() == EmberArt.SKYLINE_N, "skyline ring: %d" % sky.size())
 	var n := h.get_child_count()
-	check(EmberArt.dress(lvl, "midden").get_child_count() == n, "redress replaces")
+	var again := EmberArt.dress(lvl, "midden")
+	check(again.get_child_count() == n, "redress replaces")
 	check(lvl.get_children().filter(func(x: Node) -> bool: return x.name == &"EmberArt").size() == 1, "one holder")
+	var jm := again.get_node_or_null("Landmark_junk_mountain") as Node3D
+	check(jm != null and jm.position.is_equal_approx(Vector3(0, 0, 300)), "classic landmark stays level-local")
 	lvl.free()
+
+
+## The merged open-world level is already in world space. Slots are level-local, so dressing
+## them raw put oak_lod on the Association door (0, -13) while the map pin stays at the zone.
+func test_open_world_landmarks_follow_zone_offset() -> void:
+	var lv := Node3D.new()
+	lv.set_meta(&"open_world", true)
+	var h := EmberArt.dress(lv, "old_oak")
+	var oak := h.get_node_or_null("Landmark_oak_lod") as Node3D
+	var want := EmberArt.landmark_position("oak_lod", true)
+	check(oak != null and oak.position.is_equal_approx(want), "oak LOD at the Old Oak zone %s" % want)
+	check(want.distance_to(Vector3(0, 0, -17)) > 50.0, "not on the Association door")
+	check(h.get_node_or_null("Landmark_association_spire") == null, "spire is not dropped into the world")
+	var jm := h.get_node_or_null("Landmark_junk_mountain") as Node3D
+	check(
+		jm != null and jm.position.is_equal_approx(EmberArt.landmark_position("junk_mountain", true)),
+		"junk mountain on the landfill"
+	)
+	var gate := h.get_node_or_null("Landmark_labyrinth_gate") as Node3D
+	check(
+		gate != null and gate.position.is_equal_approx(EmberArt.landmark_position("labyrinth_gate", true)),
+		"labyrinth gate on the crater door"
+	)
+	var town := (load("res://scenes/levels/town_square.tscn") as PackedScene).instantiate()
+	check(town.get_node_or_null("Props/old_oak") == null, "no second giant oak beyond the town east gate")
+	town.free()
+	var zone := (load("res://scenes/levels/old_oak.tscn") as PackedScene).instantiate()
+	var mesh := zone.get_node("Props/old_oak") as Node3D
+	var wo := SaveMigration.world_offset("old_oak")
+	var mesh_xz := Vector2(wo.x + mesh.position.x, wo.y + mesh.position.z)
+	check(mesh_xz.distance_to(Vector2(want.x, want.z)) < 1.0, "LOD oak sits on the zone oak")
+	check(mesh_xz.distance_to(Vector2(-272.0, 3.5)) < 20.0, "zone oak is in the waystone grove")
+	zone.free()
+	var hall := (load("res://scenes/levels/mage_association.tscn") as PackedScene).instantiate()
+	Interiors.prepare(hall, "mage_association", false)
+	var spire := hall.get_node_or_null("EmberArt/Landmark_association_spire") as Node3D
+	check(
+		spire != null and spire.position.is_equal_approx(Vector3(0, 0, -15)),
+		"spire stays in the hall"
+	)
+	hall.free()
+	lv.free()
 
 
 ## Batch 07 follow-up: Terrain3D needs one format per array; a flat height channel imports

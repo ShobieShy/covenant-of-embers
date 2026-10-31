@@ -161,6 +161,10 @@ static func prepare(n: Node3D, id: String, use_cache := true) -> void:
 		nav.navigation_mesh = load(nav_cache(id)) as NavigationMesh
 	elif nav and use_cache:
 		push_warning("Interiors: no nav cache for %s (run tools/bake_interior_nav.gd)" % id)
+	# The open world never loads this hall as $Level, so main.gd's dress() never runs.
+	# The spire is interior-local (it wraps the back door); the crater art stays outdoors.
+	if id == "mage_association":
+		EmberArt.dress(n, id)
 
 
 ## The interior scene still loading on a thread ("" when none).

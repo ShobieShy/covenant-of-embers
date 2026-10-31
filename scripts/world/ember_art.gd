@@ -171,6 +171,24 @@ static func waystone_variant(point: String) -> String:
 	return "town"
 
 
+## Outdoor zones whose landmarks belong on the world map (docs/WORLD_LAYOUT.md). The
+## Association spire is interior-local: its slot lines up with that hall, not world_offset.
+const OUTDOOR: Array[String] = ["town_square", "old_oak", "midden", "breach"]
+
+
+## Level-local slot position. On the open-world level (WorldZones.merged, already in world
+## space, world_offset zero) add the zone offset, or the mesh lands at the world origin.
+## That put oak_lod at (0, 0, -13), on the Association's front door, while the waystone
+## and the map pin stay at the Old Oak zone.
+static func landmark_position(id: String, world_space: bool) -> Vector3:
+	var s: Dictionary = SLOTS[id]
+	var at: Vector3 = s["at"]
+	if not world_space:
+		return at
+	var wo := SaveMigration.world_offset(String(s["level"]))
+	return at + Vector3(wo.x, 0.0, wo.y)
+
+
 ## Adds Level/EmberArt: Filth residue decals at Anchors/filth_residue_*, a skyline ring at a
 ## terrain zone's edge, and the level's landmark art when it exists. Returns the holder.
 static func dress(level: Node3D, level_id: String) -> Node3D:
@@ -196,14 +214,22 @@ static func dress(level: Node3D, level_id: String) -> Node3D:
 	var tz := level.get_node_or_null(^"Terrain") as TerrainZone
 	if tz:
 		_skyline(holder, tz)
+	var world := bool(level.get_meta(&"open_world", false))
 	for id in SLOTS:
 		var s: Dictionary = SLOTS[id]
-		if String(s["level"]) == level_id and s.has("at"):
-			var m := model(id)
-			if m:
-				m.name = "Landmark_" + id
-				holder.add_child(m)
-				m.position = s["at"]
+		if not s.has("at"):
+			continue
+		var slot_level := String(s["level"])
+		if world:
+			if slot_level not in OUTDOOR:
+				continue
+		elif slot_level != level_id:
+			continue
+		var m := model(id)
+		if m:
+			m.name = "Landmark_" + id
+			holder.add_child(m)
+			m.position = landmark_position(id, world)
 	return holder
 
 

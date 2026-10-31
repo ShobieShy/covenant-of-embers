@@ -14,7 +14,6 @@
 [ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/fountain-square-detail.glb" id="12_wmgkk"]
 [ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/tree-high.glb" id="13_iy17i"]
 [ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/tree-high-round.glb" id="14_ofxmw"]
-[ext_resource type="PackedScene" path="res://assets/original/old_oak/OldOak_Giant.glb" id="15_qvljp"]
 [ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall-green.glb" id="16_o3gtu"]
 [ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall-red.glb" id="17_3l7rf"]
 
@@ -316,9 +315,6 @@ transform = Transform3D(1.094464, 0, 3.007016, 0, 3.2, 0, -3.007016, 0, 1.094464
 
 [node name="town_square_tree_9" type="Node3D" parent="Props" unique_id=1362598608 instance=ExtResource("14_ofxmw")]
 transform = Transform3D(1.6, 0, 2.771281, 0, 3.2, 0, -2.771281, 0, 1.6, 12, 0, 25)
-
-[node name="town_square_old_oak" type="Node3D" parent="Props" unique_id=389530207 instance=ExtResource("15_qvljp")]
-transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 29, 0, 14)
 
 [node name="Pois" type="Node3D" parent="." unique_id=462660643]
 
