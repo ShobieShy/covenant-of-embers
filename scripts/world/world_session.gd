@@ -19,8 +19,11 @@ static func start_spot(data: Dictionary, intro_mode: String) -> Dictionary:
 	f.from_dict(pr.get("flags", {}))
 	if IntroDirector.active(f):
 		var lvl := String(IntroDirector.LEVEL.get(IntroDirector.beat(f), ""))
+		var saved_level := String(pr.get("level_id", ""))
 		if Interiors.LINKS.has(lvl):
-			inside = lvl  # a mid-intro save in the Association resumes indoors
+			inside = lvl  # the beat itself is indoors
+		elif Interiors.LINKS.has(saved_level):
+			inside = saved_level  # a save still standing in the Association hall
 	if Interiors.LINKS.has(inside):
 		return {"pos": Vector3.INF, "interior": inside}
 	var wp: Array = pr.get("world_pos", [])

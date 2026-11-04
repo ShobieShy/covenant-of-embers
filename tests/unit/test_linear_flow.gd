@@ -67,6 +67,16 @@ func test_forward_gates_follow_the_story() -> void:
 	check(GameFlow.level_id == "town_square" and GameFlow.load_save, "travel loads the hub")
 	oak.free()
 	var town := _game("town_square", ["intro_done"])
+	check(town.stash != null and town.can_respec(), "the hub keeps the stash and respec")
+	var map_ev := InputEventAction.new()
+	map_ev.action = &"map"
+	map_ev.pressed = true
+	town._unhandled_input(map_ev)
+	check(
+		town.level_map != null and town.level_map.visible and town.level_map.linear_level == "town_square",
+		"M shows this closed level"
+	)
+	town.level_map.close()
 	var to_fill := _gate(town, "midden")
 	check(to_fill.locked(), "the Landfill waits for Bob's lead")
 	town.story_flags.set_flag("landfill_route_open")

@@ -124,7 +124,7 @@ static func resolve_intro(data: Dictionary, play: bool) -> bool:
 		data["progress"] = {}
 	data["progress"]["flags"] = f.to_dict()
 	if play:
-		data["progress"]["level_id"] = "mage_association"
+		data["progress"]["level_id"] = "old_oak"
 	return true
 
 

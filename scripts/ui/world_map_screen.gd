@@ -28,6 +28,9 @@ var fog: WorldFog
 var pins: MapPins
 var regions: WorldMap
 var travel: WorldTravel
+var crystal: FastTravel  ## closed levels: the crystal's points, not the world streamer
+var linear_level := ""  ## set on a closed level: M draws this level, not Elyria
+var campaign: WorldMap
 var players := Callable()  ## -> Array of [Vector3 position, float yaw, String name, Color]
 var zoom := 1.0
 var pan := Vector2.ZERO  ## screen offset of the map's top-left corner
@@ -108,9 +111,15 @@ func _build_list() -> void:
 	var title := Label.new()
 	title.text = "Travel to:"
 	list.add_child(title)
-	for p in travel.points() if travel else []:
-		if not travel.fast_travel.attuned(p):
-			continue
+	var pts: Array = []
+	if linear_level != "" and crystal:
+		for p in crystal.destinations():
+			pts.append(p)
+	elif travel:
+		for p in travel.points():
+			if travel.fast_travel.attuned(p):
+				pts.append(p)
+	for p in pts:
 		var b := Button.new()
 		b.text = String(FastTravel.info(p).get("name", p))
 		b.pressed.connect(select.bind(p))
@@ -123,16 +132,26 @@ func _build_list() -> void:
 
 ## Show the confirm card for `point` (from a pin or the list).
 func select(point: String) -> bool:
-	if travel == null or not travel.fast_travel.attuned(point):
+	var attuned := (
+		crystal.attuned(point) if linear_level != "" and crystal else (travel != null and travel.fast_travel.attuned(point))
+	)
+	if not attuned:
 		return false
 	pending = point
 	var l := card_lines(point)
 	card_title.text = l[0]
 	card_info.text = l[1] + "\n" + l[2]
-	var ok := travel.can_travel(point)
+	var ok := false
+	var err := ""
+	if linear_level != "" and crystal:
+		ok = crystal.can_travel(point)
+		err = crystal.last_error
+	elif travel:
+		ok = travel.can_travel(point)
+		err = travel.last_error
 	go_button.disabled = not ok
 	if not ok:
-		card_info.text += "\n" + travel.last_error
+		card_info.text += "\n" + err
 	card.visible = true
 	UiAnim.fade_in(card)
 	if ok and is_inside_tree():
@@ -150,18 +169,29 @@ func cancel() -> void:
 ## Travel to the card's destination.
 func confirm() -> bool:
 	var p := pending
-	if p.is_empty() or not travel.can_travel(p):
-		status = travel.last_error if travel else ""
+	if p.is_empty():
+		return false
+	var ok := crystal.can_travel(p) if linear_level != "" and crystal else (travel != null and travel.can_travel(p))
+	if not ok:
+		status = crystal.last_error if linear_level != "" and crystal else (travel.last_error if travel else "")
 		queue_redraw()
 		return false
 	cancel()
 	travel_requested.emit(p)
 	close()
-	travel.travel_to(p)
+	if linear_level != "" and crystal:
+		crystal.travel(p)
+	elif travel:
+		travel.travel_to(p)
 	return true
 
 
 func open() -> void:
+	if linear_level != "":
+		UiAnim.open(self)
+		_build_list()
+		queue_redraw()
+		return
 	if fog == null:
 		fog = WorldFog.new()
 	if pins == null:
@@ -280,6 +310,27 @@ func _unhandled_input(e: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+func _draw_linear() -> void:
+	draw_rect(Rect2(Vector2.ZERO, size if size.x > 0.0 else Vector2(1600, 900)), Color(0.05, 0.04, 0.07))
+	var font := get_theme_default_font()
+	var lines: PackedStringArray = (
+		campaign.level_lines(linear_level) if campaign else PackedStringArray([linear_level])
+	)
+	var y := 56.0
+	for line in lines:
+		var here := line.ends_with(": Here") or line == WorldMap.level_name(linear_level)
+		draw_string(
+			font,
+			Vector2(64, y),
+			line,
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			28 if y < 80.0 else 22,
+			Color(1.0, 0.72, 0.35) if here else Color(0.92, 0.9, 0.84)
+		)
+		y += 36.0
+
+
 func _rebuild_fog() -> void:
 	var img := Image.create(maxi(1, fog.cols), maxi(1, fog.rows), false, Image.FORMAT_RGBA8)
 	for y in fog.rows:
@@ -290,6 +341,9 @@ func _rebuild_fog() -> void:
 
 
 func _draw() -> void:
+	if linear_level != "":
+		_draw_linear()
+		return
 	if fog == null:
 		return
 	var r := Rect2(pan, (tex.get_size() if tex else fog.size) * zoom)

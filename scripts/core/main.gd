@@ -24,13 +24,14 @@ var quest_driver: QuestDriver
 var quest_ui: QuestTrackerUI
 var _loaded_quests := {}
 var dialogue_ui: DialogueUI
-var stash: Stash  # step 66: the Old Oak's shared stash (own file, every slot)
+var stash: Stash  # the town hub's shared stash (one file, every slot)
 var mentor_played := false
 var fast_travel: FastTravel  # step 68
 var waystone: Waystone
 var travel_ui: FastTravelUI
 var world_map: WorldMap  # step 69
 var world_map_ui: WorldMapUI
+var level_map: WorldMapScreen  # M: this closed level and the linear campaign
 var load_warnings := PackedStringArray()
 var coop: CoopWorld  # step 79: set when a co-op session is running
 var intro: IntroDirector  # step 109: set while the intro runs
@@ -270,6 +271,8 @@ func _setup_flow(player: Player) -> void:
 		apply_linear_gates()
 	_setup_quests(player, here)
 	if here == "old_oak":
+		_setup_oak(player)
+	if here == "town_square":
 		_setup_hub(player)
 	_setup_fast_travel(player, here)
 	for g in get_tree().get_nodes_in_group(FlagGate.GROUP):  # step 156: intro soft-blocks
@@ -394,14 +397,17 @@ func _ensure_dialogue() -> void:
 	layer.add_child(dialogue_ui)
 	dialogue_ui.bind(dialogue)
 
-## Step 66: the Old Oak hub - the shared stash, and Bob's first-night arrival (once).
-func _setup_hub(player: Player) -> void:
-	stash = Stash.load_shared()
+## Bob's night stays at the grove. The stash and respec live at the town hub.
+func _setup_oak(player: Player) -> void:
 	_ensure_dialogue()
 	if intro == null:  # step 113: the intro plays Bob's night itself (after the moss bed)
 		mentor_played = MentorArrival.play(story_flags, player, dialogue, self, player.spawn_feet + Vector3(0, 0, -3))
 	if story_flags.has(MentorArrival.FLAG):  # step 67: Bob stays in the Oak to report back to
 		spawn_bob(player)
+
+
+func _setup_hub(_player: Player) -> void:
+	stash = Stash.load_shared()
 
 
 func spawn_bob(player: Player) -> Npc:
@@ -431,6 +437,8 @@ func _setup_fast_travel(player: Player, here: String) -> void:
 	world_map.visit_level(here)
 	world_map_ui = WorldMapUI.new()
 	layer.add_child(world_map_ui)
+	if not open_world_on():
+		_setup_level_map(layer, here)
 	var point := String(FastTravel.LEVEL_POINT.get(here, ""))
 	if point.is_empty():
 		return
@@ -466,6 +474,9 @@ func open_map(point := "") -> void:
 	else:
 		var seen: Array = []
 		world_map_ui.show_level(world_map, GameFlow.id_of($Level), seen)
+		if level_map:
+			level_map.linear_level = GameFlow.id_of($Level)
+			level_map.campaign = world_map
 
 func _on_map_closed() -> void:
 	world_map_ui.visible = false
@@ -485,9 +496,9 @@ func _spawn_at_anchor(player: Player, saved: Dictionary) -> void:
 		player.spawn(n.global_position, deg_to_rad(float(n.get_meta("yaw_deg", 0.0))))
 		print("[spawn] at anchor %s" % n.name)
 
-## Step 71: skill respec is only offered at the Old Oak; step 59: it costs Player.respec_price() gold.
+## Respec is offered at the town hub. It costs Player.respec_price() gold.
 func can_respec() -> bool:
-	return GameFlow.id_of($Level) == "old_oak"
+	return GameFlow.id_of($Level) == "town_square"
 
 func respec_skills() -> int:
 	var player := get_node_or_null("Player") as Player
@@ -1037,6 +1048,44 @@ func _lab_loot_parent_linear(fl: LabyrinthFloor) -> void:
 	var ld := get_node_or_null("LootDropper") as LootDropper
 	if ld:
 		ld.parent = fl
+
+func _setup_level_map(layer: CanvasLayer, here: String) -> void:
+	level_map = WorldMapScreen.new()
+	level_map.linear_level = here
+	level_map.campaign = world_map
+	level_map.crystal = fast_travel
+	level_map.closed.connect(_on_level_map_closed)
+	layer.add_child(level_map)
+
+
+func _open_level_map() -> void:
+	if level_map == null:
+		return
+	var player := get_node_or_null("Player") as Player
+	if player:
+		player.ui_open = true
+	level_map.linear_level = GameFlow.id_of($Level)
+	level_map.campaign = world_map
+	level_map.open()
+
+
+func _on_level_map_closed() -> void:
+	var player := get_node_or_null("Player") as Player
+	if player and (travel_ui == null or not travel_ui.visible):
+		player.ui_open = false
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if open_world_on() or not event.is_action_pressed(&"map"):
+		return
+	if level_map and level_map.visible:
+		return  # the screen closes itself on M
+	if IntroDirector.refuse(self, "map"):
+		get_viewport().set_input_as_handled()
+		return
+	_open_level_map()
+	get_viewport().set_input_as_handled()
+
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST and pause_menu:

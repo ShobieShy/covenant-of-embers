@@ -92,10 +92,10 @@ static func _change(tree: SceneTree, path: String) -> void:
 	LoadingScreen.start(tree, path, level_id if path == GAME else "")  # threaded load, staged bar
 
 
-## Step 109: a new game starts the intro in the Mage Association (or skips it to the Old Oak).
+## 0.4.0: a new game starts the prologue at the Old Oak. --skip-intro lands there too, past it.
 static func new_run(tree: SceneTree, mode := INTRO_PLAY) -> void:
 	intro_mode = mode
-	level_id = "old_oak" if mode == INTRO_SKIP else "mage_association"
+	level_id = "old_oak"
 	load_save = false
 	_change(tree, GAME)
 

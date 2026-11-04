@@ -212,6 +212,13 @@ func _host_interior() -> Variant:
 	return null
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed(&"map") or map_screen == null or map_screen.visible:
+		return
+	map_screen.open()
+	get_viewport().set_input_as_handled()
+
+
 func _hint(t: String) -> void:
 	var hud := (
 		get_tree().current_scene.get_node_or_null("Hud") if get_tree().current_scene else null

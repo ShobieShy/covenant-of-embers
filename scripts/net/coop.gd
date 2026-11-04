@@ -95,11 +95,7 @@ static func parse_args(args: PackedStringArray) -> Dictionary:
 static func host_level() -> String:
 	var r := SaveGame.read(GameFlow.save_path)
 	if r.has("error"):
-		return (
-			"old_oak"
-			if GameFlow.intro_mode_from_args(OS.get_cmdline_user_args()) == GameFlow.INTRO_SKIP
-			else "mage_association"
-		)
+		return "old_oak"
 	var id := String((r["data"] as Dictionary).get("progress", {}).get("level_id", "midden"))
 	return id if GameFlow.LEVELS.has(id) else "midden"
 

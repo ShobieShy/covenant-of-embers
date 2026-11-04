@@ -52,10 +52,10 @@ func test_new_game_runs_intro() -> void:
 	GameFlow.dry_run = true
 	GameFlow.new_run(null)
 	check(
-		GameFlow.level_id == "mage_association" and GameFlow.intro_mode == GameFlow.INTRO_PLAY,
-		"new game -> Association"
+		GameFlow.level_id == "old_oak" and GameFlow.intro_mode == GameFlow.INTRO_PLAY,
+		"new game -> the Old Oak"
 	)
-	var g := _game("mage_association", GameFlow.INTRO_PLAY)
+	var g := _game("old_oak", GameFlow.INTRO_PLAY)
 	var p := g.get_node("Player") as Player
 	check(g.intro != null and g.intro.current() == "summoning", "director runs the summoning")
 	check(p.loadout.wieldable(Loadout.Slot.STAFF) == null, "empty-handed until Bob")
@@ -65,7 +65,7 @@ func test_new_game_runs_intro() -> void:
 	g.save_game()
 	g.free()
 	g = null
-	GameFlow.level_id = "mage_association"
+	GameFlow.level_id = "old_oak"
 	GameFlow.load_save = true
 	var h: Node = (load(GameFlow.GAME) as PackedScene).instantiate()
 	runner_tree.root.add_child(h)
