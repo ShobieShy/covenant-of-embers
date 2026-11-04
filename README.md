@@ -2,7 +2,9 @@
 
 An original, open-source co-op (1–4 players) loot FPS with Magewar-style staffs and wands, built on **Godot 4.7.2** (Forward+, GDScript). Inspired by the spirit of Magewar and by biblical themes.
 
-Status: switched from a custom C++20/Vulkan engine to Godot 4 on 2026-10-23 ([ADR-0002](docs/adr/0002-switch-to-godot.md)). The old engine is archived in `archive/cpp-engine/` and on branch `archive/cpp-vulkan-engine`. See [docs/PLAN.md](docs/PLAN.md) for the design and [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) for the step plan.
+Status: Godot 4.7.2 (Forward+). The campaign is linear closed levels. The current plan is [docs/LINEAR_LEVELS_PLAN.md](docs/LINEAR_LEVELS_PLAN.md). Mechanics that are not the world layout live in [docs/PLAN.md](docs/PLAN.md). The step log is [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md). The seamless-world plans are archived in [docs/archive/](docs/archive/README.md).
+
+The project switched from a custom C++20/Vulkan engine to Godot 4 on 2026-10-23 ([ADR-0002](docs/adr/0002-switch-to-godot.md)). The old engine is archived in `archive/cpp-engine/` and on branch `archive/cpp-vulkan-engine`. The Layout and Run sections below that point at `engine/`, `game/`, and `./build/debug/covenant` describe that archived engine.
 
 ## Run
 ```sh
@@ -11,13 +13,16 @@ godot --headless --path . -- --seconds 2   # smoke run
 ./tools/run_tests.sh                  # import + unit tests + smoke + asset lint
 ```
 
-## World (0.1.4-prealpha)
-Five zones on Terrain3D heightmaps textured with CC0 ambientCG materials: Eldoria's town
-square, the Old Oak, the Mage Association, the Landfill (Joe's dump camp, 8 respawning
-camps, trash and junk to salvage) and the Breach (crater approach, 6 rooms on 2 levels,
-3 levers, an optional side wing). Waystones fast-travel between them; see
-[docs/ZONE_BALANCE.md](docs/ZONE_BALANCE.md) and [docs/TERRAIN_MAPS_PLAN.md](docs/TERRAIN_MAPS_PLAN.md).
-Placeholder art slots awaiting original Ember Art: [docs/EMBER_ART_REQUESTS.md](docs/EMBER_ART_REQUESTS.md).
+## Campaign
+Closed levels, one scene each, joined by gates. There is no open world.
+
+1. Prologue at the Old Oak.
+2. Eldoria Town Square, the hub. The Mage Association is an interior of the hub.
+3. The Landfill.
+4. The Breach. The crater portal enters the Labyrinth.
+5. The Breach Labyrinth: Act I Warrens is in the game. Acts II-V and the Core (Crazy Joe, then the Demon Lord) are the rest of the campaign.
+
+Waystones travel between levels. Counts for the levels that exist today: [docs/ZONE_BALANCE.md](docs/ZONE_BALANCE.md). The dungeon content plan: [docs/LABYRINTH_PLAN.md](docs/LABYRINTH_PLAN.md). Placeholder art slots: [docs/EMBER_ART_REQUESTS.md](docs/EMBER_ART_REQUESTS.md).
 
 ## Licenses
 - Code: Apache-2.0 (see `LICENSE`).

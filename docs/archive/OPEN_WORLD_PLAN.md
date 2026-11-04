@@ -1,9 +1,9 @@
 # Open World Plan
 
-Superseded 2026-11-04 by docs/LINEAR_LEVELS_PLAN.md. Closed levels are the game.
-The seamless world, its cell stream, and the `--open-world` flag were removed in 0.5.0. (one seamless Elyria + in-game map)
+Superseded 2026-11-04 by [../LINEAR_LEVELS_PLAN.md](../LINEAR_LEVELS_PLAN.md). Closed levels are the game.
+The seamless world, its cell stream, and the `--open-world` flag were removed in 0.5.0. Archived 2026-11-04; this is not the current plan.
 
-Superseded 2026-11-04 by [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md). Closed levels are
+Superseded 2026-11-04 by [../LINEAR_LEVELS_PLAN.md](../LINEAR_LEVELS_PLAN.md). Closed levels are
 the game as of 0.4.0. The open world stays behind the dev-only `--open-world` flag until 0.5.0.
 
 Status: APPROVED 2026-10-27 ~00:30 CDT. The user accepted all 12 recommended defaults in

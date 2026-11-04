@@ -3,7 +3,7 @@
 Date: 2026-10-27. Tool: `tools/perf_capture.gd -- <out> --world --res WxH`. A camera walks
 Town Square -> Landfill funnel -> Landfill pit -> the Landfill/Breach strip -> Breach at run
 speed (7 m/s), 1.7 m above the terrain. It streams cells and nav as the player would, and runs
-11,540 frames per preset with vsync off and no fps cap. The raw data is in `docs/perf/perf_ow11_*.json`.
+11,540 frames per preset with vsync off and no fps cap. The raw data is in `perf/perf_ow11_*.json`.
 
 The machine is the dev box (AMD RX 6950 XT, RADV). It was run while Ember QA's suite may also
 have been on the machine, so treat the numbers as a ceiling check, not a final measurement.

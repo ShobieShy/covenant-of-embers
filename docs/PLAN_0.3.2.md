@@ -1,5 +1,7 @@
 # 0.3.2 plan: per-player level scaling + co-op polish (plan only, nothing built)
 
+Shipped milestone note. Not the current campaign plan. That is [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md).
+
 Status: draft for ShobieShy, written 2026-10-28 at 0a44992. Ships as 0.3.2, after 0.3.1.
 Part A is level scaling (sections 1-12), part B is co-op polish (sections 13-15), and
 section 16 is the combined step list.

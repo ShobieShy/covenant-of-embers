@@ -3,7 +3,9 @@
 Working title. Plan only, with no code yet. A brand-new co-op Vulkan action RPG inspired by the spirit of Magewar and by biblical themes. It is not a copy or reskin of Magewar.
 
 
-> **Superseded (2026-10-24, ShobieShy):** the story, world, NPC and faction content in this plan (§2, §5 Redemption story framing, §9 bosses, §12 world, §13 Camp, §15 story/NPCs) is replaced by the Magewar storyline in `~/game/Magewar Storyline.md` and `~/game/Magewar Bible.md` (Elyria, the Summoned, Crazy Joe, Bob, the Old Oak, The Filth, five dungeons, Demon Lord). Mechanics here still apply unless BUILD_PLAN says otherwise.
+> **Campaign (current):** closed levels only. The world in §12 is not the game we are building. The campaign plan is [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md): Old Oak, Town Square (hub), Landfill, Breach, then the Labyrinth. The open-world plans are in [archive/](archive/README.md).
+
+> **Superseded (2026-10-24, ShobieShy):** the story, world, NPC and faction content in this plan (§2, §5 Redemption story framing, §9 bosses, §12 world, §13 Camp, §15 story/NPCs) is replaced by the Magewar storyline in `~/game/Magewar Storyline.md` and `~/game/Magewar Bible.md` (Elyria, the Summoned, Crazy Joe, Bob, the Old Oak, The Filth, five dungeons, Demon Lord). Mechanics here still apply unless BUILD_PLAN says otherwise. The five separate dungeons are one Labyrinth; see [LABYRINTH_PLAN.md](LABYRINTH_PLAN.md).
 
 ## 1. Magewar material found on Luna (read-only review)
 
@@ -121,6 +123,8 @@ Each enemy has a level (1–50), XP value, Tally drop and a loot table with a dr
 
 ## 12. World map, regions and fast travel
 
+Not the current world. The campaign is closed levels: [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md).
+
 Ten years ago the old wells and vaults broke open and the land went dark; only places guarded by Watchfires are safe, and about 60 % of the map is wild. Relighting Watchfires expands safe ground and is the main measure of progress.
 
 | Region | Feel | Breach (dungeon) |
@@ -151,7 +155,7 @@ Ten years ago the old wells and vaults broke open and the land went dark; only p
 - **Rewards**: Chests per player, guaranteed Gift on first clear, boss loot.
 - **Replay**: Vigil levels with modifiers for endgame.
 
-> **Superseded (2026-10-24, ShobieShy):** the story, world, NPC and faction content in this plan (§2, §5 Redemption story framing, §9 bosses, §12 world, §13 Camp, §15 story/NPCs) is replaced by the Magewar storyline in `~/game/Magewar Storyline.md` and `~/game/Magewar Bible.md` (Elyria, the Summoned, Crazy Joe, Bob, the Old Oak, The Filth, five dungeons, Demon Lord). Mechanics here still apply unless BUILD_PLAN says otherwise.
+> **Not the current world.** Closed levels replaced the region map in §12. See [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md). The 2026-10-24 note still stands for the story sections that follow: they were replaced by the Magewar storyline, and the five dungeons are one Labyrinth ([LABYRINTH_PLAN.md](LABYRINTH_PLAN.md)).
 
 ## 15. Story, characters, NPCs and quests
 

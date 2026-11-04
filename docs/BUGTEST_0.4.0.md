@@ -2,6 +2,8 @@
 
 Date: 2026-11-04. Branch `cursor/closed-levels-0-4-0-e02c` at `e0d5840`. Godot 4.7.2.stable headless (`ed1daf0bf`). Gameplay bugs were reproduced and left as they are. Nothing in this pass changes play, saves, or tests.
 
+Recorded before the 0.5.0 cut. Probes that pass `--open-world` describe a flag that master no longer has. The parked gameplay bugs (joiner rc 134, the travel list's Landfill entries, a gate vote on a freed body, a dead player using a gate, the joiner vote log) are still open and are not part of the plan cleanup.
+
 `--classic` is the same set as the full tier (`CLASSIC` in `tests/run_tests.gd` is empty). It was not run a second time.
 
 ## Counts
