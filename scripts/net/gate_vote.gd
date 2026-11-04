@@ -18,6 +18,7 @@ var spot := Vector3.ZERO
 var banner: VoteBanner
 ## Joiner-facing outcome of the last gate_vote: "waiting", "ready", or "cancelled".
 var result := ""
+var act_name := ""  ## Blightcoil / Warrens label shown on the gate banner
 signal decided(to: String, anchor: String)
 
 

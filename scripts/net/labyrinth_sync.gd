@@ -223,9 +223,27 @@ func follow(n: int, st: Variant) -> void:
 	if interiors.floor_no != n:
 		banner_left = -1.0  # the host went down: the vote is over
 	interiors.labyrinth = host_state
+	DialogueDB.bosses = host_state.bosses
+	if interiors.current == "labyrinth" and LabGate.is_cavern(interiors.floor_no) and LabGate.is_cavern(n):
+		var cav := interiors.cavern
+		if cav and host_state.bosses.has(LabGate.BOSS):
+			cav.note_boss_dead()
+			for e in interiors.get_tree().get_nodes_in_group(Enemy.GROUP):
+				if e is Blightmaw and is_instance_valid(e):
+					(e as Node).queue_free()
+		return  # already in the cavern: do not teleport when the other player changes tier
 	if interiors.current == "labyrinth" and interiors.floor_no != n and not interiors.busy:
 		follows += 1
 		print("[coop] following the host to floor %d" % n)
 		await interiors.enter_floor(n)
 	elif interiors.current != "labyrinth":
 		interiors.floor_no = n
+		if _crater_push() and not interiors.busy:
+			follows += 1
+			print("[coop] joining the host on checkpoint %d" % n)
+			await interiors.enter("labyrinth")
+
+
+func _crater_push() -> bool:
+	var parent := interiors.get_parent() if interiors else null
+	return parent != null and parent.has_method("here_id") and String(parent.call("here_id")) == "breach"

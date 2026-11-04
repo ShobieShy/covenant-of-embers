@@ -110,14 +110,20 @@ const TABLE := {
 	"FX_SLOW": {"fixed": "status bit"},
 	"FX_STAGGER": {"fixed": "status bit"},
 	"FALL_LIMIT": {"fixed": "geometry"},
+	"CAVERN_CHASE_M": {"fixed": "ai geometry"},
+	"CAVERN_HOME_DROP": {"fixed": "geometry"},
+	"CROWN_REACH": {"fixed": "ai geometry"},
+	"HUSK_PERIOD": {"fixed": "timing"},
+	"SPORE_PERIOD": {"fixed": "timing"},
 }
 
 ## 0 = tests and tools, no scaling. The running game sets this from the local player.
 static var player_level := 0
 static var solo := true
 
-## Act I floors 1..King map to +0..+2 (five floors).
-const LABYRINTH_OFFSETS: Array[int] = [0, 0, 1, 1, 2]
+## Act I floors 1..King are +0..+2. Act II pads 6..8 are +3..+5. The pad offset
+## replaces a boss offset; it is not added on top.
+const LABYRINTH_OFFSETS: Array[int] = [0, 0, 1, 1, 2, 3, 4, 5]
 
 
 static func bind(level: int, is_solo: bool) -> void:

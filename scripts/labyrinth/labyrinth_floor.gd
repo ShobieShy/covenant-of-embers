@@ -47,7 +47,11 @@ const PACK := {"normal": [2, 3], "elite": [4, 5]}
 
 
 ## Builds floor `n` for `state` from `kit` (FloorGen.load_kit()).
+static var build_count := 0
+
+
 static func build(kit: Dictionary, n: int, state: LabyrinthState) -> LabyrinthFloor:
+	build_count += 1
 	var f := LabyrinthFloor.new()
 	f.name = "LabyrinthFloor"
 	f.floor_no = n

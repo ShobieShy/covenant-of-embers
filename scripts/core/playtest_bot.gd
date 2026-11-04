@@ -87,6 +87,8 @@ func setup(m: Node, p: Player) -> void:
 		Coop.session.ended.connect(func(r: String): _client_done("session ended: " + r))
 	elif stage == "midden_walk" and IntroDirector.active(m.get(&"story_flags")):  # OW11c: before the director
 		stage = "intro"  # step 118: a new game plays the prologue first
+	if act2_run() and not Coop.is_client() and stage == "midden_walk":
+		stage = "act2_to_breach"
 	if not Coop.is_client() and stage != "intro":
 		next_brand()
 	note("start %s in %s" % [stage, m.call(&"here_id")])
@@ -260,6 +262,9 @@ func _client_done(why: String) -> void:
 		main.call(&"save_game")
 	stats["saves"] += 1
 	note("joiner: " + why)
+	if act2_run() and _act2_heights.has("joiner"):
+		_finish(true)
+		return
 	if stats["casts"] == 0:
 		_finish(false, "joiner never cast")
 	elif (
@@ -277,7 +282,33 @@ func _client_done(why: String) -> void:
 		_finish(true)
 
 
+static var _act2_heights := {}
+static var _act2_step := 0
+
+
 func _follow_host() -> void:
+	if act2_run():
+		var inn := _interiors()
+		if inn and inn.cavern and inn.floor_no == 8:
+			var pad_y := inn.cavern.pad_global(8).y
+			if absf(player.global_position.y - pad_y) < 2.5 and not _act2_heights.has("joiner"):
+				_act2_heights["joiner"] = player.global_position.y - inn.cavern.global_position.y
+				var mire := false
+				for n in inn.cavern.get_tree().get_nodes_in_group(&"blight_volume"):
+					if String(n.get_meta(&"kind", "")) == "mire":
+						mire = true
+						var d := player.global_position - (n as Node3D).global_position
+						if Vector2(d.x, d.z).length() < 2.0:
+							_finish(false, "joiner on the Crown is inside the Sump mire")
+							return
+				note("act2 joiner height %.1f mire %s" % [_act2_heights["joiner"], mire])
+				if not mire:
+					_finish(false, "act2 cavern has no mire")
+					return
+				_act2_heights["joiner_at"] = total_time
+			if _act2_heights.has("joiner_at") and total_time - float(_act2_heights["joiner_at"]) > 15.0:
+				_finish(true)
+				return
 	var cw: CoopWorld = main.get(&"coop")
 	var e := nearest_enemy(true)
 	if e and e.global_position.distance_to(player.global_position) < 25.0:
@@ -507,19 +538,29 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		_replan_left = REPLAN
 		_path_goal = at
 		_path = PackedVector3Array()
-		var nav := main.get_node_or_null("Level/Navigation") as LevelNavigation
+		var nav := main.get_node_or_null("Level/Navigation") as NavigationRegion3D
 		var inn := _interiors()
 		if inn and inn.interior:
-			nav = inn.interior.get_node_or_null("Navigation") as LevelNavigation
+			var inside := inn.interior.get_node_or_null("Navigation") as NavigationRegion3D
+			if inside:
+				nav = inside
+		if inn and inn.cavern:
+			var coil := inn.cavern.get_node_or_null("Navigation") as NavigationRegion3D
+			if coil:
+				nav = coil
 		var lf: LabyrinthFloor = inn.lab_floor if inn and inn.current == "labyrinth" else null
 		_path_ordered = false
 		if lf and is_instance_valid(lf):  # L5: the floors have no navmesh; room-graph route
 			_path = lf.route(player.global_position, at)
 			_path_ordered = true
-		elif nav and nav.map_ready():
+		elif nav is LevelNavigation and (nav as LevelNavigation).map_ready():
 			_path = NavigationServer3D.map_get_path(
 				nav.get_navigation_map(), player.global_position, at, true
 			)
+		elif nav and nav.navigation_mesh and nav.navigation_mesh.get_polygon_count() > 0:
+			var map := nav.get_navigation_map()
+			if map.is_valid() and NavigationServer3D.map_get_iteration_id(map) > 0:
+				_path = NavigationServer3D.map_get_path(map, player.global_position, at, true)
 	# OW11b: a path that ends well short of the goal means the bot is on a nav island (seen on
 	# a Breach-rooms ledge 4 m above lever_west): walk straight at the goal and drop off it.
 	if not _path.is_empty() and Vector2(_path[-1].x - at.x, _path[-1].z - at.z).length() > 2.0:
@@ -578,7 +619,7 @@ func _physics_process(delta: float) -> void:
 	stats["casts"] = maxi(
 		stats["casts"], player.loadout.casters[0].casts + player.loadout.casters[1].casts
 	)
-	var limit := SIM_LIMIT + (LAB_LIMIT if labyrinth_run() else 0.0)
+	var limit := SIM_LIMIT + (LAB_LIMIT if labyrinth_run() or act2_run() else 0.0)
 	if total_time > limit:
 		_finish(false, "run over %.0f s in stage %s" % [limit, stage])
 		return
@@ -698,6 +739,8 @@ func _physics_process(delta: float) -> void:
 				_finish(true)
 		"lab_gate", "lab_floor", "lab_save":
 			_lab_tick()
+		"act2_to_breach", "act2_gate", "act2_climb", "act2_crown", "act2_fight", "act2_home":
+			_act2_tick()
 		"breach_chest":
 			var c: VaultChest = main.breach.chest
 			if not _reach(c) and t < 60.0 * _walk_scale():
@@ -734,6 +777,10 @@ func _physics_process(delta: float) -> void:
 
 static func labyrinth_run() -> bool:
 	return OS.get_cmdline_user_args().has("--labyrinth")
+
+
+static func act2_run() -> bool:
+	return OS.get_cmdline_user_args().has("--act2")
 
 
 var _lab_n := 0
@@ -922,6 +969,144 @@ func _lab_tick() -> void:
 	# 0.3.1 P2: the stairs take a 0.5 s Interact hold; hold it once standing on them.
 	var on := flat_distance(down.global_position) < LabyrinthStairs.RADIUS
 	walk_to(down.global_position, ["interact"] if on else [])
+
+
+func _act2_tick() -> void:
+	var lab: LabyrinthState = main.get("labyrinth")
+	if stage == "act2_to_breach":
+		if not lab.bosses.has("goblin_king"):
+			lab.defeat_boss("goblin_king")
+			lab.current = 0 if Coop.session == null else 8
+		if str(main.call("here_id")) != "breach":
+			note("act2: the King is already dead, skipping the crater walk")
+			main.call("travel", "breach")
+			_done = true
+			return
+		_goto("act2_gate")
+		return
+	if stage == "act2_gate":
+		var inn := _interiors()
+		if inn and inn.current == "labyrinth":
+			var y := player.global_position.y - inn.interior.global_position.y
+			note("act2: in the cavern at height %.1f" % y)
+			_act2_heights[inn.floor_no] = y
+			_goto("act2_crown" if Coop.session != null else "act2_climb")
+			return
+		if main.get_node_or_null("ActPicker"):
+			note("act2: choosing the Sump")
+			main.call("pick_act", LabGate.SUMP)
+			return
+		if t > 0.5:
+			if Coop.session != null:
+				lab.current = 8
+			note("act2: crater workaround, taking the gate")
+			main.call("travel", "labyrinth")
+		return
+	if stage == "act2_home":
+		if str(main.call("here_id")) != "town_square":
+			note("act2: waystone home keeps the Crown")
+			main.call("travel", "town_square", "town_gate")
+			_done = true
+			return
+		var saved := LabyrinthState.from_save(SaveGame.read(GameFlow.save_path)["data"])
+		if saved.current != 8 or not saved.bosses.has("blightmaw_matriarch"):
+			_finish(false, "home save current %d bosses %s" % [saved.current, saved.bosses])
+			return
+		if not (_act2_heights.has(6) and _act2_heights.has(7) and _act2_heights.has(8)):
+			_finish(false, "missed a pad height %s" % _act2_heights)
+			return
+		note("act2: heights %s, current %d" % [_act2_heights, saved.current])
+		_finish(true)
+		return
+	var inn2 := _interiors()
+	if inn2 == null or inn2.cavern == null:
+		if t > 8.0:
+			_finish(false, "act2 did not enter at %s" % player.global_position)
+		return
+	var cav: BlightcoilCavern = inn2.cavern
+	var local_y := player.global_position.y - cav.global_position.y
+	if cav.nav_bakes > 0:
+		_finish(false, "act2 rebaked navigation")
+		return
+	if stage == "act2_crown":
+		for n in get_tree().get_nodes_in_group(RemotePlayer.GROUP):
+			var dy := (n as Node3D).global_position.y - cav.pad_global(8).y
+			if absf(dy) < 2.5:
+				note("act2: joiner reached the Crown")
+				_finish(true)
+				return
+		var foe := nearest_enemy(true)
+		if foe and foe.global_position.distance_to(player.global_position) < 6.0 and not foe is Blightmaw:
+			fight(foe)
+			return
+		if t > 45.0:
+			_finish(false, "joiner did not reach the Crown pad")
+		return
+	if stage == "act2_climb":
+		var foe := nearest_enemy(true)
+		var on_pad := false
+		for pad in [6, 7, 8]:
+			var at := cav.pad_global(pad)
+			var flat_pad := Vector2(player.global_position.x - at.x, player.global_position.z - at.z).length()
+			if flat_pad < 4.0 and absf(local_y - cav.pad_local(pad).y) < 1.3:
+				on_pad = true
+		if on_pad and foe and foe.global_position.distance_to(player.global_position) < 3.2 and not foe is Blightmaw:
+			fight(foe)
+			return
+		var marks: Array[Vector3] = [
+			cav.pad_global(6),
+			cav.global_transform * cav._v3(cav.doc["ramp"][0]["fr"]),
+			cav.global_transform * cav._v3(cav.doc["ramp"][0]["to"]),
+			cav.pad_global(7),
+			cav.global_transform * cav._v3(cav.doc["ramp"][1]["fr"]),
+			cav.global_transform * cav._v3(cav.doc["ramp"][1]["to"]),
+			cav.pad_global(8),
+		]
+		for pad in [6, 7, 8]:
+			var pad_at := cav.pad_global(pad)
+			var pad_flat := Vector2(player.global_position.x - pad_at.x, player.global_position.z - pad_at.z).length()
+			if pad_flat < 3.5 and absf(local_y - cav.pad_local(pad).y) < 1.15 and not _act2_heights.has(pad):
+				_act2_heights[pad] = local_y
+				note(
+					"act2: pad %d height %.1f attuned %s"
+					% [pad, local_y, main.story_flags.has("waystone:" + cav.waystone_for(pad))]
+				)
+		if local_y < 3.0 and _act2_step > 2:
+			_act2_step = 0
+		while _act2_step < marks.size() - 1 and player.global_position.distance_to(marks[_act2_step]) <= 2.2:
+			_act2_step += 1
+		var next: Vector3 = marks[_act2_step]
+		if next == marks[marks.size() - 1] and player.global_position.distance_to(next) <= 2.2:
+			if _act2_heights.has(6) and _act2_heights.has(7) and _act2_heights.has(8):
+				_goto("act2_fight")
+				return
+		if t > 160.0 and not _act2_heights.has(8):
+			_finish(false, "act2 stuck at %s heights %s" % [player.global_position, _act2_heights])
+			return
+		# The ramps are under the floor angle. Aim along the next mark and walk;
+		# a nav waypoint beside the slope puts the body on the side face.
+		var flat := next - player.global_position
+		flat.y = 0.0
+		if flat.length() > 0.15:
+			player.set_look(atan2(-flat.x, -flat.z), 0.0)
+		_input = PlayerInput.hold(["forward", "sprint"])
+		return
+	if stage == "act2_fight":
+		if lab.bosses.has("blightmaw_matriarch"):
+			_goto("act2_home")
+			return
+		var boss: Blightmaw = null
+		for n in get_tree().get_nodes_in_group(Enemy.GROUP):
+			if n is Blightmaw and (n as Blightmaw).alive():
+				boss = n
+		if boss == null:
+			if t > 10.0:
+				_finish(false, "no Matriarch at height %.1f" % local_y)
+			return
+		fight(boss)
+		if t > 80.0:
+			_finish(false, "Matriarch still up at %.0f hp" % boss.health)
+		return
 
 
 func _on_died(_p) -> void:

@@ -253,6 +253,10 @@ func _setup_flow(player: Player) -> void:
 			(g as FlagGate).bind(story_flags)
 	if story_flags.has("rusty_dagger"):
 		add_child(DaggerGlow.make(player))  # step 113
+	_ensure_lab_sync()
+	DialogueDB.bosses = labyrinth.bosses
+	if quests:
+		quests.known_bosses = labyrinth.bosses
 	if GameFlow.labyrinth_floor > 0 and here == "breach":
 		var floor := GameFlow.labyrinth_floor
 		GameFlow.labyrinth_floor = 0
@@ -489,6 +493,7 @@ func _setup_quests(player: Player, here: String) -> void:
 	quests.player = player
 	if not _loaded_quests.is_empty():
 		quests.from_dict(_loaded_quests)
+	quests.known_bosses = labyrinth.bosses
 	quests.check_auto_start()
 	quest_driver = QuestDriver.make(quests)
 	add_child(quest_driver)
@@ -631,7 +636,7 @@ func _lab_waystone(fl: LabyrinthFloor) -> void:
 
 ## L3: the floor's goblins (and the King) under their own spawner, freed with the floor. An
 ## elite room is saved dead once its whole pack is down; the King's kill opens the waystone.
-func _lab_enemies(fl: LabyrinthFloor, player: Player) -> void:
+func _lab_enemies(fl: Node3D, player: Player) -> void:
 	if coop and not coop.host:
 		return  # L4: a joiner's goblins are the host's puppets (CoopWorld snapshots)
 	var old := get_node_or_null("LabyrinthEnemies")
@@ -649,29 +654,52 @@ func _lab_enemies(fl: LabyrinthFloor, player: Player) -> void:
 		var boss := String(m.get_meta(&"lab_boss", "")) if m else ""
 		if elite != "":
 			packs[elite] = int(packs.get(elite, 0)) + 1
-		ActLoot.tag(e, fl.floor_no)  # L4: floor item level, Act element and luck
+		var pad := int(m.get_meta(&"pad", fl.get("floor_no"))) if m else int(fl.get("floor_no"))
+		ActLoot.tag(e, pad)
+		if pad >= LabGate.SUMP and e is Gnawer and fl is BlightcoilCavern:
+			var gn := e as Gnawer
+			gn.cavern_sense = true
+			gn.has_home = true
+			gn.home_pad = e.global_position
+			if gn.nav:
+				gn.nav.set_navigation_map((fl as BlightcoilCavern).nav_map())
+		if e is Blightmaw and fl is BlightcoilCavern:
+			(e as Blightmaw).crown_global_y = (fl as BlightcoilCavern).pad_global(LabGate.CROWN).y
+			(e as Blightmaw).phase_changed.connect(func(_b, ph: int) -> void:
+				if ph >= 2 and fl is BlightcoilCavern:
+					(fl as BlightcoilCavern).spawn_crown_vines()
+			)
+		if e.def and e.def.id == "spore_husk" and fl is BlightcoilCavern:
+			e.died.connect(func(dead: Enemy, _el) -> void:
+				if fl is BlightcoilCavern and is_instance_valid(fl):
+					(fl as BlightcoilCavern).spawn_puff(dead.global_position)
+			)
 		e.died.connect(_on_lab_kill.bind(fl, elite, boss, packs))
 	fl.tree_exiting.connect(sp.queue_free, CONNECT_ONE_SHOT)
 
 
-func _on_lab_kill(_e: Enemy, _el: ElementTable.Element, fl: LabyrinthFloor, elite: String, boss: String, packs: Dictionary) -> void:
+func _on_lab_kill(_e: Enemy, _el: ElementTable.Element, fl: Node3D, elite: String, boss: String, packs: Dictionary) -> void:
+	var floor_no := int(fl.get("floor_no"))
 	if elite != "":
 		packs[elite] = int(packs[elite]) - 1
 		if int(packs[elite]) <= 0:
-			labyrinth.kill_elite(fl.floor_no, elite)
+			labyrinth.kill_elite(floor_no, elite)
 	if boss != "":
 		var first := not labyrinth.bosses.has(boss)
 		labyrinth.defeat_boss(boss)
-		if is_instance_valid(fl):
+		if fl is BlightcoilCavern and is_instance_valid(fl):
+			(fl as BlightcoilCavern).note_boss_dead()
+			if first:
+				_lab_boss_chest(fl, _e, first)
+		elif fl is LabyrinthFloor and is_instance_valid(fl):
 			_lab_boss_chest(fl, _e, first)
-		if is_instance_valid(fl):
 			_lab_waystone(fl)
 		print("[labyrinth] %s defeated" % boss)
 
 
 ## L4: secret-room chests, one tier above the floor (ActLoot.chest_rarity); opened ones
 ## are kept per floor in the save (shown open, no loot) until the floor is remixed.
-func _lab_chests(fl: LabyrinthFloor, player: Player) -> Array[VaultChest]:
+func _lab_chests(fl: Node3D, player: Player) -> Array[VaultChest]:
 	var out: Array[VaultChest] = []
 	var marks := fl.get_node_or_null(^"Chests")
 	if marks == null:
@@ -682,28 +710,29 @@ func _lab_chests(fl: LabyrinthFloor, player: Player) -> Array[VaultChest]:
 		c.name = "Chest_" + id
 		c.player = player
 		c.dropper = get_node_or_null("LootDropper") as LootDropper
-		c.floor_rarity = ActLoot.chest_rarity(fl.floor_no, bool(m.get_meta(&"secret", false)))
+		c.floor_rarity = ActLoot.chest_rarity(int(fl.get("floor_no")), bool(m.get_meta(&"secret", false)))
 		c.set_meta(&"tier", "secret" if m.get_meta(&"secret", false) else "normal")
 		c.set_meta(&"chest_id", id)
 		c.unlock()
 		fl.add_child(c)
 		c.global_transform = (m as Node3D).global_transform
-		if labyrinth and labyrinth.chest_open(fl.floor_no, id):
+		var floor_no := int(fl.get("floor_no"))
+		if labyrinth and labyrinth.chest_open(floor_no, id):
 			c.open_chest_quiet()
 		else:
-			c.opened.connect(func(_d: Array[LootDrop]) -> void: labyrinth.open_chest(fl.floor_no, id))
+			c.opened.connect(func(_d: Array[LootDrop]) -> void: labyrinth.open_chest(floor_no, id))
 		out.append(c)
 	return out
 
 
 ## L4: the Act boss leaves an open chest where it fell: Unique floor on the first clear,
 ## Rare on repeats (ActLoot.boss_rarity), in the boss's element.
-func _lab_boss_chest(fl: LabyrinthFloor, e: Enemy, first: bool) -> VaultChest:
+func _lab_boss_chest(fl: Node3D, e: Enemy, first: bool) -> VaultChest:
 	var c := VaultChest.new()
 	c.name = "BossChest"
 	c.player = get_node_or_null("Player") as Player
 	c.dropper = get_node_or_null("LootDropper") as LootDropper
-	c.floor_rarity = ActLoot.boss_rarity(fl.floor_no, first)
+	c.floor_rarity = ActLoot.boss_rarity(int(fl.get("floor_no")), first)
 	c.set_meta(&"tier", "boss")
 	if e and e.def:
 		c.element = e.def.affinity
@@ -723,10 +752,25 @@ func here_id() -> String:
 
 
 ## Autosave, then load `to` with the saved state. A co-op party votes at the gate first.
+var _pending_floor := 0
+var act_choice := -1
+var act_picker: CanvasLayer
+
+
 func travel(to: String, anchor := "") -> void:
 	if coop and not coop.host:
 		print("[coop] only the host can travel")  # step 91: the host's world decides
 		return
+	if to == "labyrinth" and not FastTravel.is_deep(anchor):
+		var floor := LabGate.resolve(labyrinth, act_choice)
+		if floor < 0:
+			_open_act_picker()
+			return
+		_pending_floor = floor
+		if gate_vote:
+			gate_vote.act_name = LabGate.banner(floor)
+	elif FastTravel.is_deep(anchor):
+		_pending_floor = int(FastTravel.info(anchor).get("floor", 0))
 	if gate_vote and coop and coop.host:
 		var who := get_node_or_null("Player") as Node3D
 		if gate_vote.begin(to, anchor, who.global_position if who else Vector3.ZERO):
@@ -734,12 +778,45 @@ func travel(to: String, anchor := "") -> void:
 	_commit_travel(to, anchor)
 
 
+## Host picks Goblin Warrens floor 1 or the Blightcoil Sump. A joiner never sees this.
+func pick_act(floor_no: int) -> void:
+	act_choice = floor_no
+	if act_picker:
+		act_picker.queue_free()
+		act_picker = null
+	travel("labyrinth")
+
+
+func _open_act_picker() -> void:
+	if act_picker and is_instance_valid(act_picker):
+		return
+	act_picker = CanvasLayer.new()
+	act_picker.name = "ActPicker"
+	add_child(act_picker)
+	var box := VBoxContainer.new()
+	box.set_anchors_preset(Control.PRESET_CENTER)
+	act_picker.add_child(box)
+	for floor_no in [1, LabGate.SUMP]:
+		var b := Button.new()
+		b.text = LabGate.choice_label(floor_no)
+		b.pressed.connect(pick_act.bind(floor_no))
+		box.add_child(b)
+	print("[labyrinth] choose an act")
+
+
 func _commit_travel(to: String, anchor := "") -> void:
+	var floor := _pending_floor if to == "labyrinth" else _travel_floor(anchor)
+	if to == "labyrinth" and floor <= 0:
+		floor = LabGate.resolve(labyrinth, act_choice)
+	if to == "labyrinth" and floor < 0:
+		return  # the crater path does not send checkpoint 0 once the picker exists
+	_pending_floor = 0
+	act_choice = -1
 	if coop and coop.host:
-		Coop.session.send("travel", {"to": to, "floor": _travel_floor(anchor)})
+		Coop.session.send("travel", {"to": to, "floor": floor if to == "labyrinth" else _travel_floor(anchor)})
 	if to == "labyrinth":
 		save_game()
-		_enter_linear_labyrinth(_travel_floor(anchor))
+		_enter_linear_labyrinth(floor)
 		return
 	var player := get_node_or_null("Player") as Player
 	if player:
@@ -761,7 +838,9 @@ func _linear_interiors() -> Interiors:
 
 
 ## The Breach crater portal: build the Labyrinth floor in this level (no scene change).
-func _enter_linear_labyrinth(floor := 0) -> void:
+func _ensure_lab_sync() -> void:
+	if GameFlow.id_of(get_node_or_null("Level")) != "breach":
+		return
 	var ints := _linear_interiors()
 	if ints == null:
 		ints = Interiors.new()
@@ -770,11 +849,21 @@ func _enter_linear_labyrinth(floor := 0) -> void:
 		ints.labyrinth = labyrinth
 		add_child(ints)
 		ints.floor_entered.connect(_on_linear_floor)
-		if coop and Coop.session and get_node_or_null("LabyrinthSync") == null:
-			var ls := LabyrinthSync.new()
-			ls.name = "LabyrinthSync"
-			add_child(ls)
-			ls.setup(Coop.session, ints, coop.host)
+		ints.rested.connect(_on_lab_rest)
+	elif not ints.rested.is_connected(_on_lab_rest):
+		ints.rested.connect(_on_lab_rest)
+	if coop and Coop.session and get_node_or_null("LabyrinthSync") == null:
+		var ls := LabyrinthSync.new()
+		ls.name = "LabyrinthSync"
+		add_child(ls)
+		ls.setup(Coop.session, ints, coop.host)
+
+
+func _enter_linear_labyrinth(floor := 0) -> void:
+	_ensure_lab_sync()
+	var ints := _linear_interiors()
+	if ints == null:
+		return
 	if floor > 0:
 		ints.floor_no = floor
 		labyrinth.current = floor
@@ -783,10 +872,43 @@ func _enter_linear_labyrinth(floor := 0) -> void:
 	await ints.enter("labyrinth")
 
 
+func _on_lab_rest(_at: Vector3) -> void:
+	var ints := _linear_interiors()
+	if ints and ints.cavern:
+		labyrinth.current = 7
+		ints.floor_no = 7
+		ints.cavern.floor_no = 7
+	var player := get_node_or_null("Player") as Player
+	if player:
+		player.clear_blight_status()
+	save_game()
+
+
+func _on_blight_pad(checkpoint: int, waystone_id: String) -> void:
+	var ints := _linear_interiors()
+	labyrinth.current = checkpoint
+	labyrinth.reach(checkpoint)
+	if ints:
+		ints.floor_no = checkpoint
+		if ints.cavern:
+			ints.cavern.floor_no = checkpoint
+			var player := get_node_or_null("Player") as Player
+			if player:
+				player.spawn_feet = ints.cavern.pad_global(checkpoint)
+			if ints.cavern.hazard:
+				ints.cavern.hazard.last_pad = ints.cavern.pad_global(checkpoint)
+	if fast_travel:
+		fast_travel.attune(waystone_id)
+	save_game()
+
+
 func _on_linear_floor(_n: int) -> void:
 	var ints := _linear_interiors()
-	var fl := ints.lab_floor if ints else null
 	var player := get_node_or_null("Player") as Player
+	if ints and ints.cavern:
+		_enter_cavern_runtime(ints.cavern, player)
+		return
+	var fl := ints.lab_floor if ints else null
 	if fl == null:
 		return
 	_lab_waystone(fl)
@@ -795,7 +917,50 @@ func _on_linear_floor(_n: int) -> void:
 	_lab_chests(fl, player)
 
 
-func _lab_loot_parent_linear(fl: LabyrinthFloor) -> void:
+func _enter_cavern_runtime(cav: BlightcoilCavern, player: Player) -> void:
+	DialogueDB.bosses = labyrinth.bosses
+	if quests:
+		quests.known_bosses = labyrinth.bosses
+	if not cav.pad_reached.is_connected(_on_blight_pad):
+		cav.pad_reached.connect(_on_blight_pad)
+	cav.place_marks(story_flags)
+	_wire_mother(cav, player)
+	if player:
+		player.spawn_feet = cav.pad_global(cav.floor_no)
+	_lab_loot_parent_linear(cav)
+	_lab_enemies(cav, player)
+	_lab_chests(cav, player)
+	if labyrinth.bosses.has(LabGate.BOSS):
+		cav.note_boss_dead()
+		_free_matriarch()
+
+
+func _wire_mother(cav: BlightcoilCavern, player: Player) -> void:
+	if cav.get_node_or_null("Npc_VerdantMother"):
+		return
+	var mark := cav.get_node_or_null("VerdantMother") as Node3D
+	if mark == null:
+		return
+	_ensure_dialogue()
+	var n := Npc.new("Verdant Mother")
+	n.name = "Npc_VerdantMother"
+	n.player = player
+	add_child(n)
+	n.global_position = mark.global_position
+	n.talked.connect(_on_npc_talked)
+	npcs.append(n)
+
+
+func _free_matriarch() -> void:
+	var sp := get_node_or_null("LabyrinthEnemies")
+	if sp == null:
+		return
+	for e in sp.get_children():
+		if e is Blightmaw:
+			(e as Node).queue_free()
+
+
+func _lab_loot_parent_linear(fl: Node3D) -> void:
 	var ld := get_node_or_null("LootDropper") as LootDropper
 	if ld:
 		ld.parent = fl

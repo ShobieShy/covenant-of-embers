@@ -1,0 +1,124 @@
+[gd_resource type="Resource" script_class="EnemyTable" format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_def.gd" id="1_ajlyj"]
+[ext_resource type="Script" path="res://scripts/enemies/enemy_table.gd" id="2_tnktk"]
+
+[sub_resource type="Resource" id="Resource_fadaj"]
+script = ExtResource("1_ajlyj")
+id = "spore_husk"
+display_name = "Spore-cap Husk"
+affinity = 3
+max_health = 70.0
+level = 14
+xp_reward = 18
+gold_drop = 8
+size = Vector3(0.7, 1.5, 0.7)
+color = Color(0.45, 0.55, 0.28, 1)
+has_weak_point = true
+weak_point_offset = Vector3(0, 1.25, -0.12)
+weak_point_size = Vector3(0.32, 0.28, 0.28)
+ai = {
+"aggro_range": 5.0,
+"attack_cooldown": 1.2,
+"attack_damage": 8.0,
+"attack_range": 1.3,
+"detect_range": 6.0,
+"kind": "rusher",
+"knockback_strength": 8.0,
+"knockback_threshold": 18.0,
+"knockback_time": 0.3,
+"sprint_speed": 4.4,
+"walk_speed": 2.4
+}
+
+[sub_resource type="Resource" id="Resource_1m44a"]
+script = ExtResource("1_ajlyj")
+id = "mossbound_treant"
+display_name = "Mossbound Treant"
+affinity = 3
+max_health = 280.0
+level = 18
+xp_reward = 40
+gold_drop = 16
+size = Vector3(1.4, 2.6, 1.4)
+color = Color(0.28, 0.38, 0.18, 1)
+has_weak_point = true
+weak_point_offset = Vector3(0, 2.2, -0.2)
+weak_point_size = Vector3(0.45, 0.4, 0.4)
+ai = {
+"aggro_range": 11.0,
+"attack_cooldown": 2.2,
+"attack_damage": 14.0,
+"attack_range": 2.2,
+"attack_windup": 0.7,
+"detect_range": 14.0,
+"kind": "tank",
+"knockback_strength": 12.0,
+"knockback_threshold": 40.0,
+"knockback_time": 0.25,
+"sprint_speed": 2.4,
+"turn_rate_deg": 120.0,
+"walk_speed": 1.5
+}
+
+[sub_resource type="Resource" id="Resource_atvfw"]
+script = ExtResource("1_ajlyj")
+id = "spore_beast"
+display_name = "Spore Beast"
+affinity = 6
+max_health = 140.0
+level = 18
+xp_reward = 28
+gold_drop = 12
+size = Vector3(1.1, 1.6, 1.3)
+color = Color(0.35, 0.42, 0.22, 1)
+has_weak_point = true
+weak_point_offset = Vector3(0, 1.3, -0.25)
+weak_point_size = Vector3(0.4, 0.32, 0.32)
+ai = {
+"aggro_range": 12.0,
+"attack_cooldown": 1.3,
+"attack_damage": 11.0,
+"attack_range": 1.6,
+"detect_range": 16.0,
+"kind": "rusher",
+"knockback_strength": 10.0,
+"knockback_threshold": 22.0,
+"knockback_time": 0.3,
+"sprint_speed": 5.0,
+"walk_speed": 2.8
+}
+
+[sub_resource type="Resource" id="Resource_w3ho3"]
+script = ExtResource("1_ajlyj")
+id = "blightmaw_matriarch"
+display_name = "Blightmaw Matriarch"
+affinity = 6
+max_health = 120.0
+level = 22
+xp_reward = 220
+gold_drop = 80
+size = Vector3(2.2, 3.4, 2.2)
+color = Color(0.32, 0.48, 0.2, 1)
+has_weak_point = true
+weak_point_offset = Vector3(0, 2.6, -0.4)
+weak_point_size = Vector3(0.55, 0.45, 0.45)
+ai = {
+"aggro_range": 14.0,
+"attack_cooldown": 2.0,
+"attack_damage": 16.0,
+"attack_range": 2.6,
+"attack_windup": 0.6,
+"detect_range": 18.0,
+"kind": "matriarch",
+"knockback_strength": 14.0,
+"knockback_threshold": 70.0,
+"knockback_time": 0.25,
+"sprint_speed": 2.6,
+"turn_rate_deg": 100.0,
+"walk_speed": 1.4
+}
+
+[resource]
+script = ExtResource("2_tnktk")
+defs = Array[ExtResource("1_ajlyj")]([SubResource("Resource_fadaj"), SubResource("Resource_1m44a"), SubResource("Resource_atvfw"), SubResource("Resource_w3ho3")])

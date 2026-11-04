@@ -16,6 +16,9 @@ var entries: Array[Dictionary] = []
 var choices := {}  ## dialogue id -> Array[Dictionary]
 
 static var _default: DialogueDB
+## Boss ids the Labyrinth block already holds. A dialogue require/forbid of
+## "boss:<id>" checks this list instead of a story flag.
+static var bosses: Array = []
 
 
 static func load_default() -> DialogueDB:
@@ -86,9 +89,29 @@ func speakers() -> PackedStringArray:
 ## The entry `speaker` would say now, or {}.
 func pick(speaker: String, flags: StoryFlags) -> Dictionary:
 	for e in entries:
-		if e["speaker"] == speaker and flags.all_of(e["requires"]) and flags.none_of(e["forbids"]):
+		if e["speaker"] == speaker and _holds_all(e["requires"], flags) and _holds_none(e["forbids"], flags):
 			return e
 	return {}
+
+
+func _holds(id: String, flags: StoryFlags) -> bool:
+	if id.begins_with("boss:"):
+		return bosses.has(id.substr(5))
+	return flags.has(id)
+
+
+func _holds_all(ids: Array, flags: StoryFlags) -> bool:
+	for id in ids:
+		if not _holds(String(id), flags):
+			return false
+	return true
+
+
+func _holds_none(ids: Array, flags: StoryFlags) -> bool:
+	for id in ids:
+		if _holds(String(id), flags):
+			return false
+	return true
 
 
 func choices_for(id: String, flags: StoryFlags) -> Array:

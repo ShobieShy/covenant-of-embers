@@ -20,7 +20,7 @@ for a in "$@"; do
 done
 if [ "$MODE" = fast ] && [ "${TEST_CLASSIC:-}" = 1 ]; then echo "--classic is a full-tier option"; exit 2; fi
 # The fast tier's always-run list: save/load, player, casting, loot, UI basics, Labyrinth.
-CORE_TESTS="test_smoke.gd,test_branding.gd,test_save.gd,test_save_migration.gd,test_world_save_migration.gd,test_player.gd,test_casting.gd,test_damage.gd,test_inventory.gd,test_hud.gd,test_settings.gd,test_labyrinth_state.gd,test_labyrinth_floor.gd,test_labyrinth_sync.gd,test_audio.gd,test_flow.gd,test_level.gd,test_linear_flow.gd,test_linear_migration.gd,test_gate_vote.gd"
+CORE_TESTS="test_smoke.gd,test_branding.gd,test_save.gd,test_save_migration.gd,test_world_save_migration.gd,test_player.gd,test_casting.gd,test_damage.gd,test_inventory.gd,test_hud.gd,test_settings.gd,test_labyrinth_state.gd,test_labyrinth_floor.gd,test_labyrinth_sync.gd,test_audio.gd,test_flow.gd,test_level.gd,test_linear_flow.gd,test_linear_migration.gd,test_gate_vote.gd,test_blightcoil_cavern.gd,test_blight_gate.gd,test_blight_hazard.gd,test_blight_aggro.gd,test_blight_story.gd,test_blightmaw.gd,test_blightcoil_kit.gd,test_act_loot.gd"
 python3 tools/toml_to_scene.py --self-test
 python3 tools/expand_maps.py --check
 python3 tools/toml_to_scene.py --check
@@ -64,7 +64,10 @@ else
 	grep -q "^\[playtest\] PASS" "$log" || { echo "[run_tests] playtest did not pass"; exit 1; }
 	PLAYTEST_LABYRINTH=1 PLAYTEST_TIMEOUT="${PLAYTEST_TIMEOUT:-2400}" run_clean tools/playtest.sh  # 0.3.1: Act I at 1x
 	grep -q "^\[playtest\] PASS" "$log" || { echo "[run_tests] labyrinth playtest did not pass"; exit 1; }
+	PLAYTEST_ACT2=1 PLAYTEST_TIMEOUT="${PLAYTEST_ACT2_TIMEOUT:-600}" run_clean tools/playtest.sh
+	grep -q "^\[playtest\] PASS" "$log" || { echo "[run_tests] act II playtest did not pass"; exit 1; }
 	tools/coop_playtest.sh || { echo "[run_tests] co-op playtest did not pass"; exit 1; }  # step 93
+	PLAYTEST_ACT2=1 PLAYTEST_TIMEOUT="${PLAYTEST_ACT2_TIMEOUT:-400}" tools/coop_playtest.sh || { echo "[run_tests] act II co-op playtest did not pass"; exit 1; }
 fi
 python3 tools/check_assets.py
 python3 tools/gen_credits.py --check

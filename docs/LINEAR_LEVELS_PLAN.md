@@ -33,7 +33,7 @@ progress is gated by story flags. Going back is allowed to the hub.
 2. **Eldoria, Town Square** (`town_square`) is the hub. Vendors, stash, stations, quests. The Mage Association stays an interior of the hub.
 3. **The Landfill** (`midden`). Joe's camp, Bob's lead.
 4. **The Breach** (`breach`). Crater fight. The crater portal is the Labyrinth gate.
-5. **The Breach Labyrinth**, the 1.0 campaign: Act I Warrens (floors 1-4 and the Goblin King on 5, in the game), Act II Overgrown Deep, Act III Drowned Forge, Act IV Sunken Ruins, Act V Inverted Spire (5 floors each, floor 5 the Act boss), then **the Core**: Crazy Joe, then the Demon Lord, who escapes (1.0 ending, DLC hook).
+5. **The Breach Labyrinth**, the 1.0 campaign: Act I Warrens (floors 1-4 and the Goblin King on 5, in the game), Act II The Blightcoil (one cavern, not five generated floors — see [PLAN_0.7.0_ACT2.md](PLAN_0.7.0_ACT2.md)), Act III Drowned Forge, Act IV Sunken Ruins, Act V Inverted Spire, then **the Core**: Crazy Joe, then the Demon Lord, who escapes (1.0 ending, DLC hook). Acts III–V were sketched as five floors each. Act II is not.
 
 Each Act boss floor has a waystone. It returns the party to the hub, and the hub's Breach gate offers "descend to Act N". There are no overworld shortcut gates. DLC is new towns and dungeons as new closed level sets with their own hub entrance.
 
@@ -86,7 +86,7 @@ Full tier: `tools/run_tests.sh` (every unit test, smokes, solo, Labyrinth, co-op
 - **0.4.0** shipped: closed levels.
 - **0.5.0** shipped: the open-world cut. Acts III and IV did not ship with it.
 - **0.6.0** is the trust pass ([PLAN_NEXT.md](PLAN_NEXT.md)): the parked co-op and travel bugs, and a full test run that gets past classified headless exit leaks. ZoneStreamer stays. The minimap stays off the HUD. The map stays the text sheet. No mid-session join.
-- **0.7.0**: Labyrinth Act II, after the story, look, and music are set.
+- **0.7.0**: Labyrinth Act II, The Blightcoil, one walkable cavern (Sump, Canopy Ring, Crown) around the Rotheart. See [PLAN_0.7.0_ACT2.md](PLAN_0.7.0_ACT2.md). The Murmuring Elder name is retired. The 0.6.0 trust pass is unchanged.
 - **Later**: Acts III–V, the Core, Crazy Joe and the Demon Lord, balance.
 - **1.0**: town, Breach, full Labyrinth, main story. The Demon Lord escapes.
 

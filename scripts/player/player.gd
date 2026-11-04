@@ -107,6 +107,8 @@ var slides := 0
 var slide_jumps := 0
 var speed_multiplier := 1.0  # set_speed_multiplier(): Shoes hook
 var slow_factor := 1.0  # step 55: apply_slow()
+var poison_left := 0.0  ## s of lingering spore fog still to come off health
+var poison_dps := 0.0  ## fraction of max health per second; not the Breath pool
 var slow_left := 0.0
 var dash: Dash  # step 5
 var feel: CameraFeel  # step 5: bob / landing dip / step smoothing
@@ -431,6 +433,9 @@ func on_enemy_attack(from: Variant, bite: Gnawer.Bite) -> void:
 			dl = (from as Enemy).combat_dl(LevelScale.player_level)
 		dmg *= LevelScale.mult("dmg", dl)
 	take_enemy_hit(dmg, bite.element)
+	if alive() and from is Enemy and (from as Enemy).def != null and (from as Enemy).def.id == "spore_beast":
+		poison_dps = 0.02
+		poison_left = maxf(poison_left, 2.0)
 
 
 ## A bolt (SpellBolts already resolved it on damage_target): same i-frame/dead rules.
@@ -468,6 +473,7 @@ func _on_died() -> void:
 ## and level bonuses kept), focus and slide dropped. (Jolt: ray queries see the moved
 ## body only after the next physics step.)
 func respawn() -> void:
+	clear_blight_status()
 	health.refill()
 	mana.refill()
 	breath.refill()
@@ -738,6 +744,34 @@ func apply_slow(factor: float, time: float) -> void:
 	slow_left = maxf(slow_left, time)
 
 
+## Act II: mire, fog and falls come off health. Breath and the shield are not spent.
+func hurt_health(amount: float) -> void:
+	if not alive() or downed or amount <= 0.0:
+		return
+	health.take_health(amount)
+
+
+func clear_blight_status() -> void:
+	poison_left = 0.0
+	poison_dps = 0.0
+	slow_left = 0.0
+	slow_factor = 1.0
+
+
+## Lingering fog. A full second at poison_dps removes that fraction of max health.
+func tick_poison(dt: float) -> void:
+	if not alive() or downed or poison_left <= 0.0 or poison_dps <= 0.0:
+		if poison_left <= 0.0:
+			poison_dps = 0.0
+		return
+	var step := minf(dt, poison_left)
+	poison_left -= step
+	hurt_health(health.max_value() * poison_dps * step)
+	if poison_left <= 1e-6:
+		poison_left = 0.0
+		poison_dps = 0.0
+
+
 func current_slow() -> float:
 	return slow_factor if slow_left > 0.0 else 1.0
 
@@ -747,6 +781,7 @@ func tick(input: PlayerInput, dt: float) -> void:
 	interact_held = input.down(&"interact")  # 0.3.1 P2: hold-to-use (Labyrinth stairs)
 	_apply_toggles(input)
 	slow_left = maxf(0.0, slow_left - dt)
+	tick_poison(dt)
 	# Dead (step 13): no input, no movement; respawn after respawn_delay.
 	if not alive():
 		if downed:
@@ -829,7 +864,17 @@ func tick(input: PlayerInput, dt: float) -> void:
 			direction = Vector3.ZERO
 
 	var v := direction * speed
-	v.y = 0.0 if grounded else velocity.y - tuning.gravity * dt
+	if grounded:
+		var floor_n := get_floor_normal()
+		# A flat wish climbs the Midden's 20 deg ramps and stops on a steeper one.
+		# Past about 25 deg, carry the wish up the floor (the Blightcoil root-bridges).
+		if floor_n.y < 0.91 and floor_n.y > 0.05:
+			var along := Vector3(v.x, 0.0, v.z).slide(floor_n)
+			v = along if along.dot(Vector3(direction.x, 0.0, direction.z)) > 0.0 else Vector3(v.x, 0.0, v.z)
+		else:
+			v.y = 0.0
+	else:
+		v.y = velocity.y - tuning.gravity * dt
 	if grounded and input.was_pressed(&"jump"):
 		if sliding():  # slide jump: jump x SLIDE_JUMP_MOD, stand up in the air
 			v.y = tuning.jump_velocity * tuning.slide_jump_mod

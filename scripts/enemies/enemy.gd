@@ -47,6 +47,7 @@ const BRAINS := {
 	"splitter": "res://scripts/enemies/ooze.gd",
 	"filth": "res://scripts/enemies/filth.gd",  # step 56
 	"king": "res://scripts/enemies/goblin_king.gd",  # L3: the Goblin King
+	"matriarch": "res://scripts/enemies/blightmaw.gd",  # Act II
 }
 
 const BURN_TICK := 0.5  ## s between burn damage ticks (step 53)
@@ -293,7 +294,7 @@ func stagger_threshold(base: float) -> float:
 
 
 static func _authored_boss(d: EnemyDef) -> bool:
-	return d != null and String(d.ai.get("kind", "")) in ["boss", "filth", "king"]
+	return d != null and String(d.ai.get("kind", "")) in ["boss", "filth", "king", "matriarch"]
 
 
 ## Step 80: co-op scaling (x1.6 with 2 players, ...); keeps the current health fraction.
@@ -308,7 +309,7 @@ func scale_health(k: float) -> void:
 
 ## Bosses (the Warden, The Filth) are immune to Dark corruption (step 52).
 func is_boss() -> bool:
-	return def != null and String(def.ai.get("kind", "")) in ["boss", "filth", "king"]
+	return def != null and String(def.ai.get("kind", "")) in ["boss", "filth", "king", "matriarch"]
 
 
 func alive() -> bool:

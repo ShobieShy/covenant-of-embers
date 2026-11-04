@@ -64,6 +64,7 @@ var labyrinth: LabyrinthState
 var floor_no := 1
 var kit := {}
 var lab_floor: LabyrinthFloor
+var cavern: BlightcoilCavern
 ## L4 co-op (LabyrinthSync): a joiner's stairs down are the host's call (follow_only); the
 ## host's go through stair_gate () -> bool first (the whole party nearby, or a vote).
 var follow_only := false
@@ -234,6 +235,7 @@ func leave(to_level := "town_square") -> Vector3:
 	interior = null
 	breach = null
 	lab_floor = null
+	cavern = null
 	if labyrinth and id == "labyrinth":
 		labyrinth.current = 0  # leaving mid-floor: the next visit starts at a floor's start
 		floor_no = 1  # the crater gate leads to floor 1; waystones go deeper (enter_floor)
@@ -253,6 +255,8 @@ func _kit() -> Dictionary:
 func _enter_floor(id: String, n: int) -> Vector3:
 	if labyrinth == null:
 		labyrinth = LabyrinthState.fresh()
+	if LabGate.is_cavern(n):
+		return await _enter_cavern(id, n)
 	var t0 := Time.get_ticks_msec()
 	slow_load.emit(id)  # a floor build is one frame of work, but the stairs swap is a load
 	await get_tree().process_frame
@@ -311,14 +315,53 @@ func descend() -> Vector3:
 	old.queue_free()
 	interior = null
 	lab_floor = null
+	cavern = null
 	return await _enter_floor("labyrinth", floor_no + 1)
+
+
+## Checkpoints 6-8: one cavern, the party on that tier's pad. Not a FloorGen floor.
+func _enter_cavern(id: String, n: int) -> Vector3:
+	var t0 := Time.get_ticks_msec()
+	slow_load.emit(id)
+	await get_tree().process_frame
+	cavern = BlightcoilCavern.make(n, labyrinth)
+	lab_floor = null
+	interior = cavern
+	interior.name = "Interior"
+	interior.position = Vector3(0, DEPTH, 0)
+	add_child(interior)
+	cavern.ensure_nav()
+	var ps := party()
+	for c in cavern.find_children("*", "RestShrine", true, false):
+		(c as RestShrine).player = (
+			ps[0] as Player if not ps.is_empty() and ps[0] is Player else null
+		)
+		(c as RestShrine).rested.connect(func(at: Vector3) -> void: rested.emit(at))
+	if ps.size() > 0 and ps[0] is Player and cavern.forge:
+		cavern.forge.player = ps[0] as Player
+	floor_no = n
+	current = id
+	labyrinth.reach(n)
+	labyrinth.current = n
+	var land := cavern.start_pos() + Vector3(0, 0.5, 0)
+	_move_party(land)
+	if cavern.hazard:
+		cavern.hazard.last_pad = cavern.pad_global(n)
+		cavern.hazard.rest_pad = cavern.pad_global(7)
+	busy = false
+	print("[labyrinth] blightcoil pad %d (%d ms)" % [n, Time.get_ticks_msec() - t0])
+	floor_entered.emit(n)
+	entered.emit(id)
+	return land
 
 
 ## Waystone travel straight to floor `n` (the boss floor's waystone, OW6).
 func enter_floor(n: int) -> Vector3:
 	if current == "labyrinth":
 		if floor_no == n:
-			return lab_floor.start_pos()
+			if cavern:
+				return cavern.start_pos()
+			return lab_floor.start_pos() if lab_floor else Vector3.INF
 		leave("breach")
 	floor_no = n
 	if labyrinth:

@@ -37,6 +37,7 @@ func rest(p: Player) -> void:
 		p.health.refill()
 		p.mana.refill()
 		p.breath.refill()
+		p.clear_blight_status()
 		p.spawn_feet = global_position + Vector3(0, 0, 1.5)
 	GameEvents.bus().sfx.emit("shrine_use", global_position)  # 0.3.1 P7
 	rested.emit(global_position)

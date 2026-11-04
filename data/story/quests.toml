@@ -79,3 +79,34 @@ text = "The landfill really was warped by mana. Cracked crystals and notes about
 id = "fracture_deliberate"
 title = "Not Random"
 text = "Bob: the Fracture was caused deliberately. The distortion points outward, toward the five outer dungeons."
+
+[[quest]]
+id = "the_overgrown_deep"
+title = "The Overgrown Deep"
+auto_start_when = ["verdant_met"]
+reward_xp = 80
+
+[[objective]]
+quest = "the_overgrown_deep"
+kind = "kill"
+target = "blightmaw_matriarch"
+text = "Burn out the Blightmaw Matriarch"
+
+[[quest]]
+id = "joes_marks"
+title = "Joe's Marks"
+auto_start_when = ["verdant_met"]
+reward_xp = 40
+reward_clue = "joes_rot"
+
+[[objective]]
+quest = "joes_marks"
+kind = "collect"
+target = "joe_mark"
+count = 3
+text = "Find Crazy Joe's three ritual marks"
+
+[[clue]]
+id = "joes_rot"
+title = "Joe's Rot"
+text = "Crazy Joe carved the bark and fed the Rotheart Breach-fire. The marks are still warm."

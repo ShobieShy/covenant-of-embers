@@ -35,6 +35,9 @@ const MERGED := {
 ## floor; picking the hub on the same map returns the party to Town Square.
 const DEEP_POINTS := {
 	"warrens_hall": {"name": "The Warrens - Goblin King's Hall", "level": "labyrinth", "floor": 5},
+	"blightcoil_sump": {"name": "The Blightcoil - Sump", "level": "labyrinth", "floor": 6},
+	"blightcoil_canopy": {"name": "The Blightcoil - Canopy Ring", "level": "labyrinth", "floor": 7},
+	"blightcoil_crown": {"name": "The Blightcoil - Crown", "level": "labyrinth", "floor": 8},
 }
 ## GameFlow level id -> the waystone point that stands in it (spawn anchor).
 const LEVEL_POINT := {
