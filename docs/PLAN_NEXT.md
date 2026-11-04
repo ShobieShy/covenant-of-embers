@@ -191,7 +191,7 @@ host: party ready → joiner logs ready, then the level changes
 host: cancel, or someone walks away → joiner logs cancelled, level stays
 ```
 
-A dropped peer is not "ready". The reconnect window already exists. Freeing that peer's avatar does not fill the missing set.
+A dropped peer is not "ready". They stay on the roster with `reconnecting` set until that window ends. Freeing their avatar does not clear `missing`.
 
 Travel names:
 
