@@ -574,8 +574,7 @@ func target_point() -> Variant:
 	return n.global_position if n else null
 
 
-## OW11c: the open world has no zone gates: walk to the next zone's entrance, or to the
-## front door of an interior on the way.
+## Fallback when this beat has no level gate: that level's entrance.
 func _world_way(hop: String) -> Variant:
 	if hop == "":
 		return null

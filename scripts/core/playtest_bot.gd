@@ -71,9 +71,6 @@ static func reset_run() -> void:
 	intro_beats = PackedStringArray()
 
 
-var _ow_travel := false  ## OW11b: an in-world trip to the Landfill is under way
-
-
 func setup(m: Node, p: Player) -> void:
 	main = m
 	player = p
@@ -511,7 +508,6 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		_path_goal = at
 		_path = PackedVector3Array()
 		var nav := main.get_node_or_null("Level/Navigation") as LevelNavigation
-		var ow := main.get_node_or_null("OpenWorld")
 		var inn := _interiors()
 		if inn and inn.interior:
 			nav = inn.interior.get_node_or_null("Navigation") as LevelNavigation
@@ -524,10 +520,6 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 			_path = NavigationServer3D.map_get_path(
 				nav.get_navigation_map(), player.global_position, at, true
 			)
-		elif ow:  # OW11b: the streamed world cells' nav
-			var wm := player.get_world_3d().navigation_map
-			if NavigationServer3D.map_get_iteration_id(wm) > 0:
-				_path = NavigationServer3D.map_get_path(wm, player.global_position, at, true)
 	# OW11b: a path that ends well short of the goal means the bot is on a nav island (seen on
 	# a Breach-rooms ledge 4 m above lever_west): walk straight at the goal and drop off it.
 	if not _path.is_empty() and Vector2(_path[-1].x - at.x, _path[-1].z - at.z).length() > 2.0:
@@ -615,22 +607,10 @@ func _physics_process(delta: float) -> void:
 			_intro_tick()
 		"midden_walk":
 			if main.call(&"here_id") != "midden":  # step 109: a new game starts elsewhere
-				var ow0 := main.get_node_or_null("OpenWorld")
-				if ow0 and ow0.travel.busy:
-					return  # QA-2: wait out the first world load (4x: travel overlapped it)
-				if t > 0.5 and not _ow_travel:
+				if t > 0.5:
 					note("travel to the Landfill from %s" % main.call(&"here_id"))
 					main.call(&"travel", "midden")
-					_ow_travel = main.get_node_or_null("OpenWorld") != null  # OW11b: no reload
-					_done = not _ow_travel
-				return
-			if _ow_travel:  # OW11b: landed in the world's Landfill; walk from here
-				var ow = main.get_node("OpenWorld")
-				if ow.travel.busy:
-					return
-				_ow_travel = false
-				_walk_start = player.global_position
-				_goto("midden_walk")
+					_done = true  # travel reloads the level; this run ends
 				return
 			_input = PlayerInput.hold(["forward"])
 			if t > 1.0:
@@ -642,14 +622,8 @@ func _physics_process(delta: float) -> void:
 				_goto("midden_fight")
 		"midden_fight", "breach_fight":
 			if stage == "breach_fight":
-				var owb := main.get_node_or_null("OpenWorld")
-				if owb and owb.interiors.current == "" and not owb.travel.busy:
-					if _tick % 300 == 0:  # OW11b: a death respawns outdoors; go back in
-						note("back into the Breach rooms from %s" % player.global_position)
-						main.call(&"travel", "breach")
-					return
 				if not is_instance_valid(main.breach):
-					return  # OW11b: still entering the Breach rooms
+					return  # still entering the Breach rooms
 			var e := nearest_enemy(true)
 			if e:
 				_watch_target(e)
@@ -1146,7 +1120,7 @@ func _intro_director() -> IntroDirector:
 func _intro_tick() -> void:
 	var d := _intro_director()
 	if d == null and IntroDirector.active(main.get(&"story_flags")):
-		return  # OW11c: the open world's director is made once the party has landed
+		return  # the director is created once the party has landed
 	if d == null or not IntroDirector.active(d.flags):
 		note("prologue done: %d beat(s) %s" % [intro_beats.size(), ",".join(intro_beats)])
 		if intro_beats.size() < IntroDirector.BEATS.size():
@@ -1307,15 +1281,6 @@ func _visit_joe(d: IntroDirector) -> bool:
 func _intro_interact(d: IntroDirector) -> void:
 	var at: Variant = d.target_point()
 	if at == null:
-		return
-	var ow := main.get_node_or_null("OpenWorld")
-	if ow and d.world_hop != "" and flat_distance(at) > 60.0 and ow.interiors.current == "":
-		# OW11c: a zone hundreds of metres off: travel there like midden_walk (walk_to is
-		# good for a zone's streamed ring, not a cross-world trek)
-		if not ow.travel.busy and _talk_cd <= 0.0:
-			note("travel to %s for beat %s" % [d.world_hop, d.current()])
-			main.call(&"travel", d.world_hop)
-			_talk_cd = 5.0
 		return
 	if flat_distance(at) > 1.8:
 		walk_to(at)

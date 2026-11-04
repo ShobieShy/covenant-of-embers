@@ -3,8 +3,8 @@ extends CanvasLayer
 ## OW5: the UI side of Interiors. `fade` dips a black ColorRect in and out over the
 ## transition (Interiors.FADE), and `slow_load` (a load over Interiors.SLOW_MS) shows a
 ## LoadingScreen overlay that closes when the interior is entered or left.
-## 0.3.1 P1: the same black also covers the other party moves. A fast-travel arrival (after
-## OpenWorld.ground_now() has built the ground) and a respawn after death fade in from black.
+## 0.3.1 P1: the same black also covers the other party moves. A fast-travel arrival
+## and a respawn after death fade in from black.
 ## Like UiAnim, those fade-ins are instant (it stays clear) under reduced motion and headless.
 
 const ARRIVE_S := 0.35

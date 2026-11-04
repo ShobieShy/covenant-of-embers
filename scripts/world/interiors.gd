@@ -1,14 +1,11 @@
 class_name Interiors
 extends Node3D
-## OW5a (OPEN_WORLD_PLAN section 4): instanced interiors in the open world. A door
-## trigger (InteriorDoor) fades and loads the interior scene far below the world
-## (DEPTH) so the outside stays streamed, moves the party to the interior's matching
-## exit, and leaving through an interior exit moves the party back out to the linked
-## marker in the world. Loads run on a thread; `slow_load` fires when one takes over
-## SLOW_MS (the loading-screen hook), `fade` asks the UI for the 0.3 s fade.
-## OW5b: the Breach rooms are the breach level's greybox complex, instanced from the
-## breach scene with its crater parts (STRIP) dropped (the crater is seamless world
-## terrain); the portal is the complex's entrance road, and a Breach node runs the rooms.
+## Instanced interiors of a closed level: the Mage Association, the Breach rooms, and
+## the Labyrinth. A door trigger fades and loads the interior at DEPTH, moves the party
+## to the matching exit, and leaving returns them to the linked marker in that level's
+## coordinates. Loads run on a thread; `slow_load` fires when one takes over SLOW_MS,
+## and `fade` asks the UI for the 0.3 s fade. The Breach rooms drop the crater groups
+## in STRIP and run a Breach node on the remaining complex.
 
 signal fade(seconds: float)
 signal slow_load(id: String)
@@ -56,16 +53,11 @@ const LINKS := {
 	},
 }
 
-## OW5b: level groups that live in an instanced interior, so tools/build_cells.gd keeps
-## them out of the world cells.
-const CELL_SKIP := {"breach": ["Boxes"]}
-
 var current := ""
 var interior: Node3D
-var height_fn: Callable  ## (x, z) -> world height; OpenWorld.height_at
+var height_fn: Callable  ## (x, z) -> ground height, when a caller has one
 var busy := false
-var streamer: Node  ## unused since world cell streaming was removed
-var breach: Breach  ## OW5b: the rooms' logic while breach_rooms is entered
+var breach: Breach  ## the rooms' logic while breach_rooms is entered
 ## Labyrinth L2: the save's block (main.gd sets it), the floor to enter next / being played,
 ## and the Act kit. floor_entered fires after each floor build (entering or the stairs).
 var labyrinth: LabyrinthState
@@ -192,12 +184,6 @@ func enter(id: String, from_level := "") -> Vector3:
 		)
 	var path := GameFlow.level_scene(link["scene"])
 	var t0 := Time.get_ticks_msec()
-	# OW11b: two threaded loads sharing materials raced in the dummy renderer ("material is
-	# null"); hold the streamer and let its in-flight cells finish first.
-	if is_instance_valid(streamer):
-		streamer.hold = true
-		while streamer.loading() and Time.get_ticks_msec() - t0 < 5000:
-			await get_tree().process_frame
 	SafeLoad.request(path, "PackedScene")
 	_loading = path
 	var slow := false
@@ -208,8 +194,6 @@ func enter(id: String, from_level := "") -> Vector3:
 		await get_tree().process_frame
 	var ps := SafeLoad.take(path) as PackedScene
 	_loading = ""
-	if is_instance_valid(streamer):
-		streamer.hold = false
 	interior = ps.instantiate() as Node3D
 	prepare(interior, id)
 	interior.name = "Interior"

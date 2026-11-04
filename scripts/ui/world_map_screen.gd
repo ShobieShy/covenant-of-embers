@@ -1,9 +1,7 @@
 class_name WorldMapScreen
 extends Control
-## OW7: the open-world map (M). The world texture (world/map.png, tools/gen_world_map.py)
-## with pan (drag) and zoom (wheel), fog of war (WorldFog), region names (Locked greyed),
-## and markers: waystones (click an attuned one to fast travel), road exits, interior
-## doors, custom pins (right click adds / removes, up to 32) and player arrows.
+## Map screen (M). Closed levels draw the campaign sheet for the current level.
+## The seamless texture (world/map.png) and fog are the fallback when no level is set.
 
 signal travel_requested(point: String)
 signal closed
