@@ -14,16 +14,10 @@ extends SceneTree
 ## tools/run_tests.sh runs it with --fixed-fps 60 so every frame is exactly one 1/60 s
 ## physics tick, run as fast as the CPU allows.
 
-## 0.3.1 test tiers: the classic level-flow tests run only at releases
-## (TEST_CLASSIC=1 adds them, TEST_CLASSIC=only runs just them; tools/run_tests.sh --classic).
-## A file maps to the test methods that are classic, or [] for the whole file.
-const CLASSIC := {
-	"test_level.gd": [],
-	"test_flow.gd": [],
-	"test_hub.gd": [],
-	"test_town.gd": ["test_all_exits_link"],
-	"test_vault.gd": ["test_chest_opens_after_boss"],
-}
+## 0.4.0: the closed-level flow tests run in the full tier (and test_flow / test_level are
+## on the fast tier's core list). CLASSIC is empty; TEST_CLASSIC is kept so old commands
+## still parse. A file maps to the test methods that are classic, or [] for the whole file.
+const CLASSIC := {}
 
 var failures := 0
 var passed := 0
@@ -38,7 +32,7 @@ func _physics_process(_delta: float) -> bool:
 
 
 func _run_all() -> void:
-	GameFlow.open_world = false  # OW11c-3: unit tests build classic levels unless they opt in
+	GameFlow.open_world = false  # 0.4.0: closed levels are the default; world tests opt in
 	var dir := DirAccess.open("res://tests/unit")
 	var files: Array[String] = []
 	for f in dir.get_files():

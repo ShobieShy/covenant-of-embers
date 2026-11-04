@@ -9,7 +9,7 @@ const ART := "res://assets/original/ember_art/ui/vote/"
 const TICK_FROM := 3
 const CHIP_SCALE := 3
 
-var sync: LabyrinthSync
+var sync  ## LabyrinthSync or GateVote: left(), missing(), party_size()
 var panel: PanelContainer
 var label: Label
 var chips: HBoxContainer
@@ -67,7 +67,7 @@ func _process(_dt: float) -> void:
 
 
 func refresh() -> void:
-	var left := sync.left() if sync and is_instance_valid(sync) else -1.0
+	var left: float = sync.left() if sync and is_instance_valid(sync) else -1.0
 	if left <= 0.0:
 		_last_sec = -1
 		# QA round 11: the panel stays visible through the close fade; log the end once.
@@ -77,7 +77,9 @@ func refresh() -> void:
 		return
 	_last_left = left
 	var sec := ceili(left)
-	var away: Array[String] = sync.missing()
+	var away: Array[String] = []
+	for n in sync.missing():
+		away.append(String(n))
 	label.text = "Waiting for party: %d s" % sec
 	if not away.is_empty():
 		label.text += "\nNot at the stairs: " + ", ".join(away)

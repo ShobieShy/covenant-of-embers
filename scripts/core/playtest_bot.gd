@@ -324,9 +324,15 @@ func _watch_target(e: Enemy) -> void:
 		_target_s = 0.0
 		return
 	_target_s += get_physics_process_delta_time()
-	if _target_s > UNREACHABLE_S:
+	# A boss still has to die. Dropping the Warden after one lost path left the closed
+	# Breach fight with nobody to shoot (0.4.0 linear playtest).
+	if _target_s > UNREACHABLE_S and not _is_boss(e):
 		_unreachable[e] = true
 		note("skipping unreachable %s" % _foe_desc(e))
+
+
+func _is_boss(e: Enemy) -> bool:
+	return e != null and e.def != null and e.def.id in ["breach_warden", "the_filth", "goblin_king"]
 
 
 func nearest_enemy(foes_only := false) -> Enemy:

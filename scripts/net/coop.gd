@@ -104,6 +104,15 @@ static func host_level() -> String:
 	return id if GameFlow.LEVELS.has(id) else "midden"
 
 
+## The host's Labyrinth floor (0 when the party is not inside). Joiners load it with the level.
+static func host_floor() -> int:
+	var r := SaveGame.read(GameFlow.save_path)
+	if r.has("error"):
+		return 0
+	var lab: Variant = (r["data"] as Dictionary).get("progress", {}).get("labyrinth", {})
+	return int((lab as Dictionary).get("current", 0)) if lab is Dictionary else 0
+
+
 ## Step 155: the anchor/waystone the host's save stands at; joining clients spawn there.
 static func host_anchor() -> String:
 	var r := SaveGame.read(GameFlow.save_path)
@@ -147,6 +156,7 @@ static func begin(tree: SceneTree) -> void:
 	var lvl := String(host_info.get("level", "midden"))
 	GameFlow.level_id = lvl if GameFlow.LEVELS.has(lvl) else "midden"
 	GameFlow.spawn_anchor = String(host_info.get("anchor", ""))
+	GameFlow.labyrinth_floor = int(host_info.get("floor", 0))
 	GameFlow.load_save = false
 	LoadingScreen.join_load = true
 	GameFlow._change(tree, GameFlow.GAME)

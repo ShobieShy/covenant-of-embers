@@ -9,15 +9,19 @@ func test_locked_attune_travel() -> void:
 	var ft := FastTravel.new()
 	var went: Array = []
 	ft.traveled.connect(func(p: String, lv: String) -> void: went.append([p, lv]))
-	check(ft.attune("old_oak") and not ft.attune("old_oak") and not ft.attune("nowhere"), "attune once, known points")
-	check(not ft.travel("old_oak") and ft.last_error.contains("no Teleportation"), "no crystal")
+	check(ft.attune("town_market") and ft.attuned("town_gate") and not ft.attune("town_gate"), "market merges into the hub")
+	check(not ft.attune("nowhere"), "unknown points refused")
+	check(not ft.travel("town_gate") and ft.last_error.contains("no Teleportation"), "no crystal")
 	ft.flags.set_flag(FastTravel.CRYSTAL)
-	check(not ft.travel("old_oak") and ft.last_error.contains("activated"), "locked before the tutorial ends")
+	check(not ft.travel("town_gate") and ft.last_error.contains("activated"), "locked before the tutorial ends")
 	ft.flags.set_flag(FastTravel.TUTORIAL_DONE)
 	check(not ft.travel("breach") and ft.last_error.contains("attuned"), "unattuned refused")
-	check(ft.travel("old_oak") and went == [["old_oak", "old_oak"]], "travel to an attuned point")
+	check(ft.travel("town_gate") and went == [["town_gate", "town_square"]], "travel to the hub")
+	ft.attune("breach")
 	ft.attune("landfill")
-	check(ft.destinations() == PackedStringArray(["old_oak", "landfill"]), "destinations in order")
+	ft.attune("landfill_camp")
+	check(ft.destinations() == PackedStringArray(["town_gate", "breach"]), "hub and Breach, not the Landfill stones")
+	check(ft.attuned("landfill"), "the camp stone merges into the Landfill stone")
 	var f2 := StoryFlags.new()
 	f2.from_dict(ft.flags.to_dict())
 	check(FastTravel.new(f2).attuned("landfill"), "attunement saved with the flags")
@@ -36,20 +40,21 @@ func test_in_game_waystone_and_map() -> void:
 	check(w != null and w.point == "town_gate", "town square has the town gate waystone")
 	p.global_position = w.global_position
 	check(w.check_attune() and g.fast_travel.attuned("town_gate"), "walking up attunes")
-	g.fast_travel.attune("old_oak")
+	g.fast_travel.attune("breach")
 	g.open_map("town_gate")
 	var ui: FastTravelUI = g.travel_ui
 	check(ui.visible and p.ui_open, "map opens")
-	check((ui.buttons["old_oak"] as Button).disabled, "locked before the tutorial ends (greyed)")
-	check(not ui.press("old_oak"), "refused")
+	check((ui.buttons["breach"] as Button).disabled, "locked before the tutorial ends (greyed)")
+	check(not ui.press("breach"), "refused")
+	check(g.world_map_ui.labels.has("line0"), "closed levels show the level sheet")
 	g.story_flags.set_flag(FastTravel.CRYSTAL)
 	g.story_flags.set_flag(FastTravel.TUTORIAL_DONE)
 	g.open_map("town_gate")
 	check(
-		(ui.buttons["town_gate"] as Button).disabled and not (ui.buttons["old_oak"] as Button).disabled, "here greyed"
+		(ui.buttons["town_gate"] as Button).disabled and not (ui.buttons["breach"] as Button).disabled, "here greyed"
 	)
-	check(ui.press("old_oak") and not ui.visible and not p.ui_open, "travel closes the map")
-	check(GameFlow.level_id == "old_oak" and GameFlow.load_save, "travelled to the Old Oak with the save")
+	check(ui.press("breach") and not ui.visible and not p.ui_open, "travel closes the map")
+	check(GameFlow.level_id == "breach" and GameFlow.load_save, "travelled to the Breach with the save")
 	g.free()
 	GameFlow.dry_run = false
 	GameFlow.level_id = "midden"

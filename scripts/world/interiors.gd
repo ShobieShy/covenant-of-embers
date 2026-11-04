@@ -76,6 +76,9 @@ var lab_floor: LabyrinthFloor
 ## host's go through stair_gate () -> bool first (the whole party nearby, or a vote).
 var follow_only := false
 var stair_gate: Callable
+## 0.4.0: a closed level sits at the origin. Door landings stay in that level's coordinates
+## instead of adding the open-world offset.
+var level_local := false
 signal floor_entered(n: int)
 signal rested(at: Vector3)
 
@@ -84,7 +87,7 @@ signal rested(at: Vector3)
 ## The packed-scene state, not an instantiate/free: freeing a whole level while the
 ## open world is live is the joiner's rc 134 heap abort at exit.
 func marker_world(level: String, marker: String) -> Vector3:
-	var wo := SaveMigration.world_offset(level)
+	var wo := Vector2.ZERO if level_local else SaveMigration.world_offset(level)
 	var p := SaveMigration.marker_origin(level, "./Exits/" + marker)
 	var w := Vector3(p.x + wo.x, 0.0, p.z + wo.y)
 	var h: float = height_fn.call(w.x, w.z) if height_fn.is_valid() else NAN
@@ -97,7 +100,7 @@ func marker_world(level: String, marker: String) -> Vector3:
 func link_world(link: Array) -> Vector3:
 	if link.size() < 3:
 		return marker_world(link[0], link[1])
-	var wo: Vector2 = SaveMigration.world_offset(String(link[0]))
+	var wo := Vector2.ZERO if level_local else SaveMigration.world_offset(String(link[0]))
 	var w := Vector3(float(link[2][0]) + wo.x, 0.0, float(link[2][1]) + wo.y)
 	var h: float = height_fn.call(w.x, w.z) if height_fn.is_valid() else NAN
 	w.y = 0.0 if is_nan(h) else h

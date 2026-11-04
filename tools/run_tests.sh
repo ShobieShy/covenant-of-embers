@@ -4,9 +4,9 @@
 # Tiers (0.3.1, docs/TEST_TIERS.md):
 #   tools/run_tests.sh --fast     Python checks, import, TEST_ONLY area tests + CORE_TESTS,
 #                                 one smoke run, the 4x solo playtest (per step)
-#   tools/run_tests.sh            full: every unit test (not classic), both smoke runs, 1x solo,
+#   tools/run_tests.sh            full: every unit test, both smoke runs, 1x solo,
 #                                 1x solo Labyrinth, co-op, lints (milestones)
-#   tools/run_tests.sh --classic  full + the classic level-flow tests (releases)
+#   tools/run_tests.sh --classic  same as full (0.4.0 moved the level-flow tests into full)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 GODOT="${GODOT:-godot}"
@@ -20,7 +20,7 @@ for a in "$@"; do
 done
 if [ "$MODE" = fast ] && [ "${TEST_CLASSIC:-}" = 1 ]; then echo "--classic is a full-tier option"; exit 2; fi
 # The fast tier's always-run list: save/load, player, casting, loot, UI basics, Labyrinth.
-CORE_TESTS="test_smoke.gd,test_branding.gd,test_save.gd,test_save_migration.gd,test_world_save_migration.gd,test_player.gd,test_casting.gd,test_damage.gd,test_inventory.gd,test_hud.gd,test_settings.gd,test_labyrinth_state.gd,test_labyrinth_floor.gd,test_labyrinth_sync.gd,test_world_session.gd,test_audio.gd"
+CORE_TESTS="test_smoke.gd,test_branding.gd,test_save.gd,test_save_migration.gd,test_world_save_migration.gd,test_player.gd,test_casting.gd,test_damage.gd,test_inventory.gd,test_hud.gd,test_settings.gd,test_labyrinth_state.gd,test_labyrinth_floor.gd,test_labyrinth_sync.gd,test_world_session.gd,test_audio.gd,test_flow.gd,test_level.gd,test_linear_flow.gd,test_linear_migration.gd,test_gate_vote.gd"
 python3 tools/toml_to_scene.py --self-test
 python3 tools/expand_maps.py --check
 python3 tools/toml_to_scene.py --check

@@ -12,22 +12,31 @@ signal traveled(point: String, level: String)
 const CRYSTAL := "fast_travel_crystal"
 const TUTORIAL_DONE := "tutorial_done"
 const PREFIX := "waystone:"
-## Point id -> name + GameFlow level id (Magewar travel_points: location -> scene).
+## Travel list for closed levels: the hub, the Breach, and Act-boss floors (DEEP_POINTS).
+## Landfill and market sub-points merge; the Old Oak and Landfill stones stay on their
+## levels (LOCAL) but are not destinations. A boss-floor stone lists the hub, which is
+## the road back (LINEAR_LEVELS_PLAN decisions 2 and 5).
 const POINTS := {
-	"old_oak": {"name": "The Old Oak", "level": "old_oak"},
-	"town_gate": {"name": "Eldoria - Town Gate", "level": "town_square"},
-	"town_market": {"name": "Eldoria - Market", "level": "town_square"},  # step 158
-	"landfill": {"name": "The Landfill", "level": "midden"},
-	"landfill_camp": {"name": "The Landfill - Joe's Camp", "level": "midden"},  # step 161
-	"landfill_overlook": {"name": "The Landfill - Overlook", "level": "midden"},
+	"town_gate": {"name": "Eldoria", "level": "town_square"},
 	"breach": {"name": "The Breach", "level": "breach"},
 }
-## Labyrinth L2 (plan section 7): waystones below ground, on boss floors (attuned once the
-## boss is down). Same attunement flags; WorldTravel enters the floor instead of a spot.
+## Stones that attune in place. Travel from the map does not offer them.
+const LOCAL := {
+	"old_oak": {"name": "The Old Oak", "level": "old_oak"},
+	"landfill": {"name": "The Landfill", "level": "midden"},
+}
+## Old attunement ids written by 0.3.x. canon() folds them into the stone that remains.
+const MERGED := {
+	"town_market": "town_gate",
+	"landfill_camp": "landfill",
+	"landfill_overlook": "landfill",
+}
+## Labyrinth L2: waystones on Act boss floors. In closed levels, picking one loads that
+## floor; picking the hub on the same map returns the party to Town Square.
 const DEEP_POINTS := {
 	"warrens_hall": {"name": "The Warrens - Goblin King's Hall", "level": "labyrinth", "floor": 5},
 }
-## GameFlow level id -> the waystone point in it.
+## GameFlow level id -> the waystone point that stands in it (spawn anchor).
 const LEVEL_POINT := {
 	"old_oak": "old_oak", "town_square": "town_gate", "midden": "landfill", "breach": "breach"
 }
@@ -48,18 +57,33 @@ func unlocked() -> bool:
 	return has_crystal() and flags.has(TUTORIAL_DONE)
 
 
+## Alias ids (town_market, landfill_camp, ...) become the stone that replaced them.
+static func canon(point: String) -> String:
+	return String(MERGED.get(point, point))
+
+
+static func known(point: String) -> bool:
+	var id := canon(point)
+	return POINTS.has(id) or LOCAL.has(id) or DEEP_POINTS.has(id)
+
+
+static func is_local(point: String) -> bool:
+	return LOCAL.has(canon(point))
+
+
 func attune(point: String) -> bool:
-	if not (POINTS.has(point) or DEEP_POINTS.has(point)) or attuned(point):
+	var id := canon(point)
+	if not known(id) or attuned(id):
 		return false
-	flags.set_flag(PREFIX + point)
+	flags.set_flag(PREFIX + id)
 	return true
 
 
 func attuned(point: String) -> bool:
-	return flags.has(PREFIX + point)
+	return flags.has(PREFIX + canon(point))
 
 
-## Attuned destinations, in POINTS order.
+## Attuned destinations, in POINTS then boss-floor order. Local stones are not listed.
 func destinations() -> PackedStringArray:
 	var out := PackedStringArray()
 	for p in POINTS:
@@ -71,16 +95,22 @@ func destinations() -> PackedStringArray:
 	return out
 
 
-## A point's {name, level[, floor]}, outdoors or below ground ({} when unknown).
+## A point's {name, level[, floor]} ({} when unknown). Aliases resolve first.
 static func info(point: String) -> Dictionary:
-	return POINTS.get(point, DEEP_POINTS.get(point, {}))
+	var id := canon(point)
+	if POINTS.has(id):
+		return POINTS[id]
+	if LOCAL.has(id):
+		return LOCAL[id]
+	return DEEP_POINTS.get(id, {})
 
 
 static func is_deep(point: String) -> bool:
-	return DEEP_POINTS.has(point)
+	return DEEP_POINTS.has(canon(point))
 
 
 func can_travel(point: String) -> bool:
+	point = canon(point)
 	last_error = ""
 	if not has_crystal():
 		last_error = "You have no Teleportation Crystal."
@@ -92,8 +122,10 @@ func can_travel(point: String) -> bool:
 
 
 ## Emits traveled(point, level) when allowed (main.gd travels on it); else false + last_error.
+## An alias travels as the stone it merged into.
 func travel(point: String) -> bool:
-	if not can_travel(point):
+	var id := canon(point)
+	if not can_travel(id):
 		return false
-	traveled.emit(point, String(info(point)["level"]))
+	traveled.emit(id, String(info(id)["level"]))
 	return true

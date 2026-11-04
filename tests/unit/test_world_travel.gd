@@ -42,7 +42,9 @@ func test_travel_moves_party() -> void:
 	var fighting := [true]
 	t.in_combat = func() -> bool: return fighting[0]
 	runner_tree.root.add_child(t)
-	check(t.waystones.size() == FastTravel.POINTS.size(), "a waystone per point")
+	var placed: Dictionary = WorldTravel.load_markers()["waystones"]
+	check(t.waystones.size() == placed.size(), "a waystone per world marker")
+	check(t.waystones.has("town_gate") and t.waystones.has("breach"), "hub and Breach stones")
 	check(not t.can_travel("landfill"), "not attuned")
 	t.fast_travel.attune("landfill")
 	check(not t.can_travel("landfill") and t.last_error.contains("fight"), "refused in combat")

@@ -8,21 +8,21 @@ user dir so QA saves are never touched:
 | Tier | Command | When | Roughly runs |
 |---|---|---|---|
 | Fast | `TEST_ONLY=test_hud.gd,test_dialogue.gd tools/run_tests.sh --fast` | every change / step | Python checks, import, the TEST_ONLY files plus the core list (`CORE_TESTS` in tools/run_tests.sh), one `--start` smoke run, the 4x solo playtest |
-| Full | `tools/run_tests.sh` | milestones | Python checks, import, every unit test except the classic group, both smoke runs, the 1x solo playtest, one 1x solo Labyrinth playtest (`PLAYTEST_LABYRINTH=1`), the co-op playtest, asset/credit/path lints |
-| Release | `tools/run_tests.sh --classic` | before a release tag | the full tier plus the classic level-flow tests |
+| Full | `tools/run_tests.sh` | milestones | Python checks, import, every unit test (the closed-level flow tests included), both smoke runs, the 1x solo playtest, one 1x solo Labyrinth playtest (`PLAYTEST_LABYRINTH=1`), the co-op playtest, asset/credit/path lints |
+| Release | `tools/run_tests.sh --classic` | before a release tag | the full tier (`--classic` is the same set; the old release-only group moved into full) |
 
 `TEST_ONLY` is optional in the fast tier; leave it empty to run just the core list.
 
-## The classic group
+## Closed-level flow tests
 
-Classic (non-open-world) mode is still in the game, but its level-flow tests run only at
-releases. These are `test_level.gd`, `test_flow.gd`, `test_hub.gd`, and two methods:
-`test_town.gd::test_all_exits_link` and `test_vault.gd::test_chest_opens_after_boss`. The list
-is `CLASSIC` in tests/run_tests.gd.
+0.4.0 runs the old classic level-flow tests in the full tier, and the fast tier's core
+list includes `test_flow.gd` and `test_level.gd`. `test_linear_flow.gd`,
+`test_linear_migration.gd` and `test_gate_vote.gd` cover the new gates, save migration and
+the co-op gate vote. `CLASSIC` in tests/run_tests.gd is empty.
 
-To run only the classic group:
+To run just those flow tests:
 
-    TEST_CLASSIC=only godot --headless --fixed-fps 60 --path . -s res://tests/run_tests.gd
+    TEST_ONLY=test_flow.gd,test_level.gd,test_linear_flow.gd,test_linear_migration.gd,test_gate_vote.gd godot --headless --fixed-fps 60 --path . -s res://tests/run_tests.gd
 
 ## Notes
 

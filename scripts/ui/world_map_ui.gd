@@ -8,6 +8,7 @@ const COLORS := [Color(0.45, 0.45, 0.45), Color(0.9, 0.9, 0.9), Color(1.0, 0.6, 
 var map: WorldMap
 var rows := VBoxContainer.new()
 var labels := {}
+var title: Label
 
 
 func _init() -> void:
@@ -17,14 +18,33 @@ func _init() -> void:
 	add_child(panel)
 	var v := VBoxContainer.new()
 	panel.add_child(v)
-	var title := Label.new()
+	title = Label.new()
+	title.name = "Title"
 	title.text = "Elyria"
 	v.add_child(title)
 	v.add_child(rows)
 	visible = false
 
 
+## Closed levels: this level's sheet (name, waystone, campaign Here/Visited/Unseen).
+func show_level(m: WorldMap, level_id: String, seen_ids: Array = []) -> void:
+	map = m
+	title.text = WorldMap.level_name(level_id)
+	for c in rows.get_children():
+		c.free()
+	labels.clear()
+	var texts := m.level_lines(level_id, seen_ids)
+	for i in texts.size():
+		var l := Label.new()
+		l.text = texts[i]
+		rows.add_child(l)
+		labels["line%d" % i] = l
+	labels["title"] = title
+	visible = true
+
+
 func show_map(m: WorldMap) -> void:
+	title.text = "Elyria"
 	map = m
 	for c in rows.get_children():
 		c.free()

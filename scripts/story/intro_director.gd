@@ -95,10 +95,12 @@ const GATE_RULES := {
 	"town_square":
 	{
 		"midden":
-		[
-			"filth_defeated",
-			'Bored Guard: "Barrier edge. Summoned don\'t go out there without say-so."'
-		]
+		["landfill_route_open", "Bob has not sent you to the Landfill yet."],
+	},
+	"old_oak":
+	{
+		"town_square":
+		["home_unlocked", "Rest in the grove first. The road to town is shut."],
 	},
 	"midden":
 	{
@@ -309,7 +311,14 @@ func _dress_association() -> void:
 	_spawn("Clerk", spot("clerk", CLERK_SPOT), 180.0)
 	var others := Array(Archetype.IDS).filter(func(a: String) -> bool: return a != player.archetype)
 	for i in mini(3, others.size()):
-		_spawn("Summoned " + Archetype.label(others[i]), SUMMONED_SPOTS[i], 0.0)
+		# Level-local spots. `at()` adds the open-world hall offset; closed levels stay at 0.
+		_spawn("Summoned " + Archetype.label(others[i]), at(SUMMONED_SPOTS[i]), 0.0)
+	if joe() == null:
+		var marker := main.get_node_or_null("Level/NPCs/crazy_joe") as Node3D
+		var hall := main.get_node_or_null("OpenWorld") as OpenWorld
+		if hall and hall.interiors.interior:
+			marker = hall.interiors.interior.get_node_or_null("NPCs/crazy_joe") as Node3D
+		_spawn("Crazy Joe", marker.global_position if marker else at(Vector3(0.0, 0.3, -10.0)), 0.0)
 	if flags.has("joe_expelled"):
 		_hide_joe()
 	match current():
@@ -510,6 +519,11 @@ func _exit_tree() -> void:
 
 
 func _apply_gate_rules() -> void:
+	# A slice loaded off the beat's stage (the greybox Midden while the prologue is still
+	# in the Association) is not the intro corridor. Leave its gates to the linear rules.
+	var beat_level := String(LEVEL.get(current(), here))
+	if not current().is_empty() and beat_level != here:
+		return
 	var rules: Dictionary = GATE_RULES.get(here, {})
 	for g in main.get("gates"):
 		if rules.has(g.target):
@@ -1070,6 +1084,8 @@ func complete() -> void:
 	_apply_gate_rules()
 	for g in main.get("gates"):
 		g.requires = ""
+	if main.has_method(&"apply_linear_gates"):
+		main.apply_linear_gates()
 	if marker:
 		marker.visible = false
 		marker.queue_free()

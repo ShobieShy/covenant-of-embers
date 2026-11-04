@@ -1235,9 +1235,3 @@ model = "assets/kenney/fantasy-town-kit/windmill.glb"
 position = [-27, 5.5, -20.4]
 rotation_deg = [0.0, 0.0, 0.0]
 scale = 3
-[[prop]]
-name = "old_oak"
-model = "assets/original/old_oak/OldOak_Giant.glb"
-position = [29, 0, 14]
-rotation_deg = [0.0, 25.0, 0.0]
-scale = 1.0

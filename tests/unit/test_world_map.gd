@@ -35,9 +35,18 @@ func test_shown_in_game() -> void:
 	g.position = Vector3(0, 0, -9000)
 	runner_tree.root.add_child(g)
 	check(g.world_map.state("eldoria") == WorldMap.State.VISITED, "the Old Oak visits Eldoria")
+	check(g.world_map.seen("old_oak"), "this level is marked seen")
 	g.open_map("old_oak")
 	var ui: WorldMapUI = g.world_map_ui
-	check(ui.visible and (ui.labels["eldoria"] as Label).text == "Eldoria (barrier town): Visited", "shown visited")
+	check(ui.visible and (ui.labels["line0"] as Label).text == "The Old Oak", "per-level sheet title")
+	var sheet := ""
+	for key in ui.labels:
+		if ui.labels[key] is Label:
+			sheet += (ui.labels[key] as Label).text + "\n"
+	check(sheet.contains("The Old Oak: Here"), "this level is here")
+	check(sheet.contains("The Landfill: Unseen"), "other levels start unseen")
+	ui.show_map(g.world_map)
+	check((ui.labels["eldoria"] as Label).text == "Eldoria (barrier town): Visited", "region atlas still available")
 	check((ui.labels["crimson_sea"] as Label).text == "Crimson Sea (wild land): Locked", "shown locked")
 	g.save_game()
 	g.free()
