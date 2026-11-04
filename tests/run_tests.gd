@@ -32,7 +32,6 @@ func _physics_process(_delta: float) -> bool:
 
 
 func _run_all() -> void:
-	GameFlow.open_world = false  # 0.4.0: closed levels are the default; world tests opt in
 	var dir := DirAccess.open("res://tests/unit")
 	var files: Array[String] = []
 	for f in dir.get_files():

@@ -55,5 +55,4 @@ func test_camp_wakes_and_respawns() -> void:
 	}
 	var got := sp.spawn_camp(c)
 	check(got.size() == 3 and sp.camp_spawns == 1, "camp spawns its pack")
-	check(got[0].has_meta(CampLeash.HOME), "camp members are leashed home")
 	sp.queue_free()

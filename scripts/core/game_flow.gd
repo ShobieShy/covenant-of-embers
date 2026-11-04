@@ -25,9 +25,7 @@ const LEVEL_IDS := {
 
 static var level_id := "midden"
 static var load_save := false
-## 0.4.0: closed levels are the game. Tests and `--open-world` opt into the seamless world.
-static var open_world := false
-static var spawn_anchor := ""  ## step 155: co-op join at the host's waystone (a level point)
+static var spawn_anchor := ""  ## co-op join at the host's waystone (a level point)
 ## Joiner: the host's Labyrinth floor (0 = not inside). Consumed when the level loads.
 static var labyrinth_floor := 0
 static var save_path := SaveGame.PATH
@@ -66,14 +64,6 @@ static func identity_from_args(args: PackedStringArray) -> Dictionary:
 	return out
 
 
-## Closed levels are the default. `--open-world` is the dev-only escape until 0.5.
-## `--classic-levels` is gone: that flow is the game.
-static func open_world_on() -> bool:
-	if OS.get_cmdline_user_args().has("--open-world"):
-		return true
-	return open_world
-
-
 static func level_scene(id: String) -> String:
 	return LEVELS.get(id, LEVELS["midden"])
 
@@ -107,8 +97,7 @@ static func continue_run(tree: SceneTree) -> bool:
 	var r := SaveGame.read(save_path)
 	if r.has("error"):
 		return false
-	if not open_world_on():
-		SaveMigration.store_linear(r["data"], save_path)
+	SaveMigration.store_linear(r["data"], save_path)
 	level_id = String((r["data"] as Dictionary).get("progress", {}).get("level_id", "midden"))
 	if not LEVELS.has(level_id):
 		level_id = "midden"

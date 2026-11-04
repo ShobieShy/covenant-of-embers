@@ -77,22 +77,6 @@ func test_tiles_links_and_seam_path() -> void:
 	await runner_tree.physics_frame
 
 
-func test_camp_leash() -> void:
-	var w := Node3D.new()
-	runner_tree.root.add_child(w)
-	var e := Enemy.create(EnemyTable.load_default().find("gnawer"), Transform3D.IDENTITY)
-	w.add_child(e)
-	CampLeash.home(e, Vector3(5, 0, 5))
-	e.global_position = Vector3(30, 0, 5)
-	check(CampLeash.enforce([e]) == 0, "inside 40 m stays")
-	e.apply_damage(1.0, ElementTable.Element.FIRE)
-	e.global_position = Vector3(50, 0, 5)
-	check(CampLeash.enforce([e]) == 1, "45 m out goes home")
-	check(e.global_position.distance_to(Vector3(5, 0, 5)) < 0.01, "back at its spot")
-	check_near(e.health, e.max_health(), 0.01, "healed on leash")
-	w.free()
-
-
 func test_route_graph_chains_landmarks() -> void:
 	var g := RouteGraph.new()
 	g.points = [Vector3.ZERO, Vector3(100, 0, 0), Vector3(200, 0, 0), Vector3(300, 0, 0)]

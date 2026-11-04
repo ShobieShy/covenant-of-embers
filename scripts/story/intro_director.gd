@@ -289,9 +289,6 @@ func advance(id: String) -> bool:
 ## redesigned maps move the intro without code changes; `fallback` = the greybox spot.
 func spot(id: String, fallback: Vector3) -> Vector3:
 	var n := main.get_node_or_null(NodePath("Level/Anchors/" + id)) as Node3D if main else null
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld if main else null
-	if ow and ow.interiors.interior and ow.interiors.current == here:  # OW11c: indoors
-		n = ow.interiors.interior.get_node_or_null(NodePath("Anchors/" + id)) as Node3D
 	return n.global_position if n else base + fallback
 
 
@@ -324,9 +321,6 @@ func _dress_association() -> void:
 		_spawn("Summoned " + Archetype.label(others[i]), at(SUMMONED_SPOTS[i]), 0.0)
 	if joe() == null:
 		var marker := main.get_node_or_null("Level/NPCs/crazy_joe") as Node3D
-		var hall := main.get_node_or_null("OpenWorld") as OpenWorld
-		if hall and hall.interiors.interior:
-			marker = hall.interiors.interior.get_node_or_null("NPCs/crazy_joe") as Node3D
 		_spawn("Crazy Joe", marker.global_position if marker else at(Vector3(0.0, 0.3, -10.0)), 0.0)
 	if flags.has("joe_expelled"):
 		_hide_joe()
@@ -552,23 +546,6 @@ func target_point() -> Variant:
 	var dest := String(LEVEL.get(b, here))
 	if dest != here:
 		var hop := String(ROUTE.get(here, {}).get(dest, ""))
-		var ow := main.get_node_or_null("OpenWorld") as OpenWorld
-		if ow and here == "town_square" and (dest == "midden" or b == "back_door"):
-			# OW11c: out of the Association's back door at the Landfill edge: on to the Landfill
-			var edge := ow.interiors.marker_world("town_square", "to_landfill")
-			if (
-				player
-				and (
-					(
-						Vector2(
-							edge.x - player.global_position.x, edge.z - player.global_position.z
-						)
-						. length()
-					)
-					< 40.0
-				)
-			):
-				hop = "midden"
 		var g := gate_to(hop)
 		if g == null:
 			return _world_way(hop)
@@ -600,13 +577,9 @@ func target_point() -> Variant:
 ## OW11c: the open world has no zone gates: walk to the next zone's entrance, or to the
 ## front door of an interior on the way.
 func _world_way(hop: String) -> Variant:
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld if main else null
-	if ow == null or hop == "":
+	if hop == "":
 		return null
 	world_hop = hop
-	if Interiors.LINKS.has(hop):
-		var d := ow.interiors.get_node_or_null("Door_" + hop) as Node3D
-		return d.global_position if d else null
 	return SaveMigration.entrance(hop)
 
 

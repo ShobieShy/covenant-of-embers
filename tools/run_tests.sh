@@ -20,7 +20,7 @@ for a in "$@"; do
 done
 if [ "$MODE" = fast ] && [ "${TEST_CLASSIC:-}" = 1 ]; then echo "--classic is a full-tier option"; exit 2; fi
 # The fast tier's always-run list: save/load, player, casting, loot, UI basics, Labyrinth.
-CORE_TESTS="test_smoke.gd,test_branding.gd,test_save.gd,test_save_migration.gd,test_world_save_migration.gd,test_player.gd,test_casting.gd,test_damage.gd,test_inventory.gd,test_hud.gd,test_settings.gd,test_labyrinth_state.gd,test_labyrinth_floor.gd,test_labyrinth_sync.gd,test_world_session.gd,test_audio.gd,test_flow.gd,test_level.gd,test_linear_flow.gd,test_linear_migration.gd,test_gate_vote.gd"
+CORE_TESTS="test_smoke.gd,test_branding.gd,test_save.gd,test_save_migration.gd,test_world_save_migration.gd,test_player.gd,test_casting.gd,test_damage.gd,test_inventory.gd,test_hud.gd,test_settings.gd,test_labyrinth_state.gd,test_labyrinth_floor.gd,test_labyrinth_sync.gd,test_audio.gd,test_flow.gd,test_level.gd,test_linear_flow.gd,test_linear_migration.gd,test_gate_vote.gd"
 python3 tools/toml_to_scene.py --self-test
 python3 tools/expand_maps.py --check
 python3 tools/toml_to_scene.py --check
@@ -67,11 +67,6 @@ fi
 python3 tools/check_assets.py
 python3 tools/gen_credits.py --check
 python3 tools/gen_element_trees.py --check
-if [ ! -f build/world/world.json ]; then  # build/ is not in git: regenerate the world sources
-	run_clean timeout 300 "$GODOT" --headless --path . -s res://tools/export_zone_heights.gd
-	python3 tools/build_world.py
-fi
-python3 tools/gen_world_map.py --check  # OW7
 python3 tools/check_paths.py --self-test
 python3 tools/check_paths.py
 echo "[run_tests] all green ($MODE${TEST_CLASSIC:+ + classic})"

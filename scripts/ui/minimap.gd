@@ -59,6 +59,26 @@ func rows() -> Array:
 	return players.call() if players.is_valid() else []
 
 
+## Local player plus co-op partners: [pos, yaw, name, colour, is_local].
+static func map_rows(tree: SceneTree) -> Array:
+	var out: Array = []
+	for n in tree.get_nodes_in_group(Player.GROUP):
+		var p := n as Node3D
+		var nm: Variant = p.get(&"character_name")
+		var c: Variant = p.get(&"character_color")
+		out.append([
+			p.global_position,
+			p.global_rotation.y,
+			String(nm) if nm != null else "",
+			c if c is Color else Color(1, 0.8, 0.3),
+			true,
+		])
+	for n in tree.get_nodes_in_group(RemotePlayer.GROUP):
+		var r := n as RemotePlayer
+		out.append([r.global_position, r.target_yaw, r.display_name, r.color, false])
+	return out
+
+
 func _angle() -> float:
 	return 0.0 if lock_north else yaw
 

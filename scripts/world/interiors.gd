@@ -64,7 +64,7 @@ var current := ""
 var interior: Node3D
 var height_fn: Callable  ## (x, z) -> world height; OpenWorld.height_at
 var busy := false
-var streamer: WorldStreamer  ## OW11b: held while the interior loads
+var streamer: Node  ## unused since world cell streaming was removed
 var breach: Breach  ## OW5b: the rooms' logic while breach_rooms is entered
 ## Labyrinth L2: the save's block (main.gd sets it), the floor to enter next / being played,
 ## and the Act kit. floor_entered fires after each floor build (entering or the stairs).

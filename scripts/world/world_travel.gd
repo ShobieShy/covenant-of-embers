@@ -12,7 +12,7 @@ const MARKERS := "res://world/markers.json"
 const LAND := Vector3(0.0, 0.0, 2.5)  ## off the stone, like main.gd's spawn
 
 var fast_travel: FastTravel
-var streamer: WorldStreamer
+var streamer: Node  ## was WorldStreamer; world cell streaming is gone
 var height_fn := Callable()
 var in_combat := Callable()  ## -> bool; travel is refused while it is true
 var party := Callable()  ## -> Array of Node3D to move; default: the Player group
@@ -163,24 +163,6 @@ func _party() -> Array:
 	return get_tree().get_nodes_in_group(Player.GROUP) if is_inside_tree() else []
 
 
-func _stream(dest: Vector3, screen: LoadingScreen) -> void:
-	if streamer == null:
-		return
-	var keep := streamer.viewer_override.duplicate()
-	var pts: Array[Vector3] = [dest]
-	streamer.viewer_override = pts
-	var want := streamer.wanted(pts, WorldStreamer.RING)
-	for i in 1200:  # 20 s at 60 fps, then go anyway
-		streamer.step()
-		var got := 0
-		for k in want:
-			got += 1 if streamer.loaded.has(k) else 0
-		if is_instance_valid(screen):
-			screen.advance(LoadingScreen.Stage.LEVEL, float(got) / maxf(1.0, want.size()))
-		if got == want.size():
-			if is_instance_valid(screen):
-				screen.advance(LoadingScreen.Stage.NAV, 0.0)
-			if not streamer.nav_pending(pts):
-				break
-		await get_tree().process_frame
-	streamer.viewer_override = keep
+## World cell streaming is gone. Travel that used to stream a spot now only moves the party.
+func _stream(_dest: Vector3, _screen: LoadingScreen) -> void:
+	return

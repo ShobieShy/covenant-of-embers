@@ -615,7 +615,7 @@ func _physics_process(delta: float) -> void:
 			_intro_tick()
 		"midden_walk":
 			if main.call(&"here_id") != "midden":  # step 109: a new game starts elsewhere
-				var ow0 := main.get_node_or_null("OpenWorld") as OpenWorld
+				var ow0 := main.get_node_or_null("OpenWorld")
 				if ow0 and ow0.travel.busy:
 					return  # QA-2: wait out the first world load (4x: travel overlapped it)
 				if t > 0.5 and not _ow_travel:
@@ -625,7 +625,7 @@ func _physics_process(delta: float) -> void:
 					_done = not _ow_travel
 				return
 			if _ow_travel:  # OW11b: landed in the world's Landfill; walk from here
-				var ow: OpenWorld = main.get_node("OpenWorld")
+				var ow = main.get_node("OpenWorld")
 				if ow.travel.busy:
 					return
 				_ow_travel = false
@@ -642,7 +642,7 @@ func _physics_process(delta: float) -> void:
 				_goto("midden_fight")
 		"midden_fight", "breach_fight":
 			if stage == "breach_fight":
-				var owb := main.get_node_or_null("OpenWorld") as OpenWorld
+				var owb := main.get_node_or_null("OpenWorld")
 				if owb and owb.interiors.current == "" and not owb.travel.busy:
 					if _tick % 300 == 0:  # OW11b: a death respawns outdoors; go back in
 						note("back into the Breach rooms from %s" % player.global_position)
@@ -771,9 +771,6 @@ const VOTE_FLOOR := 2  ## co-op: the joiner hangs back here so the host's 10 s v
 ## Co-op joiner, `--labyrinth`: on VOTE_FLOOR stand still (far from the stairs) so the host's
 ## stairs start the vote countdown and the floor sync carries this player down when it ends.
 func _interiors() -> Interiors:
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
-	if ow:
-		return ow.interiors
 	return main.get_node_or_null("LinearInteriors") as Interiors
 
 
@@ -808,9 +805,8 @@ var _lab_flip := false
 
 
 func _lab_tick() -> void:
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
 	var inn := _interiors()
-	if (inn and inn.busy) or (ow and ow.travel.busy):
+	if inn and inn.busy:
 		return
 	var lab: LabyrinthState = main.get(&"labyrinth")
 	var ls := main.get_node_or_null(^"LabyrinthSync") as LabyrinthSync
@@ -1304,7 +1300,7 @@ func _intro_interact(d: IntroDirector) -> void:
 	var at: Variant = d.target_point()
 	if at == null:
 		return
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
+	var ow := main.get_node_or_null("OpenWorld")
 	if ow and d.world_hop != "" and flat_distance(at) > 60.0 and ow.interiors.current == "":
 		# OW11c: a zone hundreds of metres off: travel there like midden_walk (walk_to is
 		# good for a zone's streamed ring, not a cross-world trek)

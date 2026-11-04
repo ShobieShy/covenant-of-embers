@@ -353,7 +353,7 @@ func _draw() -> void:
 	if _fog_tex:
 		draw_texture_rect(_fog_tex, r, false)  # linear filtering softens the cell edges
 	var font := get_theme_default_font()
-	var info := OpenWorld.load_info()
+	var info := {}
 	for z in info.get("zones", {}):
 		var reg := String(WorldMap.LEVEL_REGION.get(z, ""))
 		if reg.is_empty() or regions == null:

@@ -1,7 +1,7 @@
 # World layout (OW1)
 
-Superseded 2026-11-04 by [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md) for the default
-flow. The offsets below still place zones when the dev-only `--open-world` flag is on.
+Superseded 2026-11-04 by [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md). The seamless
+world and `--open-world` were removed in 0.5.0. The offsets below are historical.
 
 Every outdoor level keeps its own scene and local coordinates. `[level] world_offset = [x, z]`
 in data/levels/*.toml (16 m multiples) places it on the shared world map; toml_to_scene.py

@@ -1,6 +1,9 @@
 # Linear Levels Plan (closed levels replace the open world)
 
-Status: APPROVED 2026-11-04. ShobieShy approved every default in section 11. Requested
+Status: APPROVED 2026-11-04. ShobieShy approved every default in section 11.
+0.4.0 (LL1-LL5) and the 0.5.0 open-world cut are in this branch. Section 10 still
+leaves new Labyrinth Acts, art, and balance out of this plan. PR #3 and PR #4
+were not touched. Requested
 the same day: the game should no longer be open world; it should be linear with closed
 levels. This document is the build source for milestone 0.4.0 "Closed Levels" (LL1-LL5).
 Supersedes OPEN_WORLD_PLAN.md (OW1-OW11) as the default flow; LABYRINTH_PLAN.md stays

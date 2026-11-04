@@ -8,7 +8,6 @@ const FILE := "user://test_linear_flow_save.json"
 
 func _reset() -> void:
 	GameFlow.dry_run = true
-	GameFlow.open_world = false
 	GameFlow.save_path = FILE
 	GameFlow.path_override = FILE
 	GameFlow.intro_mode = ""
@@ -21,7 +20,6 @@ func _reset() -> void:
 
 func _restore() -> void:
 	GameFlow.dry_run = false
-	GameFlow.open_world = false
 	GameFlow.path_override = ""
 	GameFlow.select_slot(1)
 	GameFlow.level_id = "midden"
@@ -50,10 +48,7 @@ func _gate(g: Node, target: String) -> LevelGate:
 
 
 func test_closed_levels_are_the_default() -> void:
-	check(not GameFlow.open_world and not GameFlow.open_world_on(), "closed levels, no dev flag")
-	GameFlow.open_world = true
-	check(GameFlow.open_world_on(), "a test can still opt into the world")
-	GameFlow.open_world = false
+	check(GameFlow.level_scene("old_oak").ends_with("old_oak.tscn"), "the grove is a closed level")
 
 
 func test_forward_gates_follow_the_story() -> void:
