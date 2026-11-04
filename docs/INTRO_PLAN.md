@@ -1,6 +1,8 @@
-# Intro and tutorial plan (New Game -> world open)
+# Intro and tutorial plan
 
-Planned 2026-10-24. **Plan only: nothing here is built yet.** BUILD_PLAN steps 109-118 implement it.
+The intro shipped. It plays on the closed levels and starts at the Old Oak ([LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md)). This file is the original beat list, not a second campaign plan.
+
+Planned 2026-10-24. BUILD_PLAN steps 109-118 implemented it.
 Source: `~/game/Magewar Storyline.md` (Prologue: The Summoning / Welcome to ? Town / A New Home; Chapter 1: Bob?)
 and `~/game/Magewar Bible.md` (locations). Dialogue lines below are placeholders taken from
 `data/story/dialogue.toml`, which was ported from the Storyline. New lines are marked *(new)*.

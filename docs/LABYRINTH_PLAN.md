@@ -1,14 +1,14 @@
-# The Labyrinth (plan only)
+# The Labyrinth
 
-Status: APPROVED 2026-10-27 ~01:48 CDT (all 12 recommended defaults in section 13). Build
-L1 onward only after the 0.2.0 open-world release (OW11). Nothing here is built
-until 0.2.0 ships. Requested 2026-10-27 ~01:18 CDT.
+Status: APPROVED 2026-10-27 ~01:48 CDT (all 12 recommended defaults in section 13).
+Act I (the Warrens) is in the game. Acts II-V and the Core are the remaining campaign.
+The level order and the entrance are the closed-level plan in [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md).
+The seamless-world plan this used to sit beside is in [archive/OPEN_WORLD_PLAN.md](archive/OPEN_WORLD_PLAN.md).
 
 One main-game, multi-floor labyrinth dungeon replaces the Magewar Bible's "defeat all 5
-dungeons, then the Demon Lord's lair" plan. It sits alongside the open world (OPEN_WORLD_PLAN.md):
-the overworld stays the place for towns, quests and regions; the Labyrinth is where depth,
-bosses and the endgame live. Future labyrinths could ship as DLC (own entrance, own floor
-set, same systems); this plan covers only this one.
+dungeons, then the Demon Lord's lair" plan. Towns and quests live in the closed levels.
+The Labyrinth is where depth, bosses and the endgame live. Future labyrinths could ship
+as DLC (own entrance, own floor set, same systems); this plan covers only this one.
 
 ## 1. Source material (Magewar, read-only)
 
@@ -29,16 +29,14 @@ The Storyline (`Magewar Storyline.md`) supplies the flavour the five should adap
 The Fracture is the in-world reason the Labyrinth exists: the dungeons did not just open,
 they collapsed into one another, and the Labyrinth is the fused shaft beneath Elyria.
 
-## 2. Entrance in the open world
+## 2. Entrance from the closed Breach
 
-- The Breach crater (east of the Landfill, already built) is the entrance: Bob's lead ends
-  there after the prologue, and the crater portals become the Labyrinth gate (floor 1).
-  It reuses the Breach as the "first taste" and keeps the world map unchanged.
-- Shortcut gates (sealed rifts) appear in the overworld near each Act's theme region
-  (Willowbrook, Whispering Woods, Ironforge road, the coast, the Peaks foothills). Each
-  opens only once its Act is cleared from below, as a return point, never as a skip.
-- The entrance is an instanced interior (OPEN_WORLD_PLAN section 4): door trigger, loading
-  screen, the overworld stays streamed.
+- The Breach is its own level. Bob's lead ends there after the prologue, and the crater
+  portal is the Labyrinth gate (floor 1) once `filth_defeated` is set.
+- There are no shortcut gates in other regions. An Act boss waystone returns the party
+  to Town Square, and the hub's Breach gate offers the next Act.
+- The floor is an instanced interior (`Interiors`, id `labyrinth`): door trigger, loading
+  screen, one floor in memory. The closed level outside is not streamed.
 
 ## 3. Depth as progression
 
@@ -88,21 +86,21 @@ Hybrid (default):
 ## 7. Checkpoints and returning
 
 - Waystone on every boss floor (after the kill) and a rest room every floor (save, heal,
-  craft station). Waystones link to the overworld network (OW6), so returning to town and
-  going back down is one fast travel.
+  craft station). An Act boss waystone returns the party to Town Square. The hub's Breach
+  gate is the way back down.
 - Leaving mid-floor returns you to the floor's start (floor progress kept: opened chests
   and killed elites stay); dying respawns at the last rest room with the existing death
   rules.
-- The Act shortcut gates in the overworld (section 2) open once that Act is cleared.
+- There is no overworld shortcut gate for a cleared Act (section 2). The way back is the hub.
 
 ## 8. Co-op
 
-- Host authority as in OPEN_WORLD_PLAN section 7: the host's floor seed and state decide;
+- Host authority, as in the closed-level co-op rules: the host's floor seed and state decide;
   partners load the same floor through the loading screen.
 - Party stays on one floor (no split floors); the stairs/exit need all players nearby or
   a 10 s vote. Boss arenas lock when the fight starts; late joiners spectate until the
   phase ends.
-- Enemy health and loot rolls scale with party size (same scaling as the overworld camps).
+- Enemy health and loot rolls scale with party size (same scaling as the Landfill camps).
 
 ## 9. Loot scaling
 
@@ -121,16 +119,15 @@ Hybrid (default):
 
 ## 11. Performance
 
-- Floors are instanced (not streamed with the overworld); one floor in memory, the next
+- Floors are instanced, not part of a world stream; one floor in memory, the next
   preloaded on a thread when the exit is in sight.
 - Budget per floor: under 150 draw calls on Low / Steam Deck, room occlusion (rooms are
   natural portals), enemy sleep beyond 2 rooms, navmesh tiles cached per room.
 - Load target: under 2 s per floor on Steam Deck, always behind the loading screen.
 
-## 12. Fit after 0.2.0
+## 12. Build order
 
-0.2.0 (OW11) ships the open world with the Landfill and the Breach. The Labyrinth is the
-next milestone, roughly:
+Act I shipped with the closed levels. The remaining rows are the rest of the campaign:
 
 | # | Step | Estimate |
 |---|---|---|

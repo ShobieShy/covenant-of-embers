@@ -59,8 +59,8 @@ var poses_seen := 0
 var revive_progress := 0.0
 var revives := 0
 
-## OW11c: in the open world enemies live in streamed cells and interior spawners, not under
-## one root: the host shares every Enemy in the group, the joiner keeps only its puppets.
+## When true, the host shares every Enemy and the joiner keeps only its puppets.
+## Closed levels leave this false (one enemy root per level).
 var world_enemies := false
 
 
@@ -193,12 +193,6 @@ func local_pose() -> Dictionary:
 	var pr: Variant = player.get(&"progression")
 	if pr != null:
 		d["l"] = int(pr.get(&"level"))
-	var ow := player.get_node_or_null(^"../OpenWorld")
-	if ow and ow.get(&"interiors"):  # OW11c: which interior (or "" outdoors) the player is in
-		d["w"] = String(ow.get(&"interiors").get(&"current"))
-		var br: Variant = ow.get(&"interiors").get(&"breach")
-		if host and br is Breach and is_instance_valid(br):  # the host's gate / vault state
-			d["bo"] = int((br as Breach).gate_open) + 2 * int((br as Breach).open)
 	var fx := brand_fx_of(player)
 	if not fx.is_empty():  # step 142: the held brand's FX state (bits, meter, colour)
 		d["bf"] = fx

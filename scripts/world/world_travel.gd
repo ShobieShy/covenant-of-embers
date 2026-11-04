@@ -1,10 +1,10 @@
 class_name WorldTravel
 extends Node3D
-## OW6: waystones and fast travel inside the open world. Places a Waystone at every point
-## in res://world/markers.json (tools/bake_world_markers.gd), and travel_to(point) streams
-## the destination cells under the loading screen, then moves the party there - no level
-## change. Level [[exit]]s are plain roads here; exit_markers() hands them to the map (OW7).
-## Free between attuned waystones, refused in combat (OPEN_WORLD_PLAN Q3); host only.
+## Waystones from res://world/markers.json. travel_to(point) moves the party there under
+## the loading screen. Closed levels load a new scene for a different level; this node
+## still places the markers and handles deep Labyrinth points. Level [[exit]]s are plain
+## roads here; exit_markers() hands them to the map. Free between attuned waystones,
+## refused in combat.
 
 signal arrived(point: String)
 
@@ -12,12 +12,11 @@ const MARKERS := "res://world/markers.json"
 const LAND := Vector3(0.0, 0.0, 2.5)  ## off the stone, like main.gd's spawn
 
 var fast_travel: FastTravel
-var streamer: Node  ## was WorldStreamer; world cell streaming is gone
 var height_fn := Callable()
 var in_combat := Callable()  ## -> bool; travel is refused while it is true
 var party := Callable()  ## -> Array of Node3D to move; default: the Player group
 var waystones := {}  ## point -> Waystone
-## Labyrinth L2: deep waystones (FastTravel.DEEP_POINTS) have no world marker. OpenWorld
+## Labyrinth L2: deep waystones (FastTravel.DEEP_POINTS) have no world marker. The caller
 ## sets deep_travel (point -> enter its floor, awaitable), deep_world (point -> the map spot:
 ## the crater gate) and leave_interior (outdoor travel from inside an interior).
 var deep_travel := Callable()
@@ -99,8 +98,7 @@ func can_travel(point: String) -> bool:
 	return last_error.is_empty()
 
 
-## Streams the cells around `point` (LoadingScreen overlay with real progress), then moves
-## the party. False + last_error when refused.
+## Moves the party to `point` under the loading screen. False + last_error when refused.
 func travel_to(point: String) -> bool:
 	if not can_travel(point):
 		return false
@@ -115,7 +113,6 @@ func travel_to(point: String) -> bool:
 		leave_interior.call()
 	var dest := point_world(point) + LAND
 	var screen := LoadingScreen.overlay(get_tree(), String(FastTravel.info(point)["level"]))
-	await _stream(dest, screen)
 	var who := _party()
 	var lead := (who[0] as Node3D).global_position if not who.is_empty() else dest
 	for n in who:  # keep the party's spread around the leader
@@ -133,16 +130,13 @@ func travel_to(point: String) -> bool:
 	return true
 
 
-## OW10 (plan section 9): streams the cells around `dest` behind the loading screen, then
-## lands the party there; the first world load uses it (a fresh start or the Association's
-## front door), waystones use travel_to.
-## OW11e: `warm` (awaited) runs with the party in place, just before the loading screen goes.
+## Lands the party at `dest` under the loading screen. Waystones use travel_to.
+## `warm` (awaited) runs with the party in place, just before the loading screen goes.
 func land_at(dest: Vector3, level := "", warm := Callable()) -> void:
-	while busy and is_inside_tree():  # QA-2: queue behind a load in flight (a 2nd overlay freed the 1st)
+	while busy and is_inside_tree():  # queue behind a load in flight (a 2nd overlay freed the 1st)
 		await get_tree().process_frame
 	busy = true
 	var screen := LoadingScreen.overlay(get_tree(), level)
-	await _stream(dest, screen)
 	for n in _party():
 		var o := n as Node3D
 		var to := ground(dest.x, dest.z)
@@ -161,8 +155,3 @@ func _party() -> Array:
 	if party.is_valid():
 		return party.call()
 	return get_tree().get_nodes_in_group(Player.GROUP) if is_inside_tree() else []
-
-
-## World cell streaming is gone. Travel that used to stream a spot now only moves the party.
-func _stream(_dest: Vector3, _screen: LoadingScreen) -> void:
-	return

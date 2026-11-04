@@ -1,5 +1,7 @@
 # 0.3.3 — two fixes
 
+Shipped. Not the current campaign plan. That is [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md).
+
 Lands after 0.3.2 (PR #1, now on master). Does not start 0.3.4, Acts II–V, or other features. Game version is `0.3.3-prealpha`. Co-op protocol stays 4 (0.3.2).
 
 ## 1. Dialogue advance

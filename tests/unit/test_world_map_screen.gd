@@ -52,7 +52,7 @@ func test_screen() -> void:
 	m.size = Vector2(1280, 720)
 	runner_tree.root.add_child(m)
 	m.open()
-	check(m.tex != null, "world map texture (tools/gen_world_map.py)")
+	check(m.tex != null, "world map texture (world/map.png)")
 	check(m.visible, "opens")
 	var w := Vector3(123, 0, -45)
 	var back := m.screen_to_world(m.world_to_screen(w))

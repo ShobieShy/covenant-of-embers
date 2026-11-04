@@ -1,5 +1,7 @@
 # Terrain maps plan: every map grows to looter-shooter zone scale (Phase W)
 
+Archived 2026-11-04. Not the current plan. The campaign is closed levels: [../LINEAR_LEVELS_PLAN.md](../LINEAR_LEVELS_PLAN.md). Per-level Terrain3D stayed in the game. The seamless world this plan fed was removed in 0.5.0.
+
 Planned 2026-10-26. **PLAN ONLY, WAITING ON USER GO.** Questions answered 2026-10-26 (defaults; Q7 Deck check deferred). Steps 152-166 in BUILD_PLAN.md.
 Design patterns only (zone sizes, loop structure, POI density). No Borderlands/Wonderlands content, names, layouts or assets.
 

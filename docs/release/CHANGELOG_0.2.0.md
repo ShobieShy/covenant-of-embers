@@ -1,10 +1,12 @@
 # Changelog: 0.2.0-prealpha (2026-10-27)
 
+Historical. 0.5.0 removed the open world this release added. The current plan is [../LINEAR_LEVELS_PLAN.md](../LINEAR_LEVELS_PLAN.md).
+
 From 0.1.4-prealpha. Steps OW1 to OW11 in docs/build_state.json.
 
 ## Added
 - **Open world (now the default).** Old Oak, Town Square, the Landfill (Midden) and the Breach
-  are one continuous Terrain3D world, laid out west to east as in docs/WORLD_LAYOUT.md. The 1 m
+  are one continuous Terrain3D world, laid out west to east as in docs/archive/WORLD_LAYOUT.md. The 1 m
   grid has 70 regions, and 64 m transition strips join the zones. `--classic-levels` falls back
   to the old level flow.
 - Cell streaming: 128 m cells on threaded loads. Enemies sleep beyond 96 m of every viewer.
@@ -18,7 +20,7 @@ From 0.1.4-prealpha. Steps OW1 to OW11 in docs/build_state.json.
 - Co-op in the open world: a 400 m leash (warning at 300 m), the host's fast travel pulls
   joiners along, and joiners share the host's intro enemies.
 - Perf tooling: `tools/perf_capture.gd --world` walks Town to the Landfill to the Breach.
-  Results are in docs/perf_ow11.md.
+  Results are in docs/archive/perf_ow11.md.
 
 ## Changed
 - Terrain paint (OW11 polish):

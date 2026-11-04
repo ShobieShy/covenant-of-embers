@@ -1,5 +1,7 @@
 # 0.3.1 Polish Round (plan only)
 
+Shipped. Not the current campaign plan. That is [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md).
+
 Status: APPROVED 2026-10-28 ~08:12 CDT (all defaults in section 7 except music, which is
 dropped; t103u). Build P1 onward only after 0.3.0 ships. Requested 2026-10-28 ~08:05 CDT (t102u: "UX improvements
 and general UI and gameplay animations and fluidity. Stuff that smooths rough edges.").

@@ -1,5 +1,7 @@
 # Covenant of Embers 0.2.0-prealpha: The Open World
 
+Historical release notes. 0.5.0 removed this world. The current plan is [../LINEAR_LEVELS_PLAN.md](../LINEAR_LEVELS_PLAN.md).
+
 Eldoria is one connected world now. Walk from Old Oak through Town Square, down into the
 Landfill and on to the Breach with no level loads. The ground changes as you go: grass gives
 way to mud, then to rubble, and the ash thickens at the Breach.

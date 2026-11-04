@@ -7,7 +7,7 @@
 4. Log any such changes in the history in `docs/build_state.json`.
 5. Kept decisions: resistance cap 60 % per element (not Magewar's 90 %); gear's spell damage bonus stays and is added flat to every cast (ShobieShy, Oct 24 2026; Magewar only displays it; `Caster.damage_bonus` = `Equipment.spell_damage_bonus()`, PLAN §30.3); Breath/dash/mana numbers in PLAN §30.8/§30.1.
 
-Design source of truth: [PLAN.md](PLAN.md) (§30 loot-shooter + Magewar weapon/loot/crafting spec, §31 loot architecture). Engine decision: [ADR-0002](adr/0002-switch-to-godot.md). Progress: [build_state.json](build_state.json) (`next_step`).
+Design source of truth for mechanics: [PLAN.md](PLAN.md) (§30 loot-shooter + Magewar weapon/loot/crafting spec, §31 loot architecture). Campaign source of truth: [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md) (closed levels). The open-world plans are in [archive/](archive/README.md). Engine decision: [ADR-0002](adr/0002-switch-to-godot.md). Progress: [build_state.json](build_state.json) (`next_step`).
 
 Every step is ~1 hour, written in GDScript (typed), keeps `tools/run_tests.sh` green (headless import, `tests/run_tests.gd` unit tests, `-- --seconds 2` smoke run, asset lint), adds its tests under `tests/unit/test_*.gd`, and ends with a local commit (never push). Gameplay tests drive nodes by stepping physics frames deterministically. Every new asset goes into ASSETS.toml + CREDITS.md (Kenney/CC0 and Magewar's own assets OK; no Borderlands or paid assets). Porting steps 3–12 reimplement the design and numbers already validated in the archived C++ engine (`archive/cpp-engine/`, branch `archive/cpp-vulkan-engine`); use its tests as the reference for expected values.
 
@@ -867,8 +867,8 @@ Details: docs/ELEMENT_TREES_PLAN.md (request t67u). User answers t70u: structure
 - Q55 Eclipse may bypass the 15% Dark cap (once / 20 s, no bosses)? Default yes.
 - Q56 Co-op PROTOCOL 3? Default yes.
 
-## Phase W – Terrain maps at zone scale (planned 2026-10-26, WAITING ON USER GO)
-Full plan: docs/TERRAIN_MAPS_PLAN.md. Optional step 166 (Ashen Wilds) only if Q5 is yes.
+## Phase W – Terrain maps at zone scale (planned 2026-10-26, historical)
+Not the current world plan. The write-up is [archive/TERRAIN_MAPS_PLAN.md](archive/TERRAIN_MAPS_PLAN.md). Per-level Terrain3D stayed. The seamless world did not. Optional step 166 (Ashen Wilds) only if Q5 is yes.
 
 - **Step 152 (done 2026-10-26)** Terrain W1: Terrain3D v1.0.2 vendor + TOML terrain pipeline + low-poly shader.
   - Result: Vendored Terrain3D 1.0.2 (MIT, linux+windows x86_64), 3 new ambientCG CC0 sets + packed layers, TerrainZone (noise heights, flat pads, rim, region-snapped import, FULL_GAME collision, fallback camera, nav faces from height_at), [terrain] in toml_to_scene. 516 tests green. Faceted low-poly shader override deferred.
