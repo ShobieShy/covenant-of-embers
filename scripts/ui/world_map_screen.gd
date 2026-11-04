@@ -82,9 +82,13 @@ static func card_lines(point: String) -> PackedStringArray:
 	var level := String(info.get("level", ""))
 	var reg := String(WorldMap.LEVEL_REGION.get(level, ""))
 	var region := (
-		String(WorldMap.REGIONS[reg]["name"])
-		if WorldMap.REGIONS.has(reg)
-		else ("The Warrens" if level == "labyrinth" else "Unknown")
+		"The Warrens"
+		if level == "labyrinth"
+		else (
+			String(WorldMap.REGIONS[reg]["name"])
+			if WorldMap.REGIONS.has(reg)
+			else "Unknown"
+		)
 	)
 	return PackedStringArray(
 		[
@@ -114,9 +118,13 @@ func _build_list() -> void:
 		for p in crystal.destinations():
 			pts.append(p)
 	elif travel:
+		var seen := {}
 		for p in travel.points():
-			if travel.fast_travel.attuned(p):
-				pts.append(p)
+			var id := FastTravel.canon(String(p))
+			if seen.has(id) or not travel.fast_travel.attuned(id):
+				continue
+			seen[id] = true
+			pts.append(id)
 	for p in pts:
 		var b := Button.new()
 		b.text = String(FastTravel.info(p).get("name", p))

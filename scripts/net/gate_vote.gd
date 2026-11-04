@@ -16,6 +16,8 @@ var target := ""
 var anchor := ""
 var spot := Vector3.ZERO
 var banner: VoteBanner
+## Joiner-facing outcome of the last gate_vote: "waiting", "ready", or "cancelled".
+var result := ""
 signal decided(to: String, anchor: String)
 
 
@@ -51,9 +53,31 @@ func left() -> float:
 
 func missing() -> Array[String]:
 	var out: Array[String] = []
+	var here := {}
 	for n in _voters():
+		if n.is_in_group(Player.GROUP):
+			continue
+		var nm := _name_of(n)
 		if (n as Node3D).global_position.distance_to(spot) > RANGE:
-			out.append(_name_of(n))
+			if not out.has(nm):
+				out.append(nm)
+		else:
+			here[nm] = true
+	# A reconnecting peer stays missing after their body is freed. Erasing them
+	# from the roster (the reconnect window ended) drops them from this list.
+	if session != null:
+		var roster: Variant = session.get(&"roster")
+		if roster is Dictionary:
+			for id in roster:
+				var row: Variant = (roster as Dictionary)[id]
+				if not (row is Dictionary) or not bool((row as Dictionary).get("reconnecting", false)):
+					continue
+				var nm := String((row as Dictionary).get("name", ""))
+				if nm.is_empty():
+					nm = "peer%s" % str(id)
+				if here.has(nm) or out.has(nm):
+					continue
+				out.append(nm)
 	return out
 
 
@@ -79,7 +103,7 @@ func cancel() -> void:
 	vote_left = -1.0
 	banner_left = -1.0
 	if host and session:
-		session.call(&"send", "gate_vote", {"t": -1.0, "to": target})
+		session.call(&"send", "gate_vote", {"t": -1.0, "to": target, "ready": false})
 	print("[gate] vote cancelled")
 
 
@@ -95,7 +119,7 @@ func tick(dt: float) -> void:
 		var at := anchor
 		vote_left = -1.0
 		if session:
-			session.call(&"send", "gate_vote", {"t": -1.0, "to": to})
+			session.call(&"send", "gate_vote", {"t": -1.0, "to": to, "ready": true})
 		print("[gate] party ready for %s" % to)
 		decided.emit(to, at)
 
@@ -131,9 +155,16 @@ func _on_message(_from: int, kind: String, data: Dictionary) -> void:
 	if kind != "gate_vote" or host:
 		return
 	var t := float(data.get("t", -1.0))
-	banner_left = t
 	target = String(data.get("to", target))
 	if t < 0.0:
-		print("[gate] the level-change vote was cancelled")
+		banner_left = -1.0
+		if bool(data.get("ready", false)):
+			result = "ready"
+			print("[gate] party ready for %s" % target)
+		else:
+			result = "cancelled"
+			print("[gate] the level-change vote was cancelled")
 	else:
+		banner_left = t
+		result = "waiting"
 		print("[gate] the host is at a gate: %.0f s" % t)

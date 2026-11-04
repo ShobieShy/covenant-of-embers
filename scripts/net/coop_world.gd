@@ -269,16 +269,30 @@ func health_scale() -> float:
 func prepare_shutdown() -> void:
 	set_physics_process(false)
 	set_process(false)
+	# Disable physics before freeing. queue_free of a live Jolt body or nav agent
+	# during quit is the joiner's rc 134 (signal 11) after a Breach slice.
 	for id in puppets.keys():
 		var e: Enemy = puppets[id]
-		if is_instance_valid(e):
-			e.queue_free()
+		_quiet_body(e)
 	puppets.clear()
 	for peer in proxies.keys():
-		var r: Node = proxies[peer]
-		if is_instance_valid(r):
-			r.queue_free()
+		_quiet_body(proxies[peer] as Node)
 	proxies.clear()
+
+
+func _quiet_body(n: Node) -> void:
+	if not is_instance_valid(n):
+		return
+	n.set_physics_process(false)
+	n.set_process(false)
+	n.process_mode = Node.PROCESS_MODE_DISABLED
+	if n is CollisionObject3D:
+		var body := n as CollisionObject3D
+		body.collision_layer = 0
+		body.collision_mask = 0
+	for c in n.find_children("*", "NavigationAgent3D", true, false):
+		(c as Node).set_physics_process(false)
+	n.queue_free()
 
 
 func _tick_revive(dt: float) -> void:

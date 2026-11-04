@@ -26,12 +26,14 @@ To run just those flow tests:
 
 ## Notes
 
-- The co-op joiner can still exit with rc 134 at teardown after a full slice that reached the
-  breach, even when the bot logged PASS. `coop_playtest.sh` warns and accepts that. A session
-  that only follows the host through doors exits 0, and a short session (`COE_PLAYTEST_MAX_S`)
-  exits 0. Do not treat 134 as a gameplay failure; the breach-fight heap abort is still open.
+- 0.6.0 saw four co-op slices (three standalone, one inside the full tier) exit 0 after
+  `CoopWorld.prepare_shutdown` disables physics before freeing puppets and proxies. The
+  abort was intermittent and the official binary has no symbols, so `coop_playtest.sh` still
+  warns on rc 134 after PASS and does not treat that warning as the fix. A session that only
+  follows the host through doors exits 0, and a short session (`COE_PLAYTEST_MAX_S`) exits 0.
 - The Labyrinth playtest's default timeout is 2400 s. Set `PLAYTEST_TIMEOUT` to change it.
-- A run fails on any `ERROR`/`SCRIPT ERROR` log line, except the known Terrain3D res:// pair.
+- A run fails on any `ERROR`/`SCRIPT ERROR` log line, except the known Terrain3D res:// pair and the headless exit leaks below.
+- Headless Godot prints these at process exit after a green unit suite (counts vary). They are classified, not fixed: `Pages in use exist at exit in PagedAllocator` for `GeometryInstanceDummy`, `NavAgent3D`, `JoltShape3D`, `JoltBody3D`, dummy-renderer material/shader/mesh/instance RIDs, and `resources still in use at exit`. A `SCRIPT ERROR` still fails the run.
 - Headless runs skip UI animations (UiAnim is instant when DisplayServer is headless).
 
 ## QA debug hooks

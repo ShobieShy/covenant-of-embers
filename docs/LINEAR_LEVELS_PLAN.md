@@ -1,7 +1,8 @@
 # Linear levels plan
 
 Status: current plan. ShobieShy approved the closed-level campaign on 2026-11-04.
-0.4.0 (closed levels) and the 0.5.0 open-world cut are on master (`ef1f0ed`).
+0.4.0 (closed levels) and the 0.5.0 open-world cut are on master (`6901190`).
+0.6.0 is the trust pass in [PLAN_NEXT.md](PLAN_NEXT.md).
 The game is a linear campaign of closed levels. There is no open world, no
 `--open-world` flag, and no seamless cell stream.
 
@@ -10,7 +11,7 @@ This document is the only current campaign plan. The seamless-world plans are in
 content plan and follows this level order. [PLAN.md](PLAN.md) still holds mechanics;
 its open-region map is not the world we are building.
 
-## 1. Where the game is (master ef1f0ed)
+## 1. Where the game is (master 6901190)
 
 | Area | Now | Files |
 |---|---|---|
@@ -82,9 +83,11 @@ Full tier: `tools/run_tests.sh` (every unit test, smokes, solo, Labyrinth, co-op
 
 ## 9. Remaining milestones
 
-- **0.4.x**: Labyrinth Act II on the closed-level flow.
-- **0.5.x content**: Acts III and IV. The 0.5.0 *cut* already shipped; these acts did not.
-- **0.6-0.9**: Act V, the Core, Crazy Joe and the Demon Lord, balance.
+- **0.4.0** shipped: closed levels.
+- **0.5.0** shipped: the open-world cut. Acts III and IV did not ship with it.
+- **0.6.0** is the trust pass ([PLAN_NEXT.md](PLAN_NEXT.md)): the parked co-op and travel bugs, and a full test run that gets past classified headless exit leaks. ZoneStreamer stays. The minimap stays off the HUD. The map stays the text sheet. No mid-session join.
+- **0.7.0**: Labyrinth Act II, after the story, look, and music are set.
+- **Later**: Acts III–V, the Core, Crazy Joe and the Demon Lord, balance.
 - **1.0**: town, Breach, full Labyrinth, main story. The Demon Lord escapes.
 
 ## 10. Decisions that still hold

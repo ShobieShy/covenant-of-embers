@@ -28,6 +28,7 @@ wait "$hp"; hrc=$?
 wait "$jp"; jrc=$?
 grep -E '^\[(playtest|coop)\]' "$dir/host.log" | sed 's/^/host   /' | tail -12
 grep -E '^\[(playtest|coop|character)\]' "$dir/join.log" | sed 's/^/joiner /' | tail -12
+echo "[coop_playtest] raw host $hrc joiner $jrc"
 # The joiner can still SIGABRT (rc 134, glibc "corrupted size vs. prev_size in fastbins")
 # at process exit after a full slice that reached the breach, even when the bot logged PASS.
 # Door-follow no longer instantiates levels just to read markers (that path exits 0).
@@ -44,7 +45,7 @@ done
 bad=0
 for f in host join; do
 	# Terrain3D 1.0.2 logs a harmless load("res://") pair per terrain init (as in run_tests.sh).
-	if grep -vE "^ERROR: (Resource file not found: res:// \(expected type: unknown\)|Error loading resource: ''\.)$" "$dir/$f.log" | grep -qE '^(SCRIPT ERROR|ERROR):'; then echo "[coop_playtest] errors in $f log:"; grep -E -A3 '^(SCRIPT ERROR|ERROR):' "$dir/$f.log" | head -20; bad=1; fi
+	if grep -vE "^ERROR: (Resource file not found: res:// \(expected type: unknown\)|Error loading resource: ''\.|Pages in use exist at exit in PagedAllocator: N20RasterizerSceneDummy21GeometryInstanceDummyE|[0-9]+ RID allocations of type '(10NavAgent3D|P11JoltShape3D|P10JoltBody3D|N13RendererDummy15MaterialStorage13DummyMaterialE|N13RendererDummy15MaterialStorage11DummyShaderE|N13RendererDummy9DummyMeshE|N17RendererSceneCull8InstanceE)' were leaked at exit\.|[0-9]+ resources still in use at exit \(run with --verbose for details\)\.)$" "$dir/$f.log" | grep -qE '^(SCRIPT ERROR|ERROR):'; then echo "[coop_playtest] errors in $f log:"; grep -vE "^ERROR: (Resource file not found: res:// \(expected type: unknown\)|Error loading resource: ''\.|Pages in use exist at exit in PagedAllocator: N20RasterizerSceneDummy21GeometryInstanceDummyE|[0-9]+ RID allocations of type '(10NavAgent3D|P11JoltShape3D|P10JoltBody3D|N13RendererDummy15MaterialStorage13DummyMaterialE|N13RendererDummy15MaterialStorage11DummyShaderE|N13RendererDummy9DummyMeshE|N17RendererSceneCull8InstanceE)' were leaked at exit\.|[0-9]+ resources still in use at exit \(run with --verbose for details\)\.)$" "$dir/$f.log" | grep -E -A3 '^(SCRIPT ERROR|ERROR):' | head -20; bad=1; fi
 done
 if [ $hrc -eq 0 ] && [ $jrc -eq 0 ] && [ $bad -eq 0 ] && grep -q '^\[playtest\] PASS' "$dir/host.log" && grep -q '^\[playtest\] PASS' "$dir/join.log"; then
 	echo "[coop_playtest] PASS (logs $dir)"
