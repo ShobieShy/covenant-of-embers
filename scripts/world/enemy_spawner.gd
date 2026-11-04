@@ -119,8 +119,16 @@ func _players() -> Array:
 	return out
 
 
-## Step 161: a cleared camp waits respawn_s, then repopulates once a player is within
-## CampLeash.ACTIVATE m; pulled members snap home (CampLeash.enforce).
+## A cleared camp waits respawn_s, then repopulates once a player is within 80 m.
+## Closed levels do not pull camp members home.
+func _camp_near(center: Vector3, players: Array) -> bool:
+	for p in players:
+		var n := p as Node3D
+		if n and Vector2(n.global_position.x - center.x, n.global_position.z - center.z).length() <= 80.0:
+			return true
+	return false
+
+
 func _tick_camps(dt: float) -> void:
 	if camps.is_empty():
 		return
@@ -137,12 +145,10 @@ func _tick_camps(dt: float) -> void:
 		# Q6: a cleared camp counts down only while every player is away (CampLeash.ACTIVATE);
 		# a zone reload re-reads the camps, so it is full again.
 		if ticks % 15 == 0:
-			c["near"] = not ps.is_empty() and CampLeash.camp_active(c["center"], ps)
+			c["near"] = _camp_near(c["center"], ps)
 		if c.get("near") != true:
 			c["wait"] = maxf(0.0, float(c["wait"]) - dt)
-		if not alive.is_empty():
-			CampLeash.enforce(alive)
-		elif float(c["wait"]) <= 0.0 and ticks % 15 == 0 and c.get("near") == true:
+		elif float(c["wait"]) <= 0.0 and ticks % 15 == 0 and alive.is_empty() and c.get("near") == true:
 			spawn_camp(c)
 
 
@@ -164,7 +170,6 @@ func spawn_camp(c: Dictionary) -> Array[Enemy]:
 			e.name = "camp_%s_%s_%d_%d" % [c["name"], d.id, int(c["spawned"]) + 1, n + 1]
 			n += 1
 			add_child(e)
-			CampLeash.home(e, spots[n - 1])
 			_adopt(e)
 			out.append(e)
 	(c["alive"] as Array).append_array(out)

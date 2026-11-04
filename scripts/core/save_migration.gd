@@ -128,3 +128,96 @@ static func migrate(data: Dictionary) -> bool:
 		pr["fog"] = fog.to_save()
 	pr["world_v"] = WORLD_V
 	return true
+
+
+# --- 0.4.0: world saves to closed levels (LINEAR_LEVELS_PLAN section 4) ------------------
+const LINEAR_V := 3
+const FLOW := "linear"
+
+
+static func is_linear(data: Dictionary) -> bool:
+	return int((data.get("progress", {}) as Dictionary).get("linear_v", 0)) >= LINEAR_V
+
+
+## `user://save.json` -> slot1, `save_2.json` -> slot2. Empty when `path` is not a slot
+## (tests). The copy is the file as it was before the first linear write.
+static func pre_linear_path(path: String) -> String:
+	for n in range(1, SaveGame.SLOTS + 1):
+		if path == SaveGame.slot_path(n):
+			return "user://slot%d.pre_linear.json" % n
+	return ""
+
+
+## Maps a world save onto a closed level. Additive: world_pos, region and fog stay so a
+## 0.3.x build can still read the file. The Labyrinth block is not touched, so the floor
+## is kept. Returns true when `data` changed. Character files (no progress) are skipped.
+static func migrate_linear(data: Dictionary) -> bool:
+	if not data.get("progress") is Dictionary or is_linear(data):
+		return false
+	var pr: Dictionary = data["progress"]
+	var flags: Dictionary = pr.get("flags", {})
+	var from_world := int(pr.get("world_v", 0)) >= WORLD_V or pr.has("world_pos")
+	var lvl := String(pr.get("level_id", ""))
+	if from_world:
+		var wp: Variant = pr.get("world_pos", [])
+		if wp is Array and (wp as Array).size() == 3:
+			var a: Array = wp
+			lvl = WorldSession.nearest_level(Vector3(float(a[0]), float(a[1]), float(a[2])))
+		elif not GameFlow.LEVELS.has(lvl):
+			lvl = FALLBACK_LEVEL
+		if not LevelFlow.gates_allow(lvl, flags, bool(pr.get("vault_open", false))):
+			lvl = FALLBACK_LEVEL
+	elif not GameFlow.LEVELS.has(lvl):
+		lvl = FALLBACK_LEVEL
+	pr["level_id"] = lvl
+	pr["flow"] = FLOW
+	pr["linear_v"] = LINEAR_V
+	_remap_waystones(pr)
+	if not pr.has("level_seen"):
+		var seen: Array = []
+		for l in visited_levels(data):
+			if not seen.has(l):
+				seen.append(l)
+		if GameFlow.LEVELS.has(lvl) and not seen.has(lvl):
+			seen.append(lvl)
+		pr["level_seen"] = seen
+		for l in seen:
+			if int(flags.get(WorldMap.SEEN + String(l), 0)) == 0:
+				flags[WorldMap.SEEN + String(l)] = 1
+		pr["flags"] = flags
+	return true
+
+
+## Copies the slot once, then writes the migrated save. No-op when already linear.
+static func store_linear(data: Dictionary, path: String) -> bool:
+	if not migrate_linear(data):
+		return false
+	var bak := pre_linear_path(path)
+	if bak != "" and not FileAccess.file_exists(bak) and FileAccess.file_exists(path):
+		DirAccess.copy_absolute(
+			ProjectSettings.globalize_path(path), ProjectSettings.globalize_path(bak)
+		)
+		print("[save] backed up %s -> %s" % [path, bak])
+	var err := SaveGame.write(data, path)
+	if err != OK:
+		push_warning("[save] linear migration write failed: %s" % error_string(err))
+	return true
+
+
+static func _remap_waystones(pr: Dictionary) -> void:
+	var fl: Variant = pr.get("flags", {})
+	if not fl is Dictionary:
+		return
+	var flags: Dictionary = fl
+	var map := {
+		"waystone:town_market": "waystone:town_gate",
+		"waystone:landfill_camp": "waystone:landfill",
+		"waystone:landfill_overlook": "waystone:landfill",
+	}
+	var changed := false
+	for src in map:
+		if int(flags.get(src, 0)) != 0 and int(flags.get(map[src], 0)) == 0:
+			flags[map[src]] = 1
+			changed = true
+	if changed:
+		pr["flags"] = flags

@@ -18,7 +18,7 @@ signal message(from: int, kind: String, data: Dictionary)  ## step 79+: game tra
 
 enum State { IDLE, CONNECTING, LOBBY, IN_GAME, ENDED }
 
-const PROTOCOL := 4  ## 0.3.2: normalised hits, pose timestamps. 0.3.1 (p3) cannot join.
+const PROTOCOL := 5  ## 0.4.0: closed levels. A 0.3.x peer (p4) cannot join.
 const CONNECT_TIMEOUT := 8.0
 
 var state := State.IDLE

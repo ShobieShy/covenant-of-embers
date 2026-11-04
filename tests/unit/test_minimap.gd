@@ -39,7 +39,7 @@ func test_partner_rows_and_draw() -> void:
 	r.color = Color.RED
 	runner_tree.root.add_child(r)
 	r.global_position = Vector3(30, 0, 40)
-	var rows: Array = OpenWorld.map_rows(runner_tree)
+	var rows: Array = Minimap.map_rows(runner_tree)
 	var pal: Array = rows.filter(func(x: Array) -> bool: return x[2] == "Pal")
 	check(
 		pal.size() == 1 and not pal[0][4] and pal[0][3] == Color.RED,

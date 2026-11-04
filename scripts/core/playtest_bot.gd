@@ -324,9 +324,15 @@ func _watch_target(e: Enemy) -> void:
 		_target_s = 0.0
 		return
 	_target_s += get_physics_process_delta_time()
-	if _target_s > UNREACHABLE_S:
+	# A boss still has to die. Dropping the Warden after one lost path left the closed
+	# Breach fight with nobody to shoot (0.4.0 linear playtest).
+	if _target_s > UNREACHABLE_S and not _is_boss(e):
 		_unreachable[e] = true
 		note("skipping unreachable %s" % _foe_desc(e))
+
+
+func _is_boss(e: Enemy) -> bool:
+	return e != null and e.def != null and e.def.id in ["breach_warden", "the_filth", "goblin_king"]
 
 
 func nearest_enemy(foes_only := false) -> Enemy:
@@ -491,9 +497,9 @@ var _path_ordered := false
 
 func walk_to(at: Vector3, held: Array = []) -> void:
 	var lvl := main.get_node_or_null("Level")
-	var ow_in := main.get_node_or_null("OpenWorld/Interiors")
-	if ow_in and ow_in.get(&"interior"):
-		lvl = null  # OW11c: indoors the outdoor zone's landmark route does not apply
+	var indoors := _interiors()
+	if _direct_walk or (indoors and indoors.current != ""):
+		lvl = null  # indoors, or a direct walk, skips the outdoor landmark route
 	if lvl and lvl.has_node("Pois"):  # step 154: open zones route long walks via landmarks
 		if _route == null or _route_level != lvl:
 			_route = RouteGraph.from_level(lvl)
@@ -506,13 +512,10 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		_path = PackedVector3Array()
 		var nav := main.get_node_or_null("Level/Navigation") as LevelNavigation
 		var ow := main.get_node_or_null("OpenWorld")
-		if ow and ow.get(&"interiors") and ow.interiors.interior:  # OW11b: indoors
-			nav = ow.interiors.interior.get_node_or_null("Navigation") as LevelNavigation
-		var lf: LabyrinthFloor = (
-			ow.interiors.lab_floor
-			if ow and ow.get(&"interiors") and ow.interiors.current == "labyrinth"
-			else null
-		)
+		var inn := _interiors()
+		if inn and inn.interior:
+			nav = inn.interior.get_node_or_null("Navigation") as LevelNavigation
+		var lf: LabyrinthFloor = inn.lab_floor if inn and inn.current == "labyrinth" else null
 		_path_ordered = false
 		if lf and is_instance_valid(lf):  # L5: the floors have no navmesh; room-graph route
 			_path = lf.route(player.global_position, at)
@@ -612,7 +615,7 @@ func _physics_process(delta: float) -> void:
 			_intro_tick()
 		"midden_walk":
 			if main.call(&"here_id") != "midden":  # step 109: a new game starts elsewhere
-				var ow0 := main.get_node_or_null("OpenWorld") as OpenWorld
+				var ow0 := main.get_node_or_null("OpenWorld")
 				if ow0 and ow0.travel.busy:
 					return  # QA-2: wait out the first world load (4x: travel overlapped it)
 				if t > 0.5 and not _ow_travel:
@@ -622,7 +625,7 @@ func _physics_process(delta: float) -> void:
 					_done = not _ow_travel
 				return
 			if _ow_travel:  # OW11b: landed in the world's Landfill; walk from here
-				var ow: OpenWorld = main.get_node("OpenWorld")
+				var ow = main.get_node("OpenWorld")
 				if ow.travel.busy:
 					return
 				_ow_travel = false
@@ -639,7 +642,7 @@ func _physics_process(delta: float) -> void:
 				_goto("midden_fight")
 		"midden_fight", "breach_fight":
 			if stage == "breach_fight":
-				var owb := main.get_node_or_null("OpenWorld") as OpenWorld
+				var owb := main.get_node_or_null("OpenWorld")
 				if owb and owb.interiors.current == "" and not owb.travel.busy:
 					if _tick % 300 == 0:  # OW11b: a death respawns outdoors; go back in
 						note("back into the Breach rooms from %s" % player.global_position)
@@ -767,11 +770,15 @@ const VOTE_FLOOR := 2  ## co-op: the joiner hangs back here so the host's 10 s v
 
 ## Co-op joiner, `--labyrinth`: on VOTE_FLOOR stand still (far from the stairs) so the host's
 ## stairs start the vote countdown and the floor sync carries this player down when it ends.
+func _interiors() -> Interiors:
+	return main.get_node_or_null("LinearInteriors") as Interiors
+
+
 func _lab_straggle() -> bool:
 	if not labyrinth_run():
 		return false
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
-	if ow == null or ow.interiors.current != "labyrinth" or ow.interiors.floor_no != VOTE_FLOOR:
+	var inn := _interiors()
+	if inn == null or inn.current != "labyrinth" or inn.floor_no != VOTE_FLOOR:
 		return false
 	if _lab_n != VOTE_FLOOR:
 		_lab_n = VOTE_FLOOR
@@ -795,15 +802,12 @@ var _lab_stuck_at := Vector3.ZERO
 var _lab_unstick := 0.0
 var _lab_side := Vector3.ZERO
 var _lab_flip := false
+var _direct_walk := false
 
 
 func _lab_tick() -> void:
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
-	if ow == null:
-		_finish(false, "the Labyrinth needs the open world")
-		return
-	var inn := ow.interiors
-	if inn.busy or ow.travel.busy:
+	var inn := _interiors()
+	if inn and inn.busy:
 		return
 	var lab: LabyrinthState = main.get(&"labyrinth")
 	var ls := main.get_node_or_null(^"LabyrinthSync") as LabyrinthSync
@@ -811,7 +815,7 @@ func _lab_tick() -> void:
 		if not _voting:
 			_voting = true
 			_lab_votes += 1
-			note("stairs vote running on floor %d (%.0f s)" % [inn.floor_no, ls.vote_left])
+			note("stairs vote running on floor %d (%.0f s)" % [inn.floor_no if inn else 0, ls.vote_left])
 		return  # stand on the stairs while the party is counted down
 	_voting = false
 	if stage == "lab_save":
@@ -832,6 +836,27 @@ func _lab_tick() -> void:
 			return
 		_finish(true)
 		return
+	if inn == null or inn.current == "":
+		var gate := main.get_node_or_null("GateLabyrinth") as LevelGate
+		if gate:
+			if t < 1.0:
+				return
+			if gate.near(player):
+				look_at_point(gate.global_position + Vector3(0, 1.2, 0))
+				gate.use()
+			elif t > 20.0:
+				# The crater pillar sits past the greybox walk (the bot stalls near z 86).
+				# This is the same travel the gate emits.
+				note("entering the Labyrinth from %.0f m out" % flat_distance(gate.global_position))
+				main.travel("labyrinth")
+			else:
+				_direct_walk = true
+				walk_to(gate.global_position)
+				_direct_walk = false
+			return
+		if inn == null:
+			_finish(false, "no Labyrinth gate")
+			return
 	if inn.current == "breach_rooms":
 		if _tick % 120 == 0:
 			note("leaving the Breach rooms for the crater gate")
@@ -1283,7 +1308,7 @@ func _intro_interact(d: IntroDirector) -> void:
 	var at: Variant = d.target_point()
 	if at == null:
 		return
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
+	var ow := main.get_node_or_null("OpenWorld")
 	if ow and d.world_hop != "" and flat_distance(at) > 60.0 and ow.interiors.current == "":
 		# OW11c: a zone hundreds of metres off: travel there like midden_walk (walk_to is
 		# good for a zone's streamed ring, not a cross-world trek)

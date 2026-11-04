@@ -28,7 +28,18 @@ const LEVEL_REGION := {
 	"old_oak": "eldoria",
 	"midden": "landfill",
 	"breach": "landfill",
+	"labyrinth": "landfill",
 }
+## Closed-level map: one name per scene. The full-screen sheet is this list, not Elyria.
+const LEVEL_NAMES := {
+	"old_oak": "The Old Oak",
+	"town_square": "Eldoria, Town Square",
+	"mage_association": "Mage Association",
+	"midden": "The Landfill",
+	"breach": "The Breach",
+	"labyrinth": "The Breach Labyrinth",
+}
+const SEEN := "seen:"
 
 var flags: StoryFlags
 
@@ -57,7 +68,35 @@ func discover(id: String) -> bool:
 
 
 func visit_level(level_id: String) -> bool:
+	if LEVEL_NAMES.has(level_id):
+		flags.set_flag(SEEN + level_id)
 	return set_state(String(LEVEL_REGION.get(level_id, "")), State.VISITED)
+
+
+static func level_name(level_id: String) -> String:
+	return String(LEVEL_NAMES.get(level_id, level_id))
+
+
+## True when this run has loaded `level_id` (flag "seen:<id>").
+func seen(level_id: String) -> bool:
+	return flags.has(SEEN + level_id)
+
+
+## Per-level sheet: this level, then the campaign with Here / Visited / Unseen.
+func level_lines(level_id: String, seen_ids: Array = []) -> PackedStringArray:
+	var out := PackedStringArray()
+	out.append(level_name(level_id))
+	var point := String(FastTravel.LEVEL_POINT.get(level_id, ""))
+	if not point.is_empty():
+		out.append("Waystone: " + String(FastTravel.info(point).get("name", point)))
+	for id in LevelFlow.ORDER:
+		var mark := "Unseen"
+		if id == level_id:
+			mark = "Here"
+		elif seen(id) or seen_ids.has(id):
+			mark = "Visited"
+		out.append("%s: %s" % [level_name(id), mark])
+	return out
 
 
 func wild_share() -> float:

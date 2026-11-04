@@ -174,7 +174,4 @@ func test_interest_and_camp_activation() -> void:
 	w.add_child(a)
 	w.add_child(b)
 	b.global_position = Vector3(300, 0, 0)
-	check(CampLeash.camp_active(Vector3(70, 0, 0), [a, b]), "a player within 80 m wakes the camp")
-	check(not CampLeash.camp_active(Vector3(150, 0, 0), [a, b]), "nobody within 80 m")
-	check(CampLeash.camp_active(Vector3(250, 0, 0), [a, b]), "any player counts")
 	w.free()

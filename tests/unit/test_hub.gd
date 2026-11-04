@@ -58,7 +58,7 @@ func test_station_and_mentor_once() -> void:
 	var g := _game(false)
 	check(GameFlow.id_of(g.get_node("Level")) == "old_oak", "Old Oak loaded")
 	check(g.get_node_or_null("AssemblyStation") is AssemblyStation, "Assembly Station present")
-	check(g.stash != null, "stash present")
+	check(g.stash == null, "the stash moved to the town hub")
 	check(g.gate.target == "town_square", "exit to town")
 	check(not g.mentor_played, "no Bob before the home is unlocked")
 	g.story_flags.set_flag("home_unlocked")
@@ -79,4 +79,4 @@ func test_station_and_mentor_once() -> void:
 
 func test_respec_only_at_old_oak() -> void:
 	var src := FileAccess.get_file_as_string("res://scripts/core/main.gd")
-	check(src.contains("func can_respec") and src.contains('"old_oak"'), "respec gated to the Old Oak")
+	check(src.contains("func can_respec") and src.contains('"town_square"'), "respec gated to the town hub")

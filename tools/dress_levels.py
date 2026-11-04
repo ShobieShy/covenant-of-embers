@@ -95,8 +95,7 @@ def town() -> tuple[set[str], str]:
         p.append(prop(f"tree_{i + 1}", TOWN + f"{m}.glb", (x, 0, z), float(r), 3.2))
     p.append(prop("windmill_base", TOWN + "wall-block.glb", (-27, 0, -22), 0.0, (3, 6, 3)))
     p.append(prop("windmill", TOWN + "windmill.glb", (-27, 5.5, -20.4), 0.0, 3))
-    # The Old Oak itself, beyond the east gate. Step 119: the batch_03 giant oak (14 m, 18 m crown).
-    p.append(prop("old_oak", OAK, (29, 0, 14), 25.0, 1.0))
+    # The giant oak lives in the Old Oak level (level-local), not past Eldoria's east gate.
     return hide, "".join(p)
 
 

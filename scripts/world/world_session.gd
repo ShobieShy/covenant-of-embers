@@ -19,8 +19,11 @@ static func start_spot(data: Dictionary, intro_mode: String) -> Dictionary:
 	f.from_dict(pr.get("flags", {}))
 	if IntroDirector.active(f):
 		var lvl := String(IntroDirector.LEVEL.get(IntroDirector.beat(f), ""))
+		var saved_level := String(pr.get("level_id", ""))
 		if Interiors.LINKS.has(lvl):
-			inside = lvl  # a mid-intro save in the Association resumes indoors
+			inside = lvl  # the beat itself is indoors
+		elif Interiors.LINKS.has(saved_level):
+			inside = saved_level  # a save still standing in the Association hall
 	if Interiors.LINKS.has(inside):
 		return {"pos": Vector3.INF, "interior": inside}
 	var wp: Array = pr.get("world_pos", [])
@@ -45,27 +48,3 @@ static func nearest_level(p: Vector3) -> String:
 			best = l
 	return best
 
-
-## The keys main.gd merges into progress() while the open world runs.
-static func capture(ow: OpenWorld, player_pos: Vector3) -> Dictionary:
-	var inside := ow.interiors.current if ow and ow.interiors else ""
-	var lvl := nearest_level(player_pos)
-	var out := {
-		"world_v": SaveMigration.WORLD_V,
-		"region": String(WorldMap.LEVEL_REGION.get(lvl, "eldoria")),
-		"interior": inside,
-		"fog": ow.fog.to_save() if ow else "",
-	}
-	if inside.is_empty():
-		out["world_pos"] = [player_pos.x, player_pos.y, player_pos.z]
-	else:  # indoors: resume at the interior's front door outside
-		var e := SaveMigration.entrance(String(Interiors.LINKS[inside]["inside"]))
-		out["world_pos"] = [e.x, e.y, e.z]
-	return out
-
-
-## Puts a save's fog back into the world (a missing fog is left all dark).
-static func restore(ow: OpenWorld, data: Dictionary) -> void:
-	var s := String((data.get("progress", {}) as Dictionary).get("fog", ""))
-	if ow and not s.is_empty():
-		ow.fog.from_save(s)

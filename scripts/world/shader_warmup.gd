@@ -22,10 +22,14 @@ static func run(tree: SceneTree, cam: Camera3D = null) -> int:
 	holder.name = "ShaderWarmup"
 	var n := 0
 	var seen := {}
-	for f in DirAccess.get_files_at(WorldStreamer.DIR):
+	var cell_dir := DirAccess.open("res://world/cells")
+	if cell_dir == null:
+		holder.free()
+		return 0
+	for f in cell_dir.get_files():
 		if not f.ends_with(".tscn"):
 			continue
-		var ps := ResourceLoader.load(WorldStreamer.DIR + f) as PackedScene  # sync: cells are small
+		var ps := ResourceLoader.load("res://world/cells/" + f) as PackedScene
 		if ps == null:
 			continue
 		var cell := ps.instantiate()

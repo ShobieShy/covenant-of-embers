@@ -25,8 +25,9 @@ const LEVEL_IDS := {
 
 static var level_id := "midden"
 static var load_save := false
-static var open_world := true  ## OW11c-3: the seamless world is the default; --classic-levels falls back to the level flow
-static var spawn_anchor := ""  ## step 155: co-op join at the host's waystone
+static var spawn_anchor := ""  ## co-op join at the host's waystone (a level point)
+## Joiner: the host's Labyrinth floor (0 = not inside). Consumed when the level loads.
+static var labyrinth_floor := 0
 static var save_path := SaveGame.PATH
 static var slot := 1
 ## Tests: when set, select_slot keeps this path (the real slot saves stay untouched and unread).
@@ -81,10 +82,10 @@ static func _change(tree: SceneTree, path: String) -> void:
 	LoadingScreen.start(tree, path, level_id if path == GAME else "")  # threaded load, staged bar
 
 
-## Step 109: a new game starts the intro in the Mage Association (or skips it to the Old Oak).
+## 0.4.0: a new game starts the prologue at the Old Oak. --skip-intro lands there too, past it.
 static func new_run(tree: SceneTree, mode := INTRO_PLAY) -> void:
 	intro_mode = mode
-	level_id = "old_oak" if mode == INTRO_SKIP else "mage_association"
+	level_id = "old_oak"
 	load_save = false
 	_change(tree, GAME)
 
@@ -96,6 +97,7 @@ static func continue_run(tree: SceneTree) -> bool:
 	var r := SaveGame.read(save_path)
 	if r.has("error"):
 		return false
+	SaveMigration.store_linear(r["data"], save_path)
 	level_id = String((r["data"] as Dictionary).get("progress", {}).get("level_id", "midden"))
 	if not LEVELS.has(level_id):
 		level_id = "midden"

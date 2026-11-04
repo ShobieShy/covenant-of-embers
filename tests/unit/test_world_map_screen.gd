@@ -90,7 +90,7 @@ func test_travel_card() -> void:  # 0.3.1 M7
 	check(l[0] == "The Landfill" and l[1] == "Region: The Landfill", "name + region (%s)" % [l])
 	check(l[2] == "Lv 1-4", "level band from the zone's spawns")
 	check(WorldMapScreen.card_lines("old_oak")[2] == "Safe", "towns are safe")
-	check(WorldMapScreen.card_lines("warrens_hall")[1] == "Region: The Warrens", "deep points")
+	check(WorldMapScreen.card_lines("warrens_hall")[1] == "Region: The Landfill", "deep points sit in the Landfill region")
 	LoadingScreen.dry_run = true
 	var t := WorldTravel.new()
 	t.fast_travel = FastTravel.new()
@@ -104,7 +104,10 @@ func test_travel_card() -> void:  # 0.3.1 M7
 	runner_tree.root.add_child(m)
 	m.open_travel()
 	check(m.travel_mode and m.list.visible, "travel mode shows the fallback list")
-	check(m.list_buttons.has("landfill") and m.list_buttons.size() == 1, "attuned points only")
+	check(
+		m.list_buttons.has("landfill") and m.list_buttons.has("landfill_camp") and m.list_buttons.has("landfill_overlook"),
+		"merged landfill stones share one attunement (%s)" % [m.list_buttons.keys()]
+	)
 	(m.list_buttons["landfill"] as Button).pressed.emit()
 	check(m.card.visible and m.pending == "landfill", "a list button opens the same card")
 	m.cancel()

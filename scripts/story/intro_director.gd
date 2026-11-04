@@ -25,15 +25,16 @@ const BEATS: PackedStringArray = [
 	"return_to_bob",
 	"crystal",
 ]
-## The level each beat plays in.
+## The level each beat plays in. 0.4.0: the prologue (summoning, Joe, the Summoned)
+## is the Old Oak. Town is the hub. Bob's lead goes to the Landfill from the town gate.
 const LEVEL := {
-	"summoning": "mage_association",
-	"appraisal": "mage_association",
-	"expulsion": "mage_association",
-	"grant": "mage_association",
+	"summoning": "old_oak",
+	"appraisal": "old_oak",
+	"expulsion": "old_oak",
+	"grant": "old_oak",
 	"welcome": "town_square",
 	"new_home": "old_oak",
-	"back_door": "mage_association",
+	"back_door": "midden",
 	"combat": "midden",
 	"crafting": "midden",
 	"light_dark": "midden",
@@ -46,9 +47,9 @@ const OBJECTIVES := {
 	"appraisal": "Choose who you are",
 	"expulsion": "Listen to Crazy Joe",
 	"grant": "Collect your grant from the Clerk",
-	"welcome": "Find the Old Oak",
+	"welcome": "Enter Eldoria",
 	"new_home": "Rest on the moss bed",
-	"back_door": "Reach the Landfill through the Association's back door",
+	"back_door": "Go to the Landfill",
 	"combat": "Defeat the Gnawers",
 	"crafting": "Fit the salvaged parts at the Assembly Station",
 	"light_dark": "Touch the Light and Dark shrines",
@@ -95,10 +96,12 @@ const GATE_RULES := {
 	"town_square":
 	{
 		"midden":
-		[
-			"filth_defeated",
-			'Bored Guard: "Barrier edge. Summoned don\'t go out there without say-so."'
-		]
+		["landfill_route_open", "Bob has not sent you to the Landfill yet."],
+	},
+	"old_oak":
+	{
+		"town_square":
+		["home_unlocked", "Rest in the grove first. The road to town is shut."],
 	},
 	"midden":
 	{
@@ -110,13 +113,13 @@ const GATE_RULES := {
 		],
 	},
 }
-## Next gate to take from a level towards another (the intro's map: Association - Town - Oak,
-## the Landfill off the Association's back door, and its barrier gate back to town).
+## Next gate toward a beat's level. The grove opens onto town; Bob's lead is the town
+## gate to the Landfill, not the Association's back door.
 const ROUTE := {
 	"mage_association":
 	{"town_square": "town_square", "old_oak": "town_square", "midden": "midden"},
 	"town_square":
-	{"mage_association": "mage_association", "old_oak": "old_oak", "midden": "mage_association"},
+	{"mage_association": "mage_association", "old_oak": "old_oak", "midden": "midden"},
 	"old_oak":
 	{"town_square": "town_square", "mage_association": "town_square", "midden": "town_square"},
 	"midden":
@@ -126,7 +129,7 @@ const ROUTE := {
 const LOCKS := {
 	"inventory": ["bob_met", "Your pack is empty. (Unlocks once Bob kits you out.)"],
 	"skills": ["bob_met", "You don't know any skills yet. (Unlocks after meeting Bob.)"],
-	"save": ["bob_met", "Saving unlocks at the Old Oak. (Leaving still keeps your place.)"],
+	"save": ["bob_met", "Saving unlocks after you meet Bob. (Leaving still keeps your place.)"],
 	"map": ["fast_travel_crystal", "The waystone is dormant. Its light is out."],
 }
 
@@ -243,10 +246,12 @@ func setup(m: Node, p: Player, f: StoryFlags, level: String) -> void:
 	print("[intro] beat %s in %s" % [current(), here])
 	if main.get("dialogue"):
 		(main.dialogue as DialogueRunner).ended.connect(_on_dialogue_ended)
-	if here == "mage_association":
+	if here == "mage_association" or (here == "old_oak" and _grove_summoning()):
 		_dress_association()
 	elif here == "old_oak":
 		_dress_oak()
+	elif here == "town_square" and current() == "welcome":
+		advance("new_home")  # Eldoria is the hub; the moss bed is back at the grove
 	elif here == "midden":
 		if current() == "back_door":
 			advance("combat")  # step 114: through the back door, into the Landfill
@@ -255,6 +260,12 @@ func setup(m: Node, p: Player, f: StoryFlags, level: String) -> void:
 
 func current() -> String:
 	return beat(flags)
+
+
+## Summoning, Joe, and the Summoned. They play at the Old Oak; the hall still dresses
+## them if a save is standing in the Association.
+func _grove_summoning() -> bool:
+	return current() in ["summoning", "appraisal", "expulsion", "grant"]
 
 
 func objective() -> String:
@@ -278,9 +289,6 @@ func advance(id: String) -> bool:
 ## redesigned maps move the intro without code changes; `fallback` = the greybox spot.
 func spot(id: String, fallback: Vector3) -> Vector3:
 	var n := main.get_node_or_null(NodePath("Level/Anchors/" + id)) as Node3D if main else null
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld if main else null
-	if ow and ow.interiors.interior and ow.interiors.current == here:  # OW11c: indoors
-		n = ow.interiors.interior.get_node_or_null(NodePath("Anchors/" + id)) as Node3D
 	return n.global_position if n else base + fallback
 
 
@@ -309,7 +317,11 @@ func _dress_association() -> void:
 	_spawn("Clerk", spot("clerk", CLERK_SPOT), 180.0)
 	var others := Array(Archetype.IDS).filter(func(a: String) -> bool: return a != player.archetype)
 	for i in mini(3, others.size()):
-		_spawn("Summoned " + Archetype.label(others[i]), SUMMONED_SPOTS[i], 0.0)
+		# Level-local spots. `at()` adds the open-world hall offset; closed levels stay at 0.
+		_spawn("Summoned " + Archetype.label(others[i]), at(SUMMONED_SPOTS[i]), 0.0)
+	if joe() == null:
+		var marker := main.get_node_or_null("Level/NPCs/crazy_joe") as Node3D
+		_spawn("Crazy Joe", marker.global_position if marker else at(Vector3(0.0, 0.3, -10.0)), 0.0)
 	if flags.has("joe_expelled"):
 		_hide_joe()
 	match current():
@@ -487,11 +499,12 @@ func _on_dialogue_ended(id: String) -> void:
 
 func give_grant() -> void:
 	flags.set_flag("permit_given")
+	flags.set_flag("home_unlocked")  # the grove road into Eldoria
 	if current() != "grant":
 		return
 	player.inventory.add_gold(GRANT_GOLD)
 	advance("welcome")
-	_hint("+%d gold, residency permit. Find the Old Oak (through the Town Square)" % GRANT_GOLD)
+	_hint("+%d gold, residency permit. The road to Eldoria is open." % GRANT_GOLD)
 
 
 func _hint(text: String) -> void:
@@ -533,23 +546,6 @@ func target_point() -> Variant:
 	var dest := String(LEVEL.get(b, here))
 	if dest != here:
 		var hop := String(ROUTE.get(here, {}).get(dest, ""))
-		var ow := main.get_node_or_null("OpenWorld") as OpenWorld
-		if ow and here == "town_square" and (dest == "midden" or b == "back_door"):
-			# OW11c: out of the Association's back door at the Landfill edge: on to the Landfill
-			var edge := ow.interiors.marker_world("town_square", "to_landfill")
-			if (
-				player
-				and (
-					(
-						Vector2(
-							edge.x - player.global_position.x, edge.z - player.global_position.z
-						)
-						. length()
-					)
-					< 40.0
-				)
-			):
-				hop = "midden"
 		var g := gate_to(hop)
 		if g == null:
 			return _world_way(hop)
@@ -561,7 +557,7 @@ func target_point() -> Variant:
 		"grant":
 			n = cast.get("Clerk")
 		"welcome":
-			var hop := "town_square" if here == "mage_association" else "old_oak"
+			var hop := "town_square" if here != "town_square" else "old_oak"
 			n = gate_to(hop)
 			if n == null:
 				return _world_way(hop)
@@ -581,13 +577,9 @@ func target_point() -> Variant:
 ## OW11c: the open world has no zone gates: walk to the next zone's entrance, or to the
 ## front door of an interior on the way.
 func _world_way(hop: String) -> Variant:
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld if main else null
-	if ow == null or hop == "":
+	if hop == "":
 		return null
 	world_hop = hop
-	if Interiors.LINKS.has(hop):
-		var d := ow.interiors.get_node_or_null("Door_" + hop) as Node3D
-		return d.global_position if d else null
 	return SaveMigration.entrance(hop)
 
 
@@ -1070,6 +1062,8 @@ func complete() -> void:
 	_apply_gate_rules()
 	for g in main.get("gates"):
 		g.requires = ""
+	if main.has_method(&"apply_linear_gates"):
+		main.apply_linear_gates()
 	if marker:
 		marker.visible = false
 		marker.queue_free()

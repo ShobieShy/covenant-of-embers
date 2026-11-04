@@ -1,6 +1,6 @@
 class_name Stash
 extends RefCounted
-## The Old Oak stash (BUILD_PLAN step 66; Bible Home Tree). One stash shared by every save
+## The town hub's stash (BUILD_PLAN step 66). One stash shared by every save
 ## slot / character: it lives in its own file (PATH), not in a slot save. Items move
 ## between the player's backpack and the stash; they are kept as ItemCodes (like saves).
 

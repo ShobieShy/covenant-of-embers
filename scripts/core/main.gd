@@ -24,16 +24,18 @@ var quest_driver: QuestDriver
 var quest_ui: QuestTrackerUI
 var _loaded_quests := {}
 var dialogue_ui: DialogueUI
-var stash: Stash  # step 66: the Old Oak's shared stash (own file, every slot)
+var stash: Stash  # the town hub's shared stash (one file, every slot)
 var mentor_played := false
 var fast_travel: FastTravel  # step 68
 var waystone: Waystone
 var travel_ui: FastTravelUI
 var world_map: WorldMap  # step 69
 var world_map_ui: WorldMapUI
+var level_map: WorldMapScreen  # M: this closed level and the linear campaign
 var load_warnings := PackedStringArray()
 var coop: CoopWorld  # step 79: set when a co-op session is running
 var intro: IntroDirector  # step 109: set while the intro runs
+var gate_vote: GateVote  # 0.4.0: co-op ready vote before a level change
 
 func _ready() -> void:
 	UiTheme.apply(get_tree().root)  # t60u: in-game screens too, even when main runs without the menu
@@ -50,8 +52,6 @@ func _ready() -> void:
 	for m in patch_log:
 		push_warning("[patches] " + m)
 	_swap_level(GameFlow.level_id)
-	if open_world_on():
-		_use_world_level()
 	# The player spawns at the level's PlayerStart (feet), facing its yaw; its Head sits
 	# at PlayerStart/Eye (1.5 m).
 	var start := get_node_or_null("Level/PlayerStart") as Node3D
@@ -186,28 +186,6 @@ func _swap_level(id: String) -> void:
 	move_child(lv, 0)
 	QualityPresets.apply_level(lv)  # step 134
 
-## OW11a: the open world (GameFlow.open_world or --open-world). OW11c-3: on by default;
-## --classic-levels falls back to the zone-by-zone levels.
-static func open_world_on() -> bool:
-	var args := OS.get_cmdline_user_args()
-	if args.has("--classic-levels"):
-		return false
-	return GameFlow.open_world or args.has("--open-world")
-
-
-## OW11a: swaps the level for WorldZones.merged so every level system (spawner, NPCs,
-## quests, gates, chests, waystones, arena walls) runs once over all the zones.
-func _use_world_level() -> void:
-	var here := GameFlow.level_id if WorldZones.ZONES.has(GameFlow.level_id) else "old_oak"
-	var old := get_node_or_null("Level")
-	if old:
-		remove_child(old)
-		old.free()
-	var lv := WorldZones.merged(here)
-	add_child(lv)
-	move_child(lv, 0)
-
-
 ## Step 39: Breach logic, the travel gate, the pause menu (+ its settings screen), and the
 ## save load when the flow asks for it.
 func _setup_flow(player: Player) -> void:
@@ -244,6 +222,7 @@ func _setup_flow(player: Player) -> void:
 		if r.has("error"):
 			push_warning("[save] " + String(r["error"]))
 		else:
+			SaveMigration.store_linear(r["data"], GameFlow.save_path)
 			load_warnings = SaveGame.apply(player, r["data"])
 			saved_progress = (r["data"] as Dictionary).get("progress", {})
 			story_flags.from_dict((r["data"] as Dictionary).get("progress", {}).get("flags", {}))
@@ -253,20 +232,20 @@ func _setup_flow(player: Player) -> void:
 				breach.restore_open()   # step 47: rooms cleared, gate + vault stay open
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
 	_spawn_at_anchor(player, saved_progress)
-	if open_world_on():
-		_enter_open_world(player, {"progress": saved_progress} if not saved_progress.is_empty() else {})
-		if coop:  # OW11c-8: _setup_coop ran before OpenWorld existed; share world enemies (intro too)
-			coop.world_enemies = true
 	if fresh:
 		_apply_new_identity(player)
 		if not Coop.is_client():
 			_start_intro(player)
-	if IntroDirector.active(story_flags) and not open_world_on():
+	if IntroDirector.active(story_flags):
 		intro = IntroDirector.new()
 		add_child(intro)
 		intro.setup(self, player, story_flags, here)
+	else:
+		apply_linear_gates()
 	_setup_quests(player, here)
 	if here == "old_oak":
+		_setup_oak(player)
+	if here == "town_square":
 		_setup_hub(player)
 	_setup_fast_travel(player, here)
 	for g in get_tree().get_nodes_in_group(FlagGate.GROUP):  # step 156: intro soft-blocks
@@ -274,6 +253,10 @@ func _setup_flow(player: Player) -> void:
 			(g as FlagGate).bind(story_flags)
 	if story_flags.has("rusty_dagger"):
 		add_child(DaggerGlow.make(player))  # step 113
+	if GameFlow.labyrinth_floor > 0 and here == "breach":
+		var floor := GameFlow.labyrinth_floor
+		GameFlow.labyrinth_floor = 0
+		_enter_linear_labyrinth(floor)
 	print("[flow] level %s, gate to %s" % [here, gate.target])
 	Screenshots.attach(self, here)   # step 41: --shots <dir>
 	if OS.get_cmdline_user_args().has("--autoplay"):   # step 40
@@ -303,7 +286,29 @@ func _setup_exits(player: Player, here: String) -> void:
 		g.used.connect(travel)
 		g.blocked.connect(_on_gate_blocked)  # step 111
 		gates.append(g)
+	if here == "breach":
+		var has_lab := false
+		for g in gates:
+			if g.target == "labyrinth":
+				has_lab = true
+		if not has_lab:
+			var portal := LevelGate.new("labyrinth")
+			portal.name = "GateLabyrinth"
+			portal.player = player
+			add_child(portal)
+			# Same level-local spot as EmberArt's labyrinth_gate slot. Dress runs after the gates.
+			portal.global_position = $Level.global_position + Vector3(0, 0, 125)
+			portal.used.connect(travel)
+			portal.blocked.connect(_on_gate_blocked)
+			gates.append(portal)
 	gate = gates[0]
+
+
+## 0.4.0: forward gates follow the story. The intro's own rules win while it is running.
+func apply_linear_gates() -> void:
+	if intro != null and is_instance_valid(intro):
+		return
+	LevelFlow.apply(gates, GameFlow.id_of($Level), story_flags)
 
 func _on_gate_blocked(text: String) -> void:
 	var hud := get_node_or_null("Hud")
@@ -365,14 +370,17 @@ func _ensure_dialogue() -> void:
 	layer.add_child(dialogue_ui)
 	dialogue_ui.bind(dialogue)
 
-## Step 66: the Old Oak hub - the shared stash, and Bob's first-night arrival (once).
-func _setup_hub(player: Player) -> void:
-	stash = Stash.load_shared()
+## Bob's night stays at the grove. The stash and respec live at the town hub.
+func _setup_oak(player: Player) -> void:
 	_ensure_dialogue()
 	if intro == null:  # step 113: the intro plays Bob's night itself (after the moss bed)
 		mentor_played = MentorArrival.play(story_flags, player, dialogue, self, player.spawn_feet + Vector3(0, 0, -3))
 	if story_flags.has(MentorArrival.FLAG):  # step 67: Bob stays in the Oak to report back to
 		spawn_bob(player)
+
+
+func _setup_hub(_player: Player) -> void:
+	stash = Stash.load_shared()
 
 
 func spawn_bob(player: Player) -> Npc:
@@ -402,6 +410,7 @@ func _setup_fast_travel(player: Player, here: String) -> void:
 	world_map.visit_level(here)
 	world_map_ui = WorldMapUI.new()
 	layer.add_child(world_map_ui)
+	_setup_level_map(layer, here)
 	var point := String(FastTravel.LEVEL_POINT.get(here, ""))
 	if point.is_empty():
 		return
@@ -432,7 +441,11 @@ func open_map(point := "") -> void:
 	if player:
 		player.ui_open = true
 	travel_ui.show_map(fast_travel, point)
-	world_map_ui.show_map(world_map)
+	var seen: Array = []
+	world_map_ui.show_level(world_map, GameFlow.id_of($Level), seen)
+	if level_map:
+		level_map.linear_level = GameFlow.id_of($Level)
+		level_map.campaign = world_map
 
 func _on_map_closed() -> void:
 	world_map_ui.visible = false
@@ -452,9 +465,9 @@ func _spawn_at_anchor(player: Player, saved: Dictionary) -> void:
 		player.spawn(n.global_position, deg_to_rad(float(n.get_meta("yaw_deg", 0.0))))
 		print("[spawn] at anchor %s" % n.name)
 
-## Step 71: skill respec is only offered at the Old Oak; step 59: it costs Player.respec_price() gold.
+## Respec is offered at the town hub. It costs Player.respec_price() gold.
 func can_respec() -> bool:
-	return GameFlow.id_of($Level) == "old_oak"
+	return GameFlow.id_of($Level) == "town_square"
 
 func respec_skills() -> int:
 	var player := get_node_or_null("Player") as Player
@@ -499,7 +512,7 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 	coop = CoopWorld.new()
 	coop.name = "CoopWorld"
 	add_child(coop)
-	coop.world_enemies = get_node_or_null("OpenWorld") != null  # OW11c
+	coop.world_enemies = false
 	coop.setup(Coop.session, player, spawner, spawner.table)
 	var frames := PartyFrames.new()  # step 80
 	frames.name = "PartyFrames"
@@ -509,12 +522,11 @@ func _setup_coop(player: Player, spawner: EnemySpawner) -> void:
 	var sync := IntroSync.new()  # step 117: host-authoritative intro beats
 	add_child(sync)
 	sync.setup(Coop.session, story_flags, player, coop.host)
-	var ow := get_node_or_null("OpenWorld") as OpenWorld
-	if ow:  # L4: host-authoritative Labyrinth floors
-		var ls := LabyrinthSync.new()
-		ls.name = "LabyrinthSync"
-		add_child(ls)
-		ls.setup(Coop.session, ow.interiors, coop.host)
+	gate_vote = GateVote.new()
+	gate_vote.name = "GateVote"
+	add_child(gate_vote)
+	gate_vote.setup(Coop.session, coop.host)
+	gate_vote.decided.connect(_commit_travel)
 	_party_loot()  # L4: drop chance follows party size (ActLoot.party_chance)
 	if not Coop.session.roster_changed.is_connected(_party_loot):
 		Coop.session.roster_changed.connect(_party_loot)
@@ -536,15 +548,24 @@ func _party_loot() -> void:
 
 ## Step 91: the host's travel moves everyone; clients follow with their character.
 func _on_coop_message(_from: int, kind: String, data: Dictionary) -> void:
-	if kind == "travel" and Coop.is_client() and get_node_or_null("OpenWorld") != null:
-		_follow_host_travel(String(data.get("to", "")), get_node("OpenWorld") as OpenWorld)
-		return
-	if kind == "travel" and Coop.is_client() and get_node_or_null("OpenWorld") == null:
-		# (OW11c: in the open world the joiner follows the host's pose "w" and the leash)
-		if String(data.get("to", "midden")) == GameFlow.id_of($Level):
+	if kind == "travel" and Coop.is_client():
+		var to := String(data.get("to", "midden"))
+		var floor := int(data.get("floor", 0))
+		if to == "labyrinth":
+			GameFlow.labyrinth_floor = floor if floor > 0 else 1
+			if GameFlow.id_of($Level) != "breach":
+				save_game()
+				GameFlow.level_id = "breach"
+				GameFlow.labyrinth_floor = floor if floor > 0 else 1
+				GameFlow.travel(get_tree(), "breach")
+			else:
+				_enter_linear_labyrinth(floor if floor > 0 else 1)
+			return
+		if to == GameFlow.id_of($Level) and floor <= 0:
 			return  # already here (the host announces its level on every load)
 		save_game()
-		GameFlow.travel(get_tree(), String(data.get("to", "midden")))
+		GameFlow.labyrinth_floor = floor
+		GameFlow.travel(get_tree(), to)
 
 
 func _on_coop_ended(reason: String) -> void:
@@ -564,9 +585,16 @@ func progress() -> Dictionary:
 		"map_version": MapAnchors.version_of($Level),
 		"flags": story_flags.to_dict(), "quests": quests.to_dict() if quests else {},
 		"labyrinth": labyrinth.to_dict()}
-	var ow := get_node_or_null("OpenWorld") as OpenWorld
-	if ow and player:
-		d.merge(WorldSession.capture(ow, player.global_position), true)  # OW10
+	d["flow"] = SaveMigration.FLOW
+	d["linear_v"] = SaveMigration.LINEAR_V
+	var seen: Array = []
+	for id in WorldMap.LEVEL_NAMES:
+		if world_map and world_map.seen(id):
+			seen.append(id)
+	var lin := _linear_interiors()
+	if lin and lin.current == "labyrinth" and not seen.has("labyrinth"):
+		seen.append("labyrinth")
+	d["level_seen"] = seen
 	return d
 
 func save_game() -> Error:
@@ -586,83 +614,19 @@ func save_game() -> Error:
 	print("[save] wrote %s: %s" % [GameFlow.save_path, error_string(err)])
 	return err
 
-## OW10: the seamless world around the player, its fog from the save, and the start spot
-## (plan section 9: a played intro opens in the Association interior).
-func _enter_open_world(player: Player, data: Dictionary) -> void:
-	var ow := OpenWorld.new()
-	ow.name = "OpenWorld"
-	ow.story_flags = story_flags
-	add_child(ow)
-	ow.interiors.labyrinth = labyrinth  # L2: the save's block drives the floors
-	ow.interiors.rested.connect(func(_at: Vector3) -> void: save_game())
-	ow.interiors.floor_entered.connect(_on_floor_entered.bind(ow))
-	ow.interiors.entered.connect(_bind_interior_gates.bind(ow))  # OW11b
-	WorldSession.restore(ow, data)
-	var mode := GameFlow.intro_mode if not GameFlow.intro_mode.is_empty() else GameFlow.INTRO_PLAY
-	if Coop.is_client():  # OW11c: a joiner starts outdoors; it follows the host's space after
-		mode = GameFlow.INTRO_SKIP
-		ow.host_space.connect(_follow_host_space.bind(ow))
-	var at := WorldSession.start_spot(data, mode)
-	if String(at["interior"]) != "":
-		ow.interiors.enter(String(at["interior"]))
-		print("[world] start inside %s" % at["interior"])
-		return
-	var p: Vector3 = at["pos"]
-	var h := ow.height_at(p.x, p.z)
-	if not is_nan(h):
-		p.y = h
-	player.spawn(p, player.rotation.y)
-	print("[world] start at (%.0f, %.0f, %.0f)" % [p.x, p.y, p.z])
-	ow.first_load(p, WorldSession.nearest_level(p))  # the loading screen, once
-
-
-## Labyrinth L2: a floor was built. The craft station moves to its rest room, and a boss
-## floor whose boss is down gets its waystone (OW6 network, FastTravel.DEEP_POINTS).
-func _on_floor_entered(_n: int, ow: OpenWorld) -> void:
-	var fl := ow.interiors.lab_floor
-	var player := get_node_or_null("Player") as Player
-	if fl == null:
-		return
-	var st := get_node_or_null("AssemblyStation") as Node3D
-	var at := fl.get_node_or_null(AssemblyStation.MARKER) as Node3D
-	if st and at:
-		st.global_transform = at.global_transform
-	_lab_waystone(fl, ow)
-	_lab_loot_parent(fl, ow)
-	_lab_enemies(fl, player)
-	_lab_chests(fl, player)
-
-
-## QA-5: every floor is built in the same space (DEPTH), so its drops are the floor's
-## children and go with it on the stairs; outdoors they land under main again.
-func _lab_loot_parent(fl: LabyrinthFloor, ow: OpenWorld) -> void:
-	var ld := get_node_or_null("LootDropper") as LootDropper
-	if ld == null:
-		return
-	ld.parent = fl
-	if not ow.interiors.left.is_connected(_lab_loot_home):
-		ow.interiors.left.connect(_lab_loot_home)
-
-
-func _lab_loot_home(_id: String) -> void:
-	var ld := get_node_or_null("LootDropper") as LootDropper
-	if ld:
-		ld.parent = self
-
-
 ## L2: a boss floor whose boss is down gets its waystone (FastTravel.DEEP_POINTS).
-func _lab_waystone(fl: LabyrinthFloor, ow: OpenWorld) -> void:
+func _lab_waystone(fl: LabyrinthFloor) -> void:
 	var player := get_node_or_null("Player") as Player
 	var spot := fl.get_node_or_null("WaystoneSpot") as Node3D
 	if spot and labyrinth.bosses.has(String(spot.get_meta(&"boss", ""))):
 		for p in FastTravel.DEEP_POINTS:
 			if int(FastTravel.DEEP_POINTS[p]["floor"]) == fl.floor_no and not fl.has_node("Waystone_" + p):
-				var w := Waystone.new(p, ow.travel.fast_travel)
+				var w := Waystone.new(p, fast_travel)
 				w.name = "Waystone_" + p
 				w.player = player
 				fl.add_child(w)
 				w.global_position = spot.global_position
-				w.opened.connect(func(_p: String) -> void: ow.map_screen.open_travel())
+				w.opened.connect(open_map)
 
 
 ## L3: the floor's goblins (and the King) under their own spawner, freed with the floor. An
@@ -700,9 +664,8 @@ func _on_lab_kill(_e: Enemy, _el: ElementTable.Element, fl: LabyrinthFloor, elit
 		labyrinth.defeat_boss(boss)
 		if is_instance_valid(fl):
 			_lab_boss_chest(fl, _e, first)
-		var ow := get_node_or_null("OpenWorld") as OpenWorld
-		if ow and is_instance_valid(fl):
-			_lab_waystone(fl, ow)
+		if is_instance_valid(fl):
+			_lab_waystone(fl)
 		print("[labyrinth] %s defeated" % boss)
 
 
@@ -751,156 +714,33 @@ func _lab_boss_chest(fl: LabyrinthFloor, e: Enemy, first: bool) -> VaultChest:
 	return c
 
 
-## OW11b: where the party is: the zone nearest the player in the open world ("breach" in
-## the Breach rooms), else the loaded level.
+## The loaded level, or the Labyrinth while a floor is built in the Breach.
 func here_id() -> String:
-	var ow := get_node_or_null("OpenWorld") as OpenWorld
-	var player := get_node_or_null("Player") as Player
-	if ow == null or player == null:
-		return GameFlow.id_of(get_node_or_null("Level"))
-	if ow.interiors.current != "":
-		return "breach" if ow.interiors.current == "breach_rooms" else ow.interiors.current
-	return WorldSession.nearest_level(player.global_position)
+	var lin := _linear_interiors()
+	if lin and lin.current == "labyrinth":
+		return "labyrinth"
+	return GameFlow.id_of(get_node_or_null("Level"))
 
 
-## OW11b: in-world travel (no scene reload): to a zone's entrance behind the loading screen,
-## or into the Breach rooms (their own spawner; `breach` points at their logic).
-## OW11c: the open world's intro director follows the party: a fresh director (dressing,
-## gate rules, marker) whenever the place changes, with its greybox origin at the
-## interior / zone, like the classic one made per level load.
-var _ow_reached := ""
-
-
-func _ow_intro_sync() -> void:
-	var ow := get_node_or_null("OpenWorld") as OpenWorld
-	var player := get_node_or_null("Player") as Player
-	if ow == null or player == null:
-		return
-	if ow.interiors.busy or ow.travel.busy or not ow.is_node_ready():
-		return
-	var h := here_id()
-	if h != _ow_reached and quest_driver:
-		_ow_reached = h
-		quest_driver.reached(h)  # OW11c: no level loads, so zone changes count as "reach"
-	if not IntroDirector.active(story_flags) or Coop.is_client():
-		return  # OW11c: a joiner gets the host's beats as IntroSync recaps, no director of its own
-	if is_instance_valid(intro) and intro.here == h:
-		return
-	if is_instance_valid(intro):
-		if is_instance_valid(intro.cinematic):
-			intro.cinematic.queue_free()
-		remove_child(intro)  # its name goes to the new director at once
-		intro.queue_free()
-	intro = IntroDirector.new()
-	if ow.interiors.current != "" and ow.interiors.interior:
-		intro.base = ow.interiors.interior.global_position
-	else:
-		var wo: Vector2 = SaveMigration.world_offset(h)
-		intro.base = Vector3(wo.x, 0.0, wo.y)
-	add_child(intro)
-	intro.setup(self, player, story_flags, h)
-
-
-## OW11b: an interior's FlagGates (the Breach side wing) read the story flags like $Level's.
-func _bind_interior_gates(_id: String, ow: OpenWorld) -> void:
-	if ow.interiors.interior == null:
-		return
-	for g in get_tree().get_nodes_in_group(FlagGate.GROUP):
-		if ow.interiors.interior.is_ancestor_of(g):
-			(g as FlagGate).bind(story_flags)
-	# OW11c: the interior's Exits are travel gates (the Association's front and back doors)
-	var exits := ow.interiors.interior.get_node_or_null("Exits")
-	var player := get_node_or_null("Player") as Player
-	if exits == null or player == null:
-		return
-	for m in exits.get_children():
-		var to := String(m.get_meta("to", ""))
-		if to == "" or not (m is Node3D):
-			continue
-		var g := LevelGate.new(to)
-		g.name = "InteriorGate_" + to
-		g.player = player
-		ow.interiors.interior.add_child(g)
-		g.global_position = (m as Node3D).global_position
-		g.used.connect(travel)
-		g.blocked.connect(_on_gate_blocked)
-		gates.append(g)
-		g.tree_exiting.connect(func(): gates.erase(g))
-
-
-func _world_travel(ow: OpenWorld, to: String) -> void:
-	if to == "breach":
-		if ow.interiors.current == "":
-			await ow.interiors.enter("breach_rooms")
-		breach = ow.interiors.breach
-		var player := get_node_or_null("Player") as Player
-		var st := get_node_or_null("AssemblyStation") as Node3D
-		var at := ow.interiors.interior.get_node_or_null(AssemblyStation.MARKER) as Node3D if ow.interiors.interior else null
-		if st and at:  # OW11b: the station stands at the Breach entrance, as in the classic level
-			st.global_transform = at.global_transform
-		# The joiner does not simulate a second breach population. The host's puppets
-		# are the fight, same as the Labyrinth. Freeing that extra set from the
-		# physics step is heap-unsafe.
-		if breach and get_node_or_null("BreachEnemies") == null and not (coop and not coop.host):
-			var sp := EnemySpawner.new()
-			sp.name = "BreachEnemies"
-			add_child(sp)
-			sp.setup(ow.interiors.interior, player)
-			if breach.chest:
-				breach.chest.dropper = get_node_or_null("LootDropper") as LootDropper
-			ow.interiors.left.connect(func(_id): sp.queue_free(), CONNECT_ONE_SHOT)
-		return
-	if ow.interiors.current != "":
-		ow.interiors.leave(to)
-		return
-	if Interiors.LINKS.has(to):  # OW11c: a gate to the Association goes indoors
-		ow.interiors.enter(to)
-		return
-	ow.travel.land_at(SaveMigration.entrance(to), to)
-
-
-## OW11c-8: the host fast-travelled outdoors; land the joiner there too. Interiors and the
-## Breach are left to the pose "w" (host_space), which follows them already.
-func _follow_host_travel(to: String, ow: OpenWorld) -> void:
-	if to == "" or to == "breach" or Interiors.LINKS.has(to):
-		return
-	while ow.interiors.busy or ow.travel.busy:
-		await get_tree().process_frame
-	print("[coop] following the host's travel to %s" % to)
-	save_game()
-	_world_travel(ow, to)
-
-
-## OW11c: a joiner goes where its host is: into the host's interior, or back outdoors (the
-## leash then pulls it beside the host).
-func _follow_host_space(interior: String, ow: OpenWorld) -> void:
-	print("[coop] following the host %s" % ("outdoors" if interior == "" else "into " + interior))
-	if ow.interiors.current != "":
-		ow.interiors.leave()
-		if interior == "":
-			return
-		while ow.interiors.busy:
-			await get_tree().process_frame
-	if interior == "breach_rooms":
-		await _world_travel(ow, "breach")
-	elif Interiors.LINKS.has(interior):
-		await ow.interiors.enter(interior)
-
-
-## Autosave, then load `to` with the saved state.
+## Autosave, then load `to` with the saved state. A co-op party votes at the gate first.
 func travel(to: String, anchor := "") -> void:
-	var ow := get_node_or_null("OpenWorld") as OpenWorld
-	if ow and not (coop and not coop.host):
-		save_game()
-		if Coop.is_host():  # OW11c-8: a joiner follows the host's fast travel (else it is left 100s of m behind)
-			Coop.session.send("travel", {"to": to})
-		_world_travel(ow, to)
-		return
 	if coop and not coop.host:
 		print("[coop] only the host can travel")  # step 91: the host's world decides
 		return
-	if coop:
-		Coop.session.send("travel", {"to": to})
+	if gate_vote and coop and coop.host:
+		var who := get_node_or_null("Player") as Node3D
+		if gate_vote.begin(to, anchor, who.global_position if who else Vector3.ZERO):
+			return
+	_commit_travel(to, anchor)
+
+
+func _commit_travel(to: String, anchor := "") -> void:
+	if coop and coop.host:
+		Coop.session.send("travel", {"to": to, "floor": _travel_floor(anchor)})
+	if to == "labyrinth":
+		save_game()
+		_enter_linear_labyrinth(_travel_floor(anchor))
+		return
 	var player := get_node_or_null("Player") as Player
 	if player:
 		var d := SaveGame.capture(player, progress())
@@ -910,14 +750,100 @@ func travel(to: String, anchor := "") -> void:
 		SaveGame.write(d, GameFlow.save_path)
 	GameFlow.travel(get_tree(), to)
 
+
+func _travel_floor(anchor: String) -> int:
+	var info := FastTravel.info(anchor)
+	return int(info.get("floor", 0)) if FastTravel.is_deep(anchor) else 0
+
+
+func _linear_interiors() -> Interiors:
+	return get_node_or_null("LinearInteriors") as Interiors
+
+
+## The Breach crater portal: build the Labyrinth floor in this level (no scene change).
+func _enter_linear_labyrinth(floor := 0) -> void:
+	var ints := _linear_interiors()
+	if ints == null:
+		ints = Interiors.new()
+		ints.name = "LinearInteriors"
+		ints.level_local = true
+		ints.labyrinth = labyrinth
+		add_child(ints)
+		ints.floor_entered.connect(_on_linear_floor)
+		if coop and Coop.session and get_node_or_null("LabyrinthSync") == null:
+			var ls := LabyrinthSync.new()
+			ls.name = "LabyrinthSync"
+			add_child(ls)
+			ls.setup(Coop.session, ints, coop.host)
+	if floor > 0:
+		ints.floor_no = floor
+		labyrinth.current = floor
+	if ints.current == "labyrinth":
+		return
+	await ints.enter("labyrinth")
+
+
+func _on_linear_floor(_n: int) -> void:
+	var ints := _linear_interiors()
+	var fl := ints.lab_floor if ints else null
+	var player := get_node_or_null("Player") as Player
+	if fl == null:
+		return
+	_lab_waystone(fl)
+	_lab_loot_parent_linear(fl)
+	_lab_enemies(fl, player)
+	_lab_chests(fl, player)
+
+
+func _lab_loot_parent_linear(fl: LabyrinthFloor) -> void:
+	var ld := get_node_or_null("LootDropper") as LootDropper
+	if ld:
+		ld.parent = fl
+
+func _setup_level_map(layer: CanvasLayer, here: String) -> void:
+	level_map = WorldMapScreen.new()
+	level_map.linear_level = here
+	level_map.campaign = world_map
+	level_map.crystal = fast_travel
+	level_map.closed.connect(_on_level_map_closed)
+	layer.add_child(level_map)
+
+
+func _open_level_map() -> void:
+	if level_map == null:
+		return
+	var player := get_node_or_null("Player") as Player
+	if player:
+		player.ui_open = true
+	level_map.linear_level = GameFlow.id_of($Level)
+	level_map.campaign = world_map
+	level_map.open()
+
+
+func _on_level_map_closed() -> void:
+	var player := get_node_or_null("Player") as Player
+	if player and (travel_ui == null or not travel_ui.visible):
+		player.ui_open = false
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed(&"map"):
+		return
+	if level_map and level_map.visible:
+		return  # the screen closes itself on M
+	if IntroDirector.refuse(self, "map"):
+		get_viewport().set_input_as_handled()
+		return
+	_open_level_map()
+	get_viewport().set_input_as_handled()
+
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST and pause_menu:
 		save_game()
 
 func _process(delta: float) -> void:
 	_frames += 1
-	if _frames % 15 == 0:
-		_ow_intro_sync()
 	_elapsed += delta
 	if _seconds > 0.0 and _elapsed >= _seconds:
 		print("[main] %d frames, %d physics ticks in %.2f s" % [_frames, _ticks, _elapsed])
