@@ -497,9 +497,9 @@ var _path_ordered := false
 
 func walk_to(at: Vector3, held: Array = []) -> void:
 	var lvl := main.get_node_or_null("Level")
-	var ow_in := main.get_node_or_null("OpenWorld/Interiors")
-	if ow_in and ow_in.get(&"interior"):
-		lvl = null  # OW11c: indoors the outdoor zone's landmark route does not apply
+	var indoors := _interiors()
+	if indoors and indoors.current != "":
+		lvl = null  # indoors the outdoor landmark route does not apply
 	if lvl and lvl.has_node("Pois"):  # step 154: open zones route long walks via landmarks
 		if _route == null or _route_level != lvl:
 			_route = RouteGraph.from_level(lvl)
@@ -512,13 +512,10 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		_path = PackedVector3Array()
 		var nav := main.get_node_or_null("Level/Navigation") as LevelNavigation
 		var ow := main.get_node_or_null("OpenWorld")
-		if ow and ow.get(&"interiors") and ow.interiors.interior:  # OW11b: indoors
-			nav = ow.interiors.interior.get_node_or_null("Navigation") as LevelNavigation
-		var lf: LabyrinthFloor = (
-			ow.interiors.lab_floor
-			if ow and ow.get(&"interiors") and ow.interiors.current == "labyrinth"
-			else null
-		)
+		var inn := _interiors()
+		if inn and inn.interior:
+			nav = inn.interior.get_node_or_null("Navigation") as LevelNavigation
+		var lf: LabyrinthFloor = inn.lab_floor if inn and inn.current == "labyrinth" else null
 		_path_ordered = false
 		if lf and is_instance_valid(lf):  # L5: the floors have no navmesh; room-graph route
 			_path = lf.route(player.global_position, at)
@@ -773,11 +770,18 @@ const VOTE_FLOOR := 2  ## co-op: the joiner hangs back here so the host's 10 s v
 
 ## Co-op joiner, `--labyrinth`: on VOTE_FLOOR stand still (far from the stairs) so the host's
 ## stairs start the vote countdown and the floor sync carries this player down when it ends.
+func _interiors() -> Interiors:
+	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
+	if ow:
+		return ow.interiors
+	return main.get_node_or_null("LinearInteriors") as Interiors
+
+
 func _lab_straggle() -> bool:
 	if not labyrinth_run():
 		return false
-	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
-	if ow == null or ow.interiors.current != "labyrinth" or ow.interiors.floor_no != VOTE_FLOOR:
+	var inn := _interiors()
+	if inn == null or inn.current != "labyrinth" or inn.floor_no != VOTE_FLOOR:
 		return false
 	if _lab_n != VOTE_FLOOR:
 		_lab_n = VOTE_FLOOR
@@ -805,11 +809,8 @@ var _lab_flip := false
 
 func _lab_tick() -> void:
 	var ow := main.get_node_or_null("OpenWorld") as OpenWorld
-	if ow == null:
-		_finish(false, "the Labyrinth needs the open world")
-		return
-	var inn := ow.interiors
-	if inn.busy or ow.travel.busy:
+	var inn := _interiors()
+	if (inn and inn.busy) or (ow and ow.travel.busy):
 		return
 	var lab: LabyrinthState = main.get(&"labyrinth")
 	var ls := main.get_node_or_null(^"LabyrinthSync") as LabyrinthSync
@@ -817,7 +818,7 @@ func _lab_tick() -> void:
 		if not _voting:
 			_voting = true
 			_lab_votes += 1
-			note("stairs vote running on floor %d (%.0f s)" % [inn.floor_no, ls.vote_left])
+			note("stairs vote running on floor %d (%.0f s)" % [inn.floor_no if inn else 0, ls.vote_left])
 		return  # stand on the stairs while the party is counted down
 	_voting = false
 	if stage == "lab_save":
@@ -838,6 +839,20 @@ func _lab_tick() -> void:
 			return
 		_finish(true)
 		return
+	if inn == null or inn.current == "":
+		var gate := main.get_node_or_null("GateLabyrinth") as LevelGate
+		if gate:
+			if t < 1.0:
+				return
+			if gate.near(player):
+				look_at_point(gate.global_position + Vector3(0, 1.2, 0))
+				gate.use()
+			else:
+				walk_to(gate.global_position)
+			return
+		if inn == null:
+			_finish(false, "no Labyrinth gate")
+			return
 	if inn.current == "breach_rooms":
 		if _tick % 120 == 0:
 			note("leaving the Breach rooms for the crater gate")
