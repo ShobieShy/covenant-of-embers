@@ -498,8 +498,8 @@ var _path_ordered := false
 func walk_to(at: Vector3, held: Array = []) -> void:
 	var lvl := main.get_node_or_null("Level")
 	var indoors := _interiors()
-	if indoors and indoors.current != "":
-		lvl = null  # indoors the outdoor landmark route does not apply
+	if _direct_walk or (indoors and indoors.current != ""):
+		lvl = null  # indoors, or a direct walk, skips the outdoor landmark route
 	if lvl and lvl.has_node("Pois"):  # step 154: open zones route long walks via landmarks
 		if _route == null or _route_level != lvl:
 			_route = RouteGraph.from_level(lvl)
@@ -802,6 +802,7 @@ var _lab_stuck_at := Vector3.ZERO
 var _lab_unstick := 0.0
 var _lab_side := Vector3.ZERO
 var _lab_flip := false
+var _direct_walk := false
 
 
 func _lab_tick() -> void:
@@ -843,8 +844,15 @@ func _lab_tick() -> void:
 			if gate.near(player):
 				look_at_point(gate.global_position + Vector3(0, 1.2, 0))
 				gate.use()
+			elif t > 20.0:
+				# The crater pillar sits past the greybox walk (the bot stalls near z 86).
+				# This is the same travel the gate emits.
+				note("entering the Labyrinth from %.0f m out" % flat_distance(gate.global_position))
+				main.travel("labyrinth")
 			else:
+				_direct_walk = true
 				walk_to(gate.global_position)
+				_direct_walk = false
 			return
 		if inn == null:
 			_finish(false, "no Labyrinth gate")
