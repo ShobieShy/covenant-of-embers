@@ -110,3 +110,30 @@ func test_forward_gates_follow_the_story() -> void:
 	grove.free()
 	breach.free()
 	_restore()
+
+
+func test_dead_player_does_not_use_a_gate() -> void:
+	var p: Player = (load("res://scenes/player/player.tscn") as PackedScene).instantiate()
+	runner_tree.root.add_child(p)
+	var gate := LevelGate.new("old_oak")
+	gate.player = p
+	runner_tree.root.add_child(gate)
+	var asked: Array = []
+	gate.used.connect(func(to: String) -> void: asked.append(to))
+	check(gate.use() and asked == ["old_oak"], "a living player takes the gate")
+	asked.clear()
+	p.health.take(100000.0)
+	check(not p.alive(), "the player is dead")
+	check(not gate.use() and asked.is_empty(), "a dead player does not change level")
+	p.health.refill()
+	check(p.alive() and gate.use() and asked == ["old_oak"], "after respawn the gate works")
+	var portal := LevelGate.new("labyrinth")
+	portal.player = p
+	runner_tree.root.add_child(portal)
+	p.health.take(100000.0)
+	var floors: Array = []
+	portal.used.connect(func(to: String) -> void: floors.append(to))
+	check(not portal.use() and floors.is_empty(), "a dead player does not enter the Labyrinth")
+	portal.free()
+	gate.free()
+	p.free()

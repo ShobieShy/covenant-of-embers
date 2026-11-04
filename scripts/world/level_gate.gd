@@ -58,6 +58,8 @@ func locked() -> bool:
 
 
 func use() -> bool:
+	if player != null and is_instance_valid(player) and not player.alive():
+		return false
 	if locked():
 		blocked.emit(locked_text)
 		return false
