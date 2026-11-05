@@ -23,6 +23,8 @@ var follows := 0  ## joiner: floor moves made for the host
 var pushes := 0
 var banner_left := -1.0  ## 0.3.1 P2 joiner: s on the vote banner, from "lab_vote"
 var banner: VoteBanner
+var _have_cart := false
+var _cart_t := 0.0
 
 
 func setup(s: Object, ints: Interiors, is_host: bool) -> void:
@@ -57,7 +59,10 @@ func push() -> void:
 	if not host or interiors.current != "labyrinth" or interiors.labyrinth == null:
 		return
 	pushes += 1
-	session.call(&"send", "lab", {"n": interiors.floor_no, "st": interiors.labyrinth.to_dict()})
+	var body := {"n": interiors.floor_no, "st": interiors.labyrinth.to_dict()}
+	if interiors.slag and interiors.slag.hazard:
+		body["cart_t"] = interiors.slag.hazard.cart_t
+	session.call(&"send", "lab", body)
 
 
 ## Host: may the party take the stairs down now? Else the vote countdown runs.
@@ -213,6 +218,8 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 		return
 	match kind:
 		"lab":
+			_have_cart = data.has("cart_t")
+			_cart_t = float(data.get("cart_t", 0.0))
 			follow(int(data.get("n", 1)), data.get("st", {}))
 		"lab_vote":
 			banner_left = float(data.get("t", VOTE_S))
@@ -239,6 +246,7 @@ func follow(n: int, st: Variant) -> void:
 			for e in interiors.get_tree().get_nodes_in_group(Enemy.GROUP):
 				if e is Blightmaw and is_instance_valid(e):
 					(e as Node).queue_free()
+		_apply_cart()
 		return  # already in the cavern: do not teleport when the other player changes tier
 	if interiors.current == "labyrinth" and interiors.floor_no != n and not interiors.busy:
 		follows += 1
@@ -250,6 +258,13 @@ func follow(n: int, st: Variant) -> void:
 			follows += 1
 			print("[coop] joining the host on checkpoint %d" % n)
 			await interiors.enter("labyrinth")
+	_apply_cart()
+
+
+func _apply_cart() -> void:
+	if interiors == null or interiors.slag == null or interiors.slag.hazard == null:
+		return
+	interiors.slag.hazard.cart_t = _cart_t if _have_cart else 0.0
 
 
 func _crater_push() -> bool:

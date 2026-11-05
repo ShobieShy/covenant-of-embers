@@ -53,6 +53,7 @@ var layout := {}
 var rooms: Array[Node3D] = []
 var nav_bakes := 0
 var nav_from_cache := false
+var hazard: SlagHazard
 var _state: LabyrinthState
 var _region: NavigationRegion3D
 var _mats := {}
@@ -85,6 +86,10 @@ static func make(checkpoint: int, state: LabyrinthState) -> SlagworksFloor:
 		f._build_crucible()
 	else:
 		f._build_kit()
+	f.hazard = SlagHazard.new()
+	f.hazard.name = "SlagHazard"
+	f.hazard.host = f
+	f.add_child(f.hazard)
 	return f
 
 
@@ -92,6 +97,11 @@ func _ready() -> void:
 	var pad := get_node_or_null("Pad") as Area3D
 	if pad and not pad.body_entered.is_connected(_on_pad_body):
 		pad.body_entered.connect(_on_pad_body)
+	var shrine := get_node_or_null("RestShrine") as RestShrine
+	if shrine and hazard and not shrine.rested.is_connected(hazard.on_rest):
+		shrine.rested.connect(hazard.on_rest)
+	if hazard:
+		hazard.last_pad = pad_global()
 
 
 func _on_pad_body(b: Node3D) -> void:
@@ -474,6 +484,7 @@ func _shrine(at: Vector3) -> void:
 	var s := RestShrine.new()
 	s.name = "RestShrine"
 	s.position = at
+	s.set_meta(&"checkpoint", floor_no)
 	add_child(s)
 	var ws := get_node_or_null("WaveSpawns") as Node3D
 	if ws == null:
