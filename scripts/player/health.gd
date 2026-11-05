@@ -90,6 +90,22 @@ func take(amount: float) -> float:
 	return from_health
 
 
+## Poison, spore fog and falls: health only. The shield and its regen delay stay put.
+func take_health(amount: float) -> float:
+	if dead or amount <= 0.0:
+		return 0.0
+	var from_health := minf(value, amount)
+	value -= from_health
+	if value < EPS:
+		value = 0.0
+	health_lost += from_health
+	damaged.emit(0.0, from_health)
+	if value <= 0.0:
+		dead = true
+		died.emit()
+	return from_health
+
+
 ## One fixed tick: the shield regenerates for the part of the tick past the delay.
 func tick(dt: float) -> void:
 	if dead:

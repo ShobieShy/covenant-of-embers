@@ -32,6 +32,8 @@
 | ambientCG Gravel 022 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Gravel022 | 2026-10-26 |
 | ambientCG Ground 054 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground054 | 2026-10-26 |
 | Quaternius "Goblin" and "Orc" (recoloured; Ember Art batch 08b goblin grunt/archer/shaman, Goblin King) | Quaternius | CC0 1.0 | https://poly.pizza/m/OdCOFSmEhl, https://poly.pizza/m/5vO2YJsPEf | 2026-10-28 |
+| Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine) | Ember Art | CC0 1.0 | this repository | 2026-11-05 |
+| Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch) | Ember Art | CC0 1.0 | this repository | 2026-11-05 |
 
 3D models: Kenney (www.kenney.nl) — Fantasy Town Kit, Nature Kit (CC0). Delivered by Ember Art as batch 01; the full per-file list is in docs/credits/kenney_batch_01.md.
 

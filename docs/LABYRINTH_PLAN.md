@@ -64,7 +64,7 @@ the EmberArt pipeline (10 sets per region already exist; Acts add 5 more):
 ## 5. Bosses
 
 - One Act boss on every 5th floor (5 total), adapted from the five Bible dungeons:
-  Goblin King (I), the Murmuring Elder (II), Forgemaw the troll smith (III), the Drowned
+  Goblin King (I), the Blightmaw Matriarch (II — The Blightcoil, one cavern, not five floors), Forgemaw the troll smith (III), the Drowned
   Choir (IV), the Storm Warden (V). Each uses the existing boss framework (The Filth:
   arena trigger, phases, Boss Drop) and drops a named part + an Act key item.
 - Mini-bosses: one elite room on each non-boss floor (a named variant with an affix).
@@ -149,7 +149,7 @@ reuse L1-L2 unchanged.
 4. Fixed seed per save (floors persist) plus an optional remix for farming? Default: yes.
 5. Act themes from the Storyline (Warrens, Deep, Forge, Ruins, Spire)? Default: yes.
 6. Keep the Bible's finale (Crazy Joe, then the Demon Lord) in the Core? Default: yes.
-7. Overworld shortcut gates per Act, opened from below only? Default: yes.
+7. Overworld shortcut gates per Act, opened from below only? That default is stale. Closed levels have no shortcut gates, and Act II does not add one. The Drowned Forge door does not travel.
 8. Death: respawn at the last rest room, keep floor progress? Default: yes.
 9. Co-op: whole party on one floor, exit vote of 10 s? Default: yes.
 10. Do the overworld regions unlock in step with the Acts? Default: yes, via quest hints only, no hard locks.

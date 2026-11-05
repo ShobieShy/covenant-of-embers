@@ -24,6 +24,18 @@ const ACTS := {
 		"boss_first": "unique",
 		"boss_repeat": "rare",
 	},
+	2:
+	{
+		"name": "The Blightcoil",
+		"floors": [6, 8],
+		"levels": [14, 18, 22],
+		"chests": ["basic", "uncommon", "rare"],
+		"element": ElementTable.Element.EARTH,
+		"elements": [ElementTable.Element.EARTH, ElementTable.Element.DARK],
+		"luck": 0.05,
+		"boss_first": "unique",
+		"boss_repeat": "rare",
+	},
 }
 
 
@@ -46,6 +58,17 @@ static func item_level(floor_no: int) -> int:
 static func element(floor_no: int) -> int:
 	var a := act_of(floor_no)
 	return int(ACTS[a]["element"]) if a != 0 else -1
+
+
+## -1 keeps the enemy's own affinity. Otherwise the act brand, Earth or Dark for Act II.
+static func brand_roll(rng: RandomNumberGenerator, floor_no: int) -> int:
+	var a := act_of(floor_no)
+	if a == 0 or rng == null or rng.randf() >= ELEMENT_SHARE:
+		return -1
+	var els: Variant = ACTS[a].get("elements", null)
+	if els is Array and (els as Array).size() > 0:
+		return int((els as Array)[rng.randi() % (els as Array).size()])
+	return element(floor_no)
 
 
 static func luck(floor_no: int) -> float:
@@ -93,6 +116,7 @@ static func tag(e: Enemy, floor_no: int) -> void:
 		e.level_override = lv  # tests and saves that still read the band
 	var elite := 1 if Elites.affix_of(e.def) != "" else 0
 	e.level_offset = depth_offset(floor_no) + elite
-	if element(floor_no) >= 0:
+	if act_of(floor_no) != 0:
 		e.set_meta(&"act_element", element(floor_no))
+		e.set_meta(&"act_floor", floor_no)
 		e.set_meta(&"act_luck", luck(floor_no))

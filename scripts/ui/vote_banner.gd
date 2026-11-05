@@ -81,6 +81,9 @@ func refresh() -> void:
 	for n in sync.missing():
 		away.append(String(n))
 	label.text = "Waiting for party: %d s" % sec
+	var act := String(sync.get("act_name")) if sync and sync.get("act_name") != null else ""
+	if act != "":
+		label.text = act + "\n" + label.text
 	if not away.is_empty():
 		label.text += "\nNot at the stairs: " + ", ".join(away)
 	if not panel.visible or UiAnim.closing(panel):

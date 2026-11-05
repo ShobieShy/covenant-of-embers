@@ -1,0 +1,85 @@
+# Labyrinth Act II, The Blightcoil (PLAN_0.7.0_ACT2.md). One cavern, not a FloorGen floor.
+# Sump walking surface y = 0, Canopy y = 12, Crown y = 24. The Rotheart is a solid
+# column. Root-bridge ramps join the slabs; each ramp's horizontal run is at least 20 m.
+
+[cavern]
+id = "blightcoil"
+sump_y = 0.0
+canopy_y = 12.0
+crown_y = 24.0
+trunk_radius = 4.0
+trunk_top = 28.0
+outer_radius = 22.0
+inner_open = 8.0
+ramp_width = 8.0
+ramp_thickness = 0.35
+void_y = -8.0
+fog_y = 12.0
+rest_exempt = 2.5
+boss = "blightmaw_matriarch"
+
+[[slab]]
+id = "sump"
+checkpoint = 6
+waystone = "blightcoil_sump"
+center = [16.0, 0.0, 0.0]
+size = [12.0, 10.0]
+pad = [16.0, 0.0, 0.0]
+
+[[slab]]
+id = "canopy"
+checkpoint = 7
+waystone = "blightcoil_canopy"
+center = [0.0, 12.0, 20.0]
+size = [12.0, 10.0]
+pad = [4.0, 12.0, 22.0]
+
+[[slab]]
+id = "crown"
+checkpoint = 8
+waystone = "blightcoil_crown"
+center = [-16.0, 24.0, -2.0]
+size = [14.0, 12.0]
+pad = [-16.0, 24.0, -2.0]
+
+# Each ramp leaves the near edge of its slab and lands on the next, so the
+# rising span is not a ceiling over the pad it just left.
+[[ramp]]
+id = "to_canopy"
+fr = [15.0, 0.0, 1.2]
+to = [1.0, 12.0, 16.5]
+lip = [2.0, 12.0, 18.0]
+
+[[ramp]]
+id = "to_crown"
+fr = [-6.0, 12.0, 18.0]
+to = [-18.0, 24.0, 1.0]
+lip = [-18.0, 24.0, -1.0]
+
+[[pocket]]
+id = "sump_pocket"
+at = [18.0, 0.0, 6.5]
+size = [4.0, 4.0]
+secret = true
+
+[[pocket]]
+id = "canopy_pocket"
+at = [5.5, 12.0, 20.0]
+size = [3.5, 4.0]
+secret = true
+
+[[mire]]
+at = [12.0, 0.0, 3.2]
+size = [3.2, 0.6, 3.2]
+
+[[mark]]
+id = "sump_bark"
+at = [13.0, 0.0, -2.0]
+
+[[mark]]
+id = "canopy_bark"
+at = [4.0, 12.0, 19.0]
+
+[[mark]]
+id = "crown_bark"
+at = [-14.0, 24.0, -3.5]

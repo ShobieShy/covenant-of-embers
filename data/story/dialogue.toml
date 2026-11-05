@@ -187,3 +187,19 @@ id = "patron_pity"
 speaker = "Grizzled Patron"
 lines = ["*hiccups* The Fractured Flagon's the only place left with decent ale. Everything else tastes like barrier dust.", "If you're new here... the outer dungeons started acting up again last month. Something's stirring."]
 repeats = ["Go talk to the shopkeeps if you need potions. Or don't. Your funeral.", "*burps* Stay away from the landfill, kid. Even the rats are wrong there."]
+
+# Act II. Post-boss is first so it wins once the Matriarch is in the boss list.
+[[dialogue]]
+id = "verdant_after"
+speaker = "Verdant Mother"
+requires = ["boss:blightmaw_matriarch"]
+lines = ["The tree is dead. I do not know what tore the cocoon open.", "The way down has opened. It cannot be taken yet."]
+repeats = ["The way down has opened. It cannot be taken yet."]
+
+[[dialogue]]
+id = "verdant_intro"
+speaker = "Verdant Mother"
+forbids = ["boss:blightmaw_matriarch"]
+sets = ["verdant_met"]
+lines = ["I am bound to the Rotheart. The infection is climbing.", "Burn it out before it climbs higher into the Labyrinth."]
+repeats = ["Burn it out before it climbs higher."]

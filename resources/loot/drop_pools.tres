@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DropTable" load_steps=27 format=3]
+[gd_resource type="Resource" script_class="DropTable" load_steps=34 format=3]
 
 [ext_resource type="Script" path="res://scripts/loot/drop_table.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/loot/drop_pool.gd" id="2"]
@@ -154,6 +154,54 @@ max_level = 50
 drop_chance = 1.0
 entries = Array[ExtResource("3")]([SubResource("act1_goblin_king_earthward_battlestaff_rare"), SubResource("act1_goblin_king_apprentice_fire_staff_rare"), SubResource("act1_goblin_king_earthward_battlestaff_mythic"), SubResource("act1_goblin_king_swift_wind_wand_mythic")])
 
+[sub_resource type="Resource" id="act2_blight_earthward"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 40.0
+rarity = ""
+
+[sub_resource type="Resource" id="act2_blight_wind"]
+script = ExtResource("3")
+wieldable_id = "swift_wind_wand"
+weight = 30.0
+rarity = ""
+
+[sub_resource type="Resource" id="act2_blight_earthward_rare"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 10.0
+rarity = "rare"
+
+[sub_resource type="Resource" id="act2_blight"]
+script = ExtResource("2")
+id = "act2_blight"
+enemy_ids = PackedStringArray("spore_husk", "mossbound_treant", "spore_beast")
+min_level = 1
+max_level = 50
+drop_chance = 0.22
+entries = Array[ExtResource("3")]([SubResource("act2_blight_earthward"), SubResource("act2_blight_wind"), SubResource("act2_blight_earthward_rare")])
+
+[sub_resource type="Resource" id="act2_matriarch_earthward_rare"]
+script = ExtResource("3")
+wieldable_id = "earthward_battlestaff"
+weight = 40.0
+rarity = "rare"
+
+[sub_resource type="Resource" id="act2_matriarch_wind_mythic"]
+script = ExtResource("3")
+wieldable_id = "swift_wind_wand"
+weight = 15.0
+rarity = "mythic"
+
+[sub_resource type="Resource" id="act2_matriarch"]
+script = ExtResource("2")
+id = "act2_matriarch"
+enemy_ids = PackedStringArray("blightmaw_matriarch")
+min_level = 1
+max_level = 50
+drop_chance = 1.0
+entries = Array[ExtResource("3")]([SubResource("act2_matriarch_earthward_rare"), SubResource("act2_matriarch_wind_mythic")])
+
 [resource]
 script = ExtResource("1")
-pools = Array[ExtResource("2")]([SubResource("midden_gnawer"), SubResource("midden_heap"), SubResource("act1_goblins"), SubResource("act1_goblin_king")])
+pools = Array[ExtResource("2")]([SubResource("midden_gnawer"), SubResource("midden_heap"), SubResource("act1_goblins"), SubResource("act1_goblin_king"), SubResource("act2_blight"), SubResource("act2_matriarch")])

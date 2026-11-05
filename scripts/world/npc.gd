@@ -58,6 +58,9 @@ func near(p: Player) -> bool:
 
 func talk() -> void:
 	talks += 1
+	var body := get_node_or_null("CharacterModel") as CharacterModel
+	if body:
+		body.play_once("Talk")
 	talked.emit(speaker)
 
 

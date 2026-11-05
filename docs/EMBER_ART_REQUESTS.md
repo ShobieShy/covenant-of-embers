@@ -37,6 +37,32 @@ credited in game; textures can be CC0 ambientCG/Poly Haven sets credited in CRED
 | Boss arena | assets/original/ember_art/warrens/throne_hall.glb | ~32x32 m handmade floor 5 hall with a raised throne, 3 LODs |
 | Warrens map painting | assets/original/ember_art/map_warrens.png | 512x300, for the Labyrinth tab of the world map |
 
+## Labyrinth Act II: The Blightcoil (0.7.0)
+
+Batch 12 is in the repo (CC0, Ember Art). The ramp mesh rises 12 m over a 22 m run. Music cue slots stay silent until a file exists.
+
+| Slot | Path | Spec |
+|---|---|---|
+| Moss wall | assets/original/ember_art/blightcoil/moss_wall.glb | cavern wall, metres, Y-up |
+| Root-bridge ramp | assets/original/ember_art/blightcoil/root_bridge_ramp.glb | 12 m rise, 20 m minimum run, 3 m clearance, Y-up |
+| Mire surface | assets/original/ember_art/blightcoil/mire_surface.glb | Sump pool surface, metres, Y-up |
+| Spore pod | assets/original/ember_art/blightcoil/spore_pod.glb | dressing pod, metres, Y-up |
+| Trunk column | assets/original/ember_art/blightcoil/trunk_column.glb | Rotheart column, radius 4 m, Y-up |
+| Torn cocoon | assets/original/ember_art/blightcoil/torn_cocoon.glb | empty shell torn from the inside, metres, Y-up |
+| Forge door | assets/original/ember_art/blightcoil/forge_door.glb | Drowned Forge door stub, metres, Y-up |
+| Ritual-mark decal | assets/original/ember_art/blightcoil/ritual_mark_decal.png | Joe's bark mark, metres, Y-up |
+| Verdant Mother | assets/original/ember_art/blightcoil/verdant_mother.glb | dryad on the Canopy pad, metres, Y-up |
+| Spore-cap husk | assets/original/ember_art/enemies/spore_cap_husk.glb | fragile rusher, metres, Y-up |
+| Mossbound treant | assets/original/ember_art/enemies/mossbound_treant.glb | tank, metres, Y-up |
+| Spore beast | assets/original/ember_art/enemies/spore_beast.glb | rusher, metres, Y-up |
+| Grabbing vine | assets/original/ember_art/blightcoil/grabbing_vine.glb | slow volume, no damage, metres, Y-up |
+| Blightmaw Matriarch | assets/original/ember_art/enemies/blightmaw_matriarch.glb | three-phase boss, metres, Y-up |
+| Cue: Sump | (slot only, no file yet) | silence until composed |
+| Cue: Canopy | (slot only, no file yet) | silence until composed |
+| Cue: Crown | (slot only, no file yet) | silence until composed |
+| Cue: Matriarch | (slot only, no file yet) | silence until composed |
+| Cue: fog clear | (slot only, no file yet) | short sting when the spore fog clears |
+
 ## 0.3.1 (polish)
 
 Requested for docs/POLISH_0.3.1_PLAN.md. CC0 (original or Kenney), credited in CREDITS.md. No music.

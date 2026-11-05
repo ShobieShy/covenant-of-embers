@@ -25,6 +25,7 @@ const SPEAKERS := {
 	"Potion Merchant": "clerk/Animated_Woman_casual.glb",
 	"Runesmith": "clerk/Business_Man.glb",
 	"Tailor": "clerk/Animated_Woman_casual.glb",
+	"Verdant Mother": "res://assets/original/ember_art/blightcoil/verdant_mother.glb",
 }
 ## Speaker tints (alpha-blended overlay) so reused bodies read as different people.
 const TINTS := {
@@ -57,7 +58,8 @@ var _speed := 0.0
 ## The model path for a dialogue speaker ("Summoned Gal" maps through the archetype), or "".
 static func for_speaker(speaker: String) -> String:
 	if SPEAKERS.has(speaker):
-		return DIR + String(SPEAKERS[speaker])
+		var p := String(SPEAKERS[speaker])
+		return p if p.begins_with("res://") else DIR + p
 	if speaker.begins_with("Summoned "):
 		return for_archetype(speaker.trim_prefix("Summoned ").to_lower())
 	return ""
@@ -164,6 +166,27 @@ static func _local_xform(root: Node3D, n: Node3D) -> Transform3D:
 			t = (cur as Node3D).transform * t
 		cur = cur.get_parent()
 	return t
+
+
+## One non-looping clip (Talk, Attack, SporeSpray). Idle resumes when it finishes.
+func play_once(clip: String) -> bool:
+	if anim == null:
+		return false
+	for full in anim.get_animation_list():
+		var leaf := String(full).get_slice("|", 1) if String(full).contains("|") else String(full)
+		if leaf != clip and String(full) != clip:
+			continue
+		var a := anim.get_animation(full)
+		a.loop_mode = Animation.LOOP_NONE
+		if not anim.animation_finished.is_connected(_resume_idle):
+			anim.animation_finished.connect(_resume_idle)
+		anim.play(full, 0.15)
+		return true
+	return false
+
+
+func _resume_idle(_anim_name: StringName) -> void:
+	_play(IDLE)
 
 
 func _play(names: Array) -> void:

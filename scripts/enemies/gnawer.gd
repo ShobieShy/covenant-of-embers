@@ -47,6 +47,8 @@ const PLAYER_RADIUS := 0.3  ## target capsule radius (Player)
 const GRAVITY := 9.8
 const STEP_UP := 0.25  ## m it can step up (C++ kStepUp)
 const NAV_SNAP := 1.0  ## a path starting farther than this from it is someone else's
+const CAVERN_CHASE_M := 40.0  ## Act II: drop the chase when the nav path is longer
+const CAVERN_HOME_DROP := 8.0  ## Act II: fall this far below the home pad and return
 const SEPARATION_GAP := 0.35  ## step 14: m of clearance kept from other enemies' bodies
 const SEPARATION_WEIGHT := 1.5  ## how hard a neighbour bends its path
 const SEPARATION_AHEAD := 0.3  ## cos: a neighbour within ~73 deg of its heading is "ahead"
@@ -64,6 +66,7 @@ class Senses:
 	var hunting := false
 	var knockback_left := 0.0
 	var dead := false
+	var leashed := false
 
 
 ## One bite (C++ EnemyAttack).
@@ -111,6 +114,10 @@ var transitions: Array[Transition] = []
 var attacks: Array[Bite] = []
 var nav: NavigationAgent3D
 var _vy := 0.0
+var cavern_sense := false  ## Act II: 3D distance, not the flat Warrens check
+var path_length_override := -1.0  ## tests: the nav path length, in metres
+var home_pad := Vector3.ZERO
+var has_home := false
 
 
 func setup(d: EnemyDef) -> void:
@@ -138,6 +145,8 @@ static func next_state(s: State, r: RusherDef, i: Senses) -> State:
 		return State.DEAD
 	if i.knockback_left > 0.0:
 		return State.KNOCKBACK
+	if i.leashed:
+		return State.IDLE
 	if not i.target_valid:
 		return State.IDLE
 	var dist := i.distance
@@ -214,9 +223,15 @@ func think(dt: float) -> void:
 	var s := Senses.new()
 	s.target_valid = _target_valid()
 	var feet := global_position
-	var to := _flat(target.global_position - feet) if s.target_valid else Vector3.ZERO
-	s.distance = to.length()
+	if has_home and global_position.y < home_pad.y - CAVERN_HOME_DROP:
+		global_position = home_pad
+		velocity = Vector3.ZERO
+		feet = global_position
+	var delta := target.global_position - feet if s.target_valid else Vector3.ZERO
+	var to := _flat(delta)
+	s.distance = delta.length() if cavern_sense else to.length()
 	distance = s.distance
+	s.leashed = cavern_sense and _chase_path() > CAVERN_CHASE_M
 	s.line_of_sight = s.target_valid and s.distance <= rusher.detect_range and sees(_target_eye())
 	s.provoked = provoked
 	s.hunting = hunt_left > 0.0
@@ -266,12 +281,27 @@ func think(dt: float) -> void:
 	travelled += _flat(global_position - feet).length()
 
 
+func _chase_path() -> float:
+	if path_length_override >= 0.0:
+		return path_length_override
+	if nav == null or not is_inside_tree():
+		return 0.0
+	var path := nav.get_current_navigation_path()
+	if path.size() < 2:
+		return 0.0
+	var length := 0.0
+	for i in path.size() - 1:
+		length += path[i].distance_to(path[i + 1])
+	return length
+
+
 func _in_reach(dist: float, feet: Vector3) -> bool:
 	return dist <= rusher.attack_range + ATTACK_SLACK and absf(target.global_position.y - feet.y) <= BITE_HEIGHT
 
 
 ## Overridden by the Heap (a wind-up); the Gnawer bites at once.
 func _start_attack(feet: Vector3) -> void:
+	_play_clip("Attack")
 	_bite(feet)
 
 

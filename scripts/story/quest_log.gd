@@ -22,6 +22,7 @@ var player: Player  ## optional: gets xp / dust rewards
 var active := {}  ## id -> {step: int, have: int}
 var done: PackedStringArray = []
 var clues: PackedStringArray = []
+var known_bosses: Array = []  ## Labyrinth boss ids, for Act II quest seeding
 
 
 static func create(f: StoryFlags = null, path := DEFAULT_PATH) -> QuestLog:
@@ -98,8 +99,25 @@ func start(id: String) -> bool:
 	if not quests.has(id) or active.has(id) or done.has(id):
 		return false
 	active[id] = {"step": 0, "have": 0}
-	quest_started.emit(id)
+	_seed_act2(id)
+	if active.has(id):
+		quest_started.emit(id)
 	return true
+
+
+func _seed_act2(id: String) -> void:
+	if id == "joes_marks":
+		var n := 0
+		for k in flags.values:
+			if String(k).begins_with("mark:") and int(flags.values[k]) != 0:
+				n += 1
+		var need := int(quests[id]["objectives"][0]["count"])
+		if n >= need:
+			_complete(id)
+		elif n > 0:
+			active[id]["have"] = n
+	elif id == "the_overgrown_deep" and known_bosses.has("blightmaw_matriarch"):
+		_complete(id)
 
 
 func check_auto_start() -> void:

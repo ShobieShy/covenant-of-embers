@@ -97,8 +97,9 @@ func roll_for(enemy: Enemy) -> Array[LootDrop]:
 	var lk := luck
 	if enemy.has_meta(&"act_element"):
 		lk += float(enemy.get_meta(&"act_luck", 0.0))
-		if rng.randf() < ActLoot.ELEMENT_SHARE:
-			el = int(enemy.get_meta(&"act_element"))
+		var branded := ActLoot.brand_roll(rng, int(enemy.get_meta(&"act_floor", 0)))
+		if branded >= 0:
+			el = branded
 	return DropRoller.roll_kill(
 		rng, enemy.def.id, enemy.level(), el, lk, null, rarity_table(), party
 	)

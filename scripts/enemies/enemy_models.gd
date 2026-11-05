@@ -17,6 +17,11 @@ const MODELS := {
 	"goblin_archer": "res://assets/original/ember_art/goblin_archer.glb",
 	"goblin_shaman": "res://assets/original/ember_art/goblin_shaman.glb",
 	"goblin_king": "res://assets/original/ember_art/goblin_king.glb",
+	# Act II (Ember Art batch_12). Ids match data/enemies/blightcoil.toml.
+	"spore_husk": "res://assets/original/ember_art/enemies/spore_cap_husk.glb",
+	"mossbound_treant": "res://assets/original/ember_art/enemies/mossbound_treant.glb",
+	"spore_beast": "res://assets/original/ember_art/enemies/spore_beast.glb",
+	"blightmaw_matriarch": "res://assets/original/ember_art/enemies/blightmaw_matriarch.glb",
 }
 ## Batch 08b: nodes freed when the body dies (the King's Crown becomes his drop).
 const DEATH_HIDE := {"goblin_king": ["Crown"]}

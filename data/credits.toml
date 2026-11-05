@@ -209,3 +209,17 @@ author = "Covenant of Embers project"
 license = "CC0 1.0"
 source = "incoming_art/batch_07 (modified: blurred, posterized, tinted, overlays added; crystal desaturated in-repo) from ambientCG Ground080, Grass004, Rock030, Gravel022, Ground037, Ground054, Ground033, Snow006, Rocks011, PavingStones131"
 line = "Ember Art terrain sets (batch 07, based on ambientCG) by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
+name = "Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine)"
+author = "Ember Art"
+license = "CC0 1.0"
+source = "batch_12_act2_blightcoil (original work, Blender 4.5 + PIL)"
+line = "Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine) by Ember Art, CC0 1.0"
+
+[[credit]]
+name = "Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch)"
+author = "Ember Art"
+license = "CC0 1.0"
+source = "batch_12_act2_blightcoil (original work, Blender 4.5)"
+line = "Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch) by Ember Art, CC0 1.0"
