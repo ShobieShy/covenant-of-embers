@@ -6,24 +6,38 @@ Story outlines for Acts I–V are in [LABYRINTH_ACTS_STORY.md](LABYRINTH_ACTS_ST
 
 0.6.0, the trust pass, already shipped. This file no longer plans that pass. 0.7.0 is Act II, The Blightcoil, and that act is on master. This roadmap does not bump a version or cut a release.
 
+## Version scheme
+
+ShobieShy locked this on 5 Nov 2026. The same rule is in [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md).
+
+- **x.x.y** (patch): bugfixes, or a large addition that is not a new act and not a major feature upgrade.
+- **x.y.0** (minor): major polish and finishing on a new act, or a big feature upgrade. A new act ships as a minor. Act III is 0.8.0, not a patch.
+- The Breach Labyrinth campaign and all polish stay on **0.x** minors (0.8.0, 0.9.0, 0.10.0, and the 0.x minors after those).
+- **1.0 is not a content milestone on this table.** It is a release cut, and only when ShobieShy explicitly tells Luna to make it.
+
 ## Versions
 
 | Version | Content |
 |---|---|
 | 0.7.0 (shipping) | Act II, The Blightcoil |
-| 0.8.0 | Act III — The Slagworks |
+| 0.8.0 | Act III — The Slagworks. A minor, not a patch. Plan: [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md). |
 | 0.9.0 | Act IV — The Sunken Ruins |
 | 0.10.0 | Act V — The Inverted Spire |
-| 1.0 | The Core (Joe, then the Demon Lord, who escapes; main-campaign end, per the 31 Oct 2026 scope) |
+| Later 0.x | The Core, when ShobieShy opens it. Joe, then the Demon Lord, who escapes (main-campaign end, per the 31 Oct 2026 scope). Not 1.0. |
+| Later 0.x | After that clear, the endless run. Working title and boundary: [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md) under Post-Core. Not 1.0. |
 
 ## Defaults
 
-- One act per minor version.
+- One act per minor (`x.y.0`). A patch (`x.x.y`) is for bugfixes or a large addition that is not a new act.
 - Acts III–V are 5 floors, with the boss on floor 5, a waystone home, and the hub Breach gate unlocking the next descent. Act II stays the one cavern already built.
 - Empty-shell hooks run in order: cocoon, slag cast, coral sarcophagus, lit path.
 - Music stays on placeholders until it is composed.
-- Act I outline polish folds into 0.8.0 prep, or an optional 0.7.1.
-- The Core stays closed until ShobieShy opens it.
+- Act I outline polish folds into 0.8.0 prep, or an optional 0.7.1 patch.
+- The Core stays closed until ShobieShy opens it. It ships as a later 0.x minor. 1.0 waits on his explicit release cut.
+
+## After the Core
+
+Not 0.8.0, and not 1.0. When the Core is cleared, the Breach Labyrinth becomes an endless run, and each future DLC labyrinth does the same after its own story. Both the Core and that run are later 0.x content, numbered when ShobieShy opens them. The boundary and the working title are in [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md) under Post-Core. This roadmap does not build that mode, and it does not cut 1.0.
 
 ## Out of scope
 

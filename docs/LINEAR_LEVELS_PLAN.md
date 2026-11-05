@@ -24,7 +24,7 @@ its open-region map is not the world we are building.
 | Co-op | The party shares one level. The host changes level after a gate vote. A joiner loads the host's level and Labyrinth floor. | scripts/net/*, scripts/world/level_gate.gd |
 | Tests | Closed-level flow tests run in the full tier. The fast tier's core list includes `test_flow`, `test_level`, `test_linear_flow`, `test_linear_migration`, and `test_gate_vote`. | docs/TEST_TIERS.md, tests/run_tests.gd |
 
-## 2. Campaign (through 1.0)
+## 2. Campaign (through the Core)
 
 Closed levels, one scene each, joined by exit gates and a loading screen. Forward
 progress is gated by story flags. Going back is allowed to the hub.
@@ -33,7 +33,7 @@ progress is gated by story flags. Going back is allowed to the hub.
 2. **Eldoria, Town Square** (`town_square`) is the hub. Vendors, stash, stations, quests. The Mage Association stays an interior of the hub.
 3. **The Landfill** (`midden`). Joe's camp, Bob's lead.
 4. **The Breach** (`breach`). Crater fight. The crater portal is the Labyrinth gate.
-5. **The Breach Labyrinth**, the 1.0 campaign: Act I Warrens (floors 1-4 and the Goblin King on 5, in the game), Act II The Blightcoil (one cavern, not five generated floors — see [PLAN_0.7.0_ACT2.md](PLAN_0.7.0_ACT2.md)), Act III The Slagworks, Act IV Sunken Ruins, Act V Inverted Spire, then **the Core**: Crazy Joe, then the Demon Lord, who escapes (1.0 ending, DLC hook). Acts III–V are five floors each, boss on floor 5. Act II is not. Outlines: [LABYRINTH_ACTS_STORY.md](LABYRINTH_ACTS_STORY.md).
+5. **The Breach Labyrinth**, the campaign on 0.x minors: Act I Warrens (floors 1-4 and the Goblin King on 5, in the game), Act II The Blightcoil (one cavern, not five generated floors — see [PLAN_0.7.0_ACT2.md](PLAN_0.7.0_ACT2.md)), Act III The Slagworks (five floors, checkpoints 9–13 — see [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md)), Act IV Sunken Ruins, Act V Inverted Spire, then **the Core**: Crazy Joe, then the Demon Lord, who escapes (main-campaign end, DLC hook). The Core is a later 0.x when ShobieShy opens it. 1.0 is a release cut he orders, not that milestone. Acts III–V are five floors each, boss on floor 5. Act II is not. Outlines: [LABYRINTH_ACTS_STORY.md](LABYRINTH_ACTS_STORY.md). Versions: [PLAN_NEXT.md](PLAN_NEXT.md).
 
 Each Act boss floor has a waystone. It returns the party to the hub, and the hub's Breach gate offers "descend to Act N". There are no overworld shortcut gates. DLC is new towns and dungeons as new closed level sets with their own hub entrance.
 
@@ -87,10 +87,10 @@ Full tier: `tools/run_tests.sh` (every unit test, smokes, solo, Labyrinth, co-op
 - **0.5.0** shipped: the open-world cut.
 - **0.6.0** shipped: the trust pass. ZoneStreamer stays. The minimap stays off the HUD. The map stays the text sheet. No mid-session join.
 - **0.7.0** (shipping): Labyrinth Act II, The Blightcoil, one walkable cavern (Sump, Canopy Ring, Crown) around the Rotheart. See [PLAN_0.7.0_ACT2.md](PLAN_0.7.0_ACT2.md). The Murmuring Elder name is retired.
-- **0.8.0**: Act III, The Slagworks. Act I outline polish can fold into this prep, or an optional 0.7.1. See [LABYRINTH_ACTS_STORY.md](LABYRINTH_ACTS_STORY.md) and [PLAN_NEXT.md](PLAN_NEXT.md).
+- **0.8.0**: Act III, The Slagworks, five floors at checkpoints 9–13. See [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md). Act I outline polish can fold into this prep, or an optional 0.7.1. Story: [LABYRINTH_ACTS_STORY.md](LABYRINTH_ACTS_STORY.md) and [PLAN_NEXT.md](PLAN_NEXT.md).
 - **0.9.0**: Act IV, The Sunken Ruins.
 - **0.10.0**: Act V, The Inverted Spire.
-- **1.0**: The Core. Joe, then the Demon Lord, who escapes. Main-campaign end. Core design stays closed until ShobieShy opens it.
+- **Later 0.x**: The Core, when ShobieShy opens it. Joe, then the Demon Lord, who escapes. Main-campaign end. An endless run after that clear is Post-Core in [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md). Neither is 1.0. 1.0 waits on his explicit release cut. See [PLAN_NEXT.md](PLAN_NEXT.md).
 
 ## 10. Decisions that still hold
 
