@@ -49,7 +49,7 @@ Batch 12 is in the repo (CC0, Ember Art). The ramp mesh rises 12 m over a 22 m r
 | Spore pod | assets/original/ember_art/blightcoil/spore_pod.glb | dressing pod, metres, Y-up |
 | Trunk column | assets/original/ember_art/blightcoil/trunk_column.glb | Rotheart column, radius 4 m, Y-up |
 | Torn cocoon | assets/original/ember_art/blightcoil/torn_cocoon.glb | empty shell torn from the inside, metres, Y-up |
-| Forge door | assets/original/ember_art/blightcoil/forge_door.glb | Drowned Forge door stub, metres, Y-up |
+| Forge door | assets/original/ember_art/blightcoil/forge_door.glb | Slagworks door stub, metres, Y-up |
 | Ritual-mark decal | assets/original/ember_art/blightcoil/ritual_mark_decal.png | Joe's bark mark, metres, Y-up |
 | Verdant Mother | assets/original/ember_art/blightcoil/verdant_mother.glb | dryad on the Canopy pad, metres, Y-up |
 | Spore-cap husk | assets/original/ember_art/enemies/spore_cap_husk.glb | fragile rusher, metres, Y-up |

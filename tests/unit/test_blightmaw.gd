@@ -1,5 +1,5 @@
 extends TestCase
-## U6: three phases, no regen, no lock, the Forge door does not travel.
+## U6: three phases, no regen, no lock, the Slagworks door does not travel.
 
 
 func _boss() -> Blightmaw:

@@ -1,7 +1,7 @@
 # The Labyrinth
 
 Status: APPROVED 2026-10-27 ~01:48 CDT (all 12 recommended defaults in section 13).
-Act I (the Warrens) is in the game. Acts II-V and the Core are the remaining campaign.
+Act I (the Warrens) and Act II (The Blightcoil) are in the game. Acts III–V and the Core are the remaining campaign. Story outlines are in [LABYRINTH_ACTS_STORY.md](LABYRINTH_ACTS_STORY.md).
 The level order and the entrance are the closed-level plan in [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md).
 The seamless-world plan this used to sit beside is in [archive/OPEN_WORLD_PLAN.md](archive/OPEN_WORLD_PLAN.md).
 
@@ -21,7 +21,7 @@ The Storyline (`Magewar Storyline.md`) supplies the flavour the five should adap
 |---|---|
 | Willowbrook goblin raids, "hidden dungeon entrance" | Act I theme: Goblin Warrens |
 | Whispering Woods (murmuring trees, ambushes) | Act II: Overgrown Deep |
-| Ironforge mines, trolls, rare ores | Act III: Drowned Forge / mines |
+| Ironforge mines, trolls, rare ores | Act III: The Slagworks / mines |
 | Crimson Sea underwater ruins | Act IV: Sunken Ruins |
 | Shattered Peaks aerial dungeons | Act V: Inverted Spire (floating, falling floors) |
 | "Dungeon Fracture" / elder god in the core; Demon Lord's lair, Crazy Joe then Demon Lord | The Core: final floors and the two-stage finale |
@@ -56,7 +56,7 @@ the EmberArt pipeline (10 sets per region already exist; Acts add 5 more):
 |---|---|---|---|
 | I | Goblin Warrens: packed earth, timber, torchlight | traps, ambush rooms | goblins, gnawer packs |
 | II | Overgrown Deep: roots, moss, glowing fungi | vines that grab, poison spores | treants, spore beasts |
-| III | Drowned Forge: rails, lava channels, ore veins | heat zones, mine carts | trolls, constructs |
+| III | The Slagworks: rails, lava channels, ore veins | heat zones, mine carts | trolls, constructs |
 | IV | Sunken Ruins: flooded halls, coral, air pockets | rising water, breath (reuses the Breath meter) | sea horrors, cultists |
 | V | Inverted Spire: floating platforms, wind | falls, wind push | harpies, storm elementals |
 | Core | Fracture: crystal, void, fused bits of every Act | phase shifts | mixed elites |
@@ -138,7 +138,7 @@ Act I shipped with the closed levels. The remaining rows are the rest of the cam
 | L5 | Perf pass and playtests (1x / 4x / co-op through Act I) -> 0.3.0 | 2 days |
 | L6+ | Acts II-V and the Core, about 4-5 days each | 25 days |
 
-Act I alone is a releasable slice (0.3.0); later Acts ship as 0.4.0+. DLC labyrinths would
+Act I shipped. Later acts follow [PLAN_NEXT.md](PLAN_NEXT.md): 0.7.0 is Act II, then one act per minor through 0.10.0, and 1.0 is the Core. DLC labyrinths would
 reuse L1-L2 unchanged.
 
 ## 13. Open questions (recommended defaults)
@@ -147,9 +147,9 @@ reuse L1-L2 unchanged.
 2. Floor count: 5 Acts x 5 floors + a 2-3 floor Core? Default: yes (about 27 floors).
 3. Hybrid generation (handmade boss/Core floors, generated normal floors)? Default: yes.
 4. Fixed seed per save (floors persist) plus an optional remix for farming? Default: yes.
-5. Act themes from the Storyline (Warrens, Deep, Forge, Ruins, Spire)? Default: yes.
+5. Act themes from the Storyline (Warrens, Deep, Slagworks, Ruins, Spire)? Default: yes.
 6. Keep the Bible's finale (Crazy Joe, then the Demon Lord) in the Core? Default: yes.
-7. Overworld shortcut gates per Act, opened from below only? That default is stale. Closed levels have no shortcut gates, and Act II does not add one. The Drowned Forge door does not travel.
+7. Overworld shortcut gates per Act, opened from below only? That default is stale. Closed levels have no shortcut gates, and Act II does not add one. The Slagworks door does not travel.
 8. Death: respawn at the last rest room, keep floor progress? Default: yes.
 9. Co-op: whole party on one floor, exit vote of 10 s? Default: yes.
 10. Do the overworld regions unlock in step with the Acts? Default: yes, via quest hints only, no hard locks.
