@@ -301,6 +301,7 @@ func _in_reach(dist: float, feet: Vector3) -> bool:
 
 ## Overridden by the Heap (a wind-up); the Gnawer bites at once.
 func _start_attack(feet: Vector3) -> void:
+	_play_clip("Attack")
 	_bite(feet)
 
 

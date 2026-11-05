@@ -39,7 +39,7 @@ credited in game; textures can be CC0 ambientCG/Poly Haven sets credited in CRED
 
 ## Labyrinth Act II: The Blightcoil (0.7.0)
 
-Greybox until these land. Original work, CC0 or CC-BY, credited in game. No files are in the repo yet. The ramp is a 12 m rise over at least 20 m of run, with 3 m of clearance under the next slab. Music is later: the cue slots stay silent (or the level keeps its existing ambience) until a file exists.
+Batch 12 is in the repo (CC0, Ember Art). The ramp mesh rises 12 m over a 22 m run. Music cue slots stay silent until a file exists.
 
 | Slot | Path | Spec |
 |---|---|---|

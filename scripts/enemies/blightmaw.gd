@@ -53,6 +53,7 @@ func think(dt: float) -> void:
 		if _spore_left <= 0.0:
 			_spore_left = SPORE_PERIOD
 			spores_fired += 1
+			_play_clip("SporeSpray")
 			spore_fired.emit(self)
 		if phase >= 1 and _husk_left <= 0.0 and husks_called < 3:
 			_husk_left = HUSK_PERIOD
@@ -77,12 +78,28 @@ func sync_phase() -> void:
 		want = 3
 	elif fraction <= PHASE_2_AT:
 		want = 2
-	if want <= phase:
+	if want > phase:
+		phase = want
+		if phase == 3:
+			_open_weak_point()
+		phase_changed.emit(self, phase)
+	_apply_phase_meshes()
+
+
+func _enter_tree() -> void:
+	_apply_phase_meshes()
+
+
+## Phase2_Spines from phase 2. Phase3_Heart from phase 3. Both start hidden.
+func _apply_phase_meshes() -> void:
+	if model == null:
 		return
-	phase = want
-	if phase == 3:
-		_open_weak_point()
-	phase_changed.emit(self, phase)
+	for n in model.find_children("*", "Node3D", true, false):
+		var nm := String(n.name)
+		if nm.contains("Phase2_Spines"):
+			(n as Node3D).visible = phase >= 2
+		elif nm.contains("Phase3_Heart"):
+			(n as Node3D).visible = phase >= 3
 
 
 func _open_weak_point() -> void:

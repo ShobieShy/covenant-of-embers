@@ -323,3 +323,23 @@ license = "CC0-1.0"
 license_url = "https://docs.ambientcg.com/license/"
 date_added = "2026-10-27"
 use = "Terrain3D texture sets (albedo+height, normal+roughness, 1024 px): Textures based on ambientCG.com (CC0)"
+
+[[asset]]
+name = "Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine)"
+path = "assets/original/ember_art/blightcoil"
+author = "Ember Art"
+source = "batch_12_act2_blightcoil (original work, Blender 4.5 + PIL)"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-05"
+use = "Labyrinth Act II cavern dressing: moss wall, root-bridge ramp, mire, spore pod, Rotheart trunk, torn cocoon, Drowned Forge door, Joe's ritual-mark decal, Verdant Mother, grabbing vine"
+
+[[asset]]
+name = "Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch)"
+path = "assets/original/ember_art/enemies"
+author = "Ember Art"
+source = "batch_12_act2_blightcoil (original work, Blender 4.5)"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-05"
+use = "Labyrinth Act II creatures: spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch"

@@ -51,6 +51,7 @@ func winding_up() -> bool:
 
 
 func _start_attack(feet: Vector3) -> void:
+	_play_clip("Attack")
 	if rusher.attack_windup <= 0.0:
 		_bite(feet)
 		return

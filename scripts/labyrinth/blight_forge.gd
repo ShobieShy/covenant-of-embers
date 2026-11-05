@@ -30,6 +30,11 @@ func _ready() -> void:
 	var solid := StaticBody3D.new()
 	solid.add_child(shape)
 	add_child(solid)
+	var art := BlightcoilKit.visual("forge_door")
+	if art:
+		body.visible = false
+		art.name = "ForgeArt"
+		add_child(art)
 
 
 func line() -> String:

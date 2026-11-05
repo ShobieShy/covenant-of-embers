@@ -18,6 +18,19 @@ static func make_mark(id: String, story: StoryFlags) -> BlightMark:
 	return m
 
 
+func _ready() -> void:
+	super._ready()
+	var tex := BlightcoilKit.texture("ritual_mark_decal")
+	if tex == null:
+		return
+	var d := Decal.new()
+	d.name = "RitualMark"
+	d.texture_albedo = tex
+	d.size = Vector3(1.2, 0.8, 1.2)
+	d.position.y = 0.35
+	add_child(d)
+
+
 func collect(p: Player) -> void:
 	if flags != null and flag_id != "":
 		flags.set_flag("mark:" + flag_id)

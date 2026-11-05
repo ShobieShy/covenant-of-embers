@@ -11,6 +11,7 @@ func _boss() -> Blightmaw:
 
 func test_phases_do_not_rewind_or_regen() -> void:
 	var b := _boss()
+	runner_tree.root.add_child(b)
 	check(b.phase == 1, "full health is phase 1")
 	b.health = b.max_health() * 0.50
 	b.sync_phase()
@@ -37,6 +38,24 @@ func test_phases_do_not_rewind_or_regen() -> void:
 	var phase := b.phase
 	b.think(1.0)
 	check(b.phase == phase and b.ticks == 0 or b.drives_brain == false, "a client does not run the brain")
+	b.free()
+
+
+func test_phase_meshes_follow_the_phase() -> void:
+	var b := _boss()
+	runner_tree.root.add_child(b)
+	await runner_tree.process_frame
+	var spines := b.model.find_child("Phase2_Spines", true, false) as Node3D
+	var heart := b.model.find_child("Phase3_Heart", true, false) as Node3D
+	check(spines != null and heart != null, "phase meshes on the rig")
+	check(spines != null and not spines.visible, "spines hidden in phase 1")
+	check(heart != null and not heart.visible, "heart hidden in phase 1")
+	b.health = b.max_health() * 0.5
+	b.sync_phase()
+	check(b.phase == 2 and spines.visible and not heart.visible, "phase 2 shows the spines")
+	b.health = b.max_health() * 0.2
+	b.sync_phase()
+	check(b.phase == 3 and heart.visible, "phase 3 shows the heart")
 	b.free()
 
 

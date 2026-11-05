@@ -155,6 +155,11 @@ func setup(d: EnemyDef) -> void:
 
 
 ## Step 121: swap the greybox mesh for the batch_04 model; tints go to an overlay.
+func _play_clip(clip: String) -> void:
+	if model:
+		model.play_once(clip)
+
+
 func _attach_model() -> void:
 	model = EnemyModels.make(def.id, def.size.y)
 	if model == null:

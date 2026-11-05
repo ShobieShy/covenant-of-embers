@@ -67,6 +67,7 @@ func _build(state: LabyrinthState) -> void:
 	add_child(hazard)
 	if state and state.bosses.has(BOSS):
 		note_boss_dead()
+	_dress_art()
 
 
 func ensure_nav() -> void:
@@ -217,6 +218,7 @@ func spawn_crown_vines() -> void:
 	for off in [Vector3(3.2, 1.0, 0), Vector3(-2.4, 1.0, 2.2), Vector3(0, 1.0, -3.0)]:
 		# _volume parents the box to the cavern. A second add_child is an error.
 		_volume("vine", pad + off, Vector3(1.4, 2.2, 1.4), Color(0.2, 0.45, 0.18))
+	_dress_vines()
 
 
 func _physics_process(_dt: float) -> void:
@@ -381,8 +383,13 @@ func _props(state: LabyrinthState) -> void:
 	mother.set_meta(&"speaker", "Verdant Mother")
 	add_child(mother)
 	cocoon = _prop_box(
-		"Cocoon", pad_local(8) + Vector3(-2.2, 0.8, 1.4), Vector3(1.8, 1.6, 1.4), Color(0.55, 0.5, 0.32)
+		"Cocoon", pad_local(8) + Vector3(-2.2, 0, 1.4), Vector3(1.8, 1.6, 1.4), Color(0.55, 0.5, 0.32)
 	)
+	var shell := BlightcoilKit.visual("torn_cocoon")
+	if shell:
+		cocoon.mesh = null
+		shell.name = "TornCocoon"
+		cocoon.add_child(shell)
 	cocoon.visible = state != null and state.bosses.has(BOSS)
 	forge = BlightForge.new()
 	forge.name = "ForgeDoor"
@@ -771,6 +778,114 @@ func _write_cache(nm: NavigationMesh, hashed: String) -> void:
 func _v3(v: Variant) -> Vector3:
 	var a: Array = v
 	return Vector3(float(a[0]), float(a[1]), float(a[2]))
+
+
+func _dress_art() -> void:
+	_dress_trunk()
+	_dress_ramps()
+	_dress_walls()
+	_dress_pods()
+	_dress_mires()
+	_dress_vines()
+
+
+func _dress_trunk() -> void:
+	var art := BlightcoilKit.visual("trunk_column")
+	if art == null:
+		return
+	var trunk := get_node_or_null("Trunk")
+	if trunk:
+		for c in trunk.get_children():
+			if c is MeshInstance3D:
+				(c as MeshInstance3D).visible = false
+	art.name = "TrunkArt"
+	add_child(art)
+
+
+func _dress_ramps() -> void:
+	var walk := get_node_or_null("Walk")
+	for ramp in doc["ramp"]:
+		var art := BlightcoilKit.visual("root_bridge_ramp")
+		if art == null:
+			return
+		var fr := _v3(ramp["fr"])
+		var to := _v3(ramp["to"])
+		var flat := Vector3(to.x - fr.x, 0.0, to.z - fr.z)
+		var run := flat.length()
+		if run < 0.1:
+			art.free()
+			continue
+		# The deck's high end is at the node origin, y = 12. The low end is 22 m
+		# along local -Z, at y = 0. Point that -Z from the top landing back to fr.
+		art.name = "RampArt_" + String(ramp["id"])
+		art.position = Vector3(to.x, fr.y, to.z)
+		var down := fr - to
+		art.rotation.y = atan2(-down.x, -down.z)
+		art.scale = Vector3(1.0, 1.0, run / 22.0)
+		add_child(art)
+		if walk:
+			var slope := walk.get_node_or_null("Slope_" + String(ramp["id"]))
+			if slope:
+				for c in slope.get_children():
+					if c is MeshInstance3D:
+						(c as MeshInstance3D).visible = false
+			var lip := walk.get_node_or_null("Land_" + String(ramp["id"]))
+			if lip:
+				for c in lip.get_children():
+					if c is MeshInstance3D:
+						(c as MeshInstance3D).visible = false
+
+
+func _dress_walls() -> void:
+	var cavern: Dictionary = doc["cavern"]
+	var radius := float(cavern.get("outer_radius", 22.0)) + 6.0
+	var count := 12
+	for tier_y in [0.0, 12.0, 24.0]:
+		for i in count:
+			var art := BlightcoilKit.visual("moss_wall")
+			if art == null:
+				return
+			var a := TAU * float(i) / float(count)
+			art.name = "MossWall_%d_%d" % [int(tier_y), i]
+			art.position = Vector3(sin(a) * radius, tier_y, cos(a) * radius)
+			art.rotation.y = a
+			add_child(art)
+
+
+func _dress_pods() -> void:
+	for pocket in doc.get("pocket", []):
+		var art := BlightcoilKit.visual("spore_pod")
+		if art == null:
+			return
+		var at: Array = pocket["at"]
+		art.name = "SporePod_" + String(pocket["id"])
+		art.position = Vector3(float(at[0]) + 1.2, float(at[1]), float(at[2]))
+		add_child(art)
+
+
+func _dress_mires() -> void:
+	_dress_kind("mire", "mire_surface", 4.0)
+
+
+func _dress_vines() -> void:
+	_dress_kind("vine", "grabbing_vine", 2.0)
+
+
+func _dress_kind(kind: String, slot: String, module_m: float) -> void:
+	for n in get_children():
+		if String(n.get_meta(&"kind", "")) != kind or n.get_node_or_null("Art"):
+			continue
+		var art := BlightcoilKit.visual(slot)
+		if art == null:
+			return
+		for c in n.get_children():
+			if c is MeshInstance3D:
+				(c as MeshInstance3D).visible = false
+		art.name = "Art"
+		(n as Node3D).add_child(art)
+		var sz: Vector3 = n.get_meta(&"size", Vector3(module_m, 1.0, module_m))
+		if module_m > 0.1:
+			art.scale = Vector3(sz.x / module_m, 1.0, sz.z / module_m)
 
 
 func _color(id: String) -> Color:
