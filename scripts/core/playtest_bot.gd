@@ -89,6 +89,8 @@ func setup(m: Node, p: Player) -> void:
 		stage = "intro"  # step 118: a new game plays the prologue first
 	if act2_run() and not Coop.is_client() and stage == "midden_walk":
 		stage = "act2_to_breach"
+	if act3_run() and not Coop.is_client() and stage == "midden_walk":
+		stage = "act3_to_breach"
 	if not Coop.is_client() and stage != "intro":
 		next_brand()
 	note("start %s in %s" % [stage, m.call(&"here_id")])
@@ -619,7 +621,7 @@ func _physics_process(delta: float) -> void:
 	stats["casts"] = maxi(
 		stats["casts"], player.loadout.casters[0].casts + player.loadout.casters[1].casts
 	)
-	var limit := SIM_LIMIT + (LAB_LIMIT if labyrinth_run() or act2_run() else 0.0)
+	var limit := SIM_LIMIT + (LAB_LIMIT if labyrinth_run() or act2_run() or act3_run() else 0.0)
 	if total_time > limit:
 		_finish(false, "run over %.0f s in stage %s" % [limit, stage])
 		return
@@ -741,6 +743,8 @@ func _physics_process(delta: float) -> void:
 			_lab_tick()
 		"act2_to_breach", "act2_gate", "act2_climb", "act2_crown", "act2_fight", "act2_home":
 			_act2_tick()
+		"act3_to_breach", "act3_gate", "act3_floors", "act3_home":
+			_act3_tick()
 		"breach_chest":
 			var c: VaultChest = main.breach.chest
 			if not _reach(c) and t < 60.0 * _walk_scale():
@@ -781,6 +785,15 @@ static func labyrinth_run() -> bool:
 
 static func act2_run() -> bool:
 	return OS.get_cmdline_user_args().has("--act2")
+
+
+static func act3_run() -> bool:
+	return OS.get_cmdline_user_args().has("--act3")
+
+
+static var _act3_pads := {}
+static var _act3_floor_at := -1
+static var _act3_floor_t := 0.0
 
 
 var _lab_n := 0
@@ -969,6 +982,86 @@ func _lab_tick() -> void:
 	# 0.3.1 P2: the stairs take a 0.5 s Interact hold; hold it once standing on them.
 	var on := flat_distance(down.global_position) < LabyrinthStairs.RADIUS
 	walk_to(down.global_position, ["interact"] if on else [])
+
+
+func _act3_tick() -> void:
+	var lab: LabyrinthState = main.get("labyrinth")
+	if stage == "act3_to_breach":
+		if not lab.bosses.has("goblin_king"):
+			lab.defeat_boss("goblin_king")
+		if not lab.bosses.has(LabGate.BOSS):
+			lab.defeat_boss(LabGate.BOSS)
+		lab.current = 0
+		if str(main.call("here_id")) != "breach":
+			note("act3: both bosses are dead, skipping the crater walk")
+			main.call("travel", "breach")
+			_done = true
+			return
+		_goto("act3_gate")
+		return
+	if stage == "act3_gate":
+		var inn := _interiors()
+		if inn and inn.slag:
+			note("act3: on checkpoint %d" % inn.floor_no)
+			_act3_pads[inn.floor_no] = true
+			_goto("act3_floors")
+			return
+		if main.get_node_or_null("ActPicker"):
+			note("act3: choosing the Railhead")
+			main.call("pick_act", SlagworksFloor.FIRST)
+			return
+		if t > 0.5:
+			note("act3: crater workaround, taking the gate")
+			main.call("travel", "labyrinth")
+		return
+	if stage == "act3_floors":
+		var inn2 := _interiors()
+		if inn2 == null or inn2.slag == null:
+			if inn2 and inn2.busy:
+				return
+			if t > 30.0:
+				_finish(false, "act3 left the mines at %s" % player.global_position)
+			return
+		_act3_pads[inn2.floor_no] = true
+		player.health.value = player.health.max_value()
+		if inn2.floor_no >= 13:
+			if not lab.bosses.has("forgemaw"):
+				lab.defeat_boss("forgemaw")
+				inn2.slag.note_boss_dead()
+				note("act3: Forgemaw falls")
+			_goto("act3_home")
+			return
+		var down := inn2.slag.get_node_or_null("StairsDown") as Node3D
+		if down == null:
+			_finish(false, "act3 floor %d has no stairs at %s" % [inn2.floor_no, player.global_position])
+			return
+		if inn2.floor_no != _act3_floor_at:
+			_act3_floor_at = inn2.floor_no
+			_act3_floor_t = 0.0
+		_act3_floor_t += get_physics_process_delta_time()
+		if _act3_floor_t > 6.0:
+			note("act3 unstick floor %d at %s toward %s" % [inn2.floor_no, player.global_position, down.global_position])
+			player.global_position = down.global_position + Vector3(0, 0.6, 0)
+			_act3_floor_t = 0.0
+		walk_to(down.global_position, ["interact"] if flat_distance(down.global_position) < LabyrinthStairs.RADIUS + 0.4 else [])
+		if t > 160.0:
+			_finish(false, "act3 stuck on floor %d at %s next %s" % [inn2.floor_no, player.global_position, down.global_position])
+		return
+	if stage == "act3_home":
+		if not (_act3_pads.has(9) and _act3_pads.has(10) and _act3_pads.has(11) and _act3_pads.has(12) and _act3_pads.has(13)):
+			_finish(false, "act3 missed a pad %s" % _act3_pads)
+			return
+		if str(main.call("here_id")) != "town_square":
+			note("act3: waystone home keeps the crucible")
+			main.call("travel", "town_square", "town_gate")
+			_done = true
+			return
+		var saved: LabyrinthState = LabyrinthState.from_save(SaveGame.read(GameFlow.save_path)["data"])
+		if saved.current != 13 or not saved.bosses.has("forgemaw"):
+			_finish(false, "act3 home current %d bosses %s" % [saved.current, saved.bosses])
+			return
+		note("act3: pads %s current %d" % [_act3_pads, saved.current])
+		_finish(true)
 
 
 func _act2_tick() -> void:

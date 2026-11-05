@@ -388,6 +388,13 @@ func _enter_cavern(id: String, n: int) -> Vector3:
 
 ## The opened Crown door. A joiner's press does nothing; the host's waits on the
 ## stair vote when one is wired, then loads checkpoint 9. Solo play does not wait.
+func _on_slag_lift() -> void:
+	if labyrinth:
+		labyrinth.current = SlagworksFloor.FIRST
+	_swap_to(SlagworksFloor.FIRST, false)
+	rested.emit(Vector3.ZERO)
+
+
 func _on_forge_descend(_n: int) -> void:
 	if follow_only or cavern == null or current != "labyrinth":
 		return
@@ -430,6 +437,8 @@ func _enter_slag(id: String, n: int) -> Vector3:
 	interior.position = Vector3(0, DEPTH, 0)
 	add_child(interior)
 	slag.ensure_nav()
+	if not slag.lift_home.is_connected(_on_slag_lift):
+		slag.lift_home.connect(_on_slag_lift)
 	var ps := party()
 	for c in slag.find_children("*", "LabyrinthStairs", true, false):
 		(c as LabyrinthStairs).used.connect(_on_stairs, CONNECT_DEFERRED)

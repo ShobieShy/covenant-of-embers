@@ -203,3 +203,19 @@ forbids = ["boss:blightmaw_matriarch"]
 sets = ["verdant_met"]
 lines = ["I am bound to the Rotheart. The infection is climbing.", "Burn it out before it climbs higher into the Labyrinth."]
 repeats = ["Burn it out before it climbs higher."]
+
+# Act III. Post-boss is first so it wins once Forgemaw is in the boss list.
+[[dialogue]]
+id = "scrap_after"
+speaker = "Scrap-spirit"
+requires = ["boss:forgemaw"]
+lines = ["The lift is open. The cooling slag holds an empty human shape.", "The way further down cannot be taken yet."]
+repeats = ["The way further down cannot be taken yet."]
+
+[[dialogue]]
+id = "scrap_intro"
+speaker = "Scrap-spirit"
+forbids = ["boss:forgemaw"]
+sets = ["scrap_met"]
+lines = ["Joe flooded the shafts with Breach-fire. The furnaces never cooled.", "Forgemaw is the troll who kept them lit. You are uninvited ore."]
+repeats = ["Forgemaw kept the fires lit. You are uninvited ore."]

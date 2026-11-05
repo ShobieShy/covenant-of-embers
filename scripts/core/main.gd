@@ -694,6 +694,10 @@ func _on_lab_kill(_e: Enemy, _el: ElementTable.Element, fl: Node3D, elite: Strin
 		elif fl is LabyrinthFloor and is_instance_valid(fl):
 			_lab_boss_chest(fl, _e, first)
 			_lab_waystone(fl)
+		elif fl is SlagworksFloor and is_instance_valid(fl):
+			(fl as SlagworksFloor).note_boss_dead()
+			if first:
+				_lab_boss_chest(fl, _e, first)
 		print("[labyrinth] %s defeated" % boss)
 
 
@@ -932,6 +936,8 @@ func _enter_slag_runtime(fl: SlagworksFloor, player: Player) -> void:
 		quests.known_bosses = labyrinth.bosses
 	if not fl.pad_reached.is_connected(_on_blight_pad):
 		fl.pad_reached.connect(_on_blight_pad)
+	fl.place_story(story_flags)
+	_wire_spirit(fl, player)
 	if player:
 		player.spawn_feet = fl.pad_global()
 		if fl.on_pad(player.global_position):
@@ -957,6 +963,20 @@ func _enter_cavern_runtime(cav: BlightcoilCavern, player: Player) -> void:
 	if labyrinth.bosses.has(LabGate.BOSS):
 		cav.note_boss_dead()
 		_free_matriarch()
+
+
+func _wire_spirit(fl: SlagworksFloor, player: Player) -> void:
+	if fl.floor_no != 11 or get_node_or_null("Npc_ScrapSpirit"):
+		return
+	var mark := fl.get_node_or_null("ScrapSpirit") as Node3D
+	if mark == null:
+		return
+	_ensure_dialogue()
+	var n := Npc.new("Scrap-spirit")
+	n.name = "Npc_ScrapSpirit"
+	n.player = player
+	add_child(n)
+	n.global_position = mark.global_position
 
 
 func _wire_mother(cav: BlightcoilCavern, player: Player) -> void:

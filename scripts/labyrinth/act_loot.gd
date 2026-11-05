@@ -36,6 +36,17 @@ const ACTS := {
 		"boss_first": "unique",
 		"boss_repeat": "rare",
 	},
+	3:
+	{
+		"name": "The Slagworks",
+		"floors": [9, 13],
+		"levels": [24, 26, 28, 30, 34],
+		"chests": ["basic", "basic", "uncommon", "uncommon", "rare"],
+		"element": ElementTable.Element.FIRE,
+		"luck": 0.10,
+		"boss_first": "unique",
+		"boss_repeat": "rare",
+	},
 }
 
 

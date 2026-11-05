@@ -76,9 +76,9 @@ func test_shipped_pools() -> void:
 	check(
 		(
 			dt.pools.map(func(p): return p.id)
-			== ["midden_gnawer", "midden_heap", "act1_goblins", "act1_goblin_king", "act2_blight", "act2_matriarch"]
+			== ["midden_gnawer", "midden_heap", "act1_goblins", "act1_goblin_king", "act2_blight", "act2_matriarch", "act3_slag", "act3_forgemaw"]
 		),
-		"Midden, Act I, and Act II pools"
+		"Midden, Act I, Act II, and Act III pools"
 	)
 	var et := EnemyTable.load_default()
 	var gn := et.find("gnawer")

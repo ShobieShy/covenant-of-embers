@@ -15,7 +15,8 @@ class StubMain:
 
 func test_floor_bands() -> void:
 	check(ActLoot.act_of(1) == 1, "floor 1 is Act I")
-	check(ActLoot.act_of(9) == 0, "floor 9 has no Act yet")
+	check(ActLoot.act_of(9) == 3, "floor 9 is Act III")
+	check(ActLoot.act_of(14) == 0, "floor 14 has no Act yet")
 	check(ActLoot.item_level(1) == 5, "floor 1 level 5")
 	check(ActLoot.item_level(5) == 12, "King floor level 12")
 	check(ActLoot.item_level(4) > ActLoot.item_level(2), "levels rise with depth")

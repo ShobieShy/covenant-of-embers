@@ -115,6 +115,7 @@ var attacks: Array[Bite] = []
 var nav: NavigationAgent3D
 var _vy := 0.0
 var cavern_sense := false  ## Act II: 3D distance, not the flat Warrens check
+var path_cap := -1.0  ## Act III: horizontal sense, drop the chase past this path length
 var path_length_override := -1.0  ## tests: the nav path length, in metres
 var home_pad := Vector3.ZERO
 var has_home := false
@@ -231,7 +232,12 @@ func think(dt: float) -> void:
 	var to := _flat(delta)
 	s.distance = delta.length() if cavern_sense else to.length()
 	distance = s.distance
-	s.leashed = cavern_sense and _chase_path() > CAVERN_CHASE_M
+	var cap := -1.0
+	if cavern_sense:
+		cap = CAVERN_CHASE_M
+	elif path_cap >= 0.0:
+		cap = path_cap
+	s.leashed = cap >= 0.0 and _chase_path() > cap
 	s.line_of_sight = s.target_valid and s.distance <= rusher.detect_range and sees(_target_eye())
 	s.provoked = provoked
 	s.hunting = hunt_left > 0.0

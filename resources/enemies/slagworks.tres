@@ -1,0 +1,96 @@
+[gd_resource type="Resource" script_class="EnemyTable" format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_def.gd" id="1_i0sqk"]
+[ext_resource type="Script" path="res://scripts/enemies/enemy_table.gd" id="2_0y1kn"]
+
+[sub_resource type="Resource" id="Resource_nn0s7"]
+script = ExtResource("1_i0sqk")
+id = "branded_troll"
+display_name = "Branded Troll"
+affinity = 1
+max_health = 160.0
+level = 24
+xp_reward = 32
+gold_drop = 14
+size = Vector3(1.1, 2.2, 1.1)
+color = Color(0.55, 0.28, 0.16, 1)
+has_weak_point = true
+weak_point_offset = Vector3(0, 1.8, -0.15)
+weak_point_size = Vector3(0.36, 0.3, 0.3)
+ai = {
+"aggro_range": 9.0,
+"attack_cooldown": 1.3,
+"attack_damage": 12.0,
+"attack_range": 1.6,
+"detect_range": 12.0,
+"kind": "rusher",
+"knockback_strength": 10.0,
+"knockback_threshold": 24.0,
+"knockback_time": 0.3,
+"sprint_speed": 4.2,
+"walk_speed": 2.2
+}
+
+[sub_resource type="Resource" id="Resource_v05rl"]
+script = ExtResource("1_i0sqk")
+id = "forge_construct"
+display_name = "Forge Construct"
+affinity = 1
+max_health = 420.0
+level = 28
+xp_reward = 55
+gold_drop = 22
+size = Vector3(1.6, 2.4, 1.6)
+color = Color(0.45, 0.22, 0.12, 1)
+has_weak_point = true
+weak_point_offset = Vector3(0, 2, -0.25)
+weak_point_size = Vector3(0.42, 0.36, 0.36)
+ai = {
+"aggro_range": 10.0,
+"attack_cooldown": 2.1,
+"attack_damage": 16.0,
+"attack_range": 2.2,
+"attack_windup": 0.6,
+"detect_range": 14.0,
+"kind": "tank",
+"knockback_strength": 12.0,
+"knockback_threshold": 48.0,
+"knockback_time": 0.25,
+"sprint_speed": 2.2,
+"turn_rate_deg": 110.0,
+"walk_speed": 1.4
+}
+
+[sub_resource type="Resource" id="Resource_1cdsl"]
+script = ExtResource("1_i0sqk")
+id = "forgemaw"
+display_name = "Forgemaw"
+affinity = 1
+max_health = 1600.0
+level = 34
+xp_reward = 280
+gold_drop = 90
+size = Vector3(2.4, 3.2, 2.4)
+color = Color(0.62, 0.24, 0.1, 1)
+has_weak_point = true
+weak_point_offset = Vector3(0, 2.4, -0.4)
+weak_point_size = Vector3(0.5, 0.42, 0.42)
+ai = {
+"aggro_range": 14.0,
+"attack_cooldown": 1.8,
+"attack_damage": 18.0,
+"attack_range": 2.6,
+"attack_windup": 0.55,
+"detect_range": 18.0,
+"kind": "forgemaw",
+"knockback_strength": 14.0,
+"knockback_threshold": 80.0,
+"knockback_time": 0.25,
+"sprint_speed": 2.8,
+"turn_rate_deg": 100.0,
+"walk_speed": 1.6
+}
+
+[resource]
+script = ExtResource("2_0y1kn")
+defs = Array[ExtResource("1_i0sqk")]([SubResource("Resource_nn0s7"), SubResource("Resource_v05rl"), SubResource("Resource_1cdsl")])

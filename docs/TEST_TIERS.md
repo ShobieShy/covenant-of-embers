@@ -33,6 +33,7 @@ To run just those flow tests:
   follows the host through doors exits 0, and a short session (`COE_PLAYTEST_MAX_S`) exits 0.
 - The Labyrinth playtest's default timeout is 2400 s. Set `PLAYTEST_TIMEOUT` to change it.
 - The Act II leg is `PLAYTEST_ACT2=1 tools/playtest.sh` (King already dead, Sump pad, then the root-bridge ramps, then the Matriarch). It loads the cached cavern navmesh and does not rebake. `PLAYTEST_ACT2=1 tools/coop_playtest.sh` puts the host on the Crown pad and checks the joiner's height. The crater walk past z 86 stays skipped.
+- The Act III leg is `PLAYTEST_ACT3=1 tools/playtest.sh`. The King and the Matriarch are already dead. The bot takes the Railhead and crosses checkpoints 9–13. If a gantry walk stalls, it logs the position and the next stair, then unsticks. Forgemaw's death and a waystone trip home leave `current` at 13. The full tier runs this leg after Act II.
 - A run fails on any `ERROR`/`SCRIPT ERROR` log line, except the known Terrain3D res:// pair and the headless exit leaks below.
 - Headless Godot prints these at process exit after a green unit suite (counts vary). They are classified, not fixed: `Pages in use exist at exit in PagedAllocator` for `GeometryInstanceDummy`, `NavAgent3D`, `JoltShape3D`, `JoltBody3D`, dummy-renderer material/shader/mesh/instance RIDs, and `resources still in use at exit`. A `SCRIPT ERROR` still fails the run.
 - Headless runs skip UI animations (UiAnim is instant when DisplayServer is headless).

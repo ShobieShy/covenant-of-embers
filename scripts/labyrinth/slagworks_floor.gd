@@ -8,6 +8,7 @@ extends Node3D
 ## and is cached under scenes/levels/nav/slagworks/.
 
 signal pad_reached(checkpoint: int, waystone_id: String)
+signal lift_home
 
 const TOML := "res://data/labyrinth/slagworks.toml"
 const CACHE_DIR := "res://scenes/levels/nav/slagworks"
@@ -49,6 +50,7 @@ var floor_no := 9
 var waystone_id := ""
 var seed_value := 1
 var phase := 1
+var weak_open := false
 var layout := {}
 var rooms: Array[Node3D] = []
 var nav_bakes := 0
@@ -280,6 +282,7 @@ func _build_kit() -> void:
 		elif kind == "rest":
 			_pad(room.position)
 			_shrine(room.position + Vector3(2.4, 0, 0))
+		_place_pack(room, kind)
 
 
 func _build_crucible() -> void:
@@ -305,10 +308,11 @@ func _build_crucible() -> void:
 	var anvil := _anvil(arena, Vector3(0, 0, -1))
 	anvil.position = Vector3(0, 0, 0)
 	_stairs("StairsUp", LabyrinthStairs.UP, Vector3(-14, 0, -16))
+	_place_boss()
 	_shrine(Vector3(6, 0, -16))
-	_prop_area(arena, "MainLift", Vector3(8, 1.0, -16))
+	_slag_prop(arena, "MainLift", "lift", Vector3(8, 1.0, -16))
 	_slag_cast(arena)
-	_prop_area(arena, "SunkenDoor", Vector3(0, 1.0, 16.5))
+	_slag_prop(arena, "SunkenDoor", "sunken", Vector3(0, 1.0, 16.5))
 	var rail := Node3D.new()
 	rail.name = "RailProp"
 	rail.position = Vector3(-8, 0.4, 15)
@@ -460,6 +464,61 @@ func _anvil(parent: Node3D, face: Vector3) -> Node3D:
 	return a
 
 
+func _place_pack(room: Node3D, kind: String) -> void:
+	if kind == "normal":
+		for k in 2:
+			_spawn_marker("branded_troll", room.position + Vector3(-2.0 + k * 4.0, 0, 0), false, "")
+	elif kind == "elite":
+		_spawn_marker("forge_construct", room.position, false, String(room.name))
+
+
+func _place_boss() -> void:
+	if _state and _state.bosses.has(BOSS):
+		return
+	_spawn_marker(BOSS, Vector3(0, 0, 4), true, "")
+
+
+func _spawn_marker(id: String, at: Vector3, boss: bool, elite: String) -> void:
+	var root := get_node_or_null("EnemySpawns") as Node3D
+	if root == null:
+		return
+	var m := Marker3D.new()
+	m.name = "%s_%d" % [id, root.get_child_count()]
+	m.position = at
+	m.set_meta(&"enemy", id)
+	if boss:
+		m.set_meta(&"lab_boss", id)
+	if elite != "":
+		m.set_meta(&"lab_elite", elite)
+	root.add_child(m)
+
+
+func apply_phase(next: int) -> void:
+	if next < phase:
+		return
+	phase = next
+	for nm in ["GantryA", "GantryB", "GantryC"]:
+		var seg := find_child(nm, true, false) as StaticBody3D
+		if seg == null:
+			continue
+		var up := phase < 2 if nm == "GantryA" else phase < 3
+		seg.visible = up
+		seg.collision_layer = 1 if up else 0
+	if phase >= 3:
+		weak_open = true
+		for n in find_children("*", "Area3D", true, false):
+			if String(n.get_meta(&"kind", "")) != "lava" or not n.has_meta(&"wide_width"):
+				continue
+			var wide := float(n.get_meta(&"wide_width"))
+			var cs := n.get_node_or_null("CollisionShape3D") as CollisionShape3D
+			if cs and cs.shape is BoxShape3D:
+				var box := cs.shape as BoxShape3D
+				box.size.z = wide
+			var mesh := n.get_node_or_null("Greybox") as MeshInstance3D
+			if mesh and mesh.mesh is BoxMesh:
+				(mesh.mesh as BoxMesh).size.z = wide
+
+
 func _pad(at: Vector3) -> void:
 	_pad_at = at
 	var a := Area3D.new()
@@ -500,6 +559,65 @@ func _stairs(nm: String, dir: int, at: Vector3) -> void:
 	s.dir = dir
 	s.position = at
 	add_child(s)
+
+
+func _slag_prop(parent: Node3D, nm: String, role: String, at: Vector3) -> void:
+	var a := SlagProp.new()
+	a.name = nm
+	a.role = role
+	a.host = self
+	a.position = at
+	_solid(a, Vector3(0, 0, 0), Vector3(1.8, 2.4, 0.45), "Greybox", "boss", false)
+	parent.add_child(a)
+
+
+func prop_line(role: String) -> String:
+	var dead := _state != null and _state.bosses.has(BOSS)
+	if role == "lift":
+		return "The lift is locked." if not dead else "The lift is open."
+	if dead:
+		return "The way down has opened and cannot be taken yet."
+	return "The way down is still shut."
+
+
+func use_lift() -> bool:
+	if _state == null or not _state.bosses.has(BOSS):
+		return false
+	lift_home.emit()
+	return true
+
+
+func place_story(flags: StoryFlags) -> void:
+	if floor_no == 11 and get_node_or_null("ScrapSpirit") == null:
+		var spirit := Marker3D.new()
+		spirit.name = "ScrapSpirit"
+		spirit.position = _pad_at + Vector3(1.4, 0, 0.4)
+		add_child(spirit)
+	var seal_id := ""
+	if floor_no == 9:
+		seal_id = "railhead_rail"
+	elif floor_no == 11:
+		seal_id = "overlook_rail"
+	elif floor_no == 13:
+		seal_id = "crucible_rail"
+	if seal_id == "" or flags == null or flags.has("seal:" + seal_id):
+		return
+	if get_node_or_null("Seal_" + seal_id):
+		return
+	var seal := SlagSeal.make_seal(seal_id, flags)
+	add_child(seal)
+	seal.position = _pad_at + Vector3(-1.6, 0.2, 0.2)
+
+
+func note_boss_dead() -> void:
+	var cast := find_child("SlagCast", true, false) as Node3D
+	if cast:
+		cast.visible = true
+	var boss := get_node_or_null("EnemySpawns")
+	if boss:
+		for c in boss.get_children():
+			if String(c.get_meta(&"lab_boss", "")) == BOSS:
+				c.queue_free()
 
 
 func _prop_area(parent: Node3D, nm: String, at: Vector3) -> Area3D:
