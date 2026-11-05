@@ -1,6 +1,6 @@
 class_name BlightForge
 extends Node3D
-## The Drowned Forge door. It is not a LevelGate and it does not travel. After the
+## The Slagworks door. It is not a LevelGate and it does not travel. After the
 ## Matriarch dies it says the way down has opened and cannot be taken yet.
 
 signal spoke(line: String)
