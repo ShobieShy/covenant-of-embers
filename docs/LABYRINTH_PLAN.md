@@ -138,7 +138,7 @@ Act I shipped with the closed levels. The remaining rows are the rest of the cam
 | L5 | Perf pass and playtests (1x / 4x / co-op through Act I) -> 0.3.0 | 2 days |
 | L6+ | Acts II-V and the Core, about 4-5 days each | 25 days |
 
-Act I shipped. Later acts follow [PLAN_NEXT.md](PLAN_NEXT.md): 0.7.0 is Act II, then one act per minor through 0.10.0, and 1.0 is the Core. DLC labyrinths would
+Act I shipped. Later acts follow [PLAN_NEXT.md](PLAN_NEXT.md): 0.7.0 is Act II, then one act per minor through 0.10.0. The Core and the post-clear endless run are later 0.x minors when ShobieShy opens them. 1.0 is a release cut he orders, not a content row. DLC labyrinths would
 reuse L1-L2 unchanged.
 
 ## 13. Open questions (recommended defaults)
