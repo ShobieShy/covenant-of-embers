@@ -1,0 +1,76 @@
+# Labyrinth Act III room kit: the Slagworks. Same generator contract as the Warrens
+# (slot grid, kinds start/normal/elite/rest/secret/exit). Tags are for the floor
+# builder only. FloorGen does not read them, and the Warrens signature does not
+# change. tools/labyrinth_gen.py --kit data/labyrinth/slagworks.toml
+
+[kit]
+id = "slagworks"
+act = 3
+name = "The Slagworks"
+slot = 24
+floors = [9, 10, 11, 12]   # floor 13 is the handmade Forgemaw crucible
+boss_floor = 13
+
+[floor]
+main_min = 6
+main_max = 8
+secrets_min = 1
+secrets_max = 2
+rest = 1
+
+[[room]]
+id = "rail_mouth"
+kind = "start"
+size = [16, 16]
+tags = ["rail", "gantry"]
+
+[[room]]
+id = "ore_channel"
+kind = "normal"
+size = [18, 14]
+tags = ["lava", "gantry"]
+
+[[room]]
+id = "cart_line"
+kind = "normal"
+size = [16, 12]
+tags = ["rail"]
+
+[[room]]
+id = "slag_cut"
+kind = "normal"
+size = [14, 16]
+tags = ["lava"]
+
+[[room]]
+id = "gantry_hall"
+kind = "normal"
+size = [16, 16]
+tags = ["gantry"]
+
+[[room]]
+id = "furnace_hall"
+kind = "elite"
+size = [20, 20]
+tags = ["furnace", "lava", "gantry"]
+
+[[room]]
+id = "cooling_pad"
+kind = "rest"
+size = [14, 14]
+
+[[room]]
+id = "seal_nook"
+kind = "secret"
+size = [10, 10]
+
+[[room]]
+id = "ore_cache"
+kind = "secret"
+size = [12, 10]
+
+[[room]]
+id = "shaft_stair"
+kind = "exit"
+size = [14, 14]
+tags = ["gantry"]

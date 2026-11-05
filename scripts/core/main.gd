@@ -796,7 +796,7 @@ func _open_act_picker() -> void:
 	var box := VBoxContainer.new()
 	box.set_anchors_preset(Control.PRESET_CENTER)
 	act_picker.add_child(box)
-	for floor_no in [1, LabGate.SUMP]:
+	for floor_no in LabGate.choices(labyrinth):
 		var b := Button.new()
 		b.text = LabGate.choice_label(floor_no)
 		b.pressed.connect(pick_act.bind(floor_no))
@@ -878,6 +878,8 @@ func _on_lab_rest(_at: Vector3) -> void:
 		labyrinth.current = 7
 		ints.floor_no = 7
 		ints.cavern.floor_no = 7
+	elif ints and ints.slag:
+		labyrinth.current = ints.floor_no
 	var player := get_node_or_null("Player") as Player
 	if player:
 		player.clear_blight_status()
@@ -897,6 +899,10 @@ func _on_blight_pad(checkpoint: int, waystone_id: String) -> void:
 				player.spawn_feet = ints.cavern.pad_global(checkpoint)
 			if ints.cavern.hazard:
 				ints.cavern.hazard.last_pad = ints.cavern.pad_global(checkpoint)
+		elif ints.slag:
+			var player := get_node_or_null("Player") as Player
+			if player:
+				player.spawn_feet = ints.slag.pad_global()
 	if fast_travel:
 		fast_travel.attune(waystone_id)
 	save_game()
@@ -908,10 +914,28 @@ func _on_linear_floor(_n: int) -> void:
 	if ints and ints.cavern:
 		_enter_cavern_runtime(ints.cavern, player)
 		return
+	if ints and ints.slag:
+		_enter_slag_runtime(ints.slag, player)
+		return
 	var fl := ints.lab_floor if ints else null
 	if fl == null:
 		return
 	_lab_waystone(fl)
+	_lab_loot_parent_linear(fl)
+	_lab_enemies(fl, player)
+	_lab_chests(fl, player)
+
+
+func _enter_slag_runtime(fl: SlagworksFloor, player: Player) -> void:
+	DialogueDB.bosses = labyrinth.bosses
+	if quests:
+		quests.known_bosses = labyrinth.bosses
+	if not fl.pad_reached.is_connected(_on_blight_pad):
+		fl.pad_reached.connect(_on_blight_pad)
+	if player:
+		player.spawn_feet = fl.pad_global()
+		if fl.on_pad(player.global_position):
+			_on_blight_pad(fl.floor_no, fl.waystone_id)
 	_lab_loot_parent_linear(fl)
 	_lab_enemies(fl, player)
 	_lab_chests(fl, player)

@@ -169,6 +169,14 @@ func near_count() -> int:
 
 
 func stairs_pos() -> Vector3:
+	if interiors == null:
+		return Vector3.INF
+	if interiors.slag and is_instance_valid(interiors.slag):
+		var slag_stairs := interiors.slag.get_node_or_null("StairsDown") as Node3D
+		return slag_stairs.global_position if slag_stairs else Vector3.INF
+	# The cavern has no stairs. The Crown door is the vote point.
+	if interiors.cavern and is_instance_valid(interiors.cavern) and interiors.cavern.forge:
+		return interiors.cavern.forge.global_position
 	var f := interiors.lab_floor
 	var sd := f.get_node_or_null("StairsDown") as Node3D if f and is_instance_valid(f) else null
 	return sd.global_position if sd else Vector3.INF

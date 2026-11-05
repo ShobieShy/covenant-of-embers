@@ -25,6 +25,9 @@ func test_locked_attune_travel() -> void:
 	var f2 := StoryFlags.new()
 	f2.from_dict(ft.flags.to_dict())
 	check(FastTravel.new(f2).attuned("landfill"), "attunement saved with the flags")
+	check(not ft.can_travel("slagworks_crucible"), "the crucible stone is refused until the pad is stepped on")
+	check(int(FastTravel.info("slagworks_railhead")["floor"]) == 9, "railhead floor")
+	check(int(FastTravel.info("warrens_hall")["floor"]) == 5, "warrens hall stays floor 5")
 
 
 func test_in_game_waystone_and_map() -> void:

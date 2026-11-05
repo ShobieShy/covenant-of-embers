@@ -1,9 +1,11 @@
 class_name BlightForge
 extends Node3D
-## The Slagworks door. It is not a LevelGate and it does not travel. After the
-## Matriarch dies it says the way down has opened and cannot be taken yet.
+## The Slagworks door on the Crown. It is not a LevelGate. calls_travel stays false.
+## While shut, it only speaks. Once the Matriarch is dead, the line says the way
+## down has opened and the door asks the interior to load checkpoint 9.
 
 signal spoke(line: String)
+signal descend_to(checkpoint: int)
 
 var opened := false
 var calls_travel := false
@@ -39,7 +41,7 @@ func _ready() -> void:
 
 func line() -> String:
 	if opened:
-		return "The way down has opened and cannot be taken yet."
+		return "The way down has opened into the Slagworks."
 	return "The way down is still shut."
 
 
@@ -51,6 +53,8 @@ func interact() -> void:
 	last_line = line()
 	spoke.emit(last_line)
 	# No GameFlow.travel and no level id. calls_travel stays false.
+	if opened:
+		descend_to.emit(SlagworksFloor.FIRST)
 
 
 func _unhandled_input(event: InputEvent) -> void:

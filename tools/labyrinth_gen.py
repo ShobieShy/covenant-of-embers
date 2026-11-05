@@ -106,11 +106,13 @@ def signature(fl):
     return "%d %s %s stair=%d" % (fl["seed"], r, e, fl["stair_row"])
 
 
-GOLDEN_CASES = [(s, fl, rm) for s in (1, 42, 1337, 20261028, 4294967295) for fl in (1, 2, 3, 4) for rm in (0, 1)]
-
-
 def golden(kit):
-    return "".join("%d %d %d %s\n" % (s, fl, rm, signature(generate(kit, floor_seed(s, kit["kit"]["id"], fl, rm)))) for s, fl, rm in GOLDEN_CASES)
+    floors = list(kit["kit"]["floors"])
+    cases = [(s, fl, rm) for s in (1, 42, 1337, 20261028, 4294967295) for fl in floors for rm in (0, 1)]
+    return "".join(
+        "%d %d %d %s\n" % (s, fl, rm, signature(generate(kit, floor_seed(s, kit["kit"]["id"], fl, rm))))
+        for s, fl, rm in cases
+    )
 
 
 def validate(kit, fl):
@@ -144,27 +146,55 @@ def load_kit(path=KIT):
     return tomllib.loads(Path(path).read_text())
 
 
+def _take_kit(argv):
+    """Optional `--kit PATH`. The default stays the Warrens file."""
+    args = list(argv)
+    path = KIT
+    if "--kit" in args:
+        i = args.index("--kit")
+        if i + 1 >= len(args):
+            raise SystemExit("usage: tools/labyrinth_gen.py --kit PATH")
+        path = Path(args[i + 1])
+        if not path.is_absolute():
+            path = ROOT / path
+        del args[i : i + 2]
+    return path, args
+
+
+def _golden_file(kit):
+    if kit["kit"]["id"] == "warrens":
+        return GOLDEN
+    return ROOT / "tests/fixtures/labyrinth" / ("%s_golden.txt" % kit["kit"]["id"])
+
+
 def main(argv):
-    kit = load_kit()
-    if "--self-test" in argv:
+    kit_path, args = _take_kit(argv)
+    kit = load_kit(kit_path)
+    golden_file = _golden_file(kit)
+    if "--self-test" in args:
+        kid = kit["kit"]["id"]
         for s in range(2000):
             for floor in kit["kit"]["floors"]:
-                validate(kit, generate(kit, floor_seed(s, kit["kit"]["id"], floor)))
-        a = generate(kit, floor_seed(7, "warrens", 1))
-        assert signature(a) == signature(generate(kit, floor_seed(7, "warrens", 1))), "not deterministic"
-        assert signature(a) != signature(generate(kit, floor_seed(7, "warrens", 1, 1))), "remix did not change"
-        print("[labyrinth_gen] self-test OK (8000 floors)")
-    elif "--check" in argv:
-        if not GOLDEN.exists() or GOLDEN.read_text() != golden(kit):
-            print("[labyrinth_gen] %s is stale: run tools/labyrinth_gen.py --write-golden" % GOLDEN.relative_to(ROOT))
+                validate(kit, generate(kit, floor_seed(s, kid, floor)))
+        fl0 = kit["kit"]["floors"][0]
+        a = generate(kit, floor_seed(7, kid, fl0))
+        assert signature(a) == signature(generate(kit, floor_seed(7, kid, fl0))), "not deterministic"
+        assert signature(a) != signature(generate(kit, floor_seed(7, kid, fl0, 1))), "remix did not change"
+        if kid == "warrens":
+            print("[labyrinth_gen] self-test OK (8000 floors)")
+        else:
+            print("[labyrinth_gen] self-test OK (%s, %d floors)" % (kid, 2000 * len(kit["kit"]["floors"])))
+    elif "--check" in args:
+        if not golden_file.exists() or golden_file.read_text() != golden(kit):
+            print("[labyrinth_gen] %s is stale: run tools/labyrinth_gen.py --write-golden" % golden_file.relative_to(ROOT))
             return 1
         print("[labyrinth_gen] golden OK")
-    elif "--write-golden" in argv:
-        GOLDEN.write_text(golden(kit))
-        print("[labyrinth_gen] wrote", GOLDEN.relative_to(ROOT))
+    elif "--write-golden" in args:
+        golden_file.write_text(golden(kit))
+        print("[labyrinth_gen] wrote", golden_file.relative_to(ROOT))
     else:
-        s, fl = int(argv[0]), int(argv[1])
-        print(signature(generate(kit, floor_seed(s, kit["kit"]["id"], fl, int(argv[2]) if len(argv) > 2 else 0))))
+        s, fl = int(args[0]), int(args[1])
+        print(signature(generate(kit, floor_seed(s, kit["kit"]["id"], fl, int(args[2]) if len(args) > 2 else 0))))
     return 0
 
 
