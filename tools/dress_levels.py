@@ -168,16 +168,23 @@ def hall_dressing() -> list[str]:
 
 
 def midden() -> tuple[set[str], str]:
-    """Step 124 (Art A6): Landfill dressing - trash bags, bins and cans along the walls and heaps (no colliders)."""
-    spots = ((-12.5, -12.5, "Trash_Bags", 0, 1.6), (12.4, -12.6, "Trash_Bags", 70, 1.8), (-12.6, 2.0, "Trashcan", 20, 1.4),
-             (12.6, 8.5, "Trashcan", -30, 1.4), (-11.0, 10.5, "Trash_Bags", 140, 1.5), (11.2, 11.8, "Trash_Bag", 30, 1.4),
-             (-9.0, -0.8, "Trash_Bag", 60, 1.3), (-10.8, -3.6, "Can_Broken", 10, 1.4), (9.6, 5.6, "Trash_Bags", 200, 1.4),
-             (6.8, 2.2, "Can_Broken", 80, 1.3), (-4.0, 11.0, "Trashcan_Small", 0, 1.4), (4.2, 12.4, "Trash_Bag", 110, 1.2),
-             (-2.2, -3.6, "Can_Broken", 45, 1.2), (2.4, -0.2, "Trash_Bag", 300, 1.1), (-12.8, -7.0, "Trashcan_Small", 15, 1.4),
-             (12.7, -2.5, "Trash_Bags", 95, 1.6), (-6.0, 7.2, "Can_Broken", 130, 1.3), (0.5, -13.0, "Trash_Bags", 10, 1.4))
-    mul = {"Trashcan": 0.8, "Trashcan_Small": 1.2, "Trash_Bag": 3.2, "Trash_Bags": 3.2, "Can_Broken": 2.2}  # native sizes differ
-    p = [prop(f"trash_{i + 1}", TRASH + f"{m}.glb", (x, 0, z), float(r), round(s * mul[m], 3))
-         for i, (x, z, m, r, s) in enumerate(spots)]
+    """Trash along the valley heaps. Decorative only, off the centre lane, the Light shrine's
+    east side (the scavenger lies there), and the empty road past the Filth."""
+    # x, y, z, model, yaw, scale factor. y matches the floor: 0 upper trench, 1.5 ledge, -2 bowl and road.
+    spots = ((-7.2, 0.0, 20.0, "Trash_Bags", 15, 1.5), (7.4, 0.0, 19.0, "Trash_Bags", 80, 1.6),
+             (-6.8, 0.0, 14.0, "Trashcan", 20, 1.3), (6.6, 0.0, 13.0, "Can_Broken", -20, 1.3),
+             (-7.0, 0.0, 11.2, "Trash_Bag", 140, 1.4), (7.2, 0.0, 10.6, "Trash_Bags", 40, 1.4),
+             (6.5, 0.0, 8.4, "Trash_Bags", 200, 1.3), (-7.4, 0.0, 5.0, "Trashcan_Small", 0, 1.3),
+             (6.2, 0.0, 6.2, "Trash_Bag", 110, 1.2), (-7.2, 0.0, 2.2, "Trash_Bags", 60, 1.5),
+             (6.6, 0.0, 1.2, "Can_Broken", 80, 1.3), (-6.2, 0.0, -2.4, "Trash_Bag", 30, 1.3),
+             (6.2, 0.0, -8.0, "Trash_Bags", 95, 1.4), (-5.4, 1.5, -12.2, "Can_Broken", 15, 1.2),
+             (5.2, 1.5, -11.0, "Trash_Bag", 300, 1.1), (-8.0, -2.0, -30.0, "Trash_Bags", 20, 1.6),
+             (8.2, -2.0, -34.0, "Trash_Bags", 70, 1.5), (-7.4, -2.0, -40.0, "Can_Broken", 45, 1.3),
+             (7.6, -2.0, -43.0, "Trashcan", 10, 1.2), (-2.7, -2.0, -53.0, "Trash_Bag", 0, 1.2),
+             (2.6, -2.0, -57.0, "Can_Broken", 90, 1.1))
+    mul = {"Trashcan": 0.8, "Trashcan_Small": 1.2, "Trash_Bag": 3.2, "Trash_Bags": 3.2, "Can_Broken": 2.2}
+    p = [prop(f"trash_{i + 1}", TRASH + f"{m}.glb", (x, y, z), float(r), round(s * mul[m], 3))
+         for i, (x, y, z, m, r, s) in enumerate(spots)]
     return set(), "".join(p)
 
 

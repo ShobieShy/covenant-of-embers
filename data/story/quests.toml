@@ -140,7 +140,7 @@ text = "Collect the three slag seals Joe burned into the rails"
 [[quest]]
 id = "the_breach"
 title = "The Breach"
-auto_start_when = ["tutorial_done"]
+auto_start_when = ["filth_defeated"]  # north road opens here; Bob's crystal stays on report_to_bob
 reward_xp = 40
 
 [[objective]]

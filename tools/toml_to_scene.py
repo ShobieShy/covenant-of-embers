@@ -884,10 +884,15 @@ def self_test() -> int:
     # Step 160: the self-tests use the greybox arena (no zone block, no [terrain]).
     good = re.sub(r"# ---- EXPAND_BEGIN.*?EXPAND_END[^\n]*\n", "", good, flags=re.S)
     lv = parse_level(good)
-    assert len(lv["boxes"]) == 17, len(lv["boxes"])
+    names = {b["name"] for b in lv["boxes"]}
+    for need in ("ground", "compactor", "scrap_ledge", "basin_ramp", "bowl_floor", "road_floor"):
+        assert need in names, need
+    assert not any(b["kind"] == "wall" for b in lv["boxes"])
+    assert sum(b["kind"] == "heap" for b in lv["boxes"]) >= 8
     assert lv["materials"]["wall"] == "assets/ambientcg/Rock030", lv["materials"]
     tscn = to_tscn(lv, "self-test")
-    assert 'path="res://assets/ambientcg/Rock030/normal.jpg"' in tscn and "uv1_world_triplanar = true" in tscn
+    # The valley uses the ground/heap set. Wall (Rock030) stays declared for the loader.
+    assert 'path="res://assets/ambientcg/Ground037/normal.jpg"' in tscn and "uv1_world_triplanar = true" in tscn
     for bad in ('[materials]\nwall = "assets/nope"\n', '[materials]\nroof = "assets/ambientcg/Rock030"\n'):
         try:
             parse_level(_swap_materials(good, bad))

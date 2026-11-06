@@ -105,7 +105,7 @@ const GATE_RULES := {
 	},
 	"midden":
 	{
-		"breach": ["tutorial_done", "The Breach is sealed. Bob wants you back first."],
+		"breach": ["filth_defeated", "The crater is sealed until the Landfill is dealt with."],
 		"town_square":
 		[
 			"filth_defeated",
@@ -1018,7 +1018,7 @@ func _on_wave(_i: int, id: String) -> void:
 func _on_flag(flag: String, _v: int) -> void:
 	if flag == "filth_defeated" and current() == "filth":
 		advance("return_to_bob")
-		_hint("The barrier gate is open. Bring Joe's trash to Bob at the Old Oak")
+		_hint("The north road is open. The Breach is past the pit; Bob still wants Joe's trash.")
 
 
 func _play_crystal() -> void:
