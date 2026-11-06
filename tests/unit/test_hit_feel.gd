@@ -61,10 +61,19 @@ func test_flinch_and_crit_root() -> void:
 
 func test_cast_keys() -> void:
 	for i in ElementTable.IDS.size():
+		var id := String(ElementTable.IDS[i])
 		var k := GameAudio.cast_key_for(i)
-		check(k == "cast_" + ElementTable.IDS[i], "element %d -> %s" % [i, k])
-		check(GameAudio.load_stream(k) != null, "%s loads" % k)
+		check(k == "cast_" + id, "element %d -> %s" % [i, k])
+		check(String(GameAudio.SOUNDS[k]).contains("/staff/"), "%s is the tonal placeholder" % k)
+		var stream := GameAudio.load_stream(k)
+		check(stream != null and stream.get_length() > 0.12 and stream.get_length() < 1.2, "%s loads" % k)
+		var hit := GameAudio.impact_key_for(i)
+		check(hit == "impact_" + id, "impact %s" % id)
+		check(String(GameAudio.SOUNDS[hit]).contains("/staff/"), "%s is the tonal impact" % hit)
+		var impact := GameAudio.load_stream(hit)
+		check(impact != null and impact.get_length() > 0.05 and impact.get_length() < 0.6, "%s loads" % hit)
 	check(GameAudio.cast_key_for(-1) == "cast", "no element -> cast")
+	check(GameAudio.impact_key_for(-1) == "hit", "no element -> hit")
 
 
 func test_muzzle_flare() -> void:

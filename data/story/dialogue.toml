@@ -188,6 +188,21 @@ speaker = "Grizzled Patron"
 lines = ["*hiccups* The Fractured Flagon's the only place left with decent ale. Everything else tastes like barrier dust.", "If you're new here... the outer dungeons started acting up again last month. Something's stirring."]
 repeats = ["Go talk to the shopkeeps if you need potions. Or don't. Your funeral.", "*burps* Stay away from the landfill, kid. Even the rats are wrong there."]
 
+# Placeholder until story signs off (#21). The Landfill scavenger, down and then up.
+[[dialogue]]
+id = "scavenger_wounded"
+speaker = "Wounded scavenger"
+forbids = ["light_learned"]
+lines = ["Don't mind the boxes. I crawled out of the heap and didn't get far.", "Something under the trash bit me. Light, if you've got it. I can't stand."]
+repeats = ["Still down. The dump keeps what it bites."]
+
+[[dialogue]]
+id = "scavenger_stood"
+speaker = "Wounded scavenger"
+requires = ["light_learned"]
+lines = ["I can stand. That's new. I'll pick the north heap over, if the rats let me.", "You want the breach, it's past the mound. I wouldn't go in bleeding."]
+repeats = ["I'll live. Watch the heaps."]
+
 # Act II. Post-boss is first so it wins once the Matriarch is in the boss list.
 [[dialogue]]
 id = "verdant_after"

@@ -69,6 +69,25 @@ func test_forced_convert_once() -> void:
 	_cleanup(g)
 
 
+func test_scavenger_lies_clear_and_talks() -> void:
+	var g := _game("light_dark", ["gnawers_cleared", "crafted_once"])
+	var it: IntroDirector = g.intro
+	var s: Npc = it.cast["Wounded scavenger"]
+	var shrine: Vector3 = it.spot("light_shrine", IntroDirector.LIGHT_SHRINE)
+	check(s.global_position.distance_to(shrine + ScavengerPose.BESIDE) < 0.05, "beside the shrine, not in it")
+	check(is_equal_approx(s.rotation_degrees.z, 0.0), "not rolled into the crates")
+	for b in g.get_node("Level/Boxes").get_children():
+		if String(b.name).begins_with("crate"):
+			check(s.global_position.distance_to((b as Node3D).global_position) > 1.5, "clear of %s" % b.name)
+	var body := s.get_node("CharacterModel") as CharacterModel
+	check(body.holding() == "Death", "wounded pose")
+	check(g.dialogue.db.pick("Wounded scavenger", g.story_flags)["id"] == "scavenger_wounded", "downed lines")
+	it.touch_shrine("Light shrine")
+	check(body.holding() == "", "Light stands him up")
+	check(g.dialogue.db.pick("Wounded scavenger", g.story_flags)["id"] == "scavenger_stood", "up lines")
+	_cleanup(g)
+
+
 func test_joe_gives_wand() -> void:
 	var g := _game("combat")
 	var p := g.get_node("Player") as Player
