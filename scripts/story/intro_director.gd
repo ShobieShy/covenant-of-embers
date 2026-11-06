@@ -630,12 +630,7 @@ func _dress_oak() -> void:
 	if current() == "return_to_bob":
 		advance("crystal")  # step 116: home again - Bob's waiting
 	if current() == "new_home" and not flags.has(MentorArrival.FLAG):
-		bed = Npc.new("Moss bed")
-		bed.name = "MossBed"
-		bed.player = player
-		main.add_child(bed)
-		bed.global_position = player.spawn_feet + Vector3(-2.5, 0, -4)
-		bed.talked.connect(func(_s: String): rest())
+		bed = MossBed.place(main, player, Callable(self, "rest"))
 	elif current() == "new_home":
 		_bob_talks()
 
@@ -925,10 +920,7 @@ func _make_shrines() -> void:
 		n.talked.connect(touch_shrine)
 		shrines[spec[0]] = n
 	if not flags.has("light_learned"):
-		var s := _spawn(
-			"Wounded scavenger", spot("light_shrine", LIGHT_SHRINE) + Vector3(-1.5, 0, 0.5), 90.0
-		)
-		s.rotation_degrees.z = 70.0  # slumped against the heap
+		ScavengerPose.lay(_spawn("Wounded scavenger", spot("light_shrine", LIGHT_SHRINE), 0.0))
 
 
 ## Beat 10: either order. Light heals the scavenger; Dark forces one Gnawer conversion.
@@ -937,9 +929,7 @@ func touch_shrine(which: String) -> void:
 		flags.set_flag("light_learned")
 		MagicEffects.light_heals += 1
 		player.health.heal(player.health.max_value())
-		var s: Npc = cast.get("Wounded scavenger")
-		if s:
-			s.rotation_degrees.z = 0.0
+		ScavengerPose.stand(cast.get("Wounded scavenger") as Npc)
 		_hint(
 			"Light washes over the scavenger. He stands. (Light heals allies; enemies take a little less.)"
 		)

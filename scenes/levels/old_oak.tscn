@@ -359,22 +359,22 @@ transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, -6.6, 0.2, 6.6)
 transform = Transform3D(0, 0, -3, 0, 3, 0, 3, 0, 0, 6.6, 0.2, 6.6)
 
 [node name="bed_moss_1" parent="Props" instance=ExtResource("3_glb")]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -5.5, 0.45, -5.6)
+transform = Transform3D(4.5, 0, 0, 0, 0.45, 0, 0, 0, 6.8, -5, 0.48, -5)
 
 [node name="bed_flower_1" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -4.4, 0.45, -4)
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -4.4, 0.62, -4)
 
 [node name="bed_moss_2" parent="Props" instance=ExtResource("3_glb")]
-transform = Transform3D(1.732051, 0, 1, 0, 2, 0, -1, 0, 1.732051, -3, 0.45, -5.6)
+transform = Transform3D(4.5, 0, 0, 0, 0.45, 0, 0, 0, 6.8, -2.5, 0.48, -5)
 
 [node name="bed_flower_2" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(1.931852, 0, 0.517638, 0, 2, 0, -0.517638, 0, 1.931852, -1.9, 0.45, -4)
+transform = Transform3D(1.931852, 0, 0.517638, 0, 2, 0, -0.517638, 0, 1.931852, -1.9, 0.62, -4)
 
 [node name="bed_moss_3" parent="Props" instance=ExtResource("3_glb")]
-transform = Transform3D(1, 0, 1.732051, 0, 2, 0, -1.732051, 0, 1, 2, 0.45, -5.6)
+transform = Transform3D(4.5, 0, 0, 0, 0.45, 0, 0, 0, 6.8, 2.5, 0.48, -5)
 
 [node name="bed_flower_3" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(1.732051, 0, 1, 0, 2, 0, -1, 0, 1.732051, 3.1, 0.45, -4)
+transform = Transform3D(1.732051, 0, 1, 0, 2, 0, -1, 0, 1.732051, 3.1, 0.62, -4)
 
 [node name="deco_1" parent="Props" instance=ExtResource("5_glb")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -6.6, 0.15, 1)

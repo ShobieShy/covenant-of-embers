@@ -161,7 +161,7 @@ download = "incoming_art/batch_02_characters/bob (Ember Art batch 02; licences r
 license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-10-24"
-use = "Bob (Farmer); Adventurer_male alternate / future Nerd base"
+use = "Adventurer_male alternate. Bob no longer uses Farmer.glb; his placeholder is the ash elder wizard (see elders/) until bob_wizard.glb lands"
 
 [[asset]]
 name = "Quaternius characters: Clerk (Animated Woman, Business Man)"

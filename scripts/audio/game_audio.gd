@@ -14,14 +14,23 @@ const EMBER_SFX := "res://assets/original/ember_art/sfx/"
 const BUSES: PackedStringArray = ["Master", "SFX", "UI", "Music"]
 const SOUNDS := {
 	"cast": IFACE + "glass_002.ogg",
-	# 0.3.1 P5 (M5): one cast sound per element (batch 09, CC0); "cast" is the fallback.
-	"cast_arcane": EMBER_SFX + "cast_arcane.ogg",
-	"cast_fire": EMBER_SFX + "cast_fire.ogg",
-	"cast_water": EMBER_SFX + "cast_water.ogg",
-	"cast_earth": EMBER_SFX + "cast_earth.ogg",
-	"cast_air": EMBER_SFX + "cast_air.ogg",
-	"cast_light": EMBER_SFX + "cast_light.ogg",
-	"cast_dark": EMBER_SFX + "cast_dark.ogg",
+	# Staff casts and impacts. The batch_09 synth (cast_*.ogg beside this folder) is
+	# broadband hiss. These are original tonal placeholders (tools/make_staff_sfx.py,
+	# CC0) until Ember Art records the real set. "cast" / "hit" stay the fallbacks.
+	"cast_arcane": EMBER_SFX + "staff/cast_arcane.ogg",
+	"cast_fire": EMBER_SFX + "staff/cast_fire.ogg",
+	"cast_water": EMBER_SFX + "staff/cast_water.ogg",
+	"cast_earth": EMBER_SFX + "staff/cast_earth.ogg",
+	"cast_air": EMBER_SFX + "staff/cast_air.ogg",
+	"cast_light": EMBER_SFX + "staff/cast_light.ogg",
+	"cast_dark": EMBER_SFX + "staff/cast_dark.ogg",
+	"impact_arcane": EMBER_SFX + "staff/impact_arcane.ogg",
+	"impact_fire": EMBER_SFX + "staff/impact_fire.ogg",
+	"impact_water": EMBER_SFX + "staff/impact_water.ogg",
+	"impact_earth": EMBER_SFX + "staff/impact_earth.ogg",
+	"impact_air": EMBER_SFX + "staff/impact_air.ogg",
+	"impact_light": EMBER_SFX + "staff/impact_light.ogg",
+	"impact_dark": EMBER_SFX + "staff/impact_dark.ogg",
 	"cast_fail": IFACE + "error_004.ogg",
 	"focus": IFACE + "maximize_003.ogg",
 	"equip": UIPACK + "switch-a.ogg",
@@ -155,10 +164,19 @@ func bind(p: Player) -> void:
 
 ## 0.3.1 P5 (M5): the cast sound key for an element ("cast" when it has none).
 static func cast_key_for(element: int) -> String:
+	return _element_key("cast_", element, "cast")
+
+
+## Staff bolt impact for an element ("hit" when it has none).
+static func impact_key_for(element: int) -> String:
+	return _element_key("impact_", element, "hit")
+
+
+static func _element_key(prefix: String, element: int, fallback: String) -> String:
 	if element < 0 or element >= ElementTable.IDS.size():
-		return "cast"
-	var k := "cast_" + ElementTable.IDS[element]
-	return k if SOUNDS.has(k) else "cast"
+		return fallback
+	var k := prefix + ElementTable.IDS[element]
+	return k if SOUNDS.has(k) else fallback
 
 
 func _snapshot() -> Dictionary:
@@ -260,7 +278,10 @@ func _on_hurt(p: Player, _r: Damage.Result) -> void:
 func _on_enemy_spawned(e: Enemy) -> void:
 	if e == null:
 		return
-	e.damaged.connect(func(en: Enemy, _h): play_at("hit", en.global_position, 0.0, 1.4 if en.last_weak_point else 1.0))
+	e.damaged.connect(
+		func(en: Enemy, h: SpellBolts.Hit) -> void:
+			play_at(impact_key_for(h.element), en.global_position, 0.0, 1.15 if en.last_weak_point else 1.0)
+	)
 	e.died.connect(func(en: Enemy, _el): play_at("enemy_death", en.global_position))
 	if e is Gnawer:
 		e.attacked.connect(_on_gnawer_attacked)

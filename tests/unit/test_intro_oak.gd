@@ -32,6 +32,14 @@ func test_first_night() -> void:
 	IntroDirector.strip_weapons(p)
 	var it: IntroDirector = g.intro
 	check(it.current() == "new_home" and it.bed != null, "arrival -> moss bed")
+	check(it.bed.find_children("*", "CSGCylinder3D", true, false).is_empty(), "the bed is not a standing cylinder")
+	var host := g.get_node("Level/Boxes/moss_bed_2") as StaticBody3D
+	var box := (host.get_node("Shape") as CollisionShape3D).shape as BoxShape3D
+	var spot := host.to_global(Vector3(0.0, -box.size.y * 0.5, box.size.z * 0.5 + 0.45))
+	check(it.bed.global_position.distance_to(spot) < 0.05, "the rest point is on the floor in front of the middle bed")
+	check(it.bed.global_position.y < 0.05, "not standing on top of the platform")
+	var moss := g.get_node("Level/Props/bed_moss_2") as Node3D
+	check(moss.scale.y < moss.scale.x * 0.25 and moss.scale.x > 3.0, "moss lies flat across the bed")
 	check(not g.mentor_played and g.get_node_or_null("Npc_Bob") == null, "Bob waits for the night")
 	check(it.target_point() == it.bed.global_position, "marker on the bed")
 	check(p.loadout.wieldable(Loadout.Slot.STAFF) == null, "no weapon before Bob")

@@ -135,9 +135,11 @@ def oak() -> tuple[set[str], str]:
     p = [prop("old_oak", OAK, (0, -0.1, -13.0), 0.0, 1.0)]
     for i, (x, z) in enumerate(((-6.6, -6.6), (6.6, -6.6), (-6.6, 6.6), (6.6, 6.6))):
         p.append(prop(f"root_{i + 1}", NATURE + "stump_oldTall.glb", (x, 0.2, z), i * 90.0, 3))
+    # grass_large is a ~0.41 m tuft. Spread it across each 2 x 3 bed and squash the
+    # height so the moss lies on the platform instead of standing up as a clump.
     for i, x in enumerate((-5, -2.5, 2.5)):
-        p.append(prop(f"bed_moss_{i + 1}", NATURE + "grass_large.glb", (x - 0.5, 0.45, -5.6), 30.0 * i, 2))
-        p.append(prop(f"bed_flower_{i + 1}", NATURE + "flower_redA.glb", (x + 0.6, 0.45, -4.0), 15.0 * i, 2))
+        p.append(prop(f"bed_moss_{i + 1}", NATURE + "grass_large.glb", (x, 0.48, -5.0), 0.0, (4.5, 0.45, 6.8)))
+        p.append(prop(f"bed_flower_{i + 1}", NATURE + "flower_redA.glb", (x + 0.6, 0.62, -4.0), 15.0 * i, 2))
     for i, (x, z, m) in enumerate(((-6.6, 1.0, "mushroom_redGroup"), (6.6, -3.5, "mushroom_redTall"),
                                    (-6.7, -3.6, "mushroom_red"), (6.7, 1.5, "mushroom_redGroup"),
                                    (-3.0, 6.7, "flower_redB"), (3.0, 6.7, "flower_redC"))):

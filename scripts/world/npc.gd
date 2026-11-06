@@ -11,6 +11,8 @@ const REACH := 2.5
 @export var speaker := ""
 var talks := 0
 var player: Player
+## No body. Used for props that are talked to (the moss bed) so they are not a cylinder.
+var plain := false
 
 
 func _init(s := "") -> void:
@@ -19,11 +21,12 @@ func _init(s := "") -> void:
 
 func _ready() -> void:
 	Interaction.register(self, 1.2, 0.5)
-	var model := CharacterModel.make_for_speaker(speaker)  # batch_02 art
-	if model:
-		add_child(model)
-	else:
-		_placeholder_body()
+	if not plain:
+		var model := CharacterModel.make_for_speaker(speaker)  # batch_02 art
+		if model:
+			add_child(model)
+		else:
+			_placeholder_body()
 	var l := Label3D.new()
 	l.text = "%s  [F]" % speaker
 	l.position.y = 2.2

@@ -11,8 +11,14 @@ extends Node3D
 const HEIGHT := 1.75
 const WALK_SPEED := 0.35  ## m/s above which the walk clip plays
 const DIR := "res://assets/quaternius/"
+## Ember Art drop-in for Bob. A rigged GLB here (Idle / Walk, about 1.75 m, facing +Z)
+## replaces the placeholder below. Until that file exists, Bob uses the ash elder wizard
+## with BOB_WEAR so he reads as a haggard old wizard, not the farmer and not Crazy Joe.
+const BOB_ART := "res://assets/original/ember_art/characters/bob_wizard.glb"
+const BOB_PLACEHOLDER := "elders/Elder_ash.glb"
+const BOB_WEAR := Color(0.58, 0.46, 0.34)
 const SPEAKERS := {
-	"Bob": "bob/Farmer.glb",
+	"Bob": BOB_PLACEHOLDER,
 	"Clerk": "clerk/Animated_Woman_green_dress.glb",
 	"Crazy Joe": "crazy_joe/Animated_Wizard_old_man.glb",
 	"Elder": "elders/Elder_crimson.glb",
@@ -53,10 +59,14 @@ var anim: AnimationPlayer
 var _last := Vector3.INF
 var _walking := false
 var _speed := 0.0
+var _held := ""  ## a clip frozen on its last frame (wounded); walk/idle do not steal it
+var _resuming := false
 
 
 ## The model path for a dialogue speaker ("Summoned Gal" maps through the archetype), or "".
 static func for_speaker(speaker: String) -> String:
+	if speaker == "Bob" and ResourceLoader.exists(BOB_ART):
+		return BOB_ART
 	if SPEAKERS.has(speaker):
 		var p := String(SPEAKERS[speaker])
 		return p if p.begins_with("res://") else DIR + p
@@ -75,7 +85,10 @@ static func for_archetype(id: String) -> String:
 ## A ready model node, or null when the path is empty / fails to load (caller keeps its placeholder).
 ## for_speaker + make + the speaker's tint (if any).
 static func make_for_speaker(speaker: String) -> CharacterModel:
-	var cm := make(for_speaker(speaker))
+	var path := for_speaker(speaker)
+	var cm := make(path)
+	if cm and speaker == "Bob" and path != BOB_ART:
+		_wear(cm, BOB_WEAR)
 	if cm and TINTS.has(speaker):
 		var m := StandardMaterial3D.new()
 		m.albedo_color = TINTS[speaker]
@@ -132,6 +145,22 @@ static func _kaykit_player(inst: Node3D) -> AnimationPlayer:
 	return ap
 
 
+## Multiplies albedo on a duplicate of each surface, so a shared GLB (Joe, the Elders)
+## is not recoloured for everyone.
+static func _wear(cm: CharacterModel, tint: Color) -> void:
+	for mi in cm.find_children("*", "MeshInstance3D", true, false):
+		var mesh := (mi as MeshInstance3D).mesh
+		if mesh == null:
+			continue
+		for s in mesh.get_surface_count():
+			var base := mesh.surface_get_material(s) as StandardMaterial3D
+			if base == null:
+				continue
+			var m := base.duplicate() as StandardMaterial3D
+			m.albedo_color = tint
+			(mi as MeshInstance3D).set_surface_override_material(s, m)
+
+
 func _fit(inst: Node3D, height: float = HEIGHT) -> void:
 	var box := AABB()
 	var first := true
@@ -168,25 +197,61 @@ static func _local_xform(root: Node3D, n: Node3D) -> Transform3D:
 	return t
 
 
-## One non-looping clip (Talk, Attack, SporeSpray). Idle resumes when it finishes.
+## One non-looping clip (Talk, Attack, SporeSpray). Idle (or the held pose) resumes after.
 func play_once(clip: String) -> bool:
-	if anim == null:
+	var full := _match(clip)
+	if full == "":
 		return false
+	var a := anim.get_animation(full)
+	a.loop_mode = Animation.LOOP_NONE
+	if not anim.animation_finished.is_connected(_resume_idle):
+		anim.animation_finished.connect(_resume_idle)
+	anim.play(full, 0.15)
+	return true
+
+
+## Freeze `clip` on its last frame (the scavenger's fallen pose). Empty when the rig has no such clip.
+func hold(clip: String) -> bool:
+	var full := _match(clip)
+	if full == "":
+		return false
+	_held = clip
+	var a := anim.get_animation(full)
+	a.loop_mode = Animation.LOOP_NONE
+	anim.play(full)
+	anim.seek(maxf(a.length - 0.05, 0.0), true)
+	anim.pause()
+	return true
+
+
+func release() -> void:
+	_held = ""
+	_play(IDLE)
+
+
+func holding() -> String:
+	return _held
+
+
+func _match(clip: String) -> String:
+	if anim == null:
+		return ""
 	for full in anim.get_animation_list():
 		var leaf := String(full).get_slice("|", 1) if String(full).contains("|") else String(full)
-		if leaf != clip and String(full) != clip:
-			continue
-		var a := anim.get_animation(full)
-		a.loop_mode = Animation.LOOP_NONE
-		if not anim.animation_finished.is_connected(_resume_idle):
-			anim.animation_finished.connect(_resume_idle)
-		anim.play(full, 0.15)
-		return true
-	return false
+		if leaf == clip or String(full) == clip:
+			return full
+	return ""
 
 
 func _resume_idle(_anim_name: StringName) -> void:
-	_play(IDLE)
+	if _resuming:
+		return
+	_resuming = true
+	if _held != "":
+		hold(_held)
+	else:
+		_play(IDLE)
+	_resuming = false
 
 
 func _play(names: Array) -> void:
@@ -216,4 +281,5 @@ func _process(dt: float) -> void:
 	var w := _speed > WALK_SPEED
 	if w != _walking:
 		_walking = w
-		_play(WALK if w else IDLE)
+		if _held == "":
+			_play(WALK if w else IDLE)

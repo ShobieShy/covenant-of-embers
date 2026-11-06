@@ -176,37 +176,37 @@ scale = 3
 [[prop]]
 name = "bed_moss_1"
 model = "assets/kenney/nature-kit/grass_large.glb"
-position = [-5.5, 0.45, -5.6]
+position = [-5, 0.48, -5.0]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 2
+scale = [4.5, 0.45, 6.8]
 [[prop]]
 name = "bed_flower_1"
 model = "assets/kenney/nature-kit/flower_redA.glb"
-position = [-4.4, 0.45, -4.0]
+position = [-4.4, 0.62, -4.0]
 rotation_deg = [0.0, 0.0, 0.0]
 scale = 2
 [[prop]]
 name = "bed_moss_2"
 model = "assets/kenney/nature-kit/grass_large.glb"
-position = [-3.0, 0.45, -5.6]
-rotation_deg = [0.0, 30.0, 0.0]
-scale = 2
+position = [-2.5, 0.48, -5.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4.5, 0.45, 6.8]
 [[prop]]
 name = "bed_flower_2"
 model = "assets/kenney/nature-kit/flower_redA.glb"
-position = [-1.9, 0.45, -4.0]
+position = [-1.9, 0.62, -4.0]
 rotation_deg = [0.0, 15.0, 0.0]
 scale = 2
 [[prop]]
 name = "bed_moss_3"
 model = "assets/kenney/nature-kit/grass_large.glb"
-position = [2.0, 0.45, -5.6]
-rotation_deg = [0.0, 60.0, 0.0]
-scale = 2
+position = [2.5, 0.48, -5.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4.5, 0.45, 6.8]
 [[prop]]
 name = "bed_flower_3"
 model = "assets/kenney/nature-kit/flower_redA.glb"
-position = [3.1, 0.45, -4.0]
+position = [3.1, 0.62, -4.0]
 rotation_deg = [0.0, 30.0, 0.0]
 scale = 2
 [[prop]]
