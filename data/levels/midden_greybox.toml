@@ -8,11 +8,13 @@
 # (Godot's default, so Magewar transforms read the same), then moved to `center`.
 # kind: ground | wall | ramp | crate | heap | platform. Unknown keys are errors.
 #
-# Layout reinterprets Magewar's landfill_tutorial (read-only reference): a dump floor
-# with rotated trash piles, a 4 m high walled boss arena entered through a 4 m wide
-# gap from the south, and a sickly, warm, foggy light. Ours is a 28 x 28 m square
-# arena (Magewar: 26 m ring) with a scrap ledge + two ramps along the north wall,
-# crate clusters for cover and the Midden's mound in the middle.
+# Layout: a closed linear valley, south to north (-Z). The player comes in from town
+# at the south lip and walks a sunken trash trench: entry dump, compactor, deeper rot
+# (scrap climb included), the Filth bowl, then an empty north road into the Breach.
+# The Filth is the last encounter. Nothing past that bowl fights back.
+# Tutorial beats still stand on the upper floor (yard z 10.5, Joe z ~7.5, shrines z 4,
+# soft walls at z 9 / 5.5 / 2.5). The scrap ledge and its south ramps are unchanged
+# so the ramp walk still climbs onto them; north ramps drop back to the trench.
 
 [level]
 id = "midden_greybox"
@@ -45,51 +47,225 @@ color = [0.85, 0.78, 0.57]          # Magewar light_color (0.6, 0.55, 0.4) hue
 position = [0.0, 0.0, 12.5]
 yaw_deg = 0.0                       # facing north (-Z); pitch starts level
 
-# --- ground + arena walls (4 m high like Magewar's ArenaWall_Ring) ---
+# --- floors. Upper trench top is y 0 (the tutorial band). The bowl and the road drop to y -2. ---
+# ground: z -20..34, x -11..11. Player start (0, 0, 12.5) and the lesson spots sit on it.
 [[box]]
 name = "ground"
 kind = "ground"
-center = [0.0, -0.1, 0.0]
-size = [40.0, 0.2, 40.0]
+center = [0.0, -1.0, 7.0]
+size = [22.0, 2.0, 54.0]
 color = [0.36, 0.30, 0.22]
 
+# bowl_floor: z -50..-16, x -12..12, top y -2. Runs under the trench lip so a step off lands in the bowl.
 [[box]]
-name = "wall_north"
-kind = "wall"
-center = [0.0, 2.0, -14.5]
-size = [30.0, 4.0, 1.0]
-color = [0.34, 0.34, 0.37]          # cool slate: reads against the warm sky
+name = "bowl_floor"
+kind = "ground"
+center = [0.0, -3.0, -33.0]
+size = [24.0, 2.0, 34.0]
+color = [0.30, 0.28, 0.20]
+
+# road_floor: z -66..-48, x -4..4, top y -2. Empty road north of the bowl.
+[[box]]
+name = "road_floor"
+kind = "ground"
+center = [0.0, -3.0, -57.0]
+size = [8.0, 2.0, 18.0]
+color = [0.30, 0.28, 0.20]
+
+# --- trash walls. Heaps, not a slate ring. Inner face stays outside x ±10 on the upper trench. ---
+[[box]]
+name = "heap_w1"
+kind = "heap"
+center = [-13.2, 2.6, 26.0]
+size = [5.6, 5.2, 9.0]
+rotation_deg = [0.0, 6.0, 0.0]
+color = [0.36, 0.31, 0.26]
 
 [[box]]
-name = "wall_east"
-kind = "wall"
-center = [14.5, 2.0, 0.0]
-size = [1.0, 4.0, 28.0]
-color = [0.34, 0.34, 0.37]
+name = "heap_e1"
+kind = "heap"
+center = [13.2, 3.3, 26.0]
+size = [5.6, 6.6, 9.0]
+rotation_deg = [0.0, -8.0, 0.0]
+color = [0.30, 0.33, 0.20]
 
 [[box]]
-name = "wall_west"
-kind = "wall"
-center = [-14.5, 2.0, 0.0]
-size = [1.0, 4.0, 28.0]
-color = [0.34, 0.34, 0.37]
-
-# South wall split around a 4 m entrance (Magewar ArenaEntrance is 4 m wide).
-[[box]]
-name = "wall_south_west"
-kind = "wall"
-center = [-8.5, 2.0, 14.5]
-size = [13.0, 4.0, 1.0]
-color = [0.34, 0.34, 0.37]
+name = "heap_w2"
+kind = "heap"
+center = [-13.2, 3.3, 18.0]
+size = [5.6, 6.6, 9.0]
+rotation_deg = [0.0, -5.0, 0.0]
+color = [0.30, 0.33, 0.20]
 
 [[box]]
-name = "wall_south_east"
-kind = "wall"
-center = [8.5, 2.0, 14.5]
-size = [13.0, 4.0, 1.0]
-color = [0.34, 0.34, 0.37]
+name = "heap_e2"
+kind = "heap"
+center = [13.2, 2.4, 18.0]
+size = [5.6, 4.8, 9.0]
+rotation_deg = [0.0, 7.0, 0.0]
+color = [0.36, 0.31, 0.26]
 
-# --- scrap ledge along the north wall, 1.5 m up, two ramps from the south ---
+[[box]]
+name = "heap_w3"
+kind = "heap"
+center = [-13.2, 2.4, 10.0]
+size = [5.6, 4.8, 9.0]
+rotation_deg = [0.0, 4.0, 0.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "heap_e3"
+kind = "heap"
+center = [13.2, 3.6, 10.0]
+size = [5.6, 7.2, 9.0]
+rotation_deg = [0.0, -4.0, 0.0]
+color = [0.30, 0.33, 0.20]
+
+[[box]]
+name = "heap_w4"
+kind = "heap"
+center = [-13.2, 3.6, 3.0]
+size = [5.6, 7.2, 9.0]
+rotation_deg = [0.0, -6.0, 0.0]
+color = [0.30, 0.33, 0.20]
+
+[[box]]
+name = "heap_e4"
+kind = "heap"
+center = [13.2, 2.8, 3.0]
+size = [5.6, 5.6, 9.0]
+rotation_deg = [0.0, 5.0, 0.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "heap_w5"
+kind = "heap"
+center = [-13.2, 2.8, -4.0]
+size = [5.6, 5.6, 9.0]
+rotation_deg = [0.0, 8.0, 0.0]
+color = [0.30, 0.33, 0.20]
+
+[[box]]
+name = "heap_e5"
+kind = "heap"
+center = [13.2, 3.2, -4.0]
+size = [5.6, 6.4, 9.0]
+rotation_deg = [0.0, -7.0, 0.0]
+color = [0.28, 0.32, 0.18]
+
+[[box]]
+name = "heap_w6"
+kind = "heap"
+center = [-13.2, 3.2, -12.0]
+size = [5.6, 6.4, 9.0]
+rotation_deg = [0.0, -4.0, 0.0]
+color = [0.28, 0.32, 0.18]
+
+[[box]]
+name = "heap_e6"
+kind = "heap"
+center = [13.2, 2.5, -12.0]
+size = [5.6, 5.0, 9.0]
+rotation_deg = [0.0, 6.0, 0.0]
+color = [0.30, 0.33, 0.20]
+
+[[box]]
+name = "heap_w7"
+kind = "heap"
+center = [-13.2, 2.5, -18.0]
+size = [5.6, 5.0, 9.0]
+rotation_deg = [0.0, 3.0, 0.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "heap_e7"
+kind = "heap"
+center = [13.2, 3.1, -18.0]
+size = [5.6, 6.2, 9.0]
+rotation_deg = [0.0, -3.0, 0.0]
+color = [0.28, 0.32, 0.18]
+
+# South lip, past the town gate. Closes the trench; the lane itself stays open back to z 30.
+[[box]]
+name = "south_cap"
+kind = "heap"
+center = [0.0, 2.4, 33.2]
+size = [24.0, 4.8, 1.6]
+color = [0.36, 0.31, 0.26]
+
+# Entry dump piles, off the centre lane.
+[[box]]
+name = "entry_pile_w"
+kind = "heap"
+center = [-6.5, 0.6, 16.5]
+size = [3.0, 1.2, 3.6]
+rotation_deg = [0.0, 12.0, 0.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "entry_pile_e"
+kind = "heap"
+center = [6.6, 0.7, 18.5]
+size = [3.2, 1.4, 3.2]
+rotation_deg = [0.0, -14.0, 0.0]
+color = [0.30, 0.33, 0.20]
+
+# --- compactor: a metal press and crates on the west, Joe's bench stays clear at (7, 7.5). ---
+[[box]]
+name = "compactor"
+kind = "platform"
+center = [-6.8, 0.55, 7.6]
+size = [3.6, 1.1, 5.0]
+color = [0.45, 0.40, 0.33]
+
+[[box]]
+name = "crate_w1"
+kind = "crate"
+center = [-5.2, 0.45, 10.2]
+size = [1.0, 0.9, 1.0]
+color = [0.62, 0.43, 0.22]
+
+[[box]]
+name = "crate_w2"
+kind = "crate"
+center = [-4.2, 0.45, 10.8]
+size = [1.0, 0.9, 1.0]
+rotation_deg = [0.0, 15.0, 0.0]
+color = [0.62, 0.43, 0.22]
+
+[[box]]
+name = "crate_w3_stacked"
+kind = "crate"
+center = [-4.8, 1.35, 10.4]
+size = [1.0, 0.9, 1.0]
+rotation_deg = [0.0, 28.0, 0.0]
+color = [0.66, 0.47, 0.25]
+
+[[box]]
+name = "crate_e_wide"
+kind = "crate"
+center = [7.4, 0.35, 12.6]
+size = [2.0, 0.7, 1.0]
+rotation_deg = [0.0, -18.0, 0.0]
+color = [0.62, 0.43, 0.22]
+
+[[box]]
+name = "crate_ne"
+kind = "crate"
+center = [7.6, 0.55, 2.6]
+size = [1.2, 1.1, 1.2]
+rotation_deg = [0.0, 12.0, 0.0]
+color = [0.62, 0.43, 0.22]
+
+# --- deeper rot: the old mound, then the scrap climb (ledge + ramps, geometry unchanged). ---
+[[box]]
+name = "midden_mound"
+kind = "heap"
+center = [0.0, 0.55, -0.8]
+size = [2.4, 1.1, 2.4]
+rotation_deg = [0.0, 45.0, 0.0]
+color = [0.30, 0.33, 0.20]
+
 [[box]]
 name = "scrap_ledge"
 kind = "platform"
@@ -114,75 +290,168 @@ size = [3.0, 0.3, 4.272]
 rotation_deg = [20.556, 0.0, 0.0]
 color = [0.58, 0.52, 0.36]
 
-# --- the Midden's mound (boss spot) and trash heaps (Magewar TrashPiles, rotated about Y) ---
+# North face of the ledge, same ramp, pitched the other way: (z -14, y 1.5) down to (z -18, y 0).
 [[box]]
-name = "midden_mound"
+name = "ramp_down_west"
+kind = "ramp"
+center = [-4.5, 0.61, -15.947]
+size = [3.0, 0.3, 4.272]
+rotation_deg = [-20.556, 0.0, 0.0]
+color = [0.58, 0.52, 0.36]
+
+[[box]]
+name = "ramp_down_east"
+kind = "ramp"
+center = [4.5, 0.61, -15.947]
+size = [3.0, 0.3, 4.272]
+rotation_deg = [-20.556, 0.0, 0.0]
+color = [0.58, 0.52, 0.36]
+
+# Seals the floor beside the ledge so the climb is the way through.
+[[box]]
+name = "ledge_seal_w"
 kind = "heap"
-center = [0.0, 0.6, -1.5]
-size = [3.0, 1.2, 3.0]
-rotation_deg = [0.0, 45.0, 0.0]
+center = [-8.2, 2.0, -11.5]
+size = [4.4, 4.0, 12.0]
 color = [0.30, 0.33, 0.20]
 
 [[box]]
-name = "heap_west"
+name = "ledge_seal_e"
 kind = "heap"
-center = [-9.0, 0.9, -3.0]
-size = [4.0, 1.8, 3.0]
+center = [8.2, 2.0, -11.5]
+size = [4.4, 4.0, 12.0]
+color = [0.30, 0.33, 0.20]
+
+# Drops 2 m into the bowl. High end (z -18, y 0), low end (z -23.3, y -2). Wide enough for both down-ramps.
+[[box]]
+name = "basin_ramp"
+kind = "ramp"
+center = [0.0, -1.14, -20.614]
+size = [14.0, 0.3, 5.696]
+rotation_deg = [-20.556, 0.0, 0.0]
+color = [0.58, 0.52, 0.36]
+
+# Keeps the trench from spilling off the upper floor beside the basin ramp.
+[[box]]
+name = "basin_seal_w"
+kind = "heap"
+center = [-9.0, 2.0, -19.2]
+size = [4.0, 4.0, 3.5]
+color = [0.28, 0.32, 0.18]
+
+[[box]]
+name = "basin_seal_e"
+kind = "heap"
+center = [9.0, 2.0, -19.2]
+size = [4.0, 4.0, 3.5]
+color = [0.28, 0.32, 0.18]
+
+# --- the Filth bowl. Heaps around a sunken floor. The north lip opens only onto the road. ---
+[[box]]
+name = "filth_mound"
+kind = "heap"
+center = [0.0, -1.3, -33.0]
+size = [4.2, 1.4, 4.2]
 rotation_deg = [0.0, 18.0, 0.0]
-color = [0.30, 0.33, 0.20]
+color = [0.28, 0.32, 0.18]
 
 [[box]]
-name = "heap_east"
+name = "bowl_w1"
 kind = "heap"
-center = [9.0, 1.2, 3.0]
-size = [5.0, 2.4, 4.0]
-rotation_deg = [0.0, -30.0, 0.0]
+center = [-14.8, 1.25, -30.0]
+size = [6.4, 6.5, 10.0]
+color = [0.28, 0.32, 0.18]
+
+[[box]]
+name = "bowl_e1"
+kind = "heap"
+center = [14.8, 1.55, -30.0]
+size = [6.4, 7.1, 10.0]
 color = [0.30, 0.33, 0.20]
 
-# --- crates (cover), Kenney crate proportions ---
 [[box]]
-name = "crate_w1"
-kind = "crate"
-center = [-7.0, 0.5, 5.0]
-size = [1.0, 1.0, 1.0]
-color = [0.62, 0.43, 0.22]
+name = "bowl_w2"
+kind = "heap"
+center = [-14.8, 1.55, -38.0]
+size = [6.4, 7.1, 10.0]
+color = [0.30, 0.33, 0.20]
 
 [[box]]
-name = "crate_w2"
-kind = "crate"
-center = [-5.9, 0.5, 5.3]
-size = [1.0, 1.0, 1.0]
-rotation_deg = [0.0, 15.0, 0.0]
-color = [0.62, 0.43, 0.22]
+name = "bowl_e2"
+kind = "heap"
+center = [14.8, 1.25, -38.0]
+size = [6.4, 6.5, 10.0]
+color = [0.28, 0.32, 0.18]
 
 [[box]]
-name = "crate_w3_stacked"
-kind = "crate"
-center = [-6.5, 1.5, 5.1]
-size = [1.0, 1.0, 1.0]
-rotation_deg = [0.0, 30.0, 0.0]
-color = [0.66, 0.47, 0.25]
+name = "bowl_w3"
+kind = "heap"
+center = [-14.8, 1.4, -46.0]
+size = [6.4, 6.8, 10.0]
+color = [0.28, 0.32, 0.18]
 
 [[box]]
-name = "crate_e_wide"
-kind = "crate"
-center = [5.5, 0.4, 7.0]
-size = [2.0, 0.8, 1.0]
-rotation_deg = [0.0, -20.0, 0.0]
-color = [0.62, 0.43, 0.22]
+name = "bowl_e3"
+kind = "heap"
+center = [14.8, 1.4, -46.0]
+size = [6.4, 6.8, 10.0]
+color = [0.30, 0.33, 0.20]
+
+# North lip of the bowl, split around the road (gap about x -3..3).
+[[box]]
+name = "bowl_north_w"
+kind = "heap"
+center = [-8.0, 1.2, -49.2]
+size = [10.0, 6.4, 3.0]
+color = [0.28, 0.32, 0.18]
 
 [[box]]
-name = "crate_ne"
-kind = "crate"
-center = [10.0, 0.6, -6.0]
-size = [1.2, 1.2, 1.2]
-rotation_deg = [0.0, 10.0, 0.0]
-color = [0.62, 0.43, 0.22]
+name = "bowl_north_e"
+kind = "heap"
+center = [8.0, 1.2, -49.2]
+size = [10.0, 6.4, 3.0]
+color = [0.28, 0.32, 0.18]
 
-# Training dummies (step 11): [[enemy]] = an enemy id from data/enemies/*.toml, its feet
-# `position` (must lie on a box surface), optional `yaw_deg` and optional `respawn_s`
-# (step 14: the spawner revives it at full health that long after a death). Placed off the south
-# lane so the walk-and-cast smoke test still reaches the north wall.
+# Road walls and the end cap. No enemies live past the bowl.
+[[box]]
+name = "road_w1"
+kind = "heap"
+center = [-6.4, 0.5, -54.0]
+size = [5.2, 5.0, 8.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "road_e1"
+kind = "heap"
+center = [6.4, 0.5, -54.0]
+size = [5.2, 5.0, 8.0]
+color = [0.30, 0.33, 0.20]
+
+[[box]]
+name = "road_w2"
+kind = "heap"
+center = [-6.4, 0.7, -61.0]
+size = [5.2, 5.4, 8.0]
+color = [0.30, 0.33, 0.20]
+
+[[box]]
+name = "road_e2"
+kind = "heap"
+center = [6.4, 0.7, -61.0]
+size = [5.2, 5.4, 8.0]
+color = [0.36, 0.31, 0.26]
+
+[[box]]
+name = "road_cap"
+kind = "heap"
+center = [0.0, 0.5, -64.8]
+size = [12.0, 5.0, 2.2]
+color = [0.36, 0.31, 0.26]
+
+# Dummies stand in the compactor, off the centre lane. They never chase.
+# The Gnawer waits in the rot, north of the lesson walls, outside 8 m of the shrines.
+# The Heap waits where the scrap climb meets the basin, before the bowl. Both are
+# south of the Filth. Feet sit on a box top.
 [[enemy]]
 enemy = "earth_training_dummy"
 position = [-3.0, 0.0, 6.0]
@@ -191,50 +460,39 @@ respawn_s = 3.0
 
 [[enemy]]
 enemy = "water_training_dummy"
-position = [4.0, 0.0, 4.0]
+position = [4.0, 0.0, 5.8]
 yaw_deg = -20.0
 respawn_s = 3.0
 
-# Step 12: a Gnawer (data/enemies/gnawer.toml) idling in the north-west corner, beyond its
-# 8 m detect range from the start and the scripted walk, so the smoke tests stay as they
-# were; wander over (or shoot it) and it rushes you.
 [[enemy]]
 enemy = "gnawer"
-position = [-11.0, 0.0, -11.0]
-yaw_deg = -135.0   # facing the arena centre
+position = [6.5, 0.0, -2.5]
+yaw_deg = 160.0
 
-# Step 13: a Heap (data/enemies/heap.toml) in the north-east corner, mirroring the Gnawer:
-# beyond its 10 m detect range from the start and the scripted walk. Its glowing seam faces
-# the north-east wall; flank it.
 [[enemy]]
 enemy = "heap"
-position = [11.0, 0.0, -11.0]
-yaw_deg = 135.0    # facing the arena centre
+position = [0.0, 0.0, -16.6]
+yaw_deg = 180.0
 
-# Step 14: waves. Walking onto the midden mound (feet within trigger_radius of
-# trigger_center) starts them; each [[wave]] spawns delay_s after the previous one is
-# cleared (the first: delay_s after the trigger). `enemies` = [{ enemy, count, at }]:
-# `count` of an enemy id from data/enemies at a [[spawn_point]] (several stand on a 1.5 m
-# ring around it; every ring spot must lie on a box surface). Wave enemies are freed
-# after death; they don't respawn. The start, the scripted smoke walk and the corner
-# enemies stay outside the trigger, so the existing smoke tests are unchanged.
+# Waves fire only in the bowl. Gnawers, then the flanks, then the Filth alone.
+# north_ledge is the northernmost spawn; the road and the Breach gate are past it.
 [waves]
-trigger_center = [0.0, 0.0, -1.5]
-trigger_radius = 4.0
+trigger_center = [0.0, -2.0, -36.0]
+trigger_radius = 7.0
 
 [[spawn_point]]
-name = "north_ledge"          # on the scrap ledge: they pour down the ramps
-position = [0.0, 1.5, -11.5]
+name = "north_ledge"
+position = [0.0, -2.0, -42.0]
 yaw_deg = 180.0
 
 [[spawn_point]]
 name = "west_flank"
-position = [-11.5, 0.0, 9.0]
+position = [-7.0, -2.0, -34.0]
 yaw_deg = -90.0
 
 [[spawn_point]]
 name = "east_flank"
-position = [11.5, 0.0, 9.0]
+position = [7.0, -2.0, -34.0]
 yaw_deg = 90.0
 
 [[wave]]
@@ -255,16 +513,16 @@ enemies = [{ enemy = "the_filth", count = 1, at = "north_ledge" }]
 [[exit]]
 name = "to_breach"
 to = "breach"
-position = [0.0, 0.0, -12.0]
+position = [0.0, -2.0, -60.0]
 [[exit]]
 name = "to_town"
 to = "town_square"
-position = [0.0, 0.0, 13.0]
+position = [0.0, 0.0, 30.5]
 
 [[waystone]]
 point = "landfill"
-position = [2.0, 0.0, 10.0]
-yaw_deg = 180.0
+position = [5.5, 0.0, 15.0]
+yaw_deg = 0.0
 
 # ---- EXPAND_BEGIN (generated by tools/expand_maps.py; edit that, not this) ----
 # ---- EXPAND_END ----
@@ -273,108 +531,126 @@ yaw_deg = 180.0
 [[prop]]
 name = "trash_1"
 model = "assets/quaternius/enemies/props/Trash_Bags.glb"
-position = [-12.5, 0, -12.5]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 5.12
+position = [-7.2, 0.0, 20.0]
+rotation_deg = [0.0, 15.0, 0.0]
+scale = 4.8
 [[prop]]
 name = "trash_2"
 model = "assets/quaternius/enemies/props/Trash_Bags.glb"
-position = [12.4, 0, -12.6]
-rotation_deg = [0.0, 70.0, 0.0]
-scale = 5.76
+position = [7.4, 0.0, 19.0]
+rotation_deg = [0.0, 80.0, 0.0]
+scale = 5.12
 [[prop]]
 name = "trash_3"
 model = "assets/quaternius/enemies/props/Trashcan.glb"
-position = [-12.6, 0, 2.0]
+position = [-6.8, 0.0, 14.0]
 rotation_deg = [0.0, 20.0, 0.0]
-scale = 1.12
+scale = 1.04
 [[prop]]
 name = "trash_4"
-model = "assets/quaternius/enemies/props/Trashcan.glb"
-position = [12.6, 0, 8.5]
-rotation_deg = [0.0, -30.0, 0.0]
-scale = 1.12
+model = "assets/quaternius/enemies/props/Can_Broken.glb"
+position = [6.6, 0.0, 13.0]
+rotation_deg = [0.0, -20.0, 0.0]
+scale = 2.86
 [[prop]]
 name = "trash_5"
-model = "assets/quaternius/enemies/props/Trash_Bags.glb"
-position = [-11.0, 0, 10.5]
+model = "assets/quaternius/enemies/props/Trash_Bag.glb"
+position = [-7.0, 0.0, 11.2]
 rotation_deg = [0.0, 140.0, 0.0]
-scale = 4.8
+scale = 4.48
 [[prop]]
 name = "trash_6"
-model = "assets/quaternius/enemies/props/Trash_Bag.glb"
-position = [11.2, 0, 11.8]
-rotation_deg = [0.0, 30.0, 0.0]
+model = "assets/quaternius/enemies/props/Trash_Bags.glb"
+position = [7.2, 0.0, 10.6]
+rotation_deg = [0.0, 40.0, 0.0]
 scale = 4.48
 [[prop]]
 name = "trash_7"
-model = "assets/quaternius/enemies/props/Trash_Bag.glb"
-position = [-9.0, 0, -0.8]
-rotation_deg = [0.0, 60.0, 0.0]
+model = "assets/quaternius/enemies/props/Trash_Bags.glb"
+position = [6.5, 0.0, 8.4]
+rotation_deg = [0.0, 200.0, 0.0]
 scale = 4.16
 [[prop]]
 name = "trash_8"
-model = "assets/quaternius/enemies/props/Can_Broken.glb"
-position = [-10.8, 0, -3.6]
-rotation_deg = [0.0, 10.0, 0.0]
-scale = 3.08
+model = "assets/quaternius/enemies/props/Trashcan_Small.glb"
+position = [-7.4, 0.0, 5.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.56
 [[prop]]
 name = "trash_9"
-model = "assets/quaternius/enemies/props/Trash_Bags.glb"
-position = [9.6, 0, 5.6]
-rotation_deg = [0.0, 200.0, 0.0]
-scale = 4.48
-[[prop]]
-name = "trash_10"
-model = "assets/quaternius/enemies/props/Can_Broken.glb"
-position = [6.8, 0, 2.2]
-rotation_deg = [0.0, 80.0, 0.0]
-scale = 2.86
-[[prop]]
-name = "trash_11"
-model = "assets/quaternius/enemies/props/Trashcan_Small.glb"
-position = [-4.0, 0, 11.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.68
-[[prop]]
-name = "trash_12"
 model = "assets/quaternius/enemies/props/Trash_Bag.glb"
-position = [4.2, 0, 12.4]
+position = [6.2, 0.0, 6.2]
 rotation_deg = [0.0, 110.0, 0.0]
 scale = 3.84
 [[prop]]
-name = "trash_13"
+name = "trash_10"
+model = "assets/quaternius/enemies/props/Trash_Bags.glb"
+position = [-7.2, 0.0, 2.2]
+rotation_deg = [0.0, 60.0, 0.0]
+scale = 4.8
+[[prop]]
+name = "trash_11"
 model = "assets/quaternius/enemies/props/Can_Broken.glb"
-position = [-2.2, 0, -3.6]
-rotation_deg = [0.0, 45.0, 0.0]
-scale = 2.64
+position = [6.6, 0.0, 1.2]
+rotation_deg = [0.0, 80.0, 0.0]
+scale = 2.86
+[[prop]]
+name = "trash_12"
+model = "assets/quaternius/enemies/props/Trash_Bag.glb"
+position = [-6.2, 0.0, -2.4]
+rotation_deg = [0.0, 30.0, 0.0]
+scale = 4.16
+[[prop]]
+name = "trash_13"
+model = "assets/quaternius/enemies/props/Trash_Bags.glb"
+position = [6.2, 0.0, -8.0]
+rotation_deg = [0.0, 95.0, 0.0]
+scale = 4.48
 [[prop]]
 name = "trash_14"
+model = "assets/quaternius/enemies/props/Can_Broken.glb"
+position = [-5.4, 1.5, -12.2]
+rotation_deg = [0.0, 15.0, 0.0]
+scale = 2.64
+[[prop]]
+name = "trash_15"
 model = "assets/quaternius/enemies/props/Trash_Bag.glb"
-position = [2.4, 0, -0.2]
+position = [5.2, 1.5, -11.0]
 rotation_deg = [0.0, 300.0, 0.0]
 scale = 3.52
 [[prop]]
-name = "trash_15"
-model = "assets/quaternius/enemies/props/Trashcan_Small.glb"
-position = [-12.8, 0, -7.0]
-rotation_deg = [0.0, 15.0, 0.0]
-scale = 1.68
-[[prop]]
 name = "trash_16"
 model = "assets/quaternius/enemies/props/Trash_Bags.glb"
-position = [12.7, 0, -2.5]
-rotation_deg = [0.0, 95.0, 0.0]
+position = [-8.0, -2.0, -30.0]
+rotation_deg = [0.0, 20.0, 0.0]
 scale = 5.12
 [[prop]]
 name = "trash_17"
-model = "assets/quaternius/enemies/props/Can_Broken.glb"
-position = [-6.0, 0, 7.2]
-rotation_deg = [0.0, 130.0, 0.0]
-scale = 2.86
+model = "assets/quaternius/enemies/props/Trash_Bags.glb"
+position = [8.2, -2.0, -34.0]
+rotation_deg = [0.0, 70.0, 0.0]
+scale = 4.8
 [[prop]]
 name = "trash_18"
-model = "assets/quaternius/enemies/props/Trash_Bags.glb"
-position = [0.5, 0, -13.0]
+model = "assets/quaternius/enemies/props/Can_Broken.glb"
+position = [-7.4, -2.0, -40.0]
+rotation_deg = [0.0, 45.0, 0.0]
+scale = 2.86
+[[prop]]
+name = "trash_19"
+model = "assets/quaternius/enemies/props/Trashcan.glb"
+position = [7.6, -2.0, -43.0]
 rotation_deg = [0.0, 10.0, 0.0]
-scale = 4.48
+scale = 0.96
+[[prop]]
+name = "trash_20"
+model = "assets/quaternius/enemies/props/Trash_Bag.glb"
+position = [-2.7, -2.0, -53.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 3.84
+[[prop]]
+name = "trash_21"
+model = "assets/quaternius/enemies/props/Can_Broken.glb"
+position = [2.6, -2.0, -57.0]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = 2.42

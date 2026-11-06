@@ -309,8 +309,8 @@ func test_spawner_markers_respawn_and_free() -> void:
 
 
 func test_waves_in_the_midden() -> void:
-	# The player stands 3.5 m south of the mound centre: inside the 4 m trigger.
-	var m := await _midden(Vector3(4000, 0, -2000), Vector3(0, 0, 2.0))
+	# Feet in the bowl, 4 m south of the trigger: inside the 7 m radius, on the floor.
+	var m := await _midden(Vector3(4000, 0, -2000), Vector3(0, -2, -32))
 	var sp := m["spawner"] as EnemySpawner
 	var level := m["level"] as Node3D
 	var bus := GameEvents.bus()
@@ -324,7 +324,7 @@ func test_waves_in_the_midden() -> void:
 	var bus_started := [0]
 	var on_bus_start := func(_i: int, _id: String) -> void: bus_started[0] += 1
 	bus.wave_started.connect(on_bus_start)
-	check(sp.waves.size() == 3 and sp.trigger_radius == 4.0, "3 waves read from the level")
+	check(sp.waves.size() == 3 and is_equal_approx(sp.trigger_radius, 7.0), "3 waves read from the level")
 	sp.tick(DT)
 	check(sp.wave_state == EnemySpawner.WaveState.DELAY and sp.wave_index == 0, "triggered on the first tick")
 	for i in 59:

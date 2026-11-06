@@ -45,13 +45,9 @@ func test_toml_reader() -> void:
 	check(LevelToml.parse("x = 1\nx = 2").has("error"), "duplicate key rejected")
 
 
-func test_seventeen_boxes_kinds_match_toml() -> void:
+func test_boxes_match_toml() -> void:
 	var d := _toml()
 	var boxes := _boxes(d)
-	var arena := boxes.filter(
-		func(b: Dictionary) -> bool: return absf(b["center"][0]) <= 20.0 and absf(b["center"][2]) <= 20.0
-	)
-	check(arena.size() == 17, "the arena keeps its 17 greybox boxes (got %d); step 160 adds the zone" % arena.size())
 	var level: Node3D = (load(SCENE_PATH) as PackedScene).instantiate()
 	var nodes := level.get_node("Boxes").get_children()
 	check(nodes.size() == boxes.size(), "scene has %d boxes, TOML %d" % [nodes.size(), boxes.size()])
@@ -64,14 +60,9 @@ func test_seventeen_boxes_kinds_match_toml() -> void:
 		var k: String = n.get_meta("kind", "")
 		got[k] = int(got.get(k, 0)) + 1
 	check(want == got, "kind counts: TOML %s scene %s" % [want, got])
-	# Expected counts from the C++ step-12 level: 1 ground, 5 walls, 1 platform, 2 ramps, 3 heaps, 5 crates.
-	var arena_kinds: Dictionary = {}
-	for b in arena:
-		arena_kinds[b["kind"]] = int(arena_kinds.get(b["kind"], 0)) + 1
-	check(
-		arena_kinds == {"ground": 1, "wall": 5, "platform": 1, "ramp": 2, "heap": 3, "crate": 5},
-		"arena layout %s" % arena_kinds
-	)
+	check(int(want.get("wall", 0)) == 0, "the valley has no slate barrier ring")
+	check(int(want.get("heap", 0)) >= 8 and int(want.get("ground", 0)) >= 3, "heaps and three floors: %s" % want)
+	check(int(want.get("ramp", 0)) >= 4 and int(want.get("platform", 0)) >= 1, "ramps and the scrap ledge: %s" % want)
 	for i in boxes.size():
 		var n := level.get_node_or_null("Boxes/" + str(boxes[i]["name"]))
 		check(
@@ -213,47 +204,53 @@ func test_ramp_tops_meet_ledge() -> void:
 	level.free()
 
 
-func test_400_down_raycasts_hit_up_facing_surfaces() -> void:
+func test_valley_surfaces_face_up() -> void:
 	var level := _spawn()
 	var hits := 0
 	var per_kind: Dictionary = {}
 	var walkable := cos(deg_to_rad(45.0))
-	for ix in 20:
-		for iz in 20:
-			var x := lerpf(-13.5, 13.5, ix / 19.0)
-			var z := lerpf(-13.5, 13.5, iz / 19.0)
-			var hit := _ray(level, Vector3(x, 20, z), Vector3(x, -5, z))
-			if hit.is_empty():
-				fail("no hit at (%.2f, %.2f)" % [x, z])
-				continue
-			var n: Vector3 = hit["normal"]
-			var body := hit["collider"] as Node3D
-			if n.y < walkable or n.dot(body.global_basis.y.normalized()) < 0.999:
-				fail("(%.2f, %.2f): hit %s normal %s is not its top face" % [x, z, body.name, n])
-				continue
-			hits += 1
-			var k: String = body.get_meta("kind")
-			per_kind[k] = int(per_kind.get(k, 0)) + 1
-	print("    down-rays: %d/400 up-facing hits, per kind %s" % [hits, per_kind])
-	check(hits == 400, "400/400 up-facing hits (got %d)" % hits)
-	check(int(per_kind.get("ground", 0)) > 200, "mostly floor: %s" % per_kind)
+	# Centre lane, the scrap climb (inset from the ledge faces), the bowl, and heap tops.
+	var samples: Array[Vector3] = []
+	for z in [20, 16, 12, 8, 4, 0, -4, -8, -12, -16]:
+		samples.append(Vector3(0, 12, z))
+	for z in [-6, -7, -8, -10, -11, -12, -13, -16, -17]:
+		samples.append(Vector3(-4.5, 8, z))
+	for z in range(-24, -46, -2):
+		samples.append(Vector3(3, 6, z))
+	samples.append(Vector3(0, 8, -55))
+	samples.append(Vector3(-13, 12, 16))
+	samples.append(Vector3(13, 12, 10))
+	for p in samples:
+		var hit := _ray(level, p, p + Vector3(0, -20, 0))
+		if hit.is_empty():
+			fail("no hit at %s" % p)
+			continue
+		var n: Vector3 = hit["normal"]
+		var body := hit["collider"] as Node3D
+		if n.y < walkable or n.dot(body.global_basis.y.normalized()) < 0.999:
+			fail("%s: hit %s normal %s is not its top face" % [p, body.name, n])
+			continue
+		hits += 1
+		var k: String = body.get_meta("kind")
+		per_kind[k] = int(per_kind.get(k, 0)) + 1
+	check(hits == samples.size(), "up-facing hits %d/%d %s" % [hits, samples.size(), per_kind])
 	check(
-		per_kind.has("ramp") and per_kind.has("platform") and per_kind.has("heap"),
-		"rays land on ramps, ledge, heaps: %s" % per_kind
+		per_kind.has("ground") and per_kind.has("ramp") and per_kind.has("platform") and per_kind.has("heap"),
+		"floor, ramps, ledge, heaps: %s" % per_kind
 	)
 	level.free()
 
 
 func test_walls_and_open_sky() -> void:
 	var level := _spawn()
-	var hit := _ray(level, Vector3(0, 3, -10), Vector3(0, 3, -20))
-	check(not hit.is_empty() and (hit["collider"] as Node).name == "wall_north", "north wall ahead")
-	if not hit.is_empty():
-		check_near((hit["position"] as Vector3).z, -14.0, 0.01, "north wall inner face")
-	check(_ray(level, Vector3(0, 10, 0), Vector3(0, 100, 0)).is_empty(), "open sky above the arena")
+	check(_ray(level, Vector3(0, 10, 0), Vector3(0, 100, 0)).is_empty(), "open sky above the valley")
 	var gap := _ray(level, Vector3(0, 1.5, 12.5), Vector3(0, 1.5, 30))
-	# Step 160: the south gap now holds the arena_exit FlagGate until tutorial_done.
-	check(gap.is_empty() or gap["collider"] is FlagGate, "4 m south entrance: open but for the tutorial gate")
+	check(gap.is_empty() or gap["collider"] is FlagGate, "the entry lane south stays open")
+	var side := _ray(level, Vector3(0, 1.5, 16), Vector3(20, 1.5, 16))
+	var side_name := "" if side.is_empty() else String((side["collider"] as Node).name)
+	check(side_name.begins_with("heap_"), "a trash wall closes the east (%s)" % side_name)
+	var cap := _ray(level, Vector3(0, 1.5, 20), Vector3(0, 1.5, 40))
+	check(not cap.is_empty() and (cap["collider"] as Node).name == "south_cap", "the south lip is closed")
 	level.free()
 
 

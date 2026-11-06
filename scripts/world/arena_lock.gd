@@ -91,25 +91,28 @@ func _on_boss_died(_a: Variant = null, _b: Variant = null) -> void:
 	drop.call_deferred()
 
 
-## Step 118: the ring must enclose the spawner's live enemies (the boss) and every player when it rises (the Filth sits on
-## a ledge beyond the trigger, and a player can trip the trigger from its edge).
+## The ring encloses the player and the live wave (the Filth on its ledge, a gnawer still
+## in that wave). Marker packs earlier in the valley stay outside, or the ring would
+## stretch back over the whole trench and cover the north road.
 func _fit_radius() -> void:
 	if not is_inside_tree():
 		return
 	var fit := radius
-	for g in [Enemy.GROUP, Player.GROUP]:
-		for n in get_tree().get_nodes_in_group(g):
-			var n3 := n as Node3D
-			if (
-				n3 == null
-				or (
-					n3 is Enemy
-					and (not (n3 as Enemy).alive() or not get_parent().is_ancestor_of(n3))
-				)
-			):
-				continue
-			var off := n3.global_position - center
-			fit = maxf(fit, Vector2(off.x, off.z).length() + MARGIN)
+	var sp := get_parent() as EnemySpawner
+	for n in get_tree().get_nodes_in_group(Player.GROUP):
+		var p3 := n as Node3D
+		if p3 == null:
+			continue
+		var poff := p3.global_position - center
+		fit = maxf(fit, Vector2(poff.x, poff.z).length() + MARGIN)
+	for n in get_tree().get_nodes_in_group(Enemy.GROUP):
+		var e := n as Enemy
+		if e == null or not e.alive() or sp == null or not sp.is_ancestor_of(e):
+			continue
+		if not sp.wave_alive.has(e):
+			continue
+		var off := e.global_position - center
+		fit = maxf(fit, Vector2(off.x, off.z).length() + MARGIN)
 	radius = fit
 
 
