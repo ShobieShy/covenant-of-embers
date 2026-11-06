@@ -4,9 +4,9 @@ extends TestCase
 
 func test_version_string() -> void:
 	var v := String(ProjectSettings.get_setting("application/config/version", ""))
-	check(v == "0.7.0-prealpha", "project version is 0.7.0-prealpha (got %s)" % v)
+	check(v == "0.8.2-prealpha", "project version is 0.8.2-prealpha (got %s)" % v)
 	check(
-		MainMenu.version_string() == "v0.7.0-prealpha" and MainMenu.release_name() == "Pre-Alpha 0.7",
+		MainMenu.version_string() == "v0.8.2-prealpha" and MainMenu.release_name() == "Pre-Alpha 0.8.2",
 		"menu version string"
 	)
 
@@ -18,7 +18,7 @@ func test_version_suffix_parsing() -> void:
 	check(VersionInfo.numeric("0.1.1-prealpha") == "0.1.1.0", "numeric PE version drops the suffix")
 	var p := VersionInfo.parse("0.1.1-prealpha")
 	check(p.patch == 1 and p.pre == "prealpha", "parse")
-	check(NetSession.version() == "0.7.0-prealpha/p%d" % NetSession.PROTOCOL, "co-op gate keeps the suffix")
+	check(NetSession.version() == "0.8.2-prealpha/p%d" % NetSession.PROTOCOL, "co-op gate keeps the suffix")
 	check(NetSession.PROTOCOL >= 5, "0.4.0 protocol rejects a 0.3.x peer")
 
 
@@ -32,7 +32,7 @@ func test_export_presets_version() -> void:
 func test_menu_shows_version() -> void:
 	var m: MainMenu = (load(GameFlow.MENU) as PackedScene).instantiate()
 	runner_tree.root.add_child(m)
-	check(m.version_label != null and m.version_label.text.begins_with("Pre-Alpha 0.7"), "menu has version label")
+	check(m.version_label != null and m.version_label.text.begins_with("Pre-Alpha 0.8.2"), "menu has version label")
 	m.queue_free()
 
 

@@ -1876,6 +1876,13 @@
       "type": "release",
       "summary": "Version 0.7.0-prealpha. Labyrinth Act II The Blightcoil and Ember Art batch_12, on 544ca82. Fast tier green (135 passed, 4x playtest PASS) before the comment-only master move. Full tier not re-run for this cut. Linux export smoke and AppImage smoke green; Windows exe carries PE version 0.7.0.0 and the zip was built. Wine smoke did not finish here (RpcSs will not start). No Steam upload.",
       "commit": "(this commit)"
+    },
+    {
+      "time": "2026-11-06T06:53:00Z",
+      "step": "release-0.8.2",
+      "type": "release",
+      "summary": "Version 0.8.2-prealpha. Act III The Slagworks, the linear path, and the Landfill tutorial valley, on f4c265f. Fast tier green (151 passed, 4x playtest PASS). Full tier not re-run for this cut. Linux export smoke and AppImage smoke green; Windows exe carries PE version 0.8.2.0 and the zip was built. Wine smoke did not finish (unhandled page fault; wine32 is not installed). No Steam upload.",
+      "commit": "(this commit)"
     }
   ],
   "completed_steps": [
@@ -2108,5 +2115,5 @@
     "2026-10-26: steps 135-143 (part brands B1-B9) planned, waiting on user go; see docs/BRANDS_PLAN.md; open Q35-Q46",
     "2026-10-26: Q35-Q46 answered (defaults): Head brand, flat bonus per bolt, Pyrowning no mana, overheat lockout only, straight boulders, Coltara R toggle no shield, weak points + chance fallback, Water chain full charge only, element kept in names, Head-only brand, Windchester clamps at 0.1 s, wands scaled-down brand effects; steps 135-143 still waiting on user go"
   ],
-  "version": "0.7.0-prealpha"
+  "version": "0.8.2-prealpha"
 }
