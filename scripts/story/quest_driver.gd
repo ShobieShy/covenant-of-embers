@@ -10,6 +10,7 @@ extends Node
 ## fast_travel_crystal). Being a Node, its bus connections drop with the level.
 
 var log: QuestLog
+var _seen := ""
 
 
 static func make(q: QuestLog) -> QuestDriver:
@@ -39,7 +40,19 @@ static func reach_id(level_id: String) -> String:
 
 
 func reached(level_id: String) -> void:
+	if level_id == _seen:
+		return
+	_seen = level_id
 	log.notify("reach", reach_id(level_id))
+	var hud := get_tree().get_first_node_in_group(&"hud") if is_inside_tree() else null
+	if hud and hud.has_method(&"show_banner"):
+		hud.show_banner(WorldMap.level_name(level_id))
+
+
+func _physics_process(_dt: float) -> void:
+	var host := get_parent()
+	if host and host.has_method(&"here_id"):
+		reached(String(host.call(&"here_id")))
 
 
 func talked(speaker: String) -> void:

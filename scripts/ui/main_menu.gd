@@ -23,7 +23,7 @@ var creator: CharacterCreator  ## step 73 / 111
 var credits_ui: CreditsUi  ## batch_01/02 art credits
 ## 0.3.1 P6 (L1): title fade-in, a hover tick and nudge on buttons, save-slot cards.
 const LOCATION_NAMES := {
-	"midden": "The Midden",
+	"midden": "The Landfill",
 	"breach": "The Breach",
 	"town_square": "Town Square",
 	"mage_association": "Mage Association",
@@ -123,9 +123,7 @@ func _ready() -> void:
 	coop_menu = CoopMenu.new()
 	coop_menu.visible = false
 	add_child(coop_menu)
-	coop_menu.visibility_changed.connect(
-		func() -> void: menu_column.visible = not coop_menu.visible
-	)
+	coop_menu.visibility_changed.connect(func() -> void: menu_column.visible = not coop_menu.visible)
 	var coop_opts := Coop.parse_args(OS.get_cmdline_user_args())
 	if Coop.last_end_reason != "":
 		var why := CoopFlow.error_text(Coop.last_end_reason)
@@ -195,9 +193,7 @@ func press(id: String) -> void:
 
 func _start_new() -> void:
 	GameFlow.new_identity = identity()
-	var mode := (
-		_new_mode if _new_mode != "" else GameFlow.intro_mode_from_args(OS.get_cmdline_user_args())
-	)
+	var mode := _new_mode if _new_mode != "" else GameFlow.intro_mode_from_args(OS.get_cmdline_user_args())
 	GameFlow.new_run(get_tree(), mode)
 
 
@@ -242,12 +238,7 @@ func _hoverable(b: Button) -> void:
 func hover(b: Button) -> void:
 	hovers += 1
 	UiAnim.pulse(b, 0.04)
-	if (
-		hover_player
-		and hover_player.stream
-		and hover_player.is_inside_tree()
-		and not UiAnim.instant()
-	):
+	if hover_player and hover_player.stream and hover_player.is_inside_tree() and not UiAnim.instant():
 		hover_player.play()
 
 
@@ -262,21 +253,13 @@ static func slot_card(n: int) -> String:
 	var pr: Dictionary = d.get("progress", {})
 	var who := String(pl.get("name", ""))
 	var lines := ["Slot %d" % n]
-	lines.append(
-		(
-			("%s, Lv %d" % [who, int(pl.get("level", 1))])
-			if who != ""
-			else "Lv %d" % int(pl.get("level", 1))
-		)
-	)
+	lines.append(("%s, Lv %d" % [who, int(pl.get("level", 1))]) if who != "" else "Lv %d" % int(pl.get("level", 1)))
 	var lid := String(pr.get("level_id", ""))
 	if lid != "":
 		lines.append(String(LOCATION_NAMES.get(lid, lid.capitalize())))
 	var at := String(d.get("saved_at", ""))
 	if at.length() >= 16:  # saved_at is UTC; show it in local time
 		var bias := int(Time.get_time_zone_from_system().get("bias", 0)) * 60
-		var loc := Time.get_datetime_string_from_unix_time(
-			Time.get_unix_time_from_datetime_string(at) + bias, true
-		)
+		var loc := Time.get_datetime_string_from_unix_time(Time.get_unix_time_from_datetime_string(at) + bias, true)
 		lines.append("Saved " + loc.substr(0, 16))
 	return "\n".join(lines)

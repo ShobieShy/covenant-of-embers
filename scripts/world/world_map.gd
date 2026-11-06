@@ -17,6 +17,7 @@ const REGIONS := {
 	"willowbrook": {"name": "Willowbrook", "barrier": true, "start": State.KNOWN, "share": 0.1},
 	"stonehaven": {"name": "Stonehaven", "barrier": true, "start": State.KNOWN, "share": 0.1},
 	"landfill": {"name": "The Landfill", "barrier": false, "start": State.KNOWN, "share": 0.05},
+	"breach": {"name": "The Breach", "barrier": false, "start": State.LOCKED, "share": 0.0},
 	"whispering_woods": {"name": "Whispering Woods", "barrier": false, "start": State.LOCKED, "share": 0.2},
 	"shattered_peaks": {"name": "Shattered Peaks", "barrier": false, "start": State.LOCKED, "share": 0.2},
 	"crimson_sea": {"name": "Crimson Sea", "barrier": false, "start": State.LOCKED, "share": 0.15},
@@ -27,8 +28,8 @@ const LEVEL_REGION := {
 	"mage_association": "eldoria",
 	"old_oak": "eldoria",
 	"midden": "landfill",
-	"breach": "landfill",
-	"labyrinth": "landfill",
+	"breach": "breach",
+	"labyrinth": "breach",
 }
 ## Closed-level map: one name per scene. The full-screen sheet is this list, not Elyria.
 const LEVEL_NAMES := {
