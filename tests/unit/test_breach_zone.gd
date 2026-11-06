@@ -1,27 +1,19 @@
 extends TestCase
-## Step 162 (W11) done check: the Breach is a 220x320 m zone. A crater approach from the
-## breach waystone, 6 rooms on 2 levels (the annex's bell loft and reliquary at 4 m), 3
-## levers, and the optional side wing (camp + hidden chest) behind a tutorial_done gate.
-## Every new spot is reachable on the navmesh from the start.
+## The Breach is a closed dungeon: the room slice, its waystone, and the road back
+## to the Landfill. The open crater zone is not part of the level.
 
 const SCENE := "res://scenes/levels/breach.tscn"
 
 
 func test_breach_zone_layout() -> void:
 	var lvl := (load(SCENE) as PackedScene).instantiate()
-	check(lvl.get_node_or_null("Terrain") != null or lvl.find_child("*Terrain*", false) != null, "has terrain")
+	check(lvl.get_node_or_null("Terrain") == null, "no open crater")
+	check(String(lvl.get_meta("level_name", "")) == "The Breach", "the Breach keeps its name")
 	check(lvl.get_node_or_null("Waystones/breach") != null, "entrance waystone")
-	check(lvl.get_node("Camps").get_child_count() == 1, "side wing camp")
-	var tiers := lvl.get_node("Chests").get_children().map(func(c: Node) -> String: return String(c.get_meta(&"tier")))
-	check(tiers.count("hidden") == 1 and tiers.size() == 4, "4 zone chests, 1 hidden: %s" % [tiers])
-	check(lvl.get_node_or_null("Switches/lever_loft") != null, "3rd lever in the reliquary")
-	var ups := 0
-	for e in lvl.get_node("Encounters").get_children():
-		if Vector3(e.get_meta("trigger_center", Vector3.ZERO)).y > 3.0:
-			ups += 1
-	check(ups == 2, "2 rooms on the upper level: %d" % ups)
-	for a in ["crater_entrance", "ossuary", "reliquary"]:
-		check(lvl.get_node_or_null("Anchors/" + a) != null, a)
+	check(lvl.get_node_or_null("Exits/to_midden") != null, "road back to the Landfill")
+	check(lvl.get_node_or_null("Anchors/crater_entrance") == null, "the crater approach is gone")
+	var camps := lvl.get_node_or_null("Camps")
+	check(camps == null or camps.get_child_count() == 0, "no side-wing camp")
 	lvl.free()
 
 
@@ -39,9 +31,8 @@ func test_breach_zone_reachable() -> void:
 	var start := (lvl.get_node("PlayerStart") as Node3D).global_position
 	var map := nav.get_navigation_map()
 	var goals := {
-		"lever_loft": (lvl.get_node("Switches/lever_loft") as Node3D).global_position,
-		"crater_entrance": (lvl.get_node("Anchors/crater_entrance") as Node3D).global_position,
-		"side_hidden": lvl.to_global(Vector3(32, 0, 60)),
+		"lever_west": (lvl.get_node("Switches/lever_west") as Node3D).global_position,
+		"to_midden": (lvl.get_node("Exits/to_midden") as Node3D).global_position,
 	}
 	for g in goals:
 		var to: Vector3 = goals[g]

@@ -52,10 +52,10 @@ func test_new_game_runs_intro() -> void:
 	GameFlow.dry_run = true
 	GameFlow.new_run(null)
 	check(
-		GameFlow.level_id == "old_oak" and GameFlow.intro_mode == GameFlow.INTRO_PLAY,
-		"new game -> the Old Oak"
+		GameFlow.level_id == "mage_association" and GameFlow.intro_mode == GameFlow.INTRO_PLAY,
+		"new game -> the Mage Association"
 	)
-	var g := _game("old_oak", GameFlow.INTRO_PLAY)
+	var g := _game("mage_association", GameFlow.INTRO_PLAY)
 	var p := g.get_node("Player") as Player
 	check(g.intro != null and g.intro.current() == "summoning", "director runs the summoning")
 	check(p.loadout.wieldable(Loadout.Slot.STAFF) == null, "empty-handed until Bob")
@@ -81,8 +81,8 @@ func test_skip_intro() -> void:
 	check(GameFlow.intro_mode_from_args(PackedStringArray(["--skip-intro"])) == GameFlow.INTRO_SKIP, "--skip-intro")
 	GameFlow.dry_run = true
 	GameFlow.new_run(null, GameFlow.INTRO_SKIP)
-	check(GameFlow.level_id == "old_oak", "skip -> Old Oak")
-	var g := _game("old_oak", GameFlow.INTRO_SKIP)
+	check(GameFlow.level_id == "town_square", "skip -> Town Square")
+	var g := _game("town_square", GameFlow.INTRO_SKIP)
 	var p := g.get_node("Player") as Player
 	check(g.intro == null and g.story_flags.has(IntroDirector.DONE), "skipped intro is done")
 	check(g.story_flags.has("tutorial_done") and g.story_flags.has("fast_travel_crystal"), "world open")

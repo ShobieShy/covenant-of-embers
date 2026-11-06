@@ -46,8 +46,8 @@ func test_menu_buttons() -> void:
 	check((m.buttons["continue"] as Button).disabled, "continue greyed without a save")
 	m.press("new_run")
 	check(
-		GameFlow.last_request == GameFlow.GAME and GameFlow.level_id == "old_oak" and not GameFlow.load_save,
-		"new run -> the prologue at the Old Oak"
+		GameFlow.last_request == GameFlow.GAME and GameFlow.level_id == "mage_association" and not GameFlow.load_save,
+		"new run -> the prologue in the Mage Association"
 	)
 	m.press("settings")
 	check(m.settings_ui.visible, "settings opens")

@@ -137,6 +137,30 @@ target = "slag_seal"
 count = 3
 text = "Collect the three slag seals Joe burned into the rails"
 
+[[quest]]
+id = "the_breach"
+title = "The Breach"
+auto_start_when = ["tutorial_done"]
+reward_xp = 40
+
+[[objective]]
+quest = "the_breach"
+kind = "reach"
+target = "breach"
+text = "Go to the Breach"
+
+[[objective]]
+quest = "the_breach"
+kind = "reach"
+target = "labyrinth"
+text = "Enter the Labyrinth"
+
+[[objective]]
+quest = "the_breach"
+kind = "kill"
+target = "blightmaw_matriarch"
+text = "Face the Blightmaw Matriarch"
+
 [[clue]]
 id = "joes_seals_clue"
 title = "Joe's Seals"

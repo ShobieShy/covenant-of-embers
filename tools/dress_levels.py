@@ -87,15 +87,11 @@ def town() -> tuple[set[str], str]:
     p.append(prop("flagon_roof", TOWN + "roof-high-point.glb", (-14, 4, 8), 0.0, (8.2 / 1.1, 3, 6.2 / 1.1)))
     p.append(prop("flagon_chimney", TOWN + "chimney.glb", (-16.3, 5.2, 7.2), 0.0, 2.4))
     p.append(prop("flagon_lantern", TOWN + "lantern.glb", (-9.75, 0, 6.2), 0.0, 1.4))
-    # Skyline beyond the walls (out of reach; no collision needed).
-    for i, (x, z, m, r) in enumerate(((-24, -10, "tree-high", 0), (-25, 4, "tree-high-round", 40), (-23, 16, "tree", 80),
-                                      (24, -12, "tree-high-crooked", 10), (25, 0, "tree-high", 70),
-                                      (-8, -25, "tree-high-round", 20), (10, -24, "tree-crooked", 50),
-                                      (-12, 25, "tree-high", 30), (12, 25, "tree-high-round", 60))):
-        p.append(prop(f"tree_{i + 1}", TOWN + f"{m}.glb", (x, 0, z), float(r), 3.2))
-    p.append(prop("windmill_base", TOWN + "wall-block.glb", (-27, 0, -22), 0.0, (3, 6, 3)))
-    p.append(prop("windmill", TOWN + "windmill.glb", (-27, 5.5, -20.4), 0.0, 3))
-    # The giant oak lives in the Old Oak level (level-local), not past Eldoria's east gate.
+    # Street houses inside the walls, so the square stays a closed town.
+    p.append(prop("row_house", TOWN + "wall-wood.glb", (8, 0, 8), 0.0, (6, 4, 0.4)))
+    p.append(prop("row_roof", TOWN + "roof-high-point.glb", (8, 4, 8), 0.0, (6, 2.4, 5)))
+    p.append(prop("row_door", TOWN + "wall-wood-door.glb", (8, 0, 10.2), 0.0, (2, 3, 0.4)))
+    p.append(prop("row_lantern", TOWN + "lantern.glb", (10.4, 0, 8), 0.0, 1.4))
     return hide, "".join(p)
 
 

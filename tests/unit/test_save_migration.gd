@@ -49,7 +49,7 @@ func test_ask_once() -> void:
 	var d: Dictionary = SaveGame.read(FILE)["data"]
 	check(SaveGame.intro_status(d) == SaveGame.INTRO_ACTIVE, "yes: the intro runs")
 	check(IntroDirector.beat(_flags(d)) == "summoning", "from the summoning")
-	check(String(d["progress"]["level_id"]) == "old_oak", "the prologue is the Old Oak")
+	check(String(d["progress"]["level_id"]) == "mage_association", "the prologue is the Mage Association")
 	check(SaveGame.migrate_intro(FILE) == SaveGame.INTRO_ACTIVE, "not asked again")
 	SaveGame.write(_old_save("midden", 1, {}), FILE)
 	SaveGame.answer_intro(FILE, false)

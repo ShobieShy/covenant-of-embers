@@ -25,13 +25,13 @@ const BEATS: PackedStringArray = [
 	"return_to_bob",
 	"crystal",
 ]
-## The level each beat plays in. 0.4.0: the prologue (summoning, Joe, the Summoned)
-## is the Old Oak. Town is the hub. Bob's lead goes to the Landfill from the town gate.
+## The level each beat plays in. The prologue (summoning, Joe, the Summoned)
+## is the Mage Association. Town is the hub. Bob's lead goes out to the Landfill.
 const LEVEL := {
-	"summoning": "old_oak",
-	"appraisal": "old_oak",
-	"expulsion": "old_oak",
-	"grant": "old_oak",
+	"summoning": "mage_association",
+	"appraisal": "mage_association",
+	"expulsion": "mage_association",
+	"grant": "mage_association",
 	"welcome": "town_square",
 	"new_home": "old_oak",
 	"back_door": "midden",

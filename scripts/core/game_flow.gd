@@ -38,8 +38,8 @@ static var requests := 0
 ## Step 73: the new character's pick from the menu ({archetype, name, color}); applied to a
 ## fresh run (and to a co-op client with no character file yet).
 static var new_identity := {}
-## Step 109: how the next fresh game starts (consumed by main.gd): INTRO_PLAY runs the intro
-## from the Association, INTRO_SKIP starts at the Old Oak with the intro's end state.
+## How the next fresh game starts (consumed by main.gd): INTRO_PLAY runs the intro
+## in the Mage Association. INTRO_SKIP starts at Town Square with the intro's end state.
 const INTRO_PLAY := "play"
 const INTRO_SKIP := "skip"
 static var intro_mode := ""
@@ -82,10 +82,10 @@ static func _change(tree: SceneTree, path: String) -> void:
 	LoadingScreen.start(tree, path, level_id if path == GAME else "")  # threaded load, staged bar
 
 
-## 0.4.0: a new game starts the prologue at the Old Oak. --skip-intro lands there too, past it.
+## A new game starts in the Mage Association. --skip-intro lands in Town Square, past it.
 static func new_run(tree: SceneTree, mode := INTRO_PLAY) -> void:
 	intro_mode = mode
-	level_id = "old_oak"
+	level_id = "town_square" if mode == INTRO_SKIP else "mage_association"
 	load_save = false
 	_change(tree, GAME)
 

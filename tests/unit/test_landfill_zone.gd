@@ -1,19 +1,18 @@
 extends TestCase
-## Step 161 done check: the Landfill carries 10 POIs, 8 camps, 23 chests (2 hidden, 1
-## lever vault), the Overlook waystone and 2 Breach portal anchors; a camp wakes only with a
-## player near, respawns after a clear; 3 levers open the vault.
+## The Landfill is a closed arena with its own name, a waystone, and roads to town
+## and the Breach. A camp still wakes only with a player near.
 
 
 func test_landfill_layout() -> void:
 	var lvl := (load("res://scenes/levels/midden.tscn") as PackedScene).instantiate()
-	check(lvl.get_node("Camps").get_child_count() == 8, "8 camps")
-	var chests := lvl.get_node("Chests").get_children()
-	check(chests.size() == 24, "24 chests (camp + 20 + 2 hidden + vault): %d" % chests.size())
-	var tiers := chests.map(func(c: Node) -> String: return String(c.get_meta(&"tier")))
-	check(tiers.count("hidden") == 2 and tiers.count("vault") == 1, "2 hidden, 1 vault")
-	check(lvl.get_node_or_null("Waystones/landfill_overlook") != null, "Overlook waystone")
-	for a in ["breach_portal_1", "breach_portal_2", "lever_joes_stash_3"]:
-		check(lvl.get_node_or_null("Anchors/" + a) != null, a)
+	check(lvl.get_node_or_null("Terrain") == null, "the Landfill is a closed level")
+	check(String(lvl.get_meta("level_name", "")) == "The Landfill", "its own name")
+	check(lvl.get_node_or_null("Waystones/landfill") != null, "Landfill waystone")
+	check(lvl.get_node_or_null("Exits/to_town") != null, "road back to town")
+	check(lvl.get_node_or_null("Exits/to_breach") != null, "road on to the Breach")
+	check(lvl.get_node_or_null("Anchors/breach_portal_1") == null, "no Breach mark in the dump")
+	var camps := lvl.get_node_or_null("Camps")
+	check(camps == null or camps.get_child_count() == 0, "no open-zone camps")
 	lvl.free()
 
 

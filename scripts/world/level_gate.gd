@@ -33,14 +33,18 @@ func _ready() -> void:
 	box.material = m
 	add_child(box)
 	var l := Label3D.new()
-	l.text = "Gate: %s  [F]" % target.capitalize()
+	l.text = _place()
 	l.position.y = 2.8
 	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	add_child(l)
 
 
+func _place() -> String:
+	return "To %s  [F]" % WorldMap.level_name(target)
+
+
 func interact_prompt() -> String:
-	return "[F] Gate: %s" % target.capitalize()
+	return "To %s" % WorldMap.level_name(target)
 
 
 ## Looked at (t60u camera-centre cone/sphere-cast, Interaction) and within range.

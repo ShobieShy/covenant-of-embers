@@ -24,9 +24,7 @@ static func ensure_session(tree: SceneTree) -> NetSession:
 
 
 static func active() -> bool:
-	return (
-		session != null and is_instance_valid(session) and session.state == NetSession.State.IN_GAME
-	)
+	return session != null and is_instance_valid(session) and session.state == NetSession.State.IN_GAME
 
 
 static func is_host() -> bool:
@@ -59,13 +57,7 @@ static func default_name() -> String:
 
 ## {mode: "host"|"join"|"", port, address, name, players} from the user args.
 static func parse_args(args: PackedStringArray) -> Dictionary:
-	var out := {
-		"mode": "",
-		"port": NetTransport.DEFAULT_PORT,
-		"address": "",
-		"name": default_name(),
-		"players": 2
-	}
+	var out := {"mode": "", "port": NetTransport.DEFAULT_PORT, "address": "", "name": default_name(), "players": 2}
 	var i := 0
 	while i < args.size():
 		var a := args[i]
@@ -95,7 +87,7 @@ static func parse_args(args: PackedStringArray) -> Dictionary:
 static func host_level() -> String:
 	var r := SaveGame.read(GameFlow.save_path)
 	if r.has("error"):
-		return "old_oak"
+		return "mage_association"
 	var id := String((r["data"] as Dictionary).get("progress", {}).get("level_id", "midden"))
 	return id if GameFlow.LEVELS.has(id) else "midden"
 
@@ -112,11 +104,7 @@ static func host_floor() -> int:
 ## Step 155: the anchor/waystone the host's save stands at; joining clients spawn there.
 static func host_anchor() -> String:
 	var r := SaveGame.read(GameFlow.save_path)
-	return (
-		""
-		if r.has("error")
-		else String((r["data"] as Dictionary).get("progress", {}).get("anchor", ""))
-	)
+	return "" if r.has("error") else String((r["data"] as Dictionary).get("progress", {}).get("anchor", ""))
 
 
 ## session.started: everyone loads the game scene in the host's level. The host plays
