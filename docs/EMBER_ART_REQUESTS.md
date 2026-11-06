@@ -76,3 +76,25 @@ Requested for docs/POLISH_0.3.1_PLAN.md. CC0 (original or Kenney), credited in C
 | Vote banner chip-bar style | ui/vote/chip_bar.png (9-slice, margin 4) + 8x8 chips (empty/waiting/yes/no/local) | arrived (batch_09b_polish), P2 |
 | Dialogue continue arrow | ui/typewriter/continue_arrow (6 frames, 8 fps loop) | arrived (batch_09b_polish), P3 |
 | Sounds: 7 casts, 6 rarity pickups, chest, shrine, stairs, level-up, ui hover/click/open/close, vote_tick | assets/original/ember_art/sfx/*.ogg (Kenney reuses point at the repo copies) | arrived, P5/P7 |
+
+## Labyrinth Act III: The Slagworks (0.8.0)
+
+Greybox until these land. Original work, CC0 or CC-BY, credited in game. No file is added under `assets/` for this milestone. The gantry ramp rises 3 m over a run of at least 6 m. The slag cast is an empty humanoid negative. Vein and Furnace use the Railhead music bed until they have a file. Cue slots stay silent until the files exist: Railhead, Overlook, Crucible, Forgemaw, and a short sting when the lift unlocks.
+
+| Slot | Path | Spec |
+|---|---|---|
+| Furnace-anvil | assets/original/ember_art/slagworks/furnace_anvil.glb | molten mouth, metres, Y-up, the mouth faces the way into the arena |
+| Gantry deck | assets/original/ember_art/slagworks/gantry_deck.glb | safe walk at 3 m, metres, Y-up |
+| Gantry ramp | assets/original/ember_art/slagworks/gantry_ramp.glb | 3 m rise over a run of at least 6 m, about 27 degrees, metres, Y-up |
+| Lava channel | assets/original/ember_art/slagworks/lava_channel.glb | about 1.2 m tall, metres, Y-up |
+| Rail | assets/original/ember_art/slagworks/rail.glb | mine rail, metres, Y-up |
+| Mine cart | assets/original/ember_art/slagworks/mine_cart.glb | cart on the rail, metres, Y-up |
+| Slag-seal decal | assets/original/ember_art/slagworks/slag_seal_decal.png | seal burned into a rail, Y-up |
+| Scrap-spirit | assets/original/ember_art/slagworks/scrap_spirit.glb | one spirit, no second foreman, metres, Y-up |
+| Branded troll | assets/original/ember_art/enemies/branded_troll.glb | Fire-branded troll, metres, Y-up |
+| Forge-construct | assets/original/ember_art/enemies/forge_construct.glb | tank construct, metres, Y-up |
+| Forgemaw | assets/original/ember_art/enemies/forgemaw.glb | crucible boss, metres, Y-up |
+| Slag cast | assets/original/ember_art/slagworks/slag_cast.glb | empty humanoid negative in cooling slag, metres, Y-up |
+| Main lift | assets/original/ember_art/slagworks/main_lift.glb | lift back to the Railhead, metres, Y-up |
+| Sunken Ruins door | assets/original/ember_art/slagworks/sunken_door.glb | closed door, does not travel, metres, Y-up |
+| Ore-vein dressing | assets/original/ember_art/slagworks/ore_vein.glb | vein dressing, metres, Y-up |

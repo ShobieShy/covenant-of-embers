@@ -103,3 +103,31 @@ func test_exit_doorway_never_opens_onto_stair_well() -> void:
 				bad += 1
 	check(bad == 0, "exit doorway clear of the stair row on 8000 floors (%d bad)" % bad)
 	check(south > 0, "some floors move the hole south (%d)" % south)
+
+
+func test_slagworks_golden_and_warrens_seed() -> void:
+	var kit := FloorGen.load_kit("res://data/labyrinth/slagworks.toml")
+	check(kit.get("error", "") == "", "slagworks kit parses")
+	check(String(kit["kit"]["id"]) == "slagworks", "kit id")
+	var lines := (
+		FileAccess
+		. get_file_as_string("res://tests/fixtures/labyrinth/slagworks_golden.txt")
+		. strip_edges()
+		. split("\n")
+	)
+	check(lines.size() == 40, "40 slagworks golden floors")
+	var bad := 0
+	for line in lines:
+		var p := line.split(" ", false, 3)
+		var s := FloorGen.floor_seed(int(p[0]), "slagworks", int(p[1]), int(p[2]))
+		if FloorGen.signature(FloorGen.generate(kit, s)) != p[3]:
+			bad += 1
+	check(bad == 0, "slagworks golden matches (%d bad)" % bad)
+	var warrens := FloorGen.load_kit()
+	var state := LabyrinthState.fresh(9)
+	var a := FloorGen.signature(FloorGen.generate(warrens, state.floor_seed(3)))
+	var b := FloorGen.signature(
+		FloorGen.generate(warrens, FloorGen.floor_seed(state.save_seed, "warrens", 3, 0))
+	)
+	check(a == b, "floor 3 still hashes with the warrens seed")
+	check(state.slag_seed(9) != state.floor_seed(9), "slagworks seed is not the warrens hash")

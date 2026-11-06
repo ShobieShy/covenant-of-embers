@@ -190,9 +190,9 @@ Settled by the story and by this plan. None of these are open:
 - The Crown door descends to checkpoint 9 after the Matriarch is dead. The Sunken Ruins door does not load a level.
 - The endless-after-clear rule is approved and is Post-Core. 0.8.0 does not build it. DLC labyrinths get a story first, then the same conversion. The Core and that run are later 0.x content when ShobieShy opens them. 1.0 is a release cut he orders, not their version.
 
-Still open:
+Settled with the rest, 5 Nov 2026. ShobieShy kept the name:
 
-- **Working title for the endless run: The Forgotten Abyss.** Keep it, or replace it. The mode is an underground abyss in the "forgotten" sense: endless floors under a cleared labyrinth, rising monster stats, random generation only on those floors. The 0.8.0 units do not wait on this name. It is not a `GameFlow` level id and not a 0.8.0 scene.
+- **The endless run is named The Forgotten Abyss.** The mode stays deferred Post-Core. It is an underground abyss in the "forgotten" sense: endless floors under a cleared labyrinth, rising monster stats, random generation only on those floors. The name is not a `GameFlow` level id and not a 0.8.0 scene. 0.8.0 does not build the mode.
 
 ### Sources
 
@@ -488,7 +488,7 @@ Approved by ShobieShy on 5 Nov 2026. This is roadmap. It is not a 0.8.0 unit, no
 
 Once the Core is completed and the Breach Labyrinth campaign is cleared, the main story ending leaves that labyrinth as an endless dungeon. Floors keep coming. Monster stats rise as the party goes deeper. The same rule applies to every labyrinth, the Breach one and any future DLC labyrinth: when that labyrinth's own story campaign is cleared, it converts into this endless run.
 
-**Working title: The Forgotten Abyss.** The name is for an underground abyss, a forgotten depth under a cleared labyrinth. ShobieShy keeps or replaces the title. See Decisions for ShobieShy. The title is not a level id.
+**Name: The Forgotten Abyss.** Settled by ShobieShy on 5 Nov 2026. The name is for an underground abyss, a forgotten depth under a cleared labyrinth. The mode stays deferred. The title is not a level id.
 
 What is already decided about the structure:
 

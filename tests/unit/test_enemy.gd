@@ -95,14 +95,14 @@ func test_toml_inline_tables() -> void:
 func test_tres_matches_toml() -> void:
 	var table := EnemyTable.load_default()
 	check(table.validate().is_empty(), "shipped table valid: %s" % [table.validate()])
-	var r := EnemyTable.from_toml_files([DUMMIES_TOML, GNAWER_TOML, HEAP_TOML, "res://data/enemies/breach_warden.toml", "res://data/enemies/scorchling.toml", OOZE, "res://data/enemies/the_filth.toml", "res://data/enemies/goblins.toml", "res://data/enemies/blightcoil.toml"])
+	var r := EnemyTable.from_toml_files([DUMMIES_TOML, GNAWER_TOML, HEAP_TOML, "res://data/enemies/breach_warden.toml", "res://data/enemies/scorchling.toml", OOZE, "res://data/enemies/the_filth.toml", "res://data/enemies/goblins.toml", "res://data/enemies/blightcoil.toml", "res://data/enemies/slagworks.toml"])
 	check(not r.has("error"), "training_dummies.toml + gnawer.toml + heap.toml load (%s)" % r.get("error", ""))
 	if r.has("error"):
 		return
 	var toml: EnemyTable = r["table"]
 	check(
-		toml.defs.size() == 16 and table.defs.size() == 16,
-		"two dummies + Gnawer + Heap + Breach Warden + Scorchling + Ooze + The Filth + 4 goblins + 4 Blightcoil (%d toml, %d tres)" % [toml.defs.size(), table.defs.size()]
+		toml.defs.size() == 19 and table.defs.size() == 19,
+		"two dummies + Gnawer + Heap + Breach Warden + Scorchling + Ooze + The Filth + 4 goblins + 4 Blightcoil + 3 Slagworks (%d toml, %d tres)" % [toml.defs.size(), table.defs.size()]
 	)
 	for want in toml.defs:
 		var got := table.find(want.id)

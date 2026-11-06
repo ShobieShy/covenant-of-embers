@@ -10,6 +10,7 @@ const SUBTYPES := [
 	"res://scripts/enemies/scorchling.gd",
 	"res://scripts/enemies/gnawer.gd",
 	"res://scripts/enemies/blightmaw.gd",
+	"res://scripts/enemies/forgemaw.gd",
 	"res://scripts/enemies/heap.gd",
 	"res://scripts/enemies/enemy.gd",
 ]

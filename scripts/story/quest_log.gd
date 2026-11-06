@@ -100,6 +100,7 @@ func start(id: String) -> bool:
 		return false
 	active[id] = {"step": 0, "have": 0}
 	_seed_act2(id)
+	_seed_act3(id)
 	if active.has(id):
 		quest_started.emit(id)
 	return true
@@ -117,6 +118,21 @@ func _seed_act2(id: String) -> void:
 		elif n > 0:
 			active[id]["have"] = n
 	elif id == "the_overgrown_deep" and known_bosses.has("blightmaw_matriarch"):
+		_complete(id)
+
+
+func _seed_act3(id: String) -> void:
+	if id == "joes_seals":
+		var n := 0
+		for k in flags.values:
+			if String(k).begins_with("seal:") and int(flags.values[k]) != 0:
+				n += 1
+		var need := int(quests[id]["objectives"][0]["count"])
+		if n >= need:
+			_complete(id)
+		elif n > 0:
+			active[id]["have"] = n
+	elif id == "the_slagworks" and known_bosses.has("forgemaw"):
 		_complete(id)
 
 

@@ -104,6 +104,11 @@ func floor_seed(n: int) -> int:
 	return FloorGen.floor_seed(save_seed, KIT, n, remix_of(n))
 
 
+## Act III layouts. `floor_seed` stays on the Warrens kit id; this hash does not change it.
+func slag_seed(n: int) -> int:
+	return FloorGen.floor_seed(save_seed, "slagworks", n, remix_of(n))
+
+
 func reach(n: int) -> void:
 	deepest = maxi(deepest, n)
 

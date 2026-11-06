@@ -65,10 +65,13 @@ var floor_no := 1
 var kit := {}
 var lab_floor: LabyrinthFloor
 var cavern: BlightcoilCavern
+var slag: SlagworksFloor
 ## L4 co-op (LabyrinthSync): a joiner's stairs down are the host's call (follow_only); the
 ## host's go through stair_gate () -> bool first (the whole party nearby, or a vote).
 var follow_only := false
 var stair_gate: Callable
+## Crown door asked for checkpoint 9 and is waiting on the stair vote.
+var pending_slag := false
 ## 0.4.0: a closed level sits at the origin. Door landings stay in that level's coordinates
 ## instead of adding the open-world offset.
 var level_local := false
@@ -236,6 +239,8 @@ func leave(to_level := "town_square") -> Vector3:
 	breach = null
 	lab_floor = null
 	cavern = null
+	slag = null
+	pending_slag = false
 	if labyrinth and id == "labyrinth":
 		labyrinth.current = 0  # leaving mid-floor: the next visit starts at a floor's start
 		floor_no = 1  # the crater gate leads to floor 1; waystones go deeper (enter_floor)
@@ -257,6 +262,11 @@ func _enter_floor(id: String, n: int) -> Vector3:
 		labyrinth = LabyrinthState.fresh()
 	if LabGate.is_cavern(n):
 		return await _enter_cavern(id, n)
+	if SlagworksFloor.is_floor(n):
+		return await _enter_slag(id, n)
+	if n > SlagworksFloor.LAST:
+		busy = false
+		return Vector3.INF
 	var t0 := Time.get_ticks_msec()
 	slow_load.emit(id)  # a floor build is one frame of work, but the stairs swap is a load
 	await get_tree().process_frame
@@ -288,7 +298,14 @@ func _enter_floor(id: String, n: int) -> Vector3:
 
 func _on_stairs(dir: int) -> void:
 	if dir == LabyrinthStairs.UP:
+		# Slagworks stairs-up return to the crater but keep the floor just left.
+		# Warrens stairs-up still clear current. Waystone travel never comes through here.
+		var restore := slag != null
+		var back := floor_no
 		leave("breach")
+		if restore and labyrinth:
+			labyrinth.current = back
+			floor_no = back
 	elif follow_only:
 		print("[coop] the host takes the stairs")
 	elif stair_gate.is_valid() and not bool(stair_gate.call()):
@@ -301,6 +318,16 @@ func _on_stairs(dir: int) -> void:
 func descend() -> Vector3:
 	if current != "labyrinth" or busy:
 		return Vector3.INF
+	# The Crown door's vote ends here. It is not a Warrens descend.
+	if pending_slag and LabGate.is_cavern(floor_no):
+		pending_slag = false
+		return await _swap_to(SlagworksFloor.FIRST, false)
+	# Slagworks stairs are their own branch. Floor 13 does not build a floor 14.
+	# Floors 1-8 keep the Warrens stop at boss floor 5, including the cavern.
+	if floor_no >= SlagworksFloor.FIRST:
+		if floor_no >= SlagworksFloor.LAST:
+			return Vector3.INF
+		return await _swap_to(floor_no + 1, true)
 	var last := int(_kit()["kit"]["boss_floor"])
 	if floor_no >= last:
 		return Vector3.INF
@@ -316,6 +343,7 @@ func descend() -> Vector3:
 	interior = null
 	lab_floor = null
 	cavern = null
+	slag = null
 	return await _enter_floor("labyrinth", floor_no + 1)
 
 
@@ -339,10 +367,13 @@ func _enter_cavern(id: String, n: int) -> Vector3:
 		(c as RestShrine).rested.connect(func(at: Vector3) -> void: rested.emit(at))
 	if ps.size() > 0 and ps[0] is Player and cavern.forge:
 		cavern.forge.player = ps[0] as Player
+	if cavern.forge and not cavern.forge.descend_to.is_connected(_on_forge_descend):
+		cavern.forge.descend_to.connect(_on_forge_descend)
 	floor_no = n
 	current = id
 	labyrinth.reach(n)
 	labyrinth.current = n
+	slag = null
 	var land := cavern.start_pos() + Vector3(0, 0.5, 0)
 	_move_party(land)
 	if cavern.hazard:
@@ -355,12 +386,88 @@ func _enter_cavern(id: String, n: int) -> Vector3:
 	return land
 
 
+## The opened Crown door. A joiner's press does nothing; the host's waits on the
+## stair vote when one is wired, then loads checkpoint 9. Solo play does not wait.
+func _on_slag_lift() -> void:
+	if labyrinth:
+		labyrinth.current = SlagworksFloor.FIRST
+	_swap_to(SlagworksFloor.FIRST, false)
+	rested.emit(Vector3.ZERO)
+
+
+func _on_forge_descend(_n: int) -> void:
+	if follow_only or cavern == null or current != "labyrinth":
+		return
+	if stair_gate.is_valid() and not bool(stair_gate.call()):
+		pending_slag = true
+		return
+	pending_slag = false
+	_swap_to(SlagworksFloor.FIRST, false)
+
+
+func _swap_to(n: int, clear: bool) -> Vector3:
+	if Engine.is_in_physics_frame():
+		busy = true
+		await get_tree().process_frame
+	busy = true
+	if clear and labyrinth:
+		labyrinth.clear_floor(floor_no)
+	fade.emit(FADE)
+	if interior:
+		var old := interior
+		remove_child(old)
+		old.queue_free()
+	interior = null
+	lab_floor = null
+	cavern = null
+	slag = null
+	return await _enter_floor("labyrinth", n)
+
+
+## Checkpoints 9-13: one Slagworks floor. Not the Warrens kit and not the cavern.
+func _enter_slag(id: String, n: int) -> Vector3:
+	var t0 := Time.get_ticks_msec()
+	slow_load.emit(id)
+	await get_tree().process_frame
+	slag = SlagworksFloor.make(n, labyrinth)
+	lab_floor = null
+	cavern = null
+	interior = slag
+	interior.name = "Interior"
+	interior.position = Vector3(0, DEPTH, 0)
+	add_child(interior)
+	slag.ensure_nav()
+	if not slag.lift_home.is_connected(_on_slag_lift):
+		slag.lift_home.connect(_on_slag_lift)
+	var ps := party()
+	for c in slag.find_children("*", "LabyrinthStairs", true, false):
+		(c as LabyrinthStairs).used.connect(_on_stairs, CONNECT_DEFERRED)
+	for c in slag.find_children("*", "RestShrine", true, false):
+		(c as RestShrine).player = (
+			ps[0] as Player if not ps.is_empty() and ps[0] is Player else null
+		)
+		(c as RestShrine).rested.connect(func(at: Vector3) -> void: rested.emit(at))
+	floor_no = n
+	current = id
+	labyrinth.reach(n)
+	labyrinth.current = n
+	var land := slag.start_pos() + Vector3(0, 0.5, 0)
+	_move_party(land)
+	busy = false
+	print("[labyrinth] slagworks %d %s (%d ms)" % [n, SlagworksFloor.NAMES.get(n, ""), Time.get_ticks_msec() - t0])
+	floor_entered.emit(n)
+	entered.emit(id)
+	return land
+
+
 ## Waystone travel straight to floor `n` (the boss floor's waystone, OW6).
 func enter_floor(n: int) -> Vector3:
 	if current == "labyrinth":
 		if floor_no == n:
 			if cavern:
 				return cavern.start_pos()
+			if slag:
+				return slag.start_pos()
 			return lab_floor.start_pos() if lab_floor else Vector3.INF
 		leave("breach")
 	floor_no = n

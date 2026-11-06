@@ -694,6 +694,10 @@ func _on_lab_kill(_e: Enemy, _el: ElementTable.Element, fl: Node3D, elite: Strin
 		elif fl is LabyrinthFloor and is_instance_valid(fl):
 			_lab_boss_chest(fl, _e, first)
 			_lab_waystone(fl)
+		elif fl is SlagworksFloor and is_instance_valid(fl):
+			(fl as SlagworksFloor).note_boss_dead()
+			if first:
+				_lab_boss_chest(fl, _e, first)
 		print("[labyrinth] %s defeated" % boss)
 
 
@@ -796,7 +800,7 @@ func _open_act_picker() -> void:
 	var box := VBoxContainer.new()
 	box.set_anchors_preset(Control.PRESET_CENTER)
 	act_picker.add_child(box)
-	for floor_no in [1, LabGate.SUMP]:
+	for floor_no in LabGate.choices(labyrinth):
 		var b := Button.new()
 		b.text = LabGate.choice_label(floor_no)
 		b.pressed.connect(pick_act.bind(floor_no))
@@ -878,6 +882,8 @@ func _on_lab_rest(_at: Vector3) -> void:
 		labyrinth.current = 7
 		ints.floor_no = 7
 		ints.cavern.floor_no = 7
+	elif ints and ints.slag:
+		labyrinth.current = ints.floor_no
 	var player := get_node_or_null("Player") as Player
 	if player:
 		player.clear_blight_status()
@@ -897,6 +903,10 @@ func _on_blight_pad(checkpoint: int, waystone_id: String) -> void:
 				player.spawn_feet = ints.cavern.pad_global(checkpoint)
 			if ints.cavern.hazard:
 				ints.cavern.hazard.last_pad = ints.cavern.pad_global(checkpoint)
+		elif ints.slag:
+			var player := get_node_or_null("Player") as Player
+			if player:
+				player.spawn_feet = ints.slag.pad_global()
 	if fast_travel:
 		fast_travel.attune(waystone_id)
 	save_game()
@@ -908,10 +918,30 @@ func _on_linear_floor(_n: int) -> void:
 	if ints and ints.cavern:
 		_enter_cavern_runtime(ints.cavern, player)
 		return
+	if ints and ints.slag:
+		_enter_slag_runtime(ints.slag, player)
+		return
 	var fl := ints.lab_floor if ints else null
 	if fl == null:
 		return
 	_lab_waystone(fl)
+	_lab_loot_parent_linear(fl)
+	_lab_enemies(fl, player)
+	_lab_chests(fl, player)
+
+
+func _enter_slag_runtime(fl: SlagworksFloor, player: Player) -> void:
+	DialogueDB.bosses = labyrinth.bosses
+	if quests:
+		quests.known_bosses = labyrinth.bosses
+	if not fl.pad_reached.is_connected(_on_blight_pad):
+		fl.pad_reached.connect(_on_blight_pad)
+	fl.place_story(story_flags)
+	_wire_spirit(fl, player)
+	if player:
+		player.spawn_feet = fl.pad_global()
+		if fl.on_pad(player.global_position):
+			_on_blight_pad(fl.floor_no, fl.waystone_id)
 	_lab_loot_parent_linear(fl)
 	_lab_enemies(fl, player)
 	_lab_chests(fl, player)
@@ -933,6 +963,20 @@ func _enter_cavern_runtime(cav: BlightcoilCavern, player: Player) -> void:
 	if labyrinth.bosses.has(LabGate.BOSS):
 		cav.note_boss_dead()
 		_free_matriarch()
+
+
+func _wire_spirit(fl: SlagworksFloor, player: Player) -> void:
+	if fl.floor_no != 11 or get_node_or_null("Npc_ScrapSpirit"):
+		return
+	var mark := fl.get_node_or_null("ScrapSpirit") as Node3D
+	if mark == null:
+		return
+	_ensure_dialogue()
+	var n := Npc.new("Scrap-spirit")
+	n.name = "Npc_ScrapSpirit"
+	n.player = player
+	add_child(n)
+	n.global_position = mark.global_position
 
 
 func _wire_mother(cav: BlightcoilCavern, player: Player) -> void:

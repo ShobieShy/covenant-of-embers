@@ -110,3 +110,34 @@ text = "Find Crazy Joe's three ritual marks"
 id = "joes_rot"
 title = "Joe's Rot"
 text = "Crazy Joe carved the bark and fed the Rotheart Breach-fire. The marks are still warm."
+
+[[quest]]
+id = "the_slagworks"
+title = "The Slagworks"
+auto_start_when = ["scrap_met"]
+reward_xp = 90
+
+[[objective]]
+quest = "the_slagworks"
+kind = "kill"
+target = "forgemaw"
+text = "Stop Forgemaw, the troll who kept the fires lit"
+
+[[quest]]
+id = "joes_seals"
+title = "Joe's Seals"
+auto_start_when = ["scrap_met"]
+reward_xp = 40
+reward_clue = "joes_seals_clue"
+
+[[objective]]
+quest = "joes_seals"
+kind = "collect"
+target = "slag_seal"
+count = 3
+text = "Collect the three slag seals Joe burned into the rails"
+
+[[clue]]
+id = "joes_seals_clue"
+title = "Joe's Seals"
+text = "Joe burned the seals into the rails. They are not the bark marks from the cavern above."

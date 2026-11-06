@@ -8,6 +8,8 @@ func test_choice_and_waystones() -> void:
 	alive.bosses.append("goblin_king")
 	check(LabGate.resolve(alive, -1) == -1, "the picker does not send 0")
 	check(LabGate.resolve(alive, 6) == 6, "the host can choose the Sump")
+	check(LabGate.choices(alive) == [1, 6], "the King dead and the Matriarch alive is still two labels")
+	check(LabGate.resolve(alive, 9) == -1, "the Railhead is refused while the Matriarch is alive")
 	check(LabGate.choice_label(1) == "Goblin Warrens, floor 1", "Warrens label")
 	check(LabGate.choice_label(6) == "The Blightcoil, Sump", "Blightcoil label")
 	var back := LabyrinthState.fresh(1)

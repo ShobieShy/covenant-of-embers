@@ -48,6 +48,7 @@ const BRAINS := {
 	"filth": "res://scripts/enemies/filth.gd",  # step 56
 	"king": "res://scripts/enemies/goblin_king.gd",  # L3: the Goblin King
 	"matriarch": "res://scripts/enemies/blightmaw.gd",  # Act II
+	"forgemaw": "res://scripts/enemies/forgemaw.gd",  # Act III
 }
 
 const BURN_TICK := 0.5  ## s between burn damage ticks (step 53)
