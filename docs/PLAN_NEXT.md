@@ -52,17 +52,17 @@ Under 0.8.5. Added to issue #38 on 11 Nov 2026 by ShobieShy, priority ASAP. Plan
 - Crosshair size and color options.
 - A high-contrast outline option for enemies and loot.
 
-### Chaos mode (0.8.5 and beyond)
+### Covenant Escalation (0.8.5 and beyond)
 
-Chaos mode is purely mechanical: same story beats, same dialogue, just harder enemies and better loot. No narrative changes across chaos runs. Decided in the Act IV / post-game brainstorm, 2026-11-11.
+Covenant Escalation is the one post-game difficulty dial. It replaces the separate names Chaos mode and Mayhem tiers. Inspired by Tiny Tina's Wonderlands Chaos mode. Purely mechanical: same story beats, same dialogue, harder enemies, better loot. No narrative changes. Decided in the Act IV / post-game brainstorm, 2026-11-11.
 
 ### Endgame loop (2026-11-11)
 
-After beating a labyrinth, you can replay the same labyrinth over and over. Once you beat it, its final level is no longer the final level; there is no final level. You keep descending with increasing difficulty, loot drops, and rewards until you can't go on. This is the endgame loop. It applies to the main Breach labyrinth and to each DLC labyrinth after its story is cleared. Story acts stay handmade. Post-clear floors are randomly generated with escalating stats (the endless-after-clear rule in [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md)). Chaos mode stays purely mechanical, same story.
+After beating a labyrinth, you can replay the same labyrinth over and over. Once you beat it, its final level is no longer the final level; there is no final level. You keep descending with increasing difficulty, loot drops, and rewards until you can't go on. This is the endgame loop. It applies to the main Breach labyrinth and to each DLC labyrinth after its story is cleared. Story acts stay handmade. Post-clear floors are randomly generated with escalating stats (the endless-after-clear rule in [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md)). Covenant Escalation stays purely mechanical, same story.
 
-The mode is called "the Abyss" while you are progressing through it (the finite version), and once you beat it, it becomes "Endless Descent" (the infinite post-clear version).
+The mode is called "the Abyss" while you are progressing through it (the finite version), and once you beat it, it becomes "Endless Descent" (the infinite post-clear version). Covenant Escalation is the dial that turns with depth in Endless Descent.
 
-The dial already in code is `scripts/loot/vigil.gd` (Vigil, Mayhem-style tiers 1–10, unused as a playable run) and `scripts/labyrinth/labyrinth_state.gd` `remix()` (re-roll a cleared floor). How those tiers relate to Chaos mode, and whether depth auto-raises the tier or the player picks it, is open. Whether "the Abyss" / "Endless Descent" clash with the name The Forgotten Abyss below, and whether "the Abyss" means each labyrinth's descent generally, is also open. Nothing here renames The Forgotten Abyss.
+In code the dial is still `scripts/loot/vigil.gd` (`Vigil`, tiers 1–10, unused as a playable run) and `scripts/labyrinth/labyrinth_state.gd` `remix()` (re-roll a cleared floor). The class is not renamed. Whether the player can also set the dial by hand, besides it turning with depth, is open. Whether "the Abyss" / "Endless Descent" clash with the name The Forgotten Abyss below, and whether "the Abyss" means each labyrinth's descent generally, is also open. Nothing here renames The Forgotten Abyss.
 
 The Forgotten Abyss is not in 0.8.x. It stays the endless run after Act V and the Core, below.
 
