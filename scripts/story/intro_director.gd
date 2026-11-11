@@ -80,9 +80,7 @@ const END_FLAGS: PackedStringArray = [
 const DAIS_SPOT := Vector3(0.0, 0.3, -7.5)
 const ELDER_SPOT := Vector3(-3.0, 0.3, -11.0)
 const CLERK_SPOT := Vector3(6.0, 0.0, 9.0)
-const SUMMONED_SPOTS: Array[Vector3] = [
-	Vector3(-2.0, 0.3, -8.0), Vector3(2.0, 0.3, -8.0), Vector3(-1.0, 0.3, -9.0)
-]
+const SUMMONED_SPOTS: Array[Vector3] = [Vector3(-2.0, 0.3, -8.0), Vector3(2.0, 0.3, -8.0), Vector3(-1.0, 0.3, -9.0)]
 const BACK_DOOR := Vector3(0.0, 0.0, -13.5)
 const GRANT_GOLD := 50
 
@@ -95,35 +93,26 @@ const GATE_RULES := {
 	},
 	"town_square":
 	{
-		"midden":
-		["landfill_route_open", "Bob has not sent you to the Landfill yet."],
+		"midden": ["landfill_route_open", "Bob has not sent you to the Landfill yet."],
 	},
 	"old_oak":
 	{
-		"town_square":
-		["home_unlocked", "Rest in the grove first. The road to town is shut."],
+		"town_square": ["home_unlocked", "Rest in the grove first. The road to town is shut."],
 	},
 	"midden":
 	{
 		"breach": ["filth_defeated", "The crater is sealed until the Landfill is dealt with."],
 		"town_square":
-		[
-			"filth_defeated",
-			"The barrier gate is barred from this side. Deal with whatever lurks here first."
-		],
+		["filth_defeated", "The barrier gate is barred from this side. Deal with whatever lurks here first."],
 	},
 }
 ## Next gate toward a beat's level. The grove opens onto town; Bob's lead is the town
 ## gate to the Landfill, not the Association's back door.
 const ROUTE := {
-	"mage_association":
-	{"town_square": "town_square", "old_oak": "town_square", "midden": "midden"},
-	"town_square":
-	{"mage_association": "mage_association", "old_oak": "old_oak", "midden": "midden"},
-	"old_oak":
-	{"town_square": "town_square", "mage_association": "town_square", "midden": "town_square"},
-	"midden":
-	{"town_square": "town_square", "old_oak": "town_square", "mage_association": "town_square"},
+	"mage_association": {"town_square": "town_square", "old_oak": "town_square", "midden": "midden"},
+	"town_square": {"mage_association": "mage_association", "old_oak": "old_oak", "midden": "midden"},
+	"old_oak": {"town_square": "town_square", "mage_association": "town_square", "midden": "town_square"},
+	"midden": {"town_square": "town_square", "old_oak": "town_square", "mage_association": "town_square"},
 }
 ## Menus the intro holds back: feature -> [flag that unlocks it, why].
 const LOCKS := {
@@ -406,11 +395,7 @@ func _after_summoning() -> void:
 func open_creator() -> void:
 	if creator:
 		return
-	var pre := {
-		"archetype": player.archetype,
-		"name": player.character_name,
-		"color": player.character_color
-	}
+	var pre := {"archetype": player.archetype, "name": player.character_name, "color": player.character_color}
 	creator = CharacterCreator.overlay(pre)
 	main.add_child(creator)
 	CharacterCreator.of(creator).confirmed.connect(choose_identity)
@@ -420,15 +405,8 @@ func open_creator() -> void:
 
 
 func choose_identity(idn: Dictionary) -> void:
-	player.set_character(
-		String(idn.get("archetype", "")), String(idn.get("name", "")), idn.get("color", null)
-	)
-	print(
-		(
-			"[character] %s the %s (appraisal)"
-			% [player.character_name, Archetype.label(player.archetype)]
-		)
-	)
+	player.set_character(String(idn.get("archetype", "")), String(idn.get("name", "")), idn.get("color", null))
+	print("[character] %s the %s (appraisal)" % [player.character_name, Archetype.label(player.archetype)])
 	if creator:
 		creator.queue_free()
 		creator = null
@@ -638,11 +616,7 @@ func _dress_oak() -> void:
 func target_oak() -> Node3D:
 	match current():
 		"new_home":
-			return (
-				bed
-				if bed and not flags.has(MentorArrival.FLAG)
-				else main.get_node_or_null("Npc_Bob")
-			)
+			return bed if bed and not flags.has(MentorArrival.FLAG) else main.get_node_or_null("Npc_Bob")
 		"return_to_bob", "crystal":
 			return main.get_node_or_null("Npc_Bob")
 	return null
@@ -719,9 +693,7 @@ func give_kit() -> void:
 	if main.get_node_or_null("DaggerGlow") == null:
 		main.add_child(DaggerGlow.make(player))
 	advance("back_door")
-	_hint(
-		"Bob's kit: Apprentice Fire Staff, Mana Potion, rusty dagger (glows near danger), bark map"
-	)
+	_hint("Bob's kit: Apprentice Fire Staff, Mana Potion, rusty dagger (glows near danger), bark map")
 
 
 # --- Step 115: beats 8-10, the Landfill lessons ------------------------------------------
@@ -733,9 +705,7 @@ const LIGHT_SHRINE := Vector3(-5.0, 0.0, 4.0)
 const DARK_SHRINE := Vector3(5.0, 0.0, 4.0)
 const TUTORIAL_PART := "basic_fire_head"
 ## Step 118: one head can't make a staff, so the yard drops a full salvage kit.
-const TUTORIAL_KIT: PackedStringArray = [
-	"basic_fire_head", "basic_exterior", "basic_interior", "basic_handle"
-]
+const TUTORIAL_KIT: PackedStringArray = ["basic_fire_head", "basic_exterior", "basic_interior", "basic_handle"]
 ## Soft walls across the Landfill: name -> [z, flag that drops it].
 const WALLS := {
 	"YardWall": [9.0, "gnawers_cleared"],
@@ -776,203 +746,70 @@ var _toast_left := 0.0
 
 
 func _dress_landfill() -> void:
-	main.call("_ensure_dialogue")
-	if not (main.dialogue as DialogueRunner).ended.is_connected(_on_dialogue_ended):
-		(main.dialogue as DialogueRunner).ended.connect(_on_dialogue_ended)
-	var b := current()
-	if b == "filth":
-		_arm_filth()
-		return
-	if not b in ["combat", "crafting", "light_dark"]:
-		return
-	var sp := spawner()
-	if sp and sp.trigger_radius > 0.0:
-		_saved_trigger = sp.trigger_radius  # the Filth's mound stays quiet until beat 11
-		sp.trigger_radius = 0.0
-	for w in WALLS:
-		if not flags.has(String(WALLS[w][1])):
-			walls[w] = _wall(w, float(WALLS[w][0]))
-	var st := station()
-	if st:
-		st.global_position = spot("joe_bench", CAMP)
-	if not flags.has("joe_wand_given"):
-		_spawn("Crazy Joe", spot("joe_camp", JOE_CAMP), -120.0)
-	if not GameEvents.bus().crafting_completed.is_connected(_on_crafted):
-		GameEvents.bus().crafting_completed.connect(_on_crafted)
-	match b:
-		"combat":
-			_start_yard()
-		"crafting":
-			_drop_part(at(Vector3(0, 0, 10.5)))
-		"light_dark":
-			_make_shrines()
-	_queue_toasts(b)
+	IntroLandfill._dress_landfill(self)
 
 
 func spawner() -> EnemySpawner:
-	return main.get_node_or_null("Enemies") as EnemySpawner
+	return IntroLandfill.spawner(self)
 
 
 func station() -> AssemblyStation:
-	for c in main.get_children():
-		if c is AssemblyStation:
-			return c
-	return null
+	return IntroLandfill.station(self)
 
 
 func wall_up(w: String) -> bool:
-	return walls.has(w) and is_instance_valid(walls[w])
+	return IntroLandfill.wall_up(self, w)
 
 
 func _wall(n: String, z: float) -> StaticBody3D:
-	return IntroWall.make(main, n, z)
+	return IntroLandfill._wall(self, n, z)
 
 
 func _drop_wall(w: String) -> void:
-	if wall_up(w):
-		(walls[w] as Node).queue_free()
-	walls.erase(w)
+	IntroLandfill._drop_wall(self, w)
 
 
 func _start_yard() -> void:
-	var sp := spawner()
-	var d := sp.table.find("gnawer") if sp else null
-	if d == null:
-		return
-	for at in YARD_GNAWERS:
-		var e := Enemy.create(d, Transform3D(Basis(), base + at))
-		e.name = "YardGnawer%d" % (yard.size() + 1)
-		sp.add_child(e)
-		sp.call("_adopt", e)
-		e.died.connect(func(dead: Enemy, _el: ElementTable.Element): _on_yard_kill(dead))
-		yard.append(e)
-	_hint("Objective: Clear the Gnawers (0/%d)" % yard.size())
+	IntroLandfill._start_yard(self)
 
 
 func _on_yard_kill(e: Enemy) -> void:
-	yard_kills += 1
-	_hint("Objective: Clear the Gnawers (%d/%d)" % [yard_kills, YARD_GNAWERS.size()])
-	if yard_kills < YARD_GNAWERS.size() or current() != "combat":
-		return
-	flags.set_flag("gnawers_cleared")
-	_drop_wall("YardWall")
-	_drop_part(e.global_position)
-	advance("crafting")
-	_queue_toasts("crafting")
+	IntroLandfill._on_yard_kill(self, e)
 
 
 ## The guaranteed first parts (beat 8): a Basic salvage kit around the last kill, Interact to pick up.
 func _drop_part(at: Vector3) -> void:
-	part_pickups.clear()
-	var i := 0
-	for id in TUTORIAL_KIT:
-		var part := WieldablePart.load_part(id)
-		if part == null:
-			continue
-		var d := LootDrop.new()
-		d.kind = LootDrop.Kind.PART
-		d.item = part.duplicate()
-		d.rarity_id = "basic"
-		d.rolled_rarity_id = "basic"
-		d.element = part.element
-		var off := (
-			Vector3(cos(i * TAU / TUTORIAL_KIT.size()), 0, sin(i * TAU / TUTORIAL_KIT.size())) * 0.9
-		)
-		var pk := LootPickup.create(d, Vector3(at.x, at.y + 0.4, at.z) + off)
-		main.add_child(pk)
-		part_pickups.append(pk)
-		i += 1
-	next_pickup()
+	IntroLandfill._drop_part(self, at)
 
 
 ## The next kit piece still lying around (also kept in `part_pickup`).
 func next_pickup() -> LootPickup:
-	part_pickup = null
-	for pk in part_pickups:
-		if part_pickup == null and is_instance_valid(pk) and pk.is_inside_tree():
-			part_pickup = pk
-	return part_pickup
+	return IntroLandfill.next_pickup(self)
 
 
 func _on_crafted(_p: Player, _w: WieldableInstance) -> void:
-	if flags.has("crafted_once"):
-		return
-	flags.set_flag("crafted_once")
-	_drop_wall("JunkWall")
-	if current() == "crafting":
-		advance("light_dark")
-		_make_shrines()
-		_queue_toasts("light_dark")
+	IntroLandfill._on_crafted(self, _p, _w)
 
 
 func _make_shrines() -> void:
-	if not shrines.is_empty():
-		return
-	for spec in [
-		["Light shrine", spot("light_shrine", LIGHT_SHRINE)],
-		["Dark shrine", spot("dark_shrine", DARK_SHRINE)]
-	]:
-		var n := Npc.new(String(spec[0]))
-		n.name = String(spec[0]).replace(" ", "")
-		n.player = player
-		main.add_child(n)
-		n.global_position = spec[1]
-		n.talked.connect(touch_shrine)
-		shrines[spec[0]] = n
-	if not flags.has("light_learned"):
-		ScavengerPose.lay(_spawn("Wounded scavenger", spot("light_shrine", LIGHT_SHRINE), 0.0))
+	IntroLandfill._make_shrines(self)
 
 
 ## Beat 10: either order. Light heals the scavenger; Dark forces one Gnawer conversion.
 func touch_shrine(which: String) -> void:
-	if which == "Light shrine" and not flags.has("light_learned"):
-		flags.set_flag("light_learned")
-		MagicEffects.light_heals += 1
-		player.health.heal(player.health.max_value())
-		ScavengerPose.stand(cast.get("Wounded scavenger") as Npc)
-		_hint(
-			"Light washes over the scavenger. He stands. (Light heals allies; enemies take a little less.)"
-		)
-	elif which == "Dark shrine" and not flags.has("dark_learned"):
-		_dark_lesson()
-	if flags.has("light_learned") and flags.has("dark_learned") and current() == "light_dark":
-		_drop_wall("ArenaWall")
-		var sp := spawner()
-		if sp and _saved_trigger > 0.0:
-			sp.trigger_radius = _saved_trigger
-		advance("filth")
-		_arm_filth()
+	IntroLandfill.touch_shrine(self, which)
 
 
 func _dark_lesson() -> void:
-	var sp := spawner()
-	var d := sp.table.find("gnawer") if sp else null
-	if d:
-		dark_gnawer = Enemy.create(
-			d, Transform3D(Basis(), spot("dark_shrine", DARK_SHRINE) + Vector3(1.5, 0, -1.0))
-		)
-		dark_gnawer.name = "ShrineGnawer"
-		sp.add_child(dark_gnawer)
-		sp.call("_adopt", dark_gnawer)
-		if not flags.has("tutorial_force_convert"):
-			flags.set_flag("tutorial_force_convert")  # once per character
-			MagicEffects.force_convert = true
-		MagicEffects.try_corrupt(dark_gnawer, 0.0)
-	flags.set_flag("dark_learned")
-	_hint("The Gnawer's eyes go dark: it fights for you now. (Normally ~1%. Dark parts raise it.)")
+	IntroLandfill._dark_lesson(self)
 
 
 func _queue_toasts(b: String) -> void:
-	for t in TOASTS.get(b, []):
-		_toasts.append(String(t))
+	IntroLandfill._queue_toasts(self, b)
 
 
 func _tick_toasts(dt: float) -> void:
-	_toast_left -= dt
-	if _toasts.is_empty() or _toast_left > 0.0 or Cinematic.playing != null:
-		return
-	_hint(_toasts.pop_front())
-	_toast_left = TOAST_SECONDS
+	IntroLandfill._tick_toasts(self, dt)
 
 
 # --- Step 116: beats 11-13, the Filth, home, the crystal ----------------------------------
@@ -981,66 +818,19 @@ const END_CARD := "Prologue complete"
 
 
 func _arm_filth() -> void:
-	var bus := GameEvents.bus()
-	if not bus.wave_started.is_connected(_on_wave):
-		bus.wave_started.connect(_on_wave)
-	if not flags.changed.is_connected(_on_flag):
-		flags.changed.connect(_on_flag)
+	IntroLandfill._arm_filth(self)
 
 
 func _on_wave(_i: int, id: String) -> void:
-	if id != Filth.WAVE_ID or current() != "filth" or flags.has("filth_revealed"):
-		return
-	flags.set_flag("filth_revealed")
-	var sp := spawner()
-	var c: Vector3 = sp.trigger_center if sp else Vector3.ZERO
-	cinematic = play_cinematic(
-		"filth_reveal",
-		[
-			{
-				"from": c + Vector3(0, 2, 10),
-				"to": c + Vector3(0, 1.5, 7),
-				"look": c + Vector3(0, 1, 0),
-				"s": 2.0,
-				"text": "The arena walls grind up out of the trash."
-			},
-			{
-				"from": c + Vector3(-3, 1, 6),
-				"to": c + Vector3(-1, 0.8, 5),
-				"look": c + Vector3(0, 3, -2),
-				"s": 3.0,
-				"text": "THE FILTH"
-			},
-		]
-	)
+	IntroLandfill._on_wave(self, _i, id)
 
 
 func _on_flag(flag: String, _v: int) -> void:
-	if flag == "filth_defeated" and current() == "filth":
-		advance("return_to_bob")
-		_hint("The north road is open. The Breach is past the pit; Bob still wants Joe's trash.")
+	IntroLandfill._on_flag(self, flag, _v)
 
 
 func _play_crystal() -> void:
-	var bob := main.get_node_or_null("Npc_Bob") as Node3D
-	var at: Vector3 = bob.global_position if bob else player.global_position
-	var gem := RitualFX.crystal(at + Vector3(0, 1.4, 0.4))  # step 133 (FX F7)
-	main.add_child(gem)
-	cinematic = play_cinematic(
-		"crystal",
-		[
-			{
-				"from": at + Vector3(2, 1.8, 2),
-				"to": at + Vector3(1, 1.6, 1.5),
-				"look": at + Vector3(0, 1.2, 0),
-				"s": 3.0,
-				"text":
-				"Bob turns Joe's trash in his hands. It hums. It glows. It becomes a crystal."
-			},
-		],
-		complete
-	)
-	cinematic.finished.connect(func(_i, _s): gem.queue_free())
+	IntroLandfill._play_crystal(self)
 
 
 ## Beat 13 end: every gate and menu opens, the waystone wakes, "Prologue complete".
