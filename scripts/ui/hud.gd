@@ -89,6 +89,7 @@ var level_burst: CPUParticles2D  ## M4
 var level_left := 0.0
 var level_ups := 0
 var skill_badge: Label  ## M4: unspent skill points
+var skill_cd: Label  ## 0.8.6: action-skill cooldown
 
 
 ## Tick marks around the screen centre.
@@ -187,6 +188,8 @@ func _init() -> void:
 	skill_badge.name = "SkillBadge"
 	skill_badge.add_theme_color_override(&"font_color", BADGE_COLOR)
 	skill_badge.visible = false
+	skill_cd = _label(14, bars)
+	skill_cd.name = "ActionSkill"
 	crosshair = Crosshair.new()
 	crosshair.set_anchors_preset(Control.PRESET_FULL_RECT)
 	crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -536,6 +539,10 @@ func refresh(dt: float) -> void:
 	prompt_label.text = Interaction.prompt(player)
 	_set_bar_color(breath_bar, BREATH_EXHAUSTED if player.breath.exhausted else BREATH_COLOR)
 	_refresh_pips()
+	if player.action_skill.left > 0.0:
+		skill_cd.text = "Skill  %ds" % ceili(player.action_skill.left)
+	else:
+		skill_cd.text = "Skill  ready"
 	crosshair.visible = not player.focus.focused and (player.alive() or player.downed)
 	crosshair.gap = crosshair_gap() + 3.0
 	crosshair.queue_redraw()

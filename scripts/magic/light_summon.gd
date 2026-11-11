@@ -13,6 +13,7 @@ const OFFSET := Vector3(0.6, 2.0, 0.0)
 const GROUP := &"light_summons"
 
 var owner_player: Player
+var follow: Node3D  ## 0.8.6: a remote caster, when this wisp is not the local player's
 var lifetime := LIFETIME  ## step 145: + Light status_seconds skills
 var age := 0.0
 var cooldown := 0.0
@@ -51,12 +52,21 @@ func _physics_process(delta: float) -> void:
 		tick(delta)
 
 
+func _anchor() -> Node3D:
+	if owner_player != null and is_instance_valid(owner_player):
+		return owner_player
+	if follow != null and is_instance_valid(follow):
+		return follow
+	return null
+
+
 func tick(dt: float) -> void:
 	age += dt
-	if age >= lifetime or owner_player == null or not is_instance_valid(owner_player):
+	var anchor := _anchor()
+	if age >= lifetime or anchor == null:
 		queue_free()
 		return
-	global_position = owner_player.global_position + OFFSET
+	global_position = anchor.global_position + OFFSET
 	cooldown = maxf(0.0, cooldown - dt)
 	if cooldown > 1e-6:
 		return

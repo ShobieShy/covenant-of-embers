@@ -58,6 +58,8 @@ var poses_sent := 0
 var poses_seen := 0
 var revive_progress := 0.0
 var revives := 0
+var asks_sent := 0  ## 0.8.6 action-skill casts forwarded to the host
+var asks_applied := 0
 
 ## When true, the host shares every Enemy and the joiner keeps only its puppets.
 ## Closed levels leave this false (one enemy root per level).
@@ -70,6 +72,7 @@ func setup(s: NetSession, p: Node3D, enemy_root: Node, t: EnemyTable = null) -> 
 	enemies = enemy_root
 	table = t if t != null else EnemyTable.load_default()
 	host = s.is_host()
+	add_to_group(&"coop_world")
 	if &"last_stand" in player:
 		player.set(&"last_stand", LAST_STAND)
 	s.message.connect(_on_message)
@@ -191,6 +194,8 @@ func local_pose() -> Dictionary:
 	var fx := brand_fx_of(player)
 	if not fx.is_empty():  # step 142: the held brand's FX state (bits, meter, colour)
 		d["bf"] = fx
+	if player is Player and LightSummon.of(player) != null:
+		d["sm"] = 1
 	return d
 
 
@@ -207,6 +212,12 @@ static func brand_fx_of(p: Node) -> Array:
 	if pr >= 0.0:  # t69u: crystal reload progress (older protocol-2 peers ignore it)
 		out.append(snappedf(pr, 0.01))
 	return out
+
+
+## 0.8.6: the joiner tells the host which verb fired. The host applies it. No local roll.
+func send_action_skill(verb: String, at: Vector3) -> void:
+	asks_sent += 1
+	session.send("askill", {"v": verb, "p": at}, 1)
 
 
 func send_pose() -> void:
@@ -704,6 +715,12 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 						MagicEffects.net_status(
 							e, el, float(data.get("amt", 0.0)), ElementSkillMods.sanitize_net(data["sm"])
 						)
+		"askill":
+			if host:
+				asks_applied += 1
+				var anchor: Node3D = proxies.get(from) as Node3D
+				var at: Vector3 = data.get("p", Vector3.ZERO)
+				ActionSkill.resolve(enemies, String(data.get("v", "")), at, anchor)
 		"heal":
 			var amt := maxf(0.0, float(data.get("amt", 0.0)))
 			if player is Player:
