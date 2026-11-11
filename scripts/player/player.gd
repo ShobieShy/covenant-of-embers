@@ -55,7 +55,8 @@ extends CharacterBody3D
 ##  * Loadout + viewmodel (step 10, scripts/player/loadout.gd + viewmodel.gd): a staff slot
 ##    and a wand slot, each with its own Caster (own cooldown, kept while holstered);
 ##    `caster` is the slot in hand. slot_1 / slot_2 (Magewar quickslot_1/2) draw the staff /
-##    wand, the mouse wheel (quickslot_prev/next_wieldable) cycles; a draw takes 0.4 s
+##    wand, slot_3 / slot_4 draw the two extra carry slots, and the mouse wheel
+##    (quickslot_prev/next_wieldable) cycles filled slots; a draw takes 0.4 s
 ##    (24 ticks) in which presses don't cast (no mana check, cue, spread draw or bloom).
 ##    Both slots spend the one mana pool and share focus + spread. The Viewmodel (child of
 ##    the Head: bobs with it) shows the slot in hand at Magewar's pose, slid to x = 0 by
@@ -138,13 +139,19 @@ var spawn_yaw := 0.0
 var _seen_dashes := 0  ## P5: dash.dashes at the last tick (FOV kick)
 var _death_tint: DeathTint  ## P5: game only (headless has no renderer)
 var respawn_left := 0.0  # s until the respawn while dead
-## Step 80 (co-op): > 0 = falling leaves you downed for this many s (last stand) before
-## you bleed out and the normal respawn countdown starts; a teammate can revive you.
+## Step 80 (co-op): > 0 = the downed window (co-op sets this to CoopWorld.LAST_STAND).
+## 0 = the solo Second Wind window (SECOND_WIND_S). Either way a kill gets you up, and
+## in co-op a teammate can still revive you. The window ending starts the respawn countdown.
+const SECOND_WIND_S := 8.0
+const SECOND_WIND_HEALTH := 0.3
+const CRAWL_SPEED := 1.6
 var last_stand := 0.0
 var downed := false
 var downed_left := 0.0
 var revives := 0
+var second_wind_revives := 0
 var bleed_outs := 0
+var _second_wind_bound := false
 var protection_left := 0.0  # step 14: s of spawn protection left after a respawn
 var deaths := 0
 var respawns := 0
@@ -219,6 +226,7 @@ func _ready() -> void:
 	spread = Spread.from_tuning(tuning)
 	_set_health(Health.from_tuning(tuning))
 	camera.fov = focus.fov
+	_bind_second_wind()  # before consecrations, so a downed kill revives first
 	apply_bonuses()  # the pools were rebuilt from tuning: put worn bonuses back
 	loadout.swap_seconds = tuning.swap_seconds
 	viewmodel = Viewmodel.new()
@@ -247,12 +255,17 @@ func set_mana(m: Mana) -> void:
 		c.mana_drain = mana.drain_fraction  # t69u: Pyrowning crystal reloads
 
 
-## Puts a staff/wand into its slot (Loadout.equip); with empty hands it is drawn at once.
+## Puts a staff/wand into its typed slot (Loadout.equip); with empty hands it is drawn at once.
 func equip(w: WieldableInstance) -> int:
-	var slot := loadout.equip(w)
+	return equip_in(loadout.slot_for(w), w)
+
+
+## Puts `w` in `slot` (a carry slot, or a typed one). Updates the viewmodel.
+func equip_in(slot: int, w: WieldableInstance) -> int:
+	var got := loadout.equip_slot(slot, w)
 	if viewmodel != null:
 		viewmodel.show_wieldable(caster.wieldable)
-	return slot
+	return got
 
 
 func _on_out_of_mana(_cost: float) -> void:
@@ -468,10 +481,9 @@ func _on_died() -> void:
 	sprinting = false
 	velocity = Vector3.ZERO
 	direction = Vector3.ZERO
-	if last_stand > 0.0:
-		downed = true
-		downed_left = last_stand
-		downed_changed.emit(self, true)
+	downed = true
+	downed_left = last_stand if last_stand > 0.0 else SECOND_WIND_S
+	downed_changed.emit(self, true)
 	died.emit(self)
 
 
@@ -593,9 +605,10 @@ func equip_from_inventory(item: Resource) -> bool:
 		return false
 	var old: Resource = null
 	if item is WieldableInstance:
-		old = loadout.wieldable(Loadout.slot_for(item))
+		var slot := loadout.slot_for_incoming(item)
+		old = loadout.wieldable(slot)
 		inventory.remove(item)
-		equip(item)
+		equip_in(slot, item)
 	elif item is EquipmentItem:
 		inventory.remove(item)
 		old = equip_item(item)
@@ -791,12 +804,16 @@ func tick(input: PlayerInput, dt: float) -> void:
 	_apply_toggles(input)
 	slow_left = maxf(0.0, slow_left - dt)
 	tick_poison(dt)
-	# Dead (step 13): no input, no movement; respawn after respawn_delay.
+	# Dead (step 13): Second Wind first (crawl and cast; a kill revives). When that
+	# window ends, bleed_out() starts the respawn countdown. No input while that runs.
 	if not alive():
 		if downed:
 			downed_left -= dt
 			if downed_left <= 1e-7:
 				bleed_out()
+				return
+			_tick_crawl(input)
+			_tick_combat(input, dt, false)
 			return
 		respawn_left -= dt
 		feel.tick_death(true, dt)  # P5 (L5): the eye sinks while dead
@@ -856,7 +873,14 @@ func tick(input: PlayerInput, dt: float) -> void:
 		_set_crouched(true)
 	elif crouched and _can_stand():
 		_set_crouched(false)
-	if not grounded and not _jumped_from_slide and not _crouched_jump and crouch_held and not _air_tuck and not crouched:
+	if (
+		not grounded
+		and not _jumped_from_slide
+		and not _crouched_jump
+		and crouch_held
+		and not _air_tuck
+		and not crouched
+	):
 		_begin_air_tuck()
 	elif not grounded and _air_tuck and not crouch_held and not _crouched_jump:
 		_try_release_tuck()
@@ -943,19 +967,51 @@ func tick(input: PlayerInput, dt: float) -> void:
 	var o := feel.offset()
 	head.position = Vector3(o.x, eye_height + o.y, 0.0)
 
-	# Loadout (step 10): slot_1 staff / slot_2 wand / wheel cycle start a 0.4 s draw;
-	# holstered slots keep cooling down.
+	_tick_combat(input, dt, true)
+
+
+## Second Wind: a slow crawl. No jump, sprint, slide, or dash.
+func _tick_crawl(input: PlayerInput) -> void:
+	var wish := forward_for(yaw) * input.move_forward() + right_for(yaw) * input.move_right()
+	if wish.length_squared() < 1e-12:
+		return
+	velocity = wish.normalized() * CRAWL_SPEED
+	move_and_slide()
+
+
+func _bind_second_wind() -> void:
+	if _second_wind_bound:
+		return
+	_second_wind_bound = true
+	GameEvents.bus().enemy_killed.connect(_on_second_wind_kill)
+
+
+func _on_second_wind_kill(_enemy: Enemy, _element: ElementTable.Element) -> void:
+	if not downed:
+		return
+	if revive(SECOND_WIND_HEALTH):
+		second_wind_revives += 1
+		show_hint("Second Wind!")
+
+
+## Weapons, mana, focus, and the cast. `allow_potion` is false while downed: a drink
+## would be spent on a pool that refuses heals until you are up.
+func _tick_combat(input: PlayerInput, dt: float, allow_potion: bool) -> void:
+	# Loadout: slot_1..slot_4 and the wheel start a 0.4 s draw; holstered slots keep cooling.
 	var started := false
-	if input.was_pressed(&"slot_1"):
-		started = loadout.select(Loadout.Slot.STAFF)
-	elif input.was_pressed(&"slot_2"):
-		started = loadout.select(Loadout.Slot.WAND)
-	elif input.was_pressed(&"quickslot_next_wieldable"):
+	var slot_keys: Array[StringName] = [&"slot_1", &"slot_2", &"slot_3", &"slot_4"]
+	var picked := false
+	for i in slot_keys.size():
+		if input.was_pressed(slot_keys[i]):
+			started = loadout.select(i)
+			picked = true
+			break
+	if not picked and input.was_pressed(&"quickslot_next_wieldable"):
 		started = loadout.cycle(1)
-	elif input.was_pressed(&"quickslot_prev_wieldable"):
+	elif not picked and input.was_pressed(&"quickslot_prev_wieldable"):
 		started = loadout.cycle(-1)
 	loadout.tick(dt, started)
-	if input.was_pressed(&"use_potion"):  # step 24 (H since step 136): the quick-slot potion
+	if allow_potion and input.was_pressed(&"use_potion"):  # step 24 (H since step 136)
 		use_potion()
 	# Pickups (step 23): walk-over auto-collect, then Interact on the looked-at item.
 	pickups.tick(self, input.was_pressed(&"interact"), dt)

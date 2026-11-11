@@ -110,9 +110,7 @@ func auto_load_held() -> bool:
 		return false
 	var slot := player.loadout.active
 	if not player.unequip_wieldable_to_inventory(slot):
-		status.text = (
-			"Backpack full: make room to put your %s on the station." % held.display_name()
-		)
+		status.text = ("Backpack full: make room to put your %s on the station." % held.display_name())
 		return false
 	auto_slot = slot
 	auto_item = held
@@ -125,8 +123,9 @@ func auto_load_held() -> bool:
 ## The auto-loaded weapon (or what it was built into) goes back in hand if that slot is free.
 func _return_held() -> void:
 	if auto_slot >= 0 and auto_item and player and player.inventory.has(auto_item):
-		if player.loadout.wieldable(Loadout.slot_for(auto_item)) == null:
-			player.equip_from_inventory(auto_item)
+		if player.loadout.wieldable(auto_slot) == null:
+			player.inventory.remove(auto_item)
+			player.equip_in(auto_slot, auto_item)
 	auto_slot = -1
 	auto_item = null
 
@@ -254,10 +253,7 @@ func refresh() -> void:
 		ItemIcons.dress(b, parts.get(t))
 		b.text = (
 			"%s: %s"
-			% [
-				WieldablePart.PART_TYPE_NAMES[t],
-				parts[t].display_name if parts.has(t) else ("-" if ok else "n/a")
-			]
+			% [WieldablePart.PART_TYPE_NAMES[t], parts[t].display_name if parts.has(t) else ("-" if ok else "n/a")]
 		)
 	preview_label.text = preview_text()
 	error_label.text = "\n".join(errors())
@@ -308,9 +304,7 @@ func salvage_selected() -> bool:
 	var dust := CraftingExtras.salvage_value(part) if part else 0
 	if parts.values().has(part):
 		parts.erase(part.part_type)
-	return _result(
-		CraftingExtras.salvage(player.inventory, part), "Salvaged for %d Arcane Dust." % dust
-	)
+	return _result(CraftingExtras.salvage(player.inventory, part), "Salvaged for %d Arcane Dust." % dust)
 
 
 func upgrade_selected() -> bool:

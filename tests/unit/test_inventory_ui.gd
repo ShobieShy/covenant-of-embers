@@ -54,7 +54,7 @@ func test_equip_and_compare() -> void:
 	ui.select(a)
 	check(ui.equip_selected(), "equip")
 	check(p.equipment.item(EquipmentItem.Slot.HAT) == a and not p.inventory.has(a), "worn, out of pack")
-	check(ui.worn_buttons[2].text.contains(a.display_name), "worn panel")
+	check(ui.worn_buttons[Loadout.SLOT_COUNT].text.contains(a.display_name), "worn panel")
 	ui.select(b)
 	var t := ui.card_text(b)
 	check(t.contains("vs %s" % a.display_name), "compare against worn: %s" % t)

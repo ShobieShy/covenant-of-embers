@@ -231,7 +231,7 @@ func test_biased_consecrations() -> void:
 	n = 0
 	for i in 400:
 		n += 1 if Consecrations.roll(r) == "reaping" else 0
-	check(n > 60 and n < 140, "about 25 pct without (%d/400)" % n)
+	check(n > 30 and n < 90, "about 1/7 reaping without bias (%d/400)" % n)
 
 
 func test_skills_ui() -> void:

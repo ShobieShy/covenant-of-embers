@@ -92,3 +92,62 @@ func test_vault_rolls_consecrations() -> void:
 			check(Consecrations.DEFS.has(q.consecration), "known id")
 			n += 1
 	check(n > 40 and n < 160, "about half consecrated (%d/200)" % n)
+
+
+func test_pool_and_world_drops() -> void:
+	check(Consecrations.IDS.size() == 7 and Consecrations.IDS.size() <= 7, "3-bit item codes hold 7 ids")
+	for id in ["steady", "keen", "siphon"]:
+		check(Consecrations.DEFS.has(id), id)
+	var rare_hits := 0
+	var siphon := 0
+	for seed in 400:
+		var it := EquipmentRoller.from_seed(seed + 1, S.HAT, "rare", E.FIRE)
+		Consecrations.roll_onto(it, "rare", PackedStringArray(["siphon"]))
+		if it.consecration != "":
+			check(Consecrations.DEFS.has(it.consecration), "known id %s" % it.consecration)
+			rare_hits += 1
+			if it.consecration == "siphon":
+				siphon += 1
+	check(rare_hits > 40 and rare_hits < 140, "about 20 pct of Rare+ (%d/400)" % rare_hits)
+	check(siphon > rare_hits / 3, "branch bias shows up (%d/%d siphon)" % [siphon, rare_hits])
+	for seed in 40:
+		var low := EquipmentRoller.from_seed(seed + 1, S.BELT, "uncommon", E.EARTH)
+		Consecrations.roll_onto(low, "uncommon")
+		check(low.consecration == "", "uncommon stays plain")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7
+	var drops := DropRoller.roll_procedural(rng, 5, E.FIRE, 4.0)
+	for d in drops:
+		if d.kind != LootDrop.Kind.EQUIPMENT:
+			continue
+		var eq := d.item as EquipmentItem
+		if Rarity.parse(d.rarity_id) < Rarity.Tier.RARE:
+			check(eq.consecration == "", "below Rare on a kill drop")
+		elif eq.consecration != "":
+			check(Consecrations.DEFS.has(eq.consecration), "kill drop id")
+
+
+func test_steady_keen_siphon() -> void:
+	var s := _setup()
+	var p: Player = s[1]
+	p.equip_item(_piece(S.HAT, "steady"))
+	p.equip_item(_piece(S.BELT, "keen"))
+	p.focus.focused = true
+	_tick(p)
+	check(p.loadout.casters[0].conditional_bonus == Consecrations.STEADY_BONUS, "steady while focused")
+	check_near(p.loadout.casters[0].crit_chance_bonus, Consecrations.KEEN_CRIT, 1e-6, "keen crit")
+	p.focus.focused = false
+	_tick(p)
+	check(p.loadout.casters[0].conditional_bonus == 0.0, "steady drops when you stop focusing")
+	p.equip_item(_piece(S.CLOTHES, "siphon"))
+	p.health.value = 40.0
+	var e := Enemy.create(EnemyTable.load_default().find("heap"), Transform3D(Basis.IDENTITY, Vector3(5, 0, 0)))
+	e.auto_tick = false
+	s[0].add_child(e)
+	e.apply_damage(1000.0, E.FIRE)
+	check_near(p.health.value, 48.0, 0.05, "siphon +8 health")
+	var marked := EquipmentRoller.from_seed(9, S.SHOES, "mythic", E.WATER)
+	marked.consecration = "siphon"
+	var back := ItemCodes.decode(ItemCodes.encode(marked))
+	check(back.ok() and (back.item as EquipmentItem).consecration == "siphon", "siphon survives an Ember Mark")
+	s[0].free()

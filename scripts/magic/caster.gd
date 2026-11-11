@@ -63,6 +63,7 @@ var mana_refused := 0
 var damage_bonus := 0.0  ## step 19: worn spell_damage_bonus, added flat to each cast
 var conditional_bonus := 0.0  ## step 36: Consecration bonus while its condition holds (flat, each cast)
 var next_cast_bonus := 0.0  ## step 36: Consecration one-shot bonus, spent by the next cast
+var crit_chance_bonus := 0.0  ## keen consecration, added on top of the brand's crit chance
 var owner_node: Node3D  ## step 148: the Player (capstone areas centre on it)
 var skills: Skills  ## step 145: element-tree mods (ElementSkillMods), set by Player
 var mode: FireMode  ## step 136: rebuilt when the wieldable's brand or type changes
@@ -192,6 +193,7 @@ func _cast(m: FireMode, aim: Aim, bolts: SpellBolts) -> void:
 		s.dark_bonus = wieldable.dark_chance_bonus()
 		m.modify(s)
 		_apply_mods(s)
+		s.crit_chance += crit_chance_bonus
 		if LevelScale.player_level > 1:
 			s.damage *= LevelScale.player_dmg_mult(LevelScale.player_level)
 		_fill_aim(s, aim)

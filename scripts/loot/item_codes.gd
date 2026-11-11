@@ -21,6 +21,7 @@ extends RefCounted
 ##   socketed gems or a consecration. Then every part record (loose or inside an assembled
 ##   wieldable) is followed by: gem count 2 b | count × element 3 b, and an EQUIPMENT /
 ##   EQUIPMENT_TEMPLATE record by: consecration 3 b (0 none, else Consecrations.IDS index + 1).
+##   IDS is append-only and at most 7 entries; 3 bits cannot hold an 8th.
 ##   Items without extras still encode as the exact same EM1 code (old codes keep decoding).
 ##   then CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF) over the payload bytes.
 ## Indices point into the version's append-only index tables (TABLES); their bit width is

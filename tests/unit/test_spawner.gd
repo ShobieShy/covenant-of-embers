@@ -167,11 +167,16 @@ func test_player_damaged_and_spawn_protection() -> void:
 		"player_damaged with the hit's result"
 	)
 	p.take_enemy_hit(1000.0, E.EARTH)
-	check(not p.alive() and got.size() == 2, "the lethal hit is announced too")
+	check(not p.alive() and p.downed and got.size() == 2, "the lethal hit is announced too")
 	check(p.take_enemy_hit(5.0, E.EARTH) == null and got.size() == 2, "hits on the dead: none")
+	var wind := 0
+	while p.downed and wind < 600:
+		p.tick(still, DT)
+		wind += 1
+	check(p.bleed_outs == 1 and not p.alive(), "Second Wind ended")
 	for i in 180:
 		p.tick(still, DT)
-	check(p.alive() and p.respawns == 1, "respawned after 3 s")
+	check(p.alive() and p.respawns == 1, "respawned 3 s after the window")
 	check(p.invulnerable() and is_equal_approx(p.protection_left, 1.0), "1 s spawn protection")
 	var ignored := p.hits_ignored
 	check(

@@ -10,7 +10,8 @@ extends RefCounted
 ##   then randf() < EQUIP_CHANCE (25 %): one equipment piece: slot uniform over
 ##     Hat/Clothes/Belt/Shoes, rarity = RarityTable.roll(rng, luck × 0.5), seed = rng.randi()
 ##     -> item = EquipmentRoller.from_seed(seed, slot, rarity, element) (step 19; no extra
-##     draws from rng, so the replay contract of test_pools holds).
+##     draws from rng, so the replay contract of test_pools holds). A Rare+ consecration
+##     is rolled from the item seed on a side stream (Consecrations.roll_onto), not this rng.
 ## Reinterpreted (flagged): Magewar's roll_rarity_seeded uses fixed thresholds
 ## 45/25/15/8/5/2 % (+ luck × 0.05 on the roll) that disagree with its own ItemRarity drop
 ## weights 50/25/15/7/2/1; ours uses RarityTable (PLAN §30.2) for every drop. Everything is
@@ -44,14 +45,13 @@ static func roll_procedural(
 	enemy_level: int,
 	element: int = -1,
 	luck := 0.0,
-	table: RarityTable = null
+	table: RarityTable = null,
+	bias: PackedStringArray = []
 ) -> Array[LootDrop]:
 	var rt := table if table != null else RarityTable.load_default()
 	var out: Array[LootDrop] = []
 	for i in part_count(enemy_level):
-		var part_type := (
-			rng.randi_range(0, WieldablePart.PART_TYPE_NAMES.size() - 1) as WieldablePart.PartType
-		)
+		var part_type := rng.randi_range(0, WieldablePart.PART_TYPE_NAMES.size() - 1) as WieldablePart.PartType
 		var rarity := rt.roll(rng, luck)
 		var el := _element(rng, element)
 		var part := PartRoller.roll(rng, part_type, rarity.id, el)
@@ -75,6 +75,7 @@ static func roll_procedural(
 		e.element = _element(rng, element)
 		e.roll_seed = rng.randi()
 		e.item = EquipmentRoller.from_seed(e.roll_seed, e.equip_slot, r.id, e.element)
+		Consecrations.roll_onto(e.item as EquipmentItem, e.rarity_id, bias)
 		out.append(e)
 	return out
 
@@ -89,7 +90,8 @@ static func roll_kill(
 	luck := 0.0,
 	pools: DropTable = null,
 	table: RarityTable = null,
-	players := 1
+	players := 1,
+	bias: PackedStringArray = []
 ) -> Array[LootDrop]:
 	var dt := pools if pools != null else default_pools()
 	var out: Array[LootDrop] = []
@@ -98,17 +100,13 @@ static func roll_kill(
 		var d := pool.roll(rng, luck, table)
 		if d != null:
 			out.append(d)
-	out.append_array(roll_procedural(rng, enemy_level, element, luck, table))
+	out.append_array(roll_procedural(rng, enemy_level, element, luck, table, bias))
 	return out
 
 
 ## roll_kill for an EnemyDef (its id, level and affinity as the drop element).
 static func roll_enemy(
-	rng: RandomNumberGenerator,
-	def: EnemyDef,
-	luck := 0.0,
-	pools: DropTable = null,
-	table: RarityTable = null
+	rng: RandomNumberGenerator, def: EnemyDef, luck := 0.0, pools: DropTable = null, table: RarityTable = null
 ) -> Array[LootDrop]:
 	return roll_kill(rng, def.id, def.level, def.affinity, luck, pools, table)
 
