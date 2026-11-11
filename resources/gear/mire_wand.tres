@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WieldableDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "mire_wand"
+display_name = "Mire Wand"
+type = 1
+base_rarity = "uncommon"
+element = 2
+damage = 8.0
+mana_cost = 4.0
+cooldown = 0.22
+projectile_speed = 36.0
+range_m = 42.0

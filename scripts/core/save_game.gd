@@ -61,6 +61,7 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 			"name": p.character_name,
 			"color": p.character_color.to_html(false),
 			"skills": p.skills.to_dict(),  # step 71 (older saves: no key = no ranks)
+			"gear": p.gear.to_dict(),  # 0.8.7 optional: shield, flask, relic
 		},
 		"items":
 		{
@@ -254,6 +255,8 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 	if pm:
 		p.equipment.add_potions(pm.item as ConsumableItem, pm.count)
 	p.quest_items = PackedStringArray(pl.get("quest_items", []))
+	if pl.has("gear") and pl["gear"] is Dictionary:
+		p.gear.from_dict(pl["gear"])
 	warn.append_array(p.skills.from_dict(pl.get("skills", {}), pr.level))
 	p.apply_bonuses()
 	p.health.value = clampf(float(pl.get("health", p.health.max_value())), 0.0, p.health.max_value())

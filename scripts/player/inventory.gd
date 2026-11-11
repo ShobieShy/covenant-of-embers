@@ -18,7 +18,14 @@ var junk: Array[Resource] = []  ## t74u: items marked as junk (sold together at 
 
 
 static func accepts(item: Resource) -> bool:
-	return item is WieldableInstance or item is WieldablePart or item is EquipmentItem or item is ElementGem
+	return (
+		item is WieldableInstance
+		or item is WieldablePart
+		or item is EquipmentItem
+		or item is ElementGem
+		or item is ShieldDrop
+		or item is RelicDrop
+	)
 
 
 func size() -> int:

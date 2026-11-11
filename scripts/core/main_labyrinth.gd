@@ -206,6 +206,8 @@ static func _commit_travel(h: Main, to: String, anchor := "") -> void:
 		_enter_linear_labyrinth(h, floor)
 		return
 	var player := h.get_node_or_null("Player") as Player
+	if player and to == "mage_association":
+		player.gear.refill()
 	if player:
 		var d := SaveGame.capture(player, h.progress())
 		d["progress"]["level_id"] = to

@@ -103,6 +103,9 @@ static func roll_kill(
 			out.append(d)
 	out.append_array(roll_procedural(rng, enemy_level, element, luck, table, bias))
 	var who := source if source != "" else enemy_id
+	var gear := GearDrops.roll(rng.state)
+	if gear != null:
+		out.append(gear)
 	var unique_id := NamedUniques.roll_drop(who, rng.state)
 	if unique_id != "":
 		var extra := NamedUniques.make_drop(unique_id)

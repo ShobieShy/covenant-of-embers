@@ -626,6 +626,8 @@ func target_oak() -> Node3D:
 func rest() -> bool:
 	if current() != "new_home" or flags.has(MentorArrival.FLAG) or cinematic:
 		return false
+	if player:
+		player.gear.refill()
 	set_night()
 	if bed:
 		bed.queue_free()

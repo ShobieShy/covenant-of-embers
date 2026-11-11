@@ -21,6 +21,8 @@ extends RefCounted
 ## roll_element ignores its own element_weights (uniform over 7); ours uses the weights.
 
 const P := WieldablePart.PartType
+## 0.8.7 handmade parts. They live outside resources/parts so the Magewar 16 stay put.
+const EXTRA_IDS: PackedStringArray = ["slag_grip", "mire_core"]
 const E := ElementTable.Element
 
 ## Magewar PART_TEMPLATE_PATHS (resources/parts ids).
@@ -55,6 +57,10 @@ const INTERIOR_CORES: PackedStringArray = [
 ]
 const HANDLE_WRAPS: PackedStringArray = ["Leather", "Silk", "Chain", "Rune-etched", "Crystalweave", "Dragonhide"]
 const CHARM_KINDS: PackedStringArray = ["Charm", "Talisman", "Sigil", "Ward", "Relic", "Artifact"]
+
+
+static func extra_ids() -> PackedStringArray:
+	return EXTRA_IDS
 
 
 ## Rolls one part: draws exactly one seed from `rng`, then from_seed(). element < 0 = roll it.

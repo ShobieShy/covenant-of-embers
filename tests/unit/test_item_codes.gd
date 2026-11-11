@@ -263,7 +263,7 @@ func test_bad_codes_rejected() -> void:
 	w0.write(0xAB, 8)
 	_rejects(ItemCodes.seal(w0.to_bytes()), "trailing", "trailing byte")
 	# Header problems.
-	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 3); w.write(0, 5)), "version", "unknown version 3")
+	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 4); w.write(0, 5)), "version", "unknown version 4")
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 0); w.write(0, 5)), "version", "version 0")
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, 7); w.write(0, 8)), "kind", "unknown kind 7")
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 1, 2); w.write(0, 5)), "flags", "unknown flags")

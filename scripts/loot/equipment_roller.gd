@@ -19,6 +19,8 @@ extends RefCounted
 ##    from_seed() rolls on a private generator (stored in roll_seed; Ember Marks, step 20).
 
 const S := EquipmentItem.Slot
+## 0.8.7 bases. Not in the Magewar four, so those codes stay two bits wide.
+const EXTRA_BASES: PackedStringArray = ["cinder_staff", "mire_wand"]
 
 ## Magewar EQUIP_TEMPLATE_PATHS (resources/equipment ids).
 const TEMPLATE_IDS := {
@@ -43,6 +45,10 @@ const ROLLS := {
 ## Magewar _generate_equip_name, by rarity tier / slot.
 const PREFIXES: PackedStringArray = ["Tattered", "Sturdy", "Enchanted", "Arcane", "Primordial", "Legendary"]
 const BASE_NAMES: PackedStringArray = ["Hat", "Robes", "Belt", "Boots", "Grimoire"]
+
+
+static func extra_bases() -> PackedStringArray:
+	return EXTRA_BASES
 
 
 ## Rolls one piece: draws exactly one seed from `rng`, then from_seed(). element < 0 = roll it.

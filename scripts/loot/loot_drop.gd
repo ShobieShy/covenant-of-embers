@@ -36,6 +36,10 @@ func equip_slot_id() -> String:
 
 
 func describe() -> String:
+	if item is ShieldDrop:
+		return (item as ShieldDrop).display_name
+	if item is RelicDrop:
+		return (item as RelicDrop).display_name
 	var named := item is WieldablePart and NamedUniques.is_named((item as WieldablePart).id)
 	var mark := Accessibility.NAMED_MARK if named else Accessibility.rarity_mark(rarity_id)
 	var r := "%s %s" % [mark, RarityTable.load_default().display_name(rarity_id)]

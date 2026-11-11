@@ -31,8 +31,12 @@ static func of(p_def: WieldableDef) -> WieldableInstance:
 
 ## Loads resources/wieldables/<id>.tres as a fresh instance (no parts).
 static func load_base(id: String) -> WieldableInstance:
-	var d := load("res://resources/wieldables/%s.tres" % id) as WieldableDef
-	return of(d) if d != null else null
+	var path := "res://resources/wieldables/%s.tres" % id
+	if not ResourceLoader.exists(path):
+		path = "res://resources/gear/%s.tres" % id
+	if not ResourceLoader.exists(path):
+		return null
+	return of(load(path) as WieldableDef)
 
 
 ## Magewar ItemRarity.get_multiplier (x1.0 for an unknown id).
