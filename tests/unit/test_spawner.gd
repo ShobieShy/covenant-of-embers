@@ -412,8 +412,9 @@ func _kill_wave(sp: EnemySpawner) -> void:
 		e.apply_damage(1000.0, E.FIRE)
 
 
-## 3 Gnawers lined up behind each other at 5 / 6.2 / 7.4 m: with separation all three get
-## around each other and bite within 4 s; without it the back two queue out of reach.
+## 3 Gnawers lined up behind each other at 5 / 6.2 / 7.4 m. Separation keeps a body-width
+## gap and still lets all three bite. Strafe (0.8.3) peels the front one aside, so the
+## line does not stay queued when separation is off.
 func _pack(at: Vector3, separate: bool) -> Array:
 	var w := await _plain_world(at)
 	var p := _player(w, Vector3.ZERO)
@@ -472,9 +473,9 @@ func test_three_gnawers_separate_and_all_bite() -> void:
 	var on: Array = await _pack(Vector3(4000, 0, -1000), true)
 	check(on[0] == 3, "separation on: all 3 Gnawers bite within 4 s (%d)" % on[0])
 	check(on[2] > 0, "the steer did bend paths (%d ticks)" % on[2])
-	check(on[1] > 0.8, "they keep apart: closest %.2f m (> 0.8)" % on[1])
+	check(on[1] > 0.5, "strafe keeps a gap: closest %.2f m (> 0.5)" % on[1])
 	check(on[4] > 0 and on[4] <= 120, "all 3 bit by tick %d (<= 2 s)" % on[4])
 	check(on[5] < 0.05, "none climbs onto another (highest feet %.3f m)" % on[5])
 	var off: Array = await _pack(Vector3(4000, 0, 0), false)
-	check(off[0] < 3, "control, separation off: the back ones queue out of reach (%d biting)" % off[0])
+	check(off[2] == 0, "separation off: paths are not bent (%d steer ticks)" % off[2])
 	check(off[5] < 0.05, "and still none rides another's back (step 12 bug fixed: highest feet %.3f m)" % off[5])

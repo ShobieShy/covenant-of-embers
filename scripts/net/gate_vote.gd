@@ -129,11 +129,17 @@ func _process(dt: float) -> void:
 	tick(dt)
 
 
+## The host left when every local body is outside the gate. A leftover or distant
+## body must not cancel a vote that still has someone standing on the spot.
 func _host_left() -> bool:
+	var saw := false
 	for n in _voters():
-		if n.is_in_group(Player.GROUP):
-			return (n as Node3D).global_position.distance_to(spot) > RANGE
-	return false
+		if not n.is_in_group(Player.GROUP):
+			continue
+		saw = true
+		if (n as Node3D).global_position.distance_to(spot) <= RANGE:
+			return false
+	return saw
 
 
 func _voters() -> Array:

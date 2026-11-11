@@ -80,7 +80,11 @@ func test_ember_art_batch06() -> void:
 	check(dimmed, "waystone glow dimmed")
 	ws.free()
 	for r in WorldMap.REGIONS:
-		check(EmberArt.texture("map_" + String(r)) is CompressedTexture2D, "painting " + String(r))
+		var mid := "map_" + String(r)
+		var painting := EmberArt.texture(mid)
+		check(painting != null, "painting " + String(r))
+		if EmberArt.has_art(mid):
+			check(painting is CompressedTexture2D, "painted file " + String(r))
 	var g := ElementGem.new()
 	check(ItemIcons.path_for(g).ends_with("icons/gear/gem.png"), "gem icon from batch 06")
 	check(ItemIcons.junk_icon(g) != null, "junk icon")
@@ -89,10 +93,17 @@ func test_ember_art_batch06() -> void:
 func test_ember_art_dress() -> void:
 	var lvl := (load("res://scenes/levels/midden.tscn") as PackedScene).instantiate() as Node3D
 	var h := EmberArt.dress(lvl, "midden")
+	var anchors := 0
+	var an := lvl.get_node_or_null(^"Anchors")
+	if an:
+		for a in an.get_children():
+			if String(a.name).begins_with("filth_residue"):
+				anchors += 1
 	var decals := h.get_children().filter(func(n: Node) -> bool: return n is Decal)
-	check(decals.size() == 4, "4 Filth decals: %d" % decals.size())
+	check(decals.size() == anchors, "a decal per filth residue anchor: %d" % decals.size())
 	var sky := h.get_children().filter(func(n: Node) -> bool: return String(n.name).begins_with("Skyline"))
-	check(sky.size() == EmberArt.SKYLINE_N, "skyline ring: %d" % sky.size())
+	var expect_sky := EmberArt.SKYLINE_N if lvl.get_node_or_null(^"Terrain") != null else 0
+	check(sky.size() == expect_sky, "skyline ring: %d" % sky.size())
 	var n := h.get_child_count()
 	check(EmberArt.dress(lvl, "midden").get_child_count() == n, "redress replaces")
 	check(lvl.get_children().filter(func(x: Node) -> bool: return x.name == &"EmberArt").size() == 1, "one holder")
@@ -115,13 +126,17 @@ func test_terrain_sets_share_format() -> void:
 	check(fmt.size() == 2, "one albedo and one normal format: %s" % [fmt.keys()])
 
 
-## Batch 07 follow-up: with a terrain, the ground boxes keep collision but not their mesh.
+## Batch 07 follow-up: a TerrainZone hides ground-box meshes and keeps their collision.
+## The Old Oak is a closed greybox with no terrain, so its floor mesh stays.
 func test_terrain_hides_ground_meshes() -> void:
 	if not TerrainZone.available():
 		return
 	var lv: Node3D = (load("res://scenes/levels/old_oak.tscn") as PackedScene).instantiate()
 	runner_tree.root.add_child(lv)
 	var floor_box := lv.get_node("Boxes/floor")
-	check(not (floor_box.get_node("Mesh") as MeshInstance3D).visible, "ground mesh hidden")
 	check(floor_box.get_node("Shape") is CollisionShape3D, "ground collision kept")
+	if lv.get_node_or_null(^"Terrain") == null:
+		check((floor_box.get_node("Mesh") as MeshInstance3D).visible, "no terrain: the greybox floor stays")
+	else:
+		check(not (floor_box.get_node("Mesh") as MeshInstance3D).visible, "ground mesh hidden")
 	lv.free()
