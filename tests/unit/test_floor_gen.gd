@@ -20,11 +20,8 @@ func test_kit_loads() -> void:
 
 func test_matches_python_golden() -> void:
 	var kit := FloorGen.load_kit()
-	var lines := (
-		FileAccess
-		. get_file_as_string("res://tests/fixtures/labyrinth/warrens_golden.txt")
-		. strip_edges()
-		. split("\n")
+	var lines := FileAccess.get_file_as_string("res://tests/fixtures/labyrinth/warrens_golden.txt").strip_edges().split(
+		"\n"
 	)
 	check(lines.size() == 40, "40 golden floors")
 	var bad := 0
@@ -34,12 +31,7 @@ func test_matches_python_golden() -> void:
 		if FloorGen.signature(FloorGen.generate(kit, s)) != p[3]:
 			bad += 1
 			if bad == 1:
-				fail(
-					(
-						"golden mismatch: %s\n  got %s"
-						% [line, FloorGen.signature(FloorGen.generate(kit, s))]
-					)
-				)
+				fail("golden mismatch: %s\n  got %s" % [line, FloorGen.signature(FloorGen.generate(kit, s))])
 	check(bad == 0, "all golden floors match (%d bad)" % bad)
 
 
@@ -53,12 +45,7 @@ func test_rules_on_many_seeds() -> void:
 			kinds[r["kind"]] = int(kinds.get(r["kind"], 0)) + 1
 			cells[r["cell"]] = true
 		check(
-			(
-				kinds.get("start") == 1
-				and kinds.get("exit") == 1
-				and kinds.get("elite") == 1
-				and kinds.get("rest") == 1
-			),
+			kinds.get("start") == 1 and kinds.get("exit") == 1 and kinds.get("elite") == 1 and kinds.get("rest") == 1,
 			"one of each key room"
 		)
 		check(int(kinds.get("secret", 0)) in [1, 2], "1-2 secrets")
@@ -72,17 +59,10 @@ func test_seed_is_stable_and_remix_changes() -> void:
 	var kit := FloorGen.load_kit()
 	var a := FloorGen.signature(FloorGen.generate(kit, FloorGen.floor_seed(7, "warrens", 1)))
 	check(
-		a == FloorGen.signature(FloorGen.generate(kit, FloorGen.floor_seed(7, "warrens", 1))),
-		"same seed, same floor"
+		a == FloorGen.signature(FloorGen.generate(kit, FloorGen.floor_seed(7, "warrens", 1))), "same seed, same floor"
 	)
-	check(
-		a != FloorGen.signature(FloorGen.generate(kit, FloorGen.floor_seed(7, "warrens", 1, 1))),
-		"remix re-rolls"
-	)
-	check(
-		a != FloorGen.signature(FloorGen.generate(kit, FloorGen.floor_seed(7, "warrens", 2))),
-		"floors differ"
-	)
+	check(a != FloorGen.signature(FloorGen.generate(kit, FloorGen.floor_seed(7, "warrens", 1, 1))), "remix re-rolls")
+	check(a != FloorGen.signature(FloorGen.generate(kit, FloorGen.floor_seed(7, "warrens", 2))), "floors differ")
 
 
 func test_exit_doorway_never_opens_onto_stair_well() -> void:
@@ -110,10 +90,7 @@ func test_slagworks_golden_and_warrens_seed() -> void:
 	check(kit.get("error", "") == "", "slagworks kit parses")
 	check(String(kit["kit"]["id"]) == "slagworks", "kit id")
 	var lines := (
-		FileAccess
-		. get_file_as_string("res://tests/fixtures/labyrinth/slagworks_golden.txt")
-		. strip_edges()
-		. split("\n")
+		FileAccess.get_file_as_string("res://tests/fixtures/labyrinth/slagworks_golden.txt").strip_edges().split("\n")
 	)
 	check(lines.size() == 40, "40 slagworks golden floors")
 	var bad := 0
@@ -126,8 +103,6 @@ func test_slagworks_golden_and_warrens_seed() -> void:
 	var warrens := FloorGen.load_kit()
 	var state := LabyrinthState.fresh(9)
 	var a := FloorGen.signature(FloorGen.generate(warrens, state.floor_seed(3)))
-	var b := FloorGen.signature(
-		FloorGen.generate(warrens, FloorGen.floor_seed(state.save_seed, "warrens", 3, 0))
-	)
+	var b := FloorGen.signature(FloorGen.generate(warrens, FloorGen.floor_seed(state.save_seed, "warrens", 3, 0)))
 	check(a == b, "floor 3 still hashes with the warrens seed")
 	check(state.slag_seed(9) != state.floor_seed(9), "slagworks seed is not the warrens hash")

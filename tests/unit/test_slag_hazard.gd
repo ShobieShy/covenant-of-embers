@@ -112,9 +112,10 @@ func test_shrine_pad_and_clock() -> void:
 	var travel := FastTravel.new(flags)
 	flags.set_flag(FastTravel.CRYSTAL)
 	flags.set_flag(FastTravel.TUTORIAL_DONE)
-	f.pad_reached.connect(func(n: int, id: String) -> void:
-		state.current = n
-		travel.attune(id)
+	f.pad_reached.connect(
+		func(n: int, id: String) -> void:
+			state.current = n
+			travel.attune(id)
 	)
 	f._on_pad_body(p)
 	check(state.current == 11 and travel.attuned("slagworks_overlook"), "a pad step attunes and sets current")
@@ -132,8 +133,7 @@ func test_shrine_pad_and_clock() -> void:
 	f.hazard.last_pad = f.pad_global()
 	f.hazard._falls(p)
 	check(
-		p.global_position.distance_to(f.pad_global() + Vector3(0, 0.5, 0)) < 0.3,
-		"below y -8 returns to the last pad"
+		p.global_position.distance_to(f.pad_global() + Vector3(0, 0.5, 0)) < 0.3, "below y -8 returns to the last pad"
 	)
 	p.free()
 	other.free()

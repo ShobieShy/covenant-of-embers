@@ -35,11 +35,7 @@ static func status(path: String, progress: Array = []) -> ResourceLoader.ThreadL
 		progress[0] = 1.0
 	elif progress.is_empty():
 		progress.append(1.0)
-	return (
-		ResourceLoader.THREAD_LOAD_LOADED
-		if _done[path] != null
-		else ResourceLoader.THREAD_LOAD_FAILED
-	)
+	return ResourceLoader.THREAD_LOAD_LOADED if _done[path] != null else ResourceLoader.THREAD_LOAD_FAILED
 
 
 static func take(path: String) -> Resource:

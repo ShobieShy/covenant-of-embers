@@ -26,18 +26,12 @@ func test_floor_builds_from_layout() -> void:
 				gaps_ok = false
 	check(gaps_ok, "doorways exactly on the layout's open sides")
 	check(
-		(
-			f.get_node_or_null("PlayerStart") != null
-			and f.get_node_or_null("StairsUp") is LabyrinthStairs
-		),
+		f.get_node_or_null("PlayerStart") != null and f.get_node_or_null("StairsUp") is LabyrinthStairs,
 		"start + stairs up"
 	)
 	check(f.get_node_or_null("StairsDown") is LabyrinthStairs, "stairs down in the exit room")
 	check(
-		(
-			f.get_node_or_null("RestShrine") is RestShrine
-			and f.get_node_or_null(AssemblyStation.MARKER) != null
-		),
+		f.get_node_or_null("RestShrine") is RestShrine and f.get_node_or_null(AssemblyStation.MARKER) != null,
 		"rest shrine + craft spot"
 	)
 	var f2 := LabyrinthFloor.build(kit, 1, s)
@@ -81,26 +75,16 @@ func test_gate_stairs_leave_and_resume() -> void:
 	dummy.add_to_group(Player.GROUP)
 	runner_tree.root.add_child(dummy)
 	var land: Vector3 = await it.enter("labyrinth")
-	check(
-		it.current == "labyrinth" and it.floor_no == 1 and s.current == 1 and s.deepest == 1,
-		"crater gate: floor 1"
-	)
-	check(
-		land.distance_to(it.lab_floor.start_pos() + Vector3(0, 0.5, 0)) < 0.01,
-		"party at the floor start"
-	)
+	check(it.current == "labyrinth" and it.floor_no == 1 and s.current == 1 and s.deepest == 1, "crater gate: floor 1")
+	check(land.distance_to(it.lab_floor.start_pos() + Vector3(0, 0.5, 0)) < 0.01, "party at the floor start")
 	await it.descend()
 	check(
-		it.floor_no == 2 and s.cleared == [1] and s.current == 2 and s.deepest == 2,
-		"stairs: floor 2, floor 1 cleared"
+		it.floor_no == 2 and s.cleared == [1] and s.current == 2 and s.deepest == 2, "stairs: floor 2, floor 1 cleared"
 	)
 	var out := it.leave("breach")
 	var gate := it.link_world(Interiors.LINKS["labyrinth"]["front"])
 	check(it.current == "" and s.current == 0, "left the Labyrinth")
-	check(
-		Vector2(out.x, out.z).distance_to(Vector2(gate.x, gate.z)) < Interiors.INSET + 0.1,
-		"back at the crater"
-	)
+	check(Vector2(out.x, out.z).distance_to(Vector2(gate.x, gate.z)) < Interiors.INSET + 0.1, "back at the crater")
 	await it.enter("labyrinth")
 	check(it.floor_no == 1, "the crater gate always leads to floor 1")
 	it.leave("breach")
@@ -110,8 +94,7 @@ func test_gate_stairs_leave_and_resume() -> void:
 	it.leave("breach")
 	await it.enter_floor(5)
 	check(
-		it.floor_no == 5 and it.lab_floor.get_node_or_null("WaystoneSpot") != null,
-		"waystone travel to the boss floor"
+		it.floor_no == 5 and it.lab_floor.get_node_or_null("WaystoneSpot") != null, "waystone travel to the boss floor"
 	)
 	it.leave("breach")
 	it.free()
@@ -123,10 +106,7 @@ func test_deep_waystone_in_fast_travel() -> void:
 	ft.flags.set_flag(FastTravel.CRYSTAL)
 	ft.flags.set_flag(FastTravel.TUTORIAL_DONE)
 	check(not ft.destinations().has("warrens_hall"), "not attuned before the boss")
-	check(
-		ft.attune("warrens_hall") and ft.destinations().has("warrens_hall"),
-		"attunes like a world waystone"
-	)
+	check(ft.attune("warrens_hall") and ft.destinations().has("warrens_hall"), "attunes like a world waystone")
 	check(FastTravel.info("warrens_hall")["floor"] == 5, "points at the boss floor")
 	var t := WorldTravel.new()
 	t.fast_travel = ft
@@ -141,10 +121,7 @@ func test_deep_waystone_in_fast_travel() -> void:
 
 
 func test_save_inside_resumes_inside() -> void:
-	var d := {
-		"progress":
-		{"interior": "labyrinth", "flags": {}, "labyrinth": {"v": 1, "save_seed": 5, "current": 3}}
-	}
+	var d := {"progress": {"interior": "labyrinth", "flags": {}, "labyrinth": {"v": 1, "save_seed": 5, "current": 3}}}
 	var at := WorldSession.start_spot(d, GameFlow.INTRO_SKIP)
 	check(String(at["interior"]) == "labyrinth", "a save on a floor starts in the Labyrinth")
 	check(LabyrinthState.from_save(d).current == 3, "on the saved floor")
@@ -189,10 +166,7 @@ func test_route_walks_doorways() -> void:
 			for e: Array in fl.layout.get("edges", []):
 				if (
 					int(e[2]) != 1
-					and (
-						(int(e[0]) == prev and int(e[1]) == cur)
-						or (int(e[1]) == prev and int(e[0]) == cur)
-					)
+					and ((int(e[0]) == prev and int(e[1]) == cur) or (int(e[1]) == prev and int(e[0]) == cur))
 				):
 					linked = true
 			check(linked, "floor %d: hop %d->%d is a doorway" % [n, prev, cur])

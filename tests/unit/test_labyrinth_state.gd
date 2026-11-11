@@ -10,29 +10,19 @@ func _fixture(n: String) -> Dictionary:
 
 func test_old_saves_get_a_block() -> void:
 	var town := LabyrinthState.from_save(_fixture("town_square"))
-	check(
-		town.deepest == 0 and town.cleared.is_empty() and town.save_seed > 0,
-		"no Breach visit: nothing reached"
-	)
+	check(town.deepest == 0 and town.cleared.is_empty() and town.save_seed > 0, "no Breach visit: nothing reached")
 	var br := LabyrinthState.from_save(_fixture("breach"))
-	check(
-		br.deepest == 1, "a save that visited the Breach has floor 1 reached (got %d)" % br.deepest
-	)
+	check(br.deepest == 1, "a save that visited the Breach has floor 1 reached (got %d)" % br.deepest)
 	check(LabyrinthState.from_save({}).save_seed > 0, "empty save gets a seed")
 
 
 func test_v1_fixture_round_trip() -> void:
 	var s := LabyrinthState.from_save(_fixture("labyrinth"))
 	check(s.save_seed == 987654 and s.deepest == 3 and s.cleared == [1, 2], "fields")
-	check(
-		s.remix_of(1) == 1 and s.chest_open(1, "c_hoard") and s.elite_dead(2, "war_chief"),
-		"floor state"
-	)
+	check(s.remix_of(1) == 1 and s.chest_open(1, "c_hoard") and s.elite_dead(2, "war_chief"), "floor state")
 	var again := LabyrinthState.from_dict(JSON.parse_string(JSON.stringify(s.to_dict())))
 	check(JSON.stringify(again.to_dict()) == JSON.stringify(s.to_dict()), "JSON round trip")
-	check(
-		s.floor_seed(1) == FloorGen.floor_seed(987654, "warrens", 1, 1), "floor seed uses the remix"
-	)
+	check(s.floor_seed(1) == FloorGen.floor_seed(987654, "warrens", 1, 1), "floor seed uses the remix")
 
 
 func test_sanitises_bad_data() -> void:
@@ -94,20 +84,11 @@ func test_running_game_saves_and_loads_the_block() -> void:
 	g.free()
 	var r := SaveGame.read(GAME_FILE)
 	var blk: Dictionary = r["data"]["progress"].get("labyrinth", {})
-	check(
-		int(blk.get("v", 0)) == LabyrinthState.V and int(blk.get("save_seed", 0)) == seed_value,
-		"block in the file"
-	)
-	check(
-		int(blk.get("deepest", 0)) == 2 and blk.get("bosses", []) == ["goblin_king"],
-		"progress in the file"
-	)
+	check(int(blk.get("v", 0)) == LabyrinthState.V and int(blk.get("save_seed", 0)) == seed_value, "block in the file")
+	check(int(blk.get("deepest", 0)) == 2 and blk.get("bosses", []) == ["goblin_king"], "progress in the file")
 	var g2 := _game(true)
 	var lab2: LabyrinthState = g2.labyrinth
-	check(
-		lab2.save_seed == seed_value and lab2.cleared == [2] and lab2.chest_open(2, "hoard_nook"),
-		"loaded back"
-	)
+	check(lab2.save_seed == seed_value and lab2.cleared == [2] and lab2.chest_open(2, "hoard_nook"), "loaded back")
 	g2.free()
 	GameFlow.dry_run = false
 	GameFlow.level_id = "midden"

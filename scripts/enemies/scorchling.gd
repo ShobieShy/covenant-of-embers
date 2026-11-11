@@ -93,12 +93,7 @@ func _start_attack(_feet: Vector3) -> void:
 
 
 func _wants_fan(vel: Vector3) -> bool:
-	return (
-		style != null
-		and style.special == "fan"
-		and engaged + 1e-4 >= style.arm_s
-		and vel.length_squared() > 1e-6
-	)
+	return style != null and style.special == "fan" and engaged + 1e-4 >= style.arm_s and vel.length_squared() > 1e-6
 
 
 func _tick_embers(dt: float) -> void:

@@ -124,8 +124,6 @@ func _chips(here: int, total: int) -> void:
 ## QA round 10: log how the vote ended and how long the banner was up.
 func _log_end() -> void:
 	var up := Time.get_ticks_msec() / 1000.0 - _shown_at if _shown_at >= 0.0 else 0.0
-	var why := (
-		"ended (timer ran out)" if _last_left < 1.0 else "cleared (party gathered or floor changed)"
-	)
+	var why := "ended (timer ran out)" if _last_left < 1.0 else "cleared (party gathered or floor changed)"
 	print("[vote] %s after %.1f s" % [why, up])
 	_shown_at = -1.0

@@ -100,11 +100,7 @@ func _process(dt: float) -> void:
 
 
 func tick(dt: float, move_puppets := true) -> void:
-	if (
-		session == null
-		or not is_instance_valid(session)
-		or session.state != NetSession.State.IN_GAME
-	):
+	if session == null or not is_instance_valid(session) or session.state != NetSession.State.IN_GAME:
 		return
 	_snap_left -= dt
 	if _snap_left <= 0.0:
@@ -140,9 +136,7 @@ func _move_puppets(dt: float, now_ms := -1.0) -> void:
 		else:
 			var want: Variant = e.get_meta(&"net_pos", null)
 			if want is Vector3:
-				e.global_position = e.global_position.lerp(
-					want, 1.0 - exp(-RemotePlayer.SMOOTH * dt)
-				)
+				e.global_position = e.global_position.lerp(want, 1.0 - exp(-RemotePlayer.SMOOTH * dt))
 
 
 ## The host's world is authoritative. Drop local enemies outside the physics step.
@@ -161,11 +155,7 @@ func _drop_world_enemies() -> void:
 
 
 func local_pose() -> Dictionary:
-	var d := {
-		"p": player.global_position,
-		"y": player.rotation.y,
-		"n": session.local_info.get("name", "Player")
-	}
+	var d := {"p": player.global_position, "y": player.rotation.y, "n": session.local_info.get("name", "Player")}
 	var col: Variant = player.get(&"character_color")
 	if col is Color:  # step 73: the character's colour shows on the others' screens
 		d["c"] = (col as Color).to_html(false)
@@ -189,7 +179,11 @@ func local_pose() -> Dictionary:
 		d["dtl"] = float(left) if left is float or left is int else 0.0
 	if session:
 		d["t"] = session._clock_ms
-	if session and session.roster.has(session.my_id()) and bool(session.roster[session.my_id()].get("reconnecting", false)):
+	if (
+		session
+		and session.roster.has(session.my_id())
+		and bool(session.roster[session.my_id()].get("reconnecting", false))
+	):
 		d["rc"] = true
 	var pr: Variant = player.get(&"progression")
 	if pr != null:
@@ -303,7 +297,9 @@ func _tick_revive(dt: float) -> void:
 	if not downed:
 		var hold := _local_revive_hold()
 		var target := _downed_friend()
-		var step := CoopFlow.revive_step(revive_progress if hold and target >= 0 else 0.0, hold and target >= 0, dt, REVIVE_TIME)
+		var step := CoopFlow.revive_step(
+			revive_progress if hold and target >= 0 else 0.0, hold and target >= 0, dt, REVIVE_TIME
+		)
 		revive_progress = float(step["p"])
 		if hold and target >= 0:
 			session.send("revive", {"p": revive_progress, "id": target, "by": _my_name()}, target, false)
@@ -481,18 +477,19 @@ func send_snapshot() -> void:
 		if bool(session.roster[peer].get("reconnecting", false)):
 			continue
 		var p: RemotePlayer = proxies.get(int(peer))
-		var at: Variant = (
-			p.global_position if p and is_instance_valid(p) and p.is_inside_tree() else null
-		)
-		session.send(
-			"snap",
-			{
-				"e": interest_rows(all, at),
-				"t": session._clock_ms,
-				"ack": session.ack_for(int(peer)),
-			},
-			int(peer),
-			false,
+		var at: Variant = p.global_position if p and is_instance_valid(p) and p.is_inside_tree() else null
+		(
+			session
+			. send(
+				"snap",
+				{
+					"e": interest_rows(all, at),
+					"t": session._clock_ms,
+					"ack": session.ack_for(int(peer)),
+				},
+				int(peer),
+				false,
+			)
 		)
 	snaps_sent += 1
 
@@ -609,21 +606,13 @@ func _apply_snapshot(list: Array, ack := 0, t_ms := 0.0) -> void:
 func _on_puppet_hit(e: Enemy, h: SpellBolts.Hit) -> void:
 	if h == null or h.result == null:
 		return
-	send_hit(
-		e,
-		h.result.amount,
-		h.element,
-		h.dark_bonus,
-		ElementSkillMods.net_status(ElementSkillMods.of_hit(h))
-	)
+	send_hit(e, h.result.amount, h.element, h.dark_bonus, ElementSkillMods.net_status(ElementSkillMods.of_hit(h)))
 
 
 ## The client's hit on a puppet goes to the host (the puppet already showed it). Step 108:
 ## "db" = the Dark-part bonus; the host rolls the conversion.
 ## Step 150: "sm" = the element-tree status mods (ElementSkillMods.net_status), omitted when none.
-func send_hit(
-	e: Enemy, amount: float, element: ElementTable.Element, dark_bonus := 0.0, sm := {}
-) -> void:
+func send_hit(e: Enemy, amount: float, element: ElementTable.Element, dark_bonus := 0.0, sm := {}) -> void:
 	hits_sent += 1
 	_hit_seq += 1
 	_await_ack = _hit_seq
@@ -713,10 +702,7 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 						MagicEffects.try_corrupt(e, float(data.get("db", 0.0)))
 					if data.has("sm"):
 						MagicEffects.net_status(
-							e,
-							el,
-							float(data.get("amt", 0.0)),
-							ElementSkillMods.sanitize_net(data["sm"])
+							e, el, float(data.get("amt", 0.0)), ElementSkillMods.sanitize_net(data["sm"])
 						)
 		"heal":
 			var amt := maxf(0.0, float(data.get("amt", 0.0)))

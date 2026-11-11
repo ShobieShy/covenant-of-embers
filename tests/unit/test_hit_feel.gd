@@ -18,9 +18,7 @@ func _hit(e: Enemy, dmg: float, crit := 1.0) -> SpellBolts.Hit:
 
 
 func _enemy(w: Node3D, id: String) -> Enemy:
-	var e := Enemy.create(
-		EnemyTable.load_default().find(id), Transform3D(Basis.IDENTITY, Vector3.ZERO)
-	)
+	var e := Enemy.create(EnemyTable.load_default().find(id), Transform3D(Basis.IDENTITY, Vector3.ZERO))
 	e.auto_tick = false
 	w.add_child(e)
 	e.set_physics_process(false)
@@ -47,10 +45,7 @@ func test_flinch_and_crit_root() -> void:
 	check_near(e.crit_stun_left, Enemy.CRIT_STUN_S, 1e-6, "a crit roots")
 	check_near(e.move_scale(), 0.0, 1e-6, "rooted: no walk")
 	check(not e.has_status_of(E.EARTH), "the root is not Earth's stagger")
-	check(
-		Enemy.flinch_pose(Enemy.FLINCH_S, true).y > Enemy.flinch_pose(Enemy.FLINCH_S, false).y,
-		"a crit leans harder"
-	)
+	check(Enemy.flinch_pose(Enemy.FLINCH_S, true).y > Enemy.flinch_pose(Enemy.FLINCH_S, false).y, "a crit leans harder")
 	for i in 15:
 		e.tick(DT)
 	check_near(e.move_scale(), 1.0, 1e-6, "root over")
@@ -92,9 +87,7 @@ func test_real_bolt_flinches() -> void:
 	var w := Node3D.new()
 	w.position = Vector3(-2600, 0, 3300)
 	runner_tree.root.add_child(w)
-	var e := Enemy.create(
-		EnemyTable.load_default().find("gnawer"), Transform3D(Basis.IDENTITY, Vector3.ZERO)
-	)
+	var e := Enemy.create(EnemyTable.load_default().find("gnawer"), Transform3D(Basis.IDENTITY, Vector3.ZERO))
 	e.auto_tick = false
 	w.add_child(e)
 	var bolts := SpellBolts.new()
@@ -113,9 +106,7 @@ func test_real_bolt_flinches() -> void:
 	var hits: Array[SpellBolts.Hit] = []
 	for i in 30:
 		hits.append_array(bolts.tick(DT))
-	check(
-		hits.size() == 1 and hits[0].collider == e, "the bolt hit the enemy (%d hits)" % hits.size()
-	)
+	check(hits.size() == 1 and hits[0].collider == e, "the bolt hit the enemy (%d hits)" % hits.size())
 	check(e.flinches == 1 and e.flinch_left > 0.0, "the real hit flinched it")
 	check(e.flinch_dir.x > 0.5 or e.flinch_dir.length() > 0.5, "lean along the bolt")
 	w.free()

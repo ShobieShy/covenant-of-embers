@@ -40,7 +40,10 @@ func test_fire_band() -> void:
 	elite.def.set_meta(&"elite", "bulwark")
 	ActLoot.tag(elite, 11)
 	check(elite.level_offset == LevelScale.labyrinth_offset(11) + 1, "elite uses the floor offset plus 1")
-	check(elite.level_offset != LevelScale.labyrinth_offset(11) + 1 + LevelScale.BOSS_OFFSET, "not the boss offset as well")
+	check(
+		elite.level_offset != LevelScale.labyrinth_offset(11) + 1 + LevelScale.BOSS_OFFSET,
+		"not the boss offset as well"
+	)
 	elite.def.remove_meta(&"elite")
 	var boss := Enemy.create(table.find("forgemaw"))
 	ActLoot.tag(boss, 13)

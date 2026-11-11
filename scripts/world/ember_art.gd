@@ -69,11 +69,7 @@ const SKYLINE_N := 12
 
 
 static func path(id: String) -> String:
-	return (
-		DIR
-		+ id
-		+ (".png" if String(SLOTS.get(id, {}).get("kind", "model")) == "texture" else ".glb")
-	)
+	return DIR + id + (".png" if String(SLOTS.get(id, {}).get("kind", "model")) == "texture" else ".glb")
 
 
 static func has_art(id: String) -> bool:
@@ -267,10 +263,7 @@ static func landmark_bodies(id: String) -> Array[StaticBody3D]:
 			"SouthW": [Vector3(side, t, w), Vector3(-h + side / 2, t / 2, h - w / 2)],
 			"SouthE": [Vector3(side, t, w), Vector3(h - side / 2, t / 2, h - w / 2)],
 			"Lintel":
-			[
-				Vector3(SPIRE_DOOR.x, t - SPIRE_DOOR.y, w),
-				Vector3(0, SPIRE_DOOR.y + (t - SPIRE_DOOR.y) / 2, h - w / 2)
-			],
+			[Vector3(SPIRE_DOOR.x, t - SPIRE_DOOR.y, w), Vector3(0, SPIRE_DOOR.y + (t - SPIRE_DOOR.y) / 2, h - w / 2)],
 		}
 		for k in walls:
 			var bs := BoxShape3D.new()
@@ -321,16 +314,10 @@ static func _collide(m: Node3D, id: String) -> void:
 	var small := id.begins_with("waystone_") or id.begins_with("chest_")
 	var meshes := m.find_children("*", "MeshInstance3D", true, false)
 	var lod0 := meshes.filter(
-		func(n: Node) -> bool:
-			return (
-				String(n.name).contains("_LOD0") or String(n.get_parent().name).ends_with("_LOD0")
-			)
+		func(n: Node) -> bool: return String(n.name).contains("_LOD0") or String(n.get_parent().name).ends_with("_LOD0")
 	)
 	for mi in lod0 if not lod0.is_empty() else meshes:
-		if (
-			String(mi.name).contains("Impostor")
-			or (small and String(mi.get_parent().name) == "Lid")
-		):
+		if String(mi.name).contains("Impostor") or (small and String(mi.get_parent().name) == "Lid"):
 			continue
 		if small:
 			(mi as MeshInstance3D).create_convex_collision(true, true)

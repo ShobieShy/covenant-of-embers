@@ -8,9 +8,7 @@ func test_links_resolve() -> void:
 	for id in Interiors.LINKS:
 		if String(Interiors.LINKS[id]["scene"]) == "":
 			continue  # Labyrinth floors are built (test_labyrinth_floor.gd)
-		var lvl := (
-			(load(GameFlow.level_scene(Interiors.LINKS[id]["scene"])) as PackedScene).instantiate()
-		)
+		var lvl := (load(GameFlow.level_scene(Interiors.LINKS[id]["scene"])) as PackedScene).instantiate()
 		for to in Interiors.LINKS[id]["exits"]:
 			var found := false
 			for e in lvl.get_node("Exits").get_children():
@@ -40,23 +38,15 @@ func test_enter_and_leave() -> void:
 	var land: Vector3 = await i.enter("mage_association")
 	check(i.current == "mage_association" and i.interior != null, "interior loaded")
 	check(absf(land.y - Interiors.DEPTH) < 5.0, "landing below the world (%s)" % land)
-	check(
-		p.global_position.distance_to(land) < 1.0,
-		"player moved inside (%s vs %s)" % [p.global_position, land]
-	)
+	check(p.global_position.distance_to(land) < 1.0, "player moved inside (%s vs %s)" % [p.global_position, land])
 	check(i.interior.get_node_or_null("WorldEnvironment") == null, "world sky kept")
 	var out := i.leave("midden")
 	check(i.current == "", "left")
 	check(out.y > -100.0, "back above ground (%s)" % out)
-	check(
-		out.distance_to(Vector3(0, 0, 17.5)) < Interiors.INSET + 0.1,
-		"back door lands at the Landfill road"
-	)
+	check(out.distance_to(Vector3(0, 0, 17.5)) < Interiors.INSET + 0.1, "back door lands at the Landfill road")
 	await i.enter("mage_association")
 	out = i.leave("town_square")
-	check(
-		out.distance_to(door.position) >= InteriorDoor.RADIUS, "landing clear of the door trigger"
-	)
+	check(out.distance_to(door.position) >= InteriorDoor.RADIUS, "landing clear of the door trigger")
 	check(fades[0] == 4, "a fade per transition (%d)" % fades[0])
 	root.free()
 
@@ -79,9 +69,7 @@ func test_fade_and_slow_load_overlay() -> void:
 	await runner_tree.create_timer(0.6).timeout
 	await runner_tree.process_frame
 	check(not is_instance_valid(s), "overlay freed after its fade-out")
-	check(
-		runner_tree.current_scene == null or runner_tree.current_scene.name != "", "no scene change"
-	)
+	check(runner_tree.current_scene == null or runner_tree.current_scene.name != "", "no scene change")
 	f.free()
 	i.free()
 
@@ -94,8 +82,7 @@ func test_breach_rooms() -> void:
 	i.add_doors()
 	var door := i.get_node("Door_breach_rooms") as Node3D
 	check(
-		door.position.distance_to(Vector3(1099.5, 0, 11)) < 0.01,
-		"portal at the complex entrance (%s)" % door.position
+		door.position.distance_to(Vector3(1099.5, 0, 11)) < 0.01, "portal at the complex entrance (%s)" % door.position
 	)
 	var p := Node3D.new()
 	p.add_to_group(Player.GROUP)
@@ -129,10 +116,7 @@ func test_interior_nav_cached_and_fresh() -> void:
 		runner_tree.root.add_child(n)
 		check(nav.bakes == 0, "%s did not bake on entry" % id)
 		var fresh := nav.bake_now()
-		check(
-			fresh == cached,
-			"%s cache fresh (%d vs %d): rerun tools/bake_interior_nav.gd" % [id, cached, fresh]
-		)
+		check(fresh == cached, "%s cache fresh (%d vs %d): rerun tools/bake_interior_nav.gd" % [id, cached, fresh])
 		n.free()
 
 

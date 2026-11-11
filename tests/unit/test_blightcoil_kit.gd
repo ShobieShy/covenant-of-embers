@@ -24,5 +24,8 @@ func test_kit_files_and_silent_cues() -> void:
 	check(cav.find_children("*", "CollisionShape3D", true, false).size() > 3, "greybox still collides")
 	check(cav.get_node_or_null("TrunkArt") != null, "trunk art")
 	check(cav.get_node_or_null("RampArt_to_canopy") != null, "ramp art")
-	check(WarrensKit.available() == ResourceLoader.exists("res://assets/original/ember_art/warrens/wall_4m.glb"), "the Warrens kit is unchanged")
+	check(
+		WarrensKit.available() == ResourceLoader.exists("res://assets/original/ember_art/warrens/wall_4m.glb"),
+		"the Warrens kit is unchanged"
+	)
 	cav.free()

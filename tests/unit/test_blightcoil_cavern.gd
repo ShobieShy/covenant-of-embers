@@ -51,10 +51,7 @@ func test_enter_canopy_keeps_every_tier() -> void:
 	var local_y := p.global_position.y - ints.cavern.global_position.y
 	check(local_y > 12.0 and local_y < 14.0, "body on the Canopy pad (y %.2f)" % local_y)
 	var pad := ints.cavern.pad_global(7)
-	check(
-		Vector2(p.global_position.x - pad.x, p.global_position.z - pad.z).length() < 1.5,
-		"body over the Canopy pad"
-	)
+	check(Vector2(p.global_position.x - pad.x, p.global_position.z - pad.z).length() < 1.5, "body over the Canopy pad")
 	check(ints.cavern.get_node_or_null("Walk/Slab_sump") != null, "Sump still in the tree")
 	check(ints.cavern.get_node_or_null("Walk/Slab_crown") != null, "Crown still in the tree")
 	check(LabyrinthFloor.build_count == LabyrinthFloor.build_count, "build counter readable")
@@ -93,11 +90,8 @@ func test_descend_stops_at_the_king() -> void:
 
 func test_warrens_fixture_unchanged() -> void:
 	var kit := FloorGen.load_kit()
-	var lines := (
-		FileAccess
-		. get_file_as_string("res://tests/fixtures/labyrinth/warrens_golden.txt")
-		. strip_edges()
-		. split("\n")
+	var lines := FileAccess.get_file_as_string("res://tests/fixtures/labyrinth/warrens_golden.txt").strip_edges().split(
+		"\n"
 	)
 	var bad := 0
 	for line in lines:

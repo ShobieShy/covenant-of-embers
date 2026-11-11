@@ -194,9 +194,7 @@ static func store_linear(data: Dictionary, path: String) -> bool:
 		return false
 	var bak := pre_linear_path(path)
 	if bak != "" and not FileAccess.file_exists(bak) and FileAccess.file_exists(path):
-		DirAccess.copy_absolute(
-			ProjectSettings.globalize_path(path), ProjectSettings.globalize_path(bak)
-		)
+		DirAccess.copy_absolute(ProjectSettings.globalize_path(path), ProjectSettings.globalize_path(bak))
 		print("[save] backed up %s -> %s" % [path, bak])
 	var err := SaveGame.write(data, path)
 	if err != OK:

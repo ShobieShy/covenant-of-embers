@@ -13,10 +13,7 @@ func test_wall_fill_centres_the_door() -> void:
 		xs.append(snappedf(c.position.x, 0.01))
 		door = door or (String(c.name).begins_with("wall_door_4m") and is_zero_approx(c.position.x))
 		if String(c.name).begins_with("wall_2m"):
-			check(
-				is_equal_approx(absf(c.position.x), 3.0),
-				"2 m pieces beside the door (%s)" % c.position.x
-			)
+			check(is_equal_approx(absf(c.position.x), 3.0), "2 m pieces beside the door (%s)" % c.position.x)
 	xs.sort()
 	check(xs == [-10.0, -6.0, -3.0, 0.0, 3.0, 6.0, 10.0], "handoff pivots (%s)" % [xs])
 	check(door, "door centred")
@@ -30,18 +27,12 @@ func test_floor_is_dressed_and_still_collides() -> void:
 	check(f.dressed, "kit present -> dressed")
 	var r: Node3D = f.rooms[0]
 	check(r.has_node("Dress"), "room dressed")
-	check(
-		not r.has_node("Floor") or not (r.get_node("Floor").get_child(0) as MeshInstance3D).visible,
-		"greybox hidden"
-	)
+	check(not r.has_node("Floor") or not (r.get_node("Floor").get_child(0) as MeshInstance3D).visible, "greybox hidden")
 	check(r.get_node("Floor") is StaticBody3D, "greybox collision kept")
 	var rest := false
 	for rr in f.rooms:
 		if rr.get_meta(&"kind") == "rest":
-			rest = (
-				rr.find_child("cook_fire", true, false) != null
-				and rr.find_child("bedroll", true, false) != null
-			)
+			rest = (rr.find_child("cook_fire", true, false) != null and rr.find_child("bedroll", true, false) != null)
 	check(rest, "rest room has the fungus-cellar set")
 	check(f.find_child("craft_bench", true, false) != null, "craft bench at the station")
 	f.free()
@@ -53,17 +44,10 @@ func test_boss_floor_throne_hall_lods() -> void:
 	check(h != null, "throne hall is the arena")
 	var lod1 := h.find_child("throne_hall_LOD1", true, false) as MeshInstance3D if h else null
 	check(
-		(
-			lod1 != null
-			and lod1.visibility_range_begin > 0.0
-			and lod1.visibility_range_end > lod1.visibility_range_begin
-		),
+		lod1 != null and lod1.visibility_range_begin > 0.0 and lod1.visibility_range_end > lod1.visibility_range_begin,
 		"LOD1 range"
 	)
-	check(
-		h != null and h.find_children("*", "StaticBody3D", true, false).size() == 1,
-		"LOD0 collision only"
-	)
+	check(h != null and h.find_children("*", "StaticBody3D", true, false).size() == 1, "LOD0 collision only")
 	check(f.has_node("BossSpawn") and f.has_node("WaystoneSpot"), "markers kept")
 	f.free()
 
@@ -71,10 +55,7 @@ func test_boss_floor_throne_hall_lods() -> void:
 func test_gate_slot_and_posts() -> void:
 	var g := EmberArt.model("labyrinth_gate")
 	check(g != null, "gate model")
-	check(
-		g != null and g.find_children("GatePost*", "StaticBody3D", true, false).size() == 2,
-		"two posts, open portal"
-	)
+	check(g != null and g.find_children("GatePost*", "StaticBody3D", true, false).size() == 2, "two posts, open portal")
 	if g:
 		g.free()
 
@@ -104,10 +85,7 @@ func test_hand_props_at_hand_height() -> void:
 		check(prop != null, "%s has %s" % p)
 		if prop:
 			var y := _mesh_mid_y(prop) - e.global_position.y
-			check(
-				y > 0.25 * e.def.size.y and y < 1.0 * e.def.size.y,
-				"%s %s at hand height (%.2f m)" % [p[0], p[1], y]
-			)
+			check(y > 0.25 * e.def.size.y and y < 1.0 * e.def.size.y, "%s %s at hand height (%.2f m)" % [p[0], p[1], y])
 		e.free()
 
 
@@ -116,9 +94,7 @@ func _mesh_mid_y(n: Node3D) -> float:
 	var first := true
 	for mi in [n] + n.find_children("*", "MeshInstance3D", true, false):
 		if mi is MeshInstance3D:
-			var a: AABB = (
-				(mi as MeshInstance3D).global_transform * (mi as MeshInstance3D).get_aabb()
-			)
+			var a: AABB = (mi as MeshInstance3D).global_transform * (mi as MeshInstance3D).get_aabb()
 			ab = a if first else ab.merge(a)
 			first = false
 	return ab.get_center().y if not first else n.global_position.y

@@ -58,11 +58,6 @@ func interact() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if (
-		player
-		and not player.ui_open
-		and event.is_action_pressed(&"interact")
-		and Interaction.is_target(player, self)
-	):
+	if player and not player.ui_open and event.is_action_pressed(&"interact") and Interaction.is_target(player, self):
 		interact()
 		get_viewport().set_input_as_handled()

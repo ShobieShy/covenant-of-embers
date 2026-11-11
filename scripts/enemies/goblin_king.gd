@@ -117,10 +117,7 @@ func _tick_rocks(dt: float) -> void:
 				k.done = true
 				continue
 		k.pos = nxt
-		if (
-			_target_valid()
-			and k.pos.distance_to(_target_eye() - Vector3(0.0, 0.4, 0.0)) <= ROCK_HIT
-		):
+		if _target_valid() and k.pos.distance_to(_target_eye() - Vector3(0.0, 0.4, 0.0)) <= ROCK_HIT:
 			k.done = true
 			k.hit = true
 			rocks_hit += 1

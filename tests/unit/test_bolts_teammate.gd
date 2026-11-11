@@ -13,9 +13,7 @@ func test_bolts_pass_teammates() -> void:
 	var bolts := SpellBolts.new()
 	bolts.auto_tick = false
 	w.add_child(bolts)
-	var foe := Enemy.create(
-		EnemyTable.load_default().find("gnawer"), Transform3D(Basis(), Vector3(0, 0, -8))
-	)
+	var foe := Enemy.create(EnemyTable.load_default().find("gnawer"), Transform3D(Basis(), Vector3(0, 0, -8)))
 	w.add_child(foe)
 	if foe is Gnawer:
 		(foe as Gnawer).auto_tick = false
@@ -30,10 +28,7 @@ func test_bolts_pass_teammates() -> void:
 	var s := SpellBolts.Spawn.new()
 	s.element = E.FIRE
 	var r: Dictionary = bolts._cast(space, s, from, to)
-	check(
-		not r.is_empty() and r["collider"] == foe,
-		"a Fire bolt passes the teammate and hits the enemy"
-	)
+	check(not r.is_empty() and r["collider"] == foe, "a Fire bolt passes the teammate and hits the enemy")
 	s.element = E.LIGHT
 	r = bolts._cast(space, s, from, to)
 	check(

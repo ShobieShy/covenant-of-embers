@@ -91,9 +91,7 @@ func test_open_rereads_home_and_tweens_are_unscaled() -> void:  # QA round 9 (4)
 	await _wait(0.3)
 	p.position = Vector2(200, 50)  # a relayout while hidden (window resize)
 	UiAnim.open(p)
-	check(
-		p.position.is_equal_approx(Vector2(200, 50 + UiAnim.SLIDE_PX)), "slides from the new spot"
-	)
+	check(p.position.is_equal_approx(Vector2(200, 50 + UiAnim.SLIDE_PX)), "slides from the new spot")
 	await _wait(0.3)
 	check(p.position.is_equal_approx(Vector2(200, 50)), "rests at the new spot, not the old")
 	check(t != null, "a tween was made")
@@ -148,9 +146,7 @@ func test_pause_menu_unpauses_after_fade() -> void:  # QA round 10 (1)
 
 
 func test_centre_at_any_size() -> void:  # QA round 10 (3)
-	for res in [
-		Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(1024, 600)
-	]:
+	for res in [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(1024, 600)]:
 		var vp := SubViewport.new()
 		vp.size = res
 		runner_tree.root.add_child(vp)

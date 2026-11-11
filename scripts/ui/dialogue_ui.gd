@@ -211,10 +211,7 @@ func _input(e: InputEvent) -> void:
 func _is_advance_press(e: InputEvent) -> bool:
 	if not visible or runner == null or not runner.active or not e.is_pressed() or e.is_echo():
 		return false
-	var click := (
-		e is InputEventMouseButton
-		and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT
-	)
+	var click := e is InputEventMouseButton and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT
 	if click and choice_box.get_child_count() > 0:
 		return false
 	return click or e.is_action_pressed(&"interact")

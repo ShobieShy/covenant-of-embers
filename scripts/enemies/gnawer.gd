@@ -294,7 +294,13 @@ func think(dt: float) -> void:
 	_tick_pattern(dt, next, dir)
 	_attack_tick(dt, next, s.distance, feet)  # Heap: a winding-up slam lands / is cancelled
 	# (1e-4 s slack: 0.8 - 48 x 1/60 is not exactly 0 in floats.)
-	if next == State.ATTACK and attack_timer <= 1e-4 and not staggered() and _in_reach(s.distance, feet) and pattern_windup_left <= 0.0:
+	if (
+		next == State.ATTACK
+		and attack_timer <= 1e-4
+		and not staggered()
+		and _in_reach(s.distance, feet)
+		and pattern_windup_left <= 0.0
+	):
 		_start_attack(feet)
 	if _rooted():  # Heap winding up, or a pattern telegraph: planted, no walk, no turn
 		walk = 0.0
@@ -644,7 +650,9 @@ func _style_slide(dt: float, next: State, dir: Vector3, dist: float) -> Vector3:
 	if dodge_left > 0.0:
 		dodge_left = maxf(0.0, dodge_left - dt)
 		delta = dodge_dir * style.dodge_speed * dt
-	elif next == State.ATTACK and dir.length_squared() > 1e-6 and (style.strafe_speed > 0.0 or style.retreat_speed > 0.0):
+	elif (
+		next == State.ATTACK and dir.length_squared() > 1e-6 and (style.strafe_speed > 0.0 or style.retreat_speed > 0.0)
+	):
 		var side := dir.cross(Vector3.UP)
 		if side.length_squared() < 1e-8:
 			side = Vector3.RIGHT

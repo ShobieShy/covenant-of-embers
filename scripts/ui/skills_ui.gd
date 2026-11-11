@@ -171,9 +171,7 @@ func _build_tabs() -> void:
 	locks.clear()
 	crowns.clear()
 	var et := ElementTable.load_default()
-	_add_tab(
-		"core", player.skills.tree.name if player.skills.tree.name != "" else "Core", Color.WHITE
-	)
+	_add_tab("core", player.skills.tree.name if player.skills.tree.name != "" else "Core", Color.WHITE)
 	for el in ElementTable.IDS:
 		var t := SkillTree.element_tree(el)
 		if t == null:
@@ -271,9 +269,7 @@ func _card(el: String, sid: String) -> void:
 	if t == null or player == null:
 		return
 	var s := t.skill(sid)
-	card_line.text = (
-		"%s  %d/%d  —  %s" % [s["name"], player.skills.el_rank(el, sid), s["max_rank"], s["desc"]]
-	)
+	card_line.text = ("%s  %d/%d  —  %s" % [s["name"], player.skills.el_rank(el, sid), s["max_rank"], s["desc"]])
 
 
 ## Takes a rank of element skill `sid`; a capstone first opens the confirm dialog (returns false
@@ -323,9 +319,7 @@ func _pulse_path(el: String, sid: String) -> void:
 		var id := String(k)
 		if id == sid or int(t.skill(id).get("tier", 0)) >= tier or not owned.call(id):
 			continue
-		var b: Variant = (
-			el_buttons.get("%s/%s" % [el, id]) if not el.is_empty() else buttons.get(id)
-		)
+		var b: Variant = el_buttons.get("%s/%s" % [el, id]) if not el.is_empty() else buttons.get(id)
 		if b != null:
 			path.append(b)
 	for b in path:
@@ -340,8 +334,7 @@ func request_respec() -> bool:
 	var price := player.respec_price()
 	pending = RESPEC_KEY
 	confirm_label.text = (
-		"Respec refunds all your skill points%s. Continue?"
-		% (" for %d Gold" % price if price > 0 else "")
+		"Respec refunds all your skill points%s. Continue?" % (" for %d Gold" % price if price > 0 else "")
 	)
 	confirm_take.text = "Respec"
 	confirm.visible = true
@@ -417,17 +410,12 @@ func refresh() -> void:
 	_last_points = pts
 	var price := player.respec_price()
 	respec_button.text = "Respec (Old Oak, %d Gold)" % price if price > 0 else "Respec (Old Oak)"
-	respec_button.disabled = (
-		not (can_respec.is_valid() and bool(can_respec.call())) or player.inventory.gold < price
-	)
+	respec_button.disabled = (not (can_respec.is_valid() and bool(can_respec.call())) or player.inventory.gold < price)
 	for sid in buttons:
 		var s := player.skills.tree.skill(sid)
 		var b: Button = buttons[sid]
 		var why := player.skills.why_not(sid, lv)
-		b.text = (
-			"%s%s  %d/%d"
-			% ["* " if s["capstone"] else "", s["name"], player.skills.rank(sid), s["max_rank"]]
-		)
+		b.text = ("%s%s  %d/%d" % ["* " if s["capstone"] else "", s["name"], player.skills.rank(sid), s["max_rank"]])
 		b.tooltip_text = String(s["desc"]) + ("" if why.is_empty() else "\n(" + why + ")")
 		b.disabled = not why.is_empty()
 	_refresh_elements(lv)
@@ -472,11 +460,7 @@ func _refresh_elements(lv: int) -> void:
 		tb.get_node("TabCrown").visible = own == k
 		tb.text = (
 			"%s%s (%d)"
-			% [
-				"    " if not own.is_empty() else "",
-				SkillTree.element_tree(k).name,
-				player.skills.el_spent(k)
-			]
+			% ["    " if not own.is_empty() else "", SkillTree.element_tree(k).name, player.skills.el_spent(k)]
 		)
 
 
@@ -515,11 +499,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if UiAnim.is_shown(self) and confirm.visible:
 		if (
 			event.is_action_pressed(&"ui_cancel")
-			or (
-				event is InputEventJoypadButton
-				and event.pressed
-				and event.button_index == JOY_BUTTON_B
-			)
+			or (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B)
 		):
 			confirm_pending(false)
 			get_viewport().set_input_as_handled()

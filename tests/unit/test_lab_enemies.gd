@@ -42,10 +42,7 @@ func test_entering_floor_spawns_its_goblins() -> void:
 	var sp := m.get_node_or_null("LabyrinthEnemies") as EnemySpawner
 	check(sp != null, "a LabyrinthEnemies spawner under main")
 	var all := runner_tree.root.find_children("*", "Enemy", true, false)
-	check(
-		marks > 0 and all.size() >= marks,
-		"one enemy per floor marker (%d / %d)" % [all.size(), marks]
-	)
+	check(marks > 0 and all.size() >= marks, "one enemy per floor marker (%d / %d)" % [all.size(), marks])
 	m._lab_enemies(fl, null)
 	check(m.get_node_or_null("LabyrinthEnemies_old") != null, "re-entry retires the old spawner")
 	m.free()

@@ -22,14 +22,7 @@ const KING := "goblin_king"
 static var stage := "midden_walk"
 static var total_time := 0.0
 static var stats := {
-	"kills": 0,
-	"pickups": 0,
-	"casts": 0,
-	"crafted": "",
-	"saves": 0,
-	"deaths": 0,
-	"teleports": 0,
-	"looted_parts": 0
+	"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0, "teleports": 0, "looted_parts": 0
 }
 static var log_lines := PackedStringArray()
 static var save_cleared := false  ## QA: main_menu cleared the bot save this process
@@ -55,14 +48,7 @@ static func reset_run() -> void:
 	stage = "midden_walk"
 	total_time = 0.0
 	stats = {
-		"kills": 0,
-		"pickups": 0,
-		"casts": 0,
-		"crafted": "",
-		"saves": 0,
-		"deaths": 0,
-		"teleports": 0,
-		"looted_parts": 0
+		"kills": 0, "pickups": 0, "casts": 0, "crafted": "", "saves": 0, "deaths": 0, "teleports": 0, "looted_parts": 0
 	}
 	log_lines = PackedStringArray()
 	brand_turn = 0
@@ -141,10 +127,7 @@ func spend_points() -> void:
 			var t := SkillTree.element_tree(el)
 			if t != null:
 				for sid in t.skills:
-					if (
-						sk.el_why_not(el, sid, lv).is_empty()
-						and player.spend_element_skill(el, sid)
-					):
+					if sk.el_why_not(el, sid, lv).is_empty() and player.spend_element_skill(el, sid):
 						spent = true
 						_used(el)
 						break
@@ -174,21 +157,14 @@ func _on_kill(e: Enemy, _el) -> void:
 	if e and e.def and not e.def.ai.is_empty():
 		stats["kills"] += 1
 		note("killed %s (%d) at %.1f s" % [e.def.id, stats["kills"], total_time])
-		if (
-			stats["kills"] % 2 == 0
-			and not Coop.is_client()
-			and stage not in ["intro", "breach_craft", "craft"]
-		):
+		if stats["kills"] % 2 == 0 and not Coop.is_client() and stage not in ["intro", "breach_craft", "craft"]:
 			next_brand()
 
 
 func _foe_desc(e: Enemy) -> String:
 	if e == null:
 		return "none"
-	return (
-		"%s at %s hp %.0f (%.1f m)"
-		% [e.name, e.global_position, e.health, flat_distance(e.global_position)]
-	)
+	return "%s at %s hp %.0f (%.1f m)" % [e.name, e.global_position, e.health, flat_distance(e.global_position)]
 
 
 func _goto(s: String) -> void:
@@ -427,22 +403,12 @@ func fight(e: Enemy) -> void:
 			note(
 				(
 					"no line to %s for %.0f s: enemy %s, feet %s, ally %s"
-					% [
-						e.def.id,
-						_fight_stall,
-						e.global_position,
-						player.global_position,
-						e.is_ally()
-					]
+					% [e.def.id, _fight_stall, e.global_position, player.global_position, e.is_ally()]
 				)
 			)
 		walk_to(e.global_position)
 		return
-	if (
-		Engine.time_scale > 1.0
-		and _fight_stall > STALL_S
-		and flat_distance(e.global_position) > 2.0
-	):
+	if Engine.time_scale > 1.0 and _fight_stall > STALL_S and flat_distance(e.global_position) > 2.0:
 		walk_to(e.global_position, ["action_primary"])
 		look_at_point(aim)
 		if _tick % 2 == 1:
@@ -471,16 +437,9 @@ func fight(e: Enemy) -> void:
 			held.append("back")
 		_input = PlayerInput.hold(held, [])
 		return
-	if (
-		player.mana.value < 5.0
-		and player.loadout.active == Loadout.Slot.STAFF
-		and not (m is HeatMode)
-	):
+	if player.mana.value < 5.0 and player.loadout.active == Loadout.Slot.STAFF and not (m is HeatMode):
 		_input = PlayerInput.hold(held, ["slot_2"])
-	elif (
-		player.loadout.active == Loadout.Slot.WAND
-		and player.mana.value >= 0.6 * player.mana.max_value()
-	):
+	elif player.loadout.active == Loadout.Slot.WAND and player.mana.value >= 0.6 * player.mana.max_value():
 		# L5: back to the staff once mana is up again; before this the bot stayed on the
 		# wand until its next brand swap (every second kill), so a long boss fight with no
 		# kills was fought with the wand alone (solo8: the King at 148 hp after 600 s)
@@ -499,12 +458,7 @@ func fight(e: Enemy) -> void:
 
 ## QA r7: true when the slot in hand can't pay for its next cast (HeatMode/zero-cost modes never are).
 func _dry(m: FireMode) -> bool:
-	if (
-		player.caster == null
-		or player.caster.wieldable == null
-		or m == null
-		or m.cost_mult() <= 0.0
-	):
+	if player.caster == null or player.caster.wieldable == null or m == null or m.cost_mult() <= 0.0:
 		return false
 	return player.mana.value < player.caster.wieldable.mana_cost() * m.cost_mult()
 
@@ -556,9 +510,7 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 			_path = lf.route(player.global_position, at)
 			_path_ordered = true
 		elif nav is LevelNavigation and (nav as LevelNavigation).map_ready():
-			_path = NavigationServer3D.map_get_path(
-				nav.get_navigation_map(), player.global_position, at, true
-			)
+			_path = NavigationServer3D.map_get_path(nav.get_navigation_map(), player.global_position, at, true)
 		elif nav and nav.navigation_mesh and nav.navigation_mesh.get_polygon_count() > 0:
 			var map := nav.get_navigation_map()
 			if map.is_valid() and NavigationServer3D.map_get_iteration_id(map) > 0:
@@ -596,9 +548,7 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		_replan_left = 0.0
 	if _unstick_s > 0.0:
 		_unstick_s -= dt
-		_input = PlayerInput.hold(
-			["forward", "right" if int(total_time / 3.0) % 2 == 0 else "left"] + held, ["jump"]
-		)
+		_input = PlayerInput.hold(["forward", "right" if int(total_time / 3.0) % 2 == 0 else "left"] + held, ["jump"])
 		return
 	_input = PlayerInput.hold(["forward"] + held)
 
@@ -618,9 +568,7 @@ func _physics_process(delta: float) -> void:
 	if cap_s.is_valid_float() and total_time > cap_s.to_float():
 		_finish(true)
 		return
-	stats["casts"] = maxi(
-		stats["casts"], player.loadout.casters[0].casts + player.loadout.casters[1].casts
-	)
+	stats["casts"] = maxi(stats["casts"], player.loadout.casters[0].casts + player.loadout.casters[1].casts)
 	var limit := SIM_LIMIT + (LAB_LIMIT if labyrinth_run() or act2_run() or act3_run() else 0.0)
 	if total_time > limit:
 		_finish(false, "run over %.0f s in stage %s" % [limit, stage])
@@ -630,147 +578,16 @@ func _physics_process(delta: float) -> void:
 			false,
 			(
 				"stage %s over %.0f s at %s in %s, nearest foe %s"
-				% [
-					stage,
-					STAGE_LIMIT,
-					player.global_position,
-					main.call(&"here_id"),
-					_foe_desc(nearest_enemy(true))
-				]
+				% [stage, STAGE_LIMIT, player.global_position, main.call(&"here_id"), _foe_desc(nearest_enemy(true))]
 			)
 		)
 		return
 	_input = PlayerInput.hold()
-	match stage:
-		"coop_follow":
-			if _lab_straggle():
-				return
-			_follow_host()
-		"intro":
-			_intro_tick()
-		"midden_walk":
-			if main.call(&"here_id") != "midden":  # step 109: a new game starts elsewhere
-				if t > 0.5:
-					note("travel to the Landfill from %s" % main.call(&"here_id"))
-					main.call(&"travel", "midden")
-					_done = true  # travel reloads the level; this run ends
-				return
-			_input = PlayerInput.hold(["forward"])
-			if t > 1.0:
-				var moved := player.global_position.distance_to(_walk_start)
-				if moved < 1.0:
-					_finish(false, "did not move (%.2f m)" % moved)
-					return
-				note("walked %.1f m" % moved)
-				_goto("midden_fight")
-		"midden_fight", "breach_fight":
-			if stage == "breach_fight":
-				if not is_instance_valid(main.breach):
-					return  # still entering the Breach rooms
-			var e := nearest_enemy(true)
-			if e:
-				_watch_target(e)
-				fight(e)
-			elif stage == "midden_fight":
-				if stats["kills"] >= MIDDEN_KILLS:
-					_goto("midden_loot")
-				else:
-					_enter_arena()
-			else:
-				var b: Breach = main.breach
-				if b and b.open:
-					_goto("breach_chest")
-				else:
-					_breach_route(b)
-			if stage == "midden_fight" and stats["kills"] >= MIDDEN_KILLS and e == null:
-				_goto("midden_loot")
-		"midden_loot", "breach_loot":
-			var pk := nearest_pickup()
-			if pk and t < 20.0 * _walk_scale():
-				if pk.global_position.distance_to(player.eye_position()) < 2.5:
-					look_at_point(pk.global_position + Vector3(0, LootPickup.GEM_SIZE * 0.5, 0))
-					_input = PlayerInput.hold([], ["interact"] if _tick % 2 == 0 else [])
-				else:
-					walk_to(pk.global_position)
-			else:
-				note("loot: %d pickup(s) so far" % stats["pickups"])
-				if stage == "breach_loot" and stats["pickups"] == 0:
-					_finish(false, "picked up none of the vault loot")
-					return
-				_goto("midden_save" if stage == "midden_loot" else "breach_craft")
-		"breach_craft":
-			var st: AssemblyStation = main.get_node_or_null("AssemblyStation")
-			if st == null:
-				_finish(false, "no station in the Breach")
-				return
-			if not _reach(st) and t < 60.0 * _walk_scale():
-				# Snagged (loot / chest in the way): circle round the station after 15 s.
-				var k := int(t / (5.0 * _walk_scale()))
-				var off := (
-					Vector3.ZERO
-					if t < 15.0 * _walk_scale()
-					else Vector3(1.5, 0, 0).rotated(Vector3.UP, k * 1.7)
-				)
-				walk_to(st.global_position + off)
-			elif not _reach(st):
-				_finish(
-					false,
-					"could not walk to the station (%.1f m)" % flat_distance(st.global_position)
-				)
-				return
-			else:
-				_craft(st)
-				if not _done:
-					_goto("breach_save")
-		"midden_save", "breach_save":
-			if main.save_game() != OK or not GameFlow.has_save():
-				_finish(false, "save failed")
-				return
-			stats["saves"] += 1
-			if stage == "midden_save":
-				_goto("breach_fight")
-				main.travel("breach")
-			else:
-				var r := SaveGame.read(GameFlow.save_path)
-				if r.has("error") or not r["data"]["progress"].get("vault_open", false):
-					_finish(false, "final save missing vault state")
-					return
-				if labyrinth_run():  # L5: on through the crater gate to the Goblin King
-					_goto("lab_gate")
-					return
-				_finish(true)
-		"lab_gate", "lab_floor", "lab_save":
-			_lab_tick()
-		"act2_to_breach", "act2_gate", "act2_climb", "act2_crown", "act2_fight", "act2_home":
-			_act2_tick()
-		"act3_to_breach", "act3_gate", "act3_floors", "act3_home":
-			_act3_tick()
-		"breach_chest":
-			var c: VaultChest = main.breach.chest
-			if not _reach(c) and t < 60.0 * _walk_scale():
-				var front := c.global_position + c.global_transform.basis.z * 1.0
-				if (
-					flat_distance(front) < 1.0
-					or (t > 30.0 * _walk_scale() and flat_distance(c.global_position) < 8.0)
-				):
-					look_at_point(c.global_position + Vector3(0, 1.0, 0))  # last metres: straight in
-					player.set_look(player.yaw, 0.0)
-					_input = PlayerInput.hold(["forward"])
-				else:
-					walk_to(front)
-			elif not _reach(c):
-				_finish(
-					false,
-					"could not walk to the vault chest (%.1f m)" % flat_distance(c.global_position)
-				)
-				return
-			else:
-				var drops := c.open_chest()
-				note("vault chest opened: %d drop(s)" % drops.size())
-				if drops.is_empty():
-					_finish(false, "vault chest gave nothing")
-					return
-				_goto("breach_loot")
+	_run_stage()
+
+
+func _run_stage() -> void:
+	PlaytestActs._run_stage(self)
 
 
 ## --- L5: the Labyrinth leg (`--autoplay --labyrinth`) --------------------------------
@@ -794,7 +611,6 @@ static func act3_run() -> bool:
 static var _act3_pads := {}
 static var _act3_floor_at := -1
 static var _act3_floor_t := 0.0
-
 
 var _lab_n := 0
 var _lab_votes := 0
@@ -840,366 +656,35 @@ var _direct_walk := false
 
 
 func _lab_tick() -> void:
-	var inn := _interiors()
-	if inn and inn.busy:
-		return
-	var lab: LabyrinthState = main.get(&"labyrinth")
-	var ls := main.get_node_or_null(^"LabyrinthSync") as LabyrinthSync
-	if ls and ls.vote_left > 0.0:
-		if not _voting:
-			_voting = true
-			_lab_votes += 1
-			note("stairs vote running on floor %d (%.0f s)" % [inn.floor_no if inn else 0, ls.vote_left])
-		return  # stand on the stairs while the party is counted down
-	_voting = false
-	if stage == "lab_save":
-		if main.save_game() != OK:
-			_finish(false, "save failed after the King")
-			return
-		stats["saves"] += 1
-		var r := SaveGame.read(GameFlow.save_path)
-		var saved := LabyrinthState.from_save(r["data"]) if not r.has("error") else null
-		if saved == null or not saved.bosses.has(KING):
-			_finish(false, "save missing the King's kill")
-			return
-		note(
-			"labyrinth: King down, deepest floor %d, stairs votes %d" % [saved.deepest, _lab_votes]
-		)
-		if Coop.is_host() and _lab_votes == 0:
-			_finish(false, "co-op run never exercised the stairs vote")
-			return
-		_finish(true)
-		return
-	if inn == null or inn.current == "":
-		var gate := main.get_node_or_null("GateLabyrinth") as LevelGate
-		if gate:
-			if t < 1.0:
-				return
-			if gate.near(player):
-				look_at_point(gate.global_position + Vector3(0, 1.2, 0))
-				gate.use()
-			elif t > 20.0:
-				# The crater pillar sits past the greybox walk (the bot stalls near z 86).
-				# This is the same travel the gate emits.
-				note("entering the Labyrinth from %.0f m out" % flat_distance(gate.global_position))
-				main.travel("labyrinth")
-			else:
-				_direct_walk = true
-				walk_to(gate.global_position)
-				_direct_walk = false
-			return
-		if inn == null:
-			_finish(false, "no Labyrinth gate")
-			return
-	if inn.current == "breach_rooms":
-		if _tick % 120 == 0:
-			note("leaving the Breach rooms for the crater gate")
-			var land := inn.leave()
-			note("out of the Breach rooms at %s" % land)
-			t = 0.0
-		return
-	var foe := nearest_enemy(true)
-	if inn.current == "" and foe and flat_distance(foe.global_position) < LAB_FIGHT_RANGE:
-		fight(foe)  # a camp on the way to the gate
-		return
-	if inn.current == "":
-		var door := inn.get_node_or_null(^"Door_labyrinth") as Node3D
-		if door == null:
-			_finish(false, "no Labyrinth gate")
-			return
-		if t < 1.0:
-			return
-		var rooms := inn.get_node_or_null(^"Door_breach_rooms") as Node3D
-		var me := player.global_position
-		if rooms and _passes_near(me, door.global_position, rooms.global_position, 2.5):
-			# walk around the rooms' door trigger rather than straight back through it
-			var side := (
-				rooms.global_position
-				+ Vector3(3.5 if me.x >= rooms.global_position.x else -3.5, 0, 0)
-			)
-			if (
-				flat_distance(side) > 0.8
-				and _passes_near(me, door.global_position, rooms.global_position, 2.5)
-			):
-				walk_to(side)
-				return
-		walk_to(door.global_position)
-		return
-	if inn.current != "labyrinth":
-		return
-	if inn.floor_no != _lab_n:
-		_lab_n = inn.floor_no
-		_goto("lab_floor")
-		note("labyrinth floor %d" % _lab_n)
-	if lab and lab.bosses.has(KING):
-		_goto("lab_save")
-		return
-	var e := nearest_enemy(true)
-	var boss_floor := inn.lab_floor.layout.is_empty()
-	if boss_floor and _tick % 600 == 0:
-		_log_king(inn.lab_floor)
-	if e and flat_distance(e.global_position) < (60.0 if boss_floor else LAB_FIGHT_RANGE):
-		_watch_target(e)
-		fight(e)
-		return
-	if boss_floor:
-		var bs := inn.lab_floor.get_node_or_null(^"BossSpawn") as Node3D
-		if bs:
-			walk_to(bs.global_position)
-		return
-	var down := inn.lab_floor.get_node_or_null(^"StairsDown") as Node3D
-	if down == null:
-		return
-	_lab_stuck_t += get_physics_process_delta_time()
-	if _lab_unstick > 0.0:  # stuck on a wall or doorway edge: back to the room's centre
-		_lab_unstick -= get_physics_process_delta_time()
-		walk_to(_lab_side)
-		return
-	if _lab_stuck_t > 5.0:
-		if player.global_position.distance_to(_lab_stuck_at) < 1.0:
-			note(
-				(
-					"stuck on floor %d at %s (room %d), stairs %s, route %s"
-					% [
-						inn.floor_no,
-						player.global_position,
-						inn.lab_floor.room_at(player.global_position),
-						down.global_position,
-						inn.lab_floor.route(player.global_position, down.global_position)
-					]
-				)
-			)
-			_lab_unstick = 2.0
-			var rt := inn.lab_floor.route(player.global_position, down.global_position)
-			var ahead := (
-				(rt[0] if not rt.is_empty() else down.global_position) - player.global_position
-			)
-			var perp := Vector3(-ahead.z, 0, ahead.x).normalized() * (3.0 if _lab_flip else -3.0)
-			_lab_flip = not _lab_flip
-			_lab_side = player.global_position + perp - ahead.normalized() * 1.5
-		_lab_stuck_t = 0.0
-		_lab_stuck_at = player.global_position
-	# 0.3.1 P2: the stairs take a 0.5 s Interact hold; hold it once standing on them.
-	var on := flat_distance(down.global_position) < LabyrinthStairs.RADIUS
-	walk_to(down.global_position, ["interact"] if on else [])
+	PlaytestActs._lab_tick(self)
+
+
+func _lab_to_gate(inn: Interiors, lab: LabyrinthState) -> void:
+	PlaytestActs._lab_to_gate(self, inn, lab)
+
+
+func _lab_on_floor(inn: Interiors, lab: LabyrinthState) -> void:
+	PlaytestActs._lab_on_floor(self, inn, lab)
 
 
 func _act3_tick() -> void:
-	var lab: LabyrinthState = main.get("labyrinth")
-	if stage == "act3_to_breach":
-		if not lab.bosses.has("goblin_king"):
-			lab.defeat_boss("goblin_king")
-		if not lab.bosses.has(LabGate.BOSS):
-			lab.defeat_boss(LabGate.BOSS)
-		lab.current = 0
-		if str(main.call("here_id")) != "breach":
-			note("act3: both bosses are dead, skipping the crater walk")
-			main.call("travel", "breach")
-			_done = true
-			return
-		_goto("act3_gate")
-		return
-	if stage == "act3_gate":
-		var inn := _interiors()
-		if inn and inn.slag:
-			note("act3: on checkpoint %d" % inn.floor_no)
-			_act3_pads[inn.floor_no] = true
-			_goto("act3_floors")
-			return
-		if main.get_node_or_null("ActPicker"):
-			note("act3: choosing the Railhead")
-			main.call("pick_act", SlagworksFloor.FIRST)
-			return
-		if t > 0.5:
-			note("act3: crater workaround, taking the gate")
-			main.call("travel", "labyrinth")
-		return
-	if stage == "act3_floors":
-		var inn2 := _interiors()
-		if inn2 == null or inn2.slag == null:
-			if inn2 and inn2.busy:
-				return
-			if t > 30.0:
-				_finish(false, "act3 left the mines at %s" % player.global_position)
-			return
-		_act3_pads[inn2.floor_no] = true
-		player.health.value = player.health.max_value()
-		if inn2.floor_no >= 13:
-			if not lab.bosses.has("forgemaw"):
-				lab.defeat_boss("forgemaw")
-				inn2.slag.note_boss_dead()
-				note("act3: Forgemaw falls")
-			_goto("act3_home")
-			return
-		var down := inn2.slag.get_node_or_null("StairsDown") as Node3D
-		if down == null:
-			_finish(false, "act3 floor %d has no stairs at %s" % [inn2.floor_no, player.global_position])
-			return
-		if inn2.floor_no != _act3_floor_at:
-			_act3_floor_at = inn2.floor_no
-			_act3_floor_t = 0.0
-		_act3_floor_t += get_physics_process_delta_time()
-		if _act3_floor_t > 6.0:
-			note("act3 unstick floor %d at %s toward %s" % [inn2.floor_no, player.global_position, down.global_position])
-			player.global_position = down.global_position + Vector3(0, 0.6, 0)
-			_act3_floor_t = 0.0
-		walk_to(down.global_position, ["interact"] if flat_distance(down.global_position) < LabyrinthStairs.RADIUS + 0.4 else [])
-		if t > 160.0:
-			_finish(false, "act3 stuck on floor %d at %s next %s" % [inn2.floor_no, player.global_position, down.global_position])
-		return
-	if stage == "act3_home":
-		if not (_act3_pads.has(9) and _act3_pads.has(10) and _act3_pads.has(11) and _act3_pads.has(12) and _act3_pads.has(13)):
-			_finish(false, "act3 missed a pad %s" % _act3_pads)
-			return
-		if str(main.call("here_id")) != "town_square":
-			note("act3: waystone home keeps the crucible")
-			main.call("travel", "town_square", "town_gate")
-			_done = true
-			return
-		var saved: LabyrinthState = LabyrinthState.from_save(SaveGame.read(GameFlow.save_path)["data"])
-		if saved.current != 13 or not saved.bosses.has("forgemaw"):
-			_finish(false, "act3 home current %d bosses %s" % [saved.current, saved.bosses])
-			return
-		note("act3: pads %s current %d" % [_act3_pads, saved.current])
-		_finish(true)
+	PlaytestActs._act3_tick(self)
+
+
+func _act3_rest(lab: LabyrinthState) -> void:
+	PlaytestActs._act3_rest(self, lab)
 
 
 func _act2_tick() -> void:
-	var lab: LabyrinthState = main.get("labyrinth")
-	if stage == "act2_to_breach":
-		if not lab.bosses.has("goblin_king"):
-			lab.defeat_boss("goblin_king")
-			lab.current = 0 if Coop.session == null else 8
-		if str(main.call("here_id")) != "breach":
-			note("act2: the King is already dead, skipping the crater walk")
-			main.call("travel", "breach")
-			_done = true
-			return
-		_goto("act2_gate")
-		return
-	if stage == "act2_gate":
-		var inn := _interiors()
-		if inn and inn.current == "labyrinth":
-			var y := player.global_position.y - inn.interior.global_position.y
-			note("act2: in the cavern at height %.1f" % y)
-			_act2_heights[inn.floor_no] = y
-			_goto("act2_crown" if Coop.session != null else "act2_climb")
-			return
-		if main.get_node_or_null("ActPicker"):
-			note("act2: choosing the Sump")
-			main.call("pick_act", LabGate.SUMP)
-			return
-		if t > 0.5:
-			if Coop.session != null:
-				lab.current = 8
-			note("act2: crater workaround, taking the gate")
-			main.call("travel", "labyrinth")
-		return
-	if stage == "act2_home":
-		if str(main.call("here_id")) != "town_square":
-			note("act2: waystone home keeps the Crown")
-			main.call("travel", "town_square", "town_gate")
-			_done = true
-			return
-		var saved := LabyrinthState.from_save(SaveGame.read(GameFlow.save_path)["data"])
-		if saved.current != 8 or not saved.bosses.has("blightmaw_matriarch"):
-			_finish(false, "home save current %d bosses %s" % [saved.current, saved.bosses])
-			return
-		if not (_act2_heights.has(6) and _act2_heights.has(7) and _act2_heights.has(8)):
-			_finish(false, "missed a pad height %s" % _act2_heights)
-			return
-		note("act2: heights %s, current %d" % [_act2_heights, saved.current])
-		_finish(true)
-		return
-	var inn2 := _interiors()
-	if inn2 == null or inn2.cavern == null:
-		if t > 8.0:
-			_finish(false, "act2 did not enter at %s" % player.global_position)
-		return
-	var cav: BlightcoilCavern = inn2.cavern
-	var local_y := player.global_position.y - cav.global_position.y
-	if cav.nav_bakes > 0:
-		_finish(false, "act2 rebaked navigation")
-		return
-	if stage == "act2_crown":
-		for n in get_tree().get_nodes_in_group(RemotePlayer.GROUP):
-			var dy := (n as Node3D).global_position.y - cav.pad_global(8).y
-			if absf(dy) < 2.5:
-				note("act2: joiner reached the Crown")
-				_finish(true)
-				return
-		var foe := nearest_enemy(true)
-		if foe and foe.global_position.distance_to(player.global_position) < 6.0 and not foe is Blightmaw:
-			fight(foe)
-			return
-		if t > 45.0:
-			_finish(false, "joiner did not reach the Crown pad")
-		return
-	if stage == "act2_climb":
-		var foe := nearest_enemy(true)
-		var on_pad := false
-		for pad in [6, 7, 8]:
-			var at := cav.pad_global(pad)
-			var flat_pad := Vector2(player.global_position.x - at.x, player.global_position.z - at.z).length()
-			if flat_pad < 4.0 and absf(local_y - cav.pad_local(pad).y) < 1.3:
-				on_pad = true
-		if on_pad and foe and foe.global_position.distance_to(player.global_position) < 3.2 and not foe is Blightmaw:
-			fight(foe)
-			return
-		var marks: Array[Vector3] = [
-			cav.pad_global(6),
-			cav.global_transform * cav._v3(cav.doc["ramp"][0]["fr"]),
-			cav.global_transform * cav._v3(cav.doc["ramp"][0]["to"]),
-			cav.pad_global(7),
-			cav.global_transform * cav._v3(cav.doc["ramp"][1]["fr"]),
-			cav.global_transform * cav._v3(cav.doc["ramp"][1]["to"]),
-			cav.pad_global(8),
-		]
-		for pad in [6, 7, 8]:
-			var pad_at := cav.pad_global(pad)
-			var pad_flat := Vector2(player.global_position.x - pad_at.x, player.global_position.z - pad_at.z).length()
-			if pad_flat < 3.5 and absf(local_y - cav.pad_local(pad).y) < 1.15 and not _act2_heights.has(pad):
-				_act2_heights[pad] = local_y
-				note(
-					"act2: pad %d height %.1f attuned %s"
-					% [pad, local_y, main.story_flags.has("waystone:" + cav.waystone_for(pad))]
-				)
-		if local_y < 3.0 and _act2_step > 2:
-			_act2_step = 0
-		while _act2_step < marks.size() - 1 and player.global_position.distance_to(marks[_act2_step]) <= 2.2:
-			_act2_step += 1
-		var next: Vector3 = marks[_act2_step]
-		if next == marks[marks.size() - 1] and player.global_position.distance_to(next) <= 2.2:
-			if _act2_heights.has(6) and _act2_heights.has(7) and _act2_heights.has(8):
-				_goto("act2_fight")
-				return
-		if t > 160.0 and not _act2_heights.has(8):
-			_finish(false, "act2 stuck at %s heights %s" % [player.global_position, _act2_heights])
-			return
-		# The ramps are under the floor angle. Aim along the next mark and walk;
-		# a nav waypoint beside the slope puts the body on the side face.
-		var flat := next - player.global_position
-		flat.y = 0.0
-		if flat.length() > 0.15:
-			player.set_look(atan2(-flat.x, -flat.z), 0.0)
-		_input = PlayerInput.hold(["forward", "sprint"])
-		return
-	if stage == "act2_fight":
-		if lab.bosses.has("blightmaw_matriarch"):
-			_goto("act2_home")
-			return
-		var boss: Blightmaw = null
-		for n in get_tree().get_nodes_in_group(Enemy.GROUP):
-			if n is Blightmaw and (n as Blightmaw).alive():
-				boss = n
-		if boss == null:
-			if t > 10.0:
-				_finish(false, "no Matriarch at height %.1f" % local_y)
-			return
-		fight(boss)
-		if t > 80.0:
-			_finish(false, "Matriarch still up at %.0f hp" % boss.health)
-		return
+	PlaytestActs._act2_tick(self)
+
+
+func _act2_travel(lab: LabyrinthState) -> void:
+	PlaytestActs._act2_travel(self, lab)
+
+
+func _act2_cavern(lab: LabyrinthState) -> void:
+	PlaytestActs._act2_cavern(self, lab)
 
 
 func _on_died(_p) -> void:
@@ -1255,9 +740,7 @@ func _slot_name(slot: int) -> String:
 
 
 func _mode_name(slot: int) -> String:
-	var m: Object = (
-		player.loadout.casters[slot].fire_mode() if player.loadout.wieldable(slot) else null
-	)
+	var m: Object = player.loadout.casters[slot].fire_mode() if player.loadout.wieldable(slot) else null
 	return m.get_script().get_global_name() if m and m.get_script() else "-"
 
 
@@ -1272,9 +755,7 @@ func _breach_route(b: Breach) -> void:
 			walk_to(enc.trigger_center)
 		return
 	var levers: Array = b.switches.filter(func(x): return not x.is_pressed)
-	levers.sort_custom(
-		func(a, c): return flat_distance(a.global_position) < flat_distance(c.global_position)  # OW11b: nearest lever first (the loft one when the bot is up there)
-	)
+	levers.sort_custom(func(a, c): return flat_distance(a.global_position) < flat_distance(c.global_position))  # OW11b: nearest lever first (the loft one when the bot is up there)
 	for sw in levers:
 		if true:
 			if _reach(sw):
@@ -1359,9 +840,7 @@ func _craft(st: AssemblyStation) -> void:
 			player.equip_from_inventory(built)
 		# QA r7: keep every craft in the summary (the prologue staff and the Breach wand)
 		var was := String(stats["crafted"])
-		stats["crafted"] = (
-			built.display_name() if was.is_empty() else was + " + " + built.display_name()
-		)
+		stats["crafted"] = (built.display_name() if was.is_empty() else was + " + " + built.display_name())
 		note(
 			(
 				"crafted + equipped %s from %d looted part(s) (dmg %.1f)"
@@ -1392,185 +871,44 @@ var _talk_cd := 0.0
 
 
 func _intro_director() -> IntroDirector:
-	return main.get_node_or_null("IntroDirector") as IntroDirector
+	return PlaytestIntro._intro_director(self)
 
 
 func _intro_tick() -> void:
-	var d := _intro_director()
-	if d == null and IntroDirector.active(main.get(&"story_flags")):
-		return  # the director is created once the party has landed
-	if d == null or not IntroDirector.active(d.flags):
-		note("prologue done: %d beat(s) %s" % [intro_beats.size(), ",".join(intro_beats)])
-		if intro_beats.size() < IntroDirector.BEATS.size():
-			_finish(false, "prologue skipped beats (%s)" % ",".join(intro_beats))
-		else:
-			_goto("midden_walk")
-		return
-	var b := d.current()
-	if b != _intro_beat:
-		_intro_beat = b
-		if not intro_beats.has(b):
-			intro_beats.append(b)
-		t = 0.0
-		note(
-			(
-				"intro beat %s (%d/%d) in %s"
-				% [b, intro_beats.size(), IntroDirector.BEATS.size(), d.here]
-			)
-		)
-	_talk_cd -= get_physics_process_delta_time()
-	if t > 240.0:  # a stalled beat fails fast with where the bot was and what it aimed at
-		_finish(
-			false,
-			(
-				"intro beat %s stalled in %s: feet %s, target %s"
-				% [b, d.here, player.global_position, d.target_point()]
-			)
-		)
-		return
-	_intro_shot(b)
-	if _intro_ui(d):
-		return
-	if (
-		d.here == IntroDirector.LEVEL.get(b, d.here)
-		and b in ["combat", "filth"]
-		and _intro_fight(d, b)
-	):
-		return
-	if b == "crafting" and d.here == "midden" and _intro_craft(d):
-		return
-	if _arena_held(d):
-		return
-	_intro_interact(d)
+	PlaytestIntro._intro_tick(self)
 
 
 ## With --shots: one screenshot per beat 1 s in, and one 0.7 s into every cinematic (before the skip).
 func _intro_shot(b: String) -> void:
-	var sh := main.get_node_or_null("Screenshots") as Screenshots
-	if sh == null:
-		return
-	var dt := get_physics_process_delta_time()
-	if Cinematic.playing and _cine_t < 0.7 and _cine_t + dt >= 0.7:
-		sh.take("cine_" + b)
-	elif t >= 1.0 and t - dt < 1.0:
-		sh.take("beat_" + b)
+	PlaytestIntro._intro_shot(self, b)
 
 
 ## Cinematics (watch 1 s, skip), the appraisal, dialogue (first choice). True while busy.
 func _intro_ui(d: IntroDirector) -> bool:
-	if Cinematic.playing:
-		_cine_t += get_physics_process_delta_time()
-		if _cine_t > 1.0:
-			Cinematic.playing.skip()
-		return true
-	_cine_t = 0.0
-	if d.creator:
-		d.choose_identity(
-			{
-				"archetype": player.archetype,
-				"name": player.character_name,
-				"color": player.character_color
-			}
-		)
-		return true
-	var dlg: DialogueRunner = main.get(&"dialogue")
-	if dlg and dlg.active:
-		if _talk_cd <= 0.0:
-			_talk_cd = 0.3
-			if dlg.awaiting_choice():
-				dlg.choose(0)
-			else:
-				dlg.advance()
-		return true
-	return false
+	return PlaytestIntro._intro_ui(self, d)
 
 
 func _intro_fight(d: IntroDirector, b: String) -> bool:
-	var e := nearest_enemy(true)
-	if e:
-		fight(e)
-		return true
-	if b != "filth":
-		return false
-	for q in get_tree().get_nodes_in_group(QuestPickup.GROUP):  # Joe's trash, after the kill
-		walk_to((q as Node3D).global_position)
-		return true
-	var sp := d.spawner()
-	if sp:
-		walk_to(sp.trigger_center)
-	return true
+	return PlaytestIntro._intro_fight(self, d, b)
 
 
 ## A wave gnawer corrupted into an ally stays in its wave; once it turns back it keeps the
 ## arena walls up after the Filth dies (return_to_bob stalled inside the ring). Clear it.
 func _arena_held(d: IntroDirector) -> bool:
-	var sp := d.spawner()
-	var lock := sp.get_node_or_null(^"ArenaLock") as ArenaLock if sp else null
-	if lock == null or not lock.raised():
-		return false
-	var e := nearest_enemy(true)
-	if e:
-		fight(e)
-	return true
+	return PlaytestIntro._arena_held(self, d)
 
 
 func _intro_craft(d: IntroDirector) -> bool:
-	if _visit_joe(d):
-		return true
-	var pk := d.next_pickup()
-	if pk:
-		if pk.global_position.distance_to(player.eye_position()) < 2.5:
-			look_at_point(pk.global_position + Vector3(0, LootPickup.GEM_SIZE * 0.5, 0))
-			_input = PlayerInput.hold([], ["interact"] if _tick % 2 == 0 else [])
-		else:
-			walk_to(pk.global_position)
-		return true
-	var st := d.station()
-	if st and _reach(st):
-		_craft(st)
-		return true
-	return false
+	return PlaytestIntro._intro_craft(self, d)
 
 
 ## QA r6: Joe's wind wand (joe_landfill, Q21) is optional, so the bot never had a wand and
 ## fought the King on a dry staff (fight()'s slot_2 swap did nothing; 3 of 4 solo runs timed
 ## out). Like a player, talk to Joe at his Landfill camp before using his bench.
 func _visit_joe(d: IntroDirector) -> bool:
-	if player.loadout.wieldable(Loadout.Slot.WAND) != null or d.flags.has("joe_wand_given"):
-		return false
-	if not d.flags.has("landfill_route_open"):
-		return false
-	for n in main.find_children("*", "", true, false):
-		var j := n as Npc
-		if j == null or j.speaker != "Crazy Joe" or not j.is_visible_in_tree() or j.talks >= 3:
-			continue
-		if j.global_position.distance_to(player.global_position) > 60.0:
-			continue
-		if not _reach(j):
-			walk_to(j.global_position)
-		elif _talk_cd <= 0.0:
-			_talk_cd = 1.0
-			j.talk()
-		return true
-	return false
+	return PlaytestIntro._visit_joe(self, d)
 
 
 ## Walk to the objective marker, then Interact with the NPC / gate there.
 func _intro_interact(d: IntroDirector) -> void:
-	var at: Variant = d.target_point()
-	if at == null:
-		return
-	if flat_distance(at) > 1.8:
-		walk_to(at)
-		return
-	if _talk_cd > 0.0:
-		return
-	_talk_cd = 1.0
-	for n in main.find_children("*", "", true, false):
-		if (n is Npc or n is LevelGate) and (n as Node3D).global_position.distance_to(at) < 0.6:
-			look_at_point(Interaction.aim_point(n as Node3D))
-			if n is Npc:
-				(n as Npc).talk()
-			else:
-				(n as LevelGate).use()
-			return
+	PlaytestIntro._intro_interact(self, d)

@@ -5,9 +5,7 @@ const LEVELS: PackedStringArray = ["midden", "town_square", "old_oak", "breach"]
 
 
 func _fixture(lvl: String) -> Dictionary:
-	var v: Variant = JSON.parse_string(
-		FileAccess.get_file_as_string("res://tests/fixtures/saves_v1/%s.json" % lvl)
-	)
+	var v: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/saves_v1/%s.json" % lvl))
 	return v if v is Dictionary else {}
 
 
@@ -47,9 +45,7 @@ func test_local_and_unknown() -> void:
 	var mid := (load(GameFlow.level_scene("midden")) as PackedScene).instantiate() as Node3D
 	var wo: Vector2 = mid.get_meta(&"world_offset")
 	mid.free()
-	check(
-		Vector3(wp[0], wp[1], wp[2]).is_equal_approx(Vector3(10 + wo.x, 2, -4 + wo.y)), "local kept"
-	)
+	check(Vector3(wp[0], wp[1], wp[2]).is_equal_approx(Vector3(10 + wo.x, 2, -4 + wo.y)), "local kept")
 	check(e != Vector3(wp[0], wp[1], wp[2]), "not the entrance")
 	var u := {"progress": {"level_id": "no_such_place"}}
 	SaveMigration.migrate(u)

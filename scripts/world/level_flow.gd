@@ -11,23 +11,19 @@ const ORDER: PackedStringArray = ["old_oak", "town_square", "midden", "breach", 
 const FORWARD := {
 	"old_oak":
 	{
-		"town_square":
-		["home_unlocked", "Rest in the grove first. The road to town is shut."],
+		"town_square": ["home_unlocked", "Rest in the grove first. The road to town is shut."],
 	},
 	"town_square":
 	{
-		"midden":
-		["landfill_route_open", "Bob has not sent you to the Landfill yet."],
+		"midden": ["landfill_route_open", "Bob has not sent you to the Landfill yet."],
 	},
 	"mage_association":
 	{
-		"midden":
-		["landfill_route_open", "Staff only. By order of the Elders."],
+		"midden": ["landfill_route_open", "Staff only. By order of the Elders."],
 	},
 	"midden":
 	{
-		"breach":
-		["filth_defeated", "The crater is sealed until the Landfill is dealt with."],
+		"breach": ["filth_defeated", "The crater is sealed until the Landfill is dealt with."],
 	},
 	"breach":
 	{

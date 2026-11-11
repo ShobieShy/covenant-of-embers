@@ -12,11 +12,5 @@ func _init() -> void:
 		var t: EnemyTable = r["table"]
 		for d in t.defs:
 			d.resource_local_to_scene = false
-		print(
-			n,
-			": ",
-			ResourceSaver.save(t, "res://resources/enemies/%s.tres" % n),
-			" defs ",
-			t.defs.size()
-		)
+		print(n, ": ", ResourceSaver.save(t, "res://resources/enemies/%s.tres" % n), " defs ", t.defs.size())
 	quit()

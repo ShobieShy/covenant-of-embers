@@ -96,16 +96,12 @@ func refresh() -> void:
 	if player == null or vendor == null:
 		return
 	wallet.text = (
-		"%s   -   %d Gold   %d Arcane Dust"
-		% [vendor.id.capitalize(), player.inventory.gold, player.inventory.dust]
+		"%s   -   %d Gold   %d Arcane Dust" % [vendor.id.capitalize(), player.inventory.gold, player.inventory.dust]
 	)
 	stock_list.clear()
 	for s in vendor.stock:
 		var si := stock_list.add_item(
-			(
-				"%s   %d Gold"
-				% [name_of(s["item"]), Archetype.discounted(int(s["price"]), player.archetype)]
-			),
+			"%s   %d Gold" % [name_of(s["item"]), Archetype.discounted(int(s["price"]), player.archetype)],
 			ItemIcons.for_item(s["item"])
 		)
 		stock_list.set_item_icon_modulate(si, ItemIcons.tint_for(s["item"]))

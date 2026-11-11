@@ -13,9 +13,7 @@ extends CanvasLayer
 ## no navigation) gives up after STAGE_TIMEOUT and the screen still closes.
 
 enum Stage { SCENE, LEVEL, SWAP, TERRAIN, NAV, DONE }
-const STAGE_TEXT := [
-	"Loading", "Loading the region", "Entering", "Raising the land", "Charting paths", "Ready"
-]
+const STAGE_TEXT := ["Loading", "Loading the region", "Entering", "Raising the land", "Charting paths", "Ready"]
 const STAGE_RANGE := [[0.0, 0.35], [0.35, 0.7], [0.7, 0.8], [0.8, 0.9], [0.9, 1.0], [1.0, 1.0]]
 const STAGE_TIMEOUT := 20.0
 const TIP_SECONDS := 4.0
@@ -174,9 +172,7 @@ func _build_ui() -> void:
 	root.add_child(backdrop)
 	var panel := PanelContainer.new()
 	panel.name = "Panel"
-	panel.add_theme_stylebox_override(
-		&"panel", UiTheme.box("panels_9slice/pixel_ui/Ancient/brown.png", 16)
-	)
+	panel.add_theme_stylebox_override(&"panel", UiTheme.box("panels_9slice/pixel_ui/Ancient/brown.png", 16))
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 	panel.custom_minimum_size = Vector2(900, 170)
 	panel.offset_left = -450
@@ -247,9 +243,7 @@ func smooth(delta: float) -> void:
 	if UiAnim.instant():
 		shown = progress
 	else:
-		var step := maxf(
-			SMOOTH_RATE * delta, (progress - shown) * (1.0 - exp(-SMOOTH_EASE * delta))
-		)
+		var step := maxf(SMOOTH_RATE * delta, (progress - shown) * (1.0 - exp(-SMOOTH_EASE * delta)))
 		shown = minf(progress, shown + minf(step, SMOOTH_RATE * delta * 4.0))
 	if bar:
 		bar.value = shown
@@ -368,7 +362,4 @@ class _Ember:
 			var a := t * 3.0 + i * TAU / 8.0
 			var p := c + Vector2(cos(a), sin(a)) * 14.0
 			var k := float(i) / 8.0
-			draw_rect(
-				Rect2((p - Vector2(2, 2)).floor(), Vector2(4, 4)),
-				Color(1.0, 0.35 + 0.4 * k, 0.1, 0.3 + 0.7 * k)
-			)
+			draw_rect(Rect2((p - Vector2(2, 2)).floor(), Vector2(4, 4)), Color(1.0, 0.35 + 0.4 * k, 0.1, 0.3 + 0.7 * k))

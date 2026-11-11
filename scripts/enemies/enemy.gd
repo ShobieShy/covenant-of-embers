@@ -455,9 +455,7 @@ func _apply_flinch(dt: float) -> void:
 	var b := Basis.IDENTITY
 	if axis.length() > 1e-4 and p.y != 0.0:
 		b = Basis(axis.normalized(), p.y)
-	var t := Transform3D(
-		b.scaled(Vector3(1.0 + p.x * 0.5, 1.0 - p.x, 1.0 + p.x * 0.5)), Vector3.ZERO
-	)
+	var t := Transform3D(b.scaled(Vector3(1.0 + p.x * 0.5, 1.0 - p.x, 1.0 + p.x * 0.5)), Vector3.ZERO)
 	for n in _visual_nodes():
 		if not _vis_base.has(n):
 			_vis_base[n] = n.transform
@@ -520,13 +518,7 @@ func _die(element: ElementTable.Element) -> void:
 		model.set_combat_pose("death")
 	if is_inside_tree() and def:
 		var et := ElementTable.load_default()
-		StatusFX.death(
-			get_parent(),
-			global_position,
-			def.size,
-			def.color,
-			et.color(element) if et else Color.WHITE
-		)
+		StatusFX.death(get_parent(), global_position, def.size, def.color, et.color(element) if et else Color.WHITE)
 	visible = false
 
 
@@ -557,9 +549,7 @@ func tick(dt: float) -> void:
 		f & FX_SLOW != 0 and not dead,
 		f & FX_STAGGER != 0 and not dead
 	)
-	SpellFX.sync_aura(
-		self, 0.0 if dead else corrupted_left, 0.6 + (def.size.x * 0.5 if def else 0.4)
-	)
+	SpellFX.sync_aura(self, 0.0 if dead else corrupted_left, 0.6 + (def.size.x * 0.5 if def else 0.4))
 	if net_pose != "" and not (self is Gnawer):
 		pose = "death" if dead else net_pose
 		if model:
@@ -587,9 +577,7 @@ func tick(dt: float) -> void:
 ## Spawns one Enemy per EnemySpawns marker of `level` whose `enemy` meta is in `table`,
 ## under `parent` (posed before entering the tree). Unknown ids are skipped and returned
 ## in `skipped`. Types with a brain spawn as its subclass (the Gnawer, step 12).
-static func spawn_at_markers(
-	level: Node, parent: Node3D, table: EnemyTable, skipped: Array = []
-) -> Array[Enemy]:
+static func spawn_at_markers(level: Node, parent: Node3D, table: EnemyTable, skipped: Array = []) -> Array[Enemy]:
 	var out: Array[Enemy] = []
 	var spawns := level.get_node_or_null("EnemySpawns")
 	if spawns == null:
@@ -652,13 +640,7 @@ func has_status_of(element: int) -> bool:
 			return slow_left > 0.0
 		ElementTable.Element.EARTH:
 			return stagger_left > 0.0
-	return (
-		burn_left > 0.0
-		or slow_left > 0.0
-		or stagger_left > 0.0
-		or soaked_left > 0.0
-		or hex_left > 0.0
-	)
+	return burn_left > 0.0 or slow_left > 0.0 or stagger_left > 0.0 or soaked_left > 0.0 or hex_left > 0.0
 
 
 ## Step 147: the mark an element's tree applies (Water: Soaked, others: Hex) is on this enemy.

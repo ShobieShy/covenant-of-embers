@@ -12,5 +12,8 @@ func test_missing_files_stay_greybox() -> void:
 	check(not SlagworksKit.play_cue("forgemaw"), "Forgemaw music is silent")
 	var floor := SlagworksFloor.make(9, LabyrinthState.fresh(3))
 	runner_tree.root.add_child(floor)
-	check(floor.find_child("Slab", true, false) != null or floor.find_child("SlabN", true, false) != null, "the floor still has collision")
+	check(
+		floor.find_child("Slab", true, false) != null or floor.find_child("SlabN", true, false) != null,
+		"the floor still has collision"
+	)
 	floor.free()

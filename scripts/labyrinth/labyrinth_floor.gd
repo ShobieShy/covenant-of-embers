@@ -45,7 +45,6 @@ var shown_from := -1  ## the room the visible set was last built around
 const GOBLINS := ["goblin_grunt", "goblin_grunt", "goblin_archer", "goblin_shaman"]
 const PACK := {"normal": [2, 3], "elite": [4, 5]}
 
-
 ## Builds floor `n` for `state` from `kit` (FloorGen.load_kit()).
 static var build_count := 0
 
@@ -118,9 +117,7 @@ func _kit_room(kit: Dictionary, id: String) -> Dictionary:
 
 
 ## One room: floor slab, walls with doorways on `open` sides, corridors to the slot edge.
-func _room(
-	nm: String, kind: String, centre: Vector3, size: Vector2, open: Array[int], slot: float
-) -> Node3D:
+func _room(nm: String, kind: String, centre: Vector3, size: Vector2, open: Array[int], slot: float) -> Node3D:
 	var r := Node3D.new()
 	r.name = nm
 	r.position = centre
@@ -133,13 +130,9 @@ func _room(
 		var horiz := side == 0 or side == 2  # north/south walls run along x
 		var length := size.x if horiz else size.y
 		var sgn := -1.0 if side == 0 or side == 3 else 1.0
-		var edge := (
-			Vector3(0, H / 2, sgn * size.y / 2) if horiz else Vector3(sgn * size.x / 2, H / 2, 0)
-		)
+		var edge := Vector3(0, H / 2, sgn * size.y / 2) if horiz else Vector3(sgn * size.x / 2, H / 2, 0)
 		if not open.has(side):
-			var full := (
-				Vector3(length + WALL, H, WALL) if horiz else Vector3(WALL, H, length + WALL)
-			)
+			var full := Vector3(length + WALL, H, WALL) if horiz else Vector3(WALL, H, length + WALL)
 			_box(r, edge, full, kind, "Wall%d" % side)
 			continue
 		var seg := (length - DOOR) / 2.0
@@ -160,9 +153,7 @@ func _room(
 		_box(c, dir * mid + Vector3(0, -0.25, 0), fl, kind, "Floor")
 		for k in 2:
 			var s := (DOOR / 2 + WALL / 2) * (-1.0 if k == 0 else 1.0)
-			var at := (
-				dir * mid + Vector3(0, H / 2, 0) + (Vector3(s, 0, 0) if horiz else Vector3(0, 0, s))
-			)
+			var at := dir * mid + Vector3(0, H / 2, 0) + (Vector3(s, 0, 0) if horiz else Vector3(0, 0, s))
 			var sz := Vector3(WALL, H, run) if horiz else Vector3(run, H, WALL)
 			_box(c, at, sz, kind, "Wall%d" % k)
 	r.set_meta(&"kind", kind)
@@ -228,9 +219,7 @@ func _build_rooms(kit: Dictionary) -> void:
 		match kind:
 			"start":
 				_marker(self, "PlayerStart", c + Vector3(0, 0, 0))
-				_stairs(
-					"StairsUp", LabyrinthStairs.UP, c + Vector3(-sz.x / 2 + 2.0, 0, -sz.y / 2 + 2.0)
-				)
+				_stairs("StairsUp", LabyrinthStairs.UP, c + Vector3(-sz.x / 2 + 2.0, 0, -sz.y / 2 + 2.0))
 			"exit":
 				# L3: dressed, the trigger sits at the stair's BottomExit (SW corner of the well)
 				var h := WarrensKit.stair_hole(sz, stair_row)
@@ -355,9 +344,7 @@ func _chests() -> Node3D:
 func _build_boss(state: LabyrinthState) -> void:
 	# Handmade boss floor (plan section 6): an entry room, a corridor, the arena. L3 dresses
 	# it and adds the Goblin King; the waystone stands once his kill is in the save.
-	var entry := _room(
-		"Room0_boss_entry", "start", Vector3.ZERO, Vector2(14, 14), [0] as Array[int], 24.0
-	)
+	var entry := _room("Room0_boss_entry", "start", Vector3.ZERO, Vector2(14, 14), [0] as Array[int], 24.0)
 	_marker(self, "PlayerStart", entry.position)
 	_stairs("StairsUp", LabyrinthStairs.UP, Vector3(-5, 0, 5))
 	_shrine(entry.position + Vector3(-2, 0, -3))  # QA-5: the rest room before the arena (plan 7)
@@ -374,9 +361,7 @@ func _build_boss(state: LabyrinthState) -> void:
 		arena.set_meta(&"kind", "boss")
 		rooms.append(arena)
 	else:
-		arena = _room(
-			"Room1_boss_arena", "boss", Vector3(0, 0, -30), BOSS_ARENA, [2] as Array[int], 24.0
-		)
+		arena = _room("Room1_boss_arena", "boss", Vector3(0, 0, -30), BOSS_ARENA, [2] as Array[int], 24.0)
 	var bs := _marker(self, "BossSpawn", arena.position + Vector3(0, 0, -8))
 	if not (state and state.bosses.has(boss_id())):
 		var k := _marker(_spawns, "GoblinKing", bs.position)
@@ -402,9 +387,7 @@ func _goblins(r: Node3D, kind: String, sz: Vector2, i: int) -> void:
 	var n := rng.randi_range(int(PACK[kind][0]), int(PACK[kind][1]))
 	for k in n:
 		var at := Vector3(
-			rng.randf_range(-sz.x / 2 + 2.0, sz.x / 2 - 2.0),
-			0,
-			rng.randf_range(-sz.y / 2 + 2.0, sz.y / 2 - 2.0)
+			rng.randf_range(-sz.x / 2 + 2.0, sz.x / 2 - 2.0), 0, rng.randf_range(-sz.y / 2 + 2.0, sz.y / 2 - 2.0)
 		)
 		var m := _marker(_spawns, "%s_g%d" % [id, k], r.position + at)
 		m.set_meta(&"enemy", GOBLINS[rng.randi() % GOBLINS.size()])

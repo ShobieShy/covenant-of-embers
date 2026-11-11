@@ -183,9 +183,7 @@ func enter(id: String, from_level := "") -> Vector3:
 	busy = true
 	fade.emit(FADE)
 	if link.get("logic", "") == "labyrinth":
-		return await _enter_floor(
-			id, labyrinth.current if labyrinth and labyrinth.current > 0 else floor_no
-		)
+		return await _enter_floor(id, labyrinth.current if labyrinth and labyrinth.current > 0 else floor_no)
 	var path := GameFlow.level_scene(link["scene"])
 	var t0 := Time.get_ticks_msec()
 	SafeLoad.request(path, "PackedScene")
@@ -279,9 +277,7 @@ func _enter_floor(id: String, n: int) -> Vector3:
 		(c as LabyrinthStairs).used.connect(_on_stairs, CONNECT_DEFERRED)  # QA-5: not mid-physics
 	var ps := party()
 	for c in lab_floor.find_children("*", "RestShrine", true, false):
-		(c as RestShrine).player = (
-			ps[0] as Player if not ps.is_empty() and ps[0] is Player else null
-		)
+		(c as RestShrine).player = (ps[0] as Player if not ps.is_empty() and ps[0] is Player else null)
 		(c as RestShrine).rested.connect(func(at: Vector3) -> void: rested.emit(at))
 	floor_no = n
 	current = id
@@ -361,9 +357,7 @@ func _enter_cavern(id: String, n: int) -> Vector3:
 	cavern.ensure_nav()
 	var ps := party()
 	for c in cavern.find_children("*", "RestShrine", true, false):
-		(c as RestShrine).player = (
-			ps[0] as Player if not ps.is_empty() and ps[0] is Player else null
-		)
+		(c as RestShrine).player = (ps[0] as Player if not ps.is_empty() and ps[0] is Player else null)
 		(c as RestShrine).rested.connect(func(at: Vector3) -> void: rested.emit(at))
 	if ps.size() > 0 and ps[0] is Player and cavern.forge:
 		cavern.forge.player = ps[0] as Player
@@ -443,9 +437,7 @@ func _enter_slag(id: String, n: int) -> Vector3:
 	for c in slag.find_children("*", "LabyrinthStairs", true, false):
 		(c as LabyrinthStairs).used.connect(_on_stairs, CONNECT_DEFERRED)
 	for c in slag.find_children("*", "RestShrine", true, false):
-		(c as RestShrine).player = (
-			ps[0] as Player if not ps.is_empty() and ps[0] is Player else null
-		)
+		(c as RestShrine).player = (ps[0] as Player if not ps.is_empty() and ps[0] is Player else null)
 		(c as RestShrine).rested.connect(func(at: Vector3) -> void: rested.emit(at))
 	floor_no = n
 	current = id

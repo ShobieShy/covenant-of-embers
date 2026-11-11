@@ -52,10 +52,7 @@ func test_heartbeat() -> void:
 		hi = maxf(hi, a)
 	check(hi > lo + 0.1, "it beats: %.2f..%.2f" % [lo, hi])
 	check(hi <= HudFx.VIGNETTE_MAX + 1e-6, "capped")
-	check(
-		HudFx.heartbeat(0.05, 0.0, true) == HudFx.heartbeat(0.05, 0.4, true),
-		"steady under reduced motion"
-	)
+	check(HudFx.heartbeat(0.05, 0.0, true) == HudFx.heartbeat(0.05, 0.4, true), "steady under reduced motion")
 	check(HudFx.heartbeat(0.05, 0.0, true) > HudFx.heartbeat(0.25, 0.0, true), "stronger lower")
 
 
@@ -82,9 +79,7 @@ func test_magnet_arc() -> void:
 	var b := Vector3(3, 0, 0)
 	check(LootPickup.magnet_point(a, b, 0.0).is_equal_approx(a), "starts at the drop")
 	check(LootPickup.magnet_point(a, b, 1.0).is_equal_approx(b), "ends at the feet")
-	check_near(
-		LootPickup.magnet_point(a, b, 0.5).y, LootPickup.MAGNET_ARC, 1e-6, "hop peaks halfway"
-	)
+	check_near(LootPickup.magnet_point(a, b, 0.5).y, LootPickup.MAGNET_ARC, 1e-6, "hop peaks halfway")
 	var s := _setup()
 	var p: Player = s[0]
 	var w := Node3D.new()
@@ -139,19 +134,14 @@ func test_level_up_and_badge() -> void:
 	p.progression.add_xp(p.progression.xp_to_next)
 	hud.refresh(DT)
 	check(hud.level_ups == 1 and hud.level_banner.visible, "banner up")
-	check(
-		hud.level_banner.text == "Level %d!" % p.progression.level, "'%s'" % hud.level_banner.text
-	)
+	check(hud.level_banner.text == "Level %d!" % p.progression.level, "'%s'" % hud.level_banner.text)
 	var n := p.skills.available(p.progression.level)
 	check(hud.skill_badge.visible == (n > 0), "badge follows unspent points (%d)" % n)
 	for i in int(Hud.LEVEL_BANNER_S / DT) + 2:
 		hud.refresh(DT)
 	check(not hud.level_banner.visible, "banner goes")
 	check(Hud.skill_badge_text(1).contains("1 skill point "), "singular")
-	check(
-		PauseMenu.skills_label(0) == "Skills" and PauseMenu.skills_label(2).contains("2"),
-		"pause entry"
-	)
+	check(PauseMenu.skills_label(0) == "Skills" and PauseMenu.skills_label(2).contains("2"), "pause entry")
 	check(PauseMenu.skills_label(15) == "Skills\u00a0◆ 15", "QA r12: a gap before the ◆")
 	hud.free()
 	p.free()

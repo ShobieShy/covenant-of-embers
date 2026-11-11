@@ -12,10 +12,7 @@ func _run() -> void:
 	for id in Interiors.LINKS:
 		if String(Interiors.LINKS[id]["scene"]) == "":
 			continue  # Labyrinth floors are built at runtime
-		var n := (
-			(load(GameFlow.level_scene(Interiors.LINKS[id]["scene"])) as PackedScene).instantiate()
-			as Node3D
-		)
+		var n := (load(GameFlow.level_scene(Interiors.LINKS[id]["scene"])) as PackedScene).instantiate() as Node3D
 		Interiors.prepare(n, id, false)
 		var nav := n.get_node_or_null("Navigation") as LevelNavigation
 		if nav == null:
@@ -23,9 +20,7 @@ func _run() -> void:
 		nav.bake_on_ready = false
 		root.add_child(n)
 		var polys := nav.bake_now()
-		ResourceSaver.save(
-			nav.navigation_mesh, Interiors.nav_cache(id), ResourceSaver.FLAG_COMPRESS
-		)
+		ResourceSaver.save(nav.navigation_mesh, Interiors.nav_cache(id), ResourceSaver.FLAG_COMPRESS)
 		print("[interior_nav] %s %d polys" % [id, polys])
 		n.free()
 	quit(0)
