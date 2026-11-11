@@ -133,11 +133,27 @@ static func create(d: EnemyDef, xform := Transform3D.IDENTITY) -> Enemy:
 	return e
 
 
+func _bind_barks() -> void:
+	if has_meta(&"barks"):
+		return
+	set_meta(&"barks", true)
+	damaged.connect(func(_e: Enemy, _h: SpellBolts.Hit) -> void: EnemyBarks.mark(self, "hurt"))
+	died.connect(func(_e: Enemy, _el: ElementTable.Element) -> void: EnemyBarks.mark(self, "death"))
+	if has_signal(&"state_changed"):
+		connect(&"state_changed", _bark_aggro)
+
+
+func _bark_aggro(_who: Variant, _from: Variant, to: Variant) -> void:
+	if self is Gnawer and to == Gnawer.State.CHASE:
+		EnemyBarks.mark(self, "aggro")
+
+
 func setup(d: EnemyDef) -> void:
 	def = d
 	name = d.id
-	health = d.max_health
+	health = PostClear.scale_health(d.max_health)
 	damage_target = d.make_target()
+	_bind_barks()
 	if Elites.affix_of(d) != "":
 		level_offset = LevelScale.ELITE_OFFSET
 	elif _authored_boss(d):

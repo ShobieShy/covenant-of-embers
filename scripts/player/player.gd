@@ -455,6 +455,7 @@ func on_enemy_attack(from: Variant, bite: Gnawer.Bite) -> void:
 		if from is Enemy:
 			dl = (from as Enemy).combat_dl(LevelScale.player_level)
 		dmg *= LevelScale.mult("dmg", dl)
+	dmg = PostClear.scale_damage(dmg)
 	take_enemy_hit(dmg, bite.element)
 	if alive() and from is Enemy and (from as Enemy).def != null and (from as Enemy).def.id == "spore_beast":
 		poison_dps = 0.02
