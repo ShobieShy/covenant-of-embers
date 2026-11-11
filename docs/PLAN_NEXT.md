@@ -35,14 +35,14 @@ Approved by ShobieShy as patches on top of the campaign, not as new acts and not
 | Version | Content |
 |---|---|
 | 0.8.4 | Second Wind, including solo (a kill while downed revives you; a co-op teammate can still revive you). A HUD compare card for the world item under the crosshair. Four wieldable carry slots (keys 3 and 4 draw the two new ones). Consecrations can roll on ordinary Rare+ drops, and the pool is larger. |
-| 0.8.5 | Named uniques and legendaries with a special effect, flavor text, and a boss or rare-spawn drop you can farm. Named rare spawns. Elites that read as elites. Accessibility (ASAP, planned, not started): see below. |
+| 0.8.5 | Named uniques and legendaries with a special effect, flavor text, and a boss or rare-spawn drop you can farm. Named rare spawns. Elites that read as elites. Accessibility is done: see below. |
 | 0.8.6 | An action skill: one cooldown ability tied to the element spec you have spent, using verbs the game already has (summon, convert, stagger, chain). |
 | 0.8.7 | Lootable shields (capacity, delay, an effect), a throwable or flask slot, a relic or amulet slot, and more wieldable bases and parts. |
 | 0.8.8 | Vigil wired as a playable post-clear difficulty (UI, save, the run itself). Hub toys: a Breach-key chest, a vending cadence, a slot machine. A bounty board, a mantle, and combat barks. |
 
-### Accessibility (ASAP, planned, not started)
+### Accessibility (done)
 
-Under 0.8.5. Added to issue #38 on 11 Nov 2026 by ShobieShy, priority ASAP. Planned only. Implementation waits for his go. These are settings-menu options, saved to the settings file, not the save game:
+Under 0.8.5. Added to issue #38 on 11 Nov 2026 by ShobieShy. Shipped in the settings menu and `user://keybinds.cfg`, not the save game. Colorblind mode is gameplay tints plus shape marks, not a full-screen filter. The voice slider has a bus and no new voice lines. Aim toggle is the existing `action_secondary` latch. These are the options:
 
 - Colorblind modes: protanopia, deuteranopia, and tritanopia filters, plus shape and icon cues so rarity, elements, and enemy or elite markers never rely on color alone.
 - Subtitle and text options: subtitle size (small, medium, large, extra large), background opacity, speaker names, and a global UI text scale.

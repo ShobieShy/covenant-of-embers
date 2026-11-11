@@ -160,7 +160,8 @@ func _row(stat: String, label: String, value: float, cur: float, higher_better: 
 
 ## The inventory / HUD card as BBCode. Deltas are green when better and red when worse.
 func to_bbcode() -> String:
-	var s := "[color=#%s][b]%s[/b][/color]\n%s %s\n" % [color.to_html(false), title, rarity_name, kind]
+	var mark := Accessibility.NAMED_MARK if not flavor.is_empty() else Accessibility.rarity_mark(rarity_id)
+	var s := "[color=#%s][b]%s[/b][/color]\n%s %s %s\n" % [color.to_html(false), title, mark, rarity_name, kind]
 	if not compared_to.is_empty():
 		s += "[i]vs %s[/i]\n" % compared_to
 	if not flavor.is_empty():

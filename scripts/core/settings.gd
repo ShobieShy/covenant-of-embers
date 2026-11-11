@@ -16,6 +16,7 @@ var invert_y := false
 var hip_fov := 75.0
 var focus_toggle := false
 var crouch_toggle := false
+var sprint_toggle := false
 var reduced_motion := false
 var instant_text := false  ## 0.3.1 P3: dialogue without the typewriter
 var head_bob := 1.0
@@ -23,9 +24,19 @@ var aim_sensitivity := 1.0
 var master_volume := 1.0  ## step 37 buses
 var sfx_volume := 1.0
 var music_volume := 1.0
+var voice_volume := 1.0
 var colorblind := 0  ## step 76: Accessibility.Mode
 var subtitles := true
 var subtitle_scale := 1.0
+var subtitle_preset := 1  ## 0 small .. 3 extra large; aim toggle is focus_toggle
+var subtitle_bg := 0.72
+var show_speaker := true
+var text_scale := 1.0
+var shake := 1.0
+var flash_reduction := false
+var crosshair_size := 1.0
+var crosshair_swatch := 0
+var high_contrast := false
 var renderer := "auto"  ## step 86: PlatformDisplay.RENDERERS (next launch)
 var window_mode := 0  ## PlatformDisplay.WINDOW_MODES
 var ui_scale := 0.0  ## 0 = auto (DPI)
@@ -138,6 +149,14 @@ func apply_to(p: Player) -> void:
 	UiAnim.reduced_motion = reduced_motion  # 0.3.1 P1
 	DialogueUI.instant_text = instant_text  # 0.3.1 P3
 	Accessibility.subtitle_scale = subtitle_scale
+	Accessibility.subtitle_bg = subtitle_bg
+	Accessibility.show_speaker = show_speaker
+	Accessibility.text_scale = text_scale
+	Accessibility.shake = shake
+	Accessibility.flash_reduction = flash_reduction
+	Accessibility.crosshair_size = crosshair_size
+	Accessibility.crosshair_swatch = crosshair_swatch
+	Accessibility.high_contrast = high_contrast
 	var tree := Engine.get_main_loop() as SceneTree
 	if tree:
 		PlatformDisplay.apply(tree.root, window_mode, ui_scale)  # step 86
@@ -151,10 +170,12 @@ func apply_to(p: Player) -> void:
 	p.aim_sensitivity = aim_sensitivity
 	p.focus_toggle = focus_toggle
 	p.crouch_toggle = crouch_toggle
+	p.sprint_toggle = sprint_toggle
 	p.set_hip_fov(hip_fov)
 	p.set_reduced_motion(reduced_motion)
 	p.feel.set_bob_scale(head_bob)
-	GameAudio.apply_volumes(master_volume, sfx_volume, music_volume)  # step 37
+	p.feel.set_shake_scale(0.0 if reduced_motion else shake)
+	GameAudio.apply_volumes(master_volume, sfx_volume, music_volume, voice_volume)
 
 
 func save(path := PATH) -> Error:
@@ -184,7 +205,17 @@ static func load_from(path := PATH) -> Settings:
 	s.aim_sensitivity = clampf(s.aim_sensitivity, 0.1, 5.0)
 	s.head_bob = clampf(s.head_bob, 0.0, 1.0)
 	s.colorblind = clampi(int(s.colorblind), 0, Accessibility.MODE_NAMES.size() - 1)
-	s.subtitle_scale = clampf(s.subtitle_scale, 0.75, 2.0)
+	s.subtitle_scale = clampf(float(s.subtitle_scale), 0.75, 2.0)
+	s.subtitle_preset = clampi(int(s.subtitle_preset), 0, Accessibility.SUBTITLE_PRESETS.size() - 1)
+	s.subtitle_bg = clampf(float(s.subtitle_bg), 0.0, 1.0)
+	s.text_scale = clampf(float(s.text_scale), 0.75, 2.0)
+	s.shake = clampf(float(s.shake), 0.0, 1.0)
+	s.voice_volume = clampf(float(s.voice_volume), 0.0, 1.0)
+	s.master_volume = clampf(float(s.master_volume), 0.0, 1.0)
+	s.sfx_volume = clampf(float(s.sfx_volume), 0.0, 1.0)
+	s.music_volume = clampf(float(s.music_volume), 0.0, 1.0)
+	s.crosshair_size = clampf(float(s.crosshair_size), 0.5, 2.5)
+	s.crosshair_swatch = clampi(int(s.crosshair_swatch), 0, Accessibility.CROSSHAIR_COLORS.size() - 1)
 	if not PlatformDisplay.RENDERERS.has(String(s.renderer)):
 		s.renderer = "auto"
 	s.window_mode = clampi(int(s.window_mode), 0, PlatformDisplay.WINDOW_MODES.size() - 1)
@@ -199,6 +230,7 @@ func _options() -> PackedStringArray:
 		"hip_fov",
 		"focus_toggle",
 		"crouch_toggle",
+		"sprint_toggle",
 		"reduced_motion",
 		"instant_text",
 		"head_bob",
@@ -206,9 +238,19 @@ func _options() -> PackedStringArray:
 		"master_volume",
 		"sfx_volume",
 		"music_volume",
+		"voice_volume",
 		"colorblind",
 		"subtitles",
 		"subtitle_scale",
+		"subtitle_preset",
+		"subtitle_bg",
+		"show_speaker",
+		"text_scale",
+		"shake",
+		"flash_reduction",
+		"crosshair_size",
+		"crosshair_swatch",
+		"high_contrast",
 		"renderer",
 		"window_mode",
 		"ui_scale",

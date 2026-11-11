@@ -18,7 +18,7 @@ static func attach(e: Enemy) -> void:
 		e._body_mat.emission_energy_multiplier = 0.55
 	var tag := Label3D.new()
 	tag.name = "NameTag"
-	tag.text = e.display_name()
+	tag.text = "%s %s" % [Accessibility.elite_mark(affix, rare != ""), e.display_name()]
 	tag.font_size = 42
 	tag.pixel_size = 0.004
 	tag.position = Vector3(0.0, e.def.size.y + 0.55, 0.0)
@@ -39,12 +39,22 @@ static func sync(e: Enemy) -> void:
 	var frac := clampf(e.health / e.max_health(), 0.0, 1.0) if e.max_health() > 0.0 else 0.0
 	bar.scale = Vector3(maxf(frac, 0.02), 1.0, 1.0)
 	bar.visible = alive
+	_contrast(e)
 	var back := e.get_node_or_null("EliteBarBack") as Node3D
 	if back:
 		back.visible = alive
-	var tag := e.get_node_or_null("NameTag") as Node3D
+	var tag := e.get_node_or_null("NameTag") as Label3D
 	if tag:
 		tag.visible = alive
+		tag.outline_size = 16 if Accessibility.high_contrast else 8
+
+
+static func _contrast(e: Enemy) -> void:
+	if e._body_mat == null:
+		return
+	e._body_mat.rim_enabled = Accessibility.high_contrast
+	e._body_mat.rim = 1.0
+	e._body_mat.rim_tint = 1.0
 
 
 static func _bar(node_name: String, color: Color, y: float) -> MeshInstance3D:

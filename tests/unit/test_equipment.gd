@@ -421,6 +421,16 @@ func test_drops_carry_the_item() -> void:
 				and it.rarity == d.rarity_id
 				and it.element_affinity == d.element
 				and it.roll_seed == d.roll_seed
-				and d.describe() == "%s %s" % [RarityTable.load_default().display_name(d.rarity_id), it.display_name]
+				and (
+					d.describe()
+					== (
+						"%s %s %s"
+						% [
+							Accessibility.rarity_mark(d.rarity_id),
+							RarityTable.load_default().display_name(d.rarity_id),
+							it.display_name
+						]
+					)
+				)
 			)
 	check(found > 50 and ok, "%d equipment drops, each with its rolled item" % found)

@@ -44,6 +44,7 @@ func _init() -> void:
 	set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
 	offset_top = -180
 	var panel := PanelContainer.new()
+	panel.name = "SubtitlePanel"
 	panel.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(panel)
 	var v := VBoxContainer.new()
@@ -129,7 +130,11 @@ func _on_line(sp: String, t: String) -> void:
 	if not UiAnim.is_shown(self):
 		UiAnim.open(self)  # 0.3.1 P1
 	speaker_label.text = sp
+	speaker_label.visible = Accessibility.show_speaker
 	speaker_label.add_theme_color_override(&"font_color", speaker_color(sp))  # 0.3.1 P3
+	var panel := get_node_or_null("SubtitlePanel") as CanvasItem
+	if panel:
+		panel.modulate = Color(1, 1, 1, Accessibility.subtitle_bg)
 	text_label.text = t
 	_has_pending = false
 	typed = 0.0
