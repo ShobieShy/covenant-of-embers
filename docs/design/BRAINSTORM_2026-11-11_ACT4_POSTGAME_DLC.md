@@ -26,6 +26,7 @@ Breach fallout. Uses a shared map spine with faction states (lever / spawn / roo
 - DLC has level minimums. Covenant Escalation requires beating the main game.
 - Endgame loop, 2026-11-11: After beating a labyrinth, you can replay the same labyrinth over and over. Once you beat it, its final level is no longer the final level; there is no final level. You keep descending with increasing difficulty, loot drops, and rewards until you can't go on. This is the endgame loop. Covenant Escalation is the dial that turns with depth in Endless Descent. This applies to the main Breach labyrinth and to each DLC labyrinth after its story is cleared (consistent with the earlier note that post-clear floors are randomly generated with escalating stats, while story acts stay handmade). Covenant Escalation stays purely mechanical, same story.
 - The mode is called "the Abyss" while you are progressing through it (the finite version), and once you beat it, it becomes "Endless Descent" (the infinite post-clear version).
+- Gear earned going deep in Endless Descent, under Covenant Escalation, can appear as super rare drops in normal base-story labyrinth runs. Target rarity is around one-in-a-million, a genuine holy-shit moment that doesn't break story balance. The deeper the Covenant Escalation tier the item came from, the crazier it is and the rarer it is as a base-game drop.
 
 In code, Covenant Escalation is still `scripts/loot/vigil.gd` (`Vigil`, tiers 1–10, separate difficulty and reward curves, seeded Omens). The class is not renamed. A cleared floor can be re-rolled by `scripts/labyrinth/labyrinth_state.gd` `remix()`. Neither is the playable descent loop. The earlier random-floor note is in `docs/PLAN_0.8.0_SLAGWORKS.md` (the endless-after-clear rule, Post-Core).
 
@@ -50,5 +51,7 @@ Act IV does not match. Those docs call Act IV The Sunken Ruins (0.9.0). This not
 The tree name does not match. This note says Great Oak. The shipped level, quests, and docs say Old Oak (`old_oak`, [INTRO_PLAN.md](../INTRO_PLAN.md), [LINEAR_LEVELS_PLAN.md](../LINEAR_LEVELS_PLAN.md)). [EMBER_ART_REQUESTS.md](../EMBER_ART_REQUESTS.md) describes the Old Oak model as "the great oak" in the art request, not as the place name. No code or doc was renamed.
 
 Whether the player can also set Covenant Escalation by hand, besides it turning with depth in Endless Descent, is open.
+
+Whether an Endless Descent drop that appears in a base-story run is level-scaled down for that run is open. Whether co-op shares that one-in-a-million roll is open.
 
 "the Abyss" and "Endless Descent" may clash with the existing name The Forgotten Abyss (`docs/PLAN_NEXT.md`, `docs/PLAN_0.8.0_SLAGWORKS.md`: the deferred post-Core endless run). Whether "the Abyss" refers to each labyrinth's descent generally is also open. No name was renamed.

@@ -62,6 +62,8 @@ After beating a labyrinth, you can replay the same labyrinth over and over. Once
 
 The mode is called "the Abyss" while you are progressing through it (the finite version), and once you beat it, it becomes "Endless Descent" (the infinite post-clear version). Covenant Escalation is the dial that turns with depth in Endless Descent.
 
+Gear earned going deep in Endless Descent, under Covenant Escalation, can appear as super rare drops in normal base-story labyrinth runs. Target rarity is around one-in-a-million, a genuine holy-shit moment that doesn't break story balance. The deeper the Covenant Escalation tier the item came from, the crazier it is and the rarer it is as a base-game drop. Whether those drops are level-scaled down for story runs, and whether co-op shares the roll, is open.
+
 In code the dial is still `scripts/loot/vigil.gd` (`Vigil`, tiers 1–10, unused as a playable run) and `scripts/labyrinth/labyrinth_state.gd` `remix()` (re-roll a cleared floor). The class is not renamed. Whether the player can also set the dial by hand, besides it turning with depth, is open. Whether "the Abyss" / "Endless Descent" clash with the name The Forgotten Abyss below, and whether "the Abyss" means each labyrinth's descent generally, is also open. Nothing here renames The Forgotten Abyss.
 
 The Forgotten Abyss is not in 0.8.x. It stays the endless run after Act V and the Core, below.
