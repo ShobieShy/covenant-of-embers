@@ -40,10 +40,20 @@ func _init() -> void:
 	var opts := VBoxContainer.new()
 	h.add_child(opts)
 	for o in [
-		"invert_y", "focus_toggle", "crouch_toggle", "reduced_motion", "instant_text", "subtitles", "minimap_north"
+		"invert_y",
+		"focus_toggle",
+		"crouch_toggle",
+		"sprint_toggle",
+		"reduced_motion",
+		"flash_reduction",
+		"instant_text",
+		"subtitles",
+		"show_speaker",
+		"high_contrast",
+		"minimap_north"
 	]:
 		var c := CheckBox.new()
-		c.text = o.capitalize()
+		c.text = "Aim toggle" if o == "focus_toggle" else o.capitalize()
 		c.toggled.connect(func(v): set_option(o, v))
 		opts.add_child(c)
 		controls[o] = c
@@ -54,6 +64,11 @@ func _init() -> void:
 		["master_volume", 0.0, 1.0, 0.05],
 		["sfx_volume", 0.0, 1.0, 0.05],
 		["music_volume", 0.0, 1.0, 0.05],
+		["voice_volume", 0.0, 1.0, 0.05],
+		["shake", 0.0, 1.0, 0.05],
+		["subtitle_bg", 0.0, 1.0, 0.05],
+		["text_scale", 0.75, 2.0, 0.05],
+		["crosshair_size", 0.5, 2.5, 0.1],
 		["subtitle_scale", 0.75, 2.0, 0.25],
 		["ui_scale", 0.0, 2.0, 0.25]
 	]:
@@ -74,6 +89,23 @@ func _init() -> void:
 	cb.item_selected.connect(func(i): set_option("colorblind", i))
 	opts.add_child(cb)
 	controls["colorblind"] = cb
+	var preset := OptionButton.new()
+	for n in Accessibility.PRESET_NAMES:
+		preset.add_item("Subtitles: " + n)
+	preset.item_selected.connect(
+		func(i):
+			settings.subtitle_preset = i
+			settings.subtitle_scale = Accessibility.preset_scale(i)
+			_commit()
+	)
+	opts.add_child(preset)
+	controls["subtitle_preset"] = preset
+	var swatch := OptionButton.new()
+	for n in ["White", "Yellow", "Cyan", "Green"]:
+		swatch.add_item("Crosshair: " + n)
+	swatch.item_selected.connect(func(i): set_option("crosshair_swatch", i))
+	opts.add_child(swatch)
+	controls["crosshair_swatch"] = swatch
 	var wm := OptionButton.new()  # step 86
 	for n in PlatformDisplay.WINDOW_MODES:
 		wm.add_item(n)

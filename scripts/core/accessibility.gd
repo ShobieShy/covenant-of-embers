@@ -49,15 +49,40 @@ const ELEMENT_T := [
 	Color(0.3, 0.3, 0.3)
 ]
 
+const RARITY_MARKS: PackedStringArray = ["●", "▲", "■", "◆", "★", "✶"]
+const ELEMENT_MARKS: PackedStringArray = ["✦", "▲", "●", "■", "◇", "☆", "▼"]
+const NAMED_MARK := "✶"
+const SUBTITLE_PRESETS: PackedFloat64Array = [0.85, 1.0, 1.35, 1.75]
+const PRESET_NAMES: PackedStringArray = ["Small", "Medium", "Large", "Extra large"]
+const CROSSHAIR_COLORS: Array[Color] = [
+	Color(1, 1, 1, 0.9), Color(1, 0.92, 0.2, 0.95), Color(0.3, 0.95, 1, 0.95), Color(0.2, 1, 0.45, 0.95)
+]
+
 static var colorblind := Mode.OFF
 static var subtitles := true
 static var subtitle_scale := 1.0
+static var subtitle_bg := 0.72
+static var show_speaker := true
+static var text_scale := 1.0
+static var shake := 1.0
+static var flash_reduction := false
+static var crosshair_size := 1.0
+static var crosshair_swatch := 0
+static var high_contrast := false
 
 
 static func reset() -> void:
 	colorblind = Mode.OFF
 	subtitles = true
 	subtitle_scale = 1.0
+	subtitle_bg = 0.72
+	show_speaker = true
+	text_scale = 1.0
+	shake = 1.0
+	flash_reduction = false
+	crosshair_size = 1.0
+	crosshair_swatch = 0
+	high_contrast = false
 
 
 static func rarity_color(rarity_id: String, base: Color) -> Color:
@@ -74,4 +99,44 @@ static func element_color(e: int, base: Color) -> Color:
 
 
 static func font_size() -> int:
-	return roundi(BASE_FONT * subtitle_scale)
+	return roundi(BASE_FONT * subtitle_scale * text_scale)
+
+
+static func rarity_mark(rarity_id: String) -> String:
+	var i := Rarity.IDS.find(rarity_id)
+	return RARITY_MARKS[i] if i >= 0 else ""
+
+
+static func element_mark(e: int) -> String:
+	return ELEMENT_MARKS[e] if e >= 0 and e < ELEMENT_MARKS.size() else ""
+
+
+## Pearlescent when the filter is off. A palette slot when a colour-blind mode is on.
+static func named_color(base: Color) -> Color:
+	if colorblind == Mode.OFF:
+		return base
+	return (RARITY_T if colorblind == Mode.TRITANOPIA else RARITY_RG)[Rarity.Tier.UNIQUE]
+
+
+static func crosshair_color() -> Color:
+	return CROSSHAIR_COLORS[clampi(crosshair_swatch, 0, CROSSHAIR_COLORS.size() - 1)]
+
+
+static func preset_scale(preset: int) -> float:
+	return SUBTITLE_PRESETS[clampi(preset, 0, SUBTITLE_PRESETS.size() - 1)]
+
+
+static func elite_mark(affix: String, rare: bool) -> String:
+	if rare:
+		return NAMED_MARK
+	match affix:
+		"burning":
+			return "▲"
+		"warded":
+			return "■"
+		"swift":
+			return "»"
+		"splitting":
+			return "✕"
+		_:
+			return "●"

@@ -102,8 +102,10 @@ var invert_y := false
 var aim_sensitivity := 1.0  ## on top of focus.look_scale(); Magewar-like raw = 1/0.6784
 var focus_toggle := false  ## action_secondary press latches focus
 var crouch_toggle := false  ## crouch press latches "held" (Cogito TOGGLE_CROUCH)
+var sprint_toggle := false  ## sprint press latches "held"
 var _focus_latch := false
 var _crouch_latch := false
+var _sprint_latch := false
 var breath: Breath  # sprint/dash pool (step 4)
 var sprinting := false
 var slide_left := 0.0  # seconds left on the slide (Magewar SlidingTimer)
@@ -491,7 +493,11 @@ func bleed_out() -> void:
 
 
 func _apply_toggles(input: PlayerInput) -> void:
-	for pair in [[focus_toggle, &"action_secondary", "_focus_latch"], [crouch_toggle, &"crouch", "_crouch_latch"]]:
+	for pair in [
+		[focus_toggle, &"action_secondary", "_focus_latch"],
+		[crouch_toggle, &"crouch", "_crouch_latch"],
+		[sprint_toggle, &"sprint", "_sprint_latch"]
+	]:
 		if not pair[0]:
 			continue
 		var a: StringName = pair[1]

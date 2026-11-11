@@ -116,11 +116,12 @@ static func load_stream(key: String) -> AudioStream:
 
 
 ## Volumes (0..1 linear) on Master / SFX(+UI) / Music.
-static func apply_volumes(master: float, sfx: float, music: float) -> void:
+static func apply_volumes(master: float, sfx: float, music: float, voice := 1.0) -> void:
 	_set_bus("Master", master)
 	_set_bus("SFX", sfx)
 	_set_bus("UI", sfx)
 	_set_bus("Music", music)
+	_set_bus("Voice", voice)
 
 
 static func _set_bus(n: String, v: float) -> void:

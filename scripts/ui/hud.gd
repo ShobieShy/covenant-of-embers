@@ -98,10 +98,12 @@ class Crosshair:
 
 	func _draw() -> void:
 		var c := size * 0.5
-		var col := Color(1, 1, 1, 0.9)
+		var col := Accessibility.crosshair_color()
+		var arm := 8.0 * Accessibility.crosshair_size
+		var width := 2.0 * Accessibility.crosshair_size
 		for d in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]:
-			draw_line(c + d * gap, c + d * (gap + 8.0), col, 2.0)
-		draw_circle(c, 1.5, col)
+			draw_line(c + d * gap, c + d * (gap + arm), col, width)
+		draw_circle(c, 1.5 * Accessibility.crosshair_size, col)
 
 
 ## Step 140 (Brands B6): the held brand's logo, a 96x6 meter and its short text, centred

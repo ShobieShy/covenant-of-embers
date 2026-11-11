@@ -36,7 +36,9 @@ func equip_slot_id() -> String:
 
 
 func describe() -> String:
-	var r := RarityTable.load_default().display_name(rarity_id)
+	var named := item is WieldablePart and NamedUniques.is_named((item as WieldablePart).id)
+	var mark := Accessibility.NAMED_MARK if named else Accessibility.rarity_mark(rarity_id)
+	var r := "%s %s" % [mark, RarityTable.load_default().display_name(rarity_id)]
 	match kind:
 		Kind.WIELDABLE:
 			return "%s %s" % [r, (item as WieldableInstance).display_name() if item else "?"]
@@ -45,4 +47,12 @@ func describe() -> String:
 		_:
 			if item is EquipmentItem:
 				return "%s %s" % [r, (item as EquipmentItem).display_name]
-			return "%s %s %s" % [r, ElementTable.load_default().display_name(element), equip_slot_id().capitalize()]
+			return (
+				"%s %s %s %s"
+				% [
+					r,
+					Accessibility.element_mark(element),
+					ElementTable.load_default().display_name(element),
+					equip_slot_id().capitalize()
+				]
+			)

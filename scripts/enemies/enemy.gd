@@ -567,12 +567,13 @@ func tick(dt: float) -> void:
 		return
 	flash = maxf(0.0, flash - dt)
 	var k := flash / FLASH_TIME
+	var fk := 0.0 if Accessibility.flash_reduction else k
 	if _body_mat:
 		var base := def.color.lerp(ALLY_COLOR, 0.65) if corrupted_left > 0.0 else def.color
-		_body_mat.albedo_color = base.lerp(Color.WHITE, 0.6 * k)
+		_body_mat.albedo_color = base.lerp(Color.WHITE, 0.6 * fk)
 	if _head_mat:
 		_head_mat.albedo_color = def.color.lerp(
-			Color.WHITE, WEAK_POINT_BRIGHTEN + (1.0 - WEAK_POINT_BRIGHTEN) * 0.6 * k
+			Color.WHITE, WEAK_POINT_BRIGHTEN + (1.0 - WEAK_POINT_BRIGHTEN) * 0.6 * fk
 		)
 
 

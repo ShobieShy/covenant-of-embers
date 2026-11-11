@@ -38,7 +38,7 @@ func test_each_option_saved() -> void:
 	var l := Settings.load_from(FILE)
 	for k in s._options():
 		check(l.get(k) == s.get(k), "option %s round-trips" % k)
-	check(Settings.new()._options().size() == 19, "19 options (0.3.1 P3: instant_text)")
+	check(Settings.new()._options().size() == 30, "30 options (accessibility pass)")
 	_cleanup()
 
 
@@ -93,4 +93,49 @@ func test_dialogue_subtitles() -> void:
 	ui._on_line("Bob", "Hello")
 	check(ui.text_label.visible, "subtitles on shows line")
 	ui.queue_free()
+	_cleanup()
+
+
+func test_old_keybinds_keep_defaults() -> void:
+	var c := ConfigFile.new()
+	c.set_value("options", "invert_y", true)
+	check(c.save(FILE) == OK, "old file")
+	var l := Settings.load_from(FILE)
+	check(l.invert_y, "old key kept")
+	check(not l.sprint_toggle and not l.flash_reduction and not l.high_contrast, "new toggles default off")
+	check(l.voice_volume == 1.0 and l.shake == 1.0 and l.text_scale == 1.0, "new sliders default on")
+	check(l.subtitle_preset == 1 and l.show_speaker, "subtitle defaults")
+	_cleanup()
+
+
+func test_reduced_motion_overrides_shake() -> void:
+	var p := _player()
+	var s := Settings.new()
+	s.shake = 1.0
+	s.reduced_motion = true
+	s.apply_to(p)
+	check(p.feel.shake_scale == 0.0 and p.feel.reduced_motion, "reduced motion wins")
+	p.feel.add_shake(1.0)
+	check(p.feel.shake == 0.0, "no shake while reduced")
+	s.reduced_motion = false
+	s.apply_to(p)
+	check(p.feel.shake_scale == 1.0, "shake slider returns")
+	check(p.focus_toggle == s.focus_toggle, "aim toggle is the existing latch")
+	p.queue_free()
+	_cleanup()
+
+
+func test_shape_marks_and_named_tint() -> void:
+	var seen := {}
+	for id in Rarity.IDS:
+		var mark := Accessibility.rarity_mark(id)
+		check(mark != "", id)
+		seen[mark] = true
+	check(seen.size() == Rarity.IDS.size(), "one mark per rarity")
+	var part := WieldablePart.load_part("unique_void_charm")
+	Accessibility.colorblind = Accessibility.Mode.OFF
+	check(NamedUniques.color_for(part, Color.WHITE) == NamedUniques.COLOR, "pearlescent off-filter")
+	Accessibility.colorblind = Accessibility.Mode.DEUTERANOPIA
+	check(NamedUniques.color_for(part, Color.WHITE) != NamedUniques.COLOR, "palette when a filter is on")
+	check(Accessibility.NAMED_MARK != "", "named mark")
 	_cleanup()

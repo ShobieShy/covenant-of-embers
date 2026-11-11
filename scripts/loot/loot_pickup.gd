@@ -135,6 +135,10 @@ func _build(n: String, c: Color, text: String, kind := "") -> void:
 	gm.emission_enabled = true
 	gm.emission = color
 	gm.emission_energy_multiplier = 0.5
+	if Accessibility.high_contrast:
+		gm.rim_enabled = true
+		gm.rim = 1.0
+		gm.rim_tint = 1.0
 	gem.material_override = gm
 	add_child(gem)
 	prop = LootMeshes.prop_for(kind, color)

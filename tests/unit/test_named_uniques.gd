@@ -118,7 +118,10 @@ func test_elite_name_tag_and_health_bar() -> void:
 	var rare := RareSpawns.decorate(table.find("gnawer"), 0.0)
 	var e := Enemy.create(rare)
 	var tag := e.get_node_or_null("NameTag") as Label3D
-	check(tag != null and tag.text == "The Pit Warden", "named rare has a name tag")
+	check(
+		tag != null and tag.text.ends_with("The Pit Warden") and tag.text != "The Pit Warden",
+		"named rare has a marked name tag"
+	)
 	check(e.get_node_or_null("EliteBar") != null, "named rare has a health bar")
 	check(e._body_mat.emission_enabled, "named rare glows")
 	e.health = e.max_health() * 0.25
@@ -126,7 +129,7 @@ func test_elite_name_tag_and_health_bar() -> void:
 	check(is_equal_approx((e.get_node("EliteBar") as MeshInstance3D).scale.x, 0.25), "bar tracks health")
 	var elite := Enemy.create(Elites.apply(table.find("gnawer"), "burning"))
 	var etag := elite.get_node_or_null("NameTag") as Label3D
-	check(etag != null and etag.text.begins_with("Burning"), "affix elites are named too")
+	check(etag != null and etag.text.contains("Burning"), "affix elites are named too")
 	check(elite.get_node_or_null("EliteBar") != null, "affix elites have a bar")
 	e.free()
 	elite.free()

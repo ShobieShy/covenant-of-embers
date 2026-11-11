@@ -71,6 +71,7 @@ var shake := 0.0  ## 0..1 trauma (step 10)
 var shake_max := 0.03
 var shake_decay := 2.0
 var shake_offset := Vector2.ZERO  ## camera offset from the shake (x right, y up)
+var shake_scale := 1.0  ## settings slider; 0 under reduced motion
 var recoils := 0
 var _shake_time := 0.0
 var fov_kick := 0.0  ## deg added to the camera FOV (P5)
@@ -147,9 +148,9 @@ func add_recoil(amount: float) -> void:
 
 ## Screen-shake trauma (0..1, added, capped at 1); ignored under reduced motion.
 func add_shake(trauma: float) -> void:
-	if reduced_motion or trauma <= 0.0:
+	if reduced_motion or shake_scale <= 0.0 or trauma <= 0.0:
 		return
-	shake = minf(1.0, shake + trauma)
+	shake = minf(1.0, shake + trauma * shake_scale)
 
 
 func set_reduced_motion(on: bool) -> void:
@@ -166,6 +167,13 @@ func set_reduced_motion(on: bool) -> void:
 
 func set_bob_scale(s: float) -> void:
 	bob_scale = maxf(0.0, s)
+
+
+func set_shake_scale(s: float) -> void:
+	shake_scale = maxf(0.0, s)
+	if shake_scale <= 0.0:
+		shake = 0.0
+		shake_offset = Vector2.ZERO
 
 
 ## The body moved `dy` (up > 0) in one snap (a climbed step): the camera

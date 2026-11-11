@@ -94,7 +94,8 @@ func test_card_gems_and_consecration() -> void:
 	head.gems = [ElementGem.make(ElementTable.Element.DARK)] as Array[ElementGem]
 	var t := ui.card_text(head)
 	var dark := ElementTable.load_default().color(ElementTable.Element.DARK).to_html(false)
-	check(t.contains("Gems: [color=#%s]Dark" % dark), "gem in element colour: %s" % t)
+	var mark := Accessibility.element_mark(ElementTable.Element.DARK)
+	check(t.contains("Gems: [color=#%s]%s Dark" % [dark, mark]), "gem in element colour: %s" % t)
 	var a := _hat("rare", 3)
 	a.consecration = "reaping"
 	t = ui.card_text(a)

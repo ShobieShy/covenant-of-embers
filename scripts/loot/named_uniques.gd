@@ -157,7 +157,7 @@ static func effect_line(part_id: String) -> String:
 
 static func color_for(item: Resource, fallback: Color) -> Color:
 	if item is WieldablePart and is_named((item as WieldablePart).id):
-		return COLOR
+		return Accessibility.named_color(COLOR)
 	return fallback
 
 

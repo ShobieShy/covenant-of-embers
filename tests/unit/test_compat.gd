@@ -13,8 +13,8 @@ const GOLDEN_SAMPLES := [
 	"EM1-0M290-00002-82QYR",
 	"EM1-0M39G-00002-C277G",
 	"EM1-0R2D0-00000-CF548",
-	"Basic Earth Charm",
-	"Uncommon Earth Arcane Conduit",
+	"● Basic Earth Charm",
+	"▲ Uncommon Earth Arcane Conduit",
 ]
 
 var _port := 26900 + randi_range(0, 300) * 2

@@ -202,8 +202,12 @@ func update_brand(m: FireMode) -> void:
 
 ## P5 (M5): a cast lights the flare in the gem's colour for FLARE_SECONDS.
 func flash_muzzle() -> void:
-	flare_left = FLARE_SECONDS
 	flares += 1
+	if Accessibility.flash_reduction:
+		flare.visible = false
+		flare_left = 0.0
+		return
+	flare_left = FLARE_SECONDS
 	var c := gem_color()
 	_flare_mat.albedo_color = Color(c.r, c.g, c.b, 1.0)
 	flare.scale = Vector3.ONE
