@@ -19,6 +19,8 @@ var consecration_text := ""
 var current_consecration := ""  ## the compared item's consecration ("" = none / nothing compared)
 var brand: Brand  ## step 140: the maker (Head element), null = unbranded
 var is_wand := false
+var flavor := ""  ## 0.8.5 named unique
+var effect := ""
 
 const BETTER := Color(0.35, 0.9, 0.35)
 const WORSE := Color(0.95, 0.35, 0.3)
@@ -98,7 +100,10 @@ static func for_item(item: Resource, player: Player = null, against_active := fa
 			current.call("display_name") if current is WieldableInstance else String(current.get("display_name"))
 		)
 	c.rarity_name = rt.display_name(c.rarity_id)
-	c.color = rt.color(c.rarity_id)
+	c.color = NamedUniques.color_for(item, rt.color(c.rarity_id))
+	if item is WieldablePart and NamedUniques.is_named((item as WieldablePart).id):
+		c.flavor = NamedUniques.flavor((item as WieldablePart).id)
+		c.effect = NamedUniques.effect_line((item as WieldablePart).id)
 	return c
 
 
@@ -158,6 +163,10 @@ func to_bbcode() -> String:
 	var s := "[color=#%s][b]%s[/b][/color]\n%s %s\n" % [color.to_html(false), title, rarity_name, kind]
 	if not compared_to.is_empty():
 		s += "[i]vs %s[/i]\n" % compared_to
+	if not flavor.is_empty():
+		s += "[i]%s[/i]\n" % flavor
+	if not effect.is_empty():
+		s += "[color=#%s]%s[/color]\n" % [color.to_html(false), effect]
 	for r in rows:
 		s += "%s: %s" % [r.label, snapped(r.value, 0.01)]
 		if r.compared and not is_zero_approx(r.delta):

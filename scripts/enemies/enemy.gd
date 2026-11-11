@@ -155,6 +155,7 @@ func setup(d: EnemyDef) -> void:
 		_head_mesh = _mesh("HeadMesh", d.weak_point_size, d.weak_point_offset, _head_mat)
 	_attach_model()
 	apply_level_scale()
+	ElitePresence.attach(self)
 
 
 ## Step 121: swap the greybox mesh for the batch_04 model; tints go to an overlay.
@@ -537,6 +538,7 @@ func fx_flags() -> int:
 
 ## Hit flash: the greybox tint goes towards white for FLASH_TIME after a hit.
 func tick(dt: float) -> void:
+	ElitePresence.sync(self)
 	_fall_guard()
 	_status_tick(dt)
 	_apply_flinch(dt)
@@ -596,7 +598,10 @@ static func spawn_at_markers(level: Node, parent: Node3D, table: EnemyTable, ski
 			if parent.is_inside_tree() and marker.is_inside_tree()
 			else marker.transform
 		)
-		var e := Enemy.create(d, xf)
+		var roll := 1.0
+		if String(marker.get_meta(&"lab_boss", "")) == "" and String(marker.get_meta(&"lab_elite", "")) == "":
+			roll = RareSpawns.roll_of(String(marker.name))
+		var e := Enemy.create(RareSpawns.decorate(d, roll), xf)
 		e.name = marker.name
 		parent.add_child(e)
 		out.append(e)

@@ -28,7 +28,7 @@ var entry: DropEntry  ## WIELDABLE: the chosen row
 
 
 func rarity_color() -> Color:
-	return RarityTable.load_default().color(rarity_id)
+	return NamedUniques.color_for(item, RarityTable.load_default().color(rarity_id))
 
 
 func equip_slot_id() -> String:

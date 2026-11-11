@@ -263,7 +263,7 @@ func test_bad_codes_rejected() -> void:
 	w0.write(0xAB, 8)
 	_rejects(ItemCodes.seal(w0.to_bytes()), "trailing", "trailing byte")
 	# Header problems.
-	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 2); w.write(0, 5)), "version", "unknown version 2")
+	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 3); w.write(0, 5)), "version", "unknown version 3")
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 0); w.write(0, 5)), "version", "version 0")
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, 7); w.write(0, 8)), "kind", "unknown kind 7")
 	_rejects(_raw(func(w: BitStream) -> void: ItemCodes.write_header(w, K.WIELDABLE, 1, 2); w.write(0, 5)), "flags", "unknown flags")
@@ -360,7 +360,7 @@ func test_index_tables_append_only_and_complete() -> void:
 		"equipment": EquipmentItem.DIR, "consumables": ConsumableItem.DIR}
 	var versions := ItemCodes.TABLES.keys()
 	versions.sort()
-	check(versions[-1] == ItemCodes.VERSION, "VERSION is the newest table")
+	check(versions[-1] >= ItemCodes.VERSION, "tables go through the encode version")
 	check(ItemCodes.VERSION < (1 << ItemCodes.VERSION_BITS), "version fits")
 	for cat in dirs:
 		var latest := ItemCodes.table(cat)
@@ -378,4 +378,10 @@ func test_index_tables_append_only_and_complete() -> void:
 			var old := ItemCodes.table(cat, versions[i - 1])
 			var new := ItemCodes.table(cat, versions[i])
 			check(new.slice(0, old.size()) == old, "%s: v%d isn't a prefix of v%d" % [cat, versions[i - 1], versions[i]])
-	check(ItemCodes.table("parts").size() <= (1 << 4), "hand-made part index fits 4 bits")
+	check(ItemCodes.table("parts", 1).size() <= (1 << 4), "v1 hand-made part index fits 4 bits")
+	for f in ResourceLoader.list_directory("res://resources/uniques"):
+		if f.ends_with(".tres"):
+			check(
+				ItemCodes.table("parts", versions[-1]).has(f.get_basename()),
+				"unique %s is on the newest part table" % f
+			)

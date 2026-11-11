@@ -335,8 +335,13 @@ func test_midden_markers_spawn_dummies() -> void:
 	for e in got:
 		var m := markers.get_node(NodePath(String(e.name))) as Node3D
 		check(m != null and e.global_transform.is_equal_approx(m.global_transform), "%s at its marker" % e.name)
-		# gdlint:ignore = max-line-length
-		check(e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1) and e.is_in_group(Enemy.GROUP) and e.health == e.def.max_health and e.health == (150.0 if e is Heap else (30.0 if e is Gnawer else 60.0)), "%s: enemy layer, in 'enemies', full HP (60; Gnawer 30; Heap 150)" % e.name)
+		var expect := 150.0 if e is Heap else (30.0 if e is Gnawer else 60.0)
+		if String(e.def.get_meta(&"rare_id", "")) != "":
+			expect *= RareSpawns.HEALTH
+		check(
+			e.collision_layer == 1 << (Enemy.ENEMY_LAYER - 1) and e.is_in_group(Enemy.GROUP) and e.health == e.def.max_health and is_equal_approx(e.health, expect),
+			"%s: enemy layer, in 'enemies', full HP (got %s, want %s)" % [e.name, e.health, expect]
+		)
 		check(e.head_shape != null and e.body_shape.position.y == e.def.size.y * 0.5, "%s stands on its feet with a head" % e.name)
 	check(ProjectSettings.get_setting("layer_names/3d_physics/layer_3") == "enemy", "physics layer 3 is named enemy")
 	w.free()

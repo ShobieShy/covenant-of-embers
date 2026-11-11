@@ -35,10 +35,22 @@ Approved by ShobieShy as patches on top of the campaign, not as new acts and not
 | Version | Content |
 |---|---|
 | 0.8.4 | Second Wind, including solo (a kill while downed revives you; a co-op teammate can still revive you). A HUD compare card for the world item under the crosshair. Four wieldable carry slots (keys 3 and 4 draw the two new ones). Consecrations can roll on ordinary Rare+ drops, and the pool is larger. |
-| 0.8.5 | Named uniques and legendaries with a special effect, flavor text, and a boss or rare-spawn drop you can farm. Named rare spawns. Elites that read as elites. |
+| 0.8.5 | Named uniques and legendaries with a special effect, flavor text, and a boss or rare-spawn drop you can farm. Named rare spawns. Elites that read as elites. Accessibility (ASAP, planned, not started): see below. |
 | 0.8.6 | An action skill: one cooldown ability tied to the element spec you have spent, using verbs the game already has (summon, convert, stagger, chain). |
 | 0.8.7 | Lootable shields (capacity, delay, an effect), a throwable or flask slot, a relic or amulet slot, and more wieldable bases and parts. |
 | 0.8.8 | Vigil wired as a playable post-clear difficulty (UI, save, the run itself). Hub toys: a Breach-key chest, a vending cadence, a slot machine. A bounty board, a mantle, and combat barks. |
+
+### Accessibility (ASAP, planned, not started)
+
+Under 0.8.5. Added to issue #38 on 11 Nov 2026 by ShobieShy, priority ASAP. Planned only. Implementation waits for his go. These are settings-menu options, saved to the settings file, not the save game:
+
+- Colorblind modes: protanopia, deuteranopia, and tritanopia filters, plus shape and icon cues so rarity, elements, and enemy or elite markers never rely on color alone.
+- Subtitle and text options: subtitle size (small, medium, large, extra large), background opacity, speaker names, and a global UI text scale.
+- Screen shake and camera bob toggles or sliders, and a flash and strobe reduction toggle.
+- Separate volume sliders (master, music, SFX, voice) where any are missing.
+- Full key and button rebinding, plus toggle versus hold for crouch, sprint, and aim.
+- Crosshair size and color options.
+- A high-contrast outline option for enemies and loot.
 
 The Forgotten Abyss is not in 0.8.x. It stays the endless run after Act V and the Core, below.
 
