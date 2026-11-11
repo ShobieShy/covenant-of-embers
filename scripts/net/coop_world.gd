@@ -176,7 +176,7 @@ func local_pose() -> Dictionary:
 	if arch is String:  # batch_02: the others see the archetype's model
 		d["k"] = arch
 	d["a"] = bool(player.call(&"alive")) if player.has_method(&"alive") else true
-	d["cr"] = 1 if bool(player.get(&"crouched")) else 0
+	d["cr"] = 1 if player.get(&"crouched") == true else 0
 	d["i"] = bool(player.call(&"invulnerable")) if player.has_method(&"invulnerable") else false
 	d["d"] = bool(player.get(&"downed")) if &"downed" in player else false
 	var h: Variant = player.get(&"health")
