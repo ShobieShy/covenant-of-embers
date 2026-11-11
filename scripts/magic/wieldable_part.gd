@@ -60,7 +60,10 @@ static func load_part(part_id: String) -> WieldablePart:
 	if ResourceLoader.exists(path):
 		return load(path) as WieldablePart
 	var named := "res://resources/uniques/%s.tres" % part_id
-	return load(named) as WieldablePart if ResourceLoader.exists(named) else null
+	if ResourceLoader.exists(named):
+		return load(named) as WieldablePart
+	var extra := "res://resources/gear/%s.tres" % part_id
+	return load(extra) as WieldablePart if ResourceLoader.exists(extra) else null
 
 
 ## Every part id under resources/parts, sorted.

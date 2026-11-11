@@ -34,6 +34,7 @@ const DEFAULTS := {
 	&"quickslot_prev_wieldable": {"joy": JOY_BUTTON_LEFT_SHOULDER},
 	&"quickslot_next_wieldable": {"joy": JOY_BUTTON_RIGHT_SHOULDER},
 	&"use_potion": {"joy": JOY_BUTTON_MISC1},  # step 136: Y went to reload
+	&"use_flask": {"joy": JOY_BUTTON_PADDLE2},
 	&"reload": {"joy": JOY_BUTTON_Y},
 	&"inventory": {"joy": JOY_BUTTON_BACK},
 	&"skills": {"joy": JOY_BUTTON_TOUCHPAD},

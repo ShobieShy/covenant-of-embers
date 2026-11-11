@@ -123,6 +123,51 @@ const TABLES := {
 			"cinderspine",
 		],
 	},
+	3:
+	{
+		"wieldables":
+		[
+			"apprentice_fire_staff",
+			"earthward_battlestaff",
+			"novice_arcane_wand",
+			"swift_wind_wand",
+			"cinder_staff",
+			"mire_wand",
+		],
+		"parts":
+		[
+			"basic_earth_interior",
+			"basic_exterior",
+			"basic_fire_head",
+			"basic_fire_interior",
+			"basic_handle",
+			"basic_interior",
+			"mythic_water_exterior",
+			"primordial_fire_head",
+			"rare_air_handle",
+			"rare_light_charm",
+			"rare_water_head",
+			"uncommon_air_exterior",
+			"uncommon_dark_handle",
+			"uncommon_earth_charm",
+			"uncommon_fire_head",
+			"unique_void_charm",
+			"cinder_of_the_heap",
+			"rotglass_lens",
+			"matriarchs_mandible",
+			"crownspore_charm",
+			"forgemaws_tooth",
+			"slagheart",
+			"gnawers_vow",
+			"last_coal",
+			"sump_lantern",
+			"canopy_antler",
+			"brand_iron",
+			"cinderspine",
+			"slag_grip",
+			"mire_core",
+		],
+	},
 }
 
 
@@ -163,7 +208,17 @@ static func _part_version(part_id: String) -> int:
 		return 1
 	if TABLES.has(2) and (TABLES[2]["parts"] as Array).has(part_id):
 		return 2
+	if TABLES.has(3) and (TABLES[3]["parts"] as Array).has(part_id):
+		return 3
 	return -1
+
+
+static func _base_version(base_id: String) -> int:
+	if (TABLES[1]["wieldables"] as Array).has(base_id):
+		return 1
+	if TABLES.has(3) and (TABLES[3]["wieldables"] as Array).has(base_id):
+		return 3
+	return 1
 
 
 ## The Ember Mark of `item` (WieldableInstance, WieldablePart, EquipmentItem, ConsumableItem
@@ -233,7 +288,8 @@ static func write_header(w: BitStream, kind: int, version := VERSION, flags := 0
 static func _write_wieldable(w: BitStream, wi: WieldableInstance, ex := false) -> String:
 	if wi.def == null:
 		return "wieldable has no base"
-	var ids := table("wieldables")
+	var ver := maxi(_base_version(wi.def.id), content_version(wi))
+	var ids := table("wieldables", ver)
 	var idx := ids.find(wi.def.id)
 	if idx < 0:
 		return "base '%s' is not in the index table" % wi.def.id
@@ -251,7 +307,6 @@ static func _write_wieldable(w: BitStream, wi: WieldableInstance, ex := false) -
 			var e := _check_part(p)
 			if not e.is_empty():
 				return e
-		var ver := content_version(wi)
 		write_header(w, Kind.ASSEMBLED, ver, FLAG_EXTRAS if ex else 0)
 		w.write(idx, bits_for(ids.size()))
 		w.write(tier, TIER_BITS)
@@ -262,7 +317,7 @@ static func _write_wieldable(w: BitStream, wi: WieldableInstance, ex := false) -
 		return ""
 	if not wi.parts.is_empty():
 		return "loose parts on an unassembled base (assemble it first)"
-	write_header(w, Kind.WIELDABLE)
+	write_header(w, Kind.WIELDABLE, ver)
 	w.write(idx, bits_for(ids.size()))
 	w.write(tier, TIER_BITS)
 	return ""

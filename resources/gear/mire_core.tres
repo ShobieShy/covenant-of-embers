@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="WieldablePart" format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_part.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "mire_core"
+display_name = "Mire Core"
+description = "A damp core that still holds a charge."
+part_type = 2
+rarity = "uncommon"
+element = 2
+damage_bonus = 3.0
+fire_rate_modifier = 1.0
+accuracy_bonus = 0.0
+handling_bonus = 0.0
+gem_slots = 0
+roll_seed = -1

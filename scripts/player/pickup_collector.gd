@@ -99,6 +99,18 @@ func pick(p: Player, lp: LootPickup) -> bool:
 	if not _can_hold(p, lp):
 		_hint_full(p)
 		return false
+	if lp.drop.item is ShieldDrop or lp.drop.item is RelicDrop:
+		if not lp.claim():
+			return false
+		if lp.drop.item is ShieldDrop:
+			p.gear.equip_shield(lp.drop.item)
+		else:
+			p.gear.equip_relic(lp.drop.item)
+		p.apply_bonuses()
+		items_picked += 1
+		collected.emit(lp, "item")
+		_consume(lp)
+		return true
 	if not lp.claim():
 		return false
 	if not p.inventory.add(lp.drop.item):
@@ -138,7 +150,11 @@ func _magnet_item(p: Player, lp: LootPickup, flat: float, dy: float, feet: Vecto
 
 
 func _can_hold(p: Player, lp: LootPickup) -> bool:
-	return lp.drop != null and lp.drop.item != null and not p.inventory.is_full() and not p.inventory.has(lp.drop.item)
+	if lp.drop == null or lp.drop.item == null:
+		return false
+	if lp.drop.item is ShieldDrop or lp.drop.item is RelicDrop:
+		return true
+	return not p.inventory.is_full() and not p.inventory.has(lp.drop.item)
 
 
 func _hint_full(p: Player) -> void:

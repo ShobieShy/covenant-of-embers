@@ -161,6 +161,7 @@ var respawns := 0
 var hits_taken := 0
 var hits_ignored := 0  # i-frames / dead
 var equipment := Equipment.new()  # step 19: worn items + potion quick-slot
+var gear := GearKit.new()  ## 0.8.7: shield, flask, relic
 var consecrations := Consecrations.new()  # step 36: worn Consecration effects
 var archetype := Archetype.DEFAULT  ## step 73: nerd / gal / buff / loli
 var character_name := "Ember"  ## step 73 customization
@@ -729,6 +730,7 @@ func tick(input: PlayerInput, dt: float) -> void:
 	consecrations.tick(self)
 	skill_procs.tick(self, dt)
 	NamedUniques.tick(self)
+	gear.tick(self)
 	protection_left = maxf(0.0, protection_left - dt)
 	if protection_left < 1e-6:  # 1 - 60 x 1/60 leaves float dust: exactly 60 ticks
 		protection_left = 0.0

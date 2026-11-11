@@ -82,6 +82,14 @@ static func equip_from_inventory(h: Player, item: Resource) -> bool:
 	elif item is EquipmentItem:
 		h.inventory.remove(item)
 		old = h.equip_item(item)
+	elif item is ShieldDrop:
+		h.inventory.remove(item)
+		old = h.gear.equip_shield(item)
+		h.apply_bonuses()
+	elif item is RelicDrop:
+		h.inventory.remove(item)
+		old = h.gear.equip_relic(item)
+		h.apply_bonuses()
 	else:
 		return false
 	if old != null:
@@ -136,7 +144,8 @@ static func apply_bonuses(h: Player) -> void:
 	var res := h.equipment.resistances()
 	for e in ElementTable.COUNT:
 		h.damage_target.resist[e] = res[e] + float(sk.get("resist_all", 0.0)) / 100.0  # capped in Damage
-	var dmg := h.equipment.spell_damage_bonus() + float(sk.get("spell_damage", 0.0))
+	var dmg := h.equipment.spell_damage_bonus() + float(sk.get("spell_damage", 0.0)) + h.gear.flat_damage()
+	h.gear.apply(h)
 	for c in h.loadout.casters:
 		c.damage_bonus = dmg
 		c.skills = h.skills  # step 145: element-tree mods
@@ -188,6 +197,8 @@ static func _tick_combat(h: Player, input: PlayerInput, dt: float, allow_potion:
 	h.loadout.tick(dt, started)
 	if allow_potion and input.was_pressed(&"use_potion"):  # step 24 (H since step 136)
 		h.use_potion()
+	if allow_potion and input.was_pressed(&"use_flask"):
+		h.gear.use_flask(h)
 	# Pickups (step 23): walk-over auto-collect, then Interact on the looked-at item.
 	h.pickups.tick(h, input.was_pressed(&"interact"), dt)
 	# Mana regen (step 8) before the cast, so a pool back at the cost casts this tick.
