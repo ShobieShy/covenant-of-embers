@@ -106,6 +106,9 @@ static func roll_kill(
 	var gear := GearDrops.roll(rng.state)
 	if gear != null:
 		out.append(gear)
+	var deep := DeepGear.roll(rng.state, enemy_level)
+	if deep != null:
+		out.append(deep)
 	var unique_id := NamedUniques.roll_drop(who, rng.state)
 	if unique_id != "":
 		var extra := NamedUniques.make_drop(unique_id)
