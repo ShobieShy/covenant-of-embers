@@ -14,6 +14,7 @@ const ACTIONS: Array[StringName] = [
 	&"action_secondary",
 	&"sprint",
 	&"dash",
+	&"action_skill",
 	&"crouch",
 	&"interact",
 	&"slot_1",

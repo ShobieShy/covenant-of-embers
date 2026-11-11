@@ -34,6 +34,7 @@ var archetype := ""  ## pose "k": batch_02 player model for gal / buff
 var _body: Node3D
 var _model: CharacterModel
 var brand_fx: BrandFX  ## step 142: the other player's staff-brand FX (pose "bf")
+var _wisp: MeshInstance3D  ## 0.8.6: the other player's Light summon (pose "sm")
 var _cap_mesh: CapsuleMesh
 var _hit_shape: CapsuleShape3D
 var _hit_cs: CollisionShape3D
@@ -106,6 +107,7 @@ func apply_pose(d: Dictionary) -> void:
 	reconnecting = bool(d.get("rc", false))
 	downed_left = float(d.get("dtl", 0.0))
 	shield = float(d.get("sh", 0.0))
+	_set_wisp(int(d.get("sm", 0)) == 1)
 	var next_crouch := int(d.get("cr", 0)) != 0
 	if next_crouch != crouched or poses == 0:
 		crouched = next_crouch
@@ -120,6 +122,19 @@ func apply_pose(d: Dictionary) -> void:
 		else:
 			position = target_pos
 		rotation.y = target_yaw
+
+
+func _set_wisp(on: bool) -> void:
+	if on and _wisp == null:
+		_wisp = MeshInstance3D.new()
+		var sphere := SphereMesh.new()
+		sphere.radius = 0.18
+		sphere.height = 0.36
+		_wisp.mesh = sphere
+		_wisp.position = Vector3(0.6, 2.0, 0.0)
+		add_child(_wisp)
+	if _wisp != null:
+		_wisp.visible = on
 
 
 ## Step 142: [bits, meter, colour html] -> BrandFX at the staff hand ([] = nothing branded).

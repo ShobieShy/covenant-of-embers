@@ -24,6 +24,7 @@ const DEFAULTS := {
 	&"action_secondary": {"axis": JOY_AXIS_TRIGGER_LEFT, "dir": 1},
 	&"sprint": {"joy": JOY_BUTTON_LEFT_STICK},
 	&"dash": {"joy": JOY_BUTTON_B},
+	&"action_skill": {"joy": JOY_BUTTON_PADDLE1},
 	&"crouch": {"joy": JOY_BUTTON_RIGHT_STICK},
 	&"interact": {"joy": JOY_BUTTON_X},
 	&"slot_1": {"joy": JOY_BUTTON_DPAD_LEFT},

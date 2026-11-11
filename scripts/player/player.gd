@@ -118,6 +118,7 @@ var poison_left := 0.0  ## s of lingering spore fog still to come off health
 var poison_dps := 0.0  ## fraction of max health per second; not the Breath pool
 var slow_left := 0.0
 var dash: Dash  # step 5
+var action_skill := ActionSkill.new()  ## 0.8.6: one cooldown, verb from the element trees
 var feel: CameraFeel  # step 5: bob / landing dip / step smoothing
 var landings := 0
 var last_landing_speed := 0.0  # m/s downward at the last touch-down
@@ -704,6 +705,7 @@ func current_slow() -> float:
 func tick(input: PlayerInput, dt: float) -> void:
 	interact_held = input.down(&"interact")  # 0.3.1 P2: hold-to-use (Labyrinth stairs)
 	_apply_toggles(input)
+	action_skill.tick(self, input, dt)
 	slow_left = maxf(0.0, slow_left - dt)
 	tick_poison(dt)
 	# Dead (step 13): Second Wind first (crawl and cast; a kill revives). When that

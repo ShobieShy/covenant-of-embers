@@ -36,7 +36,7 @@ Approved by ShobieShy as patches on top of the campaign, not as new acts and not
 |---|---|
 | 0.8.4 | Second Wind, including solo (a kill while downed revives you; a co-op teammate can still revive you). A HUD compare card for the world item under the crosshair. Four wieldable carry slots (keys 3 and 4 draw the two new ones). Consecrations can roll on ordinary Rare+ drops, and the pool is larger. |
 | 0.8.5 | Named uniques and legendaries with a special effect, flavor text, and a boss or rare-spawn drop you can farm. Named rare spawns. Elites that read as elites. Accessibility is done: see below. |
-| 0.8.6 | An action skill: one cooldown ability tied to the element spec you have spent, using verbs the game already has (summon, convert, stagger, chain). |
+| 0.8.6 | Action skill, shipped. One cooldown on Q. The verb follows points spent on an element tree: summon, convert, stagger, or chain. Dash is V. |
 | 0.8.7 | Lootable shields (capacity, delay, an effect), a throwable or flask slot, a relic or amulet slot, and more wieldable bases and parts. |
 | 0.8.8 | Vigil wired as a playable post-clear difficulty (UI, save, the run itself). Hub toys: a Breach-key chest, a vending cadence, a slot machine. A bounty board, a mantle, and combat barks. |
 
