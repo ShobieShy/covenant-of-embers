@@ -122,6 +122,71 @@ func test_interact_picks_item() -> void:
 	w.queue_free()
 
 
+## 0.8.3 #22: items and parts inside a short radius fly in and collect. A full
+## backpack does not pull them. One pickup can be claimed only once.
+func test_items_and_parts_magnet() -> void:
+	var w := _flat()
+	var p := _player(w)
+	p.tick(PlayerInput.hold([]), DT)
+	var part_drop := _part_drop()
+	var part_item: Resource = part_drop.item
+	var part := LootPickup.create(part_drop, p.global_position + Vector3(0, 0.2, -3.2))
+	var shoes := EquipmentItem.load_item("traveler_shoes")
+	var gear := LootDrop.new()
+	gear.kind = LootDrop.Kind.EQUIPMENT
+	gear.item = shoes
+	gear.rarity_id = shoes.rarity
+	var item := LootPickup.create(gear, p.global_position + Vector3(0.4, 0.2, -3.4))
+	var far := LootPickup.create(_part_drop(), p.global_position + Vector3(0, 0.2, -8.0))
+	for n in [part, item, far]:
+		w.add_child(n)
+	for i in 90:
+		p.tick(PlayerInput.hold([]), DT)
+		await runner_tree.physics_frame
+	check(p.inventory.has(part_item), "part vacuumed")
+	check(not is_instance_valid(part) or not part.is_inside_tree(), "part pickup gone")
+	check(p.inventory.has(shoes), "equipment vacuumed")
+	check(is_instance_valid(far) and far.is_inside_tree(), "outside the radius stays")
+	check(p.pickups.items_picked >= 2, "two item collects")
+	w.queue_free()
+
+
+func test_magnet_leaves_a_full_pack_and_claims_once() -> void:
+	var w := _flat()
+	var p := _player(w)
+	p.tick(PlayerInput.hold([]), DT)
+	while not p.inventory.is_full():
+		p.inventory.add(WieldablePart.new())
+	var d := _part_drop()
+	var lp := LootPickup.create(d, p.global_position + Vector3(0, 0.2, -2.0))
+	w.add_child(lp)
+	var at := lp.global_position
+	for i in 30:
+		p.tick(PlayerInput.hold([]), DT)
+	check(lp.is_inside_tree() and not p.inventory.has(d.item), "full pack does not vacuum")
+	check(lp.global_position.distance_to(at) < 0.05, "and does not pull it")
+	check(p.last_hint == PickupCollector.HINT_FULL, "hint: " + p.last_hint)
+	var host_only := LootPickup.create(_part_drop(), Vector3.ZERO)
+	host_only.host_drop = true
+	check(not PickupCollector.may_take(host_only, true), "a client does not take a host world drop")
+	check(PickupCollector.may_take(host_only, false), "the host does")
+	host_only.host_drop = false
+	check(PickupCollector.may_take(host_only, true), "instanced loot is the client's, like gold")
+	host_only.free()
+	var q := _player(w)
+	q.global_position = p.global_position
+	var shared := LootPickup.create(_part_drop(), p.global_position + Vector3(0, 0.2, 0))
+	w.add_child(shared)
+	# Empty the first player's last slot so exactly one of them can hold it... both have
+	# room except p is full. q collects; p's second tick must not also receive it.
+	p.inventory.remove(p.inventory.items[0])
+	q.tick(PlayerInput.hold([]), DT)
+	p.tick(PlayerInput.hold([]), DT)
+	check(q.inventory.has(shared.drop.item) and not p.inventory.has(shared.drop.item), "one claim, no duplicate")
+	check(not shared.is_inside_tree(), "claimed pickup is gone")
+	w.queue_free()
+
+
 func test_compare_card_deltas() -> void:
 	var w := _flat()
 	var p := _player(w)

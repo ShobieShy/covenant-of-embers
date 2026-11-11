@@ -277,7 +277,7 @@ func test_detect_chase_attack_from_7m() -> void:
 	)
 	check_near(g.distance, 0.9, 0.02, "stops at 90 % of the bite range")
 	check(min_dist >= 0.7, "never into the player (min %.3f)" % min_dist)
-	check_near(g.travelled, 6.1, 0.05, "travelled")
+	check(g.travelled >= 6.05 and g.travelled < 20.0, "closed the 6 m gap (%.2f m, strafe adds more)" % g.travelled)
 	check(bite_ticks.size() >= 3 and bite_ticks[0] == t[2].tick, "first bite on entering attack")
 	for i in range(1, bite_ticks.size()):
 		check(bite_ticks[i] - bite_ticks[i - 1] == 48, "bites 48 ticks (0.8 s) apart: %s" % [bite_ticks])

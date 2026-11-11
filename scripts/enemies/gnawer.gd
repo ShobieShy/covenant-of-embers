@@ -119,6 +119,21 @@ var path_cap := -1.0  ## Act III: horizontal sense, drop the chase past this pat
 var path_length_override := -1.0  ## tests: the nav path length, in metres
 var home_pad := Vector3.ZERO
 var has_home := false
+## 0.8.3: pocket movement and a second strike. Null when this id has no style row
+## (training dummies never get here). `engaged` counts time spent chasing or attacking.
+var style: CombatStyle
+var engaged := 0.0
+var attack_flash := 0.0
+var recover_left := 0.0
+var pattern_windup_left := 0.0
+var pattern_cd := 0.0
+var pattern_burst := Vector3.ZERO
+var dodge_left := 0.0
+var dodge_dir := Vector3.RIGHT
+var specials := 0
+var style_lock := 0.0  ## seconds after a knockback before strafing again
+var _strafe_t := 0.0
+var _strafe_sign := 1.0
 
 
 func setup(d: EnemyDef) -> void:
@@ -134,6 +149,9 @@ func setup(d: EnemyDef) -> void:
 	nav.avoidance_enabled = false
 	add_child(nav)
 	damaged.connect(_on_damaged)
+	style = CombatStyle.for_id(d.id)
+	if style != null and hash(d.id) % 2 != 0:
+		_strafe_sign = -1.0
 
 
 static func state_name(s: State) -> String:
@@ -216,6 +234,7 @@ func think(dt: float) -> void:
 	if dead or rusher == null:
 		_set_state(State.DEAD, distance)
 		velocity = Vector3.ZERO
+		_update_pose(dt, State.DEAD)
 		return
 	attack_timer = maxf(0.0, attack_timer - dt)
 	hunt_left = maxf(0.0, hunt_left - dt)
@@ -265,13 +284,19 @@ func think(dt: float) -> void:
 			knockback_left = maxf(0.0, knockback_left - dt)
 			if knockback_left < 1e-6:  # 0.5 - 30 x (1/60) leaves ~1e-16 in doubles: 30 ticks, as in C++
 				knockback_left = 0.0
+				style_lock = 0.35
 
 	walk *= move_scale()  # step 53: Water slow / Earth stagger
+	if next == State.CHASE or next == State.ATTACK:
+		engaged += dt
+	elif next == State.IDLE:
+		engaged = 0.0
+	_tick_pattern(dt, next, dir)
 	_attack_tick(dt, next, s.distance, feet)  # Heap: a winding-up slam lands / is cancelled
 	# (1e-4 s slack: 0.8 - 48 x 1/60 is not exactly 0 in floats.)
-	if next == State.ATTACK and attack_timer <= 1e-4 and not staggered() and _in_reach(s.distance, feet):
+	if next == State.ATTACK and attack_timer <= 1e-4 and not staggered() and _in_reach(s.distance, feet) and pattern_windup_left <= 0.0:
 		_start_attack(feet)
-	if _rooted():  # Heap winding up: planted, no walk, no turn
+	if _rooted():  # Heap winding up, or a pattern telegraph: planted, no walk, no turn
 		walk = 0.0
 
 	var move := Vector3.ZERO
@@ -283,8 +308,11 @@ func think(dt: float) -> void:
 		move = face * walk
 	if next in [State.DETECT, State.CHASE, State.ATTACK] and face.length() > 1e-4 and not _rooted():
 		_turn_toward(face, rusher.turn_rate_deg * dt)
+	if not _rooted() and not staggered() and next != State.KNOCKBACK:
+		move += _style_slide(dt, next, dir, s.distance)
 	_move(move + push, dt)
 	travelled += _flat(global_position - feet).length()
+	_update_pose(dt, next)
 
 
 func _chase_path() -> float:
@@ -317,7 +345,7 @@ func _attack_tick(_dt: float, _next: State, _dist: float, _feet: Vector3) -> voi
 
 
 func _rooted() -> bool:
-	return false
+	return pattern_windup_left > 0.0
 
 
 ## The bite (cooldown starts now) + the attack.
@@ -345,6 +373,8 @@ func _land(feet: Vector3) -> void:
 		bites += 1
 	attacks.append(b)
 	attacked.emit(self, b)
+	attack_flash = maxf(attack_flash, 0.18)
+	recover_left = maxf(recover_left, 0.16)
 
 
 func _set_state(next: State, dist: float) -> void:
@@ -455,6 +485,16 @@ func reset(xform: Variant = null) -> void:
 	provoked = false
 	distance = 0.0
 	_vy = 0.0
+	engaged = 0.0
+	attack_flash = 0.0
+	recover_left = 0.0
+	pattern_windup_left = 0.0
+	pattern_cd = 0.0
+	pattern_burst = Vector3.ZERO
+	dodge_left = 0.0
+	specials = 0
+	style_lock = 0.0
+	pose = "idle"
 
 
 func _turn_toward(d: Vector3, max_deg: float) -> void:
@@ -520,7 +560,9 @@ func _on_damaged(_e: Enemy, h: SpellBolts.Hit) -> void:
 	provoked = true
 	hunt_left = HUNT_TIME
 	if h.result == null or h.result.amount <= stagger_threshold(rusher.knockback_threshold):
+		_try_dodge()
 		return
+	dodge_left = 0.0
 	if rusher.knockback_time <= 0.0 or rusher.knockback_strength <= 0.0:
 		return
 	var d := _flat(h.direction)
@@ -535,3 +577,113 @@ func _on_damaged(_e: Enemy, h: SpellBolts.Hit) -> void:
 
 static func _flat(v: Vector3) -> Vector3:
 	return Vector3(v.x, 0.0, v.z)
+
+
+## A light hit in a fight: step sideways instead of eating the next swing. A hit
+## heavy enough to knock back clears this (the push already moves the body).
+func _try_dodge() -> void:
+	if style == null or style.dodge_speed <= 0.0 or _rooted() or staggered():
+		return
+	if state != State.CHASE and state != State.ATTACK:
+		return
+	var side := Vector3(-dodge_dir.z, 0.0, dodge_dir.x)
+	if side.length_squared() < 1e-6:
+		side = Vector3(1.0, 0.0, 0.0)
+	dodge_dir = side.normalized()
+	dodge_left = style.dodge_s
+
+
+## Wind up the second strike (lunge / cleave). Fans and feints do not use this:
+## a fan is extra projectiles, a feint is the strafe itself. Boss phase attacks
+## stay in their own brains.
+func _tick_pattern(dt: float, next: State, dir: Vector3) -> void:
+	if pattern_windup_left > 0.0:
+		pattern_windup_left = maxf(0.0, pattern_windup_left - dt)
+		if pattern_windup_left <= 1e-4:
+			pattern_windup_left = 0.0
+			_release_special(dir)
+		return
+	pattern_cd = maxf(0.0, pattern_cd - dt)
+	if style == null or style.special == "feint" or style.special == "fan" or style.special == "":
+		return
+	if next != State.ATTACK or not _target_valid() or staggered():
+		return
+	if engaged < style.arm_s or pattern_cd > 0.0:
+		return
+	if has_method(&"winding_up") and bool(call(&"winding_up")):
+		return
+	# Leave the basic cooldown alone so a slam or bite still lands on its timer.
+	if attack_timer <= style.windup + 0.05:
+		return
+	pattern_windup_left = style.windup
+	pattern_cd = style.cooldown
+
+
+func _release_special(dir: Vector3) -> void:
+	if style == null or rusher == null or not _target_valid():
+		return
+	specials += 1
+	if style.special == "lunge" and dir.length_squared() > 1e-6:
+		pattern_burst = dir.normalized() * style.lunge_speed * 0.1
+	var saved := rusher.attack_damage
+	rusher.attack_damage = saved * style.damage_mul
+	_land(global_position)
+	rusher.attack_damage = saved
+
+
+## Metres to add this tick: a dodge, or (in the pocket) a strafe with a short retreat.
+## Clamped so the gap stays inside attack_range and the state machine does not drop
+## back to chase just because the enemy sidestepped.
+func _style_slide(dt: float, next: State, dir: Vector3, dist: float) -> Vector3:
+	if style_lock > 0.0:
+		style_lock = maxf(0.0, style_lock - dt)
+		return Vector3.ZERO
+	if style == null or rusher == null:
+		return Vector3.ZERO
+	var delta := Vector3.ZERO
+	if dodge_left > 0.0:
+		dodge_left = maxf(0.0, dodge_left - dt)
+		delta = dodge_dir * style.dodge_speed * dt
+	elif next == State.ATTACK and dir.length_squared() > 1e-6 and (style.strafe_speed > 0.0 or style.retreat_speed > 0.0):
+		var side := dir.cross(Vector3.UP)
+		if side.length_squared() < 1e-8:
+			side = Vector3.RIGHT
+		side = side.normalized() * _strafe_sign
+		_strafe_t += dt
+		if _strafe_t >= style.strafe_period:
+			_strafe_t = 0.0
+			_strafe_sign *= -1.0
+		delta = side * style.strafe_speed * dt
+		if style.retreat_s > 0.0 and _strafe_t < style.retreat_s:
+			delta -= dir * style.retreat_speed * dt
+	if pattern_burst.length_squared() > 1e-8:
+		delta += pattern_burst
+		pattern_burst = Vector3.ZERO
+	if delta.length_squared() < 1e-10:
+		return Vector3.ZERO
+	delta *= move_scale()
+	var pocket := rusher.attack_range
+	var min_dist := maxf(0.2, rusher.attack_range * 0.7)
+	return CombatStyle.clamp_pocket(delta, dir, dist, pocket, min_dist)
+
+
+func _update_pose(dt: float, next: State) -> void:
+	attack_flash = maxf(0.0, attack_flash - dt)
+	if attack_flash <= 0.0:
+		recover_left = maxf(0.0, recover_left - dt)
+	var want := "idle"
+	if dead or next == State.DEAD:
+		want = "death"
+	elif flinch_left > 0.0 or next == State.KNOCKBACK:
+		want = "hurt"
+	elif _rooted():
+		want = "windup"
+	elif attack_flash > 0.0:
+		want = "attack"
+	elif recover_left > 0.0:
+		want = "recover"
+	elif next == State.CHASE or next == State.DETECT or next == State.ATTACK:
+		want = "chase"
+	pose = want
+	if model:
+		model.set_combat_pose(want)

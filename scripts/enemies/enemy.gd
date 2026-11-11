@@ -58,6 +58,8 @@ const FX_BURN := 1
 const FX_SLOW := 2
 const FX_STAGGER := 4
 var net_fx := 0  ## step 134: host status bits on a co-op puppet
+var pose := "idle"  ## 0.8.3 combat pose (idle/chase/windup/attack/recover/hurt/death)
+var net_pose := ""  ## client puppet: the host's pose from the snapshot
 var health_scale := 1.0  ## step 80: co-op enemy health multiplier
 var level_override := 0  ## kept; loot uses item_floor / combat level (0.3.2)
 var level_offset := 0  ## elite +1, boss +2, Labyrinth depth +0..+2
@@ -513,6 +515,9 @@ func _die(element: ElementTable.Element) -> void:
 	body_shape.set_deferred(&"disabled", true)
 	if head_shape:
 		head_shape.set_deferred(&"disabled", true)
+	pose = "death"
+	if model:
+		model.set_combat_pose("death")
 	if is_inside_tree() and def:
 		var et := ElementTable.load_default()
 		StatusFX.death(
@@ -555,6 +560,10 @@ func tick(dt: float) -> void:
 	SpellFX.sync_aura(
 		self, 0.0 if dead else corrupted_left, 0.6 + (def.size.x * 0.5 if def else 0.4)
 	)
+	if net_pose != "" and not (self is Gnawer):
+		pose = "death" if dead else net_pose
+		if model:
+			model.set_combat_pose(pose)
 	if corrupted_left > 0.0 and not dead:
 		corrupted_left = maxf(0.0, corrupted_left - dt)
 		if corrupted_left <= 0.0:

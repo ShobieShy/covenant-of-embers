@@ -176,6 +176,7 @@ func local_pose() -> Dictionary:
 	if arch is String:  # batch_02: the others see the archetype's model
 		d["k"] = arch
 	d["a"] = bool(player.call(&"alive")) if player.has_method(&"alive") else true
+	d["cr"] = 1 if bool(player.get(&"crouched")) else 0
 	d["i"] = bool(player.call(&"invulnerable")) if player.has_method(&"invulnerable") else false
 	d["d"] = bool(player.get(&"downed")) if &"downed" in player else false
 	var h: Variant = player.get(&"health")
@@ -517,7 +518,8 @@ func snap_row(e: Enemy) -> Array:
 		e.max_health(),
 		e.dead,
 		e.is_ally(),
-		e.fx_flags()
+		e.fx_flags(),
+		e.pose,
 	]
 
 
@@ -587,6 +589,9 @@ func _apply_snapshot(list: Array, ack := 0, t_ms := 0.0) -> void:
 			var ally := row.size() > 7 and bool(row[7])
 			e.corrupted_left = PUPPET_ALLY_SECONDS if ally else 0.0
 			e.net_fx = int(row[8]) if row.size() > 8 else 0
+			if row.size() > 9:
+				e.net_pose = String(row[9])
+				e.pose = "death" if host_dead else e.net_pose
 	for id in puppets.keys():
 		if not seen.has(id):
 			var gone: Enemy = puppets[id]

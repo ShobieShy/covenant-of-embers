@@ -54,6 +54,17 @@ const KAYKIT_ANIMS := [
 ]
 const IDLE := ["Idle_Neutral", "Idle", "kaykit/Idle_A", "Rat_Idle", "Slime_Idle"]
 const WALK := ["Walk", "kaykit/Walking_A", "Rat_Run", "Slime_Walk"]
+## 0.8.3 combat poses. Clips are whatever the existing rig already has; a missing
+## name falls through to Idle / Walk so a greybox or a thin rig still moves.
+const POSE_CLIPS := {
+	"idle": ["Idle_Neutral", "Idle", "kaykit/Idle_A", "Rat_Idle", "Slime_Idle"],
+	"chase": ["Run", "Sprint", "Walk", "Rat_Run", "Slime_Walk", "kaykit/Walking_A"],
+	"windup": ["Windup", "Attack", "Punch", "Bite"],
+	"attack": ["Attack", "Punch", "Bite", "Throw", "SporeSpray"],
+	"recover": ["Idle_Neutral", "Idle", "Rat_Idle", "Slime_Idle"],
+	"hurt": ["Hit", "Hurt", "Flinch", "HitReact", "TakeDamage", "Damage"],
+	"death": ["Death", "Die", "Death_A"],
+}
 
 var anim: AnimationPlayer
 var _last := Vector3.INF
@@ -61,6 +72,7 @@ var _walking := false
 var _speed := 0.0
 var _held := ""  ## a clip frozen on its last frame (wounded); walk/idle do not steal it
 var _resuming := false
+var combat_pose := ""  ## idle/chase/windup/attack/recover/hurt/death; empty = speed-based walk
 
 
 ## The model path for a dialogue speaker ("Summoned Gal" maps through the archetype), or "".
@@ -244,7 +256,7 @@ func _match(clip: String) -> String:
 
 
 func _resume_idle(_anim_name: StringName) -> void:
-	if _resuming:
+	if _resuming or combat_pose != "":
 		return
 	_resuming = true
 	if _held != "":
@@ -254,16 +266,46 @@ func _resume_idle(_anim_name: StringName) -> void:
 	_resuming = false
 
 
-func _play(names: Array) -> void:
-	if anim == null:
+## Drive the rig from a combat pose. Same pose twice does not restart the clip.
+func set_combat_pose(pose: String) -> void:
+	if pose == combat_pose:
 		return
+	combat_pose = pose
+	if pose == "" or anim == null:
+		return
+	var names: Array = POSE_CLIPS.get(pose, IDLE)
+	if pose == "attack" or pose == "hurt" or pose == "death":
+		if not _play_once_names(names):
+			_play(IDLE)
+	else:
+		if not _play(names):
+			_play(IDLE)
+
+
+func _play_once_names(names: Array) -> bool:
+	if anim == null:
+		return false
+	for n in names:
+		for full in anim.get_animation_list():
+			if full == n or String(full).get_slice("|", 1) == n:
+				var a := anim.get_animation(full)
+				a.loop_mode = Animation.LOOP_NONE
+				anim.play(full, 0.12)
+				return true
+	return false
+
+
+func _play(names: Array) -> bool:
+	if anim == null:
+		return false
 	for n in names:
 		for full in anim.get_animation_list():
 			if full == n or String(full).get_slice("|", 1) == n:
 				var a := anim.get_animation(full)
 				a.loop_mode = Animation.LOOP_LINEAR
 				anim.play(full, 0.2)
-				return
+				return true
+	return false
 
 
 func is_walking() -> bool:
@@ -272,6 +314,9 @@ func is_walking() -> bool:
 
 func _process(dt: float) -> void:
 	if dt <= 0.0:
+		return
+	if combat_pose != "":
+		_last = global_position
 		return
 	var p := global_position
 	if _last != Vector3.INF:

@@ -80,4 +80,4 @@ func _attack_tick(dt: float, next: State, dist: float, feet: Vector3) -> void:
 
 
 func _rooted() -> bool:
-	return windup_left > 0.0
+	return windup_left > 0.0 or pattern_windup_left > 0.0

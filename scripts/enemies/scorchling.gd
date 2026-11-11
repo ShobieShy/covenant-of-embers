@@ -73,12 +73,32 @@ func _start_attack(_feet: Vector3) -> void:
 	if not sees(_target_eye()):
 		return
 	attack_timer = rusher.attack_cooldown
+	attack_flash = maxf(attack_flash, 0.18)
 	var e := Ember.new()
 	e.pos = eye_position()
 	var aim := _target_eye() - Vector3(0.0, 0.4, 0.0)
 	e.vel = (aim - e.pos).normalized() * rusher.projectile_speed
 	embers.append(e)
 	shots += 1
+	if _wants_fan(e.vel):
+		var fan := Ember.new()
+		fan.pos = e.pos
+		var lateral := e.vel.normalized().cross(Vector3.UP)
+		if lateral.length_squared() < 1e-6:
+			lateral = Vector3.RIGHT
+		fan.vel = (e.vel.normalized() + lateral.normalized() * 0.16).normalized() * rusher.projectile_speed
+		embers.append(fan)
+		shots += 1
+		specials += 1
+
+
+func _wants_fan(vel: Vector3) -> bool:
+	return (
+		style != null
+		and style.special == "fan"
+		and engaged + 1e-4 >= style.arm_s
+		and vel.length_squared() > 1e-6
+	)
 
 
 func _tick_embers(dt: float) -> void:

@@ -34,9 +34,13 @@ var archetype := ""  ## pose "k": batch_02 player model for gal / buff
 var _body: Node3D
 var _model: CharacterModel
 var brand_fx: BrandFX  ## step 142: the other player's staff-brand FX (pose "bf")
+var _cap_mesh: CapsuleMesh
+var _hit_shape: CapsuleShape3D
+var _hit_cs: CollisionShape3D
 var reconnecting := false
 var downed_left := 0.0
 var shield := 0.0
+var crouched := false  ## pose "cr": the sender's hull is the crouch capsule
 var ping_at := Vector3.INF
 var ping_left := 0.0
 var _buf := NetInterp.new()
@@ -48,6 +52,7 @@ func _ready() -> void:
 	var cap := CapsuleMesh.new()
 	cap.radius = 0.3
 	cap.height = 1.8
+	_cap_mesh = cap
 	mi.mesh = cap
 	mi.position = Vector3(0, 0.9, 0)
 	var m := StandardMaterial3D.new()
@@ -64,6 +69,8 @@ func _ready() -> void:
 	var shape := CapsuleShape3D.new()
 	shape.radius = 0.3
 	shape.height = 1.8
+	_hit_shape = shape
+	_hit_cs = cs
 	cs.shape = shape
 	cs.position = Vector3(0, 0.9, 0)
 	hb.add_child(cs)
@@ -99,6 +106,10 @@ func apply_pose(d: Dictionary) -> void:
 	reconnecting = bool(d.get("rc", false))
 	downed_left = float(d.get("dtl", 0.0))
 	shield = float(d.get("sh", 0.0))
+	var next_crouch := int(d.get("cr", 0)) != 0
+	if next_crouch != crouched or poses == 0:
+		crouched = next_crouch
+		_apply_crouch_hull()
 	poses += 1
 	if d.has("t"):
 		_buf.push_remote(float(d["t"]), float(d.get("rt", d["t"])), target_pos, target_yaw)
@@ -159,4 +170,19 @@ func invulnerable() -> bool:
 
 
 func eye_position() -> Vector3:
-	return global_position + Vector3(0, EYE, 0)
+	return global_position + Vector3(0, 0.6 if crouched else EYE, 0)
+
+
+## Match the sender's hull. The feet in the pose are already the tucked origin;
+## the short capsule is what other hits and the eye should use.
+func _apply_crouch_hull() -> void:
+	var h := 0.7 if crouched else 1.8
+	var y := h * 0.5
+	if _cap_mesh:
+		_cap_mesh.height = h
+	if _body:
+		_body.position.y = y
+	if _hit_shape:
+		_hit_shape.height = h
+	if _hit_cs:
+		_hit_cs.position.y = y
