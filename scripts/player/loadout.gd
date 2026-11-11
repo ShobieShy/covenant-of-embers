@@ -6,8 +6,9 @@ extends RefCounted
 ## quickslot_1/2 or cycled with quickslot_prev/next_wieldable (mouse wheel); only the drawn
 ## one casts (Cogito PlayerInteractionComponent blocks action_primary/secondary while
 ## is_changing_wieldables).
-##  * Two slots: Slot.STAFF holds the staff, Slot.WAND the wand (equip() picks the slot by
-##    the wieldable's type; the slice has exactly these two).
+##  * Four slots. Slot.STAFF holds the staff, Slot.WAND the wand (equip() still picks that
+##    slot by type). Slot.CARRY_3 and Slot.CARRY_4 hold any extra staff or wand (keys 3
+##    and 4). equip() does not fill those; slot_for_incoming() does, from the backpack.
 ##  * Each slot owns a Caster, so each keeps its own cooldown (Caster.cooldown_left), which
 ##    keeps counting while holstered (cool()): swapping never resets or pauses it.
 ##    Reinterpreted: Magewar frees the wieldable node on a swap, so its _fire_timer
@@ -25,11 +26,13 @@ extends RefCounted
 ##    mana check, no "Not enough mana!" cue, no spread draw, no bloom (counted in
 ##    swap_blocked).
 
-enum Slot { STAFF, WAND }
+enum Slot { STAFF, WAND, CARRY_3, CARRY_4 }
+
+const SLOT_COUNT := 4
 
 signal swap_started(slot: int)
 
-var casters: Array[Caster] = [Caster.new(), Caster.new()]
+var casters: Array[Caster] = [Caster.new(), Caster.new(), Caster.new(), Caster.new()]
 var active: int = Slot.STAFF
 var swap_seconds := 0.4
 var swap_left := 0.0  ## seconds left on the current draw (0 = ready)
@@ -60,10 +63,28 @@ func wieldable(slot: int = -1) -> WieldableInstance:
 
 ## Puts `w` into the slot of its type (its cooldown is kept). With empty hands the new
 ## slot is drawn at once (no swap). Returns the slot.
-## Replacing the staff/wand in hand starts a draw of the new one (step 24: inventory
+## Replacing the weapon in hand starts a draw of the new one (step 24: inventory
 ## swaps can't skip the draw).
 func equip(w: WieldableInstance) -> int:
-	var slot := slot_for(w)
+	return equip_slot(slot_for(w), w)
+
+
+## Staff or wand slot when it is empty, otherwise the first empty carry slot, otherwise
+## the typed slot (the caller replaces what is there).
+func slot_for_incoming(w: WieldableInstance) -> int:
+	var typed := slot_for(w)
+	if w == null or casters[typed].wieldable == null:
+		return typed
+	for s in range(Slot.CARRY_3, casters.size()):
+		if casters[s].wieldable == null:
+			return s
+	return typed
+
+
+## Puts `w` in `slot` whatever its type is. Same draw rules as equip().
+func equip_slot(slot: int, w: WieldableInstance) -> int:
+	if slot < 0 or slot >= casters.size():
+		return -1
 	var replacing_in_hand := (
 		slot == active and casters[slot].wieldable != null and w != null and casters[slot].wieldable != w
 	)

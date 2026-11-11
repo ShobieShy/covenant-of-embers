@@ -58,6 +58,57 @@ func test_bars_track_values() -> void:
 	hud.queue_free()
 
 
+func test_world_compare_card() -> void:
+	var s := _setup()
+	var p: Player = s[0]
+	var hud: Hud = s[1]
+	var held := WieldableInstance.load_base("apprentice_fire_staff")
+	var other := WieldableInstance.load_base("earthward_battlestaff")
+	p.equip(held)
+	var d := LootDrop.new()
+	d.kind = LootDrop.Kind.WIELDABLE
+	d.item = other
+	d.rarity_id = other.rarity_id()
+	var lp := LootPickup.create(d, p.global_position + p.forward_for(p.yaw) * 2.0)
+	p.get_parent().add_child(lp)
+	Interaction.face(p, lp)
+	p.tick(PlayerInput.hold(), 1.0 / 60.0)
+	check(p.pickups.focused == lp, "the drop under the crosshair")
+	hud.refresh(1.0 / 60.0)
+	check(hud.world_card_bg.visible, "card is up")
+	var card := CompareCard.for_item(other, p, true)
+	check(card.compared_to == held.display_name(), "compared to the weapon in hand")
+	var row := card.row("damage")
+	check(bool(row.compared) and not is_zero_approx(float(row.delta)), "a damage delta")
+	var hex := (CompareCard.BETTER if row.better else CompareCard.WORSE).to_html(false)
+	check(hud.world_card.text.contains(hex), "green or red delta in the card")
+	check(hud.world_card.text.contains("vs "), "names what you have equipped")
+	p.set_look(p.yaw + 2.0, 0.0)
+	p.tick(PlayerInput.hold(), 1.0 / 60.0)
+	hud.refresh(1.0 / 60.0)
+	check(p.pickups.focused == null and not hud.world_card_bg.visible, "hidden when you look away")
+	var hat := EquipmentRoller.from_seed(4, EquipmentItem.Slot.HAT, "rare", ElementTable.Element.FIRE)
+	var better := EquipmentRoller.from_seed(8, EquipmentItem.Slot.HAT, "mythic", ElementTable.Element.FIRE)
+	better.health_bonus = hat.health_bonus + 12.0
+	p.equip_item(hat)
+	var ed := LootDrop.new()
+	ed.kind = LootDrop.Kind.EQUIPMENT
+	ed.item = better
+	ed.rarity_id = "mythic"
+	var ep := LootPickup.create(ed, p.global_position + p.forward_for(p.yaw) * 2.0)
+	p.get_parent().add_child(ep)
+	Interaction.face(p, ep)
+	p.tick(PlayerInput.hold(), 1.0 / 60.0)
+	hud.refresh(1.0 / 60.0)
+	var er := CompareCard.for_item(better, p).row("health_bonus")
+	check(bool(er.better) and float(er.delta) > 0.0, "hat compares against the worn piece")
+	check(hud.world_card.text.contains(CompareCard.BETTER.to_html(false)), "better health is green")
+	lp.free()
+	ep.free()
+	p.free()
+	hud.free()
+
+
 func test_layout_non_empty() -> void:
 	var s := _setup()
 	var hud: Hud = s[1]

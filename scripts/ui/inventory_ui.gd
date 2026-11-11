@@ -78,7 +78,7 @@ func _init() -> void:
 	var mid := VBoxContainer.new()
 	h.add_child(mid)
 	mid.add_child(_label("Worn"))
-	for i in 2 + EquipmentItem.SLOT_COUNT:
+	for i in Loadout.SLOT_COUNT + EquipmentItem.SLOT_COUNT:
 		var b := _button("")
 		b.custom_minimum_size = Vector2(250, 44)
 		b.theme_type_variation = UiTheme.SLOT
@@ -201,7 +201,9 @@ func _button(t: String) -> Button:
 func _worn(i: int) -> Resource:
 	if player == null:
 		return null
-	return player.loadout.wieldable(i) if i < 2 else player.equipment.item(i - 2)
+	if i < Loadout.SLOT_COUNT:
+		return player.loadout.wieldable(i)
+	return player.equipment.item(i - Loadout.SLOT_COUNT)
 
 
 static func name_of(item: Variant) -> String:
@@ -315,7 +317,11 @@ func refresh() -> void:
 		slot_buttons[i].modulate = color_of(it) if it else Color(1, 1, 1, 0.4)
 	for i in worn_buttons.size():
 		var it := _worn(i)
-		var label: String = ["Staff", "Wand"][i] if i < 2 else EquipmentItem.SLOT_NAMES[i - 2]
+		var label: String = (
+			["Staff", "Wand", "Slot 3", "Slot 4"][i]
+			if i < Loadout.SLOT_COUNT
+			else EquipmentItem.SLOT_NAMES[i - Loadout.SLOT_COUNT]
+		)
 		worn_buttons[i].text = "%s: %s" % [label, name_of(it) if it else "-"]
 		worn_buttons[i].modulate = color_of(it) if it else Color(1, 1, 1, 0.6)
 		ItemIcons.dress(worn_buttons[i], it)
@@ -458,22 +464,7 @@ func card_text(item: Variant) -> String:
 		return "[b]%s[/b]\nQuest item (can't be trashed)" % name_of(item)
 	if not (item is WieldableInstance or item is WieldablePart or item is EquipmentItem):
 		return "[b]%s[/b]" % name_of(item)
-	var c := CompareCard.for_item(item, player)
-	var s := (
-		"[color=#%s][b]%s[/b][/color]\n%s %s\n"
-		% [c.color.to_html(false), c.title, c.rarity_name, c.kind]
-	)
-	if not c.compared_to.is_empty():
-		s += "[i]vs %s[/i]\n" % c.compared_to
-	for r in c.rows:
-		s += "%s: %s" % [r.label, snapped(r.value, 0.01)]
-		if r.compared and not is_zero_approx(r.delta):
-			s += (
-				" [color=#%s](%+.2f)[/color]"
-				% [(BETTER if r.better else WORSE).to_html(false), r.delta]
-			)
-		s += "\n"
-	return s + c.extra_lines()
+	return CompareCard.for_item(item, player).to_bbcode()
 
 
 func equip_selected() -> bool:
@@ -491,7 +482,7 @@ func unequip_selected() -> bool:
 		return false
 	var ok := false
 	var worn := false
-	for slot in [Loadout.Slot.STAFF, Loadout.Slot.WAND]:
+	for slot in Loadout.SLOT_COUNT:
 		if player.loadout.wieldable(slot) == selected:
 			worn = true
 			ok = player.unequip_wieldable_to_inventory(slot)

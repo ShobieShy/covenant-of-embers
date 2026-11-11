@@ -284,12 +284,22 @@ func test_death_and_respawn() -> void:
 		g.state == Gnawer.State.IDLE and g.bites == 0,
 		"a Gnawer ignores the dead player (%s)" % Gnawer.state_name(g.state)
 	)
-	var at := p.global_position
-	for i in 179:
+	check(p.downed and p.downed_left > 1.0, "solo death is Second Wind, not an instant respawn")
+	var before := p.jumps
+	for i in 20:
 		p.tick(PlayerInput.hold([&"move_forward"], [&"jump"]), DT)
-	check(not p.alive() and p.global_position == at and p.jumps == 0, "dead: no input, no movement for 179 ticks")
+	check(p.jumps == before and p.downed, "downed: no jump, still in the window")
+	var wind := 0
+	while p.downed and wind < 600:
+		p.tick(still, DT)
+		wind += 1
+	check(not p.downed and p.bleed_outs == 1 and not p.alive(), "window ended, bleed-out (%d ticks)" % wind)
+	check(wind + 20 >= 470 and wind + 20 <= 500, "solo window is about 8 s (%d ticks)" % [wind + 20])
+	for i in 179:
+		p.tick(still, DT)
+	check(not p.alive(), "respawn countdown still running")
 	p.tick(still, DT)
-	check(p.alive() and respawned[0] == 1 and p.respawns == 1, "respawned on tick 180 (3 s)")
+	check(p.alive() and respawned[0] == 1 and p.respawns == 1, "respawned 3 s after the window")
 	check(
 		p.global_position.is_equal_approx(w.global_position + Vector3(0, 0, 5)) and is_equal_approx(p.yaw, 0.0),
 		"back at the spawn point"

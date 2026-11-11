@@ -2,7 +2,8 @@ class_name SaveGame
 extends RefCounted
 ## Versioned JSON save (BUILD_PLAN step 38) in user://save.json.
 ## Items are Ember Mark strings (ItemCodes.encode; codes carry their own version): the
-## backpack, staff + wand, the 5 equipment slots and the potion stack. Saved values:
+## backpack, staff + wand, two extra carry slots, the 5 equipment slots and the potion
+## stack. Saved values:
 ## level/XP, Arcane Dust, current health/shield/mana/Breath (a save while dead stores the
 ## respawn state: full), skill ranks (step 71), and a free-form `progress` dictionary (level id, Breach cleared...).
 ## Load: pieces are worn first (equipment.slots, then one apply_bonuses() with the level
@@ -36,6 +37,10 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 			inv.append(c)
 	var staff := p.loadout.wieldable(Loadout.Slot.STAFF)
 	var wand := p.loadout.wieldable(Loadout.Slot.WAND)
+	var carry: Array = []
+	for s in [Loadout.Slot.CARRY_3, Loadout.Slot.CARRY_4]:
+		var carried := p.loadout.wieldable(s)
+		carry.append(ItemCodes.encode(carried) if carried else "")
 	return {
 		"version": VERSION,
 		"saved_at": Time.get_datetime_string_from_system(true),
@@ -61,6 +66,7 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 		{
 			"staff": ItemCodes.encode(staff) if staff else "",
 			"wand": ItemCodes.encode(wand) if wand else "",
+			"carry": carry,
 			"equipment": eq,
 			"potion":
 			(
@@ -223,6 +229,18 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 			p.loadout.equip(m.item as WieldableInstance)
 		elif it.has(s) and String(it[s]).is_empty():  # step 109: an empty hand stays empty (intro)
 			p.loadout.unequip(Loadout.Slot.STAFF if s == "staff" else Loadout.Slot.WAND)
+	# 0.8.4: optional. Saves from before the extra slots have no key and leave them empty.
+	if it.has("carry"):
+		var carry: Array = it.get("carry", [])
+		var carry_slots: Array[int] = [Loadout.Slot.CARRY_3, Loadout.Slot.CARRY_4]
+		for slot in carry_slots:
+			var idx := slot - Loadout.Slot.CARRY_3
+			var code := String(carry[idx]) if idx < carry.size() else ""
+			var carried := _decode(code, WieldableInstance, warn, "carry")
+			if carried:
+				p.loadout.equip_slot(slot, carried.item as WieldableInstance)
+			else:
+				p.loadout.unequip(slot)
 	var eq: Array = it.get("equipment", [])
 	for i in EquipmentItem.SLOT_COUNT:
 		p.equipment.slots[i] = null

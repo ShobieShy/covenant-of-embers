@@ -7,8 +7,9 @@ extends CanvasLayer
 ##    Color(0.2, 0.4, 1.0), flashes on Caster.out_of_mana), Breath (yellow, orange while exhausted)
 ##  * dash pips (charges / max_charges, next one fills with recharge_progress)
 ##  * crosshair: 4 ticks at gap = tan(cone) / tan(fov/2) x half-height; hidden while focused
-##  * slot icons: staff/wand tinted rarity_color(), gem dot = element colour, active one
-##    highlighted, draw filling from loadout.draw_progress()
+##  * slot icons: four carry slots tinted rarity_color(), gem dot = element colour, active
+##    one highlighted, draw filling from loadout.draw_progress()
+##  * world compare card: the item under the crosshair, green/red deltas vs equipped
 ##  * hint label (Player.hint, 1.5 s fade), hit / crit / kill marker (SpellBolts.bolt_hit),
 ##    wave banner + enemies left (EventBus), hurt edge flash, death overlay with countdown,
 ##    spawn-protection tint, level + XP line.
@@ -52,6 +53,8 @@ var pips: Array[ProgressBar] = []
 var pip_box: HBoxContainer
 var crosshair: Crosshair
 var slot_icons: Array[ColorRect] = []
+var world_card_bg: ColorRect
+var world_card: RichTextLabel
 var slot_gems: Array[ColorRect] = []
 var slot_draw: Array[ProgressBar] = []
 var hint_label: Label
@@ -186,6 +189,24 @@ func _init() -> void:
 	crosshair.set_anchors_preset(Control.PRESET_FULL_RECT)
 	crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(crosshair)
+	world_card_bg = ColorRect.new()
+	world_card_bg.color = Color(0, 0, 0, 0.62)
+	world_card_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	world_card_bg.visible = false
+	world_card_bg.custom_minimum_size = Vector2(260, 40)
+	root.add_child(world_card_bg)
+	world_card = RichTextLabel.new()
+	world_card.bbcode_enabled = true
+	world_card.fit_content = true
+	world_card.scroll_active = false
+	world_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	world_card.position = Vector2(8, 6)
+	world_card.size = Vector2(244, 200)
+	world_card.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if font:
+		world_card.add_theme_font_override(&"normal_font", font)
+		world_card.add_theme_font_size_override(&"normal_font_size", 13)
+	world_card_bg.add_child(world_card)
 	brand_meter = BrandMeter.new()
 	brand_meter.set_anchors_preset(Control.PRESET_FULL_RECT)
 	brand_meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -198,21 +219,24 @@ func _init() -> void:
 	marker.visible = false
 	var slots := HBoxContainer.new()
 	slots.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	slots.position = Vector2(-200, -90)
+	slots.position = Vector2(-300, -90)
 	root.add_child(slots)
-	for i in 2:
+	for i in Loadout.SLOT_COUNT:
 		var icon := ColorRect.new()
-		icon.custom_minimum_size = Vector2(80, 56)
+		icon.custom_minimum_size = Vector2(64, 48)
 		slots.add_child(icon)
+		var num := _label(12, icon)
+		num.text = str(i + 1)
+		num.position = Vector2(4, 0)
 		var gem := ColorRect.new()
 		gem.size = Vector2(12, 12)
-		gem.position = Vector2(34, 8)
+		gem.position = Vector2(26, 6)
 		icon.add_child(gem)
 		var dr := ProgressBar.new()
 		dr.show_percentage = false
 		dr.max_value = 1.0
-		dr.position = Vector2(4, 44)
-		dr.size = Vector2(72, 8)
+		dr.position = Vector2(4, 36)
+		dr.size = Vector2(56, 6)
 		icon.add_child(dr)
 		slot_icons.append(icon)
 		slot_gems.append(gem)
@@ -510,13 +534,14 @@ func refresh(dt: float) -> void:
 	prompt_label.text = Interaction.prompt(player)
 	_set_bar_color(breath_bar, BREATH_EXHAUSTED if player.breath.exhausted else BREATH_COLOR)
 	_refresh_pips()
-	crosshair.visible = not player.focus.focused and player.alive()
+	crosshair.visible = not player.focus.focused and (player.alive() or player.downed)
 	crosshair.gap = crosshair_gap() + 3.0
 	crosshair.queue_redraw()
+	_refresh_world_card()
 	var cst := player.caster
-	brand_meter.show_mode(cst.fire_mode() if cst != null and player.alive() else null)
+	brand_meter.show_mode(cst.fire_mode() if cst != null and (player.alive() or player.downed) else null)
 	var et := ElementTable.load_default()
-	for i in 2:
+	for i in slot_icons.size():
 		var w := player.loadout.wieldable(i)
 		slot_icons[i].color = w.rarity_color() if w else Color(0.2, 0.2, 0.2, 0.5)
 		slot_gems[i].visible = w != null
@@ -555,10 +580,33 @@ func refresh(dt: float) -> void:
 		skill_badge.text = skill_badge_text(sp)
 	death_overlay.visible = not player.alive()
 	if death_overlay.visible:
+		var tint := death_overlay.color
 		if player.downed:
-			death_label.text = "Down! %.0f s\nA friend standing beside you revives you." % player.downed_left
+			tint.a = 0.0
+			death_overlay.color = tint
+			death_label.text = "Second Wind! %.0f\nGet a kill." % ceil(player.downed_left)
+			if Coop.active():
+				death_label.text += "\nA friend beside you can still revive you."
 		else:
+			tint.a = 0.6
+			death_overlay.color = tint
 			death_label.text = "You fell.\nRising in %.1f" % player.respawn_left
+
+
+## The item under the crosshair, with green/red deltas against what is equipped.
+func _refresh_world_card() -> void:
+	var item: Resource = null
+	var lp := player.pickups.focused
+	if lp != null and lp.drop != null and player.alive() and not player.ui_open:
+		item = lp.drop.item
+	var show := item is WieldableInstance or item is WieldablePart or item is EquipmentItem
+	world_card_bg.visible = show
+	if not show:
+		return
+	world_card.text = CompareCard.for_item(item, player, true).to_bbcode()
+	var vp := root.get_viewport_rect().size
+	world_card_bg.position = vp * 0.5 + Vector2(36, -28)
+	world_card_bg.size = Vector2(260, maxf(48.0, world_card.get_content_height() + 12.0))
 
 
 ## Step 56: the boss bar shows the nearest living Filth that has a target (pips = phases).

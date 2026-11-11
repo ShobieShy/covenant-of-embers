@@ -20,8 +20,13 @@ var current_consecration := ""  ## the compared item's consecration ("" = none /
 var brand: Brand  ## step 140: the maker (Head element), null = unbranded
 var is_wand := false
 
+const BETTER := Color(0.35, 0.9, 0.35)
+const WORSE := Color(0.95, 0.35, 0.3)
 
-static func for_item(item: Resource, player: Player = null) -> CompareCard:
+
+## `against_active`: a world wieldable compares to the weapon in hand. Otherwise a
+## wieldable compares to the staff or wand slot of its type (the inventory card).
+static func for_item(item: Resource, player: Player = null, against_active := false) -> CompareCard:
 	var c := CompareCard.new()
 	var rt := RarityTable.load_default()
 	var current: Resource = null
@@ -33,7 +38,8 @@ static func for_item(item: Resource, player: Player = null) -> CompareCard:
 		c.brand = w.brand()
 		c.is_wand = w.is_wand()
 		if player != null:
-			current = player.loadout.wieldable(Loadout.slot_for(w))
+			var slot := player.loadout.active if against_active else Loadout.slot_for(w)
+			current = player.loadout.wieldable(slot)
 		var cw := current as WieldableInstance
 		c._row("damage", "Damage", w.damage(), cw.damage() if cw else NAN, true)
 		c._row("cooldown", "Cast time (s)", w.cooldown(), cw.cooldown() if cw else NAN, false)
@@ -145,6 +151,20 @@ func _row(stat: String, label: String, value: float, cur: float, higher_better: 
 		r["delta"] = value - cur
 		r["better"] = (value > cur) if higher_better else (value < cur)
 	rows.append(r)
+
+
+## The inventory / HUD card as BBCode. Deltas are green when better and red when worse.
+func to_bbcode() -> String:
+	var s := "[color=#%s][b]%s[/b][/color]\n%s %s\n" % [color.to_html(false), title, rarity_name, kind]
+	if not compared_to.is_empty():
+		s += "[i]vs %s[/i]\n" % compared_to
+	for r in rows:
+		s += "%s: %s" % [r.label, snapped(r.value, 0.01)]
+		if r.compared and not is_zero_approx(r.delta):
+			var tint: Color = BETTER if r.better else WORSE
+			s += " [color=#%s](%+.2f)[/color]" % [tint.to_html(false), r.delta]
+		s += "\n"
+	return s + extra_lines()
 
 
 func row(stat: String) -> Dictionary:

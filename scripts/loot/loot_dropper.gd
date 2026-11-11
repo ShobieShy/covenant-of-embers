@@ -101,8 +101,17 @@ func roll_for(enemy: Enemy) -> Array[LootDrop]:
 		if branded >= 0:
 			el = branded
 	return DropRoller.roll_kill(
-		rng, enemy.def.id, enemy.level(), el, lk, null, rarity_table(), party
+		rng, enemy.def.id, enemy.level(), el, lk, null, rarity_table(), party, _bias()
 	)
+
+
+func _bias() -> PackedStringArray:
+	if not is_inside_tree():
+		return PackedStringArray()
+	for n in get_tree().get_nodes_in_group(Player.GROUP):
+		if n is Player:
+			return Consecrations.bias_for(n as Player)
+	return PackedStringArray()
 
 
 ## Step 28: the rarity table drops roll on (null = shipped default).

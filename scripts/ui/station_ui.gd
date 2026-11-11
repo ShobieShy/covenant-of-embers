@@ -125,8 +125,9 @@ func auto_load_held() -> bool:
 ## The auto-loaded weapon (or what it was built into) goes back in hand if that slot is free.
 func _return_held() -> void:
 	if auto_slot >= 0 and auto_item and player and player.inventory.has(auto_item):
-		if player.loadout.wieldable(Loadout.slot_for(auto_item)) == null:
-			player.equip_from_inventory(auto_item)
+		if player.loadout.wieldable(auto_slot) == null:
+			player.inventory.remove(auto_item)
+			player.equip_in(auto_slot, auto_item)
 	auto_slot = -1
 	auto_item = null
 

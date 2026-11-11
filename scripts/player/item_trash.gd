@@ -28,7 +28,7 @@ static func trash(p: Player, item: Variant, count: int = 1) -> String:
 			p.equipment.potion = null
 		p.equipment.changed.emit(-1)
 		return ""
-	for slot in [Loadout.Slot.STAFF, Loadout.Slot.WAND]:
+	for slot in Loadout.SLOT_COUNT:
 		if p.loadout.wieldable(slot) == item:
 			return "Unequip it first."
 	for slot in EquipmentItem.SLOT_COUNT:
