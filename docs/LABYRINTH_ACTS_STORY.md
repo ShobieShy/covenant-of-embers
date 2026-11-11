@@ -4,7 +4,7 @@ Approved by ShobieShy on 5 Nov 2026.
 
 The Core is deliberately not outlined here. Music uses placeholders until it is composed. Approved Act II design notes (waystones, vines that only slow, a 3-phase Matriarch, Earth and Dark loot) stay in [ACT2_STORY.md](ACT2_STORY.md) and [PLAN_0.7.0_ACT2.md](PLAN_0.7.0_ACT2.md). This outline does not replace those notes.
 
-The version roadmap is [PLAN_NEXT.md](PLAN_NEXT.md).
+The version roadmap is [PLAN_NEXT.md](PLAN_NEXT.md). The 11 Nov 2026 Act IV / post-game / DLC notes are in [design/BRAINSTORM_2026-11-11_ACT4_POSTGAME_DLC.md](design/BRAINSTORM_2026-11-11_ACT4_POSTGAME_DLC.md). They do not replace this outline.
 
 ## Act I — The Goblin Warrens
 
