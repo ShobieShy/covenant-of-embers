@@ -14,31 +14,43 @@ signal collected(pickup: LootPickup, what: String)
 
 const AUTO_RADIUS := 1.2
 const MAGNET_RADIUS := 3.0  ## 0.3.1 P4 (M2): auto pickups this close fly in on an arc
+## 0.8.3: items and parts use a slightly wider magnet than coins. Still a short
+## radius (about a body-length past the old coin pull), not the whole room.
+const ITEM_MAGNET_RADIUS := 4.0
 const REACH := 3.0
 const LOOK_CONE_DEG := 12.0
 const HINT_FULL := "Inventory full."
+const FULL_HINT_GAP := 1.5
 
 var focused: LootPickup
 var auto_collected := 0
 var items_picked := 0
 var refused_full := 0
+var _full_hint_cd := 0.0
 
 
 func tick(p: Player, interact_pressed: bool, dt := 1.0 / 60.0) -> void:
 	if not p.is_inside_tree():
 		return
+	_full_hint_cd = maxf(0.0, _full_hint_cd - dt)
 	var all := p.get_tree().get_nodes_in_group(LootPickup.GROUP)
 	var feet := p.global_position
+	var client := Coop.is_client()
 	for n in all:
 		var lp := n as LootPickup
-		if lp == null or lp.is_queued_for_deletion() or not lp.is_auto():
+		if lp == null or lp.is_queued_for_deletion() or lp.taken:
+			continue
+		if not may_take(lp, client):
 			continue
 		var d := lp.global_position - feet
 		var flat := Vector2(d.x, d.z).length()
-		if flat <= AUTO_RADIUS and d.y > -0.5 and d.y < 1.8:
-			_auto(p, lp)
-		elif flat <= MAGNET_RADIUS and d.y > -1.0 and d.y < 2.5 and wants(p, lp):
-			lp.pull_toward(feet, dt)
+		if lp.is_auto():
+			if flat <= AUTO_RADIUS and d.y > -0.5 and d.y < 1.8:
+				_auto(p, lp)
+			elif flat <= MAGNET_RADIUS and d.y > -1.0 and d.y < 2.5 and wants(p, lp):
+				lp.pull_toward(feet, dt)
+		else:
+			_magnet_item(p, lp, flat, d.y, feet, dt)
 	focused = look_target(p, all)
 	if interact_pressed and focused != null:
 		if p.crouched and Coop.active():
@@ -73,13 +85,25 @@ func look_target(p: Player, all: Array = []) -> LootPickup:
 	return best
 
 
+## A host-marked world drop is collected on the host only. Instanced kill drops
+## (gold, items, parts) stay on the peer that rolled them, which is the same rule
+## gold already uses: each peer's EventBus spawns that peer's loot.
+static func may_take(lp: LootPickup, client: bool) -> bool:
+	return lp != null and not (lp.host_drop and client)
+
+
 ## Puts an item pickup in the backpack. False (pickup stays) when the backpack is full.
 func pick(p: Player, lp: LootPickup) -> bool:
 	if lp == null or lp.drop == null or lp.is_queued_for_deletion():
 		return false
+	if not _can_hold(p, lp):
+		_hint_full(p)
+		return false
+	if not lp.claim():
+		return false
 	if not p.inventory.add(lp.drop.item):
-		refused_full += 1
-		p.show_hint(HINT_FULL)
+		lp.unclaim()
+		_hint_full(p)
 		return false
 	items_picked += 1
 	collected.emit(lp, "item")
@@ -98,10 +122,40 @@ static func wants(p: Player, lp: LootPickup) -> bool:
 	return false
 
 
+## Items and parts inside ITEM_MAGNET_RADIUS arc in, then collect at AUTO_RADIUS.
+## A full backpack does not pull the drop (it stays where it fell) and the hint
+## is rate-limited so a pile of gear does not spam it every tick.
+func _magnet_item(p: Player, lp: LootPickup, flat: float, dy: float, feet: Vector3, dt: float) -> void:
+	if lp.drop == null or flat > ITEM_MAGNET_RADIUS or dy < -1.0 or dy > 2.5:
+		return
+	if not _can_hold(p, lp):
+		_hint_full(p)
+		return
+	if flat <= AUTO_RADIUS and dy > -0.5 and dy < 1.8:
+		pick(p, lp)
+	else:
+		lp.pull_toward(feet, dt)
+
+
+func _can_hold(p: Player, lp: LootPickup) -> bool:
+	return lp.drop != null and lp.drop.item != null and not p.inventory.is_full() and not p.inventory.has(lp.drop.item)
+
+
+func _hint_full(p: Player) -> void:
+	refused_full += 1
+	if _full_hint_cd > 0.0:
+		return
+	_full_hint_cd = FULL_HINT_GAP
+	p.show_hint(HINT_FULL)
+
+
 func _auto(p: Player, lp: LootPickup) -> void:
+	if not lp.claim():
+		return
 	match lp.auto:
 		LootPickup.Auto.MANA:
 			if p.mana.value >= p.mana.max_value():
+				lp.unclaim()
 				return
 			p.mana.restore(lp.amount)
 			_done(lp, "mana")
@@ -114,14 +168,17 @@ func _auto(p: Player, lp: LootPickup) -> void:
 		LootPickup.Auto.POTION:
 			var took := p.equipment.add_potions(lp.potion, lp.amount)
 			if took <= 0:
+				lp.unclaim()
 				return
 			lp.amount -= took
 			auto_collected += 1
 			collected.emit(lp, "potion")
 			if lp.amount <= 0:
 				_consume(lp)
-			elif lp.label:
-				lp.label.text = "%s x%d" % [lp.potion.display_name, lp.amount]
+			else:
+				lp.unclaim()
+				if lp.label:
+					lp.label.text = "%s x%d" % [lp.potion.display_name, lp.amount]
 
 
 func _done(lp: LootPickup, what: String) -> void:

@@ -8,8 +8,12 @@ extends CharacterBody3D
 ##    smoothed at LERP 10/s on the ground and AIR 6/s in the air (only while a move key is
 ##    held); speed eases to walk 4 / crouch 3 m/s at 10/s. Vertical: 0 on the ground,
 ##    gravity 9.8 otherwise; jump on the press edge (ground only) 4.5 / 3.0 m/s crouched.
-##  * Crouch is held; starts on the ground only; a crouch-jump stays crouched until landing;
-##    standing up waits until the tall capsule fits (Magewar CrouchRayCast).
+##  * Crouch is held. On the ground it starts there; a crouch-jump stays crouched until
+##    landing; standing up waits until the tall capsule fits (Magewar CrouchRayCast).
+##    Crouching in the air (not a slide-jump) tucks the capsule up by the height
+##    difference so the feet clear a higher ledge. Letting go drops the feet again
+##    only when the standing capsule fits; a landing keeps the tucked feet and then
+##    uses the same headroom check before standing.
 ##  * Steps up to 0.35 m are climbed (probe up / forward / down, like Cogito's step_check),
 ##    floor_max_angle 45 deg, floor snap 0.5 m.
 ##  * Mouse look: 0.25 deg/count, mouse right = turn right, pitch clamped to +-89 deg.
@@ -165,6 +169,8 @@ var pickups := PickupCollector.new()  # step 23: walk-over auto-collect + Intera
 var _wheel := 0  # queued mouse-wheel cycles (+ next / - prev)
 var _crouched_jump := false
 var _jumped_from_slide := false
+var _air_tuck := false  ## crouched in the air: feet were lifted by _tuck_rise
+var _tuck_rise := 0.0
 var _rising := false
 var _airborne := false
 var _air_vy := 0.0
@@ -480,6 +486,9 @@ func respawn() -> void:
 	respawn_left = 0.0
 	slide_left = 0.0
 	sprinting = false
+	_air_tuck = false
+	_tuck_rise = 0.0
+	_crouched_jump = false
 	_set_crouched(false)
 	spawn(spawn_feet, spawn_yaw)
 	respawns += 1
@@ -811,6 +820,10 @@ func tick(input: PlayerInput, dt: float) -> void:
 		landings += 1
 		last_landing_speed = maxf(0.0, -_air_vy)
 	if grounded:  # landed
+		# A tuck lands on the raised feet. Do not drop them back through the ledge.
+		if _air_tuck:
+			_air_tuck = false
+			_tuck_rise = 0.0
 		_crouched_jump = false
 		_jumped_from_slide = false
 		dash.land()
@@ -835,13 +848,18 @@ func tick(input: PlayerInput, dt: float) -> void:
 		slide_dir = wish
 		slides += 1
 
-	# Crouch (held): starts on the ground only; a crouch-jump stays crouched in the air;
-	# standing up needs head room.
-	var want_crouch := _crouched_jump or (grounded and crouch_held)
+	# Crouch (held): starts on the ground; a crouch-jump stays crouched in the air.
+	# An air tuck stays crouched until it is released into open space or we land.
+	# Standing up on the ground needs head room.
+	var want_crouch := _crouched_jump or _air_tuck or (grounded and crouch_held)
 	if want_crouch:
 		_set_crouched(true)
 	elif crouched and _can_stand():
 		_set_crouched(false)
+	if not grounded and not _jumped_from_slide and not _crouched_jump and crouch_held and not _air_tuck and not crouched:
+		_begin_air_tuck()
+	elif not grounded and _air_tuck and not crouch_held and not _crouched_jump:
+		_try_release_tuck()
 
 	# Sprint (held): starts on the ground, carries on in the air while held; never while
 	# crouched or exhausted; needs a move key (standing still with Sprint doesn't drain).
@@ -988,6 +1006,61 @@ func _set_crouched(on: bool) -> void:
 		return
 	crouched = on
 	_set_capsule(tuning.crouching_height if on else tuning.standing_height)
+
+
+func air_tucked() -> bool:
+	return _air_tuck
+
+
+## Source-style crouch jump: shrink from the bottom. The crouched capsule moves up
+## so its top stays where the standing head was and the feet rise by the difference
+## (1.0 m with the shipped tuning). A low ceiling stops the rise early.
+func _begin_air_tuck() -> void:
+	var rise := tuning.standing_height - tuning.crouching_height
+	_set_crouched(true)
+	var motion := Vector3(0.0, rise, 0.0)
+	var col := KinematicCollision3D.new()
+	if test_move(global_transform, motion, col):
+		motion = col.get_travel()
+	if motion.y < 0.02:
+		_set_crouched(false)
+		return
+	global_position.y += motion.y
+	eye_height = maxf(tuning.crouching_eye, eye_height - motion.y)
+	_tuck_rise = motion.y
+	_air_tuck = true
+
+
+## Drop the tucked feet and stand. Refuses when the standing capsule would intersect
+## the world (a ledge under the feet, or a ceiling the head would grow into).
+func _try_release_tuck() -> void:
+	if not _air_tuck:
+		return
+	var drop := _tuck_rise
+	if drop <= 0.01:
+		_air_tuck = false
+		_tuck_rise = 0.0
+		return
+	if not _stand_fits(global_position + Vector3(0.0, -drop, 0.0)):
+		return
+	global_position.y -= drop
+	eye_height += drop
+	_tuck_rise = 0.0
+	_air_tuck = false
+	_set_crouched(false)
+
+
+## The full standing capsule at `feet` is clear of the world.
+func _stand_fits(feet: Vector3) -> bool:
+	var probe := CapsuleShape3D.new()
+	probe.radius = tuning.radius - 0.02
+	probe.height = tuning.standing_height
+	var q := PhysicsShapeQueryParameters3D.new()
+	q.shape = probe
+	q.transform = Transform3D(Basis.IDENTITY, feet + Vector3(0.0, tuning.standing_height * 0.5, 0.0))
+	q.collision_mask = collision_mask
+	q.exclude = [get_rid()]
+	return get_world_3d().direct_space_state.intersect_shape(q, 1).is_empty()
 
 
 ## The part of the standing capsule above the crouched one (slightly thinner so touching

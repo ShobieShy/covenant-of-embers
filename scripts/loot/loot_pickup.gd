@@ -42,6 +42,8 @@ var pull_from := Vector3.ZERO  ## M2: where the magnet pull started
 var pulled := 0.0  ## M2: m travelled toward the player (0 = not pulled)
 var shared := false  ## 0.3.2: dropped for the whole party
 var share_id := 0
+var taken := false  ## claimed by one collector; a second player in the same world cannot
+var host_drop := false  ## a shared world drop: only the host collects it (clients do not)
 var _caption := ""
 
 
@@ -84,6 +86,18 @@ static func _auto(k: Auto, n: int, item: ConsumableItem, at: Vector3, c: Color, 
 
 func is_auto() -> bool:
 	return auto != Auto.NONE
+
+
+## One collector wins. `unclaim` is for a take that could not actually be stored.
+func claim() -> bool:
+	if taken or is_queued_for_deletion():
+		return false
+	taken = true
+	return true
+
+
+func unclaim() -> void:
+	taken = false
 
 
 func setup(d: LootDrop) -> void:
