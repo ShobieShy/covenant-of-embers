@@ -211,6 +211,40 @@ cooldown = 6.0
 recover = 0.3
 
 [[style]]
+id = "drowned_cultist"
+patterns = ["club", "lunge"]
+special = "lunge"
+strafe_speed = 1.4
+strafe_period = 1.2
+retreat_speed = 1.1
+retreat_s = 0.35
+dodge_speed = 2.2
+dodge_s = 0.18
+arm_s = 6.5
+windup = 0.4
+lunge_speed = 6.5
+damage_mul = 1.2
+cooldown = 3.0
+recover = 0.25
+
+[[style]]
+id = "drowned_choir"
+patterns = ["slam", "brand"]
+special = "feint"
+strafe_speed = 0.8
+strafe_period = 1.4
+retreat_speed = 0.6
+retreat_s = 0.35
+dodge_speed = 0.0
+dodge_s = 0.0
+arm_s = 30.0
+windup = 0.4
+lunge_speed = 0.0
+damage_mul = 1.0
+cooldown = 6.0
+recover = 0.3
+
+[[style]]
 id = "forgemaw"
 patterns = ["slam", "brand"]
 special = "feint"

@@ -122,8 +122,9 @@ static var player_level := 0
 static var solo := true
 
 ## Act I floors 1..King are +0..+2. Act II pads 6..8 are +3..+5. Act III floors
-## 9..13 are +6..+10. The floor offset replaces a boss offset; it is not added on top.
-const LABYRINTH_OFFSETS: Array[int] = [0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+## 9..13 are +6..+10. Act IV floors 14..18 are +11..+15. The floor offset replaces
+## a boss offset; it is not added on top.
+const LABYRINTH_OFFSETS: Array[int] = [0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 
 static func bind(level: int, is_solo: bool) -> void:

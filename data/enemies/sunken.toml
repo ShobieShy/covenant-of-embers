@@ -1,0 +1,29 @@
+# Act IV, The Sunken Ruins. Levels sit in the five-floor band
+# (36 / 38 / 40 / 42 / 46). Cultists are rushers. The Choir is the boss.
+# Affinity is Water. ActLoot retags item level from the floor.
+
+[[enemy]]
+id = "drowned_cultist"
+name = "Drowned Cultist"
+affinity = "water"
+max_health = 140
+level = 36
+xp_reward = 30
+gold_drop = 12
+size = [0.8, 1.8, 0.8]
+color = [0.25, 0.45, 0.55]
+weak_point = { offset = [0.0, 1.5, -0.12], size = [0.3, 0.28, 0.28] }
+ai = { kind = "rusher", detect_range = 11.0, aggro_range = 8.0, walk_speed = 2.0, sprint_speed = 3.8, attack_range = 1.4, attack_damage = 10.0, attack_cooldown = 1.2, knockback_strength = 8.0, knockback_time = 0.3, knockback_threshold = 22.0 }
+
+[[enemy]]
+id = "drowned_choir"
+name = "Drowned Choir"
+affinity = "water"
+max_health = 1400
+level = 46
+xp_reward = 260
+gold_drop = 80
+size = [2.2, 2.8, 2.2]
+color = [0.2, 0.55, 0.7]
+weak_point = { offset = [0.0, 2.2, -0.3], size = [0.46, 0.4, 0.4] }
+ai = { kind = "choir", detect_range = 16.0, aggro_range = 12.0, walk_speed = 1.5, sprint_speed = 2.6, attack_range = 2.4, attack_damage = 16.0, attack_cooldown = 1.7, attack_windup = 0.5, knockback_strength = 12.0, knockback_time = 0.25, knockback_threshold = 70.0, turn_rate_deg = 100.0 }

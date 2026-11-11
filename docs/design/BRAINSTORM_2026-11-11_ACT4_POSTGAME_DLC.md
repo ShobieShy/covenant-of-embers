@@ -4,7 +4,9 @@
 
 ## Act IV
 
-Breach fallout. Uses a shared map spine with faction states (lever / spawn / room variants), not separate branches.
+ShobieShy chose The Sunken Ruins on 11 Nov 2026. That is the act that ships. The earlier idea on this page, Breach fallout on a shared map spine with faction states, is not the plan and is not built.
+
+The shipped beats are the ones already in [LABYRINTH_ACTS_STORY.md](../LABYRINTH_ACTS_STORY.md): flooded halls, Breath as the leash, the Drowned Choir, and the coral sarcophagus. Old Oak stays Old Oak.
 
 ## Story / characters
 
@@ -46,7 +48,7 @@ Colorblind modes, subtitle size, and the rest of that list. ASAP, in the 0.8.5 p
 
 Current outlines do not call the Landfill Act I. [LABYRINTH_ACTS_STORY.md](../LABYRINTH_ACTS_STORY.md) and [PLAN_NEXT.md](../PLAN_NEXT.md) put Acts I–V in the Labyrinth: Act I the Goblin Warrens, Act II the Blightcoil, Act III the Slagworks, Act IV the Sunken Ruins, Act V the Inverted Spire. The Landfill is already the tutorial zone with the Filth. "The labyrinth = Acts 1-5" matches that numbering. Nothing here was rewritten to force a match.
 
-Act IV does not match. Those docs call Act IV The Sunken Ruins (0.9.0). This note calls Act IV Breach fallout, on a shared map spine with faction states. Both statements are left as written.
+Act IV is settled. The outlines and this note now agree: Act IV is The Sunken Ruins (0.9.0), not Breach fallout.
 
 The tree name does not match. This note says Great Oak. The shipped level, quests, and docs say Old Oak (`old_oak`, [INTRO_PLAN.md](../INTRO_PLAN.md), [LINEAR_LEVELS_PLAN.md](../LINEAR_LEVELS_PLAN.md)). [EMBER_ART_REQUESTS.md](../EMBER_ART_REQUESTS.md) describes the Old Oak model as "the great oak" in the art request, not as the place name. No code or doc was renamed.
 

@@ -5,7 +5,8 @@ extends TestCase
 
 func test_fire_band() -> void:
 	check(ActLoot.act_of(9) == 3 and ActLoot.act_of(13) == 3, "checkpoints 9-13 are act 3")
-	check(ActLoot.act_of(14) == 0, "a floor past 13 is untagged")
+	check(ActLoot.act_of(14) == 4 and ActLoot.item_level(14) == 36, "floor 14 is the Sunken gallery")
+	check(LevelScale.labyrinth_offset(14) == 11 and LevelScale.labyrinth_offset(18) == 15, "Act IV offsets")
 	check(ActLoot.act_of(5) == 1 and LevelScale.labyrinth_offset(5) == 2, "floor 5 stays act 1, offset +2")
 	check(ActLoot.act_of(8) == 2 and LevelScale.labyrinth_offset(8) == 5, "floor 8 stays act 2")
 	check(ActLoot.item_level(9) == 24 and LevelScale.labyrinth_offset(9) == 6, "Railhead 24 / +6")

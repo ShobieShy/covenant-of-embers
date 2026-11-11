@@ -87,6 +87,10 @@ static func _on_lab_kill(
 			(fl as SlagworksFloor).note_boss_dead()
 			if first:
 				_lab_boss_chest(h, fl, _e, first)
+		elif fl is SunkenFloor and is_instance_valid(fl):
+			(fl as SunkenFloor).note_boss_dead()
+			if first:
+				_lab_boss_chest(h, fl, _e, first)
 		print("[labyrinth] %s defeated" % boss)
 
 
@@ -306,6 +310,9 @@ static func _on_linear_floor(h: Main, _n: int) -> void:
 	if ints and ints.slag:
 		_enter_slag_runtime(h, ints.slag, player)
 		return
+	if ints and ints.sunken:
+		_enter_sunken_runtime(h, ints.sunken, player)
+		return
 	var fl := ints.lab_floor if ints else null
 	if fl == null:
 		return
@@ -330,6 +337,27 @@ static func _enter_slag_runtime(h: Main, fl: SlagworksFloor, player: Player) -> 
 	_lab_loot_parent_linear(h, fl)
 	_lab_enemies(h, fl, player)
 	_lab_chests(h, fl, player)
+
+
+static func _enter_sunken_runtime(h: Main, fl: SunkenFloor, player: Player) -> void:
+	DialogueDB.bosses = h.labyrinth.bosses
+	if h.quests:
+		h.quests.known_bosses = h.labyrinth.bosses
+	if not fl.pad_reached.is_connected(h._on_blight_pad):
+		fl.pad_reached.connect(h._on_blight_pad)
+	if player:
+		player.spawn_feet = fl.pad_global()
+	_lab_enemies(h, fl, player)
+	if h.labyrinth.bosses.has(SunkenFloor.BOSS) and fl.floor_no == SunkenFloor.LAST:
+		fl.note_boss_dead()
+		var spot := fl.get_node_or_null("WaystoneSpot") as Node3D
+		if spot and h.fast_travel and not fl.has_node("Waystone_sunken_nave"):
+			var w := Waystone.new("sunken_nave", h.fast_travel)
+			w.name = "Waystone_sunken_nave"
+			w.player = player
+			fl.add_child(w)
+			w.global_position = spot.global_position
+			w.opened.connect(h.open_map)
 
 
 static func _enter_cavern_runtime(h: Main, cav: BlightcoilCavern, player: Player) -> void:

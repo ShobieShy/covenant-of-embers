@@ -43,6 +43,11 @@ const DEEP_POINTS := {
 	"slagworks_overlook": {"name": "The Slagworks - Overlook", "level": "labyrinth", "floor": 11},
 	"slagworks_furnace": {"name": "The Slagworks - Furnace", "level": "labyrinth", "floor": 12},
 	"slagworks_crucible": {"name": "The Slagworks - Crucible", "level": "labyrinth", "floor": 13},
+	"sunken_gallery": {"name": "The Sunken Ruins - Gallery", "level": "labyrinth", "floor": 14},
+	"sunken_pocket": {"name": "The Sunken Ruins - Pocket", "level": "labyrinth", "floor": 15},
+	"sunken_murals": {"name": "The Sunken Ruins - Murals", "level": "labyrinth", "floor": 16},
+	"sunken_spire": {"name": "The Sunken Ruins - Spire", "level": "labyrinth", "floor": 17},
+	"sunken_nave": {"name": "The Sunken Ruins - Nave", "level": "labyrinth", "floor": 18},
 }
 ## GameFlow level id -> the waystone point that stands in it (spawn anchor).
 const LEVEL_POINT := {"old_oak": "old_oak", "town_square": "town_gate", "midden": "landfill", "breach": "breach"}
