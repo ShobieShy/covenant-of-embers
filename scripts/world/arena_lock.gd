@@ -8,6 +8,7 @@ const SEGMENTS := 16
 const HEIGHT := 4.0
 const THICK := 0.6
 const MARGIN := 1.5  ## beyond the trigger radius
+const FIT_LEEWAY := 6.0  ## only bodies already near the ring pull it outward
 const COLOR := Color(0.45, 0.22, 0.1)
 
 var center := Vector3.ZERO
@@ -98,13 +99,18 @@ func _fit_radius() -> void:
 	if not is_inside_tree():
 		return
 	var fit := radius
+	var limit := radius + FIT_LEEWAY
 	var sp := get_parent() as EnemySpawner
 	for n in get_tree().get_nodes_in_group(Player.GROUP):
 		var p3 := n as Node3D
-		if p3 == null:
+		if p3 == null or p3.is_queued_for_deletion():
 			continue
 		var poff := p3.global_position - center
-		fit = maxf(fit, Vector2(poff.x, poff.z).length() + MARGIN)
+		var pd := Vector2(poff.x, poff.z).length()
+		if pd > limit:
+			continue
+		fit = maxf(fit, pd + MARGIN)
+		limit = fit + FIT_LEEWAY
 	for n in get_tree().get_nodes_in_group(Enemy.GROUP):
 		var e := n as Enemy
 		if e == null or not e.alive() or sp == null or not sp.is_ancestor_of(e):

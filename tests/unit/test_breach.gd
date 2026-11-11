@@ -25,8 +25,8 @@ func test_layout() -> void:
 	for n in ["boss_dais", "west_wing", "east_wing", "vault_chest"]:
 		check(level.get_node_or_null("WaveSpawns/" + n) != null, "spawn %s" % n)
 	check(level.get_node("Waves").get_child_count() == 3, "three waves (the boss last)")
-	check(level.get_node("Encounters").get_child_count() == 6, "six room encounters (step 162)")
-	check(level.get_node("Switches").get_child_count() == 3, "three levers (step 162)")
+	check(level.get_node("Encounters").get_child_count() == 3, "three room encounters")
+	check(level.get_node("Switches").get_child_count() == 2, "two levers")
 	level.free()
 
 
@@ -46,9 +46,7 @@ func test_navmesh_and_spawns_reachable() -> void:
 		var m := (level.get_node("WaveSpawns/" + n) as Node3D).global_position
 		check(_reaches(map, start, m, 0.6), "room spot %s reachable" % n)
 	for s in level.get_node("Switches").get_children():
-		check(
-			_reaches(map, start, (s as Node3D).global_position, 1.0), "lever %s reachable" % s.name
-		)
+		check(_reaches(map, start, (s as Node3D).global_position, 1.0), "lever %s reachable" % s.name)
 	var b := Breach.new()
 	level.get_parent().add_child(b)
 	b.setup(level, null, false)
@@ -88,7 +86,8 @@ func _synced(nav: LevelNavigation) -> void:
 
 
 ## Step 47: room encounters fire on their triggers and clear; the levers stay inert until
-## every room is clear, and the gate opens once both are pulled.
+## every room is clear, and the gate opens once both levers are pulled.
+## The reliquary's extra rooms and third lever are not in the shipped slice.
 func test_rooms_and_levers() -> void:
 	var level := _load(Vector3(-6000, 0, -6000))
 	var w := level.get_parent()
@@ -100,7 +99,7 @@ func test_rooms_and_levers() -> void:
 	w.add_child(b)
 	b.setup(level, p, false)
 	await _synced(level.get_node("Navigation") as LevelNavigation)
-	check(b.encounters.size() == 6 and b.switches.size() == 3, "6 rooms, 3 levers")
+	check(b.encounters.size() == 3 and b.switches.size() == 2, "3 rooms, 2 levers")
 	check(not b.rooms_cleared() and b.next_encounter() == b.encounters[0], "first room first")
 	check(not b.switches[0].press(), "lever inert while rooms hold enemies")
 	for e in b.encounters:
@@ -120,8 +119,7 @@ func test_rooms_and_levers() -> void:
 	check(b.rooms_cleared(), "rooms cleared")
 	check(b.switches.all(func(x: BreachSwitch) -> bool: return x.armed), "levers armed")
 	check(b.switches[0].press() and not b.gate_open, "one lever is not enough")
-	check(b.switches[1].press() and not b.gate_open, "two levers are not enough")
-	check(b.switches[2].press() and b.gate_open, "all three levers open the gate")
+	check(b.switches[1].press() and b.gate_open, "both levers open the gate")
 	w.queue_free()
 
 
@@ -133,22 +131,14 @@ func test_station_in_breach() -> void:
 	var start := (level.get_node("PlayerStart") as Node3D).global_position
 	var st := AssemblyStation.place(w, level, start)
 	var marker := level.get_node_or_null(AssemblyStation.MARKER) as Node3D
-	check(
-		marker != null and st.global_position.distance_to(marker.global_position) < 0.01,
-		"placed on the marker"
-	)
+	check(marker != null and st.global_position.distance_to(marker.global_position) < 0.01, "placed on the marker")
 	check(st.global_position.distance_to(start) > 1.0, "not on top of the start")
 	var nav := level.get_node("Navigation") as LevelNavigation
 	var t0 := Time.get_ticks_msec()  # step 162: the 220x320 m zone syncs in real seconds
 	while not nav.map_ready() and Time.get_ticks_msec() - t0 < 20000:
 		await runner_tree.physics_frame
-	var path := NavigationServer3D.map_get_path(
-		nav.get_navigation_map(), start, st.global_position, true
-	)
-	check(
-		path.size() > 1 and path[path.size() - 1].distance_to(st.global_position) < 1.5,
-		"station reachable"
-	)
+	var path := NavigationServer3D.map_get_path(nav.get_navigation_map(), start, st.global_position, true)
+	check(path.size() > 1 and path[path.size() - 1].distance_to(st.global_position) < 1.5, "station reachable")
 	var p: Player = (load("res://scenes/player/player.tscn") as PackedScene).instantiate()
 	p.input_enabled = false
 	w.add_child(p)
@@ -159,10 +149,7 @@ func test_station_in_breach() -> void:
 	)
 	p.spawn(st.global_position + Vector3(0, 0, 1.5), 0.0)
 	check(st.in_reach(p), "in reach beside it")
-	check(
-		AssemblyStation.prompt_for(p) == "[F] Magic Assembly Station",
-		"prompt: %s" % AssemblyStation.prompt_for(p)
-	)
+	check(AssemblyStation.prompt_for(p) == "[F] Magic Assembly Station", "prompt: %s" % AssemblyStation.prompt_for(p))
 	var base := WieldableInstance.load_base("apprentice_fire_staff")
 	var parts := []
 	for id in ["basic_fire_head", "basic_exterior", "basic_interior", "basic_handle"]:
