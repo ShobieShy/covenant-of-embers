@@ -160,6 +160,8 @@ func apply_to(p: Player) -> void:
 	var tree := Engine.get_main_loop() as SceneTree
 	if tree:
 		PlatformDisplay.apply(tree.root, window_mode, ui_scale)  # step 86
+		if tree.root.theme:
+			tree.root.theme.default_font_size = roundi(Accessibility.BASE_FONT * text_scale)
 		QualityPresets.level = QualityPresets.resolve(quality)  # step 134
 		QualityPresets.apply_engine()
 		var cur := tree.current_scene.get_node_or_null(^"Level") if tree.current_scene else null

@@ -122,7 +122,12 @@ func extra_lines() -> String:
 	if not gems.is_empty():
 		var names := PackedStringArray()
 		for g in gems:
-			names.append("[color=#%s]%s[/color]" % [(g.color as Color).to_html(false), g.name])
+			names.append(
+				(
+					"[color=#%s]%s %s[/color]"
+					% [(g.color as Color).to_html(false), Accessibility.element_mark(int(g.element)), g.name]
+				)
+			)
 		s += "Gems: %s (+%d damage)\n" % [", ".join(names), int(ElementGem.GEM_DAMAGE * gems.size())]
 	if not consecration.is_empty():
 		s += "[color=#e0b040]Consecrated: %s[/color] - %s\n" % [consecration.capitalize(), consecration_text]

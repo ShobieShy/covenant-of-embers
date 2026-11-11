@@ -47,4 +47,12 @@ func describe() -> String:
 		_:
 			if item is EquipmentItem:
 				return "%s %s" % [r, (item as EquipmentItem).display_name]
-			return "%s %s %s" % [r, ElementTable.load_default().display_name(element), equip_slot_id().capitalize()]
+			return (
+				"%s %s %s %s"
+				% [
+					r,
+					Accessibility.element_mark(element),
+					ElementTable.load_default().display_name(element),
+					equip_slot_id().capitalize()
+				]
+			)
