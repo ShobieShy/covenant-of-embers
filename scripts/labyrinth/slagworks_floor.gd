@@ -9,6 +9,7 @@ extends Node3D
 
 signal pad_reached(checkpoint: int, waystone_id: String)
 signal lift_home
+signal sunken_descend
 
 const TOML := "res://data/labyrinth/slagworks.toml"
 const CACHE_DIR := "res://scenes/levels/nav/slagworks"
@@ -567,6 +568,8 @@ func prop_line(role: String) -> String:
 	var dead := _state != null and _state.bosses.has(BOSS)
 	if role == "lift":
 		return "The lift is locked." if not dead else "The lift is open."
+	if role == "sunken" and dead:
+		return "The way down has opened into the flooded halls."
 	if dead:
 		return "The way down has opened and cannot be taken yet."
 	return "The way down is still shut."
@@ -576,6 +579,13 @@ func use_lift() -> bool:
 	if _state == null or not _state.bosses.has(BOSS):
 		return false
 	lift_home.emit()
+	return true
+
+
+func use_sunken() -> bool:
+	if _state == null or not _state.bosses.has(BOSS):
+		return false
+	sunken_descend.emit()
 	return true
 
 

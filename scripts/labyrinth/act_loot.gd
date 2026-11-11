@@ -47,6 +47,17 @@ const ACTS := {
 		"boss_first": "unique",
 		"boss_repeat": "rare",
 	},
+	4:
+	{
+		"name": "The Sunken Ruins",
+		"floors": [14, 18],
+		"levels": [36, 38, 40, 42, 46],
+		"chests": ["basic", "uncommon", "uncommon", "rare", "rare"],
+		"element": ElementTable.Element.WATER,
+		"luck": 0.12,
+		"boss_first": "unique",
+		"boss_repeat": "rare",
+	},
 }
 
 

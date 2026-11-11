@@ -8,6 +8,7 @@ const BOSSES := {
 	"warrens": "goblin_king",
 	"blightcoil": "blightmaw_matriarch",
 	"slagworks": "forgemaw",
+	"sunken": "drowned_choir",
 }
 
 

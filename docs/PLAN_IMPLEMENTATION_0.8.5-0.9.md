@@ -38,7 +38,7 @@ Answer these in one pass. Each line is what the build will do if you do not say 
 17. **Story-run deep drops.** Level-scaled to the story floor. The effect stays. **Default (change if you want).**
 18. **Co-op and that roll.** Each player rolls on their own instanced loot stream. Not one shared world drop. **Default (change if you want).**
 19. **Drop rate.** One constant. No number is chosen here. Tests inject the chance. Tune the constant later. **Default (change if you want).**
-20. **Act IV.** The build plan below is Breach fallout (shared map spine, faction states). **Blocked** until you choose that over The Sunken Ruins. Old Oak stays Old Oak. **Default (change if you want).**
+20. **Act IV.** ShobieShy chose The Sunken Ruins. Breach fallout is not the plan. Old Oak stays Old Oak.
 
 ## 1. Accessibility (#38)
 
@@ -139,20 +139,20 @@ Answer these in one pass. Each line is what the build will do if you do not say 
 
 ## 6. Act IV / 0.9.0
 
-**Blocked.** Do not start until you choose Breach fallout or The Sunken Ruins. The tasks below are Breach fallout. If you choose The Sunken Ruins, this section is replaced by that outline in `docs/LABYRINTH_ACTS_STORY.md` (flooded halls, Breath as the leash, the Drowned Choir, the coral sarcophagus). Old Oak is not renamed.
+**Chosen.** Act IV is The Sunken Ruins, not Breach fallout. The outline is in `docs/LABYRINTH_ACTS_STORY.md`: flooded halls, Breath as the leash, the Drowned Choir, and the coral sarcophagus. Old Oak is not renamed. Breach fallout is not built.
 
-**Size.** The largest release in this plan: a variant layer on the Breach, a boss, and a loot band. One pull request after the call, off master, not stacked.
+**Size.** Five greybox floors after the Slagworks, a boss, and a loot band. One pull request off master, not stacked.
 
-**Depends on.** Release 5 merged, and the Act IV call.
+**Depends on.** Release 5 merged, and the Act IV call. Both are done.
 
-**Acceptance, if Breach fallout is confirmed.** One shared map spine. Faction state changes levers, spawns, and rooms. Not separate level branches. Five floors, boss on floor 5, waystone home, version 0.9.0. No Great Oak rename. Landfill stays the tutorial. Act I stays the Goblin Warrens.
+**Acceptance.** Five floors (checkpoints 14-18), the Drowned Choir on the last floor, a waystone home, Breath draining in the water, and the coral sarcophagus after the Choir. Version 0.9.0. No Great Oak rename. Landfill stays the tutorial. Act I stays the Goblin Warrens. Old Oak stays Old Oak.
 
-**Steps, only after the call.**
+**Steps.**
 
-1. One Breach interior with state flags for lever, spawn, and room variants.
-2. Five floors on that spine, boss on floor 5, waystone home.
-3. An Act IV loot band. Empty-shell hook stays the coral sarcophagus only if you keep that outline beat. Breach fallout does not add it unless you say so.
-4. Story facts from the brainstorm (Demon Lord caused the Breach, Joe as proxy, Bob, the prism, the Association head) stay out of dialogue until you ask for a writing pass.
+1. Checkpoints 14-18. A raised air path through flooded halls. Breath drains in the water, and an air bell refills it.
+2. The Drowned Choir on checkpoint 18. Surfaced, then submerged. The submerged phase is the water. A waystone on that floor sends the party home.
+3. An Act IV loot band, Water, above the Slagworks levels. The coral sarcophagus is shown after the Choir falls. It is empty.
+4. The door after Forgemaw opens these floors. It does not add a separate level id. Story facts from the brainstorm stay out of dialogue.
 
 **Tests.** A floor or variant unit test. A solo playtest down the act and home. A co-op smoke. Full tier. Landfill, Act II, and Act III still finish.
 

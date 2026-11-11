@@ -26,3 +26,5 @@ func interact() -> void:
 	spoke.emit(text)
 	if role == "lift" and host != null:
 		host.call(&"use_lift")
+	elif role == "sunken" and host != null:
+		host.call(&"use_sunken")

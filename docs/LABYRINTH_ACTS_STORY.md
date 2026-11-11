@@ -20,6 +20,8 @@ The Slagworks door drops the party into Ironforge's buried mines: rails, ore vei
 
 ## Act IV — The Sunken Ruins
 
+0.9.0 ships this outline. It is not Breach fallout. Old Oak is not renamed.
+
 Below the Slagworks, the Fracture opens into flooded halls taken from Crimson Sea ruins: coral-choked galleries, air pockets, and cult murals of a choir that sang the sea open. Breath becomes the Act's leash. Rising water, crush zones, and long swims reuse the Breath meter, while sea horrors and drowned cultists hunt anything that surfaces too long. The landmark is a drowned temple spire visible through every flooded vista, still glowing with Breach-violet from the inside. Joe's trail here is liturgical. The cultists wrote his name into their hymns as the "dry prophet" who promised them a god that would never drown. Collectible hymn-shards and pressure-locked vaults tell how he traded them a Breach seed for passage, then sealed the exits behind him. Optional air-bell shrines let the party catch their breath and piece the story together without soft-locking co-op. The Act boss is the **Drowned Choir**, a multi-body entity that phases between submerged and surfaced forms and uses the water level as a weapon. When the Choir breaks, the temple drains just enough to open a vertical shaft of wind and broken masonry. In the drained nave lies a third empty vessel: a coral sarcophagus cracked from within. Whatever is climbing toward the Core is shedding skins as it goes.
 
 ## Act V — The Inverted Spire

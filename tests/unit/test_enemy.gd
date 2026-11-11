@@ -100,14 +100,15 @@ func test_tres_matches_toml() -> void:
 		"res://data/enemies/breach_warden.toml", "res://data/enemies/scorchling.toml", OOZE,
 		"res://data/enemies/the_filth.toml", "res://data/enemies/goblins.toml",
 		"res://data/enemies/blightcoil.toml", "res://data/enemies/slagworks.toml",
+		"res://data/enemies/sunken.toml",
 	])
 	check(not r.has("error"), "training_dummies.toml + gnawer.toml + heap.toml load (%s)" % r.get("error", ""))
 	if r.has("error"):
 		return
 	var toml: EnemyTable = r["table"]
 	check(
-		toml.defs.size() == 19 and table.defs.size() == 19,
-		"two dummies + Gnawer + Heap + Breach Warden + Scorchling + Ooze + The Filth + 4 goblins + 4 Blightcoil + 3 Slagworks (%d toml, %d tres)" % [toml.defs.size(), table.defs.size()]
+		toml.defs.size() == 21 and table.defs.size() == 21,
+		"two dummies + Gnawer + Heap + Breach Warden + Scorchling + Ooze + The Filth + 4 goblins + 4 Blightcoil + 3 Slagworks + 2 Sunken (%d toml, %d tres)" % [toml.defs.size(), table.defs.size()]
 	)
 	for want in toml.defs:
 		var got := table.find(want.id)
