@@ -38,7 +38,7 @@ Approved by ShobieShy as patches on top of the campaign, not as new acts and not
 | 0.8.5 | Named uniques and legendaries with a special effect, flavor text, and a boss or rare-spawn drop you can farm. Named rare spawns. Elites that read as elites. Accessibility is done: see below. |
 | 0.8.6 | Action skill, shipped. One cooldown on Q. The verb follows points spent on an element tree: summon, convert, stagger, or chain. Dash is V. |
 | 0.8.7 | Shields, a one-charge flask, a relic, and two extra bases, shipped. The extra-drop rate is unset (0) until it is tuned. |
-| 0.8.8 | Vigil wired as a playable post-clear difficulty (UI, save, the run itself). Hub toys: a Breach-key chest, a vending cadence, a slot machine. A bounty board, a mantle, and combat barks. |
+| 0.8.8 | Covenant Escalation after Forgemaw, hub toys, bounties, a mantle, and barks, shipped. The class is still Vigil. Tier 0 is the story run. |
 
 ### Accessibility (done)
 

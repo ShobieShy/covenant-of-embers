@@ -154,6 +154,8 @@ func elite_dead(n: int, id: String) -> bool:
 func defeat_boss(id: String) -> void:
 	if not bosses.has(id):
 		bosses.append(id)
+	if id == "forgemaw":
+		PostClear.note_clear()
 
 
 func open_shortcut(id: String) -> void:

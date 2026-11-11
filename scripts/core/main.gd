@@ -229,6 +229,7 @@ func _setup_flow(player: Player) -> void:
 			story_flags.from_dict((r["data"] as Dictionary).get("progress", {}).get("flags", {}))
 			_loaded_quests = (r["data"] as Dictionary).get("progress", {}).get("quests", {})
 			labyrinth = LabyrinthState.from_save(r["data"])
+			PostClear.from_dict((r["data"] as Dictionary).get("progress", {}).get("post_clear", {}))
 			if breach and (r["data"] as Dictionary).get("progress", {}).get("vault_open", false):
 				breach.restore_open()   # step 47: rooms cleared, gate + vault stay open
 			print("[save] loaded %s (level %d, %d warning(s))" % [GameFlow.save_path, player.progression.level, load_warnings.size()])
@@ -246,8 +247,10 @@ func _setup_flow(player: Player) -> void:
 	_setup_quests(player, here)
 	if here == "old_oak":
 		_setup_oak(player)
+		HubToys.place(self)
 	if here == "town_square":
 		_setup_hub(player)
+		HubToys.place(self)
 	_setup_fast_travel(player, here)
 	for g in get_tree().get_nodes_in_group(FlagGate.GROUP):  # step 156: intro soft-blocks
 		if is_ancestor_of(g):
@@ -590,7 +593,7 @@ func progress() -> Dictionary:
 		"anchor": MapAnchors.nearest($Level, player.global_position) if player else "",
 		"map_version": MapAnchors.version_of($Level),
 		"flags": story_flags.to_dict(), "quests": quests.to_dict() if quests else {},
-		"labyrinth": labyrinth.to_dict()}
+		"labyrinth": labyrinth.to_dict(), "post_clear": PostClear.to_dict()}
 	d["flow"] = SaveMigration.FLOW
 	d["linear_v"] = SaveMigration.LINEAR_V
 	var seen: Array = []
