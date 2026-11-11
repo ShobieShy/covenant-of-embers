@@ -24,6 +24,10 @@ Breach fallout. Uses a shared map spine with faction states (lever / spawn / roo
 
 - Chaos mode is purely mechanical: harder enemies, better loot, same story and dialogue, no narrative changes.
 - DLC has level minimums. Chaos requires beating the main game.
+- Endgame loop, 2026-11-11: After beating a labyrinth, you can replay the same labyrinth over and over. Once you beat it, its final level is no longer the final level; there is no final level. You keep descending with increasing difficulty, loot drops, and rewards until you can't go on. This is the endgame loop. It pairs with the existing Mayhem-style tier system (already written in code but unused), which can be the dial that turns as you go deeper. This applies to the main Breach labyrinth and to each DLC labyrinth after its story is cleared (consistent with the earlier note that post-clear floors are randomly generated with escalating stats, while story acts stay handmade). Chaos mode stays purely mechanical, same story.
+- The mode is called "the Abyss" while you are progressing through it (the finite version), and once you beat it, it becomes "Endless Descent" (the infinite post-clear version).
+
+The Mayhem-style tiers are `scripts/loot/vigil.gd` (`Vigil`, tiers 1–10, separate difficulty and reward curves, seeded Omens). A cleared floor can be re-rolled by `scripts/labyrinth/labyrinth_state.gd` `remix()`. Neither is the playable descent loop. The earlier random-floor note is in `docs/PLAN_0.8.0_SLAGWORKS.md` (the endless-after-clear rule, Post-Core).
 
 ## Death
 
@@ -44,3 +48,7 @@ Current outlines do not call the Landfill Act I. [LABYRINTH_ACTS_STORY.md](../LA
 Act IV does not match. Those docs call Act IV The Sunken Ruins (0.9.0). This note calls Act IV Breach fallout, on a shared map spine with faction states. Both statements are left as written.
 
 The tree name does not match. This note says Great Oak. The shipped level, quests, and docs say Old Oak (`old_oak`, [INTRO_PLAN.md](../INTRO_PLAN.md), [LINEAR_LEVELS_PLAN.md](../LINEAR_LEVELS_PLAN.md)). [EMBER_ART_REQUESTS.md](../EMBER_ART_REQUESTS.md) describes the Old Oak model as "the great oak" in the art request, not as the place name. No code or doc was renamed.
+
+How Vigil tiers relate to Chaos mode is open. Whether depth auto-raises the tier, or the player picks it, is open.
+
+"the Abyss" and "Endless Descent" may clash with the existing name The Forgotten Abyss (`docs/PLAN_NEXT.md`, `docs/PLAN_0.8.0_SLAGWORKS.md`: the deferred post-Core endless run). Whether "the Abyss" refers to each labyrinth's descent generally is also open. No name was renamed.
