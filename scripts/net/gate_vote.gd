@@ -142,7 +142,7 @@ func _voters() -> Array:
 		return out
 	for g in [Player.GROUP, &"coop_avatars"]:
 		for n in get_tree().get_nodes_in_group(g):
-			if n is Node3D and not out.has(n):
+			if n is Node3D and not n.is_queued_for_deletion() and not out.has(n):
 				out.append(n)
 	return out
 

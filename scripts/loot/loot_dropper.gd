@@ -100,9 +100,7 @@ func roll_for(enemy: Enemy) -> Array[LootDrop]:
 		var branded := ActLoot.brand_roll(rng, int(enemy.get_meta(&"act_floor", 0)))
 		if branded >= 0:
 			el = branded
-	return DropRoller.roll_kill(
-		rng, enemy.def.id, enemy.level(), el, lk, null, rarity_table(), party, _bias()
-	)
+	return DropRoller.roll_kill(rng, enemy.def.id, enemy.level(), el, lk, null, rarity_table(), party, _bias())
 
 
 func _bias() -> PackedStringArray:

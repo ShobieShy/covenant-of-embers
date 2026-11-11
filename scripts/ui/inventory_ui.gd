@@ -333,9 +333,7 @@ func refresh() -> void:
 			slot_buttons[i].tooltip_text += " (junk)"
 		_junk_badge(slot_buttons[i], it if it and player.inventory.is_junk(it) else null)
 	var pot := player.equipment.potion
-	potion_button.text = (
-		"Potions: %s x%d" % [name_of(pot), player.equipment.potion_count] if pot else "Potions: -"
-	)
+	potion_button.text = ("Potions: %s x%d" % [name_of(pot), player.equipment.potion_count] if pot else "Potions: -")
 	for c in quest_box.get_children():
 		c.queue_free()
 	for q in player.quest_items:
@@ -347,11 +345,7 @@ func refresh() -> void:
 	qty.visible = is_pot
 	qty.max_value = maxi(1, player.equipment.potion_count) if is_pot else 1
 	junk_button.disabled = not (selected is Resource and player.inventory.has(selected))
-	junk_button.text = (
-		"Unmark junk"
-		if selected is Resource and player.inventory.is_junk(selected)
-		else "Mark junk"
-	)
+	junk_button.text = ("Unmark junk" if selected is Resource and player.inventory.is_junk(selected) else "Mark junk")
 	trash_button.disabled = selected == null
 	card.text = card_text(selected)
 	if selected != _card_for:  # P6: the card fades in on a new item
@@ -449,9 +443,7 @@ func toggle_junk() -> bool:
 		return false
 	var on := not player.inventory.is_junk(selected)
 	var ok := player.inventory.set_junk(selected, on)
-	status.text = (
-		("Marked as junk." if on else "Unmarked.") if ok else "Only backpack items can be junk."
-	)
+	status.text = (("Marked as junk." if on else "Unmarked.") if ok else "Only backpack items can be junk.")
 	refresh()
 	return ok
 
@@ -499,9 +491,7 @@ func unequip_selected() -> bool:
 func copy_selected() -> String:
 	last_code = ItemCodes.encode(selected) if selected is Resource else ""
 	if last_code.is_empty():
-		status.text = (
-			ItemCodes.encode_error(selected) if selected is Resource else "Nothing selected."
-		)
+		status.text = (ItemCodes.encode_error(selected) if selected is Resource else "Nothing selected.")
 		return ""
 	code_field.text = last_code
 	if DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):

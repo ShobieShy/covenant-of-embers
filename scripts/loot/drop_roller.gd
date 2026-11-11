@@ -51,9 +51,7 @@ static func roll_procedural(
 	var rt := table if table != null else RarityTable.load_default()
 	var out: Array[LootDrop] = []
 	for i in part_count(enemy_level):
-		var part_type := (
-			rng.randi_range(0, WieldablePart.PART_TYPE_NAMES.size() - 1) as WieldablePart.PartType
-		)
+		var part_type := rng.randi_range(0, WieldablePart.PART_TYPE_NAMES.size() - 1) as WieldablePart.PartType
 		var rarity := rt.roll(rng, luck)
 		var el := _element(rng, element)
 		var part := PartRoller.roll(rng, part_type, rarity.id, el)
@@ -108,11 +106,7 @@ static func roll_kill(
 
 ## roll_kill for an EnemyDef (its id, level and affinity as the drop element).
 static func roll_enemy(
-	rng: RandomNumberGenerator,
-	def: EnemyDef,
-	luck := 0.0,
-	pools: DropTable = null,
-	table: RarityTable = null
+	rng: RandomNumberGenerator, def: EnemyDef, luck := 0.0, pools: DropTable = null, table: RarityTable = null
 ) -> Array[LootDrop]:
 	return roll_kill(rng, def.id, def.level, def.affinity, luck, pools, table)
 

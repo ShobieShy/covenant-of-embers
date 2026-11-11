@@ -873,7 +873,14 @@ func tick(input: PlayerInput, dt: float) -> void:
 		_set_crouched(true)
 	elif crouched and _can_stand():
 		_set_crouched(false)
-	if not grounded and not _jumped_from_slide and not _crouched_jump and crouch_held and not _air_tuck and not crouched:
+	if (
+		not grounded
+		and not _jumped_from_slide
+		and not _crouched_jump
+		and crouch_held
+		and not _air_tuck
+		and not crouched
+	):
 		_begin_air_tuck()
 	elif not grounded and _air_tuck and not crouch_held and not _crouched_jump:
 		_try_release_tuck()

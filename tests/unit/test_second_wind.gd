@@ -43,7 +43,9 @@ func test_cast_kill_and_bleed() -> void:
 	check(hud.death_label.text.contains("Second Wind"), "banner: %s" % hud.death_label.text)
 	check(is_zero_approx(hud.death_overlay.color.a), "the overlay does not black out the fight")
 	check(hud.crosshair.visible, "crosshair stays up")
-	var e := Enemy.create(EnemyTable.load_default().find("heap"), Transform3D(Basis.IDENTITY, p.global_position + Vector3(3, 0, 0)))
+	var e := Enemy.create(
+		EnemyTable.load_default().find("heap"), Transform3D(Basis.IDENTITY, p.global_position + Vector3(3, 0, 0))
+	)
 	e.auto_tick = false
 	p.get_parent().add_child(e)
 	e.apply_damage(100000.0, E.FIRE)
