@@ -102,6 +102,8 @@ static func for_item(item: Resource) -> Texture2D:
 static func tint_for(item: Resource) -> Color:
 	if item is ElementGem:
 		return GEM_TINT[clampi((item as ElementGem).element, 0, GEM_TINT.size() - 1)]
+	if item is WieldablePart and NamedUniques.is_named((item as WieldablePart).id):
+		return NamedUniques.COLOR
 	return Color.WHITE
 
 

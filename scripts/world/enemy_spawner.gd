@@ -166,7 +166,10 @@ func spawn_camp(c: Dictionary) -> Array[Enemy]:
 			skipped.append("%s@%s" % [g["enemy"], c["name"]])
 			continue
 		for k in int(g.get("count", 1)):
-			var e := Enemy.create(d, inv * Transform3D(Basis(), spots[n]))
+			var e := Enemy.create(
+				RareSpawns.decorate(d, RareSpawns.roll_of("%s/%d" % [c["name"], n])),
+				inv * Transform3D(Basis(), spots[n])
+			)
 			e.name = "camp_%s_%s_%d_%d" % [c["name"], d.id, int(c["spawned"]) + 1, n + 1]
 			n += 1
 			add_child(e)
@@ -372,9 +375,13 @@ func _spawn_wave() -> void:
 			var n := int(used.get(at, 0))
 			used[at] = n + 1
 			var affix := Elites.roll(elite_rng, vigil_tier)
+			var spawned_def := d
 			if affix != "":
 				elites += 1
-			var e := Enemy.create(Elites.apply(d, affix), inv * Transform3D(mx.basis, spots[n]))
+				spawned_def = Elites.apply(d, affix)
+			else:
+				spawned_def = RareSpawns.decorate(d, RareSpawns.roll_of("%s/%s/%d" % [id, at, n]))
+			var e := Enemy.create(spawned_def, inv * Transform3D(mx.basis, spots[n]))
 			e.name = "%s_%s_%s_%d" % [id, at, d.id, n + 1]  # unique: n counts per point
 			add_child(e)
 			spawned += 1

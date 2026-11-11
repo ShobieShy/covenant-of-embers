@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WieldablePart" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic/wieldable_part.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "matriarchs_mandible"
+display_name = "Matriarch's Mandible"
+description = "A tooth that never stopped chewing the dark."
+part_type = 4
+rarity = "unique"
+element = 6
+damage_bonus = 4.0
+fire_rate_modifier = 1.0
+accuracy_bonus = 0.0
+handling_bonus = 0.0
+gem_slots = 0

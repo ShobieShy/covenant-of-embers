@@ -57,7 +57,10 @@ static func make(
 ## resources/parts/<id>.tres (null when missing). Shared resource: duplicate() before editing.
 static func load_part(part_id: String) -> WieldablePart:
 	var path := "%s/%s.tres" % [DIR, part_id]
-	return load(path) as WieldablePart if ResourceLoader.exists(path) else null
+	if ResourceLoader.exists(path):
+		return load(path) as WieldablePart
+	var named := "res://resources/uniques/%s.tres" % part_id
+	return load(named) as WieldablePart if ResourceLoader.exists(named) else null
 
 
 ## Every part id under resources/parts, sorted.
@@ -75,7 +78,7 @@ func rarity_def() -> Rarity:
 
 
 func rarity_color() -> Color:
-	return RarityTable.load_default().color(rarity)
+	return NamedUniques.color_for(self, RarityTable.load_default().color(rarity))
 
 
 func part_type_name() -> String:

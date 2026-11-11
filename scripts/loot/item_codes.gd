@@ -89,6 +89,40 @@ const TABLES := {
 		"equipment": ["apprentice_hat", "basic_robes", "leather_belt", "novice_grimoire", "traveler_shoes"],
 		"consumables": ["health_potion", "mana_potion"],
 	},
+	2:
+	{
+		"parts":
+		[
+			"basic_earth_interior",
+			"basic_exterior",
+			"basic_fire_head",
+			"basic_fire_interior",
+			"basic_handle",
+			"basic_interior",
+			"mythic_water_exterior",
+			"primordial_fire_head",
+			"rare_air_handle",
+			"rare_light_charm",
+			"rare_water_head",
+			"uncommon_air_exterior",
+			"uncommon_dark_handle",
+			"uncommon_earth_charm",
+			"uncommon_fire_head",
+			"unique_void_charm",
+			"cinder_of_the_heap",
+			"rotglass_lens",
+			"matriarchs_mandible",
+			"crownspore_charm",
+			"forgemaws_tooth",
+			"slagheart",
+			"gnawers_vow",
+			"last_coal",
+			"sump_lantern",
+			"canopy_antler",
+			"brand_iron",
+			"cinderspine",
+		],
+	},
 }
 
 
@@ -101,7 +135,35 @@ static func bits_for(n: int) -> int:
 
 
 static func table(category: String, version := VERSION) -> Array:
-	return TABLES.get(version, {}).get(category, [])
+	var exact: Array = TABLES.get(version, {}).get(category, [])
+	if not exact.is_empty() or version == VERSION:
+		return exact
+	return TABLES.get(VERSION, {}).get(category, [])
+
+
+## 1 when every handmade part is in the v1 table, 2 when a named unique is present.
+static func content_version(item: Variant) -> int:
+	var parts: Array = []
+	if item is WieldablePart:
+		parts = [item]
+	elif item is WieldableInstance:
+		parts = (item as WieldableInstance).parts
+	var ver := VERSION
+	for p in parts:
+		if p == null or (p as WieldablePart).roll_seed >= 0:
+			continue
+		var v := _part_version((p as WieldablePart).id)
+		if v > ver:
+			ver = v
+	return ver
+
+
+static func _part_version(part_id: String) -> int:
+	if (TABLES[1]["parts"] as Array).has(part_id):
+		return 1
+	if TABLES.has(2) and (TABLES[2]["parts"] as Array).has(part_id):
+		return 2
+	return -1
 
 
 ## The Ember Mark of `item` (WieldableInstance, WieldablePart, EquipmentItem, ConsumableItem
@@ -132,11 +194,12 @@ static func _encode(item: Variant, count: int) -> Array:
 		err = _check_part(p)
 		if err.is_empty():
 			var fl := FLAG_EXTRAS if ex else 0
+			var ver := content_version(p)
 			if p.roll_seed >= 0:
-				write_header(w, Kind.PART, VERSION, fl)
+				write_header(w, Kind.PART, ver, fl)
 			else:
-				write_header(w, Kind.PART_HANDMADE, VERSION, fl)
-			_write_part_fields(w, p, ex)
+				write_header(w, Kind.PART_HANDMADE, ver, fl)
+			_write_part_fields(w, p, ex, ver)
 	elif item is EquipmentItem:
 		err = _write_equipment(w, item, ex)
 	elif item is ConsumableItem:
@@ -188,13 +251,14 @@ static func _write_wieldable(w: BitStream, wi: WieldableInstance, ex := false) -
 			var e := _check_part(p)
 			if not e.is_empty():
 				return e
-		write_header(w, Kind.ASSEMBLED, VERSION, FLAG_EXTRAS if ex else 0)
+		var ver := content_version(wi)
+		write_header(w, Kind.ASSEMBLED, ver, FLAG_EXTRAS if ex else 0)
 		w.write(idx, bits_for(ids.size()))
 		w.write(tier, TIER_BITS)
 		w.write(wi.parts.size(), PART_COUNT_BITS)
 		for p in wi.parts:
 			w.write(1 if p.roll_seed >= 0 else 0, 1)
-			_write_part_fields(w, p, ex)
+			_write_part_fields(w, p, ex, ver)
 		return ""
 	if not wi.parts.is_empty():
 		return "loose parts on an unassembled base (assemble it first)"
@@ -216,7 +280,7 @@ static func _check_part(p: WieldablePart) -> String:
 		if again == null or not _props_equal(p, again, ["gems"]):
 			return "part '%s' doesn't match its roll seed (edited?)" % p.id
 		return ""
-	if table("parts").find(p.id) < 0:
+	if _part_version(p.id) < 0:
 		return "hand-made part '%s' is not in the index table" % p.id
 	if not _props_equal(p, WieldablePart.load_part(p.id), ["gems"]):
 		return "hand-made part '%s' was edited" % p.id
@@ -225,14 +289,14 @@ static func _check_part(p: WieldablePart) -> String:
 	return ""
 
 
-static func _write_part_fields(w: BitStream, p: WieldablePart, ex := false) -> void:
+static func _write_part_fields(w: BitStream, p: WieldablePart, ex := false, version := VERSION) -> void:
 	if p.roll_seed >= 0:
 		w.write(p.part_type, PART_TYPE_BITS)
 		w.write(Rarity.parse(p.rarity), TIER_BITS)
 		w.write(p.element, ELEMENT_BITS)
 		w.write(p.roll_seed, SEED_BITS)
 	else:
-		var ids := table("parts")
+		var ids := table("parts", version)
 		w.write(ids.find(p.id), bits_for(ids.size()))
 	if ex:
 		w.write(p.gems.size(), GEM_COUNT_BITS)

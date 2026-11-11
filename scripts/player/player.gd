@@ -720,6 +720,7 @@ func tick(input: PlayerInput, dt: float) -> void:
 	health.tick(dt)
 	consecrations.tick(self)
 	skill_procs.tick(self, dt)
+	NamedUniques.tick(self)
 	protection_left = maxf(0.0, protection_left - dt)
 	if protection_left < 1e-6:  # 1 - 60 x 1/60 leaves float dust: exactly 60 ticks
 		protection_left = 0.0

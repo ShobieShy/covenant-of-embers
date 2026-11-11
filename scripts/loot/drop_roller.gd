@@ -91,7 +91,8 @@ static func roll_kill(
 	pools: DropTable = null,
 	table: RarityTable = null,
 	players := 1,
-	bias: PackedStringArray = []
+	bias: PackedStringArray = [],
+	source := ""
 ) -> Array[LootDrop]:
 	var dt := pools if pools != null else default_pools()
 	var out: Array[LootDrop] = []
@@ -101,6 +102,12 @@ static func roll_kill(
 		if d != null:
 			out.append(d)
 	out.append_array(roll_procedural(rng, enemy_level, element, luck, table, bias))
+	var who := source if source != "" else enemy_id
+	var unique_id := NamedUniques.roll_drop(who, rng.state)
+	if unique_id != "":
+		var extra := NamedUniques.make_drop(unique_id)
+		if extra != null:
+			out.append(extra)
 	return out
 
 
