@@ -2,7 +2,7 @@
 
 Approved by ShobieShy on 5 Nov 2026.
 
-Story outlines for Acts I–V are in [LABYRINTH_ACTS_STORY.md](LABYRINTH_ACTS_STORY.md). The Core is not outlined there. Approved Act II design notes stay in [ACT2_STORY.md](ACT2_STORY.md) and [PLAN_0.7.0_ACT2.md](PLAN_0.7.0_ACT2.md). The 11 Nov 2026 Act IV / post-game / DLC notes are in [design/BRAINSTORM_2026-11-11_ACT4_POSTGAME_DLC.md](design/BRAINSTORM_2026-11-11_ACT4_POSTGAME_DLC.md). Those notes do not replace the outlines on this page.
+Story outlines for Acts I–V are in [LABYRINTH_ACTS_STORY.md](LABYRINTH_ACTS_STORY.md). The Core is not outlined there. Approved Act II design notes stay in [ACT2_STORY.md](ACT2_STORY.md) and [PLAN_0.7.0_ACT2.md](PLAN_0.7.0_ACT2.md). The 11 Nov 2026 Act IV / post-game / DLC notes are in [design/BRAINSTORM_2026-11-11_ACT4_POSTGAME_DLC.md](design/BRAINSTORM_2026-11-11_ACT4_POSTGAME_DLC.md). Those notes do not replace the outlines on this page. The implementation plan for accessibility through 0.9.0 is [PLAN_IMPLEMENTATION_0.8.5-0.9.md](PLAN_IMPLEMENTATION_0.8.5-0.9.md). It is a plan, not a build.
 
 0.6.0, the trust pass, already shipped. This file no longer plans that pass. 0.7.0 is Act II, The Blightcoil, and that act is on master. This roadmap does not bump a version or cut a release.
 
