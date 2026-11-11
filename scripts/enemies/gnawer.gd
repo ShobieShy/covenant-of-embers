@@ -610,7 +610,7 @@ func _tick_pattern(dt: float, next: State, dir: Vector3) -> void:
 		return
 	if engaged < style.arm_s or pattern_cd > 0.0:
 		return
-	if has_method(&"winding_up") and bool(call(&"winding_up")):
+	if has_method(&"winding_up") and call(&"winding_up") == true:
 		return
 	# Leave the basic cooldown alone so a slam or bite still lands on its timer.
 	if attack_timer <= style.windup + 0.05:
@@ -638,7 +638,7 @@ func _style_slide(dt: float, next: State, dir: Vector3, dist: float) -> Vector3:
 	if style_lock > 0.0:
 		style_lock = maxf(0.0, style_lock - dt)
 		return Vector3.ZERO
-	if style == null or rusher == null:
+	if style == null or rusher == null or _neighbor_near():
 		return Vector3.ZERO
 	var delta := Vector3.ZERO
 	if dodge_left > 0.0:
@@ -665,6 +665,21 @@ func _style_slide(dt: float, next: State, dir: Vector3, dist: float) -> Vector3:
 	var pocket := rusher.attack_range
 	var min_dist := maxf(0.2, rusher.attack_range * 0.7)
 	return CombatStyle.clamp_pocket(delta, dir, dist, pocket, min_dist)
+
+
+## A pack already stands inside bite range of each other. Sidesteps there close the
+## gap the crowd steer is holding (the three-gnawer separation check).
+func _neighbor_near() -> bool:
+	if not is_inside_tree():
+		return false
+	for n in get_tree().get_nodes_in_group(GROUP):
+		var e := n as Enemy
+		if e == null or e == self or not e.alive():
+			continue
+		# Wider than the bite pocket: three rats around one player sit about 1.5 m apart.
+		if _flat(e.global_position - global_position).length() < 1.8:
+			return true
+	return false
 
 
 func _update_pose(dt: float, next: State) -> void:
