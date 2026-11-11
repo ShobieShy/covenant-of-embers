@@ -16,7 +16,9 @@ func test_mother_lines_and_quests() -> void:
 		pass
 	check(flags.has("verdant_met"), "the talk sets verdant_met")
 	check(q.state("the_overgrown_deep") == "active", "the kill quest starts")
-	check(q.current_objective("the_overgrown_deep")["target"] == "blightmaw_matriarch", "the objective is the Matriarch")
+	check(
+		q.current_objective("the_overgrown_deep")["target"] == "blightmaw_matriarch", "the objective is the Matriarch"
+	)
 	check(q.state("joes_marks") == "active", "the mark quest starts")
 	DialogueDB.bosses = ["blightmaw_matriarch"]
 	var after := db.pick("Verdant Mother", flags)

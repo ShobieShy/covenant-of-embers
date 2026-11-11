@@ -201,6 +201,4 @@ static func count_up(l: Label, from: int, to: int, fmt := "%d", seconds := 0.4) 
 		l.text = fmt % to
 		return
 	var t := _tween(l, &"ui_anim_count")
-	t.tween_method(
-		func(v: float) -> void: l.text = fmt % int(round(v)), float(from), float(to), seconds
-	)
+	t.tween_method(func(v: float) -> void: l.text = fmt % int(round(v)), float(from), float(to), seconds)

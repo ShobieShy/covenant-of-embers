@@ -66,13 +66,18 @@ static func map_rows(tree: SceneTree) -> Array:
 		var p := n as Node3D
 		var nm: Variant = p.get(&"character_name")
 		var c: Variant = p.get(&"character_color")
-		out.append([
-			p.global_position,
-			p.global_rotation.y,
-			String(nm) if nm != null else "",
-			c if c is Color else Color(1, 0.8, 0.3),
-			true,
-		])
+		(
+			out
+			. append(
+				[
+					p.global_position,
+					p.global_rotation.y,
+					String(nm) if nm != null else "",
+					c if c is Color else Color(1, 0.8, 0.3),
+					true,
+				]
+			)
+		)
 	for n in tree.get_nodes_in_group(RemotePlayer.GROUP):
 		var r := n as RemotePlayer
 		out.append([r.global_position, r.target_yaw, r.display_name, r.color, false])
@@ -130,26 +135,20 @@ func _draw() -> void:
 		for e in travel.exit_markers():
 			var s := world_to_mini(e["pos"])
 			if s.distance_to(mid) < mid.x:
-				draw_circle(
-					s, 3.0, Color(0.9, 0.8, 0.5) if e["kind"] == "road" else Color(0.6, 0.8, 1.0)
-				)
+				draw_circle(s, 3.0, Color(0.9, 0.8, 0.5) if e["kind"] == "road" else Color(0.6, 0.8, 1.0))
 		for p in travel.waystones:
 			var on := travel.fast_travel.attuned(p) if travel.fast_travel else false
 			var s := clamp_rim(world_to_mini(travel.point_world(p)))
 			draw_circle(s, 5.0, Color(1.0, 0.55, 0.15) if on else Color(0.4, 0.4, 0.4))
 	for p in pins.pins if pins else []:
 		var s := clamp_rim(world_to_mini(Vector3(p[0], 0, p[1])))
-		draw_colored_polygon(
-			PackedVector2Array([s, s + Vector2(-4, -9), s + Vector2(4, -9)]), Color(0.9, 0.2, 0.3)
-		)
+		draw_colored_polygon(PackedVector2Array([s, s + Vector2(-4, -9), s + Vector2(4, -9)]), Color(0.9, 0.2, 0.3))
 	for pl in rows():
 		var local: bool = pl.size() > 4 and pl[4]
 		var s := mid if local else clamp_rim(world_to_mini(pl[0]))
 		var d := Vector2(0, -1).rotated(_angle() - float(pl[1]))
 		var c: Color = pl[3] if pl.size() > 3 else Color.WHITE
-		draw_colored_polygon(
-			PackedVector2Array([s + d * 8, s + d.rotated(2.5) * 6, s + d.rotated(-2.5) * 6]), c
-		)
+		draw_colored_polygon(PackedVector2Array([s + d * 8, s + d.rotated(2.5) * 6, s + d.rotated(-2.5) * 6]), c)
 	draw_arc(mid, mid.x - 1.0, 0.0, TAU, 48, Color(0.8, 0.7, 0.5, 0.9), 2.0)
 	if not lock_north:  # the N tick rides the rim
 		draw_string(

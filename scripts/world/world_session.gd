@@ -40,11 +40,8 @@ static func nearest_level(p: Vector3) -> String:
 	var best := SaveMigration.FALLBACK_LEVEL
 	var bd := INF
 	for l in WorldMap.LEVEL_REGION:
-		var d := Vector2(p.x, p.z).distance_to(
-			Vector2(SaveMigration.entrance(l).x, SaveMigration.entrance(l).z)
-		)
+		var d := Vector2(p.x, p.z).distance_to(Vector2(SaveMigration.entrance(l).x, SaveMigration.entrance(l).z))
 		if d < bd:
 			bd = d
 			best = l
 	return best
-

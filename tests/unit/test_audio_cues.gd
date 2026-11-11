@@ -8,14 +8,8 @@ func test_keys_present_and_distinct() -> void:
 	for k in NEW_KEYS:
 		check(GameAudio.SOUNDS.has(k), "%s key" % k)
 		check(GameAudio.load_stream(k) != null, "%s loads" % k)
-	check(
-		GameAudio.SOUNDS["cast"] != GameAudio.SOUNDS["brand_crystal_set"],
-		"cast / crystal set differ"
-	)
-	check(
-		not String(GameAudio.SOUNDS["enemy_death"]).contains("Metal"),
-		"enemy death is no longer a metal clang"
-	)
+	check(GameAudio.SOUNDS["cast"] != GameAudio.SOUNDS["brand_crystal_set"], "cast / crystal set differ")
+	check(not String(GameAudio.SOUNDS["enemy_death"]).contains("Metal"), "enemy death is no longer a metal clang")
 	for k in ["ui_hover", "ui_open", "ui_close"]:
 		check(GameAudio.UI_KEYS.has(k), "%s on the UI bus" % k)
 

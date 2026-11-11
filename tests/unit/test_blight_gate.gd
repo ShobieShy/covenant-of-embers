@@ -57,7 +57,13 @@ func test_joiner_stands_on_the_host_pad() -> void:
 	ji.floor_no = 8
 	ji.labyrinth = hi.labyrinth
 	await ji.enter("labyrinth")
-	check(is_equal_approx(p.global_position.y, ji.cavern.pad_global(8).y + 1.0) or absf(p.global_position.y - pad_y) < 2.0, "joiner height matches the Crown pad")
+	check(
+		(
+			is_equal_approx(p.global_position.y, ji.cavern.pad_global(8).y + 1.0)
+			or absf(p.global_position.y - pad_y) < 2.0
+		),
+		"joiner height matches the Crown pad"
+	)
 	check(ji.cavern.get_node_or_null("Walk/Slab_sump") != null, "both tiers exist for the joiner")
 	hi.free()
 	ji.free()

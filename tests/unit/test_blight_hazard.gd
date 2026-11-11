@@ -78,15 +78,18 @@ func test_shrine_and_pad_save_the_same_checkpoint() -> void:
 	cav.watch_pads([p])
 	check(flags.has("waystone:blightcoil_sump") == false, "the signal has not saved yet")
 	var got: Array = []
-	cav.pad_reached.connect(func(n: int, id: String) -> void:
-		state.current = n
-		state.reach(n)
-		travel.attune(id)
-		got.append(n)
+	cav.pad_reached.connect(
+		func(n: int, id: String) -> void:
+			state.current = n
+			state.reach(n)
+			travel.attune(id)
+			got.append(n)
 	)
 	cav._stepped.clear()
 	cav.watch_pads([p])
-	check(got == [6] and state.current == 6 and travel.attuned("blightcoil_sump"), "a pad step attunes and sets current")
+	check(
+		got == [6] and state.current == 6 and travel.attuned("blightcoil_sump"), "a pad step attunes and sets current"
+	)
 	p.poison_left = 4.0
 	p.poison_dps = 0.02
 	var shrine := cav.get_node("RestShrine") as RestShrine

@@ -100,9 +100,7 @@ static func chest_rarity(floor_no: int, secret := false) -> String:
 	if a == 0:
 		return "basic"
 	var cs: Array = ACTS[a]["chests"]
-	var t := Rarity.parse(
-		String(cs[clampi(floor_no - int(ACTS[a]["floors"][0]), 0, cs.size() - 1)])
-	)
+	var t := Rarity.parse(String(cs[clampi(floor_no - int(ACTS[a]["floors"][0]), 0, cs.size() - 1)]))
 	if secret:
 		t = mini(t + 1, Rarity.parse("primordial"))
 	return Rarity.IDS[t]

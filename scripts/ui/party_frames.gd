@@ -162,8 +162,14 @@ func refresh(dt := 0.0) -> void:
 			ring.custom_minimum_size = Vector2(18, 18)
 			root.add_child(ring)
 			rows[peer] = {
-				"root": root, "label": l, "bar": b, "chip": chip, "chip_v": pr.hp, "hold": 0.0,
-				"shield": shield, "ring": ring,
+				"root": root,
+				"label": l,
+				"bar": b,
+				"chip": chip,
+				"chip_v": pr.hp,
+				"hold": 0.0,
+				"shield": shield,
+				"ring": ring,
 			}
 		var row: Dictionary = rows[peer]
 		var state := ""

@@ -111,9 +111,7 @@ func rebind(action: StringName, e: InputEvent) -> bool:
 			if Gamepad.is_pad(old) != Gamepad.is_pad(e):
 				kept.append(event_to_dict(old))
 	kept.append(d)
-	kept.sort_custom(
-		func(x, y): return not (x.has("joy") or x.has("axis")) and (y.has("joy") or y.has("axis"))
-	)
+	kept.sort_custom(func(x, y): return not (x.has("joy") or x.has("axis")) and (y.has("joy") or y.has("axis")))
 	bindings[action] = kept
 	if InputMap.has_action(action):
 		InputMap.action_erase_events(action)
@@ -135,9 +133,7 @@ func apply_input_map() -> void:
 
 
 func apply_to(p: Player) -> void:
-	Accessibility.colorblind = (
-		clampi(colorblind, 0, Accessibility.MODE_NAMES.size() - 1) as Accessibility.Mode
-	)
+	Accessibility.colorblind = (clampi(colorblind, 0, Accessibility.MODE_NAMES.size() - 1) as Accessibility.Mode)
 	Accessibility.subtitles = subtitles
 	UiAnim.reduced_motion = reduced_motion  # 0.3.1 P1
 	DialogueUI.instant_text = instant_text  # 0.3.1 P3

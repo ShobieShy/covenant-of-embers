@@ -94,10 +94,7 @@ func ensure_nav() -> void:
 	nav_bakes += 1
 	nav_from_cache = false
 	_write_cache(nm, hashed)
-	push_warning(
-		"Blightcoil: built navmesh (%d polys); the cache was missing or stale"
-		% nm.get_polygon_count()
-	)
+	push_warning("Blightcoil: built navmesh (%d polys); the cache was missing or stale" % nm.get_polygon_count())
 
 
 func nav_map() -> RID:
@@ -382,9 +379,7 @@ func _props(state: LabyrinthState) -> void:
 	mother.position = pad_local(7) + Vector3(1.6, 0, 0.4)
 	mother.set_meta(&"speaker", "Verdant Mother")
 	add_child(mother)
-	cocoon = _prop_box(
-		"Cocoon", pad_local(8) + Vector3(-2.2, 0, 1.4), Vector3(1.8, 1.6, 1.4), Color(0.55, 0.5, 0.32)
-	)
+	cocoon = _prop_box("Cocoon", pad_local(8) + Vector3(-2.2, 0, 1.4), Vector3(1.8, 1.6, 1.4), Color(0.55, 0.5, 0.32))
 	var shell := BlightcoilKit.visual("torn_cocoon")
 	if shell:
 		cocoon.mesh = null
@@ -448,9 +443,7 @@ func _spawns(state: LabyrinthState) -> void:
 	add_child(spot)
 
 
-func _enemy(
-	root: Node3D, nm: String, id: String, pad: int, at: Vector3, elite := ""
-) -> Marker3D:
+func _enemy(root: Node3D, nm: String, id: String, pad: int, at: Vector3, elite := "") -> Marker3D:
 	var m := Marker3D.new()
 	m.name = nm
 	m.position = at

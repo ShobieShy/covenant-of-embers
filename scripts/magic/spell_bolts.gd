@@ -280,9 +280,7 @@ func _is_enemy(o: Object) -> bool:
 
 ## Sweeps a graze sphere from -> to against the enemy layer: {} or a ray-like dict at the
 ## first enemy (not passing bolts) it touches.
-func _graze(
-	space: PhysicsDirectSpaceState3D, s: Spawn, from: Vector3, to: Vector3, exclude: Array[RID]
-) -> Dictionary:
+func _graze(space: PhysicsDirectSpaceState3D, s: Spawn, from: Vector3, to: Vector3, exclude: Array[RID]) -> Dictionary:
 	var sphere := SphereShape3D.new()
 	sphere.radius = s.graze_radius
 	var q := PhysicsShapeQueryParameters3D.new()

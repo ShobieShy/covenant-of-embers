@@ -45,9 +45,7 @@ const DEEP_POINTS := {
 	"slagworks_crucible": {"name": "The Slagworks - Crucible", "level": "labyrinth", "floor": 13},
 }
 ## GameFlow level id -> the waystone point that stands in it (spawn anchor).
-const LEVEL_POINT := {
-	"old_oak": "old_oak", "town_square": "town_gate", "midden": "landfill", "breach": "breach"
-}
+const LEVEL_POINT := {"old_oak": "old_oak", "town_square": "town_gate", "midden": "landfill", "breach": "breach"}
 
 var flags: StoryFlags
 var last_error := ""

@@ -24,7 +24,9 @@ func test_world_save_lands_on_a_level_or_the_hub() -> void:
 	check(pr["level_id"] == "old_oak" and pr["flow"] == "linear" and int(pr["linear_v"]) == 3, "oak save stays")
 	check(pr["world_pos"][0] == oak.x and pr["region"] == "eldoria" and pr["fog"] == "kept", "world keys kept")
 	check(int(pr["labyrinth"]["current"]) == 4, "labyrinth floor kept")
-	check(int(pr["flags"]["waystone:town_gate"]) == 1 and int(pr["flags"]["waystone:town_market"]) == 1, "market -> hub")
+	check(
+		int(pr["flags"]["waystone:town_gate"]) == 1 and int(pr["flags"]["waystone:town_market"]) == 1, "market -> hub"
+	)
 	check(int(pr["flags"]["waystone:landfill"]) == 1, "camp -> landfill")
 	check(not SaveMigration.migrate_linear(d), "second pass is a no-op")
 

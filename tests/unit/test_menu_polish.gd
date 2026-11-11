@@ -18,10 +18,7 @@ func test_slot_card() -> void:
 	check(SaveGame.write(d, path) == OK, "wrote a test save")
 	var c := MainMenu.slot_card(n)
 	check(c.begins_with("Slot %d\n" % n), "slot line")
-	check(
-		c.contains("Ash, Lv 12") and c.contains("The Old Oak") and c.contains("Saved 2026-10-28"),
-		"card: %s" % c
-	)
+	check(c.contains("Ash, Lv 12") and c.contains("The Old Oak") and c.contains("Saved 2026-10-28"), "card: %s" % c)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	for f in [path + ".bak", path + ".tmp"]:
 		if FileAccess.file_exists(f):
@@ -31,10 +28,7 @@ func test_slot_card() -> void:
 func test_title_and_hover() -> void:
 	var m: MainMenu = (load(GameFlow.MENU) as PackedScene).instantiate()
 	runner_tree.root.add_child(m)
-	check(
-		m.title_label != null and is_equal_approx(m.title_label.modulate.a, 1.0),
-		"title shown (instant headless)"
-	)
+	check(m.title_label != null and is_equal_approx(m.title_label.modulate.a, 1.0), "title shown (instant headless)")
 	var b: Button = m.buttons["settings"]
 	b.mouse_entered.emit()
 	check(m.hovers == 1, "hover nudges")

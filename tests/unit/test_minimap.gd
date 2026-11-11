@@ -41,10 +41,7 @@ func test_partner_rows_and_draw() -> void:
 	r.global_position = Vector3(30, 0, 40)
 	var rows: Array = Minimap.map_rows(runner_tree)
 	var pal: Array = rows.filter(func(x: Array) -> bool: return x[2] == "Pal")
-	check(
-		pal.size() == 1 and not pal[0][4] and pal[0][3] == Color.RED,
-		"partner row with name and colour"
-	)
+	check(pal.size() == 1 and not pal[0][4] and pal[0][3] == Color.RED, "partner row with name and colour")
 	var m := Minimap.new()
 	m.fog = WorldFog.new()
 	m.pins = MapPins.new()

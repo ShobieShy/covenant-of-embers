@@ -3,8 +3,11 @@ extends TestCase
 ## its pocket, and can wind up a second strike. Boss phase thresholds stay put.
 
 const DT := 1.0 / 60.0
+
+
 class Dummy:
 	extends Node3D
+
 	func eye_position() -> Vector3:
 		return global_position + Vector3(0.0, 1.5, 0.0)
 
@@ -45,8 +48,13 @@ func test_every_fighter_has_two_patterns() -> void:
 		n += 1
 	check(n >= 16, "covered the fighting roster (%d)" % n)
 	var maw := CombatStyle.for_id("blightmaw_matriarch")
-	check(maw.special == "feint" and maw.patterns.has("spore") and maw.patterns.has("husk"), "matriarch keeps her phase attacks")
-	check(is_equal_approx(Blightmaw.PHASE_2_AT, 0.66) and is_equal_approx(Blightmaw.PHASE_3_AT, 0.33), "matriarch phases")
+	check(
+		maw.special == "feint" and maw.patterns.has("spore") and maw.patterns.has("husk"),
+		"matriarch keeps her phase attacks"
+	)
+	check(
+		is_equal_approx(Blightmaw.PHASE_2_AT, 0.66) and is_equal_approx(Blightmaw.PHASE_3_AT, 0.33), "matriarch phases"
+	)
 	check(is_equal_approx(Forgemaw.PHASE_2_AT, 0.66) and is_equal_approx(Forgemaw.PHASE_3_AT, 0.33), "forgemaw phases")
 	check(is_equal_approx(Filth.PHASE_2_AT, 0.66) and is_equal_approx(Filth.PHASE_3_AT, 0.33), "filth phases")
 	var delta := CombatStyle.clamp_pocket(Vector3(0, 0, 5), Vector3(0, 0, -1), 0.9, 1.0, 0.7)
@@ -91,8 +99,14 @@ func test_gnawer_strafes_lunges_and_poses() -> void:
 		saw_recover = saw_recover or g.pose == "recover"
 		if g.specials > 0 and g.pose == "recover":
 			break
-	check(g.specials >= 1 and saw_windup and saw_attack and saw_recover, "lunge winds up, hits, recovers (poses windup %s attack %s recover %s)" % [saw_windup, saw_attack, saw_recover])
-	check(is_equal_approx(g.attacks[-1].damage, 3.0 * g.style.damage_mul), "lunge hits harder (%.2f)" % g.attacks[-1].damage)
+	check(
+		g.specials >= 1 and saw_windup and saw_attack and saw_recover,
+		"lunge winds up, hits, recovers (poses windup %s attack %s recover %s)" % [saw_windup, saw_attack, saw_recover]
+	)
+	check(
+		is_equal_approx(g.attacks[-1].damage, 3.0 * g.style.damage_mul),
+		"lunge hits harder (%.2f)" % g.attacks[-1].damage
+	)
 	var before := g.global_position
 	var hit := SpellBolts.Hit.new()
 	hit.direction = Vector3(0, 0, 1)
@@ -123,7 +137,10 @@ func test_heap_cleave_does_not_replace_the_slam() -> void:
 		h.tick(DT)
 		if h.landed > 0:
 			break
-	check(h.landed == 1 and h.specials == 0 and is_equal_approx(h.attacks[0].damage, 8.0), "first strike is still the slam")
+	check(
+		h.landed == 1 and h.specials == 0 and is_equal_approx(h.attacks[0].damage, 8.0),
+		"first strike is still the slam"
+	)
 	h.style.arm_s = 0.0
 	h.engaged = 20.0
 	h.attack_timer = 1.5
@@ -132,7 +149,10 @@ func test_heap_cleave_does_not_replace_the_slam() -> void:
 		h.tick(DT)
 		if h.specials > 0:
 			break
-	check(h.specials == 1 and is_equal_approx(h.attacks[-1].damage, 8.0 * h.style.damage_mul), "cleave is the second strike")
+	check(
+		h.specials == 1 and is_equal_approx(h.attacks[-1].damage, 8.0 * h.style.damage_mul),
+		"cleave is the second strike"
+	)
 	check(h.slams == 1, "the cleave did not start another slam")
 	w.free()
 

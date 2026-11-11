@@ -83,9 +83,7 @@ static func generate(kit: Dictionary, seed_value: int) -> Dictionary:
 	for i in n - 1:
 		edges.append([i, i + 1, 0])
 	var smin := int(f["secrets_min"])
-	var branches := [
-		["rest", int(f["rest"])], ["secret", smin + g._below(int(f["secrets_max"]) - smin + 1)]
-	]
+	var branches := [["rest", int(f["rest"])], ["secret", smin + g._below(int(f["secrets_max"]) - smin + 1)]]
 	for br: Array in branches:
 		for _i in int(br[1]):
 			var start := g._below(n - 2) + 1

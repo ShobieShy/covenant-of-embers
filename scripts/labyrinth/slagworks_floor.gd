@@ -325,9 +325,7 @@ func _build_crucible() -> void:
 		_wall(arena, edge, full, "Lip%d" % side, "wall")
 
 
-func _segment(
-	parent: Node3D, nm: String, centre: Vector3, size: Vector3, ramp_start: Vector3, horiz: Vector3
-) -> void:
+func _segment(parent: Node3D, nm: String, centre: Vector3, size: Vector3, ramp_start: Vector3, horiz: Vector3) -> void:
 	var b := _walk_box(parent, centre, size, nm, "gantry")
 	b.add_to_group(&"slag_gantry")
 	b.set_meta(&"segment", nm.substr(6, 1))
@@ -347,12 +345,8 @@ func _floor_slab(room: Node3D, size: Vector2, lava: bool, kind: String) -> void:
 		_walk_box(room, Vector3(0, -0.25, 0), Vector3(size.x, 0.5, size.y), "Slab", kind)
 		return
 	var m := STRIP
-	_walk_box(
-		room, Vector3(0, -0.25, -size.y * 0.5 + m * 0.5), Vector3(size.x, 0.5, m), "SlabN", kind
-	)
-	_walk_box(
-		room, Vector3(0, -0.25, size.y * 0.5 - m * 0.5), Vector3(size.x, 0.5, m), "SlabS", kind
-	)
+	_walk_box(room, Vector3(0, -0.25, -size.y * 0.5 + m * 0.5), Vector3(size.x, 0.5, m), "SlabN", kind)
+	_walk_box(room, Vector3(0, -0.25, size.y * 0.5 - m * 0.5), Vector3(size.x, 0.5, m), "SlabS", kind)
 	var inner := size.y - 2.0 * m + 0.3
 	var ex := size.x * 0.5 - m * 0.5
 	_walk_box(room, Vector3(-ex, -0.25, 0), Vector3(m, 0.5, inner), "SlabW", kind)
@@ -407,9 +401,7 @@ func _add_gantry(room: Node3D, size: Vector2) -> void:
 	var horiz := Vector3(0, 0, -RAMP_RUN)
 	_add_ramp(room, start, horiz)
 	var end_z := start.z + horiz.z
-	var deck := _walk_box(
-		room, Vector3(0, 2.8, end_z - 1.5), Vector3(5.5, 0.4, 3.8), "GantryDeck", "gantry"
-	)
+	var deck := _walk_box(room, Vector3(0, 2.8, end_z - 1.5), Vector3(5.5, 0.4, 3.8), "GantryDeck", "gantry")
 	deck.set_meta(&"deck_top", 3.0)
 
 
@@ -657,9 +649,7 @@ func _slag_cast(parent: Node3D) -> void:
 	cast.add_child(gap)
 
 
-func _walk_box(
-	parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String
-) -> StaticBody3D:
+func _walk_box(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String) -> StaticBody3D:
 	var b := _solid(parent, centre, size, nm, kind, true)
 	b.add_to_group(&"slag_walk")
 	return b
@@ -669,9 +659,7 @@ func _wall(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: Str
 	return _solid(parent, centre, size, nm, "wall" if kind == "wall" else kind, false)
 
 
-func _solid(
-	parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String, collide: bool
-) -> StaticBody3D:
+func _solid(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String, collide: bool) -> StaticBody3D:
 	var b := StaticBody3D.new()
 	b.name = nm
 	b.position = centre
@@ -718,9 +706,7 @@ func _volume(parent: Node3D, centre: Vector3, size: Vector3, kind: String) -> Ar
 	mi.mesh = bm
 	var m := StandardMaterial3D.new()
 	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	m.albedo_color = (
-		Color(1.0, 0.45, 0.15, 0.28) if kind == "shimmer" else Color(0.95, 0.28, 0.05, 0.72)
-	)
+	m.albedo_color = (Color(1.0, 0.45, 0.15, 0.28) if kind == "shimmer" else Color(0.95, 0.28, 0.05, 0.72))
 	mi.material_override = m
 	a.add_child(mi)
 	parent.add_child(a)

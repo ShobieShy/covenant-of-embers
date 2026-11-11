@@ -155,10 +155,7 @@ func test_nav_cache_bakes_once() -> void:
 	first.ensure_nav()
 	check(first.nav_bakes == 1 and not first.nav_from_cache, "a missing cache bakes")
 	check(FileAccess.file_exists(first.cache_manifest_path()), "the bake writes the cache")
-	check(
-		first._region.navigation_mesh.get_polygon_count() > 0,
-		"the bake has polygons"
-	)
+	check(first._region.navigation_mesh.get_polygon_count() > 0, "the bake has polygons")
 	var stem := first.cache_mesh_path()
 	first.free()
 	var second := SlagworksFloor.make(9, LabyrinthState.fresh(21))

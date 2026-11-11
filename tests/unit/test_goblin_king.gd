@@ -71,10 +71,7 @@ func test_throw_releases_at_40_percent() -> void:
 		thrown[0] > 0 and absf((thrown[0] - start) * DT - rel) <= 2.0 * DT,
 		"release at 40 %% (%d -> %d ticks)" % [start, thrown[0]]
 	)
-	check(
-		bites.size() == 1 and is_equal_approx(bites[0].damage, GoblinKing.THROW_DAMAGE),
-		"rock lands for 14"
-	)
+	check(bites.size() == 1 and is_equal_approx(bites[0].damage, GoblinKing.THROW_DAMAGE), "rock lands for 14")
 	check(k.rocks_hit == 1 and k.slams == 0, "a rock, not a slam")
 	w.free()
 
@@ -85,9 +82,7 @@ func test_no_throw_up_close_slams_instead() -> void:
 	k.target = _target(w, Vector3(0, 0, -2.4))
 	for i in 120:
 		k.think(DT)
-	check(
-		k.throws == 0 and k.slams >= 1, "slam at 2.4 m (%d throws, %d slams)" % [k.throws, k.slams]
-	)
+	check(k.throws == 0 and k.slams >= 1, "slam at 2.4 m (%d throws, %d slams)" % [k.throws, k.slams])
 	w.free()
 
 
@@ -99,13 +94,7 @@ func test_roar_calls_two_grunts() -> void:
 	k.apply_damage(k.max_health() * 0.55, E.FIRE)
 	check(k.phase == 2 and k.roars == 1 and k.roar_left > 1.5, "roar at the enrage")
 	await runner_tree.process_frame
-	check(
-		(
-			got.size() == 2
-			and got.all(func(g): return g.is_inside_tree() and g.def.id == "goblin_grunt")
-		),
-		"two grunts"
-	)
+	check(got.size() == 2 and got.all(func(g): return g.is_inside_tree() and g.def.id == "goblin_grunt"), "two grunts")
 	k.apply_damage(1.0, E.FIRE)
 	check(k.roars == 1, "once")
 	w.free()
@@ -117,10 +106,7 @@ func test_death_drops_the_crown() -> void:
 	k.apply_damage(99999.0, E.FIRE)
 	await runner_tree.process_frame
 	var c := w.get_node_or_null("CrownDrop") as Node3D
-	check(
-		c != null and c.find_children("*", "MeshInstance3D", true, false).size() == 1,
-		"CrownDrop left"
-	)
+	check(c != null and c.find_children("*", "MeshInstance3D", true, false).size() == 1, "CrownDrop left")
 	check(not (k.model.find_child("Crown", true, false) as Node3D).visible, "crown off his head")
 	w.free()
 
@@ -134,9 +120,7 @@ func test_floor_goblins_seeded() -> void:
 	var a := _floor(1, st)
 	var b := _floor(1, st)
 	var ids := func(f: Node) -> Array:
-		return f.get_node("EnemySpawns").get_children().map(
-			func(m): return [m.name, m.get_meta(&"enemy"), m.position]
-		)
+		return f.get_node("EnemySpawns").get_children().map(func(m): return [m.name, m.get_meta(&"enemy"), m.position])
 	var la: Array = ids.call(a)
 	check(la.size() >= 4, "goblins on floor 1 (%d)" % la.size())
 	check(la == ids.call(b), "same seed, same goblins")
@@ -150,10 +134,7 @@ func test_floor_goblins_seeded() -> void:
 	if elite != "":
 		st.kill_elite(1, elite)
 		var c := _floor(1, st)
-		check(
-			(ids.call(c) as Array).all(func(x): return not String(x[0]).begins_with(elite)),
-			"dead elites stay dead"
-		)
+		check((ids.call(c) as Array).all(func(x): return not String(x[0]).begins_with(elite)), "dead elites stay dead")
 		c.free()
 	a.free()
 	b.free()
@@ -164,9 +145,7 @@ func test_boss_floor_spawns_king_until_defeated() -> void:
 	var f := _floor(5, st)
 	var m := f.get_node_or_null("EnemySpawns/GoblinKing") as Node3D
 	check(m != null and m.get_meta(&"enemy") == "goblin_king", "the King at BossSpawn")
-	check(
-		m != null and m.position.is_equal_approx(f.get_node("BossSpawn").position), "on the marker"
-	)
+	check(m != null and m.position.is_equal_approx(f.get_node("BossSpawn").position), "on the marker")
 	f.free()
 	st.defeat_boss("goblin_king")
 	f = _floor(5, st)
@@ -185,10 +164,7 @@ func test_exit_room_stair_hole() -> void:
 		f.free()
 		return
 	check(ex.find_child("stair_down", true, false) != null, "stair_down placed")
-	check(
-		ex.has_node("FloorW") and ex.has_node("FloorE") and ex.has_node("StairLanding"),
-		"slab cut round the hole"
-	)
+	check(ex.has_node("FloorW") and ex.has_node("FloorE") and ex.has_node("StairLanding"), "slab cut round the hole")
 	var s := f.get_node("StairsDown") as Node3D
 	check(s.position.y < -3.4, "trigger at the stair foot (y %.1f)" % s.position.y)
 	runner_tree.root.add_child(f)
@@ -205,9 +181,6 @@ func test_exit_room_stair_hole() -> void:
 	var hit := f.get_world_3d().direct_space_state.intersect_ray(q)
 	check(
 		not hit.is_empty() and absf(hit["position"].y - s.global_position.y) < 0.6,
-		(
-			"open shaft above the foot, floor below (%s, foot %.2f)"
-			% [hit.get("position"), s.global_position.y]
-		)
+		"open shaft above the foot, floor below (%s, foot %.2f)" % [hit.get("position"), s.global_position.y]
 	)
 	f.free()

@@ -59,9 +59,7 @@ func _run() -> void:
 	var t := EnemyTable.load_default()
 	var line: Array[Enemy] = []
 	for i in GOBLINS.size():
-		var e := Enemy.create(
-			t.find(GOBLINS[i]), Transform3D(Basis.IDENTITY, Vector3(i * 2.6 - 4.0, 0, 0))
-		)
+		var e := Enemy.create(t.find(GOBLINS[i]), Transform3D(Basis.IDENTITY, Vector3(i * 2.6 - 4.0, 0, 0)))
 		e.auto_tick = false
 		e.rotation.y = PI  # face the camera (+z)
 		st.add_child(e)
@@ -75,16 +73,8 @@ func _run() -> void:
 		var h := maxf(e.def.size.y, 1.2)
 		h *= 1.5 if e.def.id == "goblin_grunt" else 1.0
 		var p := e.position
-		await _shot(
-			"hand_%s_front" % e.def.id,
-			p + Vector3(0.4, h * 0.6, h * 1.4),
-			p + Vector3(0, h * 0.45, 0)
-		)
-		await _shot(
-			"hand_%s_side" % e.def.id,
-			p + Vector3(h * 1.4, h * 0.55, 0.2),
-			p + Vector3(0, h * 0.45, 0)
-		)
+		await _shot("hand_%s_front" % e.def.id, p + Vector3(0.4, h * 0.6, h * 1.4), p + Vector3(0, h * 0.45, 0))
+		await _shot("hand_%s_side" % e.def.id, p + Vector3(h * 1.4, h * 0.55, 0.2), p + Vector3(0, h * 0.45, 0))
 	st.queue_free()
 	await process_frame
 	# Labyrinth floor 1 (dressed) and floor 5 (throne hall + the King).

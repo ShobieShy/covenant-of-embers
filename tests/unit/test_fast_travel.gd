@@ -9,7 +9,10 @@ func test_locked_attune_travel() -> void:
 	var ft := FastTravel.new()
 	var went: Array = []
 	ft.traveled.connect(func(p: String, lv: String) -> void: went.append([p, lv]))
-	check(ft.attune("town_market") and ft.attuned("town_gate") and not ft.attune("town_gate"), "market merges into the hub")
+	check(
+		ft.attune("town_market") and ft.attuned("town_gate") and not ft.attune("town_gate"),
+		"market merges into the hub"
+	)
 	check(not ft.attune("nowhere"), "unknown points refused")
 	check(not ft.travel("town_gate") and ft.last_error.contains("no Teleportation"), "no crystal")
 	ft.flags.set_flag(FastTravel.CRYSTAL)
@@ -53,9 +56,7 @@ func test_in_game_waystone_and_map() -> void:
 	g.story_flags.set_flag(FastTravel.CRYSTAL)
 	g.story_flags.set_flag(FastTravel.TUTORIAL_DONE)
 	g.open_map("town_gate")
-	check(
-		(ui.buttons["town_gate"] as Button).disabled and not (ui.buttons["breach"] as Button).disabled, "here greyed"
-	)
+	check((ui.buttons["town_gate"] as Button).disabled and not (ui.buttons["breach"] as Button).disabled, "here greyed")
 	check(ui.press("breach") and not ui.visible and not p.ui_open, "travel closes the map")
 	check(GameFlow.level_id == "breach" and GameFlow.load_save, "travelled to the Breach with the save")
 	g.free()

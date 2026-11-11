@@ -67,9 +67,7 @@ func test_tagged_enemies_and_boss_chest() -> void:
 	check(e.has_meta(&"act_element"), "Act-tagged")
 	m._on_lab_kill(e, ElementTable.Element.EARTH, fl, "", "goblin_king", {})
 	var c := fl.get_node_or_null("BossChest") as VaultChest
-	check(
-		c != null and not c.locked and c.floor_rarity == "unique", "first clear: open Unique chest"
-	)
+	check(c != null and not c.locked and c.floor_rarity == "unique", "first clear: open Unique chest")
 	c.name = "BossChest_1"
 	m._on_lab_kill(e, ElementTable.Element.EARTH, fl, "", "goblin_king", {})
 	var c2 := fl.get_node_or_null("BossChest") as VaultChest

@@ -31,9 +31,7 @@ static func piece(id: String) -> Node3D:
 	return n
 
 
-static func _put(
-	parent: Node3D, id: String, at: Vector3, yaw := 0.0, sx := 1.0, sz := 1.0
-) -> Node3D:
+static func _put(parent: Node3D, id: String, at: Vector3, yaw := 0.0, sx := 1.0, sz := 1.0) -> Node3D:
 	var n := piece(id)
 	if n == null:
 		return null
@@ -107,9 +105,7 @@ static func fill(length: float) -> Array:
 
 
 ## Wall pieces along local X from -length/2 to +length/2 (a centred door when `door`).
-static func wall_line(
-	parent: Node3D, origin: Vector3, yaw: float, length: float, door: bool
-) -> int:
+static func wall_line(parent: Node3D, origin: Vector3, yaw: float, length: float, door: bool) -> int:
 	var dirv := Vector3(cos(yaw), 0, -sin(yaw))
 	var n := 0
 	var spans := []
@@ -135,9 +131,7 @@ static func wall_line(
 
 
 ## Floor tiles over a size.x x size.y rectangle centred on `centre` (edge tiles scaled).
-static func floor_tiles(
-	parent: Node3D, centre: Vector3, size: Vector2, hole := Vector2i(-1, -1)
-) -> int:
+static func floor_tiles(parent: Node3D, centre: Vector3, size: Vector2, hole := Vector2i(-1, -1)) -> int:
 	var n := 0
 	var fx := fill(size.x)
 	var fz := fill(size.y)
@@ -240,11 +234,7 @@ static func throne_hall() -> Node3D:
 	var h := piece("throne_hall")
 	if h == null:
 		return null
-	var bands := {
-		"_LOD0": [0.0, HALL_LOD[0]],
-		"_LOD1": [HALL_LOD[0], HALL_LOD[1]],
-		"_LOD2": [HALL_LOD[1], 0.0]
-	}
+	var bands := {"_LOD0": [0.0, HALL_LOD[0]], "_LOD1": [HALL_LOD[0], HALL_LOD[1]], "_LOD2": [HALL_LOD[1], 0.0]}
 	for mi in h.find_children("*", "MeshInstance3D", true, false):
 		for suf: String in bands:
 			if String(mi.name).ends_with(suf):

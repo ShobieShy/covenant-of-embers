@@ -45,9 +45,7 @@ func _run_all() -> void:
 	if classic == "only":
 		files = files.filter(func(f: String) -> bool: return CLASSIC.has(f))
 	elif classic != "1":
-		files = files.filter(
-			func(f: String) -> bool: return not (CLASSIC.has(f) and CLASSIC[f].is_empty())
-		)
+		files = files.filter(func(f: String) -> bool: return not (CLASSIC.has(f) and CLASSIC[f].is_empty()))
 	for f in files:
 		var script := load("res://tests/unit/" + f) as GDScript
 		if script == null or not script.can_instantiate():
@@ -61,10 +59,7 @@ func _run_all() -> void:
 				continue
 			if CLASSIC.has(f) and not CLASSIC[f].is_empty():
 				var is_classic: bool = name in CLASSIC[f]
-				if (
-					(classic == "only" and not is_classic)
-					or (classic != "1" and classic != "only" and is_classic)
-				):
+				if (classic == "only" and not is_classic) or (classic != "1" and classic != "only" and is_classic):
 					continue
 			var t = script.new()
 			t.set_meta("errors", [])

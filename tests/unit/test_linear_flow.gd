@@ -2,7 +2,6 @@ extends TestCase
 ## 0.4.0: Old Oak -> Town (hub) -> Landfill -> Breach -> the crater portal.
 ## Forward gates need the story flag; the road back to town does not.
 
-
 const FILE := "user://test_linear_flow_save.json"
 
 

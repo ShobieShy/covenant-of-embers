@@ -143,10 +143,7 @@ func test_checkpoint() -> void:
 		"other waves: no checkpoint"
 	)
 	check(
-		(
-			Filth.checkpoint(p, "the_filth", Vector3(5, 0, -1.5))
-			and p.spawn_feet == Vector3(5, 0, -1.5)
-		),
+		Filth.checkpoint(p, "the_filth", Vector3(5, 0, -1.5)) and p.spawn_feet == Vector3(5, 0, -1.5),
 		"boss wave: respawn at the boss door"
 	)
 	p.free()
@@ -166,9 +163,7 @@ func test_arena_walls() -> void:
 	sp.wave_started.emit(0, "midden_trash")
 	check(not lock.raised(), "other waves: no walls")
 	sp.wave_started.emit(1, Filth.WAVE_ID)
-	check(
-		lock.get_child_count() == ArenaLock.SEGMENTS, "boss wave: %d walls" % lock.get_child_count()
-	)
+	check(lock.get_child_count() == ArenaLock.SEGMENTS, "boss wave: %d walls" % lock.get_child_count())
 	await runner_tree.physics_frame
 	await runner_tree.physics_frame
 	var c := w.global_position + Vector3(0, 1, 0)

@@ -84,18 +84,10 @@ static func card_lines(point: String) -> PackedStringArray:
 	var region := (
 		"The Warrens"
 		if level == "labyrinth"
-		else (
-			String(WorldMap.REGIONS[reg]["name"])
-			if WorldMap.REGIONS.has(reg)
-			else "Unknown"
-		)
+		else (String(WorldMap.REGIONS[reg]["name"]) if WorldMap.REGIONS.has(reg) else "Unknown")
 	)
 	return PackedStringArray(
-		[
-			String(info.get("name", point)),
-			"Region: " + region,
-			String(LEVEL_BAND.get(level, "Lv ?"))
-		]
+		[String(info.get("name", point)), "Region: " + region, String(LEVEL_BAND.get(level, "Lv ?"))]
 	)
 
 
@@ -139,7 +131,9 @@ func _build_list() -> void:
 ## Show the confirm card for `point` (from a pin or the list).
 func select(point: String) -> bool:
 	var attuned := (
-		crystal.attuned(point) if linear_level != "" and crystal else (travel != null and travel.fast_travel.attuned(point))
+		crystal.attuned(point)
+		if linear_level != "" and crystal
+		else (travel != null and travel.fast_travel.attuned(point))
 	)
 	if not attuned:
 		return false
@@ -246,10 +240,7 @@ func waystone_at(s: Vector2) -> String:
 	if travel == null:
 		return ""
 	for p in travel.points():
-		if (
-			travel.fast_travel.attuned(p)
-			and world_to_screen(travel.point_world(p)).distance_to(s) <= HIT
-		):
+		if travel.fast_travel.attuned(p) and world_to_screen(travel.point_world(p)).distance_to(s) <= HIT:
 			return p
 	return ""
 
@@ -306,11 +297,7 @@ func _unhandled_input(e: InputEvent) -> void:
 		cancel()
 		get_viewport().set_input_as_handled()
 	elif (
-		visible
-		and (
-			e.is_action_pressed(&"ui_cancel")
-			or (InputMap.has_action(&"map") and e.is_action_pressed(&"map"))
-		)
+		visible and (e.is_action_pressed(&"ui_cancel") or (InputMap.has_action(&"map") and e.is_action_pressed(&"map")))
 	):
 		close()
 		get_viewport().set_input_as_handled()
@@ -319,9 +306,7 @@ func _unhandled_input(e: InputEvent) -> void:
 func _draw_linear() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size if size.x > 0.0 else Vector2(1600, 900)), Color(0.05, 0.04, 0.07))
 	var font := get_theme_default_font()
-	var lines: PackedStringArray = (
-		campaign.level_lines(linear_level) if campaign else PackedStringArray([linear_level])
-	)
+	var lines: PackedStringArray = campaign.level_lines(linear_level) if campaign else PackedStringArray([linear_level])
 	var y := 56.0
 	for line in lines:
 		var here := line.ends_with(": Here") or line == WorldMap.level_name(linear_level)
@@ -385,15 +370,7 @@ func _draw() -> void:
 			var s := world_to_screen(travel.point_world(p))
 			draw_circle(s, 7.0, Color(1.0, 0.55, 0.15) if on else Color(0.4, 0.4, 0.4))
 			if on and (travel_mode or p == pending):  # M7: clickable pins get a ring
-				draw_arc(
-					s,
-					11.0,
-					0.0,
-					TAU,
-					24,
-					Color(1, 0.9, 0.6) if p == pending else Color(1, 0.7, 0.3, 0.7),
-					2.0
-				)
+				draw_arc(s, 11.0, 0.0, TAU, 24, Color(1, 0.9, 0.6) if p == pending else Color(1, 0.7, 0.3, 0.7), 2.0)
 			if on:
 				draw_string(
 					font,
@@ -405,19 +382,13 @@ func _draw() -> void:
 				)
 	for p in pins.pins if pins else []:
 		var s := world_to_screen(Vector3(p[0], 0, p[1]))
-		draw_colored_polygon(
-			PackedVector2Array([s, s + Vector2(-5, -12), s + Vector2(5, -12)]), Color(0.9, 0.2, 0.3)
-		)
+		draw_colored_polygon(PackedVector2Array([s, s + Vector2(-5, -12), s + Vector2(5, -12)]), Color(0.9, 0.2, 0.3))
 	for pl in players.call() if players.is_valid() else []:
 		var s := world_to_screen(pl[0])
 		var d := Vector2(0, -1).rotated(-float(pl[1]))
 		var c: Color = pl[3] if pl.size() > 3 else Color.WHITE
-		draw_colored_polygon(
-			PackedVector2Array([s + d * 10, s + d.rotated(2.5) * 7, s + d.rotated(-2.5) * 7]), c
-		)
+		draw_colored_polygon(PackedVector2Array([s + d * 10, s + d.rotated(2.5) * 7, s + d.rotated(-2.5) * 7]), c)
 		if pl.size() > 2 and String(pl[2]) != "":
-			draw_string(
-				font, s + Vector2(10, -6), String(pl[2]), HORIZONTAL_ALIGNMENT_LEFT, -1, 13, c
-			)
+			draw_string(font, s + Vector2(10, -6), String(pl[2]), HORIZONTAL_ALIGNMENT_LEFT, -1, 13, c)
 	if status != "":
 		draw_string(font, Vector2(20, size.y - 20), status, HORIZONTAL_ALIGNMENT_LEFT, -1, 16)

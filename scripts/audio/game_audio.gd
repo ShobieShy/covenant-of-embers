@@ -81,7 +81,17 @@ const SOUNDS := {
 	"brand_crit": IMPACT + "impactGlass_light_002.ogg",
 }
 const UI_KEYS: PackedStringArray = [
-	"ui_click", "kill", "wave_start", "wave_clear", "cast_fail", "equip", "pickup", "vote_tick", "ui_hover", "ui_open", "ui_close"
+	"ui_click",
+	"kill",
+	"wave_start",
+	"wave_clear",
+	"cast_fail",
+	"equip",
+	"pickup",
+	"vote_tick",
+	"ui_hover",
+	"ui_open",
+	"ui_close"
 ]
 const CUE_DB := {"ui_hover": -10.0, "ui_open": -6.0, "ui_close": -8.0}  ## P7: quiet UI cues
 const LAND_MIN := 2.0  ## m/s: Cogito's min landing velocity (quiet)

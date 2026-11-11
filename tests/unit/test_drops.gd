@@ -71,12 +71,7 @@ func test_kill_spawns_coloured_drops() -> void:
 			check(Color(bc, 1.0).is_equal_approx(c), "beam tint")
 			check(p.light.light_color.is_equal_approx(c), "light tint")
 			check(p.label.text == x.describe(), "label '%s'" % p.label.text)
-			check_near(
-				p.beam_height(),
-				LootPickup.BEAM_HEIGHTS[Rarity.parse(x.rarity_id)],
-				1e-6,
-				"beam height"
-			)
+			check_near(p.beam_height(), LootPickup.BEAM_HEIGHTS[Rarity.parse(x.rarity_id)], 1e-6, "beam height")
 			check(p.collision_layer == 1 << (LootPickup.PICKUP_LAYER - 1), "pickup layer")
 			check(p.is_in_group(LootPickup.GROUP), "group")
 			check(p.position.distance_to(at) <= LootDropper.SCATTER + 0.1, "near the corpse")

@@ -55,9 +55,7 @@ func in_reach(p: Player) -> bool:
 
 ## Plain proximity (attunement, bot walking); interaction itself goes by look (t60u).
 func near(p: Player) -> bool:
-	return (
-		p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
-	)
+	return p != null and is_inside_tree() and p.global_position.distance_to(global_position) <= REACH
 
 
 ## Attunes when the player is in reach; true when it newly attuned.

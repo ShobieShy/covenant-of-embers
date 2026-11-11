@@ -14,7 +14,9 @@ func test_join_phases_and_errors() -> void:
 	check(CoopFlow.phase_timeout(CoopFlow.PHASE_WORLD) > 0.0, "world timeout")
 	check("Version mismatch" in CoopFlow.error_text("version mismatch: host a, you b"), "version")
 	check(CoopFlow.error_text("the session is full") == "The host is full.", "full")
-	check("Timed out" in CoopFlow.error_text("the host did not answer (check the address, port and firewall)"), "timeout")
+	check(
+		"Timed out" in CoopFlow.error_text("the host did not answer (check the address, port and firewall)"), "timeout"
+	)
 	check(CoopFlow.error_text("host left") == "The host left the session.", "host left")
 	check(CoopFlow.error_text("") == "Could not join.", "empty")
 
