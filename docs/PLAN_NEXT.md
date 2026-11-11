@@ -52,6 +52,10 @@ Under 0.8.5. Added to issue #38 on 11 Nov 2026 by ShobieShy, priority ASAP. Plan
 - Crosshair size and color options.
 - A high-contrast outline option for enemies and loot.
 
+### Chaos mode (0.8.5 and beyond)
+
+Chaos mode is purely mechanical: same story beats, same dialogue, just harder enemies and better loot. No narrative changes across chaos runs. Decided in the Act IV / post-game brainstorm, 2026-11-11.
+
 The Forgotten Abyss is not in 0.8.x. It stays the endless run after Act V and the Core, below.
 
 ## Defaults
