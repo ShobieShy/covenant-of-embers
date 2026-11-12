@@ -1,6 +1,6 @@
 # Act IV / post-game / DLC brainstorm
 
-2026-11-11. ShobieShy's story and design decisions, recorded as stated. This is not a build plan and it does not change the outlines in [LABYRINTH_ACTS_STORY.md](../LABYRINTH_ACTS_STORY.md) or [PLAN_NEXT.md](../PLAN_NEXT.md).
+2026-11-11. ShobieShy's story and design decisions, recorded as stated. This is not a build plan and it does not change the outlines in [LABYRINTH_ACTS_STORY.md](../LABYRINTH_ACTS_STORY.md) or [PLAN_NEXT.md](../PLAN_NEXT.md). Player-facing canon that incorporates this page is [../COVENANT_OF_EMBERS_BIBLE.md](../COVENANT_OF_EMBERS_BIBLE.md) and [../COVENANT_OF_EMBERS_STORYLINE.md](../COVENANT_OF_EMBERS_STORYLINE.md).
 
 ## Act IV
 

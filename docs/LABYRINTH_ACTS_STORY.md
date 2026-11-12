@@ -1,6 +1,6 @@
 # Labyrinth Acts I–V
 
-Approved by ShobieShy on 5 Nov 2026.
+Approved by ShobieShy on 5 Nov 2026. The player-facing retelling is [COVENANT_OF_EMBERS_STORYLINE.md](COVENANT_OF_EMBERS_STORYLINE.md). The bible is [COVENANT_OF_EMBERS_BIBLE.md](COVENANT_OF_EMBERS_BIBLE.md).
 
 The Core is deliberately not outlined here. Music uses placeholders until it is composed. Approved Act II design notes (waystones, vines that only slow, a 3-phase Matriarch, Earth and Dark loot) stay in [ACT2_STORY.md](ACT2_STORY.md) and [PLAN_0.7.0_ACT2.md](PLAN_0.7.0_ACT2.md). This outline does not replace those notes.
 

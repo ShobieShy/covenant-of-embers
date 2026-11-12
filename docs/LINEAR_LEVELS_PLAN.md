@@ -1,5 +1,7 @@
 # Linear levels plan
 
+Story and player-facing rules: [COVENANT_OF_EMBERS_BIBLE.md](COVENANT_OF_EMBERS_BIBLE.md) and [COVENANT_OF_EMBERS_STORYLINE.md](COVENANT_OF_EMBERS_STORYLINE.md).
+
 Status: current plan. ShobieShy approved the closed-level campaign on 2026-11-04, and the Acts I–V outlines plus the version roadmap on 2026-11-05.
 0.4.0 (closed levels), the 0.5.0 open-world cut, and the 0.6.0 trust pass are on master.
 0.7.0 is Act II, The Blightcoil, on master. Versions after that are [PLAN_NEXT.md](PLAN_NEXT.md).
