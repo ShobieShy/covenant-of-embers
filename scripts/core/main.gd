@@ -734,6 +734,11 @@ func _open_level_map() -> void:
 
 
 func _on_level_map_closed() -> void:
+	# M opens the Echo menu on the map tab. Closing that map closes the menu,
+	# which is what unpauses. The old map screen did not pause the tree.
+	if pause_menu and pause_menu.is_open():
+		pause_menu.close()
+		return
 	var player := get_node_or_null("Player") as Player
 	if player and (travel_ui == null or not travel_ui.visible):
 		player.ui_open = false
