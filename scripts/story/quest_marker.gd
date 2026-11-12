@@ -14,6 +14,9 @@ const KILL_LEVEL := {
 
 var main: Node
 var mark: Label3D
+var _cached_id := ""
+var _cached_step := -1
+var _cached_at: Variant = null
 
 
 func _ready() -> void:
@@ -39,8 +42,8 @@ func _process(_dt: float) -> void:
 		mark.visible = false
 		_minimap(Vector2(INF, INF))
 		return
-	var at: Variant = _resolve()
-	mark.visible = at != null and Cinematic.playing == null
+	var at: Variant = _cached()
+	mark.visible = at is Vector3 and Cinematic.playing == null
 	if at is Vector3:
 		var pos := at as Vector3
 		mark.global_position = pos + Vector3(0, 3.0, 0)
@@ -48,6 +51,21 @@ func _process(_dt: float) -> void:
 		_minimap(Vector2(pos.x, pos.z))
 	else:
 		_minimap(Vector2(INF, INF))
+
+
+func _cached() -> Variant:
+	var log: QuestLog = main.get("quests")
+	if log == null or not log.active.has(log.tracked):
+		_cached_id = ""
+		_cached_step = -1
+		_cached_at = null
+		return null
+	var step := int(log.active[log.tracked]["step"])
+	if log.tracked != _cached_id or step != _cached_step:
+		_cached_id = log.tracked
+		_cached_step = step
+		_cached_at = _resolve()
+	return _cached_at
 
 
 func _giver_marks() -> void:
