@@ -92,6 +92,9 @@ static func _on_lab_kill(
 			if first:
 				_lab_boss_chest(h, fl, _e, first)
 		print("[labyrinth] %s defeated" % boss)
+	if h.quests:
+		h.quests.known_bosses = h.labyrinth.bosses
+		h.quests.check_auto_start()
 
 
 ## L4: secret-room chests, one tier above the floor (ActLoot.chest_rarity); opened ones

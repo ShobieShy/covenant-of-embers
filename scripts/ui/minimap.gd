@@ -16,6 +16,7 @@ var travel: WorldTravel
 var players := Callable()  ## same rows as WorldMapScreen: [pos, yaw, name, colour, is_local]
 var lock_north := false
 var center := Vector2.ZERO  ## world x/z under the middle of the minimap
+var quest_at := Vector2(INF, INF)  ## 0.9.2: tracked-quest pin, world x/z. INF hides it.
 var yaw := 0.0  ## camera yaw; up on the minimap is where the camera looks
 var _fog_tex: ImageTexture
 var _fog_count := -1
@@ -149,6 +150,9 @@ func _draw() -> void:
 		var d := Vector2(0, -1).rotated(_angle() - float(pl[1]))
 		var c: Color = pl[3] if pl.size() > 3 else Color.WHITE
 		draw_colored_polygon(PackedVector2Array([s + d * 8, s + d.rotated(2.5) * 6, s + d.rotated(-2.5) * 6]), c)
+	if quest_at.x < 1.0e8:
+		var qs := clamp_rim(world_to_mini(Vector3(quest_at.x, 0, quest_at.y)))
+		draw_circle(qs, 4.0, Color(1.0, 0.85, 0.35))
 	draw_arc(mid, mid.x - 1.0, 0.0, TAU, 48, Color(0.8, 0.7, 0.5, 0.9), 2.0)
 	if not lock_north:  # the N tick rides the rim
 		draw_string(

@@ -54,6 +54,8 @@ func refresh() -> void:
 	if log == null:
 		return
 	tracker.text = log.tracker_text()
+	var side := log.active.has(log.tracked) and log.kind_of(log.tracked) == "side"
+	tracker.add_theme_color_override(&"font_color", Color(0.55, 0.75, 1.0) if side else Color(1.0, 0.85, 0.4))
 	clue_label.text = log.clue_log_text()
 
 

@@ -15,6 +15,16 @@ func note(enemy_id: String) -> void:
 	counts[enemy_id] = int(counts.get(enemy_id, 0)) + 1
 
 
+func from_dict(d: Dictionary) -> void:
+	counts = {}
+	for k in d:
+		counts[String(k)] = int(d[k])
+
+
+func to_dict() -> Dictionary:
+	return counts.duplicate()
+
+
 func claim(p: Player, enemy_id: String) -> bool:
 	var row := {}
 	for r in ROWS:

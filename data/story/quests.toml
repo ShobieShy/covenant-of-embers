@@ -165,3 +165,15 @@ text = "Face the Blightmaw Matriarch"
 id = "joes_seals_clue"
 title = "Joe's Seals"
 text = "Joe burned the seals into the rails. They are not the bark marks from the cavern above."
+
+[[quest]]
+id = "the_sunken_ruins"
+title = "The Sunken Ruins"
+kind = "main"
+reward_xp = 100
+
+[[objective]]
+quest = "the_sunken_ruins"
+kind = "kill"
+target = "drowned_choir"
+text = "Face the Drowned Choir"
