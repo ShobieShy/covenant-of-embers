@@ -9,7 +9,7 @@ var _elapsed := 0.0
 var _frames := 0
 var _ticks := 0
 var settings: Settings   # step 32
-var pause_menu: PauseMenu   # step 39
+var pause_menu: EchoMenu  ## 0.9.1: the tabbed pause menu (the old button list stays only for unit tests)
 var breach: Breach          # step 39: the Breach room logic when the Breach is loaded
 var gate: LevelGate         # step 39: travel gate (Midden -> Breach -> back)
 var gates: Array[LevelGate] = []  # step 65: every travel gate here (level [[exit]]s, or the defaults)
@@ -206,10 +206,10 @@ func _setup_flow(player: Player) -> void:
 	s_ui.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(s_ui)
 	s_ui.setup(settings, player)
-	pause_menu = PauseMenu.new()
-	pause_menu.name = "PauseMenu"
+	pause_menu = EchoMenu.new()
+	pause_menu.name = "EchoMenu"
 	add_child(pause_menu)
-	pause_menu.bind(player, s_ui)
+	pause_menu.bind(player, s_ui, get_node("InventoryUi") as InventoryUi, get_node("SkillsUi") as SkillsUi)
 	pause_menu.save_requested.connect(save_game)
 	var fresh := not GameFlow.load_save
 	var saved_progress := {}
@@ -507,6 +507,8 @@ func _setup_quests(player: Player, here: String) -> void:
 	quest_ui = QuestTrackerUI.new()
 	layer.add_child(quest_ui)
 	quest_ui.bind(quests)
+	if pause_menu:
+		pause_menu.quests = quests
 	quest_driver.reached(here)
 
 ## Step 79: the host simulates; clients mirror its enemies and send their hits.
@@ -715,6 +717,9 @@ func _setup_level_map(layer: CanvasLayer, here: String) -> void:
 	level_map.crystal = fast_travel
 	level_map.closed.connect(_on_level_map_closed)
 	layer.add_child(level_map)
+	if pause_menu:
+		pause_menu.level_map = level_map
+		pause_menu.world_map = world_map
 
 
 func _open_level_map() -> void:
@@ -736,6 +741,10 @@ func _on_level_map_closed() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed(&"map"):
+		return
+	if pause_menu:
+		pause_menu.open_on("map")
+		get_viewport().set_input_as_handled()
 		return
 	if level_map and level_map.visible:
 		return  # the screen closes itself on M

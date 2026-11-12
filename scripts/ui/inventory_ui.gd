@@ -18,6 +18,7 @@ const PAD_HOLD_S := 0.5
 const UNDO_S := 5.0
 
 var player: Player
+var echo  ## EchoMenu, set by the game. Untyped: the two scripts name each other.
 var root: PanelContainer
 var grid: GridContainer
 var slot_buttons: Array[Button] = []
@@ -223,10 +224,22 @@ static func color_of(item: Variant) -> Color:
 
 
 func is_open() -> bool:
+	return _panel_shown()
+
+
+func _panel_shown() -> bool:
+	if echo and echo.is_open() and echo.tab_id() == "inventory":
+		return true
 	return UiAnim.is_shown(self)
 
 
 func open() -> void:
+	if echo and not _panel_shown():
+		echo.open("inventory")
+		return
+	if echo and echo.is_open():
+		refresh()
+		return
 	refresh()  # size the content first, then centre it (QA round 10)
 	UiAnim.centre(root)
 	UiAnim.open(self)  # 0.3.1 P1
@@ -239,6 +252,9 @@ func open() -> void:
 
 
 func close() -> void:
+	if echo and echo.is_open():
+		echo.close()
+		return
 	UiAnim.close(self)  # 0.3.1 P1
 	if player:
 		player.ui_open = false
@@ -255,15 +271,18 @@ func toggle() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(ACTION):
-		toggle()
+		if echo:
+			echo.open_on("inventory")
+		else:
+			toggle()
 		get_viewport().set_input_as_handled()
-	elif UiAnim.is_shown(self) and event.is_action_pressed(&"ui_cancel"):
+	elif _panel_shown() and event.is_action_pressed(&"ui_cancel"):
 		if pending_trash != null:
 			cancel_trash()
 		else:
 			close()
 		get_viewport().set_input_as_handled()
-	elif UiAnim.is_shown(self) and InputMap.has_action(TRASH_ACTION) and event.is_action_pressed(TRASH_ACTION):
+	elif _panel_shown() and InputMap.has_action(TRASH_ACTION) and event.is_action_pressed(TRASH_ACTION):
 		if code_field.has_focus():
 			return  # typing an X into the Ember Mark field
 		var target: Variant = hovered if hovered != null else selected

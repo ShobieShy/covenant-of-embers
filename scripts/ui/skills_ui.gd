@@ -13,6 +13,7 @@ extends CanvasLayer
 const ACTION := &"skills"
 
 var player: Player
+var echo  ## EchoMenu, set by the game. Untyped: the two scripts name each other.
 var can_respec := Callable()  ## () -> bool; main.gd binds Main.can_respec
 var root: PanelContainer
 var columns: HBoxContainer
@@ -465,10 +466,27 @@ func _refresh_elements(lv: int) -> void:
 
 
 func is_open() -> bool:
+	return _panel_shown()
+
+
+func _panel_shown() -> bool:
+	if echo and echo.is_open() and echo.tab_id() == "skills":
+		return true
 	return UiAnim.is_shown(self)
 
 
+func _focus_inside() -> bool:
+	var f := get_viewport().gui_get_focus_owner() if is_inside_tree() else null
+	return f != null and root != null and (f == root or root.is_ancestor_of(f))
+
+
 func open() -> void:
+	if echo and not _panel_shown():
+		echo.open("skills")
+		return
+	if echo and echo.is_open():
+		refresh()
+		return
 	refresh()  # size the content first, then centre it (QA round 10)
 	UiAnim.centre(root)
 	UiAnim.open(self)  # 0.3.1 P1
@@ -481,6 +499,9 @@ func open() -> void:
 
 
 func close() -> void:
+	if echo and echo.is_open():
+		echo.close()
+		return
 	UiAnim.close(self)  # 0.3.1 P1
 	if player:
 		player.ui_open = false
@@ -496,7 +517,7 @@ func toggle() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if UiAnim.is_shown(self) and confirm.visible:
+	if _panel_shown() and confirm.visible:
 		if (
 			event.is_action_pressed(&"ui_cancel")
 			or (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B)
@@ -504,14 +525,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			confirm_pending(false)
 			get_viewport().set_input_as_handled()
 		return
-	if UiAnim.is_shown(self) and event is InputEventJoypadButton and event.pressed:
+	if _panel_shown() and _focus_inside() and event is InputEventJoypadButton and event.pressed:
 		if event.button_index in [JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER]:
 			cycle_tab(-1 if event.button_index == JOY_BUTTON_LEFT_SHOULDER else 1)
 			get_viewport().set_input_as_handled()
 			return
 	if event.is_action_pressed(ACTION):
-		toggle()
+		if echo:
+			echo.open_on("skills")
+		else:
+			toggle()
 		get_viewport().set_input_as_handled()
-	elif UiAnim.is_shown(self) and event.is_action_pressed(&"ui_cancel"):
+	elif _panel_shown() and event.is_action_pressed(&"ui_cancel"):
 		close()
 		get_viewport().set_input_as_handled()

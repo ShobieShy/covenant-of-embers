@@ -47,6 +47,7 @@ func _run() -> void:
 	st.close()
 	var iv := main.get_node("InventoryUi") as InventoryUi
 	iv.open()
+	paused = false
 	iv.select(inv.at(0))
 	await _shot("inventory_icons.png")
 	iv.close()
@@ -60,8 +61,9 @@ func _run() -> void:
 	d._on_choices(PackedStringArray(["Here it is.", "Not yet."]))
 	await _shot("dialogue.png")
 	d.visible = false
-	var pm := main.get_node("PauseMenu")
+	var pm := main.get_node("EchoMenu")
 	pm.call("open")
+	paused = false
 	await _shot("menu_pause.png")
 	pm.set("visible", false)
 	var su := main.get_node("SettingsUi")
