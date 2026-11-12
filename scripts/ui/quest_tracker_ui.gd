@@ -13,10 +13,11 @@ func _init() -> void:
 	name = "QuestTracker"
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	tracker.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	tracker.position = Vector2(-340, 120)
-	tracker.size = Vector2(320, 200)
-	tracker.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	# 0.9.1: left side, clear of the top-right minimap. Still every active quest until 0.9.2.
+	tracker.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	tracker.position = Vector2(16, 16)
+	tracker.size = Vector2(360, 220)
+	tracker.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	add_child(tracker)
 	clue_panel.set_anchors_preset(Control.PRESET_CENTER)
 	clue_panel.custom_minimum_size = Vector2(520, 320)

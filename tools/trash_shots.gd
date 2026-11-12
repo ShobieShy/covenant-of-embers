@@ -41,6 +41,7 @@ func _run() -> void:
 	inv.set_junk(inv.at(2), true)
 	var iv := main.get_node("InventoryUi") as InventoryUi
 	iv.open()
+	paused = false
 	iv.select(inv.at(3))
 	iv.request_trash(inv.at(3))
 	await _shot("trash_confirm_rare.png")

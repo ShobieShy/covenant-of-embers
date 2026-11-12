@@ -95,7 +95,7 @@ func m_continue() -> void:
 func test_pause_menu() -> void:
 	_reset()
 	var g := _game("midden", false)
-	var pm: PauseMenu = g.pause_menu
+	var pm: EchoMenu = g.pause_menu
 	var p := g.get_node("Player") as Player
 	var esc := InputEventAction.new()
 	esc.action = &"menu"
@@ -103,9 +103,10 @@ func test_pause_menu() -> void:
 	pm._unhandled_input(esc)
 	check(pm.visible and runner_tree.paused and p.ui_open, "Esc pauses")
 	pm.press("settings")
-	check(pm.settings_ui.visible, "settings from pause")
+	check(pm.tab_id() == "settings" and pm.settings_ui.visible, "settings tab")
 	pm._unhandled_input(esc)
-	check(not pm.settings_ui.visible and pm.visible, "Esc closes settings first")
+	check(not pm.visible and not runner_tree.paused, "Esc closes the menu")
+	pm.open()
 	pm.press("resume")
 	check(not pm.visible and not runner_tree.paused and not p.ui_open, "resume")
 	p.ui_open = true  # e.g. the inventory is open: Esc is its, not the pause menu's

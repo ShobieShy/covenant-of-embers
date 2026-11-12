@@ -43,6 +43,7 @@ var card_info := Label.new()
 var go_button := Button.new()
 var list := VBoxContainer.new()  ## fallback: one button per attuned waystone
 var list_buttons := {}
+var hosted := false  ## 0.9.1: drawn inside the Echo map tab; Esc belongs to that menu
 
 
 func _init() -> void:
@@ -293,6 +294,11 @@ func _gui_input(e: InputEvent) -> void:
 
 
 func _unhandled_input(e: InputEvent) -> void:
+	if hosted:
+		if visible and card.visible and e.is_action_pressed(&"ui_cancel"):
+			cancel()
+			get_viewport().set_input_as_handled()
+		return
 	if visible and card.visible and e.is_action_pressed(&"ui_cancel"):
 		cancel()
 		get_viewport().set_input_as_handled()

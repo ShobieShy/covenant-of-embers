@@ -7,6 +7,7 @@ extends CanvasLayer
 signal closed
 
 var settings: Settings
+var echo  ## EchoMenu, set by the game. Untyped: the two scripts name each other.
 var player: Player
 var path := Settings.PATH
 var listening: StringName = &""
@@ -144,6 +145,10 @@ func open() -> void:
 
 
 func close() -> void:
+	if echo and echo.is_open():
+		echo.close()
+		listening = &""
+		return
 	UiAnim.close(self)  # QA r14
 	listening = &""
 	closed.emit()

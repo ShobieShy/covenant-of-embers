@@ -46,6 +46,7 @@ func _run() -> void:
 		if c is SkillsUi:
 			ui = c
 	ui.open()
+	paused = false
 	ui.show_tab("fire")
 	await _shot("skills_fire_capstone_owned.png")
 	ui.show_tab("water")
