@@ -8,7 +8,7 @@ extends TestCase
 
 func test_loads_and_rejects() -> void:
 	var q := QuestLog.create()
-	check(q.order.size() == 8 and q.clue_defs.size() == 5, "8 quests, 5 clues")
+	check(q.order.size() == 9 and q.clue_defs.size() == 5, "9 quests, 5 clues")
 	var bad := QuestLog.new()
 	bad.flags = StoryFlags.new()
 	check(bad.load_text('[[quest]]\nid = "x"') != "", "no objectives rejected")

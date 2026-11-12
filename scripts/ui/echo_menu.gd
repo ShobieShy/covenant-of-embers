@@ -50,6 +50,7 @@ var slide: Control
 var pages: Array[Control] = []
 var _leave_armed := false
 var _mission_id := ""
+var _mission_filter := "main"
 var _homes := {}
 var _page_tween: Tween
 var _line_tween: Tween
@@ -484,14 +485,29 @@ func _build_missions(page: Control) -> void:
 	var box := HBoxContainer.new()
 	box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	page.add_child(box)
+	var left := VBoxContainer.new()
+	box.add_child(left)
+	var filters := HBoxContainer.new()
+	left.add_child(filters)
+	for id in ["main", "side", "done"]:
+		var b := Button.new()
+		b.text = "Completed" if id == "done" else id.capitalize()
+		b.pressed.connect(_set_mission_filter.bind(id))
+		filters.add_child(b)
 	var list := VBoxContainer.new()
 	list.name = "MissionList"
 	list.custom_minimum_size = Vector2(280, 0)
-	box.add_child(list)
+	left.add_child(list)
+	var right := VBoxContainer.new()
+	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_child(right)
 	mission_detail = Label.new()
 	mission_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	mission_detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	box.add_child(mission_detail)
+	right.add_child(mission_detail)
+	var track := Button.new()
+	track.text = "Track"
+	track.pressed.connect(_track_selected)
+	right.add_child(track)
 
 
 func _build_character(page: Control) -> void:
@@ -521,6 +537,17 @@ func _build_social(page: Control) -> void:
 	box.add_child(leave)
 
 
+func _set_mission_filter(id: String) -> void:
+	_mission_filter = id
+	_fill_missions()
+
+
+func _track_selected() -> void:
+	if quests and _mission_id != "":
+		quests.track(_mission_id)
+		status.text = "Tracking."
+
+
 func _fill_missions() -> void:
 	var list := pages[1].find_child("MissionList", true, false) as VBoxContainer
 	for c in list.get_children():
@@ -530,7 +557,14 @@ func _fill_missions() -> void:
 		return
 	var ids: PackedStringArray = []
 	for id in quests.order:
-		if quests.active.has(id) or quests.done.has(id):
+		var show := false
+		if _mission_filter == "done":
+			show = quests.done.has(id)
+		elif _mission_filter == "side":
+			show = quests.kind_of(id) == "side" and quests.active.has(id)
+		else:
+			show = quests.kind_of(id) == "main" and quests.active.has(id)
+		if show:
 			ids.append(id)
 	if _mission_id == "" or not ids.has(_mission_id):
 		_mission_id = ids[0] if not ids.is_empty() else ""
@@ -538,7 +572,11 @@ func _fill_missions() -> void:
 		var b := Button.new()
 		var title := String(quests.quests[id]["title"])
 		b.text = title if not quests.done.has(id) else title + "  (done)"
-		b.modulate = Color(0.7, 0.7, 0.7) if quests.done.has(id) else Color.WHITE
+		b.modulate = (
+			Color(0.7, 0.7, 0.7)
+			if quests.done.has(id)
+			else (Color(0.55, 0.75, 1.0) if quests.kind_of(id) == "side" else Color(1.0, 0.85, 0.45))
+		)
 		b.pressed.connect(_select_mission.bind(id))
 		list.add_child(b)
 	_select_mission(_mission_id)
@@ -550,7 +588,9 @@ func _select_mission(id: String) -> void:
 		mission_detail.text = "No missions yet."
 		return
 	var q: Dictionary = quests.quests[id]
-	var lines: PackedStringArray = [String(q["title"])]
+	var lines: PackedStringArray = [
+		String(q["title"]), quests.kind_of(id).capitalize(), "Level %d" % quests.recommended(id)
+	]
 	var step := int(quests.active[id]["step"]) if quests.active.has(id) else -1
 	var i := 0
 	for o in q["objectives"]:
@@ -560,7 +600,7 @@ func _select_mission(id: String) -> void:
 			count = " (%d/%d)" % [int(quests.active[id]["have"]), int(o["count"])]
 		lines.append("%s %s%s" % [mark, o["text"], count])
 		i += 1
-	lines.append("Reward: %d XP, %d dust" % [int(q["xp"]), int(q["dust"])])
+	lines.append("Reward: %s" % quests.reward_line(id))
 	if String(q["clue"]) != "" and quests.clue_defs.has(q["clue"]):
 		var got := quests.clues.has(String(q["clue"]))
 		var clue: Dictionary = quests.clue_defs[q["clue"]]
@@ -604,7 +644,7 @@ func _fill_challenges() -> void:
 	for c in box.get_children():
 		c.free()
 	var head := Label.new()
-	head.text = "Bounties. Repeatable. Gold is paid when you claim. Counts last for this session."
+	head.text = "Bounties. Repeatable. Gold is paid when you claim. Counts are saved."
 	head.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(head)
 	for row in Bounties.ROWS:

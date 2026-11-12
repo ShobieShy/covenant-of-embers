@@ -24,6 +24,9 @@ var quests: QuestLog  # step 67: the tutorial chain (saved in progress["quests"]
 var quest_driver: QuestDriver
 var quest_ui: QuestTrackerUI
 var _loaded_quests := {}
+var _loaded_bounties := {}
+var _join_side := {}
+var _join_bounties := {}
 var dialogue_ui: DialogueUI
 var stash: Stash  # the town hub's shared stash (one file, every slot)
 var mentor_played := false
@@ -217,6 +220,8 @@ func _setup_flow(player: Player) -> void:
 		# Step 91: a client plays its own portable character, never the host's slot.
 		var cr := CharacterSave.load_into(player, Coop.character)
 		fresh = cr.has("error")
+		_join_side = cr.get("side", {})
+		_join_bounties = cr.get("bounties", {})
 		print("[character] %s: %s" % [Coop.character, cr.get("error", "loaded level %d" % player.progression.level)])
 	elif GameFlow.load_save:
 		var r := SaveGame.read(GameFlow.save_path)
@@ -228,6 +233,7 @@ func _setup_flow(player: Player) -> void:
 			saved_progress = (r["data"] as Dictionary).get("progress", {})
 			story_flags.from_dict((r["data"] as Dictionary).get("progress", {}).get("flags", {}))
 			_loaded_quests = (r["data"] as Dictionary).get("progress", {}).get("quests", {})
+			_loaded_bounties = (r["data"] as Dictionary).get("progress", {}).get("bounties", {})
 			labyrinth = LabyrinthState.from_save(r["data"])
 			PostClear.from_dict((r["data"] as Dictionary).get("progress", {}).get("post_clear", {}))
 			if breach and (r["data"] as Dictionary).get("progress", {}).get("vault_open", false):
@@ -509,6 +515,20 @@ func _setup_quests(player: Player, here: String) -> void:
 	quest_ui.bind(quests)
 	if pause_menu:
 		pause_menu.quests = quests
+		if not _loaded_bounties.is_empty():
+			pause_menu.bounties.from_dict(_loaded_bounties)
+	var toast := QuestToast.new()
+	toast.name = "QuestToast"
+	add_child(toast)
+	toast.bind(quests)
+	var marker := QuestMarker.new()
+	marker.name = "QuestMarker"
+	marker.main = self
+	add_child(marker)
+	if not _join_side.is_empty():
+		quests.apply_side(_join_side)
+	if not _join_bounties.is_empty() and pause_menu:
+		pause_menu.bounties.from_dict(_join_bounties)
 	quest_driver.reached(here)
 
 ## Step 79: the host simulates; clients mirror its enemies and send their hits.
@@ -595,6 +615,7 @@ func progress() -> Dictionary:
 		"anchor": MapAnchors.nearest($Level, player.global_position) if player else "",
 		"map_version": MapAnchors.version_of($Level),
 		"flags": story_flags.to_dict(), "quests": quests.to_dict() if quests else {},
+		"bounties": pause_menu.bounties.to_dict() if pause_menu else {},
 		"labyrinth": labyrinth.to_dict(), "post_clear": PostClear.to_dict()}
 	d["flow"] = SaveMigration.FLOW
 	d["linear_v"] = SaveMigration.LINEAR_V
@@ -616,7 +637,12 @@ func save_game() -> Error:
 		print("[save] not during a cinematic")
 		return ERR_BUSY
 	if coop and not coop.host:
-		var cerr := CharacterSave.write(player, Coop.character, story_flags.has(IntroDirector.DONE))  # step 91: never the host slot
+		var extra := {}
+		if quests:
+			extra["side"] = quests.side_dict()
+		if pause_menu:
+			extra["bounties"] = pause_menu.bounties.to_dict()
+		var cerr := CharacterSave.write(player, Coop.character, story_flags.has(IntroDirector.DONE), extra)
 		print("[save] character %s: %s" % [Coop.character, error_string(cerr)])
 		return cerr
 	if stash:
