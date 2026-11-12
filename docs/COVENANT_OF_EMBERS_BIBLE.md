@@ -2,7 +2,7 @@
 
 Player-facing canon for story and play, written 12 Nov 2026 from the game through **v0.9.0**, the approved act outlines, and ShobieShy's decisions of 24 Oct, 27 Oct, 4–5 Nov, and 11 Nov 2026.
 
-This document replaces the Magewar Bible for Covenant of Embers. The Magewar Bible file is not in this repository. The Magewar storyline text lives in the Magewar project. Covenant's own lines, bosses, loot, and later decisions win wherever they disagree with that older text.
+This is a rewrite of ShobieShy's Magewar Bible and Magewar Storyline, adapted to Covenant of Embers. Those two source files stay on his machine. They are not part of this repository. Where they disagree with a later decision or with what v0.9.0 actually does, Covenant wins. The losses are listed under Changed from Magewar.
 
 ## How to read the tags
 
@@ -17,49 +17,77 @@ Numbers below are the current tuning. Several of them were written as placeholde
 
 Covenant of Embers is a co-op loot shooter for one to four players. You are one of the Summoned: an ordinary person pulled into Elyria, handed a staff, and pointed at a hole in the world. You shoot spells from staffs and wands you build out of parts. You keep what you kill. You come back when you die.
 
-The heroes are shaped like a bad isekai. The guns, the death, and the loot are shaped like a looter-shooter. The skill names carry the ember language of the title. The retired story of exiles, lamps, and altars is not this game.
+The Magewar Bible's own header is "Konosuba, but it's Borderlands." The heroes are ordinary people dropped into a catastrophe. The weapons, the death, and the loot are a looter-shooter's. The skill names carry the ember language of this title. An earlier Covenant story, exiles and lamps and altars, was retired on 24 Oct 2026. This is the Magewar story.
 
-There is no open world. Each place is its own level, joined by gates and waystones.
+There is no open world in the build. Each place you can walk is its own level, joined by gates and waystones. The rest of Elyria is still out there. You hear it. You do not drive across it.
 
 ## World
 
-**Elyria** is the realm. **Eldoria** is the walled city you actually live in, under an arcane barrier. Bob welcomes you to Elyria. Merchants sell to you in Eldoria. Both names are in use on purpose.
+**Elyria** is the realm: kingdoms, ancient forests, mountains, a sea. **Eldoria** is the walled capital you actually live in, under an arcane barrier, merchants still haggling in the glow. Bob welcomes you to Elyria. The stalls sell to you in Eldoria. Both names are in use on purpose. The chapter list in the old storyline left the town as "? Town." The Bible and the lines in the square settled it. Eldoria.
 
-Ten years ago the dungeons fractured. The barriers between those underworlds and the surface broke, and monsters came out in waves. The Mage Association and the surviving governments raised domes of arcane energy over the cities that could still be saved. Eldoria is one of those cities. Ward-pillars stand on the town square. Outside the dome, the land is wild.
+Ten years ago the dungeons fractured. Formal speech in the Magewar Bible calls that day the **Dungeon Invasion**. In the square and in Joe's mouth it is the Fracture, and the hole north of the dump is the Breach. They are one catastrophe. The walls between the underworlds and the surface shattered. Monsters came out in waves. Farmland became a battlefield. Trade roads became death traps. Villages vanished into ghost towns and overgrown ruin. A person with a pitchfork, or a rudimentary spell, did not last.
 
-The **Breach** is that fracture as the campaign meets it: a crater north of the landfill, and the mouth of one labyrinth. The Demon Lord caused the Breach. Crazy Joe is his useful-idiot proxy. Bob can already tell you the Fracture was deliberate. He does not yet say the Demon Lord's name.
+The Mage Association and the surviving governments raised domes of arcane energy over the cities that could still be saved. The domes repel monsters and steady the mana under them. They are powered by crystal obelisks attuned to the stars. Ward-pillars are the face of that work on Eldoria's square. The domes are failing. Joe says so in the hall. The patron at the Fractured Flagon says the outer dungeons started acting up again last month.
 
-The old plan was five separate dungeons, then the Demon Lord's lair. Those five places collapsed into one shaft under Elyria. The labyrinth's five acts are what is left of them.
+About sixty percent of Elyria's habitable land is still wild: adventurers, bandits, and refugees, one step ahead of the beasts. The campaign does not give you that map as a road. The places are real. The levels you can load are the city, the dump, the crater, and the shaft.
 
-**Inherited from the Magewar storyline, and not a place you can walk:** the floating citadel of Arcana Spire as an Association headquarters; the Kingdom of Valdoria; the elven enclaves of Sylvandar; the dwarven holds of Ironforge as a living city; Luminar; Willowbrook; Stonehaven; the orc tribes of the Wastes; the Whispering Woods; the Shattered Peaks; the Crimson Sea. About sixty percent of Elyria was described as still wild. Those names survive as the flavor the labyrinth was built from. Willowbrook's goblin raids became Act I. The Whispering Woods became Act II. Ironforge's mines became Act III. The Crimson Sea's ruins became Act IV. The Shattered Peaks became Act V. **Open:** which of those lands still exist on a map beyond the labyrinth.
+The **Breach** is the fracture as the campaign meets it: a crater north of the landfill, and the mouth of one labyrinth. The Demon Lord caused it. Crazy Joe is his useful-idiot proxy. Bob can already tell you the Fracture was deliberate. He does not yet say the Demon Lord's name.
+
+### The lands
+
+These are the lands the Magewar storyline names. None of them is a separate level in v0.9.0. Several of them were folded into the labyrinth's acts. The others are still the world past the dome.
+
+| Land | What it is | Where the campaign put it |
+|---|---|---|
+| Arcana Spire | The Association's floating citadel, the old headquarters | You do not go there. The hall in Eldoria is the chapter that summoned you. |
+| Kingdom of Valdoria | The human kingdoms that sat down with the Association | The politics behind the barriers. No throne room in the build. |
+| Sylvandar | Elven enclaves | A caravan out of Sylvandar is one of the old side stories. It is not a mission you can accept. |
+| Ironforge | Dwarven holds | The living holds are off the map. The buried mines are Act III, the Slagworks. |
+| The Wastes | Nomadic orc tribes, brought into the barrier alliance | Not a level. |
+| Luminar | A scholarly haven whose libraries the Fracture did not touch | Not a level. Bob's research has that flavor. |
+| Willowbrook | A riverside village of apple orchards. The barriers reached it. Goblins raid it. | Those raids are the memory of Act I, the Goblin Warrens. |
+| Stonehaven | A mining outpost that supplied iron for enchanted weapons | Not a level. The Slagworks is the mine the story actually enters. |
+| Whispering Woods | Trees that murmur secrets and hide ambushes | Act II, the Blightcoil, is that wood pulled underground. |
+| Shattered Peaks | Avalanche mountains and aerial dungeons | **Open** Act V, the Inverted Spire. |
+| Crimson Sea | A monster-infested ocean and its underwater ruins | Act IV, the Sunken Ruins. |
+
+The Magewar plan was five separate dungeons, then the Demon Lord's lair. Those five places collapsed into one shaft under Elyria. The labyrinth's five acts are what is left of them. Willowbrook's hidden entrance, the whispering wood, Ironforge's mines, the sunken ruins, and the peaks are no longer five trips. They are five depths.
 
 ## History
 
-Before the Fracture, dungeons were contained. Heroes trained in them. Joe remembers that age. He is three hundred years old in the Magewar storyline, and he once sealed a volcano dungeon during the Eruption Wars. The last fifty years, in that same text, warped him. He talks about interdimensional echoes and forgotten gods in the trash.
+Before the Fracture, dungeons were contained. They were training grounds. Spells, Joe says, flowed like wine. He is three hundred years old, the oldest mage in the Association, born before the cataclysm. He once sealed a volcano dungeon by himself during the Eruption Wars. The Association kept him for that, and tolerated the rest.
 
-The Fracture's cause was argued in public: a curse, a failed rite, a broken ley line. The argument is over for this game. The Demon Lord did it. The people of Eldoria have not been told.
+The last fifty years warped him, by the public telling. He rambles about interdimensional echoes and forgotten gods in the trash heaps. The private truth, decided 11 Nov 2026, is uglier than a sickness: after the Elders threw him out, he joined the Demon Lord. The rambling is real. The loyalty is the part Eldoria has not been told.
 
-The Association answered with barriers, crystal obelisks, and a slow crawl outward toward smaller towns. Progress was ugly: scarce mana crystals, burned-out mages, stolen funds, and the occasional breach of an unfinished ward. That politics is why Bob will not work with them. "Politics is the true monster" is his line, and he means it.
+Scholars spent the decade on three theories: a divine curse, a failed rite by an ambitious archmage, or a ley line torn out of balance. A later line in the old storyline adds a slumbering elder god in the core as the culprit. That guess lost. The Demon Lord caused the Breach. People in Eldoria are still allowed to repeat the old theories. The story is not.
 
-Joe then performed a forbidden summoning in the Association hall, spent a fortune in mana, cracked the floor, and pulled the Summoned through. The appraisal crystal called them underwhelming. The Elders expelled him. The Summoned stayed, because the rite does not run backward.
+The answer the kingdoms actually built was political. Valdoria, Sylvandar, Ironforge, and the orc tribes of the Wastes put centuries of rivalry aside and sat down with the Association. Together they raised the domes, first over capitals like Eldoria and library-cities like Luminar, then, slowly, over smaller towns: Willowbrook, Stonehaven, and places like them. Mana crystals came out of the few dungeons that were still safe to mine. Mages burned out from the work. Local governments skimmed the funds. Mages fought each other over who got the next ward. Unfinished barriers failed, and the massacres that followed ate the public's trust. That is the decade Bob means when he says politics is the true monster.
+
+Then Joe, in the Association's grand hall, opened tomes smuggled from ruined libraries and spent a fortune in mana on a forbidden summoning. He wanted champions from beyond the veil: demigods, warriors from other worlds, anyone stronger than Elyria. The rite cracked the marble and sent a shock through the barriers. What stepped out of the smoke were ordinary people. The appraisal crystal read them as underwhelming: strength like a child's, mana like a dry well, no inborn element. The Association's fear was practical. A rite that sloppy could have torn a new rift.
+
+They stripped his robes, took his staff, and banished him to the wilds in a tattered cloak, with a warning not to come back. The Summoned stayed. A few mages muttered about sending them home. The rite only runs one way. Protocol paid them out of embarrassment: fifty gold, a week's food in a safe town, clothes enchanted for minor durability, and a permit for a tree at the edge of the city that the survey says has been empty for centuries.
+
+The first day is a market day. Barrier-safe herbs on the stalls. Guards on the wards. Bread bought in clumsy Elyrian Common. Children point. Adventurers scoff. Under the pity is the only advantage the Summoned brought with them: otherworldly knowledge. Physics, machines, and the kind of strategy you learn from games are not magic here, and they are not nothing.
 
 **Proposed.** The crystal's "underwhelming" is the same interference that spoiled Bob's earlier summonings. The Demon Lord has been blocking a real champion from arriving. Joe got ordinary people through anyway, which is why the Demon Lord later finds him useful and why Bob finds you interesting.
 
 ## Cosmology
 
-Mana is the stuff spells spend. In the older storyline it runs in ley lines under the earth. Covenant's playable magic does not make you map those lines. You spend a mana pool, you regen it, and you feel an element when the bolt leaves the staff.
+Mana is the stuff spells spend. It also runs in ley lines, the invisible rivers under the earth. You do not map those lines in this game. You spend a pool, you regen it, and you feel an element when the bolt leaves the staff. The Sylvandar caravan story, in the old text, is how an elf's lore puts a ley-line map in your hands. That escort is not a quest in v0.9.0. The lines are still there.
 
-Barriers repel monsters and steady the mana under a city. They are failing. Joe says so in the hall, and the patron at the Fractured Flagon says the outer dungeons started acting up again last month.
+Barriers are the civic use of the same mana: a dome, an obelisk, a ward-pillar. They are failing from the outside in.
 
 **Breach-fire** is Joe's sabotage, carried down the shaft. He carved it into the Rotheart, flooded the Slagworks with it, and the approved Act IV outline has him trade a Breach seed to a drowned cult. **Proposed.** Breach-fire is the Demon Lord's heat caught in ore and trash. Joe believes he discovered it. He is half right about the trash and wrong about the author.
 
-**Open.** The older storyline ends on a slumbering elder god in the core, and the labyrinth plan once used that image. The Demon Lord is the cause and the final boss. Whether he is that god, or something that woke instead of it, is unanswered. Do not merge them in dialogue until ShobieShy does.
+The elder god stays a tavern theory. Do not put him in the Core as a second final boss, and do not reveal that the Demon Lord "was the god all along," unless ShobieShy writes that later. The cause is already assigned.
 
 **Open.** The prism gag, decided 11 Nov 2026 and not built: a half-cracked prism, a mid-game choice to seal it or crack it, and a late payoff. **Proposed.** It is an Association focus cracked by Joe's rite. Sealing it steadies Eldoria's barrier. Cracking it feeds the Summoned and widens the crater. Either way the Demon Lord has been looking through the crack, so the choice tells him your name. That payoff is a proposal, not the decision.
 
 ## Magic
 
-Seven elements. A hit is one and a half times as painful when you have the advantage, and half as painful when you have the disadvantage. The same element on both sides is even. Arcane is even against everything, and everything is even against Arcane.
+The Magewar Bible's chart is six elements in a rock-paper-scissors: Fire, Water, Earth, Air, Light, Dark. Light heals and keeps one summon. Dark corrupts enemies into summons. Covenant keeps both of those tricks and adds a seventh element, Arcane, which picks no fight and carries no brand.
+
+A hit is one and a half times as painful when you have the advantage, and half as painful when you have the disadvantage. The same element on both sides is even. Arcane is even against everything, and everything is even against Arcane.
 
 | Element | Color in the world | Strong against | Weak against | What a hit does |
 |---|---|---|---|---|
@@ -184,13 +212,21 @@ Shadow Touch +3% Dark damage. Whisper, turn chance up a little, still under the 
 
 **The drowned cult** of Act IV sings the sea open. **Open:** their name, the hymn text, and the title they give Joe beyond the outline's "dry prophet." Hymn-shards are not items in v0.9.0.
 
-**Open.** The Magewar storyline offered rebels against the barrier monopoly, romances, and rival Summoned from Joe's earlier failures. None of that is built. The 11 Nov decision says Bob's failed summonings were the Demon Lord blocking him, which cuts against a crowd of rival Summoned already walking around. Leave them out until someone writes them on purpose.
+**Rebels against the barrier monopoly** are a real pressure in the Magewar storyline, the other side of the Association's taxes and the skimmed ward-funds. The Potion Merchant already complains that Association taxes make real imports rare. Bob will not work for the hall. A playable "join the rebels" is not in v0.9.0. **Open:** whether that becomes a faction you can take, or stays the reason the city grumbles.
+
+**The Association, as a path,** is the other offer in that same text: stay with the mages and earn spell tomes. In the build, that is the hall, the closed wings, the skill trees, and the Runesmith. You are not inducted. You are housed and pointed at the dump.
+
+**Romances** in the old storyline bloom with a fiery blacksmith and an enigmatic bard. Neither has a name or a scene. **Open.**
+
+**Rival Summoned** are a question the Magewar storyline asks in its own voice ("Joe's prior failures?") and does not answer. Bob's failed rites produced no one: the Demon Lord blocked them. Joe's earlier attempts are a separate blank. **Open** whether any of those people are walking around. Do not fill the square with them until that is a yes.
 
 ## Characters
 
 ### The Summoned
 
-You, and up to three others in co-op. In a solo game the other three stand in the hall as themselves: Nerd, Gal, Buff, and Loli. You pick one of those four, a name, and a color. Each pick is a look and one perk.
+The four of you are the party the Magewar storyline was written for: Nerd, Gal, Buff, and Loli, known to Elyria as the Summoned. In co-op, that is the group, up to four. In a solo game the other three stand in the hall while you are appraised, and you pick which of them you are, plus a name and a color. Each pick is a look and one perk. You were not born with an element. The crystal is right about that. The archetype perk is a habit, not an affinity.
+
+The storyline's examples of "ordinary" are an office worker, a student, and a hobbyist gamer. The lines in the hall are more specific, and they win: the Nerd wanted a cheat skill, the Gal was at brunch, the Buff rejects the crystal's reading of his strength, and the Loli is older than she looks. What you share is otherworldly knowledge and a growth left by the rite. Bob reads it with his orb. In a party, the Summoned who is behind the highest level nearby earns more experience from the same kill: a quarter again for each level of gap, up to double. That is the playable face of the "growth multipliers." A level also gives +5 max mana and +5 max breath, and refills both. It does not raise max health. You start at level 1, needing 100 experience, and each later threshold is one and a half times the last. The cap is 50.
 
 | Pick | Perk | What they say in the hall |
 |---|---|---|
@@ -201,21 +237,25 @@ You, and up to three others in co-op. In a solo game the other three stand in th
 
 An old save with no pick shows as a Wanderer and gets no perk. Wanderer is not a fifth choice on the crystal.
 
-**Open.** Whether the other three take rooms in the tree after the grant, or stay a cinematic, is unanswered.
+**Open.** In solo, whether the other three take rooms in the tree and walk the shaft, or stay a hall scene, is unanswered. The story treats them as the party either way.
 
 ### Crazy Joe
 
-Joseph to the Elders. Crazy Joe to everyone else. He summoned you, called the crystal a liar, told you the dungeons fractured ten years ago, and got marched out. He waits at a landfill camp, gives you a wind wand that fell out of a portal, and points you at his bench and at the mound. He believes the trash speaks.
+Joseph to the Elders. Crazy Joe to everyone else. He is three hundred, infamous, and the man who cracked the hall to get you here. He called the crystal a liar, told you the dungeons fractured ten years ago, and got marched out. They took his robes and his staff. The wilds he was banished to begin at the landfill, just past the barrier, which is why "do not return" and "he is camping in the trash" are both true. He never goes back to the dais. He waits at the dump, gives you a wind wand that fell out of a portal (not the staff they confiscated), and points you at his bench and at the mound. He believes the trash speaks. His discards are cracked crystals, notes on trash portals, and contraptions Bob can actually use.
 
 He is the Demon Lord's proxy: reckless on his own, banished for it, and then useful. Down the labyrinth he is always a step ahead, feeding Breach-fire to whatever will take it. **Open** (approved, not built): in Act V he stops being ahead of you. He is waiting. In the Core you fight him, corrupted, with spells that feel like a player's, and then you fight the Demon Lord.
 
 ### Bob
 
-Lazy, nonchalant, and the reason you have a staff. He has been living in the tree for decades, hiding it with illusion, researching the Fracture from a laboratory he does not show off. The Magewar storyline puts him at two hundred and fifty, a master illusionist who could stand with the Elders and will not. In the room he is shorter than that legend: "Name's Bob. This is my home. You lot are squatting."
+The Magewar Bible leaves his name as a blank ("introduces himself as ?"). The storyline fills it, and so does every line he speaks. His name is Bob.
 
-He gives you a staff, a rusty dagger that glows when something nasty is close, a mana potion, and a map scratched on bark. The staff is for fighting. The dagger is for knowing when to. After the Filth he builds the fast-travel crystal out of Joe's resonant trash, tells you the Fracture was deliberate, and welcomes you to Elyria. Then he wants to be left alone. His research line still says five dungeons scattered across the realm. That is the old map. The shaft under the crater is where those five went.
+He is lazy, nonchalant, and the reason you have a staff. He is two hundred and fifty, tall, cloaked, with a wild beard streaked silver and eyes like embers. He arrives the first night in a teleport vortex, because the tree is his and the city has spent centuries not checking. He is a master illusionist and arcanist. His power could stand with the Elders. He will not take the job. The illusion on the bark is why the survey says the tree is empty. The Clerk, when you use the name, is not surprised. He is annoyed. Someone has a file. Nobody visits.
 
-His earlier summonings failed because the Demon Lord blocked them. He explains the lore after the Filth, in the voice of a man who would rather you do the walking.
+Bob's work happens in a tree-top laboratory: star charts, monster autopsies, anomalous artifacts, and one lead, a mana distortion at the landfill where barrier-construction refuse mixed with pre-Cataclysm junk. **Open:** that laboratory, and the potion garden the old storyline adds once the tree becomes a real base, are not furnished rooms in v0.9.0. What you can use is the hollow, the moss, the stash, the Magic Assembly Station, and the waystone.
+
+He gives you a staff, a rusty dagger that glows when something nasty is close, a mana potion that tastes like sour berries, and a map scratched on bark. The staff is for fighting. The dagger is for knowing when to. The old text led with the dagger and did not mention the staff in that gift. Covenant added the staff and kept the dagger as the keepsake. After the Filth he builds the fast-travel crystal out of Joe's resonant trash. It jumps between attuned points. The first of those are the tree and the town gate. He tells you the Fracture was deliberate, welcomes you to Elyria, and wants to be left alone. His research line still says five dungeons scattered across the realm. That is the old map. The shaft under the crater is where those five went.
+
+His earlier summonings failed because the Demon Lord blocked them. He explains the lore after the Filth, in the voice of a man who would rather you do the walking. The model on screen is still a placeholder. The description above is the one to write to.
 
 **Proposed.** He calls it the Great Oak when he is being grand and "my tree" the rest of the time. The Clerk's permit says Old Oak because that is what the last survey wrote down.
 
@@ -243,7 +283,7 @@ He caused the Breach. He blocked Bob. He took Joe on after the banishment. He is
 
 ### The Mage Association
 
-The first room. Cool, dim, a dais, Joe, the crystal, the Elders, the Clerk. The back door behind the dais opens on the landfill once Bob has sent you. The side wings stay closed to novices until the tutorial is done. The Archmage's wings are closed, and the door says so.
+The game starts here, as the Bible says. Cool, dim, a dais, Joe, the crystal, the Elders, the Clerk. The Bible's note on the room is one word: expensive. The marble, the rite, and the taxes all agree. The front door opens on the square. The back door behind the dais opens on the landfill once Bob has sent you. That back door was a question mark in the Bible. The campaign answered it. The side wings stay closed to novices until the tutorial is done. The Archmage's wings are closed, and the door says so. Arcana Spire, the floating citadel, is the order's old seat. This hall is the Eldoria chapter, and it is the only Association room you enter.
 
 ### Eldoria, Town Square
 
@@ -295,6 +335,8 @@ The approved outline also has Joe as the cult's dry prophet, a Breach seed trade
 **The empty shells.** You can already see three: the cocoon under the Matriarch, the human-shaped slag under Forgemaw, the coral sarcophagus in the nave. The approved reading is that something is climbing toward the Core and shedding skins. The Mother and the scrap-spirit do not know what. **Open:** who or what was inside. Do not answer it in this bible.
 
 ## Enemies
+
+The Fracture's first wave, out in the sixty percent that is still wild, is the list the storyline gives: snarling goblins with rusted blades, hulking trolls that regenerate, ethereal wraiths that drain the life out of what they touch, slime beasts that dissolve flesh, and shadow drakes that blot out the sun. The campaign has given some of those a face. Goblins are the Warrens. Trolls are the branded smiths of the Slagworks; the wild ones that knit their own wounds are still a surface story, not a moveset you have met. Slime is the Filth, and the mire ooze in the Breach. Wraiths and shadow drakes have not walked into a level yet. They remain the reason the road past the dome is a bad idea.
 
 Training dummies stand in the landfill: an earthen one and a tidal one, for learning that elements matter.
 
@@ -364,9 +406,21 @@ Final hurt is the weapon's base, times rarity, plus flat bonuses, then the eleme
 
 ### Building a weapon
 
-A staff is five parts: Head, Exterior, Interior, Handle, Charm. A wand is Head, Exterior, and Handle. You assemble them at the station in the tree. The Head's element sets the brand. Gems sit in the Head. Rare heads have more sockets. A Primordial head has more still. Wands keep a single gem socket.
+The base staff or wand is the spell. The parts are the modifiers. You only assemble them at a Magic Assembly Station. The one you can use is in the tree. The Bible also calls that bench an enchantment forge. Same station. The Runesmith in the square does not build weapons. He spends Arcane Dust to wake a part's runes again: same part, same rarity, different luck.
 
-You carry a staff and a wand in the quick slots, plus two more weapons on the extra slots.
+The Bible's overview names the parts Handle, Shell, Internals, and Head. The crafting page names Head, Exterior, Interior, Handle, and Charm. Shell is the Exterior. Internals are the Interior. Covenant uses the longer list.
+
+A staff takes four or five parts. The Charm is the optional fifth, and it is staff-only, an extra augment. A wand takes the Head, the Exterior, and the Handle. The Bible left a question mark on whether a wand needs a Handle. Covenant answered it: the wand has one. A wand's Head holds a single gem. A staff Head holds one to three, which in play means a Rare head opens more sockets and a Primordial head opens more still.
+
+| Part | What it is for |
+|---|---|
+| Head | The element, and the gem sockets that can change the bolt. The brand follows the Head, not the gem. |
+| Exterior (Shell) | The fire rate, where the weapon has one. |
+| Interior (Internals) | The base of the damage. |
+| Handle | Handling, stability, and accuracy. On a staff it also shortens the draw. |
+| Charm | Staff only. Optional. A further augment. |
+
+You carry a staff and a wand in the quick slots, plus two more weapons on the extra slots. The Bible's carried set was a staff and a wand. The two extra slots are a Covenant addition.
 
 ### What else you wear
 
@@ -439,6 +493,8 @@ Enemy health climbs by about sixty percent for each extra player. Labyrinth drop
 
 ## Quests
 
+The Magewar Bible is blunt about the pace after the dump. The main quest is vague on purpose. There is no divine marker. You learn the next place from a person, and you take the side work that opens it. Covenant keeps the tone and gives the vagueness a spine: Bob will not draw the map for you, and the shaft is still down.
+
 The main path is short on purpose, then the shaft takes over.
 
 | Quest | Kind | What you do | In v0.9.0 |
@@ -454,7 +510,23 @@ The main path is short on purpose, then the shaft takes over.
 
 A clue journal keeps Joe's trash, the mana distortion, the deliberate Fracture, Joe's rot, and the seals. Act IV, Act V, and the Core have no quest entries yet. **Open.**
 
-Bob's repeating line still tells you to talk to townsfolk and take their quests. The board that exists is the bounty board, not a town plot. **Open:** Willowbrook's farmer, the elf caravan, and the other side stories from the Magewar storyline. They were the seeds of the acts, not quests you can accept.
+### Side stories, and where they went
+
+The Magewar storyline's side work is canon. Most of it became an act instead of an errand on the square.
+
+| The old job | What it uncovered | In Covenant |
+|---|---|---|
+| Help a Willowbrook farmer against goblin raids | A hidden dungeon entrance | Act I. The farmer is not an NPC you can hire. The raids are the Warrens' history. |
+| Escort a Sylvandar caravan | Elven lore, and a ley-line map | Not a mission. The lore is why ley lines are in the cosmology. **Open** as a quest. |
+| Delve Ironforge's mines | Trolls, and ore that upgrades gear | Act III. The gear is the slag loot, not a separate upgrade path. |
+| The Whispering Woods | Trees that talk, and ambushes | Act II. |
+| The Shattered Peaks | Aerial dungeons, avalanches | **Open** Act V. |
+| The Crimson Sea | Underwater ruins | Act IV. |
+| Tavern gossip: echoing whispers in the deep | A clue, not a map marker | The patron at the Fractured Flagon, and Bob's "talk to people." |
+| A merchant's vanished expedition | Another clue | Not written as a named merchant quest. **Open** if it needs its own person. |
+| Landfills across Elyria, or old mining greed, as the cause | Bob's early theories | Superseded. The cause is the Demon Lord. The landfill stays the tutorial, not the conspiracy. |
+
+Bob still tells you to talk to townsfolk and take their quests. The board you can clear is the bounty board. The acts are the discovery.
 
 ## Bounties, toys, and the mantle
 
@@ -484,7 +556,7 @@ At the current tuning, each tier adds a quarter again to enemy health, fifteen p
 
 ## DLC
 
-**Open**, decided in shape and not built. The main game has one town. Each DLC labyrinth gets its own town and its own Mage Association chapter: shops for trade, the chapter for quests, training, and lore. DLC has level minimums. **Open:** the numbers, the town names, and which labyrinths they are. Covenant Escalation on a DLC labyrinth requires the main game beaten, and it stays mechanical there too. After that DLC's story boss, the same Abyss and then the same Endless Descent apply. Story floors stay handmade.
+**Open**, decided in shape and not built. The Magewar Bible's map, after the starting town, is "Town 2" (a square and a first dungeon) and "Small Town" (a dot). Covenant spent that first dungeon on the labyrinth instead of a second city. DLC is where the extra towns come back. Each DLC labyrinth gets its own town and its own Mage Association chapter: shops for trade, the chapter for quests, training, and lore. The main game keeps Eldoria. DLC has level minimums. **Open:** the numbers, the town names, and which labyrinths they are. Covenant Escalation on a DLC labyrinth requires the main game beaten, and it stays mechanical there too. After that DLC's story boss, the same Abyss and then the same Endless Descent apply. Story floors stay handmade. Small Town is still a dot.
 
 ## How a minute of play feels
 
@@ -521,7 +593,10 @@ The four archetype names are the ones ShobieShy kept. Use them as he wrote them.
 - **Fast-travel crystal.** Bob's gift after the Filth. Waystones are the stones you actually touch.
 - **Filth, the.** The landfill boss. Also the reason the junkyard feels like a dare.
 - **Forgotten Abyss, the.** The unbuilt endless run after the Core. A different mode from the Abyss.
+- **Dungeon Invasion.** The Magewar Bible's formal name for the Fracture.
+- **Elyrian Common.** The language you learn badly on the first day.
 - **Fracture.** The day the dungeons broke, ten years ago.
+- **Ley lines.** The rivers of mana under Elyria. Not a map you draw.
 - **Great Oak.** ShobieShy's name for the home tree. The permit says Old Oak.
 - **Labyrinth.** Acts I–V under the Breach, one shaft.
 - **Path of Embers.** The shared skill tree.
@@ -531,20 +606,21 @@ The four archetype names are the ones ShobieShy kept. Use them as he wrote them.
 ## Open, in one list
 
 - The permit still says Old Oak. The bible says Great Oak.
-- Which Magewar kingdoms still exist off the playable map.
-- Whether the Demon Lord is the old "elder god."
 - The prism: the decision is one sentence, the scene is unwritten.
-- The Association head's name.
-- Where the other three Summoned live after the hall.
-- Act IV hymns, the cult's name, hymn-shards, Choir-as-a-crowd, the sarcophagus's occupant.
+- The Association head's name, face, and the scene where the fear shows.
+- In solo, whether Nerd, Gal, Buff, and Loli take rooms in the tree and walk the shaft.
+- Act IV hymns, the cult's name, hymn-shards, one Choir or many, what was in the sarcophagus.
 - Act V, the Storm Warden, and the Core fights, including the Demon Lord's escape as a scene.
 - Who shed the three skins.
-- Death at the Association and dropping gold, versus the checkpoint return that ships today.
+- Death at the Association and dropping gold, versus the waystone return that ships today.
 - Deep-gear drop rate, and any further level-scaling question.
-- Whether the Abyss / Endless Descent / Forgotten Abyss names should be untangled.
-- DLC towns, their names, and the level minimums. The rule "Escalation needs the main game beaten" is decided. The numbers are not.
-- Side quests beyond Joe's marks, Joe's seals, and the bounty board.
-- Placeholder voice: the scavenger, Bob's look, a lot of the music.
+- Whether the Abyss, Endless Descent, and The Forgotten Abyss should be renamed.
+- DLC town names and level minimums. Escalation on DLC still requires the main game beaten. Which labyrinths those towns belong to.
+- A playable rebel faction, a playable induction into the mages beyond the hall you already use, and the blacksmith and bard as named scenes.
+- Whether any of Joe's earlier failed summonings produced a rival who is still alive. Bob's failures did not.
+- Bob's tree-top laboratory and the potion garden as rooms you can walk.
+- The Sylvandar caravan, and the merchant's vanished expedition, as missions.
+- Placeholder presentation: the scavenger's lines, Bob's model, and the music. The Bible's music page was blank. The build is silent.
 
 ## Proposed, in one list
 
@@ -552,3 +628,27 @@ The four archetype names are the ones ShobieShy kept. Use them as he wrote them.
 - Breach-fire is the Demon Lord's heat in ore and trash. Joe thinks he found it.
 - Bob says Great Oak. The Clerk's survey says Old Oak.
 - The prism is a cracked Association focus. Sealing or cracking it both tell the Demon Lord your name.
+
+## Changed from Magewar
+
+Covenant keeps the rite, the four Summoned, Joe, Bob, the tree, the landfill, the Filth, the crystal, the vague middle, and the fight with Joe and then the Demon Lord. These are the places it does not keep the old text.
+
+| Magewar | Covenant |
+|---|---|
+| Six elements. | Seven. Arcane is the extra, and it is neutral. |
+| The cause is unknown, and a later line blames a slumbering elder god. | The Demon Lord caused the Breach. The elder god is a theory people may still repeat. |
+| Joe is a reckless exile. The storyline wonders if he is sick from the Fracture. | He is the Demon Lord's proxy. The sickness is the public story. |
+| Bob is a driven recluse who teleports in and sets the pace. The Bible leaves his name blank. | His name is Bob. He is the lazy roommate. The research is the same research. |
+| The home is the Old Oak, also called the Home Tree. | ShobieShy calls it the Great Oak. The permit, the quests, and the signs still say Old Oak. |
+| Five separate dungeons, then the Demon Lord teleports the party to his lair. | One labyrinth of five acts. You walk there. He does not summon you. After the fight, he escapes. |
+| Act themes are side trips: Willowbrook, the woods, Ironforge, the Crimson Sea, the peaks. | Those trips are the acts. Act IV is the Sunken Ruins. An earlier Breach-fallout idea for that act was dropped. |
+| The starter gift is a glowing dagger, a sour mana potion, and a bark map. | Bob also hands you the staff. The dagger is the keepsake that glows. The Filth is a staff fight, not an improvised trap. |
+| Handle on a wand is a question mark. | Wands have handles. |
+| You carry a staff and a wand, and you wear hat, clothes, belt, shoes, potion, grimoire. | Those stay. Covenant adds two extra weapon slots, a shield, a flask, and a relic. |
+| The enchantment forge is the only bench. | The Magic Assembly Station in the tree is that bench. The Runesmith, who rerolls a part with Arcane Dust, is extra. |
+| After the clear, the story is over when the Demon Lord falls. | The Abyss, then Endless Descent, and the Covenant Escalation dial, change the difficulty and the loot. They do not change the story. The Forgotten Abyss is a later endless run, after the Core, and it is not built. |
+| Death is not specified. | The decided death is a return to the Association, loot and story kept, gold dropped. v0.9.0 still returns you to the last waystone with the gold in your pocket. |
+| Town 2 and Small Town are the next maps. Dungeon 1 sits under Town 2. | Dungeon 1 became the labyrinth. Town 2 and Small Town are the empty slots DLC is meant to fill. |
+| Chapters 2 through 16 of the storyline are the letter C and nothing else. | The acts, the shells, and the Core outline are what got written instead. |
+| Co-op is stated, with no player cap in the Bible. | One to four. |
+| The main quest stays vague, taught by gossip and side jobs. | The tone stays. The path is the shaft. |

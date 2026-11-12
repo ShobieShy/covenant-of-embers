@@ -2,27 +2,27 @@
 
 The campaign as it stands through **v0.9.0**, plus the approved outlines that are not built yet, plus a little connective tissue marked **Proposed** so ShobieShy can throw it out.
 
-The Magewar storyline is the ancestor: Elyria, the Summoned, Crazy Joe, Bob, the landfill, the Filth, the Demon Lord. Its later chapters were blank. Covenant filled them with one labyrinth instead of five dungeons. This document is that filled story. The older file is not in this repository.
+This is a rewrite of the Magewar Storyline, with the Magewar Bible's ending and map folded in, and then bent to fit Covenant of Embers. The source files stay on ShobieShy's machine. They are not in this repository. Where the old text and the game disagree, the game wins. The short list of those disagreements is at the end. The bible has the longer one.
 
 Read the tags the way the bible does. Unmarked scenes are in the game, or ShobieShy has already decided them. **Open** means you cannot play it yet, or nobody has answered it. **Proposed** means this document invented it.
 
 ## Before the rite
 
-Elyria had dungeons the way a coast has weather. They were underground, mean, and contained. Heroes went in. Most of them came out. Crazy Joe is old enough to remember when that was the whole arrangement. The Magewar storyline gives him three centuries and one good story, a volcano dungeon sealed during the Eruption Wars, and then fifty years of getting worse.
+Elyria is a realm of kingdoms, old forest, and high mountains, and it used to keep its monsters downstairs. Dungeons were contained: treasure, anomalies, and something to train a hero on. Crazy Joe is old enough to remember when that was the whole arrangement. He is three hundred, the oldest mage in the Association, and the man who sealed a volcano dungeon alone during the Eruption Wars. Spells, in that memory, flowed like wine. The last fifty years are the part his peers whisper about. The Fracture's noise got into him. He talks about interdimensional echoes and forgotten gods in the trash.
 
-Ten years ago the containers broke. The day is called the Fracture. Goblins, trolls, wraiths, and things with no names came up into farmland and onto roads. Cities that could pay for it, and mages who could survive the work, raised barriers. Eldoria got one. Merchants still argue under it. The dome holds. Joe will tell you, in the first five minutes, that the barriers are failing anyway.
+Ten years ago the containers broke. The Magewar Bible calls the day the Dungeon Invasion. Everyone you will meet calls it the Fracture, and the crater you will walk to is the Breach. Goblins with rusted blades, trolls that knit their own wounds, wraiths that drink a life by touching it, slimes that melt flesh, and shadow drakes that take the sun out of the sky came up onto farmland and onto roads. Villages went missing between dusk and the next rumor. A pitchfork was not a plan. A beginner spell was not a plan.
 
-Scholars spent the decade blaming a curse, a botched rite, or a ley line that tore. They can keep the argument. The Demon Lord caused the Breach. That is the decision of 11 Nov 2026. Eldoria has not heard it. Bob has half of it: after you survive the Filth, he will say the Fracture was deliberate, and he will not give you the name.
+The Association, from its floating citadel of Arcana Spire, sat down with the governments that were still answering letters: human Valdoria, the elves of Sylvandar, the dwarves of Ironforge, the orc tribes of the Wastes. They raised domes. Crystal obelisks, attuned to the stars, drank mana and held the domes up. Eldoria, the capital, got one early. So did Luminar, the library city the chaos did not reach. Over the decade the work crept out to smaller towns. Willowbrook, apples and a river, got a dome. Stonehaven, the iron post that feeds enchanted weapons, got a dome. The work was slow because the crystals had to be mined from the few dungeons that were still safe, because mages burned out, because someone was always skimming the fund, and because an unfinished ward fails in public. About sixty percent of the habitable land is still wild. Bandits and refugees share it with the things that came up.
+
+Scholars spent the decade on a curse, a failed rite, or a torn ley line, the invisible river of mana under the earth. The old storyline, at the end of its tour, also offers a slumbering elder god in the core. That offer is withdrawn. The Demon Lord caused the Breach. Eldoria has not been told. Bob has the deliberate half: after you survive the Filth, he will say someone caused it, and he will not give you the name.
 
 **Proposed.** He has the name. He is too lazy, and too afraid of being right, to spend it on you before you have earned a worse conversation.
 
-The wilds outside the domes stayed wild. The Magewar storyline draws them as kingdoms and wastes and a sea. Covenant folds the parts you will actually meet into the shaft under the crater: Willowbrook's goblin problem, a wood that should not be underground, Ironforge's mines, a drowned temple, a sky where a sky cannot be. **Open** how much of that outer map is still there for a later game.
+The lands past the dome are real. You will not ride to them. Willowbrook's goblin problem, a wood that murmurs, Ironforge's mines, a drowned temple, and a sky that should not be underground are the five depths of one shaft. Valdoria, Sylvandar, Luminar, Stonehaven, the Wastes, and Arcana Spire stay off the level list. The hall that summons you is the Eldoria chapter, not the floating spire.
 
 ## The summoning
 
-Joe does it in the Association hall, on the dais, with books he should not have had and mana the Elders will miss. He is mumbling about interdimensional echoes and forgotten gods when the smoke clears and you are standing in it.
-
-He is delighted. You are a real outsider. A real chance. Then he puts you in front of the appraisal crystal, and the crystal says underwhelming.
+Joe does it in the Association hall, on the dais. He wanted champions from beyond the veil. Demigods. Anyone stronger than this realm. The tomes were smuggled out of ruined libraries. He is mumbling about interdimensional echoes and forgotten gods while the mana bill cracks the marble and rings the barriers. When the smoke clears, you are standing in it, and he is delighted. You are a real outsider. A real chance. Then he puts you in front of the appraisal crystal, and the crystal says underwhelming: a child's strength, a dry mana pool, no element of your own.
 
 He refuses the reading. He tells you the dungeons fractured ten years ago, that monsters are everywhere, that the barriers are failing, and that you should check the landfill for whatever is causing "it." The Elders arrive in the middle of the pitch. Joseph is expelled. Reckless does not begin to cover it. They march him out the back. The Summoned stay. The rite does not reverse. See the Clerk.
 
@@ -30,7 +30,11 @@ If you are alone, the other three are in the hall with you, having the same bad 
 
 **Proposed.** The crystal is not broken. The Demon Lord has been sitting on the summoning for years, spoiling Bob's quieter attempts and, this once, failing to stop Joe's loud one. What gets through is ordinary. Ordinary, in a realm that expected a champion, still counts as a crack in his plan. Joe does not understand this. Bob will, later, and he will pretend it is a research note.
 
-The Clerk has Form 7-B. Sign or make a mark. Fifty gold, which will feed you for a week if Eldoria's prices are feeling kind. Clothes, enchanted for minor durability, already on your back. A residency permit for the Old Oak at the edge of town. Big dead tree. Can't miss it. The Clerk is already looking past you at the next problem.
+They take his robes and his staff. The wilds get him in a tattered cloak, with an order not to come back to the hall. He will obey that order to the letter and camp in the landfill, which is where the wilds start.
+
+A few mages want to send you home. The rite does not have a return. The Clerk has Form 7-B. Sign or make a mark. Fifty gold, which will feed you for a week if Eldoria's prices are feeling kind. Clothes, enchanted for minor durability, already on your back. A residency permit for the Old Oak at the edge of town. Big dead tree. Can't miss it. The survey says nobody has lived there for centuries. The bark is carved with faded runes. Vines choke the door. The Clerk is already looking past you at the next problem.
+
+The first day is the square. Barrier-safe herbs. Guards on the wards. Bread, paid for in the scraps of Elyrian Common you can manage. Children point. Adventurers scoff. You are a joke with a permit, and you are also carrying a head full of another world's physics, machines, and tactics, which Elyria has no slot for yet. The four of you are the party. In co-op that is literal. **Open:** in a solo game, whether the other three follow you into the tree and down the shaft, or stay in the hall.
 
 **Open.** The permit, the quests, and the level all say Old Oak. On 11 Nov 2026 ShobieShy called Bob's home the Great Oak. This storyline uses Great Oak for the place and Old Oak for the paper. **Proposed.** Bob likes the grander name. The Clerk copied a survey.
 
@@ -40,7 +44,9 @@ The square is paved and watched. Ward-pillars hold the dome. The Bored Guard kno
 
 You are a joke with a permit. The joke walks east.
 
-The tree is hollow, dark, and candle-lit. Moss will do for a bed. Someone has been living here. That someone arrives, or is simply there, and he is not happy to see squatters. His name is Bob. He looks at you with a glowing orb. He is interested, which for Bob is a kind of affection he would deny.
+The tree is hollow, dark, and candle-lit. Moss will do for a bed. Knotholes let the dust show. Someone has been living here, and the city has agreed not to notice. That night a vortex opens in the room. The man who steps out is tall, cloaked, silver in the beard, eyes like embers. The Magewar Bible left his name as a question mark. He answers it himself. His name is Bob. He looks at you with a glowing orb. He is interested, which for Bob is a kind of affection he would deny.
+
+He is two hundred and fifty. He could match an Elder and will not sit the exam. Illusion keeps the tree looking abandoned while he works a laboratory up in the branches: star charts, autopsies, artifacts, and a single distortion at the dump, where the rubbish of the barrier project mixed with junk from before the Fracture. **Open:** you cannot climb into that laboratory yet, and the potion garden the old text promises the tree is not planted. The hollow, the stash, and the assembly bench are the home you have.
 
 You are weak. Pathetically so. You could become something useful. His only lead is a faint mana distortion at the landfill. He wants samples, and he wants Joe's trash, because Joe has a knack for accidental magic in his discards. The payment is a staff, a rusty dagger, a mana potion that tastes like sour berries, and a map on bark. The staff is for fighting. The dagger glows when something nasty is close, which in this town is a calendar. If you ask why you should help, he says the Association will not, and you have nowhere else to sleep. If you just agree, he likes you better. Less talking. More landfill.
 
@@ -62,7 +68,27 @@ You can die here. The run is built to let you. See the bible for the last stand,
 
 You bring the trash home. Bob is surprised you are competent. Joe's madness has uses. The crystals in the junk still hold resonance, and out of them he makes a fast-travel crystal, a palm-sized way to jump between attuned stones. Then he says the sentence the whole campaign hangs on. The Fracture is not random. Someone, or something, caused it deliberately. Welcome to Elyria. Try not to break anything he cannot fix.
 
-He also says the answers are in five dungeons scattered across the realm, and that you should talk to townsfolk and take their quests, and that he will be here researching, so stop bothering him. The five dungeons are the old shape of the truth. The Breach fused them. You will not tour Willowbrook, the woods, Ironforge, the sea, and the peaks as separate countries. You will fall through what they became.
+He also says the answers are in five dungeons scattered across the realm, and that you should talk to townsfolk and take their quests, and that he will be here researching, so stop bothering him. That vagueness is the Magewar Bible's whole plan for the middle of the game. Covenant keeps his manners and gives the middle a hole. The five dungeons are the old shape of the truth. The Breach fused them.
+
+The side stories he is pointing at are specific, and most of them became depths instead of errands.
+
+A Willowbrook farmer, losing apples to goblin raids, would have shown you a hidden entrance. That entrance is the Warrens. You do not meet the farmer.
+
+An elf caravan out of Sylvandar would have paid you in lore and a map of the ley lines. **Open.** Nobody offers you that escort. The lines are still under the world.
+
+Ironforge's mines, trolls, and ore that upgrades a weapon: that is the Slagworks, and the loot is the upgrade.
+
+The Whispering Woods, secretive and full of ambushes, is the Blightcoil.
+
+The Crimson Sea's drowned ruins are the Sunken Ruins.
+
+The Shattered Peaks, avalanches and dungeons in the air, are the Inverted Spire, which you cannot climb yet.
+
+A drunk will mention whispers in the deep. A merchant, somewhere, lost an expedition. **Open** whether that merchant gets a name. Bob's other early theories, artifacts buried in landfills across the realm, or old mining greed cracking the seals, are retired. The landfill is the tutorial. The cause is the Demon Lord.
+
+The old text also says the Summoned start getting asked to pick a side, mages and their tomes or rebels who hate the barrier monopoly, and that a fiery blacksmith or an enigmatic bard might love one of you. None of those scenes are written. The taxes and Bob's contempt for the hall are the rebel argument as it currently exists. **Open** the rest.
+
+And it warns that rival Summoned, maybe Joe's earlier failures, might come looking. Bob's failures are accounted for: the Demon Lord blocked them, and they produced no one. Joe's earlier tries are the storyline's own question mark. **Open.**
 
 The square changes its mind about you by an inch. The guard saw the sludge. The merchant offers first pick. The patron raises a mug and does not offer to pay for it. You are still a Summoned. You are no longer only a punchline.
 
@@ -154,7 +180,7 @@ Gear from deep in that descent can, rarely, show up in an ordinary story run, sc
 
 ## DLC, as a door and not a plot
 
-**Open.** Each later labyrinth gets its own town and its own Mage Association chapter, with shops, training, and lore, the way an adventurer's guild plants a hall. The main game keeps Eldoria. DLC has level minimums, and the numbers are not chosen. Covenant Escalation on those labyrinths waits until the main game is beaten, and it stays a dial there too. The Demon Lord's escape is the narrative excuse to send you. The towns themselves have no names yet.
+**Open.** The Magewar Bible, after Eldoria, has a Town 2 with its own square and a Dungeon 1, and a Small Town that is only a dot. Covenant used Dungeon 1 as the labyrinth. The extra towns are the DLC shape: each later labyrinth gets its own town and its own Mage Association chapter, with shops, training, and lore. The main game keeps Eldoria. DLC has level minimums, and the numbers are not chosen. Covenant Escalation on those labyrinths waits until the main game is beaten, and it stays a dial there too. The Demon Lord's escape is the narrative excuse to send you. The towns have no names yet. Small Town is still a dot.
 
 ## Quests, as the story actually hands them to you
 
@@ -167,7 +193,6 @@ The bounty board after Forgemaw is work, not lore: gnawers, heaps, spore husks, 
 ## Open
 
 - Old Oak on the permit, Great Oak in ShobieShy's mouth.
-- How much of the outer Elyria map still exists.
 - The prism: half-cracked, a mid-game seal-or-crack, a late payoff. No scene.
 - The Association head's name, and the scene where the fear shows.
 - Where Nerd, Gal, Buff, and Loli go after the hall, in a solo game.
@@ -180,7 +205,10 @@ The bounty board after Forgemaw is work, not lore: gnawers, heaps, spore husks, 
 - Deep-gear odds.
 - Whether to rename the Abyss, Endless Descent, or the Forgotten Abyss so they stop colliding.
 - DLC town names and level minimums.
-- Side stories the Magewar text teased and this game has not built: a farmer, a caravan, a romance, a rebel cell, a rival Summoned.
+- The Sylvandar caravan and the vanished expedition as missions you can take.
+- A named blacksmith, a named bard, and a rebel cell you can join.
+- Whether Joe's earlier failed rites left a rival Summoned alive. Bob's did not.
+- Bob's laboratory and the potion garden as rooms.
 
 ## Proposed
 
@@ -190,3 +218,19 @@ The bounty board after Forgemaw is work, not lore: gnawers, heaps, spore husks, 
 - Joe thought the Breach seed was his bargain. The cult thought they were buying a dry god. Both were opening doors for whatever is shedding the shells. The walker stays unnamed.
 - The Demon Lord's exit flickers the ward-pillars over Eldoria for one breath, and the next town hears about it before you arrive.
 - The prism is an Association focus cracked in the rite. Seal it and the dome steadies. Crack it and you are stronger and the crater is wider. He has been watching through it either way, so the choice introduces you.
+
+## Changed from Magewar
+
+The rite, the four Summoned, the expulsion, the tree, the Filth, the crystal, and a last fight with Joe and then the Demon Lord all survive. The story changes are these.
+
+- The Demon Lord caused the Breach. The elder god is no longer the culprit.
+- Joe is the Demon Lord's proxy, not only a sick exile.
+- Bob is the lazy roommate. His name is filled in. The Bible had left it blank.
+- The home he claims is the Great Oak in ShobieShy's mouth and the Old Oak on the permit.
+- Five dungeon trips became one labyrinth. Act IV is the Sunken Ruins.
+- The Demon Lord does not teleport you to a lair after the fifth dungeon. You walk down. When you beat him, he leaves.
+- The Filth is won with a staff. The dagger glows and warns. It is not the weapon.
+- The blank chapters after "Bob?" are the acts, the empty shells, and the Core.
+- The Abyss, Endless Descent, and Covenant Escalation add no scenes.
+
+The bible's Changed from Magewar table also covers elements, parts, gear slots, and the dial.
