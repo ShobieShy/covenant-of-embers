@@ -229,8 +229,9 @@ func send_void(feet_y: float, at: Vector3, yaw: float) -> void:
 
 func _on_void(from: int, data: Dictionary) -> void:
 	if host:
-		var line: float = player.kill_line_y if player != null and player.kill_ready else -1.0e8
-		if not KillPlane.below(float(data.get("y", 0.0)), line):
+		var feet_y := float(data.get("y", 0.0))
+		var line := KillPlane.line_near(get_tree(), feet_y)
+		if is_nan(line) or not KillPlane.below(feet_y, line):
 			return
 		var claimed := Vector3(float(data.get("px", 0.0)), float(data.get("py", 0.0)), float(data.get("pz", 0.0)))
 		var level := player.get_parent().get_node_or_null("Level") if player and player.get_parent() else null

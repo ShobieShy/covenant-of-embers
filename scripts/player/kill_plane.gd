@@ -37,6 +37,40 @@ static func lowest_top(root: Node, feet_y: float = NAN) -> float:
 	return best if best < 1.0e8 else NAN
 
 
+const GROUP := &"kill_line"
+
+
+## One scan when a procedural floor is built. TOML levels already carry the meta.
+static func stamp(node: Node) -> void:
+	if node == null:
+		return
+	var top := lowest_top(node)
+	if is_nan(top):
+		return
+	node.set_meta(&"kill_line_y", line_for(top))
+	if not node.is_in_group(GROUP):
+		node.add_to_group(GROUP)
+
+
+## The line of the floor under these feet. A floor two thousand metres away does not count.
+static func line_near(tree: SceneTree, feet_y: float) -> float:
+	if tree == null:
+		return NAN
+	var best_top := INF
+	var best := NAN
+	for n in tree.get_nodes_in_group(GROUP):
+		if not n.has_meta(&"kill_line_y"):
+			continue
+		var line := float(n.get_meta(&"kill_line_y"))
+		var top := line + DROP
+		if top < feet_y - 48.0 or top > feet_y + 64.0:
+			continue
+		if top < best_top:
+			best_top = top
+			best = line
+	return best
+
+
 ## True when this tick should stop because the player was sent back.
 static func tick(p: Player) -> bool:
 	if p == null or not p.alive() or p.downed or Cinematic.playing != null:
@@ -77,14 +111,14 @@ static func _refresh(p: Player) -> void:
 	if p.kill_scan > 0 and p.kill_ready and not below(feet, p.kill_line_y):
 		return
 	p.kill_scan = 120
-	var top := lowest_top(p.get_parent(), feet)
-	if is_nan(top):
+	var line := line_near(p.get_tree(), feet)
+	if is_nan(line):
 		if p.kill_ready and below(feet, p.kill_line_y):
 			return
 		p.kill_ready = false
 		return
 	p.kill_ready = true
-	p.kill_line_y = line_for(top)
+	p.kill_line_y = line
 
 
 ## Host: a claimed spawn is kept only if it sits on a real marker. Otherwise the level start.

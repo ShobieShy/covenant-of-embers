@@ -45,6 +45,10 @@ static func make(checkpoint: int, state: LabyrinthState) -> SunkenFloor:
 	return f
 
 
+func _ready() -> void:
+	KillPlane.stamp(self)
+
+
 func start_pos() -> Vector3:
 	return global_position + Vector3(0, 1.7, -16)
 

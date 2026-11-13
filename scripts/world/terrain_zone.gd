@@ -47,8 +47,36 @@ const REGION_SIZE := 256  # Terrain3D default region_size (vertices)
 
 func _ready() -> void:
 	snap_level()
+	_apply_kill_line()
 	if build_on_ready:
 		build()
+
+
+## The heightfield can sit under the pads. The kill line uses whichever is lower.
+func _apply_kill_line() -> void:
+	var parent := get_parent()
+	if parent == null:
+		return
+	var low := _min_height()
+	var terr := KillPlane.line_for(low)
+	var box_line: float = float(parent.get_meta(&"kill_line_y", terr))
+	parent.set_meta(&"kill_line_y", minf(box_line, terr))
+	if not parent.is_in_group(KillPlane.GROUP):
+		parent.add_to_group(KillPlane.GROUP)
+
+
+func _min_height() -> float:
+	var best := INF
+	var o := center - size * 0.5
+	var step := maxf(spacing, 4.0)
+	var x := o.x
+	while x <= o.x + size.x + 0.01:
+		var z := o.y
+		while z <= o.y + size.y + 0.01:
+			best = minf(best, height_at(x, z))
+			z += step
+		x += step
+	return best if best < 1.0e8 else pad_y
 
 
 ## Step 157: TOML props / anchors / waystones with `snap = true` keep their y as an offset

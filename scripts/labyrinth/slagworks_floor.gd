@@ -105,6 +105,7 @@ func _ready() -> void:
 		shrine.rested.connect(hazard.on_rest)
 	if hazard:
 		hazard.last_pad = pad_global()
+	KillPlane.stamp(self)
 
 
 func _on_pad_body(b: Node3D) -> void:

@@ -229,6 +229,10 @@ func _build_rooms(kit: Dictionary) -> void:
 				_shrine(c)
 
 
+func _ready() -> void:
+	KillPlane.stamp(self)
+
+
 func _process(_dt: float) -> void:
 	if not cull or layout.is_empty() or not is_inside_tree():
 		return
