@@ -120,11 +120,12 @@ size = Vector3(2.5, 0.1, 2.5)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
 albedo_color = Color(0.461356, 0.410021, 0.34919, 1)
 
-[node name="OldOak" type="Node3D"]
+[node name="OldOak" type="Node3D" groups=["kill_line"]]
 metadata/level_id = "old_oak"
 metadata/level_name = "The Old Oak"
 metadata/world_offset = Vector2(-272, 0)
 metadata/source = "res://data/levels/old_oak.toml"
+metadata/kill_line_y = -8
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1")

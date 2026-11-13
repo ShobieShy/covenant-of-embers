@@ -541,6 +541,18 @@ def _num(t: dict, k: str, default: float, lo: float, hi: float) -> float:
     return float(v)
 
 
+def _kill_line(boxes: list[dict]) -> float | None:
+    """Lowest wide slab top, minus 8 m. Stored on the level. The player does not scan for it."""
+    best = None
+    for b in boxes:
+        if b["size"][0] < 4.0 or b["size"][2] < 4.0:
+            continue
+        top = b["center"][1] + b["size"][1] * 0.5
+        if best is None or top < best:
+            best = top
+    return None if best is None else best - 8.0
+
+
 def _terrain(t: dict, boxes: list[dict]) -> dict:
     """Step 152 (Phase W1): an open-zone heightfield (scripts/world/terrain_zone.gd).
     Pads = every `ground` box footprint (+ pad_margin), so the greybox stays flat."""
@@ -709,10 +721,12 @@ def to_tscn(lv: dict, source: str) -> str:
     ] if lv["volumetric_fog"] > 0 else [])))
     nodes: list[str] = []
     root = "Midden" if lv["id"].startswith("midden") else "".join(w.capitalize() for w in lv["id"].split("_"))
-    nodes.append(f'[node name="{root}" type="Node3D"]\nmetadata/level_id = "{lv["id"]}"\n'
+    kill = _kill_line(lv["boxes"])
+    nodes.append(f'[node name="{root}" type="Node3D" groups=["kill_line"]]\nmetadata/level_id = "{lv["id"]}"\n'
                  f'metadata/level_name = "{lv["name"]}"\n'
                  f'metadata/world_offset = Vector2({_f(lv["world_offset"][0])}, {_f(lv["world_offset"][1])})\n'
-                 f'metadata/source = "res://{source}"\n')
+                 f'metadata/source = "res://{source}"\n'
+                 + (f'metadata/kill_line_y = {_f(kill)}\n' if kill is not None else ""))
     nodes.append(f'[node name="WorldEnvironment" type="WorldEnvironment" parent="."]\nenvironment = SubResource("{env}")\n')
     nodes.append(f'[node name="Sun" type="DirectionalLight3D" parent="."]\n'
                  f'transform = {_xf(sun_basis(lv["to_light"]), [0, 10, 0])}\n'

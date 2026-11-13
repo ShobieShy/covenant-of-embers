@@ -61,7 +61,8 @@ func test_tiles_links_and_seam_path() -> void:
 	)
 	check(nav.polygon_count() > 0, "tiles have polygons")
 	var ok := false
-	for i in 120:
+	# Terrain _ready samples the heightfield before the tiles sync. 120 frames is not always enough.
+	for i in 600:
 		await runner_tree.physics_frame
 		if nav.map_ready():
 			ok = true

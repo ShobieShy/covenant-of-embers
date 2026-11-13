@@ -274,11 +274,12 @@ size = Vector3(1.5, 1.5, 1.5)
 [sub_resource type="BoxShape3D" id="BoxShape3D_19"]
 size = Vector3(1.5, 1.5, 1.5)
 
-[node name="BreachSlice" type="Node3D"]
+[node name="BreachSlice" type="Node3D" groups=["kill_line"]]
 metadata/level_id = "breach_slice"
 metadata/level_name = "The Breach"
 metadata/world_offset = Vector2(1104, -64)
 metadata/source = "res://data/levels/breach_slice.toml"
+metadata/kill_line_y = -8
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1")

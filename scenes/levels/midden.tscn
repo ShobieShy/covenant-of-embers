@@ -370,11 +370,12 @@ size = Vector3(12, 5, 2.2)
 [sub_resource type="BoxShape3D" id="BoxShape3D_32"]
 size = Vector3(12, 5, 2.2)
 
-[node name="Midden" type="Node3D"]
+[node name="Midden" type="Node3D" groups=["kill_line"]]
 metadata/level_id = "midden_greybox"
 metadata/level_name = "The Landfill"
 metadata/world_offset = Vector2(576, -240)
 metadata/source = "res://data/levels/midden_greybox.toml"
+metadata/kill_line_y = -10
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1")

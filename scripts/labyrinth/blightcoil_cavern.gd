@@ -418,6 +418,7 @@ func _ready() -> void:
 		hazard.rest_pad = pad_global(7)
 		hazard.last_pad = pad_global(floor_no)
 		hazard.cavern = self
+	KillPlane.stamp(self)
 
 
 func _spawns(state: LabyrinthState) -> void:

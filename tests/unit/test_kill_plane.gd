@@ -47,6 +47,18 @@ func test_labyrinth_floor_is_not_the_crater() -> void:
 	_slab(world, Vector3(0, -1999.5, 0))
 	check(is_equal_approx(KillPlane.lowest_top(world, 0.0), 0.0), "the crater ignores the deep floor")
 	check(is_equal_approx(KillPlane.lowest_top(world, -1999.0), -1999.0), "the floor ignores the crater")
+	var crater := Node3D.new()
+	var deep := Node3D.new()
+	crater.set_meta(&"kill_line_y", -8.0)
+	deep.set_meta(&"kill_line_y", -2007.0)
+	crater.add_to_group(KillPlane.GROUP)
+	deep.add_to_group(KillPlane.GROUP)
+	runner_tree.root.add_child(crater)
+	runner_tree.root.add_child(deep)
+	check(is_equal_approx(KillPlane.line_near(runner_tree, 0.0), -8.0), "the crater line")
+	check(is_equal_approx(KillPlane.line_near(runner_tree, -1999.0), -2007.0), "the joiner's floor, not the host's")
+	crater.free()
+	deep.free()
 	world.free()
 
 
@@ -63,6 +75,7 @@ func test_fall_respawns_and_keeps_gold() -> void:
 	level.add_child(body)
 	var p: Player = (load("res://scenes/player/player.tscn") as PackedScene).instantiate()
 	runner_tree.root.add_child(level)
+	KillPlane.stamp(level)
 	runner_tree.root.add_child(p)
 	p.spawn(Vector3(2, 0, 3), 0.4)
 	p.inventory.gold = 77
