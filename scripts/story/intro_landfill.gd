@@ -20,7 +20,7 @@ static func _dress_landfill(h: IntroDirector) -> void:
 		sp.trigger_radius = 0.0
 	for w in h.WALLS:
 		if not h.flags.has(String(h.WALLS[w][1])):
-			h.walls[w] = _wall(h, w, float(h.WALLS[w][0]))
+			h.walls[w] = _wall(h, w, _wall_z(h, w))
 	var st := station(h)
 	if st:
 		st.global_position = h.spot("joe_bench", h.CAMP)
@@ -53,6 +53,13 @@ static func wall_up(h: IntroDirector, w: String) -> bool:
 	return h.walls.has(w) and is_instance_valid(h.walls[w])
 
 
+const WALL_ANCHOR := {"YardWall": "yard_wall", "JunkWall": "junk_wall", "ArenaWall": "arena_wall"}
+
+
+static func _wall_z(h: IntroDirector, w: String) -> float:
+	return h.spot(String(WALL_ANCHOR[w]), Vector3(0.0, 0.0, float(h.WALLS[w][0]))).z
+
+
 static func _wall(h: IntroDirector, n: String, z: float) -> StaticBody3D:
 	return IntroWall.make(h.main, n, z)
 
@@ -68,8 +75,9 @@ static func _start_yard(h: IntroDirector) -> void:
 	var d := sp.table.find("gnawer") if sp else null
 	if d == null:
 		return
-	for at in h.YARD_GNAWERS:
-		var e := Enemy.create(d, Transform3D(Basis(), h.base + at))
+	for i in h.YARD_GNAWERS.size():
+		var at := h.spot("yard_gnawer_%d" % i, h.YARD_GNAWERS[i])
+		var e := Enemy.create(d, Transform3D(Basis(), at))
 		e.name = "YardGnawer%d" % (h.yard.size() + 1)
 		sp.add_child(e)
 		sp.call("_adopt", e)

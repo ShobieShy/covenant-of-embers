@@ -134,11 +134,14 @@ func test_pool_rolls_within_2pct() -> void:
 			counts.resize(p.entries.size())
 			var tiers := PackedInt32Array()
 			tiers.resize(Rarity.COUNT)
+			var bad_drops := 0
 			for n in N:
 				var d := p.roll(rng, luck)
 				counts[p.entries.find(d.entry)] += 1
 				tiers[Rarity.parse(d.rolled_rarity_id)] += 1
-				check(d.kind == LootDrop.Kind.WIELDABLE and d.rarity_id == d.entry.rarity_id(), "drop kind/rarity")
+				if d.kind != LootDrop.Kind.WIELDABLE or d.rarity_id != d.entry.rarity_id():
+					bad_drops += 1
+			check(bad_drops == 0, "drop kind/rarity (%d bad)" % bad_drops)
 			var exp := p.expected_chances(luck)
 			var worst := 0.0
 			for i in counts.size():

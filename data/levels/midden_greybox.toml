@@ -654,3 +654,44 @@ model = "assets/quaternius/enemies/props/Can_Broken.glb"
 position = [2.6, -2.0, -57.0]
 rotation_deg = [0.0, 90.0, 0.0]
 scale = 2.42
+
+# Intro spots. The constants in IntroDirector stay as the fallback.
+[[anchor]]
+name = "yard_gnawer_0"
+position = [-8.0, 0.0, 10.5]
+
+[[anchor]]
+name = "yard_gnawer_1"
+position = [8.0, 0.0, 10.5]
+
+[[anchor]]
+name = "yard_gnawer_2"
+position = [-4.0, 0.0, 10.0]
+
+[[anchor]]
+name = "joe_bench"
+position = [5.0, 0.0, 7.0]
+
+[[anchor]]
+name = "joe_camp"
+position = [7.0, 0.0, 7.5]
+
+[[anchor]]
+name = "light_shrine"
+position = [-5.0, 0.0, 4.0]
+
+[[anchor]]
+name = "dark_shrine"
+position = [5.0, 0.0, 4.0]
+
+[[anchor]]
+name = "yard_wall"
+position = [0.0, 0.0, 9.0]
+
+[[anchor]]
+name = "junk_wall"
+position = [0.0, 0.0, 5.5]
+
+[[anchor]]
+name = "arena_wall"
+position = [0.0, 0.0, 2.5]

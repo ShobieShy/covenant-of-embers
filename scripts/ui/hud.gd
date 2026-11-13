@@ -357,7 +357,10 @@ static func bar_color(b: ProgressBar) -> Color:
 
 
 func _set_bar_color(b: ProgressBar, c: Color) -> void:
-	(b.get_theme_stylebox(&"fill") as StyleBoxFlat).bg_color = c
+	var box := b.get_theme_stylebox(&"fill") as StyleBoxFlat
+	if box.bg_color.is_equal_approx(c):
+		return
+	box.bg_color = c
 
 
 ## M3: a trailing chip segment drawn over the empty part of `b`.
@@ -582,7 +585,9 @@ func refresh(dt: float) -> void:
 		banner.text = "Wave %d/%d%s" % [spawner.wave_index + 1, spawner.waves.size(), left]
 	_refresh_boss()
 	var pr := player.progression
-	level_label.text = "Level %d   %d / %d XP   %d Gold" % [pr.level, pr.xp, pr.xp_to_next, player.inventory.gold]
+	var lvl := "Level %d   %d / %d XP   %d Gold" % [pr.level, pr.xp, pr.xp_to_next, player.inventory.gold]
+	if level_label.text != lvl:
+		level_label.text = lvl
 	var sp := player.skills.available(pr.level)
 	skill_badge.visible = sp > 0
 	if sp > 0:
@@ -612,9 +617,12 @@ func _refresh_world_card() -> void:
 	world_card_bg.visible = show
 	if not show:
 		return
-	world_card.text = CompareCard.for_item(item, player, true).to_bbcode()
-	var vp := root.get_viewport_rect().size
-	world_card_bg.position = vp * 0.5 + Vector2(36, -28)
+	var bb := CompareCard.for_item(item, player, true).to_bbcode()
+	var pos := root.get_viewport_rect().size * 0.5 + Vector2(36, -28)
+	if world_card.text == bb and world_card_bg.position.is_equal_approx(pos):
+		return
+	world_card.text = bb
+	world_card_bg.position = pos
 	world_card_bg.size = Vector2(260, maxf(48.0, world_card.get_content_height() + 12.0))
 
 

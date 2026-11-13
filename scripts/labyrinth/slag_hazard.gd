@@ -21,6 +21,9 @@ var _from_y := {}
 var _air := {}
 var _voided := {}
 var _watched := {}
+var _rail_nodes: Array = []
+var _cart_nodes: Array = []
+var _rails_ready := false
 
 
 func _ready() -> void:
@@ -168,13 +171,27 @@ func _falls(p: Player) -> void:
 
 
 func _rails() -> Array:
-	var out: Array = []
-	if host == null or int(host.get(&"floor_no")) < 9 or int(host.get(&"floor_no")) > 12:
-		return out
-	for n in host.find_children("*", "Node3D", true, false):
-		if String(n.name) == "Rail" and n.has_meta(&"loop"):
-			out.append(n)
-	return out
+	if _rails_ready:
+		return _rail_nodes
+	if host == null or not host.is_inside_tree():
+		return []
+	_rail_nodes = []
+	if int(host.get(&"floor_no")) >= 9 and int(host.get(&"floor_no")) <= 12:
+		for n in host.find_children("*", "Node3D", true, false):
+			if String(n.name) == "Rail" and n.has_meta(&"loop"):
+				_rail_nodes.append(n)
+	_rails_ready = true
+	return _rail_nodes
+
+
+func _remember_carts() -> void:
+	_cart_nodes.clear()
+	for n in _rails():
+		if not n.has_meta(&"cart"):
+			continue
+		var cart: Variant = n.get_meta(&"cart")
+		if cart is Node3D and is_instance_valid(cart):
+			_cart_nodes.append(cart)
 
 
 func _ensure_carts() -> void:
@@ -190,6 +207,7 @@ func _ensure_carts() -> void:
 		cart.set_meta(&"mover", true)
 		host.add_child(cart)
 		n.set_meta(&"cart", cart)
+	_remember_carts()
 
 
 func _move_carts() -> void:
@@ -228,10 +246,10 @@ func _carts(p: Player, dt: float) -> void:
 		return
 	if host == null:
 		return
-	for n in host.find_children("*", "Node3D", true, false):
-		if String(n.name) != "Cart":
-			continue
+	for n in _cart_nodes:
 		var cart := n as Node3D
+		if cart == null or not is_instance_valid(cart):
+			continue
 		if cart.global_position.distance_to(p.global_position) > CART_REACH:
 			continue
 		p.hurt_health(p.health.max_value() * CART_HIT)

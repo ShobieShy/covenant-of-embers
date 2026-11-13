@@ -977,6 +977,9 @@ func _read_cache(hashed: String) -> NavigationMesh:
 
 
 func _write_cache(nm: NavigationMesh, hashed: String) -> void:
+	# An export's res:// is read-only. The editor (and a dev checkout) can refresh the cache.
+	if not OS.has_feature("editor"):
+		return
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(CACHE_DIR))
 	var err := ResourceSaver.save(nm, cache_mesh_path())
 	if err != OK:

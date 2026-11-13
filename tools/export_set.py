@@ -31,7 +31,11 @@ BASE = (
     "assets/kenney/blaster-kit/Previews/*, "
     "assets/quaternius/*_preview.png, "
     "assets/kenney/ui-pack/Vector/*, "
-    "assets/kenney/ui-pack/PNG/*/Double/*"
+    "assets/kenney/ui-pack/PNG/*/Double/*, "
+    "scenes/levels/nav/midden_greybox/*, "
+    "scenes/levels/nav/breach_slice/*, "
+    "scenes/levels/nav/town_square/*, "
+    "scenes/levels/nav/old_oak/*"
 )
 
 
