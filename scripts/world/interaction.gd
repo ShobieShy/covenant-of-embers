@@ -83,7 +83,7 @@ static func is_target(p: Player, n: Node3D) -> bool:
 
 ## The HUD prompt for the looked-at target ("" when none, or a UI is open).
 static func prompt(p: Player) -> String:
-	if p == null or p.ui_open:
+	if p == null or p.input_blocked():
 		return ""
 	var t := target(p)
 	if t and t.has_method("interact_prompt"):

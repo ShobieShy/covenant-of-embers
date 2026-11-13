@@ -234,6 +234,8 @@ func _panel_shown() -> bool:
 
 
 func open() -> void:
+	if player and player.dialogue_lock:
+		return
 	if echo and not _panel_shown():
 		echo.open("inventory")
 		return

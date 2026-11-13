@@ -152,7 +152,7 @@ func open_chest_quiet() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if locked or is_open or player == null or player.ui_open:
+	if locked or is_open or player == null or player.input_blocked():
 		return
 	if event.is_action_pressed(&"interact") and in_reach(player):
 		open_chest()

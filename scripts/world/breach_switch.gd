@@ -83,7 +83,7 @@ func _refresh() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if player == null or player.ui_open or is_pressed:
+	if player == null or player.input_blocked() or is_pressed:
 		return
 	if event.is_action_pressed(&"interact") and in_reach(player) and press():
 		get_viewport().set_input_as_handled()

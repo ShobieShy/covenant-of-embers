@@ -606,7 +606,7 @@ func refresh(dt: float) -> void:
 func _refresh_world_card() -> void:
 	var item: Resource = null
 	var lp := player.pickups.focused
-	if lp != null and lp.drop != null and player.alive() and not player.ui_open:
+	if lp != null and lp.drop != null and player.alive() and not player.input_blocked():
 		item = lp.drop.item
 	var show := item is WieldableInstance or item is WieldablePart or item is EquipmentItem
 	world_card_bg.visible = show

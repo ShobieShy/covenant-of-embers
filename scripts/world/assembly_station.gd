@@ -47,7 +47,7 @@ static func place(parent: Node, level: Node, fallback: Vector3) -> AssemblyStati
 
 ## The shared station prompt for whichever station is in reach ("" when none).
 static func prompt_for(p: Player) -> String:
-	var t := Interaction.target(p) if p and not p.ui_open else null
+	var t := Interaction.target(p) if p and not p.input_blocked() else null
 	return (t as AssemblyStation).interact_prompt() if t is AssemblyStation else ""
 
 
