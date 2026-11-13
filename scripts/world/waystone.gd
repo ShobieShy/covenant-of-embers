@@ -60,6 +60,10 @@ func near(p: Player) -> bool:
 
 ## Attunes when the player is in reach; true when it newly attuned.
 func check_attune() -> bool:
+	if player and near(player):
+		# Last stone touched. A later fall comes back here, not to the level start.
+		player.spawn_feet = global_position + Vector3(0, 0.05, 1.2)
+		player.spawn_yaw = global_rotation.y
 	if travel and near(player) and travel.attune(point):
 		attuned.emit(point)
 		return true

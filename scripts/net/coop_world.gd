@@ -220,6 +220,37 @@ func send_action_skill(verb: String, at: Vector3) -> void:
 	session.send("askill", {"v": verb, "p": at}, 1)
 
 
+## The fallen client asks. The host answers with a point on a real marker.
+func send_void(feet_y: float, at: Vector3, yaw: float) -> void:
+	if session == null:
+		return
+	session.send("void", {"y": feet_y, "px": at.x, "py": at.y, "pz": at.z, "yaw": yaw}, 1)
+
+
+func _on_void(from: int, data: Dictionary) -> void:
+	if host:
+		var line: float = player.kill_line_y if player != null and player.kill_ready else -1.0e8
+		if not KillPlane.below(float(data.get("y", 0.0)), line):
+			return
+		var claimed := Vector3(float(data.get("px", 0.0)), float(data.get("py", 0.0)), float(data.get("pz", 0.0)))
+		var level := player.get_parent().get_node_or_null("Level") if player and player.get_parent() else null
+		var dest := KillPlane.host_dest(level, claimed, line)
+		session.send(
+			"void", {"ok": true, "px": dest.x, "py": dest.y, "pz": dest.z, "yaw": float(data.get("yaw", 0.0))}, from
+		)
+		return
+	if from == 1 and bool(data.get("ok", false)) and player and player.has_method(&"apply_void"):
+		player.apply_void(
+			Vector3(float(data.get("px", 0.0)), float(data.get("py", 0.0)), float(data.get("pz", 0.0))),
+			float(data.get("yaw", 0.0))
+		)
+
+
+func apply_void_on_player(at: Vector3, yaw: float) -> void:
+	if player and player.has_method(&"apply_void"):
+		player.apply_void(at, yaw)
+
+
 func send_pose() -> void:
 	poses_sent += 1
 	session.send("pose", local_pose(), 0, false)
@@ -677,6 +708,8 @@ func send_puppet_heal(e: Enemy, amount: float) -> void:
 
 func _on_message(from: int, kind: String, data: Dictionary) -> void:
 	match kind:
+		"void":
+			_on_void(from, data)
 		"pose":
 			poses_seen += 1
 			data["rt"] = session._clock_ms
