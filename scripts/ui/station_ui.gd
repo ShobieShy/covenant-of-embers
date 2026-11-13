@@ -154,7 +154,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if UiAnim.is_shown(self) and event.is_action_pressed(&"ui_cancel"):
 		close()
 		get_viewport().set_input_as_handled()
-	elif not UiAnim.is_shown(self) and player and not player.ui_open and event.is_action_pressed(&"interact"):
+	elif not UiAnim.is_shown(self) and player and not player.input_blocked() and event.is_action_pressed(&"interact"):
 		var s := nearest_station()
 		if s:
 			open(s)

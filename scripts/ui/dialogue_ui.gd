@@ -29,6 +29,7 @@ static var instant_text := false  ## Settings.apply_to() keeps this in sync
 static var open_ui: DialogueUI
 
 var runner: DialogueRunner
+var player: Player  ## the local player this box locks; co-op partners are separate nodes
 var speaker_label := Label.new()
 var text_label := Label.new()
 var choice_box := VBoxContainer.new()
@@ -118,15 +119,32 @@ func _update_arrow() -> void:
 	)
 
 
-func bind(r: DialogueRunner) -> void:
+func bind(r: DialogueRunner, who: Player = null) -> void:
 	runner = r
+	player = who
 	r.line_shown.connect(_on_line)
 	r.choices_shown.connect(_on_choices)
-	r.ended.connect(func(_id: String) -> void: UiAnim.close(self))  # 0.3.1 P1
+	r.ended.connect(_on_ended)  # 0.3.1 P1
+
+
+func _on_ended(_id: String) -> void:
+	_unlock()
+	UiAnim.close(self)
+
+
+func _lock() -> void:
+	if player and is_instance_valid(player):
+		player.lock_dialogue()
+
+
+func _unlock() -> void:
+	if player and is_instance_valid(player):
+		player.unlock_dialogue()
 
 
 func _on_line(sp: String, t: String) -> void:
 	open_ui = self
+	_lock()
 	if not UiAnim.is_shown(self):
 		UiAnim.open(self)  # 0.3.1 P1
 	speaker_label.text = sp
@@ -192,6 +210,7 @@ static func capturing() -> bool:
 
 
 func _exit_tree() -> void:
+	_unlock()
 	if open_ui == self:
 		open_ui = null
 

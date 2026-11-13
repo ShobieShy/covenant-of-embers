@@ -382,7 +382,7 @@ func _ensure_dialogue() -> void:
 	layer.name = "DialogueLayer"
 	add_child(layer)
 	layer.add_child(dialogue_ui)
-	dialogue_ui.bind(dialogue)
+	dialogue_ui.bind(dialogue, get_node_or_null("Player") as Player)
 
 ## Bob's night stays at the grove. The stash and respec live at the town hub.
 func _setup_oak(player: Player) -> void:
@@ -772,6 +772,10 @@ func _on_level_map_closed() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed(&"map"):
+		return
+	var speaker := get_node_or_null("Player") as Player
+	if speaker and speaker.dialogue_lock:
+		get_viewport().set_input_as_handled()
 		return
 	if pause_menu:
 		pause_menu.open_on("map")

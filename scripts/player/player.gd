@@ -97,6 +97,8 @@ var speed := 4.0  # Magewar `current_speed`
 var interact_held := false  ## 0.3.1 P2: Interact held this tick
 var input_enabled := true  # false in tests: no Input polling in _physics_process
 var ui_open := false  # step 30: a menu screen is up: no actions, no mouse look
+var dialogue_lock := false  ## this player is in a conversation; other players are not
+var _ui_before_dialogue := false
 # Step 32 settings (Settings.apply_to): look + hold/toggle modes.
 var invert_y := false
 var aim_sensitivity := 1.0  ## on top of focus.look_scale(); Magewar-like raw = 1/0.6784
@@ -284,8 +286,29 @@ func _notification(what: int) -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 
+## Menus and this player's own dialogue. A co-op partner's conversation does not set it.
+func input_blocked() -> bool:
+	return ui_open or dialogue_lock
+
+
+## Freeze this player for a conversation. The previous menu flag is restored on unlock.
+func lock_dialogue() -> void:
+	if dialogue_lock:
+		return
+	dialogue_lock = true
+	_ui_before_dialogue = ui_open
+	ui_open = true
+
+
+func unlock_dialogue() -> void:
+	if not dialogue_lock:
+		return
+	dialogue_lock = false
+	ui_open = _ui_before_dialogue
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if not input_enabled or ui_open:
+	if not input_enabled or input_blocked():
 		return
 	var mm := event as InputEventMouseMotion
 	if mm and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
@@ -313,7 +336,7 @@ func set_spread_seed(s: int) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if input_enabled and ui_open:
+	if input_enabled and input_blocked():
 		_wheel = 0
 		tick(PlayerInput.hold(), delta)  # physics keeps running; no actions while a menu is up
 	elif input_enabled and bot_input.is_valid():

@@ -73,6 +73,6 @@ func use() -> bool:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if player and not player.ui_open and event.is_action_pressed(&"interact") and in_reach(player):
+	if player and not player.input_blocked() and event.is_action_pressed(&"interact") and in_reach(player):
 		use()
 		get_viewport().set_input_as_handled()

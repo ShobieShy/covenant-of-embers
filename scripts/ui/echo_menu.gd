@@ -167,7 +167,7 @@ func tab_id() -> String:
 
 ## Open on a tab. Does not toggle. Esc and the footer use this.
 func open(tab := "") -> void:
-	if Cinematic.playing:
+	if Cinematic.playing or (player and player.dialogue_lock):
 		return
 	var id := tab if tab != "" else TABS[last_tab]
 	if _locked(id):
@@ -180,7 +180,7 @@ func open(tab := "") -> void:
 
 ## Key that already means this tab: open it, switch to it, or close if it is showing.
 func open_on(tab: String) -> void:
-	if Cinematic.playing:
+	if Cinematic.playing or (player and player.dialogue_lock):
 		return
 	if is_open() and tab_id() == tab:
 		close()
