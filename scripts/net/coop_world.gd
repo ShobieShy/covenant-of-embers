@@ -4,7 +4,7 @@ extends Node
 ##  - every peer sends its pose 20x/s (unreliable); others show it as a RemotePlayer;
 ##  - the host's enemies hunt the nearest living player (local or remote); a bite on a
 ##    remote player is sent to its owner ("hurt") and resolved there (i-frames, shield);
-##  - the host snapshots its enemies 20x/s (id, type, pose, health, dead); clients show
+##  - the host snapshots its enemies 20x/s (compact rows, unreliable channel 1); clients show
 ##    brainless puppets (plain Enemy bodies, their own spawner switched off);
 ##  - a client's bolt on a puppet is predicted locally and sent to the host ("hit"),
 ##    which applies it to the real enemy; deaths go out reliably ("kill");
@@ -42,6 +42,9 @@ var loot_note_shown := false
 var _ids := {}  ## Enemy -> id (host)
 var _wired := {}  ## Enemy -> true (attacks rerouted, death hooked)
 var _next_id := 1
+var _type_ids := PackedStringArray()  ## session catalog: index -> def.id
+var _kinds_sent := {}  ## peer -> true once that catalog was sent
+var _kinds_ask_ms := 0.0  ## client: don't request the catalog every snapshot
 var _snap_left := 0.0
 var snaps_sent := 0
 var snaps_seen := 0
@@ -510,45 +513,89 @@ func route_attack(target: Node3D, bite: Gnawer.Bite, from: Gnawer = null) -> voi
 
 
 ## Step 155: interest management. Each peer gets only the enemies within INTEREST m of
-## its proxy (a peer with no pose yet gets everything); puppets missing from a snapshot
-## are freed on the client, so walking away despawns them and walking back respawns them.
+## its proxy, and only after its first pose so the type catalog has a listener.
+## Puppets missing from a snapshot are freed on the client, so walking away despawns
+## them and walking back respawns them.
 func send_snapshot() -> void:
 	var all := host_enemies()
+	_grow_catalog(all)
 	for peer in session.roster:
 		if int(peer) == session.my_id():
 			continue
 		if bool(session.roster[peer].get("reconnecting", false)):
 			continue
-		var p: RemotePlayer = proxies.get(int(peer))
-		var at: Variant = p.global_position if p and is_instance_valid(p) and p.is_inside_tree() else null
-		(
-			session
-			. send(
-				"snap",
-				{
-					"e": interest_rows(all, at),
-					"t": session._clock_ms,
-					"ack": session.ack_for(int(peer)),
-				},
-				int(peer),
-				false,
-			)
-		)
+		var id := int(peer)
+		var p: RemotePlayer = proxies.get(id)
+		# A catalog sent before this peer's world exists is lost, and the snapshot rows
+		# are only type indexes. Wait until their pose shows they are listening.
+		if p == null or not is_instance_valid(p) or not p.is_inside_tree():
+			continue
+		if not bool(_kinds_sent.get(id, false)):
+			session.send("kinds", {"ids": _type_ids}, id)
+			_kinds_sent[id] = true
+		var at: Variant = p.global_position
+		var rows := interest_rows(all, at)
+		var origin := at as Vector3 if at is Vector3 else _row_origin(rows)
+		var bytes := SnapCodec.encode(rows, origin, int(session._clock_ms), session.ack_for(id), _type_ids)
+		session.send("snap", {"b": bytes}, id, false)
 	snaps_sent += 1
 
 
-func interest_rows(all: Array[Enemy], at: Variant) -> Array:
-	var list: Array = []
+func _grow_catalog(all: Array) -> void:
+	if _type_ids.is_empty():
+		_type_ids = SnapCodec.catalog_from(table)
+	var grew := false
 	for e in all:
+		var enemy := e as Enemy
+		if enemy == null or enemy.def == null or _type_ids.has(enemy.def.id):
+			continue
+		_type_ids.append(enemy.def.id)
+		grew = true
+	if grew:
+		_kinds_sent.clear()
+
+
+static func _row_origin(rows: Array) -> Vector3:
+	if rows.is_empty():
+		return Vector3.ZERO
+	return rows[0][2]
+
+
+static func _nearer(a: Array, b: Array) -> bool:
+	return float(a[0]) < float(b[0])
+
+
+## Nearest MAX_ENEMIES within INTEREST. Farther rows are the ones a full packet drops.
+func interest_rows(all: Array[Enemy], at: Variant) -> Array:
+	var ranked: Array = []
+	var origin := Vector3.ZERO
+	var have := at is Vector3
+	if have:
+		origin = at
+	for e in all:
+		if e == null or e.def == null:
+			continue
+		var dist := 0.0
+		if have:
+			dist = e.global_position.distance_squared_to(origin)
+			if dist > INTEREST * INTEREST:
+				continue
+		ranked.append([dist, e])
+	ranked.sort_custom(_nearer)
+	var list: Array = []
+	for pair in ranked:
 		if list.size() >= MAX_ENEMIES:
 			break
-		if at == null or e.global_position.distance_to(at as Vector3) <= INTEREST:
-			list.append(snap_row(e))
+		list.append(snap_row(pair[1]))
 	return list
 
 
-## One snapshot row; [8] = Enemy.fx_flags() (step 134: status FX parity on clients).
+## One logical row. The wire form is SnapCodec (type index, pose index, quantized pose).
+## [8] = Enemy.fx_flags(), [10] = boss phase when the enemy has one.
 func snap_row(e: Enemy) -> Array:
+	var phase := 0
+	if "phase" in e:
+		phase = clampi(int(e.phase), 0, 7)
 	return [
 		enemy_id(e),
 		e.def.id,
@@ -560,6 +607,7 @@ func snap_row(e: Enemy) -> Array:
 		e.is_ally(),
 		e.fx_flags(),
 		e.pose,
+		phase,
 	]
 
 
@@ -632,6 +680,10 @@ func _apply_snapshot(list: Array, ack := 0, t_ms := 0.0) -> void:
 			if row.size() > 9:
 				e.net_pose = String(row[9])
 				e.pose = "death" if host_dead else e.net_pose
+			if row.size() > 10:
+				e.set_meta(&"net_phase", int(row[10]))
+				if "phase" in e:
+					e.phase = int(row[10])
 	for id in puppets.keys():
 		if not seen.has(id):
 			var gone: Enemy = puppets[id]
@@ -704,6 +756,27 @@ func send_puppet_heal(e: Enemy, amount: float) -> void:
 	session.send("pheal", {"id": int(e.get_meta(&"net_id", 0)), "amt": amount}, 1)
 
 
+## A snapshot that arrives before the type catalog cannot name enemies. Ask again, and
+## don't treat the empty decode as "everyone left".
+func _take_snapshot(data: Dictionary) -> void:
+	var raw: Variant = data.get("b", PackedByteArray())
+	var bytes: PackedByteArray = raw if raw is PackedByteArray else PackedByteArray()
+	if _type_ids.is_empty():
+		_ask_kinds()
+		return
+	var got := SnapCodec.decode(bytes, _type_ids)
+	if not bool(got.get("ok", false)):
+		return
+	_apply_snapshot(got["rows"], int(got["ack"]), float(got["t"]))
+
+
+func _ask_kinds() -> void:
+	if session == null or session._clock_ms < _kinds_ask_ms:
+		return
+	_kinds_ask_ms = session._clock_ms + 500.0
+	session.send("need_kinds", {}, 1)
+
+
 ## --- messages ------------------------------------------------------------------------
 
 
@@ -718,9 +791,15 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 			pr.apply_pose(data)
 			if session.roster.has(from):
 				pr.reconnecting = bool(session.roster[from].get("reconnecting", false))
+		"kinds":
+			if not host and from == 1:
+				_type_ids = SnapCodec.ids_of(data.get("ids", []))
+		"need_kinds":
+			if host:
+				_kinds_sent.erase(from)
 		"snap":
 			if not host and from == 1:
-				_apply_snapshot(data.get("e", []), int(data.get("ack", 0)), float(data.get("t", 0.0)))
+				_take_snapshot(data)
 		"ping":
 			if proxies.has(from):
 				var prp: RemotePlayer = proxies[from]
