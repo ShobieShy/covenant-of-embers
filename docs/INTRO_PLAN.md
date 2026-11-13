@@ -1,6 +1,6 @@
 # Intro and tutorial plan
 
-The intro shipped. It plays on the closed levels and starts at the Old Oak ([LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md)). This file is the original beat list, not a second campaign plan.
+The intro shipped. It plays on the closed levels and starts at the Old Oak ([LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md)). This file is the original beat list, not a second campaign plan. Player-facing canon is [COVENANT_OF_EMBERS_BIBLE.md](COVENANT_OF_EMBERS_BIBLE.md) and [COVENANT_OF_EMBERS_STORYLINE.md](COVENANT_OF_EMBERS_STORYLINE.md). The Magewar Bible and Magewar Storyline files named below are not in this repository.
 
 Planned 2026-10-24. BUILD_PLAN steps 109-118 implemented it.
 Source: `~/game/Magewar Storyline.md` (Prologue: The Summoning / Welcome to ? Town / A New Home; Chapter 1: Bob?)

@@ -16,11 +16,13 @@ godot --headless --path . -- --seconds 2   # smoke run
 ## Campaign
 Closed levels, one scene each, joined by gates. There is no open world.
 
-1. Prologue at the Old Oak.
+Story and player-facing rules: [docs/COVENANT_OF_EMBERS_BIBLE.md](docs/COVENANT_OF_EMBERS_BIBLE.md) and [docs/COVENANT_OF_EMBERS_STORYLINE.md](docs/COVENANT_OF_EMBERS_STORYLINE.md).
+
+1. Prologue. The Mage Association summons you. Home is the Great Oak (the permit still says Old Oak).
 2. Eldoria Town Square, the hub. The Mage Association is an interior of the hub.
-3. The Landfill.
+3. The Landfill, the junkyard tutorial, and the Filth.
 4. The Breach. The crater portal enters the Labyrinth.
-5. The Breach Labyrinth: Act I Warrens is in the game. Acts II-V and the Core (Crazy Joe, then the Demon Lord) are the rest of the campaign.
+5. The Breach Labyrinth. Acts I–IV are playable through v0.9.0: the Goblin Warrens, the Blightcoil, the Slagworks, and the Sunken Ruins. Act V (the Inverted Spire), the Core (Crazy Joe, then the Demon Lord), and The Forgotten Abyss are still ahead.
 
 Waystones travel between levels. Counts for the levels that exist today: [docs/ZONE_BALANCE.md](docs/ZONE_BALANCE.md). The dungeon content plan: [docs/LABYRINTH_PLAN.md](docs/LABYRINTH_PLAN.md). Placeholder art slots: [docs/EMBER_ART_REQUESTS.md](docs/EMBER_ART_REQUESTS.md).
 

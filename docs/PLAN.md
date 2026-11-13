@@ -6,6 +6,8 @@ Working title. Plan only, with no code yet. A brand-new co-op Vulkan action RPG 
 > **Campaign (current):** closed levels only. The world in §12 is not the game we are building. The campaign plan is [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md): Old Oak, Town Square (hub), Landfill, Breach, then the Labyrinth. The open-world plans are in [archive/](archive/README.md).
 
 > **Superseded (2026-10-24, ShobieShy):** the story, world, NPC and faction content in this plan (§2, §5 Redemption story framing, §9 bosses, §12 world, §13 Camp, §15 story/NPCs) is replaced by the Magewar storyline in `~/game/Magewar Storyline.md` and `~/game/Magewar Bible.md` (Elyria, the Summoned, Crazy Joe, Bob, the Old Oak, The Filth, five dungeons, Demon Lord). Mechanics here still apply unless BUILD_PLAN says otherwise. The five separate dungeons are one Labyrinth; see [LABYRINTH_PLAN.md](LABYRINTH_PLAN.md).
+>
+> **Current story (2026-11-12):** those external Magewar files are not in this repository. Player-facing canon is [COVENANT_OF_EMBERS_BIBLE.md](COVENANT_OF_EMBERS_BIBLE.md) and [COVENANT_OF_EMBERS_STORYLINE.md](COVENANT_OF_EMBERS_STORYLINE.md).
 
 ## 1. Magewar material found on Luna (read-only review)
 

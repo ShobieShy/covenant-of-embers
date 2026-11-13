@@ -1,5 +1,7 @@
 # The Labyrinth
 
+Player-facing canon for the shaft, the acts, and the endgame loop is [COVENANT_OF_EMBERS_BIBLE.md](COVENANT_OF_EMBERS_BIBLE.md) and [COVENANT_OF_EMBERS_STORYLINE.md](COVENANT_OF_EMBERS_STORYLINE.md). The Magewar Bible cited below is not in this repository.
+
 Status: APPROVED 2026-10-27 ~01:48 CDT (all 12 recommended defaults in section 13).
 Act I (the Warrens) and Act II (The Blightcoil) are in the game. Acts III–V and the Core are the remaining campaign. Story outlines are in [LABYRINTH_ACTS_STORY.md](LABYRINTH_ACTS_STORY.md).
 The level order and the entrance are the closed-level plan in [LINEAR_LEVELS_PLAN.md](LINEAR_LEVELS_PLAN.md).
