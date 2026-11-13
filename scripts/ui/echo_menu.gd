@@ -29,6 +29,7 @@ const LABELS: PackedStringArray = [
 ]
 
 var player: Player
+var flags: StoryFlags  ## nil in unit tests: the menu is already in hand
 var settings_ui: SettingsUi
 var inventory: InventoryUi
 var skills: SkillsUi
@@ -38,6 +39,9 @@ var quests: QuestLog
 var bounties := Bounties.new()
 var current := 0
 var last_tab := 0
+var title_label: Label
+var tab_strip: Control
+var pause_only := false
 var underline: ColorRect
 var mission_detail: Label
 var character_label: Label
@@ -76,11 +80,12 @@ func _init() -> void:
 	margin.add_child(panel)
 	var v := VBoxContainer.new()
 	panel.add_child(v)
-	var title := Label.new()
-	title.text = "ECHO"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	v.add_child(title)
+	title_label = Label.new()
+	title_label.text = "Auto-Scribe™"
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(title_label)
 	var strip := Control.new()
+	tab_strip = strip
 	strip.custom_minimum_size = Vector2(0, 40)
 	v.add_child(strip)
 	var row := HBoxContainer.new()
@@ -165,16 +170,26 @@ func tab_id() -> String:
 	return TABS[current]
 
 
+func _has_scribe() -> bool:
+	return flags == null or flags.has(IntroDirector.SCRIBE)
+
+
 ## Open on a tab. Does not toggle. Esc and the footer use this.
+## Before the Clerk's gift, Esc still pauses on Settings. The other tabs stay shut.
 func open(tab := "") -> void:
 	if Cinematic.playing or (player and player.dialogue_lock):
 		return
-	var id := tab if tab != "" else TABS[last_tab]
+	pause_only = not _has_scribe()
+	if pause_only and tab != "" and tab != "settings":
+		_need_scribe()
+		return
+	var id := "settings" if pause_only else (tab if tab != "" else TABS[last_tab])
 	if _locked(id):
 		return
 	var idx := maxi(0, TABS.find(id))
 	if not is_open():
 		_open_shell()
+	_apply_shell()
 	show_tab(idx)
 
 
@@ -257,10 +272,25 @@ func _on_kill(enemy: Enemy, _element: ElementTable.Element) -> void:
 		_fill_challenges()
 
 
+func _need_scribe() -> void:
+	var why := "The Clerk has not handed you the Auto-Scribe™."
+	if player:
+		player.show_hint(why)
+	print("[intro] " + why)
+
+
+func _apply_shell() -> void:
+	if title_label:
+		title_label.text = "Paused" if pause_only else "Auto-Scribe™"
+	if tab_strip:
+		tab_strip.visible = not pause_only
+
+
 func _open_shell() -> void:
 	UiAnim.open(self)
 	status.text = ""
 	_leave_armed = false
+	_apply_shell()
 	if player:
 		player.ui_open = true
 	if is_inside_tree():
@@ -286,6 +316,8 @@ func _locked(id: String) -> bool:
 
 
 func _tab_key(event: InputEvent) -> bool:
+	if pause_only:
+		return false
 	if event is InputEventKey and event.pressed and not event.echo:
 		var focus := get_viewport().gui_get_focus_owner()
 		if focus is LineEdit:

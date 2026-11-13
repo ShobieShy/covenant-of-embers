@@ -1,4 +1,4 @@
-# Quests and the Echo menu (0.9.x)
+# Quests and the Auto-Scribe™ (0.9.x)
 
 Planning only. Written against master `38b3ec5` (v0.9.0-prealpha). No code in this change.
 
@@ -107,7 +107,7 @@ The host's save holds the world: level, `progress["quests"]`, story flags, vault
 
 `Settings` and `Accessibility` already cover text scale, subtitle size, high contrast, colorblind tints, and reduced motion. `UiAnim.reduced_motion` makes panel open and close instant. High contrast is drawn on enemies and loot, not on menu chrome. The skill screen's inner tabs do not use a sliding underline.
 
-## The Echo menu
+## The Auto-Scribe™
 
 One in-game menu. Esc opens it and pauses, as the pause menu does now. The last tab you used is the one that opens. First run opens Map.
 
@@ -234,7 +234,7 @@ Loot stays instanced, as it is now.
 
 Two releases. The menu can ship on the quest data that already exists. The mission rules change save fields, markers, and co-op, and they should not block the menu.
 
-**0.9.1, the Echo menu.** The eight tabs, the motion, reduced motion, and the Missions tab reading `QuestLog` as it is. One HUD tracker that shows every active quest until 0.9.2, but no longer under the minimap. Inventory, skills, map, and settings move into the tabs. Old keys (Tab, K, M, Esc) open the matching tab. No new quest fields required.
+**0.9.1, the Auto-Scribe™.** The eight tabs, the motion, reduced motion, and the Missions tab reading `QuestLog` as it is. One HUD tracker that shows every active quest until 0.9.2, but no longer under the minimap. Inventory, skills, map, and settings move into the tabs. Old keys (Tab, K, M, Esc) open the matching tab. No new quest fields required.
 
 **0.9.2, mission rules.** Main and side, one tracked quest, waypoints, `!` / `?`, the completion panel, reward lines, the Act IV main quest row, and bounties on the Challenges tab with a save.
 
@@ -246,7 +246,7 @@ Change any of these. Each is what the build will do if you do not.
 
 1. **Two releases, 0.9.1 then 0.9.2**, as above.
 2. **Tab order** is Map, Missions, Inventory, Skills, Character, Challenges, Social, Settings.
-3. **Q and E change tabs only while the Echo menu is open.** Q in the world stays the action skill.
+3. **Q and E change tabs only while the Auto-Scribe™ is open.** Q in the world stays the action skill.
 4. **Pad LB / RB** change echo tabs until the Skills tab's inner tree has focus. Then they change Core / element, as they do now.
 5. **Esc** opens and closes the menu and pauses. It still skips a cinematic instead of opening the menu.
 6. **One tracked quest** in 0.9.2. Auto-track the main quest. Side quests do not take the slot unless Track is pressed.

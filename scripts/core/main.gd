@@ -213,6 +213,7 @@ func _setup_flow(player: Player) -> void:
 	pause_menu.name = "EchoMenu"
 	add_child(pause_menu)
 	pause_menu.bind(player, s_ui, get_node("InventoryUi") as InventoryUi, get_node("SkillsUi") as SkillsUi)
+	pause_menu.flags = story_flags
 	pause_menu.save_requested.connect(save_game)
 	var fresh := not GameFlow.load_save
 	var saved_progress := {}
@@ -244,6 +245,7 @@ func _setup_flow(player: Player) -> void:
 		_apply_new_identity(player)
 		if not Coop.is_client():
 			_start_intro(player)
+	IntroDirector.ensure_scribe(story_flags)
 	if IntroDirector.active(story_flags):
 		intro = IntroDirector.new()
 		add_child(intro)

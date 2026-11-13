@@ -36,7 +36,7 @@ speaker = "Clerk"
 requires = ["joe_expelled"]
 forbids = ["permit_given"]
 sets = ["permit_given"]
-lines = ["Summoned? Form 7-B. Sign here. ...Or make a mark. Fine.", "By protocol: fifty gold. It's not much, but it'll keep you fed for a week.", "Rudimentary clothing, enchanted for minor durability. You're wearing it already. You're welcome.", "And residency in the Old Oak. Edge of town. Big dead tree, can't miss it. Here's the residency permit."]
+lines = ["Summoned? Form 7-B. Sign here. ...Or make a mark. Fine.", "By protocol: fifty gold. It's not much, but it'll keep you fed for a week.", "Rudimentary clothing, enchanted for minor durability. You're wearing it already. You're welcome.", "And residency in the Old Oak. Edge of town. Big dead tree, can't miss it. Here's the residency permit.", "And this. The Auto-Scribe™. Map, kit, notes. Esc opens it."]
 
 # Step 114: with Bob's word, the Clerk waves you through the back door.
 [[dialogue]]
