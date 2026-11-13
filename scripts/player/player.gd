@@ -183,6 +183,11 @@ var skills := Skills.new()  # step 71: skill ranks (tree data in data/skills/)
 var skill_procs := SkillProcs.new()  # step 72: kill procs + capstone frenzy
 var quest_items := PackedStringArray()  # step 57: quest items (Joe's Trash), saved
 var pickups := PickupCollector.new()  # step 23: walk-over auto-collect + Interact pickup
+var look_target: Node3D  ## Interaction.current: one look query per physics frame
+var look_target_frame := -1
+var look_target_dir := Vector3.INF
+var look_target_eye := Vector3.INF
+var look_target_blocked := false
 
 var _wheel := 0  # queued mouse-wheel cycles (+ next / - prev)
 var _crouched_jump := false

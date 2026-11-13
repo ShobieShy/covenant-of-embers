@@ -59,33 +59,79 @@ static func score(p: Player, n: Node3D) -> float:
 	return (0.0 if in_sphere else 1.0 - c) + dist * 1e-4
 
 
-## The one thing the player is looking at (null when nothing qualifies or a UI is open).
+## The one thing the player is looking at. Uncached. Tests call this directly.
 static func target(p: Player) -> Node3D:
 	if p == null or not p.is_inside_tree():
 		return null
 	var best: Node3D = null
 	var best_s := INF
 	var tree := p.get_tree()
-	for n in tree.get_nodes_in_group(GROUP) + tree.get_nodes_in_group(LootPickup.GROUP):
-		var nd := n as Node3D
-		if nd == null or (nd is LootPickup and (nd as LootPickup).drop == null):
-			continue
-		var s := score(p, nd)
-		if s < best_s:
-			best_s = s
-			best = nd
+	for grp in [GROUP, LootPickup.GROUP]:
+		for n in tree.get_nodes_in_group(grp):
+			var nd := n as Node3D
+			if nd == null or (nd is LootPickup and (nd as LootPickup).drop == null):
+				continue
+			var s := score(p, nd)
+			if s < best_s:
+				best_s = s
+				best = nd
 	return best
 
 
+## One look query for this physics frame. A later HUD read reuses it.
+static func refresh_target(p: Player) -> Node3D:
+	if p == null:
+		return null
+	var blocked := p.input_blocked()
+	var found: Node3D = null if blocked else target(p)
+	p.look_target = found
+	p.look_target_frame = Engine.get_physics_frames()
+	p.look_target_dir = p.look_direction()
+	p.look_target_eye = p.eye_position()
+	p.look_target_blocked = blocked
+	return found
+
+
+static func _cached(p: Player) -> bool:
+	return (
+		p.look_target_frame == Engine.get_physics_frames()
+		and p.look_target_dir.is_equal_approx(p.look_direction())
+		and p.look_target_eye.is_equal_approx(p.eye_position())
+	)
+
+
+## Cached look target. A blocked player keeps a cleared cache until the next physics frame.
+static func current(p: Player) -> Node3D:
+	if p == null:
+		return null
+	if p.input_blocked():
+		p.look_target = null
+		p.look_target_blocked = true
+		p.look_target_frame = Engine.get_physics_frames()
+		return null
+	if p.look_target_blocked and p.look_target_frame == Engine.get_physics_frames():
+		return null
+	if _cached(p):
+		return p.look_target
+	return refresh_target(p)
+
+
 static func is_target(p: Player, n: Node3D) -> bool:
-	return p != null and n != null and n.is_inside_tree() and target(p) == n
+	if p == null or n == null or not n.is_inside_tree():
+		return false
+	# score() rechecks can_interact() at press time. The cache only picks who.
+	return current(p) == n and score(p, n) < INF
 
 
 ## The HUD prompt for the looked-at target ("" when none, or a UI is open).
 static func prompt(p: Player) -> String:
 	if p == null or p.input_blocked():
+		if p:
+			p.look_target = null
+			p.look_target_blocked = true
+			p.look_target_frame = Engine.get_physics_frames()
 		return ""
-	var t := target(p)
+	var t := current(p)
 	if t and t.has_method("interact_prompt"):
 		return String(t.interact_prompt())
 	return ""
@@ -95,3 +141,4 @@ static func prompt(p: Player) -> String:
 static func face(p: Player, n: Node3D) -> void:
 	var d := aim_point(n) - p.eye_position()
 	p.set_look(atan2(-d.x, -d.z), atan2(d.y, Vector2(d.x, d.z).length()))
+	refresh_target(p)

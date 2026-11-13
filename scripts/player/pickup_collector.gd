@@ -51,6 +51,7 @@ func tick(p: Player, interact_pressed: bool, dt := 1.0 / 60.0) -> void:
 				lp.pull_toward(feet, dt)
 		else:
 			_magnet_item(p, lp, flat, d.y, feet, dt)
+	Interaction.refresh_target(p)
 	focused = look_target(p, all)
 	if interact_pressed and focused != null:
 		if p.crouched and Coop.active():
@@ -80,7 +81,7 @@ func look_target(p: Player, all: Array = []) -> LootPickup:
 		if c >= best_cos:
 			best_cos = c
 			best = lp
-	if best != null and p.is_inside_tree() and not (Interaction.target(p) is LootPickup):
+	if best != null and p.is_inside_tree() and not (Interaction.current(p) is LootPickup):
 		return null  # t60u: something else (NPC, station...) is the looked-at target
 	return best
 
