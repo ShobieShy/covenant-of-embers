@@ -318,8 +318,8 @@ func test_brand_fx_and_blast_hits() -> void:
 ## mods ("sm") and the host applies the status and mark; junk keys are dropped, values clamped;
 ## a capstone area hit on a puppet goes through the puppet-hit path.
 func test_element_status_mods_reach_host() -> void:
-	check(NetSession.PROTOCOL == 5, "protocol 5 (0.4.0 closed levels)")
-	check(NetSession.version().ends_with("/p5"), "0.3.x builds can't join")
+	check(NetSession.PROTOCOL == 6, "protocol 6 (compact snapshots)")
+	check(NetSession.version().ends_with("/p6"), "a p5 peer can't join")
 	var san := ElementSkillMods.sanitize_net({"status_seconds": 99.0, "evil": 5, "mark_seconds": -3})
 	check(san.size() == 2 and san["status_seconds"] == 10.0 and san["mark_seconds"] == 0.0, "host sanitises sm")
 	check(

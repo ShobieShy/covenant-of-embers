@@ -18,7 +18,7 @@ signal message(from: int, kind: String, data: Dictionary)  ## step 79+: game tra
 
 enum State { IDLE, CONNECTING, LOBBY, IN_GAME, ENDED }
 
-const PROTOCOL := 5  ## 0.4.0: closed levels. A 0.3.x peer (p4) cannot join.
+const PROTOCOL := 6  ## Compact enemy snapshots. A p5 peer cannot join.
 const CONNECT_TIMEOUT := 8.0
 
 var state := State.IDLE
@@ -149,6 +149,8 @@ func _send_now(kind: String, data: Dictionary, to: int, reliable: bool) -> void:
 		return
 	var f: Callable = _msg if reliable else _msg_fast
 	if to != 0:
+		if not api.get_peers().has(to):
+			return
 		f.rpc_id(to, kind, data)
 	else:
 		f.rpc(kind, data)
@@ -344,6 +346,6 @@ func _msg(kind: String, data: Dictionary) -> void:
 	message.emit(api.get_remote_sender_id(), kind, data)
 
 
-@rpc("any_peer", "unreliable_ordered")
+@rpc("any_peer", "call_remote", "unreliable_ordered", 1)
 func _msg_fast(kind: String, data: Dictionary) -> void:
 	message.emit(api.get_remote_sender_id(), kind, data)

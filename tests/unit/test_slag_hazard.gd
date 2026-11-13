@@ -96,7 +96,7 @@ func test_heat_carts_and_falls() -> void:
 func test_shrine_pad_and_clock() -> void:
 	check(SlagHazard.clock_from({}) == 0.0, "a missing cart_t starts at 0")
 	check_near(SlagHazard.clock_from({"cart_t": 4.25}), 4.25, 0.001, "cart_t sets the loop time")
-	check(NetSession.PROTOCOL == 5, "the protocol stays 5")
+	check(NetSession.PROTOCOL == 6, "compact snapshots are protocol 6")
 	var f := _floor(11)
 	var p := _player()
 	f.hazard._shimmer[p.get_instance_id()] = 3.0
