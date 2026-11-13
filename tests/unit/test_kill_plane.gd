@@ -16,7 +16,10 @@ func test_host_rejects_a_far_claim() -> void:
 	var far := Vector3(40, 1, 40)
 	check(KillPlane.host_dest(level, far, -8.0).distance_to(start.global_position) < 0.01, "a far claim is the start")
 	var hole := Vector3(0, -40, 12)
-	check(KillPlane.host_dest(level, hole, -8.0).distance_to(start.global_position) < 0.01, "a claim in the void is the start")
+	check(
+		KillPlane.host_dest(level, hole, -8.0).distance_to(start.global_position) < 0.01,
+		"a claim in the void is the start"
+	)
 	level.free()
 
 
@@ -24,6 +27,27 @@ func test_line_and_floor() -> void:
 	check(is_equal_approx(KillPlane.line_for(0.0), -8.0), "eight metres under the floor")
 	check(KillPlane.below(-9.0, -8.0) and not KillPlane.below(-2.0, -8.0), "the bowl is not the void")
 	check(is_nan(KillPlane.lowest_top(null)), "no level, no floor")
+
+
+func _slab(parent: Node, at: Vector3) -> void:
+	var body := StaticBody3D.new()
+	var col := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(20, 1, 20)
+	col.shape = box
+	body.position = at
+	parent.add_child(body)
+	body.add_child(col)
+
+
+func test_labyrinth_floor_is_not_the_crater() -> void:
+	var world := Node3D.new()
+	runner_tree.root.add_child(world)
+	_slab(world, Vector3(0, -0.5, 0))
+	_slab(world, Vector3(0, -1999.5, 0))
+	check(is_equal_approx(KillPlane.lowest_top(world, 0.0), 0.0), "the crater ignores the deep floor")
+	check(is_equal_approx(KillPlane.lowest_top(world, -1999.0), -1999.0), "the floor ignores the crater")
+	world.free()
 
 
 func test_fall_respawns_and_keeps_gold() -> void:

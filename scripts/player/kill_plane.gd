@@ -15,10 +15,14 @@ static func below(feet_y: float, line_y: float) -> bool:
 
 
 ## Lowest wide floor in `root` (ground slabs, not walls). NAN if none yet.
-static func lowest_top(root: Node) -> float:
+## With `feet_y`, ignore slabs more than 64 m above or 48 m below those feet.
+## The Labyrinth is built inside the Breach, two thousand metres down. Its floor
+## must not set the crater's line, and the crater must not set the floor's.
+static func lowest_top(root: Node, feet_y: float = NAN) -> float:
 	var best := INF
 	if root == null:
 		return NAN
+	var band := not is_nan(feet_y)
 	for n in root.find_children("*", "CollisionShape3D", true, false):
 		var shape := (n as CollisionShape3D).shape
 		if shape is BoxShape3D:
@@ -26,6 +30,8 @@ static func lowest_top(root: Node) -> float:
 			if box.size.x < 4.0 or box.size.z < 4.0:
 				continue
 			var top := (n as Node3D).global_position.y + box.size.y * 0.5
+			if band and (top < feet_y - 48.0 or top > feet_y + 64.0):
+				continue
 			if top < best:
 				best = top
 	return best if best < 1.0e8 else NAN
@@ -64,14 +70,17 @@ static func _recover(p: Player) -> void:
 
 
 static func _refresh(p: Player) -> void:
+	var feet := p.global_position.y
+	# Standing on a known floor can wait. A body already under the line, or a
+	# fresh level, scans now so a lower floor can replace a stale line.
 	p.kill_scan -= 1
-	if p.kill_scan > 0 and p.kill_ready:
+	if p.kill_scan > 0 and p.kill_ready and not below(feet, p.kill_line_y):
 		return
 	p.kill_scan = 120
-	var parent := p.get_parent()
-	var level := parent.get_node_or_null("Level") if parent else null
-	var top := lowest_top(level)
+	var top := lowest_top(p.get_parent(), feet)
 	if is_nan(top):
+		if p.kill_ready and below(feet, p.kill_line_y):
+			return
 		p.kill_ready = false
 		return
 	p.kill_ready = true
