@@ -140,6 +140,11 @@ var last_hint := ""
 var health: Health  # step 13: shield first, then health
 var damage_target := Damage.Target.new(ElementTable.Element.ARCANE)  ## bolts + enemy melee resolve on it
 var spawn_feet := Vector3.ZERO  # the last spawn() point: respawns go back there
+var kill_line_y := 0.0
+var kill_ready := false
+var kill_scan := 0
+var void_wait := 0
+var void_falls := 0
 var spawn_yaw := 0.0
 var _seen_dashes := 0  ## P5: dash.dashes at the last tick (FOV kick)
 var _death_tint: DeathTint  ## P5: game only (headless has no renderer)
@@ -510,6 +515,11 @@ func respawn() -> void:
 	PlayerState.respawn(self)
 
 
+## Host-confirmed void respawn. Gold is not touched.
+func apply_void(at: Vector3, yaw: float) -> void:
+	KillPlane.recover_at(self, at, yaw)
+
+
 func revive(fraction := 0.3) -> bool:
 	return PlayerState.revive(self, fraction)
 
@@ -749,6 +759,8 @@ func tick(input: PlayerInput, dt: float) -> void:
 		head.position = Vector3(0.0, eye_height + feel.offset().y, 0.0)
 		if respawn_left <= 1e-7:
 			respawn()
+		return
+	if KillPlane.tick(self):
 		return
 	health.tick(dt)
 	consecrations.tick(self)
