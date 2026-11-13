@@ -16,7 +16,7 @@ godot --headless --path . -- --seconds 2   # smoke run
 ## Campaign
 Closed levels, one scene each, joined by gates. There is no open world.
 
-Story and player-facing rules: [docs/COVENANT_OF_EMBERS_BIBLE.md](docs/COVENANT_OF_EMBERS_BIBLE.md) and [docs/COVENANT_OF_EMBERS_STORYLINE.md](docs/COVENANT_OF_EMBERS_STORYLINE.md).
+Story and player-facing rules: [docs/COVENANT_OF_EMBERS_BIBLE.md](docs/COVENANT_OF_EMBERS_BIBLE.md) and [docs/COVENANT_OF_EMBERS_STORYLINE.md](docs/COVENANT_OF_EMBERS_STORYLINE.md). Lore maps: [docs/maps/MAP_LEGEND.md](docs/maps/MAP_LEGEND.md).
 
 1. Prologue. The Mage Association summons you. Home is the Great Oak (the permit still says Old Oak).
 2. Eldoria Town Square, the hub. The Mage Association is an interior of the hub.

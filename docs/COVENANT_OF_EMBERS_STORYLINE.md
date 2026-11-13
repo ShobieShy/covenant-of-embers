@@ -6,6 +6,12 @@ This is a rewrite of the Magewar Storyline, with the Magewar Bible's ending and 
 
 Read the tags the way the bible does. Unmarked scenes are in the game, or ShobieShy has already decided them. **Open** means you cannot play it yet, or nobody has answered it. **Proposed** means this document invented it.
 
+![The realm of Elyria. Outer-kingdom bearings are illustrative, not canon.](maps/elyria-world-map.jpg)
+
+![Eldoria, the hub, and the labyrinth under the Breach.](maps/eldoria-and-the-labyrinth.jpg)
+
+The legend is [maps/MAP_LEGEND.md](maps/MAP_LEGEND.md). Kingdom bearings on the world map are illustrative. The bible does not give them a compass.
+
 ## Before the rite
 
 Elyria is a realm of kingdoms, old forest, and high mountains, and it used to keep its monsters downstairs. Dungeons were contained: treasure, anomalies, and something to train a hero on. Crazy Joe is old enough to remember when that was the whole arrangement. He is three hundred, the oldest mage in the Association, and the man who sealed a volcano dungeon alone during the Eruption Wars. Spells, in that memory, flowed like wine. The last fifty years are the part his peers whisper about. The Fracture's noise got into him. He talks about interdimensional echoes and forgotten gods in the trash.
