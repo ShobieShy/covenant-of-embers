@@ -92,6 +92,8 @@ const TABLE := {
 	"STEP_UP": {"fixed": "movement"},
 	"NAV_SNAP": {"fixed": "ai geometry"},
 	"SEPARATION_GAP": {"fixed": "ai geometry"},
+	"LOD_IDLE_M": {"fixed": "ai geometry"},
+	"CROWD_CELL": {"fixed": "ai geometry"},
 	"SEPARATION_WEIGHT": {"fixed": "ai geometry"},
 	"SEPARATION_AHEAD": {"fixed": "ai geometry"},
 	"SEPARATION_FORWARD": {"fixed": "ai geometry"},

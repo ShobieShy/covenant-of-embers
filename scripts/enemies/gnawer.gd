@@ -50,6 +50,11 @@ const NAV_SNAP := 1.0  ## a path starting farther than this from it is someone e
 const CAVERN_CHASE_M := 40.0  ## Act II: drop the chase when the nav path is longer
 const CAVERN_HOME_DROP := 8.0  ## Act II: fall this far below the home pad and return
 const SEPARATION_GAP := 0.35  ## step 14: m of clearance kept from other enemies' bodies
+const LOD_IDLE_M := 10.0  ## past detect_range + this, an idle enemy thinks every 4th tick
+const CROWD_CELL := 2.0
+static var _crowd_frame := -1
+static var _crowd_max_r := 0.0
+static var _crowd: Dictionary = {}
 const SEPARATION_WEIGHT := 1.5  ## how hard a neighbour bends its path
 const SEPARATION_AHEAD := 0.3  ## cos: a neighbour within ~73 deg of its heading is "ahead"
 const SEPARATION_FORWARD := 0.25  ## blocked: share of the heading kept while going around
@@ -95,6 +100,8 @@ var ally_target_was: Node3D  ## step 52: the player target set aside while corru
 var ally_bites := 0  ## step 52: bites landed on enemies while corrupted
 var auto_tick := true  ## false in tests: tick() is called by hand
 var ticks := 0
+var _senses := Senses.new()
+var _lod_n := 0
 var attack_timer := 0.0
 var hunt_left := 0.0
 var knockback_left := 0.0
@@ -204,6 +211,8 @@ func tick(dt: float) -> void:
 	elif ally_target_was != null:
 		target = ally_target_was
 		ally_target_was = null
+	if _lod_hold():
+		return
 	think(dt)
 
 
@@ -239,8 +248,9 @@ func think(dt: float) -> void:
 	attack_timer = maxf(0.0, attack_timer - dt)
 	hunt_left = maxf(0.0, hunt_left - dt)
 
-	# Sense.
-	var s := Senses.new()
+	# Sense. One object, rewritten each think.
+	var s := _senses
+	s.dead = false
 	s.target_valid = _target_valid()
 	var feet := global_position
 	if has_home and global_position.y < home_pad.y - CAVERN_HOME_DROP:
@@ -439,6 +449,69 @@ func _steer(straight: Vector3) -> Vector3:
 	return d.normalized()
 
 
+## Idle, unprovoked, and far from every player (including a co-op partner): think every 4th tick.
+## Off in tests (auto_tick false, or GameFlow.dry_run). Status and flash still tick.
+func _lod_hold() -> bool:
+	if not auto_tick or GameFlow.dry_run:
+		return false
+	if state != State.IDLE or provoked or hunt_left > 0.0 or dead or rusher == null:
+		return false
+	_lod_n += 1
+	if _lod_n % 4 == 0:
+		return false
+	return _far_from_players(rusher.detect_range + LOD_IDLE_M)
+
+
+func _far_from_players(limit: float) -> bool:
+	var tree := get_tree()
+	if tree == null:
+		return false
+	for grp in [Player.GROUP, RemotePlayer.GROUP]:
+		for n in tree.get_nodes_in_group(grp):
+			var body := n as Node3D
+			if body != null and global_position.distance_to(body.global_position) <= limit:
+				return false
+	return true
+
+
+static func _crowd_key(at: Vector3) -> Vector2i:
+	return Vector2i(int(floor(at.x / CROWD_CELL)), int(floor(at.z / CROWD_CELL)))
+
+
+static func _crowd_reach(tree: SceneTree) -> float:
+	if _crowd_frame != Engine.get_physics_frames():
+		_crowd_fill(tree)
+	return _crowd_max_r
+
+
+static func _crowd_fill(tree: SceneTree) -> void:
+	_crowd_frame = Engine.get_physics_frames()
+	_crowd.clear()
+	_crowd_max_r = 0.0
+	for n in tree.get_nodes_in_group(Enemy.GROUP):
+		var e := n as Enemy
+		if e == null or e.dead or e.def == null:
+			continue
+		var r := 0.5 * maxf(e.def.size.x, e.def.size.z)
+		_crowd_max_r = maxf(_crowd_max_r, r)
+		var key := _crowd_key(e.global_position)
+		if not _crowd.has(key):
+			_crowd[key] = []
+		(_crowd[key] as Array).append(e)
+
+
+static func _crowd_near(tree: SceneTree, at: Vector3, radius: float) -> Array:
+	_crowd_reach(tree)
+	var reach := int(ceil(radius / CROWD_CELL))
+	var key := _crowd_key(at)
+	var out: Array = []
+	for dz in range(-reach, reach + 1):
+		for dx in range(-reach, reach + 1):
+			var cell: Variant = _crowd.get(Vector2i(key.x + dx, key.y + dz), [])
+			out.append_array(cell)
+	return out
+
+
 ## Step 14 crowd separation: Gnawers are kinematic and mask the enemy layer, so they block
 ## each other; a pack in a corridor used to queue up behind the first one, out of bite
 ## range. Every other live enemy whose body (+ SEPARATION_GAP) overlaps its own pushes it
@@ -454,7 +527,8 @@ func _separate(want: Vector3) -> Vector3:
 	var me := global_position
 	var my_r := 0.5 * maxf(def.size.x, def.size.z)
 	var side := Vector3(-want.z, 0.0, want.x)  # its left
-	for n in get_tree().get_nodes_in_group(GROUP):
+	var query := my_r + _crowd_reach(get_tree()) + SEPARATION_GAP
+	for n in _crowd_near(get_tree(), me, query):
 		var o := n as Enemy
 		if o == null or o == self or o.dead or o.def == null:
 			continue
