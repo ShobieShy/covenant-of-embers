@@ -81,7 +81,7 @@ Barriers are the civic use of the same mana: a dome, an obelisk, a ward-pillar. 
 
 The elder god stays a tavern theory. Do not put him in the Core as a second final boss, and do not reveal that the Demon Lord "was the god all along," unless ShobieShy writes that later. The cause is already assigned.
 
-**Open.** The prism gag, decided 11 Nov 2026 and not built: a half-cracked prism, a mid-game choice to seal it or crack it, and a late payoff. **Proposed.** It is an Association focus cracked by Joe's rite. Sealing it steadies Eldoria's barrier. Cracking it feeds the Summoned and widens the crater. Either way the Demon Lord has been looking through the crack, so the choice tells him your name. That payoff is a proposal, not the decision.
+The prism is an Association focus cracked by Joe's rite. Mid-campaign you seal it or you crack it the rest of the way. Sealing it steadies Eldoria's barrier. Cracking it makes you stronger and widens the crater. Either choice tells the Demon Lord your name. He has been looking through the crack. **Open:** the scene is not written, and it is not in v0.9.0. The skill named Prism, later in this bible, is a combat mark. It is not this focus.
 
 ## Magic
 
@@ -212,7 +212,7 @@ Shadow Touch +3% Dark damage. Whisper, turn chance up a little, still under the 
 
 **The drowned cult** of Act IV sings the sea open. **Open:** their name, the hymn text, and the title they give Joe beyond the outline's "dry prophet." Hymn-shards are not items in v0.9.0.
 
-**Rebels against the barrier monopoly** are a real pressure in the Magewar storyline, the other side of the Association's taxes and the skimmed ward-funds. The Potion Merchant already complains that Association taxes make real imports rare. Bob will not work for the hall. A playable "join the rebels" is not in v0.9.0. **Open:** whether that becomes a faction you can take, or stays the reason the city grumbles.
+**Rebels against the barrier monopoly** are a faction you can join. They are the other side of the Association's taxes and the skimmed ward-funds. The Potion Merchant already complains that those taxes make real imports rare. Bob will not work for the hall. **Open:** who leads them, how you join, and what the faction gives you. None of that is in v0.9.0.
 
 **The Association, as a path,** is the other offer in that same text: stay with the mages and earn spell tomes. In the build, that is the hall, the closed wings, the skill trees, and the Runesmith. You are not inducted. You are housed and pointed at the dump.
 
@@ -237,7 +237,7 @@ The storyline's examples of "ordinary" are an office worker, a student, and a ho
 
 An old save with no pick shows as a Wanderer and gets no perk. Wanderer is not a fifth choice on the crystal.
 
-**Open.** In solo, whether the other three take rooms in the tree and walk the shaft, or stay a hall scene, is unanswered. The story treats them as the party either way.
+In a solo game the other three live in the tree with you. They do not go down the shaft. The people who walk the labyrinth with you are other players.
 
 ### Crazy Joe
 
@@ -257,7 +257,7 @@ He gives you a staff, a rusty dagger that glows when something nasty is close, a
 
 His earlier summonings failed because the Demon Lord blocked them. He explains the lore after the Filth, in the voice of a man who would rather you do the walking. The model on screen is still a placeholder. The description above is the one to write to.
 
-**Proposed.** He calls it the Great Oak when he is being grand and "my tree" the rest of the time. The Clerk's permit says Old Oak because that is what the last survey wrote down.
+He calls the tree the Great Oak. The permit, the signs, and the quests say Old Oak, because that is what the last survey wrote down. Both names stay. Do not pick one and erase the other.
 
 ### The Demon Lord
 
@@ -291,9 +291,7 @@ The hub. A paved square, ward-pillars, stalls, the Fractured Flagon, the guard o
 
 ### The Great Oak
 
-Home. A colossal hollow tree at the edge of town, candle-lit, moss beds, a stash, an assembly station, and Bob. The Magewar storyline calls it the Old Oak and says no one had lived there for centuries because it was rumored haunted. Bob was the haunting. ShobieShy called it the Great Oak on 11 Nov 2026.
-
-**Open.** Every sign, quest, and permit in v0.9.0 still says Old Oak. Nothing has been renamed. This bible uses Great Oak as the name ShobieShy used. Until the permit changes, write both, and do not pretend the Clerk has updated Form 7-B.
+Home. A colossal hollow tree at the edge of town, candle-lit, moss beds, a stash, an assembly station, and Bob. The survey, the permit, the signs, and the quests call it the Old Oak. Bob calls it the Great Oak. Both names stay. The Clerk has not updated Form 7-B, and he is not going to. The Magewar storyline says no one had lived there for centuries because it was rumored haunted. Bob was the haunting. In a solo game the other three Summoned live here with you. They do not follow you into the shaft.
 
 ### The Landfill
 
@@ -326,13 +324,15 @@ Act loot sits in bands: Act I around levels 5–12, Act II 14–22, Act III 24�
 
 **Act IV.** Flooded halls, coral, cult murals, a drowned spire still glowing Breach-violet. Breath is the leash. Water spends Breath, then health. Each floor has an air bell that refills Breath. The Choir is fought above the water, then under it, and the second phase is the water rising. In the drained nave, a coral sarcophagus, cracked, empty. The pad there is the way home. This act is the Sunken Ruins. An earlier sketch put Breach fallout here. That sketch was dropped on 11 Nov 2026.
 
-The approved outline also has Joe as the cult's dry prophet, a Breach seed traded for passage, sealed exits, and hymn-shards. **Open.** Those words and items are not in the v0.9.0 build. The Choir is one body in two phases. Whether it should be several singers is open. What was in the sarcophagus is open.
+The Drowned Choir is many singers sharing one will. v0.9.0 still shows one body, surfaced and then submerged while the water rises. That single body is a build gap. Write the Choir as a crowd.
+
+The approved outline also has Joe as the cult's dry prophet, a Breach seed traded for passage, sealed exits, and hymn-shards. **Open.** Those words and items are not in the v0.9.0 build. What was in the sarcophagus is revealed in the Core. The identity is not written yet.
 
 **Act V, Open.** The shaft becomes sky. Platforms hang in a vertical void. The Inverted Spire grows downward from a false sky, and every earlier act's geometry shows in its facets. This is the five dungeons collapsed into one throat. Harpies and storm elementals try to push you off. The boss is the Storm Warden, keeper of the wind locks, fought across breaking platforms. When the Warden falls, a crystal throat leads toward the Core. You can waystone home from the boss pad. Looking down, you do not see another empty cocoon. You see a lit path. Joe is waiting. Side ledges are supposed to hold who Joe was before the Breach, and why the Demon Lord let him walk this deep. None of that is written yet.
 
 **The Core, Open.** Crazy Joe, then the Demon Lord. The Demon Lord escapes. That escape is the main campaign's end and the door to DLC. Fight specifics are deliberately not specified.
 
-**The empty shells.** You can already see three: the cocoon under the Matriarch, the human-shaped slag under Forgemaw, the coral sarcophagus in the nave. The approved reading is that something is climbing toward the Core and shedding skins. The Mother and the scrap-spirit do not know what. **Open:** who or what was inside. Do not answer it in this bible.
+**The empty shells.** You can already see three: the cocoon under the Matriarch, the human-shaped slag under Forgemaw, the coral sarcophagus in the nave. Something is climbing toward the Core and shedding skins. The Mother and the scrap-spirit do not know what. Who or what shed the skins is revealed in the Core. **Open:** the identity itself is not written. Do not name it before that reveal, and do not invent the name here.
 
 ## Enemies
 
@@ -379,7 +379,7 @@ Names and flavor lines on these uniques were drafted as proposals and shipped an
 
 **Forgemaw.** The troll who kept the furnaces lit. Three phases in the crucible: the gantry starts whole, then a segment goes, then the ring comes down, the lava widens, and a weak point opens. He can drop Forgemaw's Tooth or Slagheart. His death is also the key to the post-game dial.
 
-**The Drowned Choir.** Act IV, the nave. One body, two phases: surfaced, then submerged while the water rises. **Open** whether a later pass makes the Choir a crowd of singers.
+**The Drowned Choir.** Act IV, the nave. Many singers, one will. In v0.9.0 you fight one body: above the water, then under it, while the water rises. The single body is a build gap. The story is the crowd.
 
 **Storm Warden. Open.** Act V's wind-lock keeper. Not built.
 
@@ -469,7 +469,7 @@ A story boss drops one of its named uniques about one kill in five, every time y
 
 ### Deep gear
 
-Gear from deep in Endless Descent, under Covenant Escalation, can appear as a very rare drop in an ordinary story run. It keeps its effect and is scaled to the story floor. Each player in co-op rolls their own. The deeper the tier it came from, the stranger it is, and the rarer it is up here. **Open:** the drop rate is unset, so a normal kill does not add one yet. Whether the item is also level-scaled down for that story floor, beyond the scaling already described, is still a question on the page.
+Gear earned deep in the Forgotten Abyss, and later in Endless Descent, under Covenant Escalation, can appear as a very rare drop in an ordinary story run. It keeps its effect and is scaled to the story floor. Each player in co-op rolls their own. The deeper the tier it came from, the stranger it is, and the rarer it is up here. **Open:** the drop rate is unset, so a normal kill does not add one yet. Whether the item is also level-scaled down for that story floor, beyond the scaling already described, is still a question on the page.
 
 ### Gold and dust
 
@@ -477,13 +477,9 @@ You start with 50 gold, a week's food if you are careful and a bad afternoon if 
 
 ## Death
 
-The decided rule, 11 Nov 2026, is Borderlands-shaped. You respawn at the Mage Association. You keep your loot and your story. You drop the gold you were carrying.
+You go down, and you have a window. Alone, that window is about eight seconds. In co-op it is about fifteen. A kill in the window gets you up. A living teammate within about two and a half meters, standing there for about three seconds, pulls you up at roughly thirty percent health. The action skill will not fire while you are down.
 
-What v0.9.0 actually does is the last stand, and then a return to the last waystone or spawn the run stored. The gold stays in your pocket.
-
-You go down, and you have a window. Alone, that window is about eight seconds. In co-op it is about fifteen. A kill in the window gets you up. A living teammate within about two and a half meters, standing there for about three seconds, pulls you up at roughly thirty percent health. The action skill will not fire while you are down. When the window ends, you bleed out and come back.
-
-**Open.** Build toward the Association return and the dropped gold. Until that ships, write death as a setback of time and pride, not as a wipe of the character.
+When the window ends, you come back at the last waystone, or at the spawn the run stored if you have not touched one. You keep your loot, your story, and your gold. An earlier note had you respawn at the Mage Association and drop the gold. That note is withdrawn.
 
 ## Co-op
 
@@ -538,25 +534,23 @@ A chest takes a Breach key, or 25 gold if you have no key. A stall takes 8 gold.
 
 A mantle hangs on your shoulders. It changes nothing on your character sheet. Enemies bark when they chase, when they are hit, and when they die.
 
-## The Abyss, Endless Descent, and Covenant Escalation
+## The Forgotten Abyss, Endless Descent, and Covenant Escalation
 
 These change the difficulty and the loot. They do not change the story, the dialogue, or the ending.
 
-**The Abyss** is the finite replay of a labyrinth after you have beaten that labyrinth's story boss. Each act that is in the game can open its own: the King, the Matriarch, Forgemaw, the Choir.
+**The Forgotten Abyss** is the post-campaign descent for as long as the Demon Lord is unbeaten. You go back down after the handmade story. The story floors stay as they were built. New floors are generated. There is no new chapter in them.
 
-**Endless Descent** begins once you beat that Abyss. There is no last floor. New floors are generated. The story floors stay as they were built. You go until you stop.
+**Endless Descent** begins once the Demon Lord is beaten. The further floors are random, and each one draws on every act's themes at once: warrens, rot, slag, drowned halls, and the spire's wind, in whatever mix the floor is dealt. The story still does not change.
 
-**Covenant Escalation** is the one dial. It replaces the older names Chaos mode and Mayhem tiers. It is inspired by a chaos dial in another looter, and it is original to this game in name and in use. Tiers run from 0 to 10. Tier 0 is the story run and leaves the story floors' math alone. You can turn the dial after Forgemaw is dead. In Endless Descent, depth raises the highest tier you are allowed to set, and you can set anything from 0 up to that cap.
+**Covenant Escalation** is the one dial on both runs. It replaces the older names Chaos mode and Mayhem tiers. Tiers run from 0 to 10. Tier 0 is the story run and leaves the story floors' math alone. You can turn the dial after Forgemaw is dead. Depth in the descent raises the highest tier you are allowed to set, and you can set anything from 0 up to that cap.
 
 At the current tuning, each tier adds a quarter again to enemy health, fifteen percent to enemy damage, and ten percent to experience. Basic loot gets scarcer. Rare and better loot gets a little more likely. Higher tiers also roll omens. The current omen names are Ember Rain, Restless Dead, Gilded Ashes, Shades rise twice, Hungry Dark, Wards regenerate faster, Blood Moon, and Iron Vow. Easy omens show up first. Harder ones join as the tier climbs. A floor you have not cleared for the story cannot be remixed. A floor you have cleared can.
 
-**Open.** The 11 Nov note asked whether you can set the dial by hand outside the depth cap. v0.8.8 answered part of that: after Forgemaw you can set 0 through 10 in the hub, and Endless Descent then caps how high that hand-set tier may go. If a later pass wants the dial to move only with depth, that would be a change, not the current game.
-
-**The Forgotten Abyss** is a different run. The name was settled on 5 Nov 2026 for the endless floors under a cleared labyrinth after Act V and the Core. It is not built. It is not the Abyss you can already replay, and it is not Endless Descent. **Open:** whether the three names are confusing enough to rename one of them. Until then, keep all three, and do not use them as synonyms.
+v0.9.0 still uses the older labels. A finite replay of one labyrinth is called the Abyss on screen, the floors after that replay are called Endless Descent, and the Forgotten Abyss is reserved for a run the build has not made. Those on-screen names are a build gap. Write to the names in this section. The Demon Lord is not in the game yet, so Endless Descent, in the decided sense, cannot start.
 
 ## DLC
 
-**Open**, decided in shape and not built. The Magewar Bible's map, after the starting town, is "Town 2" (a square and a first dungeon) and "Small Town" (a dot). Covenant spent that first dungeon on the labyrinth instead of a second city. DLC is where the extra towns come back. Each DLC labyrinth gets its own town and its own Mage Association chapter: shops for trade, the chapter for quests, training, and lore. The main game keeps Eldoria. DLC has level minimums. **Open:** the numbers, the town names, and which labyrinths they are. Covenant Escalation on a DLC labyrinth requires the main game beaten, and it stays mechanical there too. After that DLC's story boss, the same Abyss and then the same Endless Descent apply. Story floors stay handmade. Small Town is still a dot.
+**Open**, decided in shape and not built. The Magewar Bible's map, after the starting town, is "Town 2" (a square and a first dungeon) and "Small Town" (a dot). Covenant spent that first dungeon on the labyrinth instead of a second city. DLC is where the extra towns come back. Each DLC labyrinth gets its own town and its own Mage Association chapter: shops for trade, the chapter for quests, training, and lore. The main game keeps Eldoria. DLC has level minimums. **Open:** the numbers, the town names, and which labyrinths they are. Covenant Escalation on a DLC labyrinth requires the main game beaten, and it stays mechanical there too. After that DLC's story boss, the same Forgotten Abyss applies until the Demon Lord of that story is beaten, and Endless Descent applies after. Story floors stay handmade. Small Town is still a dot. The main game's Demon Lord is the one this bible means. A DLC's own lord, if it has one, is **Open.**
 
 ## How a minute of play feels
 
@@ -572,9 +566,11 @@ Use Elyria for the realm and Eldoria for the city. Use the Breach for the crater
 
 The Demon Lord caused it. Say that when the story is ready to say that. Bob, today, stops at "someone caused it deliberately."
 
-Do not name the thing in the cocoon, the slag, or the sarcophagus. The people who were there do not know.
+Do not name what shed the three skins before the Core. That is where the reveal happens. The people who found the shells do not know.
 
-Covenant Escalation, the Abyss, and Endless Descent get no new dialogue. A harder tier is not a new chapter.
+The permit, the signs, and the quests say Old Oak. Bob says Great Oak. Use both.
+
+Covenant Escalation, the Forgotten Abyss, and Endless Descent get no new dialogue. A harder tier is not a new chapter. The Drowned Choir is many singers. Do not write them as one creature because the current fight uses one body.
 
 Ember language belongs to the title, the Path of Embers, and the skill trees: hearth, pyre, ash, kindling, wildfire. Do not paste it onto Joe's mouth. He talks about trash, portals, and fire that is already wrong.
 
@@ -582,22 +578,21 @@ The four archetype names are the ones ShobieShy kept. Use them as he wrote them.
 
 ## Glossary
 
-- **Abyss.** The finite replay of one labyrinth after its story boss.
 - **Arcane Dust.** The Runesmith's reroll fuel.
 - **Breach.** The crater, the gate, and the catastrophe in Joe's mouth. Caused by the Demon Lord.
 - **Breach-fire.** Joe's sabotage down the shaft.
 - **Covenant Escalation.** The difficulty dial, tiers 0–10. Mechanical only.
-- **Endless Descent.** The infinite run after you beat an Abyss.
+- **Endless Descent.** The random floors after the Demon Lord is beaten. Every act's themes can show up in them. No new story.
 - **Eldoria.** The hub city.
 - **Elyria.** The realm.
 - **Fast-travel crystal.** Bob's gift after the Filth. Waystones are the stones you actually touch.
 - **Filth, the.** The landfill boss. Also the reason the junkyard feels like a dare.
-- **Forgotten Abyss, the.** The unbuilt endless run after the Core. A different mode from the Abyss.
+- **Forgotten Abyss, the.** The post-campaign descent while the Demon Lord is still unbeaten. No new story.
 - **Dungeon Invasion.** The Magewar Bible's formal name for the Fracture.
 - **Elyrian Common.** The language you learn badly on the first day.
 - **Fracture.** The day the dungeons broke, ten years ago.
 - **Ley lines.** The rivers of mana under Elyria. Not a map you draw.
-- **Great Oak.** ShobieShy's name for the home tree. The permit says Old Oak.
+- **Great Oak.** What Bob calls the home tree. The permit, the signs, and the quests say Old Oak.
 - **Labyrinth.** Acts I–V under the Breach, one shaft.
 - **Path of Embers.** The shared skill tree.
 - **Summoned.** You. Underwhelming, on paper.
@@ -605,29 +600,23 @@ The four archetype names are the ones ShobieShy kept. Use them as he wrote them.
 
 ## Open, in one list
 
-- The permit still says Old Oak. The bible says Great Oak.
-- The prism: the decision is one sentence, the scene is unwritten.
+- The prism scene. The focus, the choice, and the payoff are decided. The scene is not written.
 - The Association head's name, face, and the scene where the fear shows.
-- In solo, whether Nerd, Gal, Buff, and Loli take rooms in the tree and walk the shaft.
-- Act IV hymns, the cult's name, hymn-shards, one Choir or many, what was in the sarcophagus.
+- Act IV hymns, the cult's name, hymn-shards, and the words of the dry prophet. The Choir's nature is decided: many singers, one will.
 - Act V, the Storm Warden, and the Core fights, including the Demon Lord's escape as a scene.
-- Who shed the three skins.
-- Death at the Association and dropping gold, versus the waystone return that ships today.
+- The identity of whatever shed the three skins. The reveal happens in the Core. The name is not written.
 - Deep-gear drop rate, and any further level-scaling question.
-- Whether the Abyss, Endless Descent, and The Forgotten Abyss should be renamed.
-- DLC town names and level minimums. Escalation on DLC still requires the main game beaten. Which labyrinths those towns belong to.
-- A playable rebel faction, a playable induction into the mages beyond the hall you already use, and the blacksmith and bard as named scenes.
+- DLC town names and level minimums. Escalation on DLC still requires the main game beaten. Which labyrinths those towns belong to. Whether a DLC has its own lord before its Endless Descent.
+- How you join the rebels, who leads them, and what you get. Joining is decided. The blacksmith and the bard still have no names or scenes. Induction into the mages, beyond the hall you already use, is not a faction path.
 - Whether any of Joe's earlier failed summonings produced a rival who is still alive. Bob's failures did not.
 - Bob's tree-top laboratory and the potion garden as rooms you can walk.
 - The Sylvandar caravan, and the merchant's vanished expedition, as missions.
-- Placeholder presentation: the scavenger's lines, Bob's model, and the music. The Bible's music page was blank. The build is silent.
+- Placeholder presentation: the scavenger's lines, Bob's model, and the music. The Bible's music page was blank. The build is silent. The Choir's one body, and the on-screen names "the Abyss" and "Endless Descent," are build gaps against the decisions above.
 
 ## Proposed, in one list
 
 - The appraisal crystal's insult is the Demon Lord's block, the same one that spoiled Bob's rites.
 - Breach-fire is the Demon Lord's heat in ore and trash. Joe thinks he found it.
-- Bob says Great Oak. The Clerk's survey says Old Oak.
-- The prism is a cracked Association focus. Sealing or cracking it both tell the Demon Lord your name.
 
 ## Changed from Magewar
 
@@ -639,15 +628,15 @@ Covenant keeps the rite, the four Summoned, Joe, Bob, the tree, the landfill, th
 | The cause is unknown, and a later line blames a slumbering elder god. | The Demon Lord caused the Breach. The elder god is a theory people may still repeat. |
 | Joe is a reckless exile. The storyline wonders if he is sick from the Fracture. | He is the Demon Lord's proxy. The sickness is the public story. |
 | Bob is a driven recluse who teleports in and sets the pace. The Bible leaves his name blank. | His name is Bob. He is the lazy roommate. The research is the same research. |
-| The home is the Old Oak, also called the Home Tree. | ShobieShy calls it the Great Oak. The permit, the quests, and the signs still say Old Oak. |
+| The home is the Old Oak, also called the Home Tree. | The permit, the signs, and the quests say Old Oak, because that is the survey. Bob calls it the Great Oak. Both stay. |
 | Five separate dungeons, then the Demon Lord teleports the party to his lair. | One labyrinth of five acts. You walk there. He does not summon you. After the fight, he escapes. |
 | Act themes are side trips: Willowbrook, the woods, Ironforge, the Crimson Sea, the peaks. | Those trips are the acts. Act IV is the Sunken Ruins. An earlier Breach-fallout idea for that act was dropped. |
 | The starter gift is a glowing dagger, a sour mana potion, and a bark map. | Bob also hands you the staff. The dagger is the keepsake that glows. The Filth is a staff fight, not an improvised trap. |
 | Handle on a wand is a question mark. | Wands have handles. |
 | You carry a staff and a wand, and you wear hat, clothes, belt, shoes, potion, grimoire. | Those stay. Covenant adds two extra weapon slots, a shield, a flask, and a relic. |
 | The enchantment forge is the only bench. | The Magic Assembly Station in the tree is that bench. The Runesmith, who rerolls a part with Arcane Dust, is extra. |
-| After the clear, the story is over when the Demon Lord falls. | The Abyss, then Endless Descent, and the Covenant Escalation dial, change the difficulty and the loot. They do not change the story. The Forgotten Abyss is a later endless run, after the Core, and it is not built. |
-| Death is not specified. | The decided death is a return to the Association, loot and story kept, gold dropped. v0.9.0 still returns you to the last waystone with the gold in your pocket. |
+| After the clear, the story is over when the Demon Lord falls. | Until he is beaten, the post-campaign descent is the Forgotten Abyss. After he is beaten, random floors that mix every act are Endless Descent. Covenant Escalation is the dial. None of it changes the story. v0.9.0 still prints the older names. |
+| Death is not specified. | You return to the last waystone. You keep your loot, your story, and your gold. |
 | Town 2 and Small Town are the next maps. Dungeon 1 sits under Town 2. | Dungeon 1 became the labyrinth. Town 2 and Small Town are the empty slots DLC is meant to fill. |
 | Chapters 2 through 16 of the storyline are the letter C and nothing else. | The acts, the shells, and the Core outline are what got written instead. |
 | Co-op is stated, with no player cap in the Bible. | One to four. |

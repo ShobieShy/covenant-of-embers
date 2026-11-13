@@ -34,9 +34,9 @@ They take his robes and his staff. The wilds get him in a tattered cloak, with a
 
 A few mages want to send you home. The rite does not have a return. The Clerk has Form 7-B. Sign or make a mark. Fifty gold, which will feed you for a week if Eldoria's prices are feeling kind. Clothes, enchanted for minor durability, already on your back. A residency permit for the Old Oak at the edge of town. Big dead tree. Can't miss it. The survey says nobody has lived there for centuries. The bark is carved with faded runes. Vines choke the door. The Clerk is already looking past you at the next problem.
 
-The first day is the square. Barrier-safe herbs. Guards on the wards. Bread, paid for in the scraps of Elyrian Common you can manage. Children point. Adventurers scoff. You are a joke with a permit, and you are also carrying a head full of another world's physics, machines, and tactics, which Elyria has no slot for yet. The four of you are the party. In co-op that is literal. **Open:** in a solo game, whether the other three follow you into the tree and down the shaft, or stay in the hall.
+The first day is the square. Barrier-safe herbs. Guards on the wards. Bread, paid for in the scraps of Elyrian Common you can manage. Children point. Adventurers scoff. You are a joke with a permit, and you are also carrying a head full of another world's physics, machines, and tactics, which Elyria has no slot for yet. The four of you are the party. In co-op the other three go down the shaft with you, because they are the other players. In a solo game they live in the tree and they stay there. They do not enter the labyrinth.
 
-**Open.** The permit, the quests, and the level all say Old Oak. On 11 Nov 2026 ShobieShy called Bob's home the Great Oak. This storyline uses Great Oak for the place and Old Oak for the paper. **Proposed.** Bob likes the grander name. The Clerk copied a survey.
+The permit, the signs, and the quests say Old Oak. That is the survey, and the Clerk is not rewriting it. Bob calls the tree the Great Oak. Both names stay.
 
 ## Eldoria, and a tree with a tenant
 
@@ -62,7 +62,7 @@ Joe is camped in his own garbage, delighted that the Association threw you out t
 
 The Filth is that something: a boss made of runoff, dungeon-slime, and years of Joe's discards. It slams like a heap that learned acid. It pulls the trash back into itself. The fight ends when the core is finally a target instead of a rumor. It always leaves Joe's trash for the quest. Sometimes it leaves a cinder that still remembers a buried fire, or a lens the Filth used to look through.
 
-You can die here. The run is built to let you. See the bible for the last stand, and for the decided rule that a real death should dump you at the Association minus your gold. The landfill itself is a soft fail: the lesson is the staff, the element, and the walk back, not a game over.
+You can die here. The run is built to let you. A last stand, then a return to the last waystone, with your gold still in your pocket. The landfill itself is a soft fail: the lesson is the staff, the element, and the walk back, not a game over.
 
 ## What Bob does with the sludge
 
@@ -86,7 +86,7 @@ The Shattered Peaks, avalanches and dungeons in the air, are the Inverted Spire,
 
 A drunk will mention whispers in the deep. A merchant, somewhere, lost an expedition. **Open** whether that merchant gets a name. Bob's other early theories, artifacts buried in landfills across the realm, or old mining greed cracking the seals, are retired. The landfill is the tutorial. The cause is the Demon Lord.
 
-The old text also says the Summoned start getting asked to pick a side, mages and their tomes or rebels who hate the barrier monopoly, and that a fiery blacksmith or an enigmatic bard might love one of you. None of those scenes are written. The taxes and Bob's contempt for the hall are the rebel argument as it currently exists. **Open** the rest.
+The old text also says the Summoned start getting asked to pick a side: the mages and their tomes, or the rebels who hate the barrier monopoly. The rebels are a faction you can join. **Open:** who leads them, how the join works, and what you are paid in. A fiery blacksmith and an enigmatic bard are still only types. **Open:** their names and their scenes.
 
 And it warns that rival Summoned, maybe Joe's earlier failures, might come looking. Bob's failures are accounted for: the Demon Lord blocked them, and they produced no one. Joe's earlier tries are the storyline's own question mark. **Open.**
 
@@ -134,11 +134,11 @@ Below the slag, the Fracture opens into flooded halls. Coral. Air pockets. Cult 
 
 Breath is the law of the place. The water spends it. When the breath is gone, the water spends health. Each floor has an air bell. Drowned cultists hunt anything that stays at the surface too long. The floors the game gives you are the Gallery, the Pocket, the Murals, the Spire, and the Nave.
 
-The Drowned Choir waits in the nave. In v0.9.0 it is one body. It fights you above the water, then it goes under, and the second phase is the water rising. **Open** whether the Choir should be many singers using one will. The outline describes a multi-body thing. The build is the single body. Either reading can be true later. Do not write a hymn that depends on the headcount until that is chosen.
+The Drowned Choir waits in the nave. It is many singers sharing one will. In v0.9.0 you fight one body: above the water, then under it, while the water rises. That single body is a build gap. Write the crowd. The hymn text is still unwritten, so do not invent the words.
 
 When the Choir breaks, the temple drains just enough. In the nave is a coral sarcophagus, cracked from within. It is empty. The pad beside it is the way home.
 
-**Open.** The approved outline has more than the build. The cult wrote Joe into their hymns as the dry prophet who promised a god that would never drown. He traded them a Breach seed for passage and sealed the exits behind him. Hymn-shards were going to tell that at the air bells. None of those lines or items are in v0.9.0. The cult has no name. What was in the sarcophagus, if anything, is the question the empty shell is for. The answer is not in this storyline.
+**Open.** The approved outline has more than the build. The cult wrote Joe into their hymns as the dry prophet who promised a god that would never drown. He traded them a Breach seed for passage and sealed the exits behind him. Hymn-shards were going to tell that at the air bells. None of those lines or items are in v0.9.0. The cult has no name. Who or what left the sarcophagus is revealed in the Core. The identity is not written yet.
 
 **Proposed.** Joe believed the seed was his gift and his fare. The cult believed the god would be dry-shod. Both were hiring language for a thing that was already walking up out of its own castoffs, using Joe's deals as doors. That is a reading of the shells. It is not an identification of the walker. Leave the walker unnamed.
 
@@ -164,19 +164,19 @@ The Association head, nameless on purpose so far, has been terrified of him the 
 
 ## What the shells are for
 
-Three empties, in order, all visible by the end of Act IV: the cocoon, the slag-cast body, the coral sarcophagus. The approved line is that something is climbing toward the Core and shedding skins as it goes. Act V, if it ships as outlined, refuses you a fourth shell and gives you Joe instead, waiting.
-
-Those are different images, and they should stay different until someone decides they are the same. Joe-as-the-thing-in-the-cocoon is not the current outline. Joe-as-the-man-who-cut-the-road is.
+Three empties, in order, all visible by the end of Act IV: the cocoon, the slag-cast body, the coral sarcophagus. Something is climbing toward the Core and shedding skins. Act V, if it ships as outlined, refuses you a fourth shell and gives you Joe instead, waiting. Joe-as-the-thing-in-the-cocoon is not the current outline. Joe-as-the-man-who-cut-the-road is. Who shed the skins is revealed in the Core. The name is not written, so this storyline does not guess it.
 
 ## After the story, the same story
 
-Once a labyrinth's boss is dead, you can run that labyrinth again. While you are still finishing that replay, it is called the Abyss. When you beat the replay, the last floor stops being the last floor. That is Endless Descent. The new floors are generated. The story floors stay as they were built. You keep going until you can't, or until you don't want to.
+Until the Demon Lord is beaten, the descent you take after the handmade campaign is the Forgotten Abyss. The story floors stay as they were built. Further floors are generated. Nothing in them is a new chapter.
 
-Covenant Escalation is the dial on that loop, tiers from a quiet zero up to ten. Harder enemies, better loot, the same sentences. It does not add a chapter, a confession, or a different ending. Turning it does not make Bob say the Demon Lord's name. The omens it rolls — Ember Rain, a blood moon, wards that refuse to stay down — are weather on the fight, not plot.
+After the Demon Lord is beaten, the floors keep coming, and they are random. A floor can carry every act at once: packed earth, rot, slag, drowned stone, and the spire's wind. That run is Endless Descent. It still does not change what anyone says.
 
-Gear from deep in that descent can, rarely, show up in an ordinary story run, scaled to the floor you are actually on. **Open.** The rate is not tuned, so it does not happen yet. Each co-op player would roll their own.
+Covenant Escalation is the dial on both, tiers from a quiet zero up to ten. Harder enemies, better loot, the same sentences. Turning it does not make Bob say the Demon Lord's name. The omens it rolls, Ember Rain, a blood moon, wards that refuse to stay down, are weather on the fight, not plot.
 
-**The Forgotten Abyss** is the name reserved for the endless run after Act V and the Core. It is not this loop. **Open** whether three names for "down, but more" is too many. Until that is decided, the Abyss is the replay, Endless Descent is the infinite version of that replay, and the Forgotten Abyss is the one you have not been given.
+Gear from deep in either descent can, rarely, show up in an ordinary story run, scaled to the floor you are actually on. **Open.** The rate is not tuned, so it does not happen yet. Each co-op player rolls their own.
+
+v0.9.0 still prints the older names: a finite replay of one labyrinth is called the Abyss, and the floors after that replay are called Endless Descent. The Demon Lord is not in the game, so the decided Endless Descent cannot start. Write to the names in this section. The labels on screen are a build gap.
 
 ## DLC, as a door and not a plot
 
@@ -190,23 +190,22 @@ A New Home is the permit and the walk. Trash Talk is three gnawers, the Filth, a
 
 The bounty board after Forgemaw is work, not lore: gnawers, heaps, spore husks, paid in gold, repeatable forever. It does not advance the Fracture.
 
+## The prism
+
+The prism is an Association focus, cracked in the rite. Midway, you seal it or you finish the crack. Sealing it steadies the dome. Cracking it makes you stronger and widens the crater. Either way the Demon Lord learns your name. He has been watching through it. **Open:** the scene is not written.
+
 ## Open
 
-- Old Oak on the permit, Great Oak in ShobieShy's mouth.
-- The prism: half-cracked, a mid-game seal-or-crack, a late payoff. No scene.
+- The prism scene. The choice and the payoff are decided.
 - The Association head's name, and the scene where the fear shows.
-- Where Nerd, Gal, Buff, and Loli go after the hall, in a solo game.
 - Hymns, the cult's name, the dry-prophet lines, hymn-shards.
-- One Choir or many.
-- What was in the sarcophagus, the cocoon, and the slag, and whether those answers match.
+- The identity of whatever shed the three skins. The reveal is in the Core. The name is not written.
 - Act V, the Storm Warden, the pages on Joe's past, the reason the Demon Lord let him this deep.
 - The Core: Joe's fight, the Demon Lord's fight, the escape as a scene.
-- Whether death already dumps gold at the Association, or still returns you to a waystone with the purse intact. The decision is the Association and the gold. The game is the waystone.
 - Deep-gear odds.
-- Whether to rename the Abyss, Endless Descent, or the Forgotten Abyss so they stop colliding.
 - DLC town names and level minimums.
 - The Sylvandar caravan and the vanished expedition as missions you can take.
-- A named blacksmith, a named bard, and a rebel cell you can join.
+- Who leads the rebels, how you join, and what you get. The blacksmith and the bard still have no names.
 - Whether Joe's earlier failed rites left a rival Summoned alive. Bob's did not.
 - Bob's laboratory and the potion garden as rooms.
 
@@ -214,10 +213,8 @@ The bounty board after Forgemaw is work, not lore: gnawers, heaps, spore husks, 
 
 - Bob already knows the Demon Lord's name and will not spend it early.
 - The crystal's "underwhelming" is the Demon Lord's block, the same block that ruined Bob's rites. You got through because Joe was sloppy enough to be unstoppable.
-- The Clerk's "Old Oak" is a survey. Bob's "Great Oak" is the name he uses when he cares, which is rare.
-- Joe thought the Breach seed was his bargain. The cult thought they were buying a dry god. Both were opening doors for whatever is shedding the shells. The walker stays unnamed.
+- Joe thought the Breach seed was his bargain. The cult thought they were buying a dry god. Both were hiring language for a thing that was already walking up out of its own castoffs. That is a reading. It is not the name. The Core is where the name is told, and the name is not written yet.
 - The Demon Lord's exit flickers the ward-pillars over Eldoria for one breath, and the next town hears about it before you arrive.
-- The prism is an Association focus cracked in the rite. Seal it and the dome steadies. Crack it and you are stronger and the crater is wider. He has been watching through it either way, so the choice introduces you.
 
 ## Changed from Magewar
 
@@ -226,11 +223,12 @@ The rite, the four Summoned, the expulsion, the tree, the Filth, the crystal, an
 - The Demon Lord caused the Breach. The elder god is no longer the culprit.
 - Joe is the Demon Lord's proxy, not only a sick exile.
 - Bob is the lazy roommate. His name is filled in. The Bible had left it blank.
-- The home he claims is the Great Oak in ShobieShy's mouth and the Old Oak on the permit.
+- The permit, the signs, and the quests say Old Oak. Bob calls it the Great Oak. Both stay.
 - Five dungeon trips became one labyrinth. Act IV is the Sunken Ruins.
 - The Demon Lord does not teleport you to a lair after the fifth dungeon. You walk down. When you beat him, he leaves.
 - The Filth is won with a staff. The dagger glows and warns. It is not the weapon.
-- The blank chapters after "Bob?" are the acts, the empty shells, and the Core.
-- The Abyss, Endless Descent, and Covenant Escalation add no scenes.
+- You come back at the last waystone, and you keep your gold.
+- The blank chapters after "Bob?" are the acts, the empty shells, and the Core. The Core is also where the shed skins are explained. The explanation is not written.
+- Until the Demon Lord falls, the post-campaign descent is the Forgotten Abyss. After he falls, random floors that mix every act are Endless Descent. Covenant Escalation adds no scenes. v0.9.0 still prints the older names.
 
 The bible's Changed from Magewar table also covers elements, parts, gear slots, and the dial.
