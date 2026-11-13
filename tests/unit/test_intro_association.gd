@@ -54,6 +54,7 @@ func test_beats_one_to_four() -> void:
 	check(g.talk_to("Clerk") and g.dialogue.entry["id"] == "clerk_grant", "Clerk gives the grant")
 	_finish_dialogue(g)
 	check(p.inventory.gold == IntroDirector.GRANT_GOLD and g.story_flags.has("permit_given"), "50 gold + permit")
+	check(g.story_flags.has(IntroDirector.SCRIBE), "the Clerk hands over the Auto-Scribe")
 	check(it.current() == "welcome", "on to the town")
 	check(not town.locked(), "front door opens after the permit")
 	g.free()

@@ -10,6 +10,7 @@ signal beat_changed(id: String)
 
 const FLAG := "intro_beat"
 const DONE := "intro_done"
+const SCRIBE := "auto_scribe"  ## the Clerk's Auto-Scribe™. The menu stays shut until this is set.
 const BEATS: PackedStringArray = [
 	"summoning",
 	"appraisal",
@@ -63,6 +64,7 @@ const END_FLAGS: PackedStringArray = [
 	"identity_chosen",
 	"joe_expelled",
 	"permit_given",
+	"auto_scribe",
 	"home_unlocked",
 	"bob_arrived",
 	"bob_met",
@@ -182,6 +184,13 @@ static func reach(f: StoryFlags, id: String) -> bool:
 		return false
 	f.set_flag(FLAG, i + 1)
 	return true
+
+
+## A finished intro, or a grant already handed over, includes the Auto-Scribe™.
+## Save version stays 1. Old files pick the flag up the next time they load.
+static func ensure_scribe(f: StoryFlags) -> void:
+	if f != null and (f.has(DONE) or f.has("permit_given")):
+		f.set_flag(SCRIBE)
 
 
 ## Ends the intro: the world opens.
@@ -478,11 +487,12 @@ func _on_dialogue_ended(id: String) -> void:
 func give_grant() -> void:
 	flags.set_flag("permit_given")
 	flags.set_flag("home_unlocked")  # the grove road into Eldoria
+	flags.set_flag(SCRIBE)
 	if current() != "grant":
 		return
 	player.inventory.add_gold(GRANT_GOLD)
 	advance("welcome")
-	_hint("+%d gold, residency permit. The road to Eldoria is open." % GRANT_GOLD)
+	_hint("+%d gold, residency permit, and the Auto-Scribe™. Esc opens it." % GRANT_GOLD)
 
 
 func _hint(text: String) -> void:

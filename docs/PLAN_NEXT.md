@@ -22,7 +22,7 @@ ShobieShy locked this on 5 Nov 2026. The same rule is in [PLAN_0.8.0_SLAGWORKS.m
 | 0.7.0 (shipping) | Act II, The Blightcoil |
 | 0.8.0 | Act III — The Slagworks. A minor, not a patch. Plan: [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md). |
 | 0.9.0 | Act IV — The Sunken Ruins, shipped. Flooded halls, Breath as the leash, the Drowned Choir, the coral sarcophagus. Not Breach fallout. Old Oak stays Old Oak. |
-| 0.9.1 | The Echo menu, shipped. One tabbed pause screen for Map, Missions, Inventory, Skills, Character, Challenges, Social, and Settings. |
+| 0.9.1 | The Auto-Scribe™, shipped. One tabbed pause screen for Map, Missions, Inventory, Skills, Character, Challenges, Social, and Settings. The Clerk hands it over with the grant. |
 | 0.9.2 | Mission rules. One tracked quest, main and side, the Choir quest, saved bounties. |
 | 0.10.0 | Act V — The Inverted Spire |
 | Later 0.x | The Core, when ShobieShy opens it. Joe, then the Demon Lord, who escapes (main-campaign end, per the 31 Oct 2026 scope). Not 1.0. |

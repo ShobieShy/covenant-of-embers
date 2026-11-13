@@ -71,7 +71,7 @@ The answer the kingdoms actually built was political. Valdoria, Sylvandar, Ironf
 
 Then Joe, in the Association's grand hall, opened tomes smuggled from ruined libraries and spent a fortune in mana on a forbidden summoning. He wanted champions from beyond the veil: demigods, warriors from other worlds, anyone stronger than Elyria. The rite cracked the marble and sent a shock through the barriers. What stepped out of the smoke were ordinary people. The appraisal crystal read them as underwhelming: strength like a child's, mana like a dry well, no inborn element. The Association's fear was practical. A rite that sloppy could have torn a new rift.
 
-They stripped his robes, took his staff, and banished him to the wilds in a tattered cloak, with a warning not to come back. The Summoned stayed. A few mages muttered about sending them home. The rite only runs one way. Protocol paid them out of embarrassment: fifty gold, a week's food in a safe town, clothes enchanted for minor durability, and a permit for a tree at the edge of the city that the survey says has been empty for centuries.
+They stripped his robes, took his staff, and banished him to the wilds in a tattered cloak, with a warning not to come back. The Summoned stayed. A few mages muttered about sending them home. The rite only runs one way. Protocol paid them out of embarrassment: fifty gold, a week's food in a safe town, clothes enchanted for minor durability, a permit for a tree at the edge of the city that the survey says has been empty for centuries, and an Auto-Scribe™. The Clerk hands you the scribe with the papers. Until then, Esc only pauses. After that, Esc opens the scribe: map, kit, notes, and the rest.
 
 The first day is a market day. Barrier-safe herbs on the stalls. Guards on the wards. Bread bought in clumsy Elyrian Common. Children point. Adventurers scoff. Under the pity is the only advantage the Summoned brought with them: otherworldly knowledge. Physics, machines, and the kind of strategy you learn from games are not magic here, and they are not nothing.
 
@@ -272,7 +272,7 @@ He caused the Breach. He blocked Bob. He took Joe on after the banishment. He is
 ### The hall and the square
 
 - **Elder.** Expels Joseph. Tells the Summoned to see the Clerk. Has nothing more to say.
-- **Clerk.** Form 7-B. Fifty gold. Clothes you are already wearing. A residency permit. Later, if Bob sent you, the back door behind the dais. Mind the smell.
+- **Clerk.** Form 7-B. Fifty gold. Clothes you are already wearing. A residency permit. The Auto-Scribe™, handed over with the papers. Later, if Bob sent you, the back door behind the dais. Mind the smell.
 - **Bored Guard.** Pity before the Filth, a grudging respect after, and a DANGER sign he does not think is a joke.
 - **Potion Merchant.** The only potions in Eldoria, by his own account. First pick once you have sludge on your boots.
 - **Tailor.** Robes, belts, boots. Gold up front.
