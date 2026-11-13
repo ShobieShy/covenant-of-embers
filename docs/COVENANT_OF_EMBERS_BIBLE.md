@@ -37,6 +37,12 @@ The **Breach** is the fracture as the campaign meets it: a crater north of the l
 
 These are the lands the Magewar storyline names. None of them is a separate level in v0.9.0. Several of them were folded into the labyrinth's acts. The others are still the world past the dome.
 
+The bible does not give these kingdoms a compass. On the chart below they are placed by terrain type only: sea, peaks, woods, river, mines, waste, a floating citadel. Those bearings are illustrative, not canon. Eldoria, the landfill just past its barrier, and the Breach north of the dump are the places the campaign actually locates.
+
+![The realm of Elyria. Outer-kingdom bearings are illustrative, not canon.](maps/elyria-world-map.jpg)
+
+Labels and the sources for each name are in [maps/MAP_LEGEND.md](maps/MAP_LEGEND.md).
+
 | Land | What it is | Where the campaign put it |
 |---|---|---|
 | Arcana Spire | The Association's floating citadel, the old headquarters | You do not go there. The hall in Eldoria is the chapter that summoned you. |
@@ -289,6 +295,8 @@ The game starts here, as the Bible says. Cool, dim, a dais, Joe, the crystal, th
 
 The hub. A paved square, ward-pillars, stalls, the Fractured Flagon, the guard on the landfill gate. North to the Association, south to the landfill, east to the tree. A waystone. After Forgemaw, the square also holds the post-game toys: a chest, a vendor stall, a slot machine, and a bounty board.
 
+![Eldoria, the Landfill, and the Breach. The Association is north of the square, the landfill south, the Old Oak east, and the crater north of the dump.](maps/eldoria-hub-map.jpg)
+
 ### The Great Oak
 
 Home. A colossal hollow tree at the edge of town, candle-lit, moss beds, a stash, an assembly station, and Bob. The survey, the permit, the signs, and the quests call it the Old Oak. Bob calls it the Great Oak. Both names stay. The Clerk has not updated Form 7-B, and he is not going to. The Magewar storyline says no one had lived there for centuries because it was rumored haunted. Bob was the haunting. In a solo game the other three Summoned live here with you. They do not follow you into the shaft.
@@ -303,7 +311,11 @@ A half-level doorway, not an act. Violet-grey haze, a gnawer den, an ember galle
 
 ### The labyrinth
 
-Handmade story floors stay handmade. Generated floors fill the space between bosses. A waystone on a boss floor brings you back to the square, and the Breach gate offers the next descent. There is no overworld shortcut.
+One shaft. The five acts are the five old dungeon trips, stacked. Act V and the Core are drawn here because they are outlined. They are not in the current build.
+
+![The labyrinth, from the Breach down through the acts to the Core. Act V is planned.](maps/labyrinth-cross-section.jpg)
+
+Handmade story floors stay handmade. Generated floors fill the space between bosses. A waystone on a boss floor brings you back to the square, and the Breach gate offers the next descent. There is no overworld shortcut. The Forgotten Abyss and Endless Descent are later modes of this same shaft, not extra places on the chart.
 
 | Act | Name | Checkpoints | In v0.9.0 |
 |---|---|---|---|
