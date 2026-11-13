@@ -9,8 +9,8 @@ extends Node3D
 ## Gameplay nodes (camps, chests, waystones, exits) never live under a POI, so streaming
 ## is purely visual and co-op peers never disagree about the world.
 ##
-## apply_ranges() sets per-quality visibility ranges (HLOD-style fade) on every prop mesh,
-## and occlusion culling is on for Medium/High (QualityPresets.apply_level calls both).
+## apply_ranges() sets per-quality visibility ranges (HLOD-style fade) on every prop mesh.
+## Occlusion culling stays off until a level has occluders.
 
 const LOAD_RADIUS := [150.0, 200.0, 250.0]  ## Low (Steam Deck) / Medium / High
 const UNLOAD_EXTRA := 50.0

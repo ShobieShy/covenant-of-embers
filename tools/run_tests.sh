@@ -47,7 +47,7 @@ run_clean() {
 	# Terrain3D 1.0.2 logs a harmless load("res://") pair when a terrain initialises.
 	# Headless exit also leaks dummy-renderer RIDs, a nav agent, and Jolt bodies
 	# (docs/TEST_TIERS.md). The counts vary. A SCRIPT ERROR still fails the run.
-	if grep -vE "^ERROR: (Resource file not found: res:// \(expected type: unknown\)|Error loading resource: ''\.|Pages in use exist at exit in PagedAllocator: N20RasterizerSceneDummy21GeometryInstanceDummyE|[0-9]+ RID allocations of type '(10NavAgent3D|P11JoltShape3D|P10JoltBody3D|N13RendererDummy15MaterialStorage13DummyMaterialE|N13RendererDummy15MaterialStorage11DummyShaderE|N13RendererDummy9DummyMeshE|N17RendererSceneCull8InstanceE)' were leaked at exit\.|[0-9]+ resources still in use at exit \(run with --verbose for details\)\.)$" "$log" | grep -qE '^(SCRIPT ERROR|ERROR):'; then
+	if grep -v -E -f tools/known_errors.regex "$log" | grep -qE '^(SCRIPT ERROR|ERROR):'; then
 		echo "[run_tests] errors logged by: $*"; exit 1
 	fi
 }

@@ -64,8 +64,6 @@ static func apply_level(lvl: Node) -> void:
 		var keep := light is DirectionalLight3D and level != Level.LOW or level == Level.HIGH
 		light.shadow_enabled = keep and light.get_meta(&"authored_shadow")
 	ZoneStreamer.apply_ranges(lvl)  # step 153: prop visibility ranges per preset
-	if lvl.is_inside_tree():
-		lvl.get_viewport().use_occlusion_culling = level != Level.LOW
 
 
 static func apply_engine() -> void:

@@ -316,7 +316,7 @@ func _dress_association() -> void:
 	var others := Array(Archetype.IDS).filter(func(a: String) -> bool: return a != player.archetype)
 	for i in mini(3, others.size()):
 		# Level-local spots. `at()` adds the open-world hall offset; closed levels stay at 0.
-		_spawn("Summoned " + Archetype.label(others[i]), at(SUMMONED_SPOTS[i]), 0.0)
+		_spawn("Summoned " + Archetype.label(others[i]), spot("summoned_%d" % i, SUMMONED_SPOTS[i]), 0.0)
 	if joe() == null:
 		var marker := main.get_node_or_null("Level/NPCs/crazy_joe") as Node3D
 		_spawn("Crazy Joe", marker.global_position if marker else at(Vector3(0.0, 0.3, -10.0)), 0.0)

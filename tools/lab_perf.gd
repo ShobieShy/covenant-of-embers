@@ -31,12 +31,10 @@ func _initialize() -> void:
 			fl.cull_to(start.global_position)
 		var c := _census(fl)
 		var times := PackedFloat64Array()
-		var last := Time.get_ticks_usec()
 		for i in FRAMES:
-			await process_frame
-			var now := Time.get_ticks_usec()
-			times.append((now - last) / 1000.0)
-			last = now
+			var tick_at := Time.get_ticks_usec()
+			_tick_work(holder, 1.0 / 60.0)
+			times.append((Time.get_ticks_usec() - tick_at) / 1000.0)
 		var avg := 0.0
 		var worst := 0.0
 		for t in times:
@@ -60,6 +58,16 @@ func _initialize() -> void:
 		var f := FileAccess.open(out, FileAccess.WRITE)
 		f.store_string(JSON.stringify(rows, "  "))
 	quit()
+
+
+## Time spent inside tick(), not the gap between headless frames.
+func _tick_work(root_node: Node, dt: float) -> void:
+	var stack: Array[Node] = [root_node]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n.has_method(&"tick"):
+			n.call(&"tick", dt)
+		stack.append_array(n.get_children())
 
 
 func _census(fl: Node) -> Dictionary:
