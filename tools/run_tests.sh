@@ -24,6 +24,7 @@ CORE_TESTS="test_quest_chain.gd,test_smoke.gd,test_branding.gd,test_save.gd,test
 python3 tools/toml_to_scene.py --self-test
 python3 tools/expand_maps.py --check
 python3 tools/toml_to_scene.py --check
+python3 tools/export_set.py --check
 python3 tools/import_magewar_parts.py --check
 python3 tools/labyrinth_gen.py --self-test  # L1
 python3 tools/labyrinth_gen.py --check
