@@ -10,6 +10,7 @@ const KILL_LEVEL := {
 	"blightmaw_matriarch": "labyrinth",
 	"forgemaw": "labyrinth",
 	"drowned_choir": "labyrinth",
+	"storm_warden": "labyrinth",
 }
 
 var main: Node

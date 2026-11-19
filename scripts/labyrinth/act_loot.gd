@@ -58,6 +58,17 @@ const ACTS := {
 		"boss_first": "unique",
 		"boss_repeat": "rare",
 	},
+	5:
+	{
+		"name": "The Inverted Spire",
+		"floors": [19, 23],
+		"levels": [48, 49, 49, 50, 50],
+		"chests": ["basic", "uncommon", "uncommon", "rare", "rare"],
+		"element": ElementTable.Element.AIR,
+		"luck": 0.14,
+		"boss_first": "unique",
+		"boss_repeat": "rare",
+	},
 }
 
 

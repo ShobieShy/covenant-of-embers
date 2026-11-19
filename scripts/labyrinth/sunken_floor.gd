@@ -6,6 +6,7 @@ extends Node3D
 
 signal pad_reached(checkpoint: int, waystone_id: String)
 signal home_requested
+signal spire_descend
 
 const FIRST := 14
 const LAST := 18
@@ -135,6 +136,17 @@ func _build() -> void:
 		spot.position = Vector3(2.2, 1.7, 16)
 		spot.set_meta(&"boss", BOSS)
 		add_child(spot)
+		var door := SlagProp.new()
+		door.name = "SpireDoor"
+		door.role = "spire"
+		door.host = self
+		door.position = Vector3(-2.2, 1.7, 14)
+		var ds := CollisionShape3D.new()
+		var db := BoxShape3D.new()
+		db.size = Vector3(1.2, 2.2, 0.4)
+		ds.shape = db
+		door.add_child(ds)
+		add_child(door)
 
 
 func _marker(parent: Node3D, id: String, at: Vector3, boss: bool) -> void:
@@ -171,6 +183,21 @@ func _on_water(body: Node) -> void:
 func _on_bell(body: Node) -> void:
 	if body is Player and (body as Player).breath != null:
 		(body as Player).breath.refill()
+
+
+func use_spire() -> bool:
+	if _state == null or not _state.bosses.has(BOSS):
+		return false
+	spire_descend.emit()
+	return true
+
+
+func prop_line(role: String) -> String:
+	if role != "spire":
+		return ""
+	if _state != null and _state.bosses.has(BOSS):
+		return "The shaft becomes sky."
+	return "The wind locks hold."
 
 
 func _on_pad(body: Node) -> void:

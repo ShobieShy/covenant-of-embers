@@ -50,6 +50,7 @@ const BRAINS := {
 	"matriarch": "res://scripts/enemies/blightmaw.gd",  # Act II
 	"forgemaw": "res://scripts/enemies/forgemaw.gd",  # Act III
 	"choir": "res://scripts/enemies/drowned_choir.gd",  # Act IV
+	"warden": "res://scripts/enemies/gnawer.gd",  # Act V: the Storm Warden uses the rusher brain
 }
 
 const BURN_TICK := 0.5  ## s between burn damage ticks (step 53)
@@ -335,7 +336,7 @@ func scale_health(k: float) -> void:
 
 ## Bosses (the Warden, The Filth) are immune to Dark corruption (step 52).
 func is_boss() -> bool:
-	return def != null and String(def.ai.get("kind", "")) in ["boss", "filth", "king", "matriarch"]
+	return def != null and String(def.ai.get("kind", "")) in ["boss", "filth", "king", "matriarch", "warden"]
 
 
 func alive() -> bool:

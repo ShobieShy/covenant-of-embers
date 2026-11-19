@@ -1,0 +1,92 @@
+[gd_resource type="Resource" script_class="EnemyTable" format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_def.gd" id="1_r4gr4"]
+[ext_resource type="Script" path="res://scripts/enemies/enemy_table.gd" id="2_55vn8"]
+
+[sub_resource type="Resource" id="Resource_r272p"]
+script = ExtResource("1_r4gr4")
+id = "harpy"
+display_name = "Harpy"
+affinity = 4
+max_health = 160.0
+level = 48
+xp_reward = 34
+gold_drop = 14
+size = Vector3(0.9, 1.7, 0.9)
+color = Color(0.55, 0.6, 0.7, 1)
+has_weak_point = true
+weak_point_offset = Vector3(0, 1.4, -0.1)
+weak_point_size = Vector3(0.28, 0.26, 0.26)
+ai = {
+"aggro_range": 10.0,
+"attack_cooldown": 1.1,
+"attack_damage": 12.0,
+"attack_range": 1.6,
+"detect_range": 14.0,
+"kind": "rusher",
+"knockback_strength": 16.0,
+"knockback_threshold": 8.0,
+"knockback_time": 0.35,
+"sprint_speed": 5.0,
+"walk_speed": 2.4
+}
+
+[sub_resource type="Resource" id="Resource_bsmmy"]
+script = ExtResource("1_r4gr4")
+id = "storm_elemental"
+display_name = "Storm Elemental"
+affinity = 4
+max_health = 200.0
+level = 49
+xp_reward = 40
+gold_drop = 16
+size = Vector3(1.1, 2, 1.1)
+color = Color(0.7, 0.75, 0.9, 1)
+has_weak_point = true
+weak_point_offset = Vector3(0, 1.6, -0.12)
+weak_point_size = Vector3(0.32, 0.3, 0.3)
+ai = {
+"aggro_range": 9.0,
+"attack_cooldown": 1.3,
+"attack_damage": 14.0,
+"attack_range": 1.8,
+"detect_range": 13.0,
+"kind": "rusher",
+"knockback_strength": 18.0,
+"knockback_threshold": 8.0,
+"knockback_time": 0.4,
+"sprint_speed": 4.4,
+"walk_speed": 2.2
+}
+
+[sub_resource type="Resource" id="Resource_ee14c"]
+script = ExtResource("1_r4gr4")
+id = "storm_warden"
+display_name = "Storm Warden"
+affinity = 4
+max_health = 1600.0
+level = 50
+xp_reward = 280
+gold_drop = 90
+size = Vector3(2, 2.6, 2)
+color = Color(0.75, 0.8, 0.95, 1)
+has_weak_point = true
+weak_point_offset = Vector3(0, 2, -0.25)
+weak_point_size = Vector3(0.42, 0.36, 0.36)
+ai = {
+"aggro_range": 12.0,
+"attack_cooldown": 1.4,
+"attack_damage": 18.0,
+"attack_range": 2.2,
+"detect_range": 16.0,
+"kind": "warden",
+"knockback_strength": 22.0,
+"knockback_threshold": 20.0,
+"knockback_time": 0.4,
+"sprint_speed": 4.2,
+"walk_speed": 2.0
+}
+
+[resource]
+script = ExtResource("2_55vn8")
+defs = Array[ExtResource("1_r4gr4")]([SubResource("Resource_r272p"), SubResource("Resource_bsmmy"), SubResource("Resource_ee14c")])

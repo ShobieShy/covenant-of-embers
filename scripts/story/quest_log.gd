@@ -26,6 +26,7 @@ const LEVEL_OF := {
 	"blightmaw_matriarch": 22,
 	"forgemaw": 34,
 	"drowned_choir": 46,
+	"storm_warden": 50,
 }
 
 var quests := {}  ## id -> {id, title, objectives: [{kind, target, count, text}], rewards...}
@@ -125,6 +126,7 @@ func start(id: String) -> bool:
 	_seed_act2(id)
 	_seed_act3(id)
 	_seed_sunken(id)
+	_seed_spire(id)
 	if active.has(id):
 		if kind_of(id) == "main":
 			tracked = id
@@ -169,6 +171,11 @@ func _seed_sunken(id: String) -> void:
 		_complete(id)
 
 
+func _seed_spire(id: String) -> void:
+	if id == "the_inverted_spire" and known_bosses.has("storm_warden"):
+		_complete(id)
+
+
 func check_auto_start() -> void:
 	for id in order:
 		var a: Array = quests[id]["auto"]
@@ -176,6 +183,12 @@ func check_auto_start() -> void:
 			start(id)
 	if known_bosses.has("forgemaw") and quests.has("the_sunken_ruins") and state("the_sunken_ruins") == "available":
 		start("the_sunken_ruins")
+	if (
+		known_bosses.has("drowned_choir")
+		and quests.has("the_inverted_spire")
+		and state("the_inverted_spire") == "available"
+	):
+		start("the_inverted_spire")
 
 
 func current_objective(id: String) -> Dictionary:
