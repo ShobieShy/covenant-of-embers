@@ -146,6 +146,12 @@ def oak() -> tuple[set[str], str]:
         p.append(prop(f"deco_{i + 1}", NATURE + f"{m}.glb", (x, 0.05 * 3, z), 40.0 * i, 3))
     p.append(prop("stool", NATURE + "stump_roundDetailed.glb", (3.8, 0.15, -5.5), 0.0, 3))
     p.append(prop("table", NATURE + "stump_squareDetailedWide.glb", (-1.6, 0.15, 3.4), 20.0, 3))
+    # 0.10.3: Kenney stand-ins for the missing lab meshes. The room is the boxes above.
+    p.append(prop("lab_chart", TOWN + "banner-green.glb", (-4.0, 5.3, -6.5), 0.0, 2.2))
+    p.append(prop("lab_slab_top", TOWN + "stall-bench.glb", (-5.2, 4.15, -5.2), 90.0, 1.4))
+    p.append(prop("lab_shelf_front", TOWN + "stall.glb", (-2.0, 4.05, -5.8), 0.0, 1.3))
+    for i, x in enumerate((-3.2, -2.4, -1.6)):
+        p.append(prop(f"lab_pot_{i + 1}", TOWN + "stall-stool.glb", (x, 4.15, -3.4), 0.0, 0.7))
     return set(), "".join(p)
 
 
