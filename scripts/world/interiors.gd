@@ -67,6 +67,7 @@ var lab_floor: LabyrinthFloor
 var cavern: BlightcoilCavern
 var slag: SlagworksFloor
 var sunken: SunkenFloor
+var spire: SpireFloor
 ## L4 co-op (LabyrinthSync): a joiner's stairs down are the host's call (follow_only); the
 ## host's go through stair_gate () -> bool first (the whole party nearby, or a vote).
 var follow_only := false
@@ -241,6 +242,8 @@ func leave(to_level := "town_square") -> Vector3:
 	lab_floor = null
 	cavern = null
 	slag = null
+	sunken = null
+	spire = null
 	pending_slag = false
 	if labyrinth and id == "labyrinth":
 		labyrinth.current = 0  # leaving mid-floor: the next visit starts at a floor's start
@@ -263,6 +266,8 @@ func _enter_floor(id: String, n: int) -> Vector3:
 		labyrinth = LabyrinthState.fresh()
 	if LabGate.is_cavern(n):
 		return await _enter_cavern(id, n)
+	if SpireFloor.is_floor(n):
+		return await _enter_spire(id, n)
 	if SunkenFloor.is_floor(n):
 		return await _enter_sunken(id, n)
 	if SlagworksFloor.is_floor(n):
@@ -323,6 +328,10 @@ func descend() -> Vector3:
 	if pending_slag and LabGate.is_cavern(floor_no):
 		pending_slag = false
 		return await _swap_to(SlagworksFloor.FIRST, false)
+	if SpireFloor.is_floor(floor_no):
+		if floor_no >= SpireFloor.LAST:
+			return Vector3.INF
+		return await _swap_to(floor_no + 1, true)
 	if SunkenFloor.is_floor(floor_no):
 		if floor_no >= SunkenFloor.LAST:
 			return Vector3.INF
@@ -391,6 +400,42 @@ func _enter_cavern(id: String, n: int) -> Vector3:
 
 ## The opened Crown door. A joiner's press does nothing; the host's waits on the
 ## stair vote when one is wired, then loads checkpoint 9. Solo play does not wait.
+func _on_spire_descend() -> void:
+	if follow_only or current != "labyrinth":
+		return
+	_swap_to(SpireFloor.FIRST, false)
+
+
+func _enter_spire(id: String, n: int) -> Vector3:
+	var t0 := Time.get_ticks_msec()
+	slow_load.emit(id)
+	await get_tree().process_frame
+	spire = SpireFloor.make(n, labyrinth)
+	lab_floor = null
+	cavern = null
+	slag = null
+	sunken = null
+	interior = spire
+	interior.name = "Interior"
+	interior.position = Vector3(0, DEPTH, 0)
+	add_child(interior)
+	if not spire.home_requested.is_connected(_on_sunken_home):
+		spire.home_requested.connect(_on_sunken_home)
+	for c in spire.find_children("*", "LabyrinthStairs", true, false):
+		(c as LabyrinthStairs).used.connect(_on_stairs, CONNECT_DEFERRED)
+	floor_no = n
+	current = id
+	if labyrinth:
+		labyrinth.reach(n)
+		labyrinth.current = n
+	var land := spire.start_pos()
+	_move_party(land)
+	busy = false
+	floor_entered.emit(n)
+	print("[labyrinth] spire %d %s (%d ms)" % [n, SpireFloor.NAMES.get(n, ""), Time.get_ticks_msec() - t0])
+	return land
+
+
 func _on_sunken_descend() -> void:
 	if follow_only or current != "labyrinth":
 		return
@@ -411,6 +456,8 @@ func _enter_sunken(id: String, n: int) -> Vector3:
 	add_child(interior)
 	if not sunken.home_requested.is_connected(_on_sunken_home):
 		sunken.home_requested.connect(_on_sunken_home)
+	if not sunken.spire_descend.is_connected(_on_spire_descend):
+		sunken.spire_descend.connect(_on_spire_descend)
 	for c in sunken.find_children("*", "LabyrinthStairs", true, false):
 		(c as LabyrinthStairs).used.connect(_on_stairs, CONNECT_DEFERRED)
 	floor_no = n
@@ -464,6 +511,7 @@ func _swap_to(n: int, clear: bool) -> Vector3:
 	cavern = null
 	slag = null
 	sunken = null
+	spire = null
 	return await _enter_floor("labyrinth", n)
 
 

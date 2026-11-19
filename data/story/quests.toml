@@ -177,3 +177,15 @@ quest = "the_sunken_ruins"
 kind = "kill"
 target = "drowned_choir"
 text = "Face the Drowned Choir"
+
+[[quest]]
+id = "the_inverted_spire"
+title = "The Inverted Spire"
+kind = "main"
+reward_xp = 120
+
+[[objective]]
+quest = "the_inverted_spire"
+kind = "kill"
+target = "storm_warden"
+text = "Face the Storm Warden"

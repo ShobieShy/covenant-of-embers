@@ -16,6 +16,7 @@ const DEFAULT_PATHS: PackedStringArray = [
 	"res://resources/enemies/blightcoil.tres",  # Act II
 	"res://resources/enemies/slagworks.tres",  # Act III
 	"res://resources/enemies/sunken.tres",  # Act IV
+	"res://resources/enemies/spire.tres",  # Act V
 ]  ## step 34: the Breach mini-boss
 
 @export var defs: Array[EnemyDef] = []

@@ -48,6 +48,11 @@ const DEEP_POINTS := {
 	"sunken_murals": {"name": "The Sunken Ruins - Murals", "level": "labyrinth", "floor": 16},
 	"sunken_spire": {"name": "The Sunken Ruins - Spire", "level": "labyrinth", "floor": 17},
 	"sunken_nave": {"name": "The Sunken Ruins - Nave", "level": "labyrinth", "floor": 18},
+	"spire_platforms": {"name": "The Inverted Spire - Platforms", "level": "labyrinth", "floor": 19},
+	"spire_falls": {"name": "The Inverted Spire - Falls", "level": "labyrinth", "floor": 20},
+	"spire_wind": {"name": "The Inverted Spire - Wind", "level": "labyrinth", "floor": 21},
+	"spire_facets": {"name": "The Inverted Spire - Facets", "level": "labyrinth", "floor": 22},
+	"spire_warden": {"name": "The Inverted Spire - Warden", "level": "labyrinth", "floor": 23},
 }
 ## GameFlow level id -> the waystone point that stands in it (spawn anchor).
 const LEVEL_POINT := {"old_oak": "old_oak", "town_square": "town_gate", "midden": "landfill", "breach": "breach"}

@@ -28,3 +28,5 @@ func interact() -> void:
 		host.call(&"use_lift")
 	elif role == "sunken" and host != null:
 		host.call(&"use_sunken")
+	elif role == "spire" and host != null:
+		host.call(&"use_spire")

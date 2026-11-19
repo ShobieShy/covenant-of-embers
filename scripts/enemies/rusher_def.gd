@@ -10,8 +10,8 @@ extends RefCounted
 ## (Magewar's Mutant Rat: 8 / 6 / 3 / 5.5 / 3 dmg / 0.8 s) overrides them in its TOML.
 
 const KINDS: PackedStringArray = [
-	"rusher", "tank", "boss", "ranged", "splitter", "filth", "king", "matriarch", "forgemaw", "choir"
-]  ## matriarch: Act II. forgemaw: Act III. choir: Act IV.
+	"rusher", "tank", "boss", "ranged", "splitter", "filth", "king", "matriarch", "forgemaw", "choir", "warden"
+]  ## matriarch: Act II. forgemaw: Act III. choir: Act IV. warden: Act V.
 const KEYS: PackedStringArray = [
 	"kind",
 	"detect_range",
