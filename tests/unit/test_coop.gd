@@ -110,7 +110,7 @@ func test_puppets_poses_hits_kills_and_hurt() -> void:
 	check(pup != null and pup.def.id == "earth_training_dummy", "same type")
 	check(pup != null and pup.global_position.distance_to(real.global_position) < 0.2, "pose converged")
 	check(
-		hw.proxies.has(cid) and (hw.proxies[cid] as RemotePlayer).global_position.distance_to(Vector3(3, 0, 0)) < 0.3,
+		hw.proxies.has(cid) and ((hw.proxies[cid] as RemotePlayer).global_position.distance_to(Vector3(3, 0, 0)) < 0.3),
 		"host sees client"
 	)
 	check(cw.proxies.has(1), "client sees host")
@@ -318,8 +318,8 @@ func test_brand_fx_and_blast_hits() -> void:
 ## mods ("sm") and the host applies the status and mark; junk keys are dropped, values clamped;
 ## a capstone area hit on a puppet goes through the puppet-hit path.
 func test_element_status_mods_reach_host() -> void:
-	check(NetSession.PROTOCOL == 6, "protocol 6 (compact snapshots)")
-	check(NetSession.version().ends_with("/p6"), "a p5 peer can't join")
+	check(NetSession.PROTOCOL == 7, "protocol 7 (late-hit credit)")
+	check(NetSession.version().ends_with("/p7"), "a p6 peer can't join")
 	var san := ElementSkillMods.sanitize_net({"status_seconds": 99.0, "evil": 5, "mark_seconds": -3})
 	check(san.size() == 2 and san["status_seconds"] == 10.0 and san["mark_seconds"] == 0.0, "host sanitises sm")
 	check(

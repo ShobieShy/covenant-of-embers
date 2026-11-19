@@ -31,7 +31,7 @@ static var coop_started := false
 static var brand_turn := 0  ## step 143: next brand in the staff rotation
 static var brands_used := PackedStringArray()
 static var trees_used := PackedStringArray()  ## step 151: skill trees the bot spent points in
-static var coop_totals := {"hits_sent": 0, "hits_applied": 0, "snaps_seen": 0, "poses_seen": 0}  ## step 93: the menu wiped the bot files once
+static var coop_totals := {"hits_sent": 0, "hits_applied": 0, "credits_sent": 0, "snaps_seen": 0, "poses_seen": 0}  ## step 93: the menu wiped the bot files once
 
 var main: Node
 var player: Player
