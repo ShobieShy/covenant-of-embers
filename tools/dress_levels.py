@@ -185,7 +185,15 @@ def midden() -> tuple[set[str], str]:
     mul = {"Trashcan": 0.8, "Trashcan_Small": 1.2, "Trash_Bag": 3.2, "Trash_Bags": 3.2, "Can_Broken": 2.2}
     p = [prop(f"trash_{i + 1}", TRASH + f"{m}.glb", (x, y, z), float(r), round(s * mul[m], 3))
          for i, (x, y, z, m, r, s) in enumerate(spots)]
-    return set(), "".join(p)
+    # 0.10.1: Kenney rocks stand in for the missing Ember Art berm mesh.
+    hide = {"berm_w", "berm_e", "ridge", "rock_cut"}
+    for i, z in enumerate(range(-64, 36, 8)):
+        y = 0.0 if z > -18 else -2.0
+        p.append(prop(f"berm_rock_w{i + 1}", TOWN + "rock-large.glb", (-18.0, y, float(z)), 0.0, (2.2, 3.5, 2.2)))
+        p.append(prop(f"berm_rock_e{i + 1}", TOWN + "rock-large.glb", (18.0, y, float(z)), 0.0, (2.2, 3.5, 2.2)))
+    p.append(prop("ridge_rocks", TOWN + "rock-wide.glb", (-14.0, 0.0, 36.0), 0.0, (3, 3, 2), 5, (7, 0, 0)))
+    p.append(prop("cut_rocks", TOWN + "rock-wide.glb", (-14.0, -2.0, -68.0), 0.0, (3, 3, 2), 5, (7, 0, 0)))
+    return hide, "".join(p)
 
 
 def breach() -> tuple[set[str], str]:

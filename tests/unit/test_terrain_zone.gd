@@ -34,6 +34,11 @@ func test_heights_deterministic_flat_pads_and_rim() -> void:
 			hilly += 1
 	check(hilly > 0, "hills away from pads")
 	check(a.grid_size() == Vector2i(225, 225), "grid from region-snapped origin %s" % a.grid_size())
+	a.pad_heights = PackedFloat32Array([-2.05, 0.0])
+	a.pads = [Rect2(C.x - 10, C.y - 30, 20, 10), Rect2(C.x - 10, C.y + 10, 20, 10)]
+	a._hash = 0
+	check_near(a.height_at(C.x, C.y - 25), -2.05, 0.001, "lower pad stays at its own height")
+	check_near(a.height_at(C.x, C.y + 15), 0.0, 0.001, "upper pad stays at its own height")
 	a.free()
 	b.free()
 
