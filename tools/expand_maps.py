@@ -135,41 +135,41 @@ WOOD = [0.42, 0.3, 0.2]
 
 
 def association() -> Map:
-    """159 W8 Mage Association, 60x90 m, 3 floors, no terrain: the 20x30 grand hall stays as is
-    (beats 1-4); the library wing (E, mezzanine at 4 m, archive at 8 m) and the courtyard wing (W)
-    open through side doors behind tutorial_done gates."""
+    """0.10.2: a 64 by 56 m close. Library 18 by 22 on the east, courtyard 22 by 24
+    on the west. The 90 m wings, the mezzanine, and the archive stair are gone.
+    Side doors stay shut until the tutorial ends."""
     m = Map(None)
-    for side, sx in (("east", 1), ("west", -1)):
-        cx = 20 * sx
-        m.box(f"{side}_wing_floor", "ground", [cx, -0.1, 0], [20, 0.2, 90], [0.5, 0.47, 0.44])
-        m.wall(f"{side}_wing_outer", [30.5 * sx, 4, 0], [1, 8, 92], HALL_STONE)
-        m.wall(f"{side}_wing_north", [cx, 4, -45.5], [20, 8, 1], HALL_STONE)
-        m.wall(f"{side}_wing_south", [cx, 4, 45.5], [20, 8, 1], HALL_STONE)
-        m.wall(f"{side}_wing_inner_n", [10.5 * sx, 4, -30.25], [1, 8, 29.5], HALL_STONE)
-        m.wall(f"{side}_wing_inner_s", [10.5 * sx, 4, 30.25], [1, 8, 29.5], HALL_STONE)
-        m.gate(f"{side}_wing_door", [10.6 * sx, 1.75, 0], [0.5, 3.5, 4.4],
-               "The Archmage's wings are closed to novices.", "tutorial_done")
-    # Library wing: shelves on the ground floor, a mezzanine (floor 2) and an archive (floor 3).
-    for i in range(6):
-        m.box(f"shelf_{i + 1}", "wall", [24, 1.6, -40 + i * 6], [8, 3.2, 1], WOOD)
-    m.stairs("library_stair", 13, 12, 4.0, 10, (0.0, -1.2), 3.0, WOOD)
-    m.box("mezzanine", "platform", [21, 3.8, -21.8], [18, 0.4, 43.6], WOOD)
-    for i in range(8):
-        m.box(f"archive_stair_{i + 1}", "platform", [28, 4 + 4 * (i + 1) / 8 - 0.2, -4 - 1.2 * i], [3, 0.4, 3], WOOD)
-    m.box("archive", "platform", [25, 7.8, -27.5], [9, 0.4, 25], WOOD)
-    m.box("archive_rail", "wall", [20.25, 8.6, -27.5], [0.3, 1.2, 25], WOOD)
-    m.chest("archive_hidden", [28, 8.0, -38], "hidden")
-    m.chest("library_chest", [16, 0, -42], "normal")
+    # Library, east of the hall. The anchor stays at (16, 0, 0).
+    m.box("library_floor", "ground", [21, -0.1, 0], [18, 0.2, 22], [0.5, 0.47, 0.44])
+    m.wall("library_outer", [30.5, 4, 0], [1, 8, 22], HALL_STONE)
+    m.wall("library_north", [21, 4, -11.5], [18, 8, 1], HALL_STONE)
+    m.wall("library_south", [21, 4, 11.5], [18, 8, 1], HALL_STONE)
+    for i in range(4):
+        m.box(f"shelf_{i + 1}", "wall", [26, 1.6, -8 + i * 4], [6, 3.2, 1], WOOD)
+    m.chest("library_chest", [24, 0, -8], "normal")
+    m.chest("archive_hidden", [26, 0, 8], "hidden")
     m.anchor("library", [16, 0, 0], 270.0)
-    m.poi("library", [20, 0, -10], 25)
-    # Courtyard wing: open to the sky, a fountain, planters and trees.
-    m.box("fountain", "wall", [-20, 0.5, 0], [6, 1, 6], HALL_STONE)
-    m.box("fountain_water", "platform", [-20, 1.02, 0], [5, 0.04, 5], [0.16, 0.28, 0.38])
-    for i, (x, z) in enumerate(((-15, -30), (-25, -30), (-15, 30), (-25, 30), (-15, -15), (-25, 15))):
+    m.poi("library", [21, 0, 0], 12)
+    m.gate("east_wing_door", [11.6, 1.75, 0], [0.5, 3.5, 4.4],
+           "The Archmage's wings are closed to novices.", "tutorial_done")
+    # Courtyard, west of the hall. The anchor stays at (-16, 0, 0).
+    m.box("courtyard_floor", "ground", [-23, -0.1, 0], [22, 0.2, 24], [0.34, 0.4, 0.28])
+    m.wall("courtyard_outer", [-34.5, 3, 0], [1, 6, 24], HALL_STONE)
+    m.wall("courtyard_north", [-23, 3, -12.5], [22, 6, 1], HALL_STONE)
+    m.wall("courtyard_south", [-23, 3, 12.5], [22, 6, 1], HALL_STONE)
+    m.box("fountain", "wall", [-23, 0.5, 0], [6, 1, 6], HALL_STONE)
+    m.box("fountain_water", "platform", [-23, 1.02, 0], [5, 0.04, 5], [0.16, 0.28, 0.38])
+    for i, (x, z) in enumerate(((-30, -8), (-18, -8), (-30, 0), (-18, 0), (-30, 8), (-18, 8))):
         m.prop(f"courtyard_tree_{i + 1}", TREES[i % len(TREES)], [x, 0, z], 37.0 * i, 3.5, poi="courtyard")
-    m.chest("courtyard_chest", [-27, 0, -42], "normal")
+    m.chest("courtyard_chest", [-30, 0, 6], "normal")
     m.anchor("courtyard", [-16, 0, 0], 90.0)
-    m.poi("courtyard", [-20, 0, 0], 25)
+    m.poi("courtyard", [-23, 0, 0], 14)
+    m.gate("west_wing_door", [-11.6, 1.75, 0], [0.5, 3.5, 4.4],
+           "The Archmage's wings are closed to novices.", "tutorial_done")
+    # The back of the close is a berm. Kenney rock stands in for the missing mesh.
+    m.box("back_berm", "wall", [-2, 3, -22], [64, 7, 4], ROCK, hidden=True)
+    for i, x in enumerate(range(-28, 30, 8)):
+        m.prop(f"back_rock_{i + 1}", "assets/kenney/fantasy-town-kit/rock-wide.glb", [x, 0, -22], 0.0, 2.4)
     return m
 
 

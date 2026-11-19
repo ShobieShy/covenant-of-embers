@@ -156,10 +156,12 @@ static func prepare(n: Node3D, id: String, use_cache := true) -> void:
 			n.remove_child(e)
 			e.free()
 	var nav := n.get_node_or_null("Navigation") as LevelNavigation
-	if nav and use_cache and ResourceLoader.exists(nav_cache(id)):
+	# A terrain close loads its tile cache in LevelNavigation._ready. The single
+	# interior mesh is only for a level that has no heightfield.
+	if nav and use_cache and n.get_node_or_null("Terrain") == null and ResourceLoader.exists(nav_cache(id)):
 		nav.bake_on_ready = false
 		nav.navigation_mesh = load(nav_cache(id)) as NavigationMesh
-	elif nav and use_cache:
+	elif nav and use_cache and n.get_node_or_null("Terrain") == null:
 		push_warning("Interiors: no nav cache for %s (run tools/bake_interior_nav.gd)" % id)
 
 

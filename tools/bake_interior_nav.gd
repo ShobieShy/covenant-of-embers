@@ -13,6 +13,10 @@ func _run() -> void:
 		if String(Interiors.LINKS[id]["scene"]) == "":
 			continue  # Labyrinth floors are built at runtime
 		var n := (load(GameFlow.level_scene(Interiors.LINKS[id]["scene"])) as PackedScene).instantiate() as Node3D
+		if n.get_node_or_null("Terrain") != null:
+			print("[interior_nav] %s uses the terrain tile cache" % id)
+			n.free()
+			continue
 		Interiors.prepare(n, id, false)
 		var nav := n.get_node_or_null("Navigation") as LevelNavigation
 		if nav == null:
