@@ -97,19 +97,19 @@ def town() -> tuple[set[str], str]:
 
 def hall() -> tuple[set[str], str]:
     hide = {"wall_north", "wall_south", "wall_west", "wall_east", "wall_west_s", "wall_east_s", "pillar_w1", "pillar_e1", "pillar_w2", "pillar_e2",
-            "pillar_w3", "pillar_e3"}
-    p = [wall_x("north_w", TOWN + "wall-window-stone.glb", -10, -2, -14.5, 6, 1),
-         wall_x("back_door", TOWN + "wall-door.glb", -2, 2, -14.5, 6, 1),
-         wall_x("north_e", TOWN + "wall-window-stone.glb", 2, 10, -14.5, 6, 1),
-         wall_x("south_w", TOWN + "wall.glb", -10, -2, 14.5, 6, 1, flip=True),
-         wall_x("front_door", TOWN + "wall-doorway-round.glb", -2, 2, 14.5, 6, 1, flip=True),
-         wall_x("south_e", TOWN + "wall.glb", 2, 10, 14.5, 6, 1, flip=True),
-         wall_z("west", TOWN + "wall-window-stone.glb", -14, -2.5, -9.5, 6, 1),  # step 159: wing doors
-         wall_z("west_s", TOWN + "wall-window-stone.glb", 2.5, 14, -9.5, 6, 1),
-         wall_z("west_door", TOWN + "wall-door.glb", -2, 2, -9.5, 6, 1),
-         wall_z("east", TOWN + "wall-window-stone.glb", -14, -2.5, 9.5, 6, 1, flip=True),
-         wall_z("east_s", TOWN + "wall-window-stone.glb", 2.5, 14, 9.5, 6, 1, flip=True),
-         wall_z("east_door", TOWN + "wall-door.glb", -2, 2, 9.5, 6, 1, flip=True)]
+            "pillar_w3", "pillar_e3", "back_berm"}
+    p = [wall_x("north_w", TOWN + "wall-window-stone.glb", -12, -2, -15.5, 6, 1),
+         wall_x("back_door", TOWN + "wall-door.glb", -2, 2, -15.5, 6, 1),
+         wall_x("north_e", TOWN + "wall-window-stone.glb", 2, 12, -15.5, 6, 1),
+         wall_x("south_w", TOWN + "wall.glb", -12, -2, 15.5, 6, 1, flip=True),
+         wall_x("front_door", TOWN + "wall-doorway-round.glb", -2, 2, 15.5, 6, 1, flip=True),
+         wall_x("south_e", TOWN + "wall.glb", 2, 12, 15.5, 6, 1, flip=True),
+         wall_z("west", TOWN + "wall-window-stone.glb", -16, -2.5, -11.5, 6, 1),
+         wall_z("west_s", TOWN + "wall-window-stone.glb", 2.5, 16, -11.5, 6, 1),
+         wall_z("west_door", TOWN + "wall-door.glb", -2, 2, -11.5, 6, 1),
+         wall_z("east", TOWN + "wall-window-stone.glb", -16, -2.5, 11.5, 6, 1, flip=True),
+         wall_z("east_s", TOWN + "wall-window-stone.glb", 2.5, 16, 11.5, 6, 1, flip=True),
+         wall_z("east_door", TOWN + "wall-door.glb", -2, 2, 11.5, 6, 1, flip=True)]
     for side, x in (("w", -5), ("e", 5)):
         p.append(prop(f"pillar_{side}", TOWN + "pillar-stone.glb", (x, 0, -8), 0.0, (6.25, 6, 6.25), 3, (0, 0, 6)))
         p.append(prop(f"arch_{side}", TOWN + "wall-arch-top-detail.glb", (x - 0.45 * 10, 4.5, -5), 0.0, (10, 1.5, 6), 2,
@@ -121,8 +121,8 @@ def hall() -> tuple[set[str], str]:
                       (9 + 0.38 * 3 - 0.05, 1.2, z), 180.0, 3))
     for i, x in enumerate((-3.6, 3.6)):
         p.append(prop(f"dais_lantern_{i + 1}", TOWN + "lantern.glb", (x, 0, -10), 0.0, 1.6))
-        p.append(prop(f"door_lantern_{i + 1}", TOWN + "lantern.glb", (x * 0.8, 0, 13.6), 0.0, 1.4))
-    p.append(prop("roof", TOWN + "roof-high-flat.glb", (0, 6, 0), 0.0, (20, 1, 30)))
+        p.append(prop(f"door_lantern_{i + 1}", TOWN + "lantern.glb", (x * 0.8, 0, 14.6), 0.0, 1.4))
+    p.append(prop("roof", TOWN + "roof-high-flat.glb", (0, 6, 0), 0.0, (24, 1, 32)))
     p.append(prop("dais_steps", TOWN + "stairs-wide-stone.glb", (0, 0, -7.85), 180.0, (6, 0.3, 0.3)))
     p += hall_dressing()
     return hide, "".join(p)
