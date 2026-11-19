@@ -30,6 +30,9 @@ const EDGE := 24.0  ## metres over which the zone edge rises to `rim`
 @export var layers: PackedStringArray = ["Grass004", "Rock030", "Gravel022"]
 @export var pads: Array[Rect2] = []
 @export var pad_y := -0.02
+## One height per pad, just under that ground box. Empty means every pad uses pad_y,
+## which is what a single-height close (the town) already shipped.
+@export var pad_heights: PackedFloat32Array = PackedFloat32Array()
 @export var blend := 14.0
 @export var build_on_ready := true
 
@@ -126,10 +129,28 @@ func edge_distance(x: float, z: float) -> float:
 	return minf(minf(x - (center.x - h.x), center.x + h.x - x), minf(z - (center.y - h.y), center.y + h.y - z))
 
 
+## The flat height under (x, z): the nearest pad's own height, or pad_y when the
+## level has one height for every pad.
+func _base_height(x: float, z: float) -> float:
+	if pad_heights.is_empty() or pad_heights.size() != pads.size():
+		return pad_y
+	var best_d := INF
+	var best_h := pad_y
+	for i in pads.size():
+		var r := pads[i]
+		var dx := maxf(maxf(r.position.x - x, x - r.end.x), 0.0)
+		var dz := maxf(maxf(r.position.y - z, z - r.end.y), 0.0)
+		var d := sqrt(dx * dx + dz * dz)
+		if d < best_d:
+			best_d = d
+			best_h = pad_heights[i]
+	return best_h
+
+
 func height_at(x: float, z: float) -> float:
 	var hill := (noise().get_noise_2d(x, z) * 0.5 + 0.5) * height
 	var t := clampf(pad_distance(x, z) / blend, 0.0, 1.0)
-	var h := pad_y + hill * t * t * (3.0 - 2.0 * t)
+	var h := _base_height(x, z) + hill * t * t * (3.0 - 2.0 * t)
 	# A pad is a street or a square. The rim cliff stays beside it, not on it,
 	# so a gate road can reach the zone edge and stay flat.
 	if pad_distance(x, z) <= 0.0:

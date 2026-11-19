@@ -17,7 +17,9 @@ func _ray(level: Node3D, a: Vector3, b: Vector3) -> Dictionary:
 
 func test_areas_run_south_to_north_and_the_filth_is_last() -> void:
 	var level := _level()
-	check(level.get_node_or_null("Terrain") == null, "closed level, no terrain")
+	check(level.get_node_or_null("Terrain") != null, "the valley has terrain")
+	check(level.get_node_or_null("Boxes/berm_w") != null, "a berm closes the west side")
+	check(level.get_node_or_null("Boxes/heap_w1") == null, "the old heap ring is gone")
 	check(String(level.get_meta("level_name", "")) == "The Landfill", "keeps its name")
 	var start := (level.get_node("PlayerStart") as Node3D).position
 	var compactor := (level.get_node("Boxes/compactor") as Node3D).position

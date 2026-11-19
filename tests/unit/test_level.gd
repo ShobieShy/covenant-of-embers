@@ -60,7 +60,7 @@ func test_boxes_match_toml() -> void:
 		var k: String = n.get_meta("kind", "")
 		got[k] = int(got.get(k, 0)) + 1
 	check(want == got, "kind counts: TOML %s scene %s" % [want, got])
-	check(int(want.get("wall", 0)) == 0, "the valley has no slate barrier ring")
+	check(int(want.get("wall", 0)) == 4, "berms, the ridge, and the rock cut close the valley")
 	check(int(want.get("heap", 0)) >= 8 and int(want.get("ground", 0)) >= 3, "heaps and three floors: %s" % want)
 	check(int(want.get("ramp", 0)) >= 4 and int(want.get("platform", 0)) >= 1, "ramps and the scrap ledge: %s" % want)
 	for i in boxes.size():
@@ -248,9 +248,9 @@ func test_walls_and_open_sky() -> void:
 	check(gap.is_empty() or gap["collider"] is FlagGate, "the entry lane south stays open")
 	var side := _ray(level, Vector3(0, 1.5, 16), Vector3(20, 1.5, 16))
 	var side_name := "" if side.is_empty() else String((side["collider"] as Node).name)
-	check(side_name.begins_with("heap_"), "a trash wall closes the east (%s)" % side_name)
+	check(side_name == "berm_e", "a berm closes the east (%s)" % side_name)
 	var cap := _ray(level, Vector3(0, 1.5, 20), Vector3(0, 1.5, 40))
-	check(not cap.is_empty() and (cap["collider"] as Node).name == "south_cap", "the south lip is closed")
+	check(not cap.is_empty() and (cap["collider"] as Node).name == "ridge", "the south ridge is closed")
 	level.free()
 
 

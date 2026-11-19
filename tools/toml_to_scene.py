@@ -531,7 +531,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     return out
 
 
-TERRAIN_KEYS = {"size", "center", "height", "seed", "spacing", "rim", "map_version", "layers", "pad_margin", "blend"}
+TERRAIN_KEYS = {"size", "center", "height", "seed", "spacing", "rim", "map_version", "layers", "pad_margin", "blend", "stepped", "pad_y"}
 
 
 def _num(t: dict, k: str, default: float, lo: float, hi: float) -> float:
@@ -570,12 +570,17 @@ def _terrain(t: dict, boxes: list[dict]) -> dict:
             raise LevelError(f"[terrain] layer {x}: no assets/original/ember_art/terrain/{x}_albedo_height.png "
                              f"or assets/ambientcg/{x}/terrain_alb_ht.png")
     margin = _num(t, "pad_margin", 2.0, 0.0, 64.0)
+    stepped = bool(t.get("stepped", False))
     pads = []
+    pad_heights = []
     for b in boxes:
         if b["kind"] != "ground":
             continue
         hx, hz = b["size"][0] / 2 + margin, b["size"][2] / 2 + margin
         pads.append([b["center"][0] - hx, b["center"][2] - hz, 2 * hx, 2 * hz])
+        # Just under the box top, so the greybox stays the floor and the heightfield
+        # does not fill a lower pad (the bowl) up to the yard.
+        pad_heights.append(round(b["center"][1] + b["size"][1] * 0.5 - 0.05, 3))
         for c in (b["center"][0] - hx, b["center"][0] + hx):
             for z in (b["center"][2] - hz, b["center"][2] + hz):
                 if not (abs(c - center[0]) < size[0] / 2 - 4 and abs(z - center[1]) < size[1] / 2 - 4):
@@ -589,7 +594,8 @@ def _terrain(t: dict, boxes: list[dict]) -> dict:
     return {"size": size, "center": center, "height": _num(t, "height", 10.0, 0.0, 120.0), "seed": seed,
             "spacing": _num(t, "spacing", 1.0, 0.25, 4.0), "rim": _num(t, "rim", 16.0, 0.0, 80.0),
             "blend": _num(t, "blend", 14.0, 1.0, 100.0), "map_version": mv, "layers": [str(x) for x in layers],
-            "pads": pads}
+            "pads": pads, "pad_heights": pad_heights if stepped else [],
+            "pad_y": _num(t, "pad_y", -0.02, -40.0, 40.0)}
 
 
 # ---------------------------------------------------------------- .tscn writer
@@ -761,7 +767,10 @@ def to_tscn(lv: dict, source: str) -> str:
                      f'height = {_f(tr["height"])}\nnoise_seed = {tr["seed"]}\nspacing = {_f(tr["spacing"])}\n'
                      f'rim = {_f(tr["rim"])}\nmap_version = {tr["map_version"]}\n'
                      f'layers = PackedStringArray({layers})\npads = Array[Rect2]([{pads}])\n'
-                     f'blend = {_f(tr["blend"])}\n')
+                     + (f'pad_heights = PackedFloat32Array({", ".join(_f(h) for h in tr["pad_heights"])})\n'
+                        if tr.get("pad_heights") else "")
+                     + (f'pad_y = {_f(tr["pad_y"])}\n' if abs(tr["pad_y"] + 0.02) > 0.001 else "")
+                     + f'blend = {_f(tr["blend"])}\n')
     scenes: dict[str, str] = {}
     if any(not pr["poi"] for pr in lv["props"]):
         nodes.append('[node name="Props" type="Node3D" parent="."]\n')
@@ -899,9 +908,9 @@ def self_test() -> int:
     good = re.sub(r"# ---- EXPAND_BEGIN.*?EXPAND_END[^\n]*\n", "", good, flags=re.S)
     lv = parse_level(good)
     names = {b["name"] for b in lv["boxes"]}
-    for need in ("ground", "compactor", "scrap_ledge", "basin_ramp", "bowl_floor", "road_floor"):
+    for need in ("ground", "compactor", "scrap_ledge", "basin_ramp", "bowl_floor", "road_floor", "berm_w", "ridge", "rock_cut"):
         assert need in names, need
-    assert not any(b["kind"] == "wall" for b in lv["boxes"])
+    assert "heap_w1" not in names and "south_cap" not in names
     assert sum(b["kind"] == "heap" for b in lv["boxes"]) >= 8
     assert lv["materials"]["wall"] == "assets/ambientcg/Rock030", lv["materials"]
     tscn = to_tscn(lv, "self-test")
@@ -1009,7 +1018,8 @@ def self_test() -> int:
         else:
             raise AssertionError(f"expected error: {msg}")
     # Step 152: [terrain] -> a TerrainZone node with one pad per ground box.
-    tz = parse_level(good + '\n[terrain]\nsize = [400, 400]\nheight = 12\nseed = 7\n')
+    bare = re.sub(r"\n\[terrain\]\n.*?\n(?=# )", "\n", good, count=1, flags=re.S)
+    tz = parse_level(bare + '\n[terrain]\nsize = [400, 400]\nheight = 12\nseed = 7\n')
     assert tz["terrain"]["pads"] and tz["terrain"]["seed"] == 7, tz["terrain"]
     sc = to_tscn(tz, "x.toml")
     assert 'script = ExtResource("1_terrain")' in sc and "pads = Array[Rect2]([Rect2(" in sc
@@ -1017,7 +1027,7 @@ def self_test() -> int:
     for bad, msg in (('size = [10, 10]', "size must be"), ('size = [400, 400]\nlayers = ["Nope"]', "layer Nope"),
                      ('size = [400, 400]\nwhat = 1', "unknown"), ('size = [40, 40]', "4 m inside")):
         try:
-            parse_level(good + "\n[terrain]\n" + bad + "\n")
+            parse_level(bare + "\n[terrain]\n" + bad + "\n")
         except LevelError as e:
             assert msg in str(e), (msg, str(e))
         else:

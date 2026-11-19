@@ -5,7 +5,7 @@ extends TestCase
 
 func test_landfill_layout() -> void:
 	var lvl := (load("res://scenes/levels/midden.tscn") as PackedScene).instantiate()
-	check(lvl.get_node_or_null("Terrain") == null, "the Landfill is a closed level")
+	check(lvl.get_node_or_null("Terrain") != null, "the Landfill is a terrain valley")
 	check(String(lvl.get_meta("level_name", "")) == "The Landfill", "its own name")
 	check(lvl.get_node_or_null("Waystones/landfill") != null, "Landfill waystone")
 	check(lvl.get_node_or_null("Exits/to_town") != null, "road back to town")

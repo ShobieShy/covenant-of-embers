@@ -1,4 +1,9 @@
-# The Landfill (formerly "The Ashen Midden", Q25) - greybox arena (old C++ BUILD_PLAN step 12; Godot BUILD_PLAN step 2).
+# The Landfill, 0.10.1. A valley 48 m wide and 150 m long. The yard stays at
+# y 0. The bowl and the north road stay at y -2. Berms close both sides.
+# A ridge holds the town gate. A rock cut holds the Breach gate.
+# Kenney rocks stand in for the Ember Art berm mesh. The tutorial band,
+# Joe, the Filth, the waystone, and the intro anchors stay put.
+# (formerly "The Ashen Midden", Q25)
 # Source of truth for scenes/levels/midden.tscn: edit here, then run tools/toml_to_scene.py
 # (tools/run_tests.sh fails while the scene is stale). Also read by scripts/world/level_toml.gd.
 #
@@ -47,13 +52,24 @@ color = [0.85, 0.78, 0.57]          # Magewar light_color (0.6, 0.55, 0.4) hue
 position = [0.0, 0.0, 12.5]
 yaw_deg = 0.0                       # facing north (-Z); pitch starts level
 
+[terrain]
+size = [48, 150]
+center = [0, -16]
+height = 6
+seed = 101
+rim = 8
+blend = 10
+pad_y = -2.05
+layers = ["Ground037", "Rock030"]
+
+
 # --- floors. Upper trench top is y 0 (the tutorial band). The bowl and the road drop to y -2. ---
 # ground: z -20..34, x -11..11. Player start (0, 0, 12.5) and the lesson spots sit on it.
 [[box]]
 name = "ground"
 kind = "ground"
 center = [0.0, -1.0, 7.0]
-size = [22.0, 2.0, 54.0]
+size = [28.0, 2.0, 54.0]
 color = [0.36, 0.30, 0.22]
 
 # bowl_floor: z -50..-16, x -12..12, top y -2. Runs under the trench lip so a step off lands in the bowl.
@@ -61,7 +77,7 @@ color = [0.36, 0.30, 0.22]
 name = "bowl_floor"
 kind = "ground"
 center = [0.0, -3.0, -33.0]
-size = [24.0, 2.0, 34.0]
+size = [28.0, 2.0, 34.0]
 color = [0.30, 0.28, 0.20]
 
 # road_floor: z -66..-48, x -4..4, top y -2. Empty road north of the bowl.
@@ -69,131 +85,39 @@ color = [0.30, 0.28, 0.20]
 name = "road_floor"
 kind = "ground"
 center = [0.0, -3.0, -57.0]
-size = [8.0, 2.0, 18.0]
+size = [28.0, 2.0, 18.0]
 color = [0.30, 0.28, 0.20]
 
 # --- trash walls. Heaps, not a slate ring. Inner face stays outside x ±10 on the upper trench. ---
 [[box]]
-name = "heap_w1"
-kind = "heap"
-center = [-13.2, 2.6, 26.0]
-size = [5.6, 5.2, 9.0]
-rotation_deg = [0.0, 6.0, 0.0]
-color = [0.36, 0.31, 0.26]
-
+name = "berm_w"
+kind = "wall"
+center = [-17.0, 1.5, -16.0]
+size = [6.0, 7.0, 100.0]
+color = [0.32, 0.28, 0.22]
+hidden = true
 [[box]]
-name = "heap_e1"
-kind = "heap"
-center = [13.2, 3.3, 26.0]
-size = [5.6, 6.6, 9.0]
-rotation_deg = [0.0, -8.0, 0.0]
-color = [0.30, 0.33, 0.20]
-
+name = "berm_e"
+kind = "wall"
+center = [17.0, 1.5, -16.0]
+size = [6.0, 7.0, 100.0]
+color = [0.32, 0.28, 0.22]
+hidden = true
 [[box]]
-name = "heap_w2"
-kind = "heap"
-center = [-13.2, 3.3, 18.0]
-size = [5.6, 6.6, 9.0]
-rotation_deg = [0.0, -5.0, 0.0]
-color = [0.30, 0.33, 0.20]
-
+name = "ridge"
+kind = "wall"
+center = [0.0, 3.0, 36.0]
+size = [40.0, 8.0, 4.0]
+color = [0.34, 0.30, 0.24]
+hidden = true
 [[box]]
-name = "heap_e2"
-kind = "heap"
-center = [13.2, 2.4, 18.0]
-size = [5.6, 4.8, 9.0]
-rotation_deg = [0.0, 7.0, 0.0]
-color = [0.36, 0.31, 0.26]
+name = "rock_cut"
+kind = "wall"
+center = [0.0, 1.0, -68.0]
+size = [40.0, 8.0, 4.0]
+color = [0.34, 0.30, 0.24]
+hidden = true
 
-[[box]]
-name = "heap_w3"
-kind = "heap"
-center = [-13.2, 2.4, 10.0]
-size = [5.6, 4.8, 9.0]
-rotation_deg = [0.0, 4.0, 0.0]
-color = [0.36, 0.31, 0.26]
-
-[[box]]
-name = "heap_e3"
-kind = "heap"
-center = [13.2, 3.6, 10.0]
-size = [5.6, 7.2, 9.0]
-rotation_deg = [0.0, -4.0, 0.0]
-color = [0.30, 0.33, 0.20]
-
-[[box]]
-name = "heap_w4"
-kind = "heap"
-center = [-13.2, 3.6, 3.0]
-size = [5.6, 7.2, 9.0]
-rotation_deg = [0.0, -6.0, 0.0]
-color = [0.30, 0.33, 0.20]
-
-[[box]]
-name = "heap_e4"
-kind = "heap"
-center = [13.2, 2.8, 3.0]
-size = [5.6, 5.6, 9.0]
-rotation_deg = [0.0, 5.0, 0.0]
-color = [0.36, 0.31, 0.26]
-
-[[box]]
-name = "heap_w5"
-kind = "heap"
-center = [-13.2, 2.8, -4.0]
-size = [5.6, 5.6, 9.0]
-rotation_deg = [0.0, 8.0, 0.0]
-color = [0.30, 0.33, 0.20]
-
-[[box]]
-name = "heap_e5"
-kind = "heap"
-center = [13.2, 3.2, -4.0]
-size = [5.6, 6.4, 9.0]
-rotation_deg = [0.0, -7.0, 0.0]
-color = [0.28, 0.32, 0.18]
-
-[[box]]
-name = "heap_w6"
-kind = "heap"
-center = [-13.2, 3.2, -12.0]
-size = [5.6, 6.4, 9.0]
-rotation_deg = [0.0, -4.0, 0.0]
-color = [0.28, 0.32, 0.18]
-
-[[box]]
-name = "heap_e6"
-kind = "heap"
-center = [13.2, 2.5, -12.0]
-size = [5.6, 5.0, 9.0]
-rotation_deg = [0.0, 6.0, 0.0]
-color = [0.30, 0.33, 0.20]
-
-[[box]]
-name = "heap_w7"
-kind = "heap"
-center = [-13.2, 2.5, -18.0]
-size = [5.6, 5.0, 9.0]
-rotation_deg = [0.0, 3.0, 0.0]
-color = [0.36, 0.31, 0.26]
-
-[[box]]
-name = "heap_e7"
-kind = "heap"
-center = [13.2, 3.1, -18.0]
-size = [5.6, 6.2, 9.0]
-rotation_deg = [0.0, -3.0, 0.0]
-color = [0.28, 0.32, 0.18]
-
-# South lip, past the town gate. Closes the trench; the lane itself stays open back to z 30.
-[[box]]
-name = "south_cap"
-kind = "heap"
-center = [0.0, 2.4, 33.2]
-size = [24.0, 4.8, 1.6]
-color = [0.36, 0.31, 0.26]
-
-# Entry dump piles, off the centre lane.
 [[box]]
 name = "entry_pile_w"
 kind = "heap"
@@ -355,103 +279,6 @@ size = [4.2, 1.4, 4.2]
 rotation_deg = [0.0, 18.0, 0.0]
 color = [0.28, 0.32, 0.18]
 
-[[box]]
-name = "bowl_w1"
-kind = "heap"
-center = [-14.8, 1.25, -30.0]
-size = [6.4, 6.5, 10.0]
-color = [0.28, 0.32, 0.18]
-
-[[box]]
-name = "bowl_e1"
-kind = "heap"
-center = [14.8, 1.55, -30.0]
-size = [6.4, 7.1, 10.0]
-color = [0.30, 0.33, 0.20]
-
-[[box]]
-name = "bowl_w2"
-kind = "heap"
-center = [-14.8, 1.55, -38.0]
-size = [6.4, 7.1, 10.0]
-color = [0.30, 0.33, 0.20]
-
-[[box]]
-name = "bowl_e2"
-kind = "heap"
-center = [14.8, 1.25, -38.0]
-size = [6.4, 6.5, 10.0]
-color = [0.28, 0.32, 0.18]
-
-[[box]]
-name = "bowl_w3"
-kind = "heap"
-center = [-14.8, 1.4, -46.0]
-size = [6.4, 6.8, 10.0]
-color = [0.28, 0.32, 0.18]
-
-[[box]]
-name = "bowl_e3"
-kind = "heap"
-center = [14.8, 1.4, -46.0]
-size = [6.4, 6.8, 10.0]
-color = [0.30, 0.33, 0.20]
-
-# North lip of the bowl, split around the road (gap about x -3..3).
-[[box]]
-name = "bowl_north_w"
-kind = "heap"
-center = [-8.0, 1.2, -49.2]
-size = [10.0, 6.4, 3.0]
-color = [0.28, 0.32, 0.18]
-
-[[box]]
-name = "bowl_north_e"
-kind = "heap"
-center = [8.0, 1.2, -49.2]
-size = [10.0, 6.4, 3.0]
-color = [0.28, 0.32, 0.18]
-
-# Road walls and the end cap. No enemies live past the bowl.
-[[box]]
-name = "road_w1"
-kind = "heap"
-center = [-6.4, 0.5, -54.0]
-size = [5.2, 5.0, 8.0]
-color = [0.36, 0.31, 0.26]
-
-[[box]]
-name = "road_e1"
-kind = "heap"
-center = [6.4, 0.5, -54.0]
-size = [5.2, 5.0, 8.0]
-color = [0.30, 0.33, 0.20]
-
-[[box]]
-name = "road_w2"
-kind = "heap"
-center = [-6.4, 0.7, -61.0]
-size = [5.2, 5.4, 8.0]
-color = [0.30, 0.33, 0.20]
-
-[[box]]
-name = "road_e2"
-kind = "heap"
-center = [6.4, 0.7, -61.0]
-size = [5.2, 5.4, 8.0]
-color = [0.36, 0.31, 0.26]
-
-[[box]]
-name = "road_cap"
-kind = "heap"
-center = [0.0, 0.5, -64.8]
-size = [12.0, 5.0, 2.2]
-color = [0.36, 0.31, 0.26]
-
-# Dummies stand in the compactor, off the centre lane. They never chase.
-# The Gnawer waits in the rot, north of the lesson walls, outside 8 m of the shrines.
-# The Heap waits where the scrap climb meets the basin, before the bowl. Both are
-# south of the Filth. Feet sit on a box top.
 [[enemy]]
 enemy = "earth_training_dummy"
 position = [-3.0, 0.0, 6.0]
@@ -523,6 +350,46 @@ position = [0.0, 0.0, 30.5]
 point = "landfill"
 position = [5.5, 0.0, 15.0]
 yaw_deg = 0.0
+
+[[anchor]]
+name = "yard_gnawer_0"
+position = [-8.0, 0.0, 10.5]
+
+[[anchor]]
+name = "yard_gnawer_1"
+position = [8.0, 0.0, 10.5]
+
+[[anchor]]
+name = "yard_gnawer_2"
+position = [-4.0, 0.0, 10.0]
+
+[[anchor]]
+name = "joe_bench"
+position = [5.0, 0.0, 7.0]
+
+[[anchor]]
+name = "joe_camp"
+position = [7.0, 0.0, 7.5]
+
+[[anchor]]
+name = "light_shrine"
+position = [-5.0, 0.0, 4.0]
+
+[[anchor]]
+name = "dark_shrine"
+position = [5.0, 0.0, 4.0]
+
+[[anchor]]
+name = "yard_wall"
+position = [0.0, 0.0, 9.0]
+
+[[anchor]]
+name = "junk_wall"
+position = [0.0, 0.0, 5.5]
+
+[[anchor]]
+name = "arena_wall"
+position = [0.0, 0.0, 2.5]
 
 # ---- EXPAND_BEGIN (generated by tools/expand_maps.py; edit that, not this) ----
 # ---- EXPAND_END ----
@@ -654,44 +521,175 @@ model = "assets/quaternius/enemies/props/Can_Broken.glb"
 position = [2.6, -2.0, -57.0]
 rotation_deg = [0.0, 90.0, 0.0]
 scale = 2.42
-
-# Intro spots. The constants in IntroDirector stay as the fallback.
-[[anchor]]
-name = "yard_gnawer_0"
-position = [-8.0, 0.0, 10.5]
-
-[[anchor]]
-name = "yard_gnawer_1"
-position = [8.0, 0.0, 10.5]
-
-[[anchor]]
-name = "yard_gnawer_2"
-position = [-4.0, 0.0, 10.0]
-
-[[anchor]]
-name = "joe_bench"
-position = [5.0, 0.0, 7.0]
-
-[[anchor]]
-name = "joe_camp"
-position = [7.0, 0.0, 7.5]
-
-[[anchor]]
-name = "light_shrine"
-position = [-5.0, 0.0, 4.0]
-
-[[anchor]]
-name = "dark_shrine"
-position = [5.0, 0.0, 4.0]
-
-[[anchor]]
-name = "yard_wall"
-position = [0.0, 0.0, 9.0]
-
-[[anchor]]
-name = "junk_wall"
-position = [0.0, 0.0, 5.5]
-
-[[anchor]]
-name = "arena_wall"
-position = [0.0, 0.0, 2.5]
+[[prop]]
+name = "berm_rock_w1"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, -2.0, -64.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e1"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, -2.0, -64.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w2"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, -2.0, -56.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e2"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, -2.0, -56.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w3"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, -2.0, -48.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e3"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, -2.0, -48.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w4"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, -2.0, -40.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e4"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, -2.0, -40.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w5"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, -2.0, -32.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e5"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, -2.0, -32.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w6"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, -2.0, -24.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e6"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, -2.0, -24.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w7"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, 0.0, -16.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e7"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, 0.0, -16.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w8"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, 0.0, -8.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e8"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, 0.0, -8.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w9"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, 0.0, 0.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e9"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, 0.0, 0.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w10"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, 0.0, 8.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e10"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, 0.0, 8.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w11"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, 0.0, 16.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e11"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, 0.0, 16.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w12"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, 0.0, 24.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e12"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, 0.0, 24.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_w13"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-16.0, 0.0, 32.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "berm_rock_e13"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [16.0, 0.0, 32.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4, 6, 4]
+[[prop]]
+name = "ridge_rocks"
+model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
+position = [-12.0, 0.0, 36.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [6, 6, 4]
+count = 5
+step = [6, 0, 0]
+[[prop]]
+name = "cut_rocks"
+model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
+position = [-12.0, -2.0, -68.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [6, 6, 4]
+count = 5
+step = [6, 0, 0]
