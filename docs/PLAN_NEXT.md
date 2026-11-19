@@ -2,7 +2,7 @@
 
 Planning only. Written 19 Nov 2026 against master `7daafd1884de80c93d5818f4500c071115535c53`. That commit is also the tag `v0.9.4-prealpha`. The in-game string is `0.9.4-prealpha`. Co-op protocol is 6. Save version is 1.
 
-This file replaces the version table that used to live here. That table, approved 5 Nov 2026, called 0.10.0 Act V. [PLAN_LEVEL_REMAKE.md](PLAN_LEVEL_REMAKE.md) later assigned 0.10.0, 0.10.1, and 0.10.2 to the Town, the Landfill, and the Association. The queued work and this request use the remake numbers. Act V moves to 0.11.0 unless ShobieShy picks a different answer in the decisions at the end.
+This file replaces the version table that used to live here. That table, approved 5 Nov 2026, called 0.10.0 Act V. [PLAN_LEVEL_REMAKE.md](PLAN_LEVEL_REMAKE.md) later assigned 0.10.0, 0.10.1, and 0.10.2 to the Town, the Landfill, and the Association. ShobieShy confirmed that order on 19 Nov 2026. Act V is 0.11.0. The twelve calls at the end are decided. Nothing in this update is implemented yet.
 
 The version scheme from 5 Nov 2026 still holds, and it is repeated in [PLAN_0.8.0_SLAGWORKS.md](PLAN_0.8.0_SLAGWORKS.md).
 
@@ -27,7 +27,7 @@ Status is against master `7daafd1` / v0.9.4-prealpha.
 | Association remake, 64×56 close, hall 24×32, library 18×22, courtyard 22×24, wings removed | Missing | PLAN_LEVEL_REMAKE defaults 9 |
 | Landfill / Filth bowl, three slabs about 24×100 | Shipped greybox (`midden_greybox`) | `data/levels/midden_greybox.toml` |
 | Landfill remake, 48×150 valley, berms, north rock cut, south ridge | Missing | PLAN_LEVEL_REMAKE defaults 8 |
-| Old Oak / Great Oak, both names | Shipped. Hollow, Bob, station. No tree-top lab, no potion garden | Bible "The Great Oak" marks the lab **Open**; `data/levels/old_oak.toml` |
+| Old Oak / Great Oak, both names | Shipped hollow, Bob, and station. The tree-top lab is decided for 0.10.3. The potion garden stays a few pots in that room, not a new yard. The rest of the tree stays | Bible "The Great Oak"; decision 8 |
 | The Breach crater and the Warden | Shipped greybox slice | `data/levels/breach_slice.toml`; boss `breach_warden` |
 | One shaft, not five separate dungeon trips | Shipped as the labyrinth entered from the Breach | `scripts/core/main.gd` loads floors inside the Breach; storyline "The Breach" |
 | Kill plane under every level, last waystone or spawn, loot and gold kept, only the fallen player moves | Shipped in 0.9.3, joiner line stored on the level in 0.9.4 | `scripts/player/kill_plane.gd`; [CHANGELOG_0.9.3.md](release/CHANGELOG_0.9.3.md), [CHANGELOG_0.9.4.md](release/CHANGELOG_0.9.4.md) |
@@ -67,7 +67,7 @@ Status is against master `7daafd1` / v0.9.4-prealpha.
 | Act II, Blightcoil, floors 6–8, Matriarch, empty cocoon | Shipped | `scripts/labyrinth/blightcoil_cavern.gd` |
 | Act III, Slagworks, floors 9–13, Forgemaw, empty slag cast | Shipped | `scripts/labyrinth/slagworks_floor.gd` |
 | Act IV, Sunken Ruins, floors 14–18, Gallery / Pocket / Murals / Spire / Nave | Shipped | `scripts/labyrinth/sunken_floor.gd` |
-| Drowned Choir as many singers | Contradicts. The story wants a crowd. The fight is one body, surfaced then submerged | `scripts/enemies/drowned_choir.gd`; storyline Act IV; bible "Tone and style" |
+| Drowned Choir as many singers | Contradicts, and the one body stays for now. The story still wants a crowd later. Do not rebuild it in 0.10.x or 0.11.0 | `scripts/enemies/drowned_choir.gd`; decision 7 |
 | Hymn-shards, cult name, dry-prophet lines | Missing. **Open** | Storyline Act IV |
 | Empty coral sarcophagus | Shipped as the end prop. The walker is unnamed, which matches the docs | Storyline Act IV |
 | Quest "The Sunken Ruins" | Shipped in 0.9.2. The bible's quest table, frozen at v0.9.0, still says Act IV has no entry | `data/story/quests.toml` `the_sunken_ruins` |
@@ -107,11 +107,11 @@ Status is against master `7daafd1` / v0.9.4-prealpha.
 | Rarities through Unique, no separate legendary tier | Shipped | Bible "Rarities" |
 | Assembly station in the tree; Runesmith rerolls, does not build | Shipped | Bible "Building a weapon" |
 | Catch-up XP, +25% per level behind, capped at double | Shipped as Resolve. This is not `Vigil.xp_mult` | `scripts/player/progression.gd` `resolve_multiplier` |
-| `Vigil.xp_mult` (+10% XP per tier) | Missing from play. The function exists and nothing in a run calls it | `scripts/loot/vigil.gd`; `scripts/player/xp_rewarder.gd` uses a flat `xp_multiplier` of 1 |
+| `Vigil.xp_mult` (+10% XP per tier) | Left unwired on purpose. Quick win 12 is closed as "leave" | `scripts/loot/vigil.gd`; decision 2 |
 | Second Wind, crouch-jump, loot magnet, compare card | Shipped | Bible "How a minute of play feels" |
 | Death window, revive, waystone return, gold kept | Shipped. A fall uses the kill plane and skips the window | Bible "Death"; `kill_plane.gd` |
 | Co-op, 1–4 players, host authority, +60% enemy health per extra player, own loot | Shipped. Protocol 6 | `scripts/net/net_session.gd`; `scripts/net/coop_world.gd` |
-| Music | Missing. Buses exist. No tracks. Cues no-op when the file is absent | `scripts/audio/game_audio.gd`; bible "Open" list |
+| Music | Stays silent until a track exists. Do not block a version on it | `scripts/audio/game_audio.gd`; decision 6 |
 
 ### After the story
 
@@ -129,12 +129,12 @@ Status is against master `7daafd1` / v0.9.4-prealpha.
 
 | Disagreement | Which side wins |
 |---|---|
-| This file used to set 0.10.0 as Act V. PLAN_LEVEL_REMAKE sets 0.10.0–0.10.2 as Town, Landfill, Association | The remake plan wins for those three numbers. It is the later approved default, and it is the work already queued. Act V is the next minor after that, proposed here as 0.11.0. ShobieShy can override that in decision 1 |
+| This file used to set 0.10.0 as Act V. PLAN_LEVEL_REMAKE sets 0.10.0–0.10.2 as Town, Landfill, Association | Decided. The remake numbers win. Act V is 0.11.0 |
 | Bible and storyline say "not in v0.9.0" for the Auto-Scribe handoff, the Sunken quest, the kill-plane death rule, and several 0.8.x gear lines | The game wins for what you can play. Those sentences are stale, not design changes. A later docs pass should say 0.9.4. Do not treat them as open features |
 | Map legend says Act V is not in the v0.9.2 build | Still true at 0.9.4. The version number in that sentence is stale. The label *planned* is right |
-| Storyline and bible: the Choir is many singers. The fight is one body, two phases | The docs win as the target. The one body is a known build gap, not a retcon. Do not change it inside a remake PR |
+| Storyline and bible: the Choir is many singers. The fight is one body, two phases | The docs stay the later target. ShobieShy decided the one body stays for now. Do not change it in 0.10.x or 0.11.0 |
 | Bible: on-screen "Abyss" and "Endless Descent" should become Forgotten Abyss and Endless Descent | The bible wins when those modes are actually on a menu. Until then the code's `Descent` names are internal. Not a story fight |
-| Bible: Covenant Escalation is a dial you set after Forgemaw, and it adds 10% experience per tier | The dial and the XP are not in a run. `Vigil.xp_mult` is the 10% function and it is unwired. The health and damage curves in `PostClear` do run. Docs win for the missing dial. Whether XP uses `Vigil.xp_mult` is decision 2, because quick win 12 was left for ShobieShy |
+| Bible: Covenant Escalation is a dial you set after Forgemaw, and it adds 10% experience per tier | The dial is still missing. Health and damage in `PostClear` do run. ShobieShy left `Vigil.xp_mult` unwired, so the 10% XP line waits with the dial. Do not wire it in these versions |
 | Bible: a normal kill does not drop a shield, flask, relic, or deep-gear piece until the rate is set | The code matches (`chance := 0.0`). No contradiction |
 | Storyline: the five depths should feel like one descent. The build offers Railhead only after both the King and the Matriarch are dead, and each act is its own stretch | The build matches what v0.9.0 shipped. The "one walk" is the story's shape, not a bug in the gate. Leave it until Act V forces a throat |
 | `EchoMenu` is the class name. The title the player reads is Auto-Scribe™ | The player-facing name wins. Renaming the class is optional cleanup, not a feature |
@@ -151,8 +151,9 @@ Story calls that stay **Open**, with no recommended winner:
 - The blacksmith and the bard.
 - Whether any of Joe's earlier summonings left a rival.
 - DLC town names, level minimums, and whether a DLC has its own lord.
-- Bob's laboratory and the potion garden as rooms.
 - The Sylvandar escort and the merchant's expedition as missions.
+
+Bob's laboratory is no longer open. It is 0.10.3. The potion garden is a few pots in that room, not a new outdoor plot. The rest of the Old Oak stays.
 
 Proposed lines in the bible (the crystal's insult is the Demon Lord's block; Breach-fire is his heat) stay proposed. They are not in dialogue. Do not write them into a level until ShobieShy accepts them.
 
@@ -167,16 +168,14 @@ Not started as geometry. Master is still the greyboxes in section 1. What did la
 - Terrain layers a level does not name stay out of the export, so the remake textures can exist on disk without shipping in 0.9.4.
 - Intro spots for the hall and the landfill are anchors, with the old constants as the fallback (`mage_association.toml`, `midden_greybox.toml`). Moving a pad later does not require a new constant.
 
-Old Oak, the Breach, and the labyrinth floors are out of this remake, except for the kill plane they already have. Ember Art's mesh list is the three tables in [PLAN_LEVEL_REMAKE.md](PLAN_LEVEL_REMAKE.md). Kenney and Quaternius stay until the mesh for that row exists.
+Old Oak's exterior, the Breach, and the labyrinth floors are out of the three remakes, except for the kill plane they already have. The lab is a later 0.10.3 interior. Ember Art's mesh list is the three tables in [PLAN_LEVEL_REMAKE.md](PLAN_LEVEL_REMAKE.md). If those cliff meshes are not in the tree, the remake ships Kenney cliffs and swaps them later. Kenney and Quaternius stay for every other slot the same way.
 
 ### Quick win 12
 
-Still waiting on ShobieShy. Not done.
+Closed as "leave." Do not wire it in these versions.
 
-- `Vigil.xp_mult` in `scripts/loot/vigil.gd` returns `1 + 0.10 * tier`. No gameplay XP path reads it. Catch-up XP is a different system (Resolve).
-- `CoopWorld.apply_void_on_player` in `scripts/net/coop_world.gd` has no caller. A joiner who falls is moved by `player.apply_void` from `_on_void`.
-
-Wiring them changes Escalation rewards and the fall path. Removing them deletes code the bible's tuning paragraph describes. Either choice is a behavior change, so it stayed out of 0.9.4.
+- `Vigil.xp_mult` in `scripts/loot/vigil.gd` returns `1 + 0.10 * tier`. No gameplay XP path reads it. Catch-up XP stays Resolve.
+- `CoopWorld.apply_void_on_player` in `scripts/net/coop_world.gd` has no caller. A joiner who falls stays on `player.apply_void` from `_on_void`.
 
 ### Dropped co-op hits (55 of 68)
 
@@ -188,9 +187,11 @@ Hits are reliable. The loss setting does not drop them. `coop_world.gd` counts a
 
 The same pre-#72 run also logged `unknown peer ID` while the session was closing, which failed the playtest script even though both bots had passed. #72 stops a send to a peer that is already gone. That teardown error is separate from the 55 of 68.
 
+ShobieShy changed the rule. A hit that arrives after the body is dead still pays the shooter loot and XP, once. It does not kill the enemy again. The how is under 0.10.0, because that is the next version, and the credit ships in that version before the new town geometry. It needs co-op protocol 7. A 0.9.4 peer cannot join.
+
 ### Windows on a real PC
 
-Not done. CI exports a Windows build and checks the PE version. The 0.9.4 zip was packed with `WINE_SMOKE=0`, so Wine did not launch the exe. Nobody has recorded a pass on a physical Windows machine: boot, menu, a fight, a save, a load.
+There is no Windows PC. CI still exports the zip and checks the PE version. The zip ships. Windows stays unverified, and that does not block a version.
 
 ### Silent music
 
@@ -202,17 +203,33 @@ Still the walkable hubs. Town is one 40×40 slab with gaps that are not all door
 
 ### AppImage
 
-`tools/package.sh` builds `CovenantOfEmbers-<version>-x86_64.AppImage`, smoke-runs it headless, and writes the Windows zip. For v0.9.4 the AppImage was built and the smoke run reached the menu. It is not attached to the public GitHub release. The release has the Windows zip and `SHA256SUMS.txt`. The sums file includes the AppImage hash. The binary itself was kept off the public tag because the repository is public.
+`tools/package.sh` builds `CovenantOfEmbers-<version>-x86_64.AppImage`, smoke-runs it headless, and writes the Windows zip. v0.9.4 left the AppImage off the public release. From the next prerelease on, the AppImage is attached next to the Windows zip and `SHA256SUMS.txt`.
 
 ## 4. Ordered roadmap
 
 Each version below is a minor or a patch under the 5 Nov scheme. None of them is 1.0.
 
-### 0.10.0 — Town
+### 0.10.0 — Late-hit credit, then the Town
 
-**Scope.** Replace the 40×40 slab with a 72×72 close. Raised square 36×36, about 2 m up. Streets to three gates only: north Association, south Landfill, east Old Oak. Cliff outside the streets. East and west holes closed. Ids stay: `town_square`, `to_association`, `to_landfill`, `to_old_oak`, `town_gate`, the five NPC speakers. Starts, exits, NPCs, and the waystone move at most 4 m, or the playtest bot moves in the same PR. Nav is rebaked. Kill plane stays, retuned to the new lowest walkable y.
+Two changes, in this order, in this version. The credit is not a town feature. It ships here so the protocol bump is not buried in a later level.
 
-**Depends on.** 0.9.4 (kill plane, export excludes, anchors). Ember Art town row, or a stated decision to ship Terrain3D plus Kenney until a mesh arrives.
+**Late-hit credit.** Today `coop_world.gd` applies a `"hit"` only while `not e.dead`. A joiner's shot that arrives after the host has already killed the body is ignored. Loot and XP already fire once, on `EventBus.enemy_killed`, on each peer: the host when the real enemy dies, the joiner when the reliable `"kill"` runs `confirm_kill` on the puppet (`loot_dropper.gd`, `xp_rewarder.gd`). Firing that signal again would drop a second pile and count the quest twice.
+
+The rule:
+
+- A hit on a living enemy is unchanged. It damages. If that damage kills, death, the `"kill"` message, quest credit, and one loot roll happen once, as now.
+- A hit on a dead enemy does not call `apply_damage`, does not call `died`, and does not emit `enemy_killed` again. Quest counts, boss flags, Second Wind, and Dark convert stay tied to the one death.
+- The host keeps a set of peer ids already paid for that enemy id. The killer is marked when the enemy dies. A later hit from a peer not in the set marks them and sends one reliable `"credit"` (`id`, def id, position, element, level). A peer already in the set gets an ack and nothing else.
+- The joiner pays loot and XP from `"credit"` only if that corpse was not already rolled from `"kill"`. `"kill"` then `"credit"`, or `"credit"` then `"kill"`, is one roll. The key is `(peer, enemy id)`.
+- The hit sequence is still acked, so the joiner's prediction settles.
+
+**Compat.** New message `"credit"`, and the dead branch of `"hit"`. Bump `NetSession.PROTOCOL` from 6 to 7. A p6 peer cannot join. Do not change `Compat.fingerprint()` unless a loot table changes. The fingerprint stays the item and loot hash. The protocol number is the gate, the same way the snapshot bump was.
+
+**Tests.** One corpse, two peers: the second peer's late hit rolls loot once and does not raise the kill count. A second late hit from the same peer rolls nothing. Kill-then-credit and credit-then-kill each roll once. `COOP_LAG=150` `COOP_LOSS=0.02`: hits that do not damage still credit, and pickup counts do not double.
+
+**Town scope.** Replace the 40×40 slab with a 72×72 close. Raised square 36×36, about 2 m up. Streets to three gates only: north Association, south Landfill, east Old Oak. Cliff outside the streets. East and west holes closed. Ids stay: `town_square`, `to_association`, `to_landfill`, `to_old_oak`, `town_gate`, the five NPC speakers. Starts, exits, NPCs, and the waystone move at most 4 m, or the playtest bot moves in the same PR. Nav is rebaked from the new collision. The old town nav tiles, the old minimap, and the old slab layout are not reused. Kill plane stays, retuned to the new lowest walkable y.
+
+**Depends on.** 0.9.4 (kill plane, export excludes, anchors). The credit lands before the new ground, in the same version. Cliff art is Kenney if the Ember Art cliff mesh is not in the tree. Swap it when the mesh arrives.
 
 **Ember Art.** Ward pillar, ward lantern, Association arch, south gate, east gate, street lanterns, banners, stall frames, crate stacks, hand cart, fountain basin and water, Flagon front, roof, lantern, one row-house, cliff texture, broken cobble. Counts are the Town table in PLAN_LEVEL_REMAKE.
 
@@ -244,6 +261,20 @@ Each version below is a minor or a patch under the 5 Nov scheme. None of them is
 
 **Tests.** Intro from summoning through the grant and the back door. Full tier. Confirm the Clerk still grants the scribe before Esc opens it.
 
+### 0.10.3 — Bob's laboratory
+
+The Old Oak is otherwise unchanged. No new footprint, no new yard, no renamed tree. Both names stay.
+
+**Scope.** A stair or ladder in the existing hollow, up to one room in the branches: a star chart, an autopsy slab, a shelf of artifacts, and a short bench of potion pots. That bench is the potion garden. It is not a garden outside the bark. Bob can stand in the room after the tutorial. The Magic Assembly Station, the stash, the waystone, and the hollow bed stay where they are. The intro still meets him downstairs.
+
+**Depends on.** The three hub remakes only so this patch does not fight their nav and gate work. It does not need their meshes.
+
+**Ember Art.** One lab interior: chart, slab, shelf, stair, a handful of pots. If those meshes are missing, Kenney furniture blocks the room in and is swapped later. Do not ask for a new oak.
+
+**Risks.** A stair that opens the roof without a wall brings back the fall the kill plane is catching. The room needs a floor and a closed edge. The playtest bot must still find Bob in the hollow during the intro, not up the stair.
+
+**Tests.** Intro `new_home` still talks to Bob downstairs. After the crystal, the stair can be walked and the room has a floor. Full tier. Old Oak's exterior nav is rebaked only where the stair mouth changes the hollow. The old exterior layout stays.
+
 ### 0.11.0 — Act V, the Inverted Spire
 
 **Scope.** The approved outline, not a remake. Five floors in the shaft after the Sunken Ruins. Platforms, long falls, wind that reverses, the downward tower, echoes of the four acts on its facets. Boss: the Storm Warden, fought with no safe floor. On death, a lit path down, not a fourth empty shell. Waystone home still works. One main quest, kill the Warden, in the same shape as the Sunken quest. No hymn text, no rebel join, no Core.
@@ -260,7 +291,7 @@ Each version below is a minor or a patch under the 5 Nov scheme. None of them is
 
 **Scope.** Only if ShobieShy opens it. Fight Joe, corrupted, with spells that feel like the player's brands. Then the Demon Lord. Then he leaves. Loot and the leaving shot need a written pass first; this version should not invent them in code. In the same minor, or a patch on it: the hub dial for Covenant Escalation after Forgemaw, the Forgotten Abyss as a mode you can start while he is unbeaten, and the on-screen names matching the bible. Endless Descent stays off until he has a defeat flag.
 
-**Depends on.** Act V's lit path, or an explicit skip. A written Joe fight and a written Demon Lord, even if short. Decision 2 if Escalation XP is in this version.
+**Depends on.** Act V's lit path, or an explicit skip. A written Joe fight and a written Demon Lord, even if short. `Vigil.xp_mult` stays unwired until a later ask. The Core does not start off this plan. ShobieShy has to write the fights first.
 
 **Ember Art.** Joe's corrupted read, distinct from the landfill camp. A Demon Lord silhouette only after the face is no longer Open. The ward-pillars flickering is a DLC hook in the storyline and does not need a new mesh.
 
@@ -276,74 +307,21 @@ Not scheduled as numbers.
 - **Rebels** stay a faction you can join. No build until a leader, a join, and a reward are accepted. The Potion Merchant's tax line is enough foreshadowing.
 - **DLC towns** each get a square, a chapter, shops, and a labyrinth, with a level minimum. Eldoria stays the main hub. Escalation on a DLC waits until the main Demon Lord is beaten. Names are Open. No art request until a town has a name.
 
-Patches between these minors are for the Windows playtest, music if a track exists, the Choir crowd if it is pulled forward, and quick win 12 once it is decided. They do not take 0.10.x's numbers.
+Patches between these versions do not reopen quick win 12, the Choir, music, the rebels, or the DLC names. Windows ships unverified.
 
 ## 5. Decisions
 
-Recommended defaults are the ones already written down, or the smaller change when nothing was written down.
+ShobieShy answered these on 19 Nov 2026. They are no longer open.
 
-1. **What is 0.10.0?**
-   - A. Town, then 0.10.1 Landfill, then 0.10.2 Association. Act V becomes 0.11.0.
-   - B. Act V is 0.10.0, and the remakes wait.
-   - C. One version holds the town and Act V.
-   - **Default: A.**
-
-2. **Quick win 12, `Vigil.xp_mult` and `apply_void_on_player`.**
-   - A. Leave both until you say. Catch-up XP stays Resolve. Falls stay on `player.apply_void`.
-   - B. Wire `Vigil.xp_mult` into kill XP while Escalation is on, and delete `apply_void_on_player` as unused.
-   - C. Wire the XP and also route the joiner's fall through `apply_void_on_player`.
-   - **Default: A.**
-
-3. **Hits that arrive after the enemy is dead (the 55 of 68).**
-   - A. Leave the rule. Reliable hits still apply while the body is alive. Late hits do not.
-   - B. Count a hit that arrives in the same short window as the death.
-   - C. Buffer the joiner's shots until the host's snapshot catches up.
-   - **Default: A.** It predates the compact snapshots, and B or C changes who gets the kill.
-
-4. **The Linux AppImage on a public release.**
-   - A. Keep building it and keep it off the public GitHub release.
-   - B. Attach it, as v0.9.3 did.
-   - C. Stop building it.
-   - **Default: A.**
-
-5. **Windows on a real PC.**
-   - A. You run the 0.9.4 zip once, menu through a save, before 0.10.0 merges.
-   - B. Wait for a bug report.
-   - C. Turn Wine smoke back on in the packaging script and treat that as the check.
-   - **Default: A.** Wine is not a PC.
-
-6. **Music.**
-   - A. Stay silent until a track is composed. Do not block the remakes.
-   - B. Ask for placeholder loops from Ember Art before 0.10.0.
-   - C. Commission the score now and hold the remakes.
-   - **Default: A.**
-
-7. **The Choir's one body.**
-   - A. Leave the one body until a later patch. The remakes do not touch it.
-   - B. Rebuild the fight as a crowd before Act V.
-   - **Default: A.**
-
-8. **Bob's laboratory and the potion garden.**
-   - A. Not part of 0.10.x. Old Oak stays as it is.
-   - B. Add the climb in the town remake's PR.
-   - **Default: A.** The remake plan already leaves Old Oak alone.
-
-9. **When the Core opens.**
-   - A. It stays closed until you ask for the outline in writing. 0.12.0 does not start on a guess.
-   - B. Write the Joe fight and the escape now, and build after Act V.
-   - **Default: A.**
-
-10. **Rebels and DLC towns.**
-    - A. No names, no join, no town, until the Core's ending exists.
-    - B. Name a rebel leader and one DLC town now, and still do not build them.
-    - **Default: A.**
-
-11. **Proposed bible lines** (the Demon Lord spoiled the crystal; Breach-fire is his heat).
-    - A. Leave them proposed. Do not put them in dialogue.
-    - B. Accept them and add them the next time Bob or Joe speaks in a story patch.
-    - **Default: A.**
-
-12. **Grey boxes if Ember Art is late.**
-    - A. 0.10.0 can ship Terrain3D, the cliff, and Kenney, and swap in Ember Art meshes when they land.
-    - B. 0.10.0 waits until the town mesh list is in the repo.
-    - **Default: A.** The hold and the gates are the point of the remake. The arch can be Kenney for one patch.
+1. **Order.** Decided. Town 0.10.0, Landfill 0.10.1, Association 0.10.2, Act V 0.11.0.
+2. **Quick win 12.** Decided. Leave `Vigil.xp_mult` unwired. Leave `apply_void_on_player` uncalled. Closed as "leave."
+3. **Late hits.** Decided, and the earlier default is withdrawn. A hit that arrives after the death still pays that shooter loot and XP, once, with no second kill and no second pile. How: the 0.10.0 section. Protocol 7.
+4. **AppImage.** Decided. Attach it to public releases from the next prerelease on.
+5. **Windows.** Decided. There is no PC. Build the zip anyway. Windows stays unverified and does not block.
+6. **Music.** Decided. Silent until a track exists.
+7. **Choir.** Decided. One body for now.
+8. **Bob's lab.** Decided. Add it in 0.10.x. This plan puts it at 0.10.3, after the Association and before Act V, so the three remake PRs stay the three levels. The Old Oak exterior does not change. Scope and art are in the 0.10.3 section.
+9. **The Core.** Decided. Closed until ShobieShy writes the fights.
+10. **Rebels and DLC towns.** Decided. No leader and no town names yet.
+11. **Proposed bible lines.** Decided. They stay out of dialogue.
+12. **Late cliff art.** Decided. Ship Kenney cliffs and swap in Ember Art when the meshes exist.
