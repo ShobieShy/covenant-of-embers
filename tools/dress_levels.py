@@ -51,47 +51,47 @@ def wall_z(name, piece, z0, z1, xc, h, thick, tile=4.0, y=0.0, flip=False):
 
 
 def town() -> tuple[set[str], str]:
-    hide = {"wall_north_w", "wall_north_e", "wall_south_w", "wall_south_e", "wall_west", "wall_east", "wall_west_s", "wall_east_s", "ward_1", "ward_2", "ward_3",
-            "ward_4", "association_doors", "fountain", "stall_1", "stall_2", "stall_3", "stall_4", "flagon"}
+    # 0.10.0: raised 36 m square. Kenney cliffs stand in for the missing Ember Art cliff mesh.
+    hide = {"cliff_n_w", "cliff_n_e", "cliff_s_w", "cliff_s_e", "cliff_e_n", "cliff_e_s", "cliff_w",
+            "ward_1", "ward_2", "ward_3", "ward_4", "association_doors", "fountain",
+            "stall_1", "stall_2", "stall_3", "stall_4", "flagon"}
+    y = 2.0
     p = []
-    for side, z in (("north", -19.5), ("south", 19.5)):
-        p.append(wall_x(f"{side}_w_wall", TOWN + "wall.glb", -20, -2, z, 4, 1, flip=z > 0))
-        p.append(wall_x(f"{side}_e_wall", TOWN + "wall.glb", 2, 20, z, 4, 1, flip=z > 0))
-    p.append(wall_z("west_wall", TOWN + "wall.glb", -19, -2.5, -19.5, 4, 1))  # step 158: district gates
-    p.append(wall_z("west_wall_s", TOWN + "wall.glb", 2.5, 19, -19.5, 4, 1))
-    p.append(wall_z("east_wall", TOWN + "wall.glb", -19, -2.5, 19.5, 4, 1, flip=True))
-    p.append(wall_z("east_wall_s", TOWN + "wall.glb", 2.5, 19, 19.5, 4, 1, flip=True))
-    for i, (x, z) in enumerate(((-18, -18), (18, -18), (-18, 18), (18, 18))):
-        p.append(prop(f"ward_{i + 1}", TOWN + "pillar-stone.glb", (x, 0, z), 0.0, (7.5, 6, 7.5)))
-        p.append(prop(f"ward_lantern_{i + 1}", TOWN + "lantern.glb", (x, 6, z), 0.0, 1.2))
-    p.append(wall_x("association_door", TOWN + "wall-door.glb", -2, 2, -19.2, 5, 0.4, tile=4))
-    p.append(wall_x("association_arch", TOWN + "wall-arch-top-detail.glb", -2, 2, -19.5, 1.5, 1, y=4.0))
-    for i, x in enumerate((-2.6, 2.6)):
-        p.append(prop(f"gate_lantern_n{i + 1}", TOWN + "lantern.glb", (x, 0, -18.7), 0.0, 1.6))
-        p.append(prop(f"gate_lantern_s{i + 1}", TOWN + "lantern.glb", (x, 0, 18.7), 0.0, 1.6))
-    p.append(prop("gate_pillars_s", TOWN + "pillar-stone.glb", (-2.0, 0, 19.5), 0.0, (6, 5, 6), 2, (4, 0, 0)))
+    p.append(wall_x("cliff_n_w", TOWN + "wall.glb", -32, -4, -33, 6, 1, y=0.0))
+    p.append(wall_x("cliff_n_e", TOWN + "wall.glb", 4, 32, -33, 6, 1, y=0.0))
+    p.append(wall_x("cliff_s_w", TOWN + "wall.glb", -32, -4, 33, 6, 1, flip=True, y=0.0))
+    p.append(wall_x("cliff_s_e", TOWN + "wall.glb", 4, 32, 33, 6, 1, flip=True, y=0.0))
+    p.append(wall_z("cliff_w", TOWN + "wall.glb", -33, 33, -33, 6, 1, y=0.0))
+    p.append(wall_z("cliff_e_n", TOWN + "wall.glb", -33, 9, 33, 6, 1, flip=True, y=0.0))
+    p.append(wall_z("cliff_e_s", TOWN + "wall.glb", 20, 33, 33, 6, 1, flip=True, y=0.0))
+    for i, (x, z) in enumerate(((-16, -16), (16, -16), (-16, 16), (16, 16))):
+        p.append(prop(f"ward_{i + 1}", TOWN + "pillar-stone.glb", (x, y, z), 0.0, (7.5, 6, 7.5)))
+        p.append(prop(f"ward_lantern_{i + 1}", TOWN + "lantern.glb", (x, y + 6, z), 0.0, 1.2))
+    p.append(wall_x("association_door", TOWN + "wall-doorway-round.glb", -2, 2, -17.2, 5, 0.4, tile=4, y=y))
+    p.append(wall_x("association_arch", TOWN + "wall-arch-top-detail.glb", -2, 2, -17.5, 1.5, 1, y=y + 4.0))
+    p.append(prop("gate_pillars_s", TOWN + "pillar-stone.glb", (-2.0, y, 17.5), 0.0, (6, 5, 6), 2, (4, 0, 0)))
+    p.append(prop("gate_pillars_e", TOWN + "pillar-stone.glb", (17.0, y, 12.0), 0.0, (6, 5, 6), 2, (0, 0, 4)))
     for i, (x, b) in enumerate(((-14, "red"), (-6, "green"), (6, "green"), (14, "red"))):
-        p.append(prop(f"banner_n{i + 1}", TOWN + f"banner-{b}.glb", (x, 1.0, -17.71), 90.0, 3))
-    p.append(prop("road", TOWN + "road.glb", (0, 0.001, 17.0), 0.0, (4, 1, 4), 9, (0, 0, -4)))
-    p.append(prop("road_e", TOWN + "road.glb", (4.0, 0.001, 14.0), 0.0, (4, 1, 4), 4, (4, 0, 0)))
-    p.append(prop("fountain", TOWN + "fountain-square-detail.glb", (0, 0, 0), 0.0, (2, 1.667, 2)))
+        p.append(prop(f"banner_n{i + 1}", TOWN + f"banner-{b}.glb", (x, y + 1.0, -16.5), 90.0, 3))
+    p.append(prop("road_n", TOWN + "road.glb", (0, 1.2, -22), 0.0, (4, 1, 4), 2, (0, 0, -4)))
+    p.append(prop("road_s", TOWN + "road.glb", (0, 1.2, 22), 0.0, (4, 1, 4), 2, (0, 0, 4)))
+    p.append(prop("road_e", TOWN + "road.glb", (22, 1.2, 14), 90.0, (4, 1, 4), 2, (4, 0, 0)))
+    p.append(prop("fountain", TOWN + "fountain-square-detail.glb", (0, y, 0), 0.0, (2, 1.667, 2)))
     for i, x in enumerate((-12, -8, 8, 12)):
         p.append(prop(f"stall_{i + 1}", TOWN + ("stall-red.glb" if i % 2 == 0 else "stall-green.glb"),
-                      (x, 0, -6), 0.0, (2.5, 1.21, 1.5)))
-    p.append(prop("cart", TOWN + "cart-high.glb", (-15.5, 0, -6.2), 90.0, 1.6))
-    # The Flagon: an 8 x 4 x 6 wood house on the flagon collider (x -18..-10, z 5..11).
-    p.append(wall_x("flagon_n", TOWN + "wall-wood-window-shutters.glb", -18, -10, 5, 4, 0.4, tile=2.7, y=0.0))
-    p.append(wall_x("flagon_s", TOWN + "wall-wood-window-glass.glb", -18, -10, 11, 4, 0.4, tile=2.7, flip=True))
-    p.append(wall_z("flagon_w", TOWN + "wall-wood.glb", 5, 11, -18, 4, 0.4, tile=3))
-    p.append(wall_z("flagon_e", TOWN + "wall-wood-door.glb", 5, 11, -10, 4, 0.4, tile=6, flip=True))
-    p.append(prop("flagon_roof", TOWN + "roof-high-point.glb", (-14, 4, 8), 0.0, (8.2 / 1.1, 3, 6.2 / 1.1)))
-    p.append(prop("flagon_chimney", TOWN + "chimney.glb", (-16.3, 5.2, 7.2), 0.0, 2.4))
-    p.append(prop("flagon_lantern", TOWN + "lantern.glb", (-9.75, 0, 6.2), 0.0, 1.4))
-    # Street houses inside the walls, so the square stays a closed town.
-    p.append(prop("row_house", TOWN + "wall-wood.glb", (8, 0, 8), 0.0, (6, 4, 0.4)))
-    p.append(prop("row_roof", TOWN + "roof-high-point.glb", (8, 4, 8), 0.0, (6, 2.4, 5)))
-    p.append(prop("row_door", TOWN + "wall-wood-door.glb", (8, 0, 10.2), 0.0, (2, 3, 0.4)))
-    p.append(prop("row_lantern", TOWN + "lantern.glb", (10.4, 0, 8), 0.0, 1.4))
+                      (x, y, -6), 0.0, (2.5, 1.21, 1.5)))
+    p.append(prop("cart", TOWN + "cart-high.glb", (-15.5, y, -6.2), 90.0, 1.6))
+    p.append(wall_x("flagon_n", TOWN + "wall-wood-window-shutters.glb", -18, -10, 5, 4, 0.4, tile=2.7, y=y))
+    p.append(wall_x("flagon_s", TOWN + "wall-wood-window-glass.glb", -18, -10, 11, 4, 0.4, tile=2.7, flip=True, y=y))
+    p.append(wall_z("flagon_w", TOWN + "wall-wood.glb", 5, 11, -18, 4, 0.4, tile=3, y=y))
+    p.append(wall_z("flagon_e", TOWN + "wall-wood-door.glb", 5, 11, -10, 4, 0.4, tile=6, flip=True, y=y))
+    p.append(prop("flagon_roof", TOWN + "roof-high-point.glb", (-14, y + 4, 8), 0.0, (8.2 / 1.1, 3, 6.2 / 1.1)))
+    p.append(prop("flagon_chimney", TOWN + "chimney.glb", (-16.3, y + 5.2, 7.2), 0.0, 2.4))
+    p.append(prop("flagon_lantern", TOWN + "lantern.glb", (-9.75, y, 6.2), 0.0, 1.4))
+    p.append(prop("row_house", TOWN + "wall-wood.glb", (8, y, 8), 0.0, (6, 4, 0.4)))
+    p.append(prop("row_roof", TOWN + "roof-high-point.glb", (8, y + 4, 8), 0.0, (6, 2.4, 5)))
+    p.append(prop("row_door", TOWN + "wall-wood-door.glb", (8, y, 10.2), 0.0, (2, 3, 0.4)))
+    p.append(prop("row_lantern", TOWN + "lantern.glb", (10.4, y, 8), 0.0, 1.4))
     return hide, "".join(p)
 
 

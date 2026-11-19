@@ -31,12 +31,16 @@ BASE = (
     "assets/kenney/blaster-kit/Previews/*, "
     "assets/quaternius/*_preview.png, "
     "assets/kenney/ui-pack/Vector/*, "
-    "assets/kenney/ui-pack/PNG/*/Double/*, "
-    "scenes/levels/nav/midden_greybox/*, "
-    "scenes/levels/nav/breach_slice/*, "
-    "scenes/levels/nav/town_square/*, "
-    "scenes/levels/nav/old_oak/*"
+    "assets/kenney/ui-pack/PNG/*/Double/*"
 )
+
+# Greybox nav stays out of the download until that level has a [terrain] remake.
+NAV_UNTIL_TERRAIN = {
+    "town_square.toml": "scenes/levels/nav/town_square/*",
+    "midden_greybox.toml": "scenes/levels/nav/midden_greybox/*",
+    "breach_slice.toml": "scenes/levels/nav/breach_slice/*",
+    "old_oak.toml": "scenes/levels/nav/old_oak/*",
+}
 
 
 def referenced_layers() -> set[str]:
@@ -80,8 +84,17 @@ def exclude_patterns() -> list[str]:
     return patterns
 
 
+def nav_excludes() -> list[str]:
+    out: list[str] = []
+    for name, pattern in NAV_UNTIL_TERRAIN.items():
+        text = (LEVELS / name).read_text(encoding="utf-8")
+        if "[terrain]" not in text:
+            out.append(pattern)
+    return out
+
+
 def wanted_filter() -> str:
-    extra = exclude_patterns()
+    extra = nav_excludes() + exclude_patterns()
     if not extra:
         return BASE
     return BASE + ", " + ", ".join(extra)

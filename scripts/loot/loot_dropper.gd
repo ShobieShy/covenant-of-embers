@@ -30,6 +30,7 @@ var kills_seen := 0
 var kills_skipped := 0
 var gold_spawned := 0  ## gold pickups (not counted in `spawned`)
 var loot_noted := false  ## 0.3.2: one "your loot" toast per session
+var _paid := {}  ## corpse key -> true, so a late co-op credit cannot roll the same kill twice
 
 
 ## Step 59: gold for one kill: base +-25 % (0 stays 0).
@@ -69,8 +70,17 @@ func _exit_tree() -> void:
 		bus.enemy_killed.disconnect(_on_enemy_killed)
 
 
+func _claim(key: int) -> bool:
+	if _paid.has(key):
+		return false
+	_paid[key] = true
+	return true
+
+
 func _on_enemy_killed(enemy: Enemy, _element: ElementTable.Element) -> void:
 	if enemy == null or enemy.def == null or parent == null:
+		return
+	if not _claim(int(enemy.get_meta(&"net_id", enemy.get_instance_id()))):
 		return
 	kills_seen += 1
 	if not drops_for(enemy.def.id):
@@ -88,6 +98,29 @@ func _on_enemy_killed(enemy: Enemy, _element: ElementTable.Element) -> void:
 		var gp := LootPickup.create_gold(g, at + Vector3(0.0, LIFT, -SCATTER * 0.5))
 		parent.add_child(gp)
 		gold_spawned += 1
+
+
+## One instanced roll for a corpse this peer has not already been paid for.
+## A late co-op hit uses this when the kill message never arrived. A kill that
+## already rolled returns false and spawns nothing.
+func pay_corpse(key: int, def: EnemyDef, at: Vector3, level: int) -> bool:
+	if def == null or parent == null or not _claim(key) or not drops_for(def.id):
+		return false
+	kills_seen += 1
+	var local := parent.to_local(at)
+	spawn_drops(roll_def(def, level), local, def.id)
+	var g := gold_for(def, gold_rng, level)
+	if g > 0:
+		var gp := LootPickup.create_gold(g, local + Vector3(0.0, LIFT, -SCATTER * 0.5))
+		parent.add_child(gp)
+		gold_spawned += 1
+	return true
+
+
+func roll_def(def: EnemyDef, level: int) -> Array[LootDrop]:
+	return DropRoller.roll_kill(
+		rng, def.id, level, def.affinity, luck, null, rarity_table(), party, _bias(), RareSpawns.source_of(def)
+	)
 
 
 ## The kill's drops. L4: a Labyrinth enemy (ActLoot.tag) rolls at its floor's level, with

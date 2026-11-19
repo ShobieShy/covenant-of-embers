@@ -18,7 +18,7 @@ signal message(from: int, kind: String, data: Dictionary)  ## step 79+: game tra
 
 enum State { IDLE, CONNECTING, LOBBY, IN_GAME, ENDED }
 
-const PROTOCOL := 6  ## Compact enemy snapshots. A p5 peer cannot join.
+const PROTOCOL := 7  ## Late-hit credit. A p6 peer cannot join.
 const CONNECT_TIMEOUT := 8.0
 
 var state := State.IDLE

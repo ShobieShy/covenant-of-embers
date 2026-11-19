@@ -42,6 +42,7 @@ var loot_note_shown := false
 var _ids := {}  ## Enemy -> id (host)
 var _wired := {}  ## Enemy -> true (attacks rerouted, death hooked)
 var _next_id := 1
+var _credited := {}  ## enemy id -> {peer: true} already offered a late-hit reward
 var _type_ids := PackedStringArray()  ## session catalog: index -> def.id
 var _kinds_sent := {}  ## peer -> true once that catalog was sent
 var _kinds_ask_ms := 0.0  ## client: don't request the catalog every snapshot
@@ -51,6 +52,7 @@ var snaps_seen := 0
 var hits_sent := 0
 var brand_hits_sent := 0  ## step 142: chain/blast/orb hits on puppets forwarded
 var hits_applied := 0
+var credits_sent := 0  ## late hits that paid loot/XP once, without a second kill
 var heals_sent := 0  ## step 108
 var heals_taken := 0
 const PUPPET_ALLY_SECONDS := 1.0e6
@@ -437,6 +439,7 @@ func enemy_id(e: Enemy) -> int:
 	if not _ids.has(e):
 		_ids[e] = _next_id
 		by_id[_next_id] = e
+		e.set_meta(&"net_id", _next_id)
 		_next_id += 1
 	return _ids[e]
 
@@ -777,6 +780,40 @@ func _ask_kinds() -> void:
 	session.send("need_kinds", {}, 1)
 
 
+## A shot that arrived after the death. One offer per peer. The client pays loot and
+## XP only if that corpse has not already paid them.
+func _credit_late(peer: int, e: Enemy, eid: int) -> void:
+	if e.def == null:
+		return
+	var paid: Dictionary = _credited.get(eid, {})
+	if paid.get(peer, false):
+		return
+	paid[peer] = true
+	_credited[eid] = paid
+	credits_sent += 1
+	var at := e.global_position
+	session.send("credit", {"id": eid, "def": e.def.id, "x": at.x, "y": at.y, "z": at.z, "lv": e.level()}, peer)
+
+
+func _take_credit(data: Dictionary) -> void:
+	if table == null:
+		return
+	var def := table.find(String(data.get("def", "")))
+	if def == null:
+		return
+	var id := int(data.get("id", 0))
+	var at := Vector3(float(data.get("x", 0.0)), float(data.get("y", 0.0)), float(data.get("z", 0.0)))
+	var main := get_parent()
+	if main == null:
+		return
+	var dropper := main.get_node_or_null(^"LootDropper") as LootDropper
+	if dropper:
+		dropper.pay_corpse(id, def, at, int(data.get("lv", def.level)))
+	var xp := main.get_node_or_null(^"XpRewarder") as XpRewarder
+	if xp:
+		xp.pay_corpse(id, def)
+
+
 ## --- messages ------------------------------------------------------------------------
 
 
@@ -816,18 +853,24 @@ func _on_message(from: int, kind: String, data: Dictionary) -> void:
 					e.confirm_kill(int(data.get("el", 0)) as ElementTable.Element)
 		"hit":
 			if host:
-				var e: Enemy = by_id.get(int(data.get("id", 0)))
-				if e and is_instance_valid(e) and not e.dead:
+				var eid := int(data.get("id", 0))
+				var e: Enemy = by_id.get(eid)
+				session.note_hit(from, int(data.get("seq", 0)))
+				if e and is_instance_valid(e) and not e.dead and not e.is_queued_for_deletion():
 					hits_applied += 1
 					var el := int(data.get("el", 0)) as ElementTable.Element
 					e.apply_damage(maxf(0.0, float(data.get("amt", 0.0))), el, true, true)
-					session.note_hit(from, int(data.get("seq", 0)))
 					if el == ElementTable.Element.DARK and float(data.get("amt", 0.0)) > 0.0:
 						MagicEffects.try_corrupt(e, float(data.get("db", 0.0)))
 					if data.has("sm"):
 						MagicEffects.net_status(
 							e, el, float(data.get("amt", 0.0)), ElementSkillMods.sanitize_net(data["sm"])
 						)
+				elif e and is_instance_valid(e) and e.dead:
+					_credit_late(from, e, eid)
+		"credit":
+			if not host and from == 1:
+				_take_credit(data)
 		"askill":
 			if host:
 				asks_applied += 1

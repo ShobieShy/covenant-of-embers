@@ -130,6 +130,10 @@ func height_at(x: float, z: float) -> float:
 	var hill := (noise().get_noise_2d(x, z) * 0.5 + 0.5) * height
 	var t := clampf(pad_distance(x, z) / blend, 0.0, 1.0)
 	var h := pad_y + hill * t * t * (3.0 - 2.0 * t)
+	# A pad is a street or a square. The rim cliff stays beside it, not on it,
+	# so a gate road can reach the zone edge and stay flat.
+	if pad_distance(x, z) <= 0.0:
+		return h
 	var e := clampf(1.0 - edge_distance(x, z) / EDGE, 0.0, 1.0)
 	return h + rim * e * e
 

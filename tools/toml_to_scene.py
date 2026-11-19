@@ -578,8 +578,8 @@ def _terrain(t: dict, boxes: list[dict]) -> dict:
         pads.append([b["center"][0] - hx, b["center"][2] - hz, 2 * hx, 2 * hz])
         for c in (b["center"][0] - hx, b["center"][0] + hx):
             for z in (b["center"][2] - hz, b["center"][2] + hz):
-                if not (abs(c - center[0]) < size[0] / 2 - 24 and abs(z - center[1]) < size[1] / 2 - 24):
-                    raise LevelError(f"[terrain] ground box '{b['name']}' must sit 24 m inside the zone edge")
+                if not (abs(c - center[0]) < size[0] / 2 - 4 and abs(z - center[1]) < size[1] / 2 - 4):
+                    raise LevelError(f"[terrain] ground box '{b['name']}' must sit 4 m inside the zone edge")
     mv = t.get("map_version", 1)
     if not isinstance(mv, int) or isinstance(mv, bool) or mv < 1:
         raise LevelError("[terrain] map_version must be an integer >= 1")
@@ -1015,7 +1015,7 @@ def self_test() -> int:
     assert 'script = ExtResource("1_terrain")' in sc and "pads = Array[Rect2]([Rect2(" in sc
     assert sc.index('name="Terrain"') < sc.index('name="Navigation"')
     for bad, msg in (('size = [10, 10]', "size must be"), ('size = [400, 400]\nlayers = ["Nope"]', "layer Nope"),
-                     ('size = [400, 400]\nwhat = 1', "unknown"), ('size = [60, 60]', "24 m inside")):
+                     ('size = [400, 400]\nwhat = 1', "unknown"), ('size = [40, 40]', "4 m inside")):
         try:
             parse_level(good + "\n[terrain]\n" + bad + "\n")
         except LevelError as e:

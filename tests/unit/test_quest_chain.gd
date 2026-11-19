@@ -42,7 +42,11 @@ func _gate(g: Node, target: String) -> LevelGate:
 
 func _closed(g: Node, id: String) -> void:
 	var lvl := g.get_node("Level")
-	check(lvl.get_node_or_null("Terrain") == null, "%s is a closed level" % id)
+	var terrain := lvl.get_node_or_null("Terrain")
+	if id == "town_square":
+		check(terrain != null, "the town is a terrain close")
+	else:
+		check(terrain == null, "%s is a closed level" % id)
 	check(g.gates.size() > 0, "%s has a way out" % id)
 
 
