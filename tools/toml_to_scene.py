@@ -1036,7 +1036,7 @@ def self_test() -> int:
             raise AssertionError(f"expected error: {msg}")
     # Step 152: [terrain] -> a TerrainZone node with one pad per ground box.
     bare = re.sub(r"\n\[terrain\]\n.*?\n(?=# )", "\n", good, count=1, flags=re.S)
-    tz = parse_level(bare + '\n[terrain]\nsize = [400, 400]\nheight = 12\nseed = 7\n')
+    tz = parse_level(bare + '\n[terrain]\nsize = [1200, 1200]\ncenter = [0, -400]\nheight = 12\nseed = 7\n')
     assert tz["terrain"]["pads"] and tz["terrain"]["seed"] == 7, tz["terrain"]
     sc = to_tscn(tz, "x.toml")
     assert 'script = ExtResource("1_terrain")' in sc and "pads = Array[Rect2]([Rect2(" in sc
