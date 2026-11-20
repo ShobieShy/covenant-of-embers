@@ -434,6 +434,8 @@ A staff takes four or five parts. The Charm is the optional fifth, and it is sta
 
 You carry a staff and a wand in the quick slots, plus two more weapons on the extra slots. The Bible's carried set was a staff and a wand. The two extra slots are a Covenant addition.
 
+Painted sheets for every form, part, and tier are in [concepts/weapons/](concepts/weapons/README.md). Each sheet shows that one part in all seven elements. They are the look. The assembly rule above is still what a staff or a wand accepts.
+
 ### What else you wear
 
 Hat, clothes, belt, shoes, and a grimoire, plus a potion on a quick slot. Health potions restore 30. Mana potions restore 25 and taste like sour berries. The clothes you start in are tattered mage robes, enchanted for minor durability, standard issue for new arrivals.
