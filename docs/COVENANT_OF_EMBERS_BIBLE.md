@@ -297,6 +297,8 @@ The hub. A paved square, ward-pillars, stalls, the Fractured Flagon, the guard o
 
 ![Eldoria, the Landfill, and the Breach. The Association is north of the square, the landfill south, the Old Oak east, and the crater north of the dump.](maps/eldoria-hub-map.jpg)
 
+The per-level paintings are in [maps/levels/](maps/levels/). The creature sheets are in [concepts/creatures/](concepts/creatures/). The layout numbers taken off those paintings are in [specs/](specs/).
+
 ### The Great Oak
 
 Home. A colossal hollow tree at the edge of town, candle-lit, moss beds, a stash, an assembly station, and Bob. The survey, the permit, the signs, and the quests call it the Old Oak. Bob calls it the Great Oak. Both names stay. The Clerk has not updated Form 7-B, and he is not going to. The Magewar storyline says no one had lived there for centuries because it was rumored haunted. Bob was the haunting. In a solo game the other three Summoned live here with you. They do not follow you into the shaft.
