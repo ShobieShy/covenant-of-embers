@@ -53,45 +53,80 @@ def wall_z(name, piece, z0, z1, xc, h, thick, tile=4.0, y=0.0, flip=False):
     return prop(name, piece, (xc + dx, y, z0 + w / 2), rot, (sx, h, w), n, (0, 0, w))
 
 
+def _building(p, name, x0, x1, z0, z1, y, stories, stone=False):
+    """A rectangular shell. z0 is the north face. stories of 4 m, then a roof."""
+    wall = TOWN + ("wall-window-stone.glb" if stone else "wall-wood-window-glass.glb")
+    door = TOWN + ("wall-doorway-round.glb" if stone else "wall-wood-door.glb")
+    plain = TOWN + ("wall.glb" if stone else "wall-wood.glb")
+    for storey in range(stories):
+        yy = y + storey * 4.0
+        face = door if storey == 0 else plain
+        p.append(wall_x(f"{name}_n{storey}", wall, x0, x1, z0, 4, 0.5, tile=4, y=yy))
+        p.append(wall_x(f"{name}_s{storey}", face, x0, x1, z1, 4, 0.5, tile=max(4.0, (x1 - x0) / 2), flip=True, y=yy))
+        p.append(wall_z(f"{name}_w{storey}", wall, z0, z1, x0, 4, 0.5, tile=4, y=yy))
+        p.append(wall_z(f"{name}_e{storey}", wall, z0, z1, x1, 4, 0.5, tile=4, flip=True, y=yy))
+    p.append(prop(f"{name}_roof", TOWN + "roof-high-point.glb",
+                  ((x0 + x1) / 2, y + stories * 4.0, (z0 + z1) / 2), 0.0,
+                  (max(4.0, (x1 - x0) / 1.1), 2.6 if stories == 1 else 3.2, max(4.0, (z1 - z0) / 1.1))))
+
+
 def town() -> tuple[set[str], str]:
-    # 0.11.1: 120 m square inside a 320 m ring. Kenney rock-large stands in for the cliff mesh.
-    hide = {"fountain", "stall_1", "stall_2", "stall_3", "stall_4", "flagon"}
-    y = 2.0
+    # 0.11.3: the painting. Round wall, small circular square, cathedral, oak lobe.
+    hide = {"fountain", "flagon", "cathedral", "house_sw", "house_se", "house_ne", "house_w1", "house_w2",
+            "house_s1", "house_s2"}
+    y = 4.0
     p = []
-    for i in range(24):
-        deg = i * 15
-        if deg <= 12 or abs(deg - 90) <= 16 or abs(deg - 180) <= 12 or deg >= 348:
-            continue  # the three gates stay open
-        a = math.radians(deg)
-        p.append(prop(f"rim_rock_{i + 1}", TOWN + "rock-large.glb",
-                      (round(math.sin(a) * 166, 1), 0.0, round(-math.cos(a) * 166, 1)),
-                      float(deg), (5.5, 4.0, 3.5), snap=True))
-    for i, (x, z) in enumerate(((-48, -48), (48, -48), (-48, 48), (48, 48))):
-        p.append(prop(f"ward_lantern_{i + 1}", TOWN + "lantern.glb", (x, y + 7.2, z), 0.0, 1.4))
-    p.append(prop("association_arch", TOWN + "wall-arch-top-detail.glb", (0.0, y + 4.0, -158.0), 90.0, (8.0, 2.2, 6.0)))
-    p.append(prop("gate_pillars_n", TOWN + "pillar-stone.glb", (-6.0, y, -156.0), 0.0, (5, 6, 5), 2, (12, 0, 0)))
-    p.append(prop("gate_pillars_s", TOWN + "pillar-stone.glb", (-6.0, y, 156.0), 0.0, (5, 6, 5), 2, (12, 0, 0)))
-    p.append(prop("gate_pillars_e", TOWN + "pillar-stone.glb", (156.0, y, 24.0), 0.0, (5, 6, 5), 2, (0, 0, 12)))
-    for i, (x, b) in enumerate(((-40, "red"), (-20, "green"), (20, "green"), (40, "red"))):
-        p.append(prop(f"banner_n{i + 1}", TOWN + f"banner-{b}.glb", (x, y + 1.0, -52.0), 90.0, 3))
-    p.append(prop("fountain", TOWN + "fountain-square-detail.glb", (0, y, 0), 0.0, (3.2, 2.4, 3.2)))
-    for i, x in enumerate((-48, -36, 36, 48)):
+    p.append(prop("fountain", TOWN + "fountain-square-detail.glb", (0, y, 0), 0.0, (4.6, 3.5, 4.6)))
+    for i in range(8):
+        a = math.radians(i * 45 + 20)
         p.append(prop(f"stall_{i + 1}", TOWN + ("stall-red.glb" if i % 2 == 0 else "stall-green.glb"),
-                      (x, y, -22), 0.0, (3.2, 1.5, 2.0)))
-    p.append(prop("cart", TOWN + "cart-high.glb", (-54, y, -22), 90.0, 1.8))
-    p.append(wall_x("flagon_n", TOWN + "wall-wood-window-shutters.glb", -52, -36, 18, 4, 0.4, tile=4, y=y))
-    p.append(wall_x("flagon_s", TOWN + "wall-wood-window-glass.glb", -52, -36, 30, 4, 0.4, tile=4, flip=True, y=y))
-    p.append(wall_z("flagon_w", TOWN + "wall-wood.glb", 18, 30, -52, 4, 0.4, tile=4, y=y))
-    p.append(wall_z("flagon_e", TOWN + "wall-wood-door.glb", 18, 30, -36, 4, 0.4, tile=6, flip=True, y=y))
-    p.append(prop("flagon_roof", TOWN + "roof-high-point.glb", (-44, y + 4, 24), 0.0, (14.5, 3.2, 11)))
-    p.append(prop("flagon_chimney", TOWN + "chimney.glb", (-50, y + 5.4, 22), 0.0, 2.2))
-    p.append(prop("flagon_lantern", TOWN + "lantern.glb", (-34.5, y, 20), 0.0, 1.4))
-    p.append(prop("gate_lantern_n", TOWN + "lantern.glb", (8, y, -154), 0.0, 1.4))
-    p.append(prop("gate_lantern_s", TOWN + "lantern.glb", (8, y, 154), 0.0, 1.4))
-    p.append(prop("gate_lantern_e", TOWN + "lantern.glb", (154, y, 38), 0.0, 1.4))
-    for i, (x, z, sc) in enumerate(((-100, 40, 3.2), (-110, -50, 2.8), (40, 100, 3.4), (90, -80, 2.6), (80, 90, 3.0))):
-        p.append(prop(f"grove_tree_{i + 1}", NATURE + "tree_oak.glb", (x, 0.0, z), float(i * 40), sc, snap=True))
-        p.append(prop(f"outcrop_{i + 1}", TOWN + "rock-wide.glb", (x + 6, 0.0, z - 4), float(i * 25), 2.4, snap=True))
+                      (round(math.sin(a) * 16, 2), y, round(-math.cos(a) * 16, 2)),
+                      round(math.degrees(a), 1), (2.8, 1.6, 2.2)))
+    _building(p, "flagon", -67, -49, 5, 19, y, 2)
+    p.append(prop("flagon_chimney", TOWN + "chimney.glb", (-62, y + 8.4, 8), 0.0, 2.2))
+    p.append(prop("flagon_lantern", TOWN + "lantern.glb", (-47.5, y, 14), 0.0, 1.5))
+    _building(p, "cathedral", -13, 13, -58, -43, y, 1, stone=True)
+    for i, (x, z) in enumerate(((-13, -58), (13, -58), (-13, -43), (13, -43))):
+        p.append(prop(f"spire_{i + 1}", TOWN + "pillar-stone.glb", (x, y, z), 0.0, (4.5, 12, 4.5)))
+    p.append(prop("cathedral_arch", TOWN + "wall-arch-top-detail.glb", (0, y + 6.5, -42), 90.0, (10, 2.4, 6)))
+    for name, x0, x1, z0, z1 in (
+        ("house_sw", -48, -34, 40, 54),
+        ("house_se", 34, 48, 44, 58),
+        ("house_ne", 40, 54, -36, -22),
+        ("house_w1", -128, -112, 2, 16),
+        ("house_w2", -128, -114, -36, -22),
+        ("house_s1", 20, 34, 92, 106),
+        ("house_s2", -40, -26, 88, 102),
+    ):
+        _building(p, name, x0, x1, z0, z1, y, 1)
+    for i, (x, z) in enumerate(((-8, 148), (8, 148), (164, 4), (164, 18))):
+        p.append(prop(f"tower_{i + 1}", TOWN + "pillar-stone.glb", (x, y, z), 0.0, (5.5, 11, 5.5)))
+    p.append(prop("south_arch", TOWN + "wall-arch-top.glb", (0, y + 5.5, 154), 90.0, (12, 2.2, 5)))
+    p.append(prop("east_arch", TOWN + "wall-arch-top.glb", (168, y + 5.5, 8), 0.0, (8, 2.0, 5)))
+    p.append(prop("old_oak", "assets/original/old_oak/OldOak_Giant.glb", (128, y, 12), 200.0, 2.8))
+    p.append(prop("oak_door", TOWN + "wall-wood-door.glb", (116, y, 12), 180.0, (3.2, 3.4, 1.2)))
+    for i, (x, z) in enumerate(((-86, -64), (-70, -48), (-92, -48), (-74, -70), (-60, -62))):
+        p.append(prop(f"garden_tree_{i + 1}", NATURE + "tree_oak.glb", (x, y, z), float(i * 50), 2.6))
+    p.append(prop("garden_fountain", TOWN + "fountain-round.glb", (-80, y, -58), 0.0, (2.2, 1.8, 2.2)))
+    p.append(prop("garden_bench", TOWN + "stall-bench.glb", (-68, y, -52), 40.0, 2.0))
+    for i, z in enumerate(range(36, 140, 26)):
+        p.append(prop(f"lamp_s{i + 1}", TOWN + "lantern.glb", (7, y, z), 0.0, 1.6))
+    for i, x in enumerate((40, 70, 100)):
+        p.append(prop(f"lamp_e{i + 1}", TOWN + "lantern.glb", (x, y, 14), 0.0, 1.6))
+    p.append(prop("lamp_n", TOWN + "lantern.glb", (6, y, -70), 0.0, 1.6))
+    for i in range(18):
+        deg = i * 20 + 8
+        if abs(deg - 180) < 18 or abs(deg - 90) < 16 or abs(deg - 270) < 14:
+            continue
+        a = math.radians(deg)
+        p.append(prop(f"grove_{i + 1}", NATURE + ("tree_oak.glb" if i % 2 == 0 else "tree_fat.glb"),
+                      (round(math.sin(a) * 108, 1), 0.0, round(-math.cos(a) * 100, 1)),
+                      float(deg), 2.4, snap=True))
+    for i, deg in enumerate((30, 140, 220, 300)):
+        a = math.radians(deg)
+        p.append(prop(f"slope_rock_{i + 1}", TOWN + "rock-large.glb",
+                      (round(math.sin(a) * 190, 1), 0.0, round(-math.cos(a) * 176, 1)),
+                      float(deg), (4.5, 3.2, 3.2), snap=True))
     return hide, "".join(p)
 
 

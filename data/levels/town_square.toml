@@ -1,8 +1,7 @@
-# Eldoria Town Square, 0.11.1. A hub ring about 320 m across. The paved
-# square is 120 m and sits at y 2, with roads north, south, and east.
-# The west arc is a cliff. Grass, hills, a shallow moat, and rock
-# outcrops are the Terrain3D ground. Kenney rock-large stands in for
-# the Ember Art cliff mesh. The dome is the sky.
+# Eldoria, 0.11.3. A round walled hill about 320 m across, dressed to the
+# painted town map. The square is the small circle at the middle. The
+# cathedral door is the Association, the oak door is Bob's lab, the south
+# gate is the Landfill. The west wall is sealed.
 
 [level]
 id = "town_square"
@@ -14,167 +13,657 @@ ground = "assets/ambientcg/PavingStones131"
 uv_scale = 0.4
 
 [environment]
-sky_color = [0.62, 0.48, 0.82]
-ambient_color = [0.42, 0.4, 0.5]
-fog_density = 0.003
+sky_color = [0.72, 0.52, 0.78]
+ambient_color = [0.42, 0.38, 0.48]
+fog_density = 0.0025
 sky = true
 grade = [1.03, 1.05, 1.12]
+dome_radius = 190
 
 [sun]
-to_light = [0.4, 0.8, 0.3]
-color = [1.0, 0.95, 0.85]
+to_light = [0.35, 0.82, 0.25]
+color = [1.0, 0.94, 0.82]
 
 [player_start]
-position = [0.0, 2.0, 36.0]
+position = [0.0, 4.0, 16.0]
 yaw_deg = 0.0
 
 [terrain]
-size = [360, 360]
+size = [440, 440]
 center = [0, 0]
-height = 8
+height = 2.5
 seed = 100
-rim = 14
-cliff = 8
-blend = 24
+rim = 5
+cliff = 12
+blend = 14
 spacing = 2
-map_version = 3
-pad_y = 1.95
-foliage = 6000
+map_version = 4
+pad_y = 3.95
+foliage = 5000
+mound_radius = 168
+mound_fall = 40
+mound_drop = 8
 layers = ["grass", "rock", "path_cobble"]
-carves = [[95.1, -113.4, 22, -9], [95.1, 113.4, 22, -9], [-95.1, 113.4, 22, -9], [-139.1, 50.6, 22, -9], [-139.1, -50.6, 22, -9], [-95.1, -113.4, 22, -9], [-100.0, 40.0, 18, 5.0], [-110.0, -50.0, 16, 4.5], [40.0, 100.0, 18, 5.0], [90.0, -80.0, 16, 4.0], [80.0, 90.0, 16, 4.5], [-70.0, 110.0, 14, 3.5]]
 
 [[box]]
-name = "square"
+name = "plaza"
 kind = "ground"
-center = [0.0, 1.9, 0.0]
-size = [120.0, 0.2, 120.0]
+center = [0, 3.9, 0]
+size = [48, 0.2, 48]
 color = [0.36, 0.34, 0.31]
-[[box]]
-name = "street_n"
-kind = "ground"
-center = [0.0, 1.9, -116.0]
-size = [14.0, 0.2, 112.0]
-color = [0.32, 0.30, 0.28]
+
 [[box]]
 name = "street_s"
 kind = "ground"
-center = [0.0, 1.9, 116.0]
-size = [14.0, 0.2, 112.0]
-color = [0.32, 0.30, 0.28]
+center = [0, 3.9, 90]
+size = [12, 0.2, 132]
+color = [0.34, 0.32, 0.29]
+
+[[box]]
+name = "lane_se"
+kind = "ground"
+center = [18, 3.9, 70]
+size = [14, 0.2, 22]
+color = [0.36, 0.34, 0.31]
+
+[[box]]
+name = "lane_se2"
+kind = "ground"
+center = [26, 3.9, 96]
+size = [14, 0.2, 22]
+color = [0.36, 0.34, 0.31]
+
+[[box]]
+name = "lane_sw"
+kind = "ground"
+center = [-20, 3.9, 64]
+size = [14, 0.2, 22]
+color = [0.36, 0.34, 0.31]
+
+[[box]]
+name = "lane_sw2"
+kind = "ground"
+center = [-16, 3.9, 92]
+size = [14, 0.2, 20]
+color = [0.36, 0.34, 0.31]
+
+[[box]]
+name = "street_n"
+kind = "ground"
+center = [0, 3.9, -42]
+size = [32, 0.2, 44]
+color = [0.36, 0.34, 0.31]
+
+[[box]]
+name = "street_n_wall"
+kind = "ground"
+center = [0, 3.9, -104]
+size = [10, 0.2, 88]
+color = [0.34, 0.32, 0.29]
+
 [[box]]
 name = "street_e"
 kind = "ground"
-center = [116.0, 1.9, 30.0]
-size = [112.0, 0.2, 14.0]
-color = [0.32, 0.30, 0.28]
+center = [64, 3.9, 8]
+size = [80, 0.2, 12]
+color = [0.36, 0.34, 0.31]
+
 [[box]]
-name = "ward_1"
-kind = "wall"
-center = [-48.0, 5.5, -48.0]
-size = [1.4, 7.0, 1.4]
-color = [0.45, 0.28, 0.85]
+name = "oak_pad"
+kind = "ground"
+center = [126, 3.9, 12]
+size = [44, 0.2, 40]
+color = [0.32, 0.36, 0.28]
+
 [[box]]
-name = "ward_2"
-kind = "wall"
-center = [48.0, 5.5, -48.0]
-size = [1.4, 7.0, 1.4]
-color = [0.45, 0.28, 0.85]
+name = "flagon_pad"
+kind = "ground"
+center = [-58, 3.9, 12]
+size = [24, 0.2, 18]
+color = [0.36, 0.34, 0.31]
+
 [[box]]
-name = "ward_3"
-kind = "wall"
-center = [-48.0, 5.5, 48.0]
-size = [1.4, 7.0, 1.4]
-color = [0.45, 0.28, 0.85]
+name = "street_w"
+kind = "ground"
+center = [-104, 3.9, 12]
+size = [96, 0.2, 12]
+color = [0.36, 0.34, 0.31]
+
 [[box]]
-name = "ward_4"
-kind = "wall"
-center = [48.0, 5.5, 48.0]
-size = [1.4, 7.0, 1.4]
-color = [0.45, 0.28, 0.85]
+name = "garden_path"
+kind = "ground"
+center = [-40, 3.9, -28]
+size = [24, 0.2, 14]
+color = [0.36, 0.34, 0.31]
+
+[[box]]
+name = "garden"
+kind = "platform"
+center = [-80, 4.0, -58]
+size = [36, 0.2, 30]
+color = [0.28, 0.45, 0.22]
+
 [[box]]
 name = "fountain"
 kind = "heap"
-center = [0.0, 2.4, 0.0]
-size = [6.0, 0.8, 6.0]
-color = [0.6, 0.6, 0.65]
+center = [0, 4.4, 0]
+size = [7, 0.8, 7]
+color = [0.55, 0.55, 0.58]
 hidden = true
-[[box]]
-name = "stall_1"
-kind = "crate"
-center = [-48.0, 2.7, -22.0]
-size = [3.0, 1.4, 2.0]
-color = [0.6, 0.4, 0.25]
-hidden = true
-[[box]]
-name = "stall_2"
-kind = "crate"
-center = [-36.0, 2.7, -22.0]
-size = [3.0, 1.4, 2.0]
-color = [0.6, 0.4, 0.25]
-hidden = true
-[[box]]
-name = "stall_3"
-kind = "crate"
-center = [36.0, 2.7, -22.0]
-size = [3.0, 1.4, 2.0]
-color = [0.6, 0.4, 0.25]
-hidden = true
-[[box]]
-name = "stall_4"
-kind = "crate"
-center = [48.0, 2.7, -22.0]
-size = [3.0, 1.4, 2.0]
-color = [0.6, 0.4, 0.25]
-hidden = true
+
 [[box]]
 name = "flagon"
 kind = "wall"
-center = [-44.0, 4.0, 24.0]
-size = [16.0, 4.0, 12.0]
-color = [0.45, 0.32, 0.22]
+center = [-58, 8, 12]
+size = [18, 8, 14]
+color = [0.42, 0.3, 0.2]
 hidden = true
+
+[[box]]
+name = "cathedral"
+kind = "wall"
+center = [0, 8, -50]
+size = [26, 8, 16]
+color = [0.5, 0.48, 0.46]
+hidden = true
+
+[[box]]
+name = "house_sw"
+kind = "wall"
+center = [-41, 6, 47]
+size = [14, 4, 14]
+color = [0.4, 0.3, 0.22]
+hidden = true
+
+[[box]]
+name = "house_se"
+kind = "wall"
+center = [41, 6, 51]
+size = [14, 4, 14]
+color = [0.4, 0.3, 0.22]
+hidden = true
+
+[[box]]
+name = "house_ne"
+kind = "wall"
+center = [47, 6, -29]
+size = [14, 4, 14]
+color = [0.4, 0.3, 0.22]
+hidden = true
+
+[[box]]
+name = "house_w1"
+kind = "wall"
+center = [-120, 6, 9]
+size = [16, 4, 14]
+color = [0.4, 0.3, 0.22]
+hidden = true
+
+[[box]]
+name = "house_w2"
+kind = "wall"
+center = [-121, 6, -29]
+size = [14, 4, 14]
+color = [0.4, 0.3, 0.22]
+hidden = true
+
+[[box]]
+name = "house_s1"
+kind = "wall"
+center = [27, 6, 99]
+size = [14, 4, 14]
+color = [0.4, 0.3, 0.22]
+hidden = true
+
+[[box]]
+name = "house_s2"
+kind = "wall"
+center = [-33, 6, 95]
+size = [14, 4, 14]
+color = [0.4, 0.3, 0.22]
+hidden = true
+
+[[box]]
+name = "ring_00"
+kind = "wall"
+center = [0.0, 7.5, -158.0]
+size = [32, 7, 1.8]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_01"
+kind = "wall"
+center = [29.87, 7.5, -155.6]
+size = [32, 7, 1.8]
+rotation_deg = [0, -10, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_02"
+kind = "wall"
+center = [58.83, 7.5, -148.47]
+size = [32, 7, 1.8]
+rotation_deg = [0, -20, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_03"
+kind = "wall"
+center = [86.0, 7.5, -136.83]
+size = [32, 7, 1.8]
+rotation_deg = [0, -30, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_04"
+kind = "wall"
+center = [110.56, 7.5, -121.04]
+size = [32, 7, 1.8]
+rotation_deg = [0, -40, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_05"
+kind = "wall"
+center = [131.76, 7.5, -101.56]
+size = [32, 7, 1.8]
+rotation_deg = [0, -50, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_06"
+kind = "wall"
+center = [148.96, 7.5, -79.0]
+size = [32, 7, 1.8]
+rotation_deg = [0, -60, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_07"
+kind = "wall"
+center = [161.63, 7.5, -54.04]
+size = [32, 7, 1.8]
+rotation_deg = [0, -70, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_08"
+kind = "wall"
+center = [161.63, 7.5, 54.04]
+size = [32, 7, 1.8]
+rotation_deg = [0, -110, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_09"
+kind = "wall"
+center = [148.96, 7.5, 79.0]
+size = [32, 7, 1.8]
+rotation_deg = [0, -120, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_10"
+kind = "wall"
+center = [131.76, 7.5, 101.56]
+size = [32, 7, 1.8]
+rotation_deg = [0, -130, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_11"
+kind = "wall"
+center = [110.56, 7.5, 121.04]
+size = [32, 7, 1.8]
+rotation_deg = [0, -140, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_12"
+kind = "wall"
+center = [86.0, 7.5, 136.83]
+size = [32, 7, 1.8]
+rotation_deg = [0, -150, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_13"
+kind = "wall"
+center = [58.83, 7.5, 148.47]
+size = [32, 7, 1.8]
+rotation_deg = [0, -160, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_14"
+kind = "wall"
+center = [-58.83, 7.5, 148.47]
+size = [32, 7, 1.8]
+rotation_deg = [0, -200, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_15"
+kind = "wall"
+center = [-86.0, 7.5, 136.83]
+size = [32, 7, 1.8]
+rotation_deg = [0, -210, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_16"
+kind = "wall"
+center = [-110.56, 7.5, 121.04]
+size = [32, 7, 1.8]
+rotation_deg = [0, -220, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_17"
+kind = "wall"
+center = [-131.76, 7.5, 101.56]
+size = [32, 7, 1.8]
+rotation_deg = [0, -230, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_18"
+kind = "wall"
+center = [-148.96, 7.5, 79.0]
+size = [32, 7, 1.8]
+rotation_deg = [0, -240, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_19"
+kind = "wall"
+center = [-161.63, 7.5, 54.04]
+size = [32, 7, 1.8]
+rotation_deg = [0, -250, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_20"
+kind = "wall"
+center = [-169.39, 7.5, 27.44]
+size = [32, 7, 1.8]
+rotation_deg = [0, -260, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_21"
+kind = "wall"
+center = [-172.0, 7.5, 0.0]
+size = [32, 7, 1.8]
+rotation_deg = [0, -270, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_22"
+kind = "wall"
+center = [-169.39, 7.5, -27.44]
+size = [32, 7, 1.8]
+rotation_deg = [0, -280, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_23"
+kind = "wall"
+center = [-161.63, 7.5, -54.04]
+size = [32, 7, 1.8]
+rotation_deg = [0, -290, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_24"
+kind = "wall"
+center = [-148.96, 7.5, -79.0]
+size = [32, 7, 1.8]
+rotation_deg = [0, -300, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_25"
+kind = "wall"
+center = [-131.76, 7.5, -101.56]
+size = [32, 7, 1.8]
+rotation_deg = [0, -310, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_26"
+kind = "wall"
+center = [-110.56, 7.5, -121.04]
+size = [32, 7, 1.8]
+rotation_deg = [0, -320, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_27"
+kind = "wall"
+center = [-86.0, 7.5, -136.83]
+size = [32, 7, 1.8]
+rotation_deg = [0, -330, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_28"
+kind = "wall"
+center = [-58.83, 7.5, -148.47]
+size = [32, 7, 1.8]
+rotation_deg = [0, -340, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ring_29"
+kind = "wall"
+center = [-29.87, 7.5, -155.6]
+size = [32, 7, 1.8]
+rotation_deg = [0, -350, 0]
+color = [0.48, 0.45, 0.42]
+
+[[box]]
+name = "ward_1"
+kind = "wall"
+center = [61.7, 7.2, -121.45]
+size = [1.5, 6.4, 1.5]
+color = [0.55, 0.28, 0.95]
+emissive = true
+
+[[box]]
+name = "ward_2"
+kind = "wall"
+center = [111.84, 7.2, -86.13]
+size = [1.5, 6.4, 1.5]
+color = [0.55, 0.28, 0.95]
+emissive = true
+
+[[box]]
+name = "ward_3"
+kind = "wall"
+center = [111.84, 7.2, 86.13]
+size = [1.5, 6.4, 1.5]
+color = [0.55, 0.28, 0.95]
+emissive = true
+
+[[box]]
+name = "ward_4"
+kind = "wall"
+center = [61.7, 7.2, 121.45]
+size = [1.5, 6.4, 1.5]
+color = [0.55, 0.28, 0.95]
+emissive = true
+
+[[box]]
+name = "ward_5"
+kind = "wall"
+center = [-61.7, 7.2, 121.45]
+size = [1.5, 6.4, 1.5]
+color = [0.55, 0.28, 0.95]
+emissive = true
+
+[[box]]
+name = "ward_6"
+kind = "wall"
+center = [-119.6, 7.2, 76.86]
+size = [1.5, 6.4, 1.5]
+color = [0.55, 0.28, 0.95]
+emissive = true
+
+[[box]]
+name = "ward_7"
+kind = "wall"
+center = [-111.84, 7.2, -86.13]
+size = [1.5, 6.4, 1.5]
+color = [0.55, 0.28, 0.95]
+emissive = true
+
+[[box]]
+name = "ward_8"
+kind = "wall"
+center = [-49.93, 7.2, -125.92]
+size = [1.5, 6.4, 1.5]
+color = [0.55, 0.28, 0.95]
+emissive = true
+
+[[box]]
+name = "oak_gem_1"
+kind = "wall"
+center = [118, 6.2, 4]
+size = [1.3, 4.4, 1.3]
+color = [0.62, 0.32, 1.0]
+emissive = true
+
+[[box]]
+name = "oak_gem_2"
+kind = "wall"
+center = [136, 6.2, 6]
+size = [1.3, 4.4, 1.3]
+color = [0.62, 0.32, 1.0]
+emissive = true
+
+[[box]]
+name = "oak_gem_3"
+kind = "wall"
+center = [128, 6.2, 22]
+size = [1.3, 4.4, 1.3]
+color = [0.62, 0.32, 1.0]
+emissive = true
+
+[[box]]
+name = "oak_gem_4"
+kind = "wall"
+center = [122, 6.2, 20]
+size = [1.3, 4.4, 1.3]
+color = [0.62, 0.32, 1.0]
+emissive = true
+
+[[box]]
+name = "oak_gem_5"
+kind = "wall"
+center = [134, 6.2, 18]
+size = [1.3, 4.4, 1.3]
+color = [0.62, 0.32, 1.0]
+emissive = true
+
+[[light]]
+name = "light_cathedral"
+position = [0, 8, -36]
+color = [0.75, 0.6, 1.0]
+energy = 1.4
+range = 14
+
+[[light]]
+name = "light_flagon"
+position = [-46, 6, 14]
+color = [1.0, 0.72, 0.4]
+energy = 1.4
+range = 14
+
+[[light]]
+name = "light_fountain"
+position = [0, 6, 0]
+color = [0.7, 0.55, 1.0]
+energy = 1.4
+range = 14
+
+[[light]]
+name = "light_south"
+position = [0, 7, 146]
+color = [1.0, 0.8, 0.5]
+energy = 1.4
+range = 14
+
+[[light]]
+name = "light_oak"
+position = [120, 6, 12]
+color = [0.7, 0.4, 1.0]
+energy = 1.4
+range = 14
+
+[[light]]
+name = "light_garden"
+position = [-80, 5, -58]
+color = [0.6, 0.85, 0.45]
+energy = 1.4
+range = 14
+
+[[light]]
+name = "light_market"
+position = [12, 6, -10]
+color = [1.0, 0.75, 0.45]
+energy = 1.4
+range = 14
+
+[[light]]
+name = "light_west"
+position = [-100, 6, 12]
+color = [1.0, 0.78, 0.45]
+energy = 1.4
+range = 14
+
 
 [[exit]]
 name = "to_association"
 to = "mage_association"
-position = [0.0, 2.0, -160.0]
+position = [0.0, 4.0, -38.0]
 [[exit]]
 name = "to_landfill"
 to = "midden"
-position = [0.0, 2.0, 160.0]
+position = [0.0, 4.0, 148.0]
 [[exit]]
 name = "to_old_oak"
 to = "old_oak"
-position = [160.0, 2.0, 30.0]
+position = [116.0, 4.0, 12.0]
 [[npc]]
 name = "guard_gate"
 speaker = "Bored Guard"
-position = [3.0, 2.0, 148.0]
+position = [4.0, 4.0, 140.0]
 yaw_deg = 180.0
 [[npc]]
 name = "merchant"
 speaker = "Potion Merchant"
-position = [-36.0, 2.0, -14.0]
-yaw_deg = 0.0
+position = [-12.0, 4.0, -6.0]
+yaw_deg = 90.0
 [[npc]]
 name = "tailor"
 speaker = "Tailor"
-position = [-36.0, 2.0, -6.0]
-yaw_deg = 0.0
+position = [-12.0, 4.0, 4.0]
+yaw_deg = 90.0
 [[npc]]
 name = "runesmith"
 speaker = "Runesmith"
-position = [36.0, 2.0, -14.0]
-yaw_deg = 0.0
+position = [12.0, 4.0, -4.0]
+yaw_deg = 270.0
 [[npc]]
 name = "patron"
 speaker = "Grizzled Patron"
-position = [-28.0, 2.0, 24.0]
+position = [-48.0, 4.0, 12.0]
 yaw_deg = 90.0
 
 [[waystone]]
 point = "town_gate"
-position = [0.0, 2.0, 28.0]
+position = [0.0, 4.0, 20.0]
 yaw_deg = 180.0
 
 # ---- EXPAND_BEGIN (generated by tools/expand_maps.py; edit that, not this) ----
@@ -182,387 +671,736 @@ yaw_deg = 180.0
 
 # ---- DRESS_BEGIN (generated by tools/dress_levels.py; edit that, not this) ----
 [[prop]]
-name = "rim_rock_2"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [43.0, 0.0, -160.3]
-rotation_deg = [0.0, 15.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_3"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [83.0, 0.0, -143.8]
-rotation_deg = [0.0, 30.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_4"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [117.4, 0.0, -117.4]
-rotation_deg = [0.0, 45.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_5"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [143.8, 0.0, -83.0]
-rotation_deg = [0.0, 60.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_9"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [143.8, 0.0, 83.0]
-rotation_deg = [0.0, 120.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_10"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [117.4, 0.0, 117.4]
-rotation_deg = [0.0, 135.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_11"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [83.0, 0.0, 143.8]
-rotation_deg = [0.0, 150.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_12"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [43.0, 0.0, 160.3]
-rotation_deg = [0.0, 165.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_14"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-43.0, 0.0, 160.3]
-rotation_deg = [0.0, 195.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_15"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-83.0, 0.0, 143.8]
-rotation_deg = [0.0, 210.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_16"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-117.4, 0.0, 117.4]
-rotation_deg = [0.0, 225.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_17"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-143.8, 0.0, 83.0]
-rotation_deg = [0.0, 240.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_18"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-160.3, 0.0, 43.0]
-rotation_deg = [0.0, 255.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_19"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-166.0, 0.0, 0.0]
-rotation_deg = [0.0, 270.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_20"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-160.3, 0.0, -43.0]
-rotation_deg = [0.0, 285.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_21"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-143.8, 0.0, -83.0]
-rotation_deg = [0.0, 300.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_22"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-117.4, 0.0, -117.4]
-rotation_deg = [0.0, 315.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_23"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-83.0, 0.0, -143.8]
-rotation_deg = [0.0, 330.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_24"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-43.0, 0.0, -160.3]
-rotation_deg = [0.0, 345.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "ward_lantern_1"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-48, 9.2, -48]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "ward_lantern_2"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [48, 9.2, -48]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "ward_lantern_3"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-48, 9.2, 48]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "ward_lantern_4"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [48, 9.2, 48]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "association_arch"
-model = "assets/kenney/fantasy-town-kit/wall-arch-top-detail.glb"
-position = [0.0, 6.0, -158.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = [8.0, 2.2, 6.0]
-[[prop]]
-name = "gate_pillars_n"
-model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
-position = [-6.0, 2.0, -156.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [5, 6, 5]
-count = 2
-step = [12, 0, 0]
-[[prop]]
-name = "gate_pillars_s"
-model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
-position = [-6.0, 2.0, 156.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [5, 6, 5]
-count = 2
-step = [12, 0, 0]
-[[prop]]
-name = "gate_pillars_e"
-model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
-position = [156.0, 2.0, 24.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [5, 6, 5]
-count = 2
-step = [0, 0, 12]
-[[prop]]
-name = "banner_n1"
-model = "assets/kenney/fantasy-town-kit/banner-red.glb"
-position = [-40, 3.0, -52.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 3
-[[prop]]
-name = "banner_n2"
-model = "assets/kenney/fantasy-town-kit/banner-green.glb"
-position = [-20, 3.0, -52.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 3
-[[prop]]
-name = "banner_n3"
-model = "assets/kenney/fantasy-town-kit/banner-green.glb"
-position = [20, 3.0, -52.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 3
-[[prop]]
-name = "banner_n4"
-model = "assets/kenney/fantasy-town-kit/banner-red.glb"
-position = [40, 3.0, -52.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 3
-[[prop]]
 name = "fountain"
 model = "assets/kenney/fantasy-town-kit/fountain-square-detail.glb"
-position = [0, 2.0, 0]
+position = [0, 4.0, 0]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.2, 2.4, 3.2]
+scale = [4.6, 3.5, 4.6]
 [[prop]]
 name = "stall_1"
 model = "assets/kenney/fantasy-town-kit/stall-red.glb"
-position = [-48, 2.0, -22]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.2, 1.5, 2.0]
+position = [5.47, 4.0, -15.04]
+rotation_deg = [0.0, 20.0, 0.0]
+scale = [2.8, 1.6, 2.2]
 [[prop]]
 name = "stall_2"
 model = "assets/kenney/fantasy-town-kit/stall-green.glb"
-position = [-36, 2.0, -22]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.2, 1.5, 2.0]
+position = [14.5, 4.0, -6.76]
+rotation_deg = [0.0, 65.0, 0.0]
+scale = [2.8, 1.6, 2.2]
 [[prop]]
 name = "stall_3"
 model = "assets/kenney/fantasy-town-kit/stall-red.glb"
-position = [36, 2.0, -22]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.2, 1.5, 2.0]
+position = [15.04, 4.0, 5.47]
+rotation_deg = [0.0, 110.0, 0.0]
+scale = [2.8, 1.6, 2.2]
 [[prop]]
 name = "stall_4"
 model = "assets/kenney/fantasy-town-kit/stall-green.glb"
-position = [48, 2.0, -22]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.2, 1.5, 2.0]
+position = [6.76, 4.0, 14.5]
+rotation_deg = [0.0, 155.0, 0.0]
+scale = [2.8, 1.6, 2.2]
 [[prop]]
-name = "cart"
-model = "assets/kenney/fantasy-town-kit/cart-high.glb"
-position = [-54, 2.0, -22]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 1.8
+name = "stall_5"
+model = "assets/kenney/fantasy-town-kit/stall-red.glb"
+position = [-5.47, 4.0, 15.04]
+rotation_deg = [0.0, 200.0, 0.0]
+scale = [2.8, 1.6, 2.2]
 [[prop]]
-name = "flagon_n"
-model = "assets/kenney/fantasy-town-kit/wall-wood-window-shutters.glb"
-position = [-50.0, 2.0, 19.8]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = [4.0, 4, 4.0]
-count = 4
-step = [4.0, 0, 0]
+name = "stall_6"
+model = "assets/kenney/fantasy-town-kit/stall-green.glb"
+position = [-14.5, 4.0, 6.76]
+rotation_deg = [0.0, 245.0, 0.0]
+scale = [2.8, 1.6, 2.2]
 [[prop]]
-name = "flagon_s"
+name = "stall_7"
+model = "assets/kenney/fantasy-town-kit/stall-red.glb"
+position = [-15.04, 4.0, -5.47]
+rotation_deg = [0.0, 290.0, 0.0]
+scale = [2.8, 1.6, 2.2]
+[[prop]]
+name = "stall_8"
+model = "assets/kenney/fantasy-town-kit/stall-green.glb"
+position = [-6.76, 4.0, -14.5]
+rotation_deg = [0.0, 335.0, 0.0]
+scale = [2.8, 1.6, 2.2]
+[[prop]]
+name = "flagon_n0"
 model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
-position = [-50.0, 2.0, 28.2]
-rotation_deg = [0.0, -90.0, 0.0]
-scale = [4.0, 4, 4.0]
+position = [-64.75, 4.0, 7.25]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [5.0, 4, 4.5]
 count = 4
-step = [4.0, 0, 0]
+step = [4.5, 0, 0]
 [[prop]]
-name = "flagon_w"
-model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
-position = [-53.8, 2.0, 20.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [4.0, 4, 4.0]
-count = 3
-step = [0, 0, 4.0]
-[[prop]]
-name = "flagon_e"
+name = "flagon_s0"
 model = "assets/kenney/fantasy-town-kit/wall-wood-door.glb"
-position = [-34.2, 2.0, 21.0]
-rotation_deg = [0.0, 180.0, 0.0]
-scale = [4.0, 4, 6.0]
+position = [-62.5, 4.0, 16.75]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [5.0, 4, 9.0]
 count = 2
-step = [0, 0, 6.0]
+step = [9.0, 0, 0]
+[[prop]]
+name = "flagon_w0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-69.25, 4.0, 6.75]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "flagon_e0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-46.75, 4.0, 6.75]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "flagon_n1"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-64.75, 8.0, 7.25]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [5.0, 4, 4.5]
+count = 4
+step = [4.5, 0, 0]
+[[prop]]
+name = "flagon_s1"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-62.5, 8.0, 16.75]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [5.0, 4, 9.0]
+count = 2
+step = [9.0, 0, 0]
+[[prop]]
+name = "flagon_w1"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-69.25, 8.0, 6.75]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "flagon_e1"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-46.75, 8.0, 6.75]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
 [[prop]]
 name = "flagon_roof"
 model = "assets/kenney/fantasy-town-kit/roof-high-point.glb"
-position = [-44, 6.0, 24]
+position = [-58.0, 12.0, 12.0]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = [14.5, 3.2, 11]
+scale = [16.3636, 3.2, 12.7273]
 [[prop]]
 name = "flagon_chimney"
 model = "assets/kenney/fantasy-town-kit/chimney.glb"
-position = [-50, 7.4, 22]
+position = [-62, 12.4, 8]
 rotation_deg = [0.0, 0.0, 0.0]
 scale = 2.2
 [[prop]]
 name = "flagon_lantern"
 model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-34.5, 2.0, 20]
+position = [-47.5, 4.0, 14]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+scale = 1.5
 [[prop]]
-name = "gate_lantern_n"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [8, 2.0, -154]
+name = "cathedral_n0"
+model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
+position = [-10.8333, 4.0, -55.75]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [5.0, 4, 4.3333]
+count = 6
+step = [4.3333, 0, 0]
+[[prop]]
+name = "cathedral_s0"
+model = "assets/kenney/fantasy-town-kit/wall-doorway-round.glb"
+position = [-6.5, 4.0, -45.25]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [5.0, 4, 13.0]
+count = 2
+step = [13.0, 0, 0]
+[[prop]]
+name = "cathedral_w0"
+model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
+position = [-15.25, 4.0, -56.125]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+scale = [5.0, 4, 3.75]
+count = 4
+step = [0, 0, 3.75]
 [[prop]]
-name = "gate_lantern_s"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [8, 2.0, 154]
+name = "cathedral_e0"
+model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
+position = [15.25, 4.0, -56.125]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [5.0, 4, 3.75]
+count = 4
+step = [0, 0, 3.75]
+[[prop]]
+name = "cathedral_roof"
+model = "assets/kenney/fantasy-town-kit/roof-high-point.glb"
+position = [0.0, 8.0, -50.5]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+scale = [23.6364, 2.6, 13.6364]
 [[prop]]
-name = "gate_lantern_e"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [154, 2.0, 38]
+name = "spire_1"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-13, 4.0, -58]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+scale = [4.5, 12, 4.5]
 [[prop]]
-name = "grove_tree_1"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [-100, 0.0, 40]
+name = "spire_2"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [13, 4.0, -58]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 3.2
-snap = true
+scale = [4.5, 12, 4.5]
 [[prop]]
-name = "outcrop_1"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [-94, 0.0, 36]
+name = "spire_3"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-13, 4.0, -43]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
-snap = true
+scale = [4.5, 12, 4.5]
 [[prop]]
-name = "grove_tree_2"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [-110, 0.0, -50]
-rotation_deg = [0.0, 40.0, 0.0]
+name = "spire_4"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [13, 4.0, -43]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4.5, 12, 4.5]
+[[prop]]
+name = "cathedral_arch"
+model = "assets/kenney/fantasy-town-kit/wall-arch-top-detail.glb"
+position = [0, 10.5, -42]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [10, 2.4, 6]
+[[prop]]
+name = "house_sw_n0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-46.25, 4.0, 42.25]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [3.5, 0, 0]
+[[prop]]
+name = "house_sw_s0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-door.glb"
+position = [-44.5, 4.0, 51.75]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [5.0, 4, 7.0]
+count = 2
+step = [7.0, 0, 0]
+[[prop]]
+name = "house_sw_w0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-50.25, 4.0, 41.75]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_sw_e0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-31.75, 4.0, 41.75]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_sw_roof"
+model = "assets/kenney/fantasy-town-kit/roof-high-point.glb"
+position = [-41.0, 8.0, 47.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [12.7273, 2.6, 12.7273]
+[[prop]]
+name = "house_se_n0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [35.75, 4.0, 46.25]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [3.5, 0, 0]
+[[prop]]
+name = "house_se_s0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-door.glb"
+position = [37.5, 4.0, 55.75]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [5.0, 4, 7.0]
+count = 2
+step = [7.0, 0, 0]
+[[prop]]
+name = "house_se_w0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [31.75, 4.0, 45.75]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_se_e0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [50.25, 4.0, 45.75]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_se_roof"
+model = "assets/kenney/fantasy-town-kit/roof-high-point.glb"
+position = [41.0, 8.0, 51.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [12.7273, 2.6, 12.7273]
+[[prop]]
+name = "house_ne_n0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [41.75, 4.0, -33.75]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [3.5, 0, 0]
+[[prop]]
+name = "house_ne_s0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-door.glb"
+position = [43.5, 4.0, -24.25]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [5.0, 4, 7.0]
+count = 2
+step = [7.0, 0, 0]
+[[prop]]
+name = "house_ne_w0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [37.75, 4.0, -34.25]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_ne_e0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [56.25, 4.0, -34.25]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_ne_roof"
+model = "assets/kenney/fantasy-town-kit/roof-high-point.glb"
+position = [47.0, 8.0, -29.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [12.7273, 2.6, 12.7273]
+[[prop]]
+name = "house_w1_n0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-126.0, 4.0, 4.25]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [5.0, 4, 4.0]
+count = 4
+step = [4.0, 0, 0]
+[[prop]]
+name = "house_w1_s0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-door.glb"
+position = [-124.0, 4.0, 13.75]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [5.0, 4, 8.0]
+count = 2
+step = [8.0, 0, 0]
+[[prop]]
+name = "house_w1_w0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-130.25, 4.0, 3.75]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_w1_e0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-109.75, 4.0, 3.75]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_w1_roof"
+model = "assets/kenney/fantasy-town-kit/roof-high-point.glb"
+position = [-120.0, 8.0, 9.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [14.5455, 2.6, 12.7273]
+[[prop]]
+name = "house_w2_n0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-126.25, 4.0, -33.75]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [3.5, 0, 0]
+[[prop]]
+name = "house_w2_s0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-door.glb"
+position = [-124.5, 4.0, -24.25]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [5.0, 4, 7.0]
+count = 2
+step = [7.0, 0, 0]
+[[prop]]
+name = "house_w2_w0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-130.25, 4.0, -34.25]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_w2_e0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-111.75, 4.0, -34.25]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_w2_roof"
+model = "assets/kenney/fantasy-town-kit/roof-high-point.glb"
+position = [-121.0, 8.0, -29.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [12.7273, 2.6, 12.7273]
+[[prop]]
+name = "house_s1_n0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [21.75, 4.0, 94.25]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [3.5, 0, 0]
+[[prop]]
+name = "house_s1_s0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-door.glb"
+position = [23.5, 4.0, 103.75]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [5.0, 4, 7.0]
+count = 2
+step = [7.0, 0, 0]
+[[prop]]
+name = "house_s1_w0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [17.75, 4.0, 93.75]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_s1_e0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [36.25, 4.0, 93.75]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_s1_roof"
+model = "assets/kenney/fantasy-town-kit/roof-high-point.glb"
+position = [27.0, 8.0, 99.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [12.7273, 2.6, 12.7273]
+[[prop]]
+name = "house_s2_n0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-38.25, 4.0, 90.25]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [3.5, 0, 0]
+[[prop]]
+name = "house_s2_s0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-door.glb"
+position = [-36.5, 4.0, 99.75]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [5.0, 4, 7.0]
+count = 2
+step = [7.0, 0, 0]
+[[prop]]
+name = "house_s2_w0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-42.25, 4.0, 89.75]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_s2_e0"
+model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
+position = [-23.75, 4.0, 89.75]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [5.0, 4, 3.5]
+count = 4
+step = [0, 0, 3.5]
+[[prop]]
+name = "house_s2_roof"
+model = "assets/kenney/fantasy-town-kit/roof-high-point.glb"
+position = [-33.0, 8.0, 95.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [12.7273, 2.6, 12.7273]
+[[prop]]
+name = "tower_1"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-8, 4.0, 148]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.5, 11, 5.5]
+[[prop]]
+name = "tower_2"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [8, 4.0, 148]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.5, 11, 5.5]
+[[prop]]
+name = "tower_3"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [164, 4.0, 4]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.5, 11, 5.5]
+[[prop]]
+name = "tower_4"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [164, 4.0, 18]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [5.5, 11, 5.5]
+[[prop]]
+name = "south_arch"
+model = "assets/kenney/fantasy-town-kit/wall-arch-top.glb"
+position = [0, 9.5, 154]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [12, 2.2, 5]
+[[prop]]
+name = "east_arch"
+model = "assets/kenney/fantasy-town-kit/wall-arch-top.glb"
+position = [168, 9.5, 8]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [8, 2.0, 5]
+[[prop]]
+name = "old_oak"
+model = "assets/original/old_oak/OldOak_Giant.glb"
+position = [128, 4.0, 12]
+rotation_deg = [0.0, 200.0, 0.0]
 scale = 2.8
-snap = true
 [[prop]]
-name = "outcrop_2"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [-104, 0.0, -54]
-rotation_deg = [0.0, 25.0, 0.0]
-scale = 2.4
-snap = true
+name = "oak_door"
+model = "assets/kenney/fantasy-town-kit/wall-wood-door.glb"
+position = [116, 4.0, 12]
+rotation_deg = [0.0, 180.0, 0.0]
+scale = [3.2, 3.4, 1.2]
 [[prop]]
-name = "grove_tree_3"
+name = "garden_tree_1"
 model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [40, 0.0, 100]
-rotation_deg = [0.0, 80.0, 0.0]
-scale = 3.4
-snap = true
-[[prop]]
-name = "outcrop_3"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [46, 0.0, 96]
-rotation_deg = [0.0, 50.0, 0.0]
-scale = 2.4
-snap = true
-[[prop]]
-name = "grove_tree_4"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [90, 0.0, -80]
-rotation_deg = [0.0, 120.0, 0.0]
+position = [-86, 4.0, -64]
+rotation_deg = [0.0, 0.0, 0.0]
 scale = 2.6
-snap = true
 [[prop]]
-name = "outcrop_4"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [96, 0.0, -84]
-rotation_deg = [0.0, 75.0, 0.0]
-scale = 2.4
-snap = true
-[[prop]]
-name = "grove_tree_5"
+name = "garden_tree_2"
 model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [80, 0.0, 90]
-rotation_deg = [0.0, 160.0, 0.0]
-scale = 3.0
+position = [-70, 4.0, -48]
+rotation_deg = [0.0, 50.0, 0.0]
+scale = 2.6
+[[prop]]
+name = "garden_tree_3"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-92, 4.0, -48]
+rotation_deg = [0.0, 100.0, 0.0]
+scale = 2.6
+[[prop]]
+name = "garden_tree_4"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-74, 4.0, -70]
+rotation_deg = [0.0, 150.0, 0.0]
+scale = 2.6
+[[prop]]
+name = "garden_tree_5"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-60, 4.0, -62]
+rotation_deg = [0.0, 200.0, 0.0]
+scale = 2.6
+[[prop]]
+name = "garden_fountain"
+model = "assets/kenney/fantasy-town-kit/fountain-round.glb"
+position = [-80, 4.0, -58]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [2.2, 1.8, 2.2]
+[[prop]]
+name = "garden_bench"
+model = "assets/kenney/fantasy-town-kit/stall-bench.glb"
+position = [-68, 4.0, -52]
+rotation_deg = [0.0, 40.0, 0.0]
+scale = 2.0
+[[prop]]
+name = "lamp_s1"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [7, 4.0, 36]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.6
+[[prop]]
+name = "lamp_s2"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [7, 4.0, 62]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.6
+[[prop]]
+name = "lamp_s3"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [7, 4.0, 88]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.6
+[[prop]]
+name = "lamp_s4"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [7, 4.0, 114]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.6
+[[prop]]
+name = "lamp_e1"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [40, 4.0, 14]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.6
+[[prop]]
+name = "lamp_e2"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [70, 4.0, 14]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.6
+[[prop]]
+name = "lamp_e3"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [100, 4.0, 14]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.6
+[[prop]]
+name = "lamp_n"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [6, 4.0, -70]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.6
+[[prop]]
+name = "grove_1"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [15.0, 0.0, -99.0]
+rotation_deg = [0.0, 8.0, 0.0]
+scale = 2.4
 snap = true
 [[prop]]
-name = "outcrop_5"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [86, 0.0, 86]
-rotation_deg = [0.0, 100.0, 0.0]
+name = "grove_2"
+model = "assets/kenney/nature-kit/tree_fat.glb"
+position = [50.7, 0.0, -88.3]
+rotation_deg = [0.0, 28.0, 0.0]
 scale = 2.4
+snap = true
+[[prop]]
+name = "grove_3"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [80.3, 0.0, -66.9]
+rotation_deg = [0.0, 48.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_4"
+model = "assets/kenney/nature-kit/tree_fat.glb"
+position = [100.1, 0.0, -37.5]
+rotation_deg = [0.0, 68.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_6"
+model = "assets/kenney/nature-kit/tree_fat.glb"
+position = [102.7, 0.0, 30.9]
+rotation_deg = [0.0, 108.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_7"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [85.1, 0.0, 61.6]
+rotation_deg = [0.0, 128.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_8"
+model = "assets/kenney/nature-kit/tree_fat.glb"
+position = [57.2, 0.0, 84.8]
+rotation_deg = [0.0, 148.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_11"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-50.7, 0.0, 88.3]
+rotation_deg = [0.0, 208.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_12"
+model = "assets/kenney/nature-kit/tree_fat.glb"
+position = [-80.3, 0.0, 66.9]
+rotation_deg = [0.0, 228.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_13"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-100.1, 0.0, 37.5]
+rotation_deg = [0.0, 248.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_15"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-102.7, 0.0, -30.9]
+rotation_deg = [0.0, 288.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_16"
+model = "assets/kenney/nature-kit/tree_fat.glb"
+position = [-85.1, 0.0, -61.6]
+rotation_deg = [0.0, 308.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_17"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-57.2, 0.0, -84.8]
+rotation_deg = [0.0, 328.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "grove_18"
+model = "assets/kenney/nature-kit/tree_fat.glb"
+position = [-22.5, 0.0, -97.8]
+rotation_deg = [0.0, 348.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "slope_rock_1"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [95.0, 0.0, -152.4]
+rotation_deg = [0.0, 30.0, 0.0]
+scale = [4.5, 3.2, 3.2]
+snap = true
+[[prop]]
+name = "slope_rock_2"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [122.1, 0.0, 134.8]
+rotation_deg = [0.0, 140.0, 0.0]
+scale = [4.5, 3.2, 3.2]
+snap = true
+[[prop]]
+name = "slope_rock_3"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-122.1, 0.0, 134.8]
+rotation_deg = [0.0, 220.0, 0.0]
+scale = [4.5, 3.2, 3.2]
+snap = true
+[[prop]]
+name = "slope_rock_4"
+model = "assets/kenney/fantasy-town-kit/rock-large.glb"
+position = [-164.5, 0.0, -88.0]
+rotation_deg = [0.0, 300.0, 0.0]
+scale = [4.5, 3.2, 3.2]
 snap = true

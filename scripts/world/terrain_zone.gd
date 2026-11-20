@@ -40,6 +40,10 @@ const EDGE := 24.0  ## metres over which the zone edge rises to `rim`
 @export var foliage := 0
 ## Sculpt stamps: x, z, radius, depth. Depth below zero digs a bowl. Pads stay flat.
 @export var carves: PackedVector4Array = PackedVector4Array()
+## Off the pads, ground outside this radius falls by mound_drop over mound_fall metres.
+@export var mound_radius := 0.0
+@export var mound_fall := 30.0
+@export var mound_drop := 0.0
 @export var build_on_ready := true
 
 var terrain: Node3D = null  ## Terrain3D (typed loosely so this parses without the extension)
@@ -162,9 +166,23 @@ func height_at(x: float, z: float) -> float:
 	if pad_distance(x, z) <= 0.0:
 		return h
 	h = _carved(x, z, h)
+	h = _mound(x, z, h)
 	var width := cliff_width if cliff_width > 0.0 else EDGE
 	var e := clampf(1.0 - edge_distance(x, z) / width, 0.0, 1.0)
 	return h + rim * e * e
+
+
+func _mound(x: float, z: float, h: float) -> float:
+	if mound_radius <= 0.0 or mound_drop == 0.0:
+		return h
+	var dx := x - center.x
+	var dz := z - center.y
+	var dist := sqrt(dx * dx + dz * dz)
+	if dist <= mound_radius:
+		return h
+	var u := clampf((dist - mound_radius) / maxf(mound_fall, 0.5), 0.0, 1.0)
+	var smooth := u * u * (3.0 - 2.0 * u)
+	return h - mound_drop * smooth
 
 
 func _carved(x: float, z: float, h: float) -> float:

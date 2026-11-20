@@ -175,6 +175,30 @@ def _bool(v, what: str) -> bool:
     return v
 
 
+def _lights(items: list, out: dict) -> None:
+    if len(items) > 8:
+        raise LevelError("at most 8 [[light]] nodes")
+    seen: set[str] = set()
+    for i, lit in enumerate(items):
+        w = f"light {i + 1}"
+        _only(lit, {"name", "position", "color", "energy", "range"}, w)
+        name = str(_need(lit, "name", w))
+        if name in seen:
+            raise LevelError(f"duplicate light name '{name}'")
+        seen.add(name)
+        energy = float(lit.get("energy", 1.2))
+        rng = float(lit.get("range", 12.0))
+        if not 0.0 < energy <= 8.0 or not 1.0 <= rng <= 40.0:
+            raise LevelError(f"light '{name}': energy in (0, 8] and range in [1, 40]")
+        out["lights"].append({
+            "name": name,
+            "position": _vec(_need(lit, "position", w), f"light '{name}' position"),
+            "color": _color(lit.get("color", [1.0, 0.9, 0.7]), f"light '{name}' color"),
+            "energy": energy,
+            "range": rng,
+        })
+
+
 def _props(items: list, out: dict) -> None:
     seen: set[str] = set()
     for i, pr in enumerate(items):
@@ -314,7 +338,8 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate", "chest", "camp"}, "top level")
+               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate", "chest", "camp",
+               "light"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -325,13 +350,17 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     if len(wo) != 2 or any(x % 16.0 for x in wo):
         raise LevelError("world_offset must be [x, z], multiples of 16 m")
     env = d["environment"]
-    _only(env, {"sky_color", "ambient_color", "fog_density", "sky", "volumetric_fog", "fog_albedo", "grade"}, "[environment]")
+    _only(env, {"sky_color", "ambient_color", "fog_density", "sky", "volumetric_fog", "fog_albedo", "grade",
+                "dome_radius"}, "[environment]")
     vfog = float(env.get("volumetric_fog", 0.0))
     if not 0.0 <= vfog <= 0.2:
         raise LevelError("volumetric_fog must be in [0, 0.2]")
     grade = [float(x) for x in env.get("grade", [1.0, 1.05, 1.1])]
     if len(grade) != 3 or not all(0.5 <= x <= 1.5 for x in grade):
         raise LevelError("grade must be [brightness, contrast, saturation], each in [0.5, 1.5]")
+    dome = float(env.get("dome_radius", 0.0) or 0.0)
+    if not 0.0 <= dome <= 400.0:
+        raise LevelError("dome_radius must be in [0, 400]")
     fog = float(env.get("fog_density", 0.0))
     if not 0.0 <= fog <= 1.0:
         raise LevelError("fog_density must be in [0, 1]")
@@ -354,6 +383,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "volumetric_fog": vfog,
         "fog_albedo": _color(env.get("fog_albedo", [1.0, 1.0, 1.0]), "fog_albedo"),
         "grade": grade,
+        "dome_radius": dome,
         "to_light": [x / ln for x in tl],
         "sun_color": _color(_need(sun, "color", "[sun]"), "sun color"),
         "start_position": _vec(_need(ps, "position", "[player_start]"), "player_start position"),
@@ -370,6 +400,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "switches": [],
         "materials": {},
         "props": [],
+        "lights": [],
         "pois": [],
         "anchors": [],
         "waystones": [],
@@ -392,7 +423,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     names: set[str] = set()
     for i, b in enumerate(d.get("box", [])):
         w = f"box {i + 1}"
-        _only(b, {"name", "kind", "center", "size", "rotation_deg", "color", "hidden"}, w)
+        _only(b, {"name", "kind", "center", "size", "rotation_deg", "color", "hidden", "emissive"}, w)
         name = str(_need(b, "name", w))
         w = f"box '{name}'"
         if name in names:
@@ -410,9 +441,11 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
             "rotation_deg": _vec(b.get("rotation_deg", [0, 0, 0]), f"{w} rotation_deg"),
             "color": _color(_need(b, "color", w), f"{w} color"),
             "hidden": _bool(b.get("hidden", False), f"{w} hidden"),
+            "emissive": _bool(b.get("emissive", False), f"{w} emissive"),
         })
     if not out["boxes"]:
         raise LevelError("need at least one [[box]]")
+    _lights(d.get("light", []), out)
     if not on_surface(out["boxes"], out["start_position"]):
         raise LevelError("player_start position (feet) must lie on a box surface (within 5 cm)")
     for i, e in enumerate(d.get("enemy", [])):
@@ -532,7 +565,8 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
 
 
 TERRAIN_KEYS = {"size", "center", "height", "seed", "spacing", "rim", "map_version", "layers", "pad_margin",
-                "blend", "stepped", "pad_y", "cliff", "foliage", "carves"}
+                "blend", "stepped", "pad_y", "cliff", "foliage", "carves", "mound_radius", "mound_fall",
+                "mound_drop"}
 
 
 def _num(t: dict, k: str, default: float, lo: float, hi: float) -> float:
@@ -606,6 +640,9 @@ def _terrain(t: dict, boxes: list[dict]) -> dict:
     return {"size": size, "center": center, "height": _num(t, "height", 10.0, 0.0, 120.0), "seed": seed,
             "spacing": _num(t, "spacing", 1.0, 0.25, 4.0), "rim": _num(t, "rim", 16.0, 0.0, 80.0),
             "cliff": _num(t, "cliff", 24.0, 2.0, 80.0), "foliage": foliage, "carves": carves,
+            "mound_radius": _num(t, "mound_radius", 0.0, 0.0, 2000.0),
+            "mound_fall": _num(t, "mound_fall", 30.0, 1.0, 200.0),
+            "mound_drop": _num(t, "mound_drop", 0.0, 0.0, 80.0),
             "blend": _num(t, "blend", 14.0, 1.0, 100.0), "map_version": mv, "layers": [str(x) for x in layers],
             "pads": pads, "pad_heights": pad_heights if stepped else [],
             "pad_y": _num(t, "pad_y", -0.02, -40.0, 40.0)}
@@ -750,13 +787,46 @@ def to_tscn(lv: dict, source: str) -> str:
     nodes.append(f'[node name="Sun" type="DirectionalLight3D" parent="."]\n'
                  f'transform = {_xf(sun_basis(lv["to_light"]), [0, 10, 0])}\n'
                  f'light_color = {_color_str(lv["sun_color"])}\nlight_energy = 1.3\nshadow_enabled = true\n')
+    for lit in lv.get("lights", []):
+        nodes.append(f'[node name="{lit["name"]}" type="OmniLight3D" parent="."]\n'
+                     f'transform = {_xf(rot_yxz([0, 0, 0]), lit["position"])}\n'
+                     f'light_color = {_color_str(lit["color"])}\nlight_energy = {_f(lit["energy"])}\n'
+                     f'omni_range = {_f(lit["range"])}\nshadow_enabled = false\n')
+    if lv.get("dome_radius", 0.0) > 0.0:
+        radius = float(lv["dome_radius"])
+        mesh = sub("SphereMesh", ("dome", radius), "\n".join([
+            f"radius = {_f(radius)}",
+            f"height = {_f(radius * 2.0)}",
+            "radial_segments = 48",
+            "rings = 16",
+            "is_hemisphere = true",
+        ]))
+        dmat = sub("StandardMaterial3D", ("dome",), "\n".join([
+            "transparency = 1",
+			"albedo_color = Color(0.78, 0.62, 0.9, 0.38)",
+            "emission_enabled = true",
+            "emission = Color(0.95, 0.72, 0.38, 1)",
+            "emission_energy_multiplier = 0.35",
+            "cull_mode = 1",
+            "shading_mode = 0",
+        ]))
+        nodes.append(f'[node name="Dome" type="MeshInstance3D" parent="."]\n'
+                     f'transform = {_xf(rot_yxz([0, 0, 0]), [0, lv["start_position"][1], 0])}\n'
+                     f'mesh = SubResource("{mesh}")\nsurface_material_override/0 = SubResource("{dmat}")\n')
     nodes.append('[node name="Boxes" type="Node3D" parent="."]\n')
     for i, b in enumerate(lv["boxes"]):
         sk = tuple(b["size"])
         mesh = sub("BoxMesh", sk, f"size = {_v3(b['size'])}")
         shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
         tex = lv.get("materials", {}).get(b["kind"])
-        if tex:
+        if b.get("emissive"):
+            mat = sub("StandardMaterial3D", tuple(b["color"]) + ("emit",), "\n".join([
+                f"albedo_color = {_color_str(b['color'])}",
+                "emission_enabled = true",
+                f"emission = {_color_str(b['color'])}",
+				"emission_energy_multiplier = 1.3",
+            ]))
+        elif tex:
             gs = GROUND_TINT if b["kind"] == "ground" else 1.0
             mat = sub("StandardMaterial3D", (tuple(b["color"]), tex, gs),
                       _textured(b["color"], tex, lv["uv_scale"], ext_id, gs))
@@ -787,6 +857,8 @@ def to_tscn(lv: dict, source: str) -> str:
                      + (f'foliage = {tr["foliage"]}\n' if tr["foliage"] else "")
                      + (f'carves = PackedVector4Array({", ".join(_f(x) for c in tr["carves"] for x in c)})\n'
                         if tr["carves"] else "")
+                     + (f'mound_radius = {_f(tr["mound_radius"])}\nmound_fall = {_f(tr["mound_fall"])}\n'
+                        f'mound_drop = {_f(tr["mound_drop"])}\n' if tr["mound_radius"] > 0 else "")
                      + f'blend = {_f(tr["blend"])}\n')
     scenes: dict[str, str] = {}
     if any(not pr["poi"] for pr in lv["props"]):
