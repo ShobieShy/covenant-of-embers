@@ -34,6 +34,16 @@ func test_heights_deterministic_flat_pads_and_rim() -> void:
 			hilly += 1
 	check(hilly > 0, "hills away from pads")
 	check(a.grid_size() == Vector2i(225, 225), "grid from region-snapped origin %s" % a.grid_size())
+	var lip_x := C.x + a.size.x * 0.5
+	var gentle := a.height_at(lip_x, C.y) - a.height_at(lip_x - 4.0, C.y)
+	a.cliff_width = 6.0
+	var steep := a.height_at(lip_x, C.y) - a.height_at(lip_x - 4.0, C.y)
+	check(steep > gentle + 1.0, "a narrower cliff rises faster over the last metres")
+	a.cliff_width = 24.0
+	var before := a.height_at(C.x + 40.0, C.y)
+	a.carves = PackedVector4Array([Vector4(C.x + 40.0, C.y, 12.0, -4.0)])
+	check(a.height_at(C.x + 40.0, C.y) < before - 3.0, "a carve digs off the pad")
+	check_near(a.height_at(C.x, C.y), a.pad_y, 0.001, "a carve does not dent a pad")
 	a.pad_heights = PackedFloat32Array([-2.05, 0.0])
 	a.pads = [Rect2(C.x - 10, C.y - 30, 20, 10), Rect2(C.x - 10, C.y + 10, 20, 10)]
 	a._hash = 0

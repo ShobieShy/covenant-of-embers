@@ -531,7 +531,8 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     return out
 
 
-TERRAIN_KEYS = {"size", "center", "height", "seed", "spacing", "rim", "map_version", "layers", "pad_margin", "blend", "stepped", "pad_y"}
+TERRAIN_KEYS = {"size", "center", "height", "seed", "spacing", "rim", "map_version", "layers", "pad_margin",
+                "blend", "stepped", "pad_y", "cliff", "foliage", "carves"}
 
 
 def _num(t: dict, k: str, default: float, lo: float, hi: float) -> float:
@@ -591,8 +592,20 @@ def _terrain(t: dict, boxes: list[dict]) -> dict:
     seed = t.get("seed", 1)
     if not isinstance(seed, int) or isinstance(seed, bool):
         raise LevelError("[terrain] seed must be an integer")
+    carves = []
+    for c in t.get("carves", []):
+        stamp = _vec(c, "[terrain] carve", 4)
+        if stamp[2] <= 0.0 or stamp[2] > 400.0:
+            raise LevelError("[terrain] carve radius must be in (0, 400]")
+        if not -40.0 <= stamp[3] <= 40.0:
+            raise LevelError("[terrain] carve depth must be in [-40, 40]")
+        carves.append(stamp)
+    foliage = t.get("foliage", 0)
+    if not isinstance(foliage, int) or isinstance(foliage, bool) or not 0 <= foliage <= 8000:
+        raise LevelError("[terrain] foliage must be an integer in [0, 8000]")
     return {"size": size, "center": center, "height": _num(t, "height", 10.0, 0.0, 120.0), "seed": seed,
             "spacing": _num(t, "spacing", 1.0, 0.25, 4.0), "rim": _num(t, "rim", 16.0, 0.0, 80.0),
+            "cliff": _num(t, "cliff", 24.0, 2.0, 80.0), "foliage": foliage, "carves": carves,
             "blend": _num(t, "blend", 14.0, 1.0, 100.0), "map_version": mv, "layers": [str(x) for x in layers],
             "pads": pads, "pad_heights": pad_heights if stepped else [],
             "pad_y": _num(t, "pad_y", -0.02, -40.0, 40.0)}
@@ -770,6 +783,10 @@ def to_tscn(lv: dict, source: str) -> str:
                      + (f'pad_heights = PackedFloat32Array({", ".join(_f(h) for h in tr["pad_heights"])})\n'
                         if tr.get("pad_heights") else "")
                      + (f'pad_y = {_f(tr["pad_y"])}\n' if abs(tr["pad_y"] + 0.02) > 0.001 else "")
+                     + (f'cliff_width = {_f(tr["cliff"])}\n' if abs(tr["cliff"] - 24.0) > 0.001 else "")
+                     + (f'foliage = {tr["foliage"]}\n' if tr["foliage"] else "")
+                     + (f'carves = PackedVector4Array({", ".join(_f(x) for c in tr["carves"] for x in c)})\n'
+                        if tr["carves"] else "")
                      + f'blend = {_f(tr["blend"])}\n')
     scenes: dict[str, str] = {}
     if any(not pr["poi"] for pr in lv["props"]):

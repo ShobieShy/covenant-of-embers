@@ -29,7 +29,7 @@ func test_enter_and_leave() -> void:
 	root.add_child(i)
 	i.add_doors()
 	var door := i.get_node("Door_mage_association") as Node3D
-	check(door.position.distance_to(Vector3(0, 0, -17)) < 0.01, "front door at the town marker")
+	check(door.position.distance_to(Vector3(0, 0, -160)) < 0.01, "front door at the town marker")
 	var p := Node3D.new()
 	p.add_to_group(Player.GROUP)
 	root.add_child(p)
@@ -43,7 +43,7 @@ func test_enter_and_leave() -> void:
 	var out := i.leave("midden")
 	check(i.current == "", "left")
 	check(out.y > -100.0, "back above ground (%s)" % out)
-	check(out.distance_to(Vector3(0, 0, 17.5)) < Interiors.INSET + 0.1, "back door lands at the Landfill road")
+	check(out.distance_to(Vector3(0, 0, 160)) < Interiors.INSET + 0.1, "back door lands at the Landfill road")
 	await i.enter("mage_association")
 	out = i.leave("town_square")
 	check(out.distance_to(door.position) >= InteriorDoor.RADIUS, "landing clear of the door trigger")

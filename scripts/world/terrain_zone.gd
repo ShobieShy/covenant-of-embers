@@ -34,6 +34,12 @@ const EDGE := 24.0  ## metres over which the zone edge rises to `rim`
 ## which is what a single-height close (the town) already shipped.
 @export var pad_heights: PackedFloat32Array = PackedFloat32Array()
 @export var blend := 14.0
+## Width of the rim rise. 24 m is the rise every zone shipped before 0.11.1.
+@export var cliff_width := 24.0
+## Instanced grass cards. No collision, faded at 50 m, never more than 8000 in view.
+@export var foliage := 0
+## Sculpt stamps: x, z, radius, depth. Depth below zero digs a bowl. Pads stay flat.
+@export var carves: PackedVector4Array = PackedVector4Array()
 @export var build_on_ready := true
 
 var terrain: Node3D = null  ## Terrain3D (typed loosely so this parses without the extension)
@@ -155,8 +161,25 @@ func height_at(x: float, z: float) -> float:
 	# so a gate road can reach the zone edge and stay flat.
 	if pad_distance(x, z) <= 0.0:
 		return h
-	var e := clampf(1.0 - edge_distance(x, z) / EDGE, 0.0, 1.0)
+	h = _carved(x, z, h)
+	var width := cliff_width if cliff_width > 0.0 else EDGE
+	var e := clampf(1.0 - edge_distance(x, z) / width, 0.0, 1.0)
 	return h + rim * e * e
+
+
+func _carved(x: float, z: float, h: float) -> float:
+	for c in carves:
+		var radius := c.z
+		if radius <= 0.0:
+			continue
+		var dx := x - c.x
+		var dz := z - c.y
+		var dist := sqrt(dx * dx + dz * dz)
+		if dist >= radius:
+			continue
+		var u := dist / radius
+		h += c.w * (1.0 - u * u)
+	return h
 
 
 func grid_size() -> Vector2i:
@@ -244,6 +267,71 @@ func build() -> void:
 	t.get(&"collision").call(&"build")
 	terrain = t
 	_hide_ground_meshes()
+	_add_foliage()
+
+
+func _add_foliage() -> void:
+	if foliage <= 0:
+		return
+	var n := mini(foliage, 8000)
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = _grass_mesh()
+	mm.instance_count = n
+	var rng := RandomNumberGenerator.new()
+	rng.seed = noise_seed
+	var placed := 0
+	var tries := 0
+	while placed < n and tries < n * 12:
+		tries += 1
+		var x := center.x + (rng.randf() - 0.5) * size.x * 0.9
+		var z := center.y + (rng.randf() - 0.5) * size.y * 0.9
+		if pad_distance(x, z) < 2.0 or edge_distance(x, z) < cliff_width:
+			continue
+		var y := height_at(x, z)
+		var slope := absf(height_at(x + spacing, z) - y) + absf(height_at(x, z + spacing) - y)
+		if slope > spacing * 0.8:
+			continue
+		var basis := Basis(Vector3.UP, rng.randf() * TAU)
+		basis = basis.scaled(
+			Vector3(rng.randf_range(0.75, 1.35), rng.randf_range(0.65, 1.25), rng.randf_range(0.75, 1.35))
+		)
+		mm.set_instance_transform(placed, Transform3D(basis, Vector3(x, y, z)))
+		placed += 1
+	mm.visible_instance_count = placed
+	var inst := MultiMeshInstance3D.new()
+	inst.name = "Foliage"
+	inst.multimesh = mm
+	inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	inst.visibility_range_end = 50.0
+	inst.visibility_range_end_margin = 8.0
+	inst.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.32, 0.48, 0.2)
+	mat.roughness = 1.0
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	inst.material_override = mat
+	add_child(inst)
+
+
+func _grass_mesh() -> ArrayMesh:
+	var verts := PackedVector3Array()
+	var normals := PackedVector3Array()
+	var quads: Array[PackedVector3Array] = [
+		PackedVector3Array([Vector3(-0.18, 0, 0), Vector3(0.18, 0, 0), Vector3(0.18, 0.5, 0), Vector3(-0.18, 0.5, 0)]),
+		PackedVector3Array([Vector3(0, 0, -0.18), Vector3(0, 0, 0.18), Vector3(0, 0.5, 0.18), Vector3(0, 0.5, -0.18)]),
+	]
+	for q in quads:
+		verts.append_array([q[0], q[1], q[2], q[0], q[2], q[3]])
+		for _i in 6:
+			normals.append(Vector3.UP)
+	var arrays: Array = []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = verts
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	return mesh
 
 
 ## Batch 07 follow-up: the greybox `ground` boxes sit 2 cm above the pads and hid the painted
