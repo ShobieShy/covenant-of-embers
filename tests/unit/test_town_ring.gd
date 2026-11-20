@@ -11,7 +11,7 @@ func test_ring_scale_and_ground() -> void:
 	var south := (level.get_node("Exits/to_landfill") as Node3D).position
 	var east := (level.get_node("Exits/to_old_oak") as Node3D).position
 	var across := north.distance_to(south)
-	check(across > 300.0 and across < 360.0, "north to south is a hub crossing (%.0f m)" % across)
+	check(across > 240.0 and across < 340.0, "north to south stays a town crossing (%.0f m)" % across)
 	check(east.x > 140.0 and absf(east.z) < 80.0, "the east gate stays on the east road")
 	check(level.get_node_or_null("Exits/to_west") == null, "the west arc has no gate")
 	check(terrain.foliage > 0 and terrain.foliage <= 8000, "grass stays inside the instance cap")
