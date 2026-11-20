@@ -550,7 +550,11 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		_unstick_s -= dt
 		_input = PlayerInput.hold(["forward", "right" if int(total_time / 3.0) % 2 == 0 else "left"] + held, ["jump"])
 		return
-	_input = PlayerInput.hold(["forward"] + held)
+	# 0.11.1: the hub and the valley are long. Sprint the open ground; breath still cuts it off.
+	var gait := ["forward"]
+	if flat_distance(at) > 24.0:
+		gait.append("sprint")
+	_input = PlayerInput.hold(gait + held)
 
 
 func flat_distance(at: Vector3) -> float:
