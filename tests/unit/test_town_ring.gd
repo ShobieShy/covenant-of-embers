@@ -1,5 +1,5 @@
 extends TestCase
-## 0.11.1: Eldoria is a hub you cross in about a minute of sprint, not a 72 m pad.
+## 0.11.3: Eldoria follows the town painting. North to south stays a short sprint.
 
 
 func test_ring_scale_and_ground() -> void:
@@ -18,10 +18,11 @@ func test_ring_scale_and_ground() -> void:
 	check(level.get_node_or_null("Terrain/Foliage") != null, "grass is one instanced mesh")
 	var kill := float(level.get_meta("kill_line_y"))
 	check(kill < north.y - 7.0, "the kill line sits under the streets (%.1f)" % kill)
-	var pad := terrain.height_at(0.0, 0.0)
-	var mound := terrain.height_at(-100.0, 40.0)
-	check(mound > pad + 2.0, "a hill stands west of the square")
-	var moat := terrain.height_at(-139.1, 50.6)
-	check(moat < pad - 0.5, "a ravine sits off the roads")
+	var pad := terrain.height_at(0.0, 28.0)
+	var dropped := terrain.height_at(-230.0, 10.0)
+	check(dropped < pad - 4.0, "the ground drops outside the west wall (%.1f vs %.1f)" % [dropped, pad])
+	check(level.get_node_or_null("Props/old_oak") == null, "the grove keeps the Old Oak name")
+	check(level.get_node_or_null("Props/oak_landmark") != null, "the east lobe holds the oak")
+	check(level.get_node_or_null("Underlay") != null, "the painting is the underlay")
 	check(level.get_node_or_null("Boxes/cliff_w") == null, "the west boundary is not a wall box")
 	level.free()
