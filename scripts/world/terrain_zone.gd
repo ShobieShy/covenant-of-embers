@@ -40,6 +40,15 @@ const EDGE := 24.0  ## metres over which the zone edge rises to `rim`
 @export var foliage := 0
 ## Sculpt stamps: x, z, radius, depth. Depth below zero digs a bowl. Pads stay flat.
 @export var carves: PackedVector4Array = PackedVector4Array()
+## Raised town: flat inside the circle (and optional ellipses), then a cliff.
+@export var plateau_center := Vector2.ZERO
+@export var plateau_radius := 0.0
+@export var plateau_drop := 0.0
+@export var plateau_fall := 16.0
+@export var lobe_center := Vector2.ZERO
+@export var lobe_radii := Vector2.ZERO
+@export var keep_center := Vector2.ZERO
+@export var keep_radii := Vector2.ZERO
 @export var build_on_ready := true
 
 var terrain: Node3D = null  ## Terrain3D (typed loosely so this parses without the extension)
@@ -162,9 +171,31 @@ func height_at(x: float, z: float) -> float:
 	if pad_distance(x, z) <= 0.0:
 		return h
 	h = _carved(x, z, h)
+	h -= plateau_drop * _plateau_mix(x, z)
 	var width := cliff_width if cliff_width > 0.0 else EDGE
 	var e := clampf(1.0 - edge_distance(x, z) / width, 0.0, 1.0)
 	return h + rim * e * e
+
+
+## 0 inside the plateau, 1 once plateau_fall metres outside the circle and ellipses.
+func _plateau_mix(x: float, z: float) -> float:
+	if plateau_radius <= 0.0 or plateau_drop == 0.0:
+		return 0.0
+	var gap := Vector2(x, z).distance_to(plateau_center) - plateau_radius
+	gap = minf(gap, _ellipse_gap(x, z, lobe_center, lobe_radii))
+	gap = minf(gap, _ellipse_gap(x, z, keep_center, keep_radii))
+	if gap <= 0.0:
+		return 0.0
+	var u := clampf(gap / maxf(plateau_fall, 0.001), 0.0, 1.0)
+	return u * u * (3.0 - 2.0 * u)
+
+
+func _ellipse_gap(x: float, z: float, c: Vector2, radii: Vector2) -> float:
+	if radii.x <= 1.0 or radii.y <= 1.0:
+		return 1.0e8
+	var nx := (x - c.x) / radii.x
+	var nz := (z - c.y) / radii.y
+	return (sqrt(nx * nx + nz * nz) - 1.0) * minf(radii.x, radii.y)
 
 
 func _carved(x: float, z: float, h: float) -> float:

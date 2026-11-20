@@ -54,45 +54,9 @@ def wall_z(name, piece, z0, z1, xc, h, thick, tile=4.0, y=0.0, flip=False):
 
 
 def town() -> tuple[set[str], str]:
-    # 0.11.1: 120 m square inside a 320 m ring. Kenney rock-large stands in for the cliff mesh.
-    hide = {"fountain", "stall_1", "stall_2", "stall_3", "stall_4", "flagon"}
-    y = 2.0
-    p = []
-    for i in range(24):
-        deg = i * 15
-        if deg <= 12 or abs(deg - 90) <= 16 or abs(deg - 180) <= 12 or deg >= 348:
-            continue  # the three gates stay open
-        a = math.radians(deg)
-        p.append(prop(f"rim_rock_{i + 1}", TOWN + "rock-large.glb",
-                      (round(math.sin(a) * 166, 1), 0.0, round(-math.cos(a) * 166, 1)),
-                      float(deg), (5.5, 4.0, 3.5), snap=True))
-    for i, (x, z) in enumerate(((-48, -48), (48, -48), (-48, 48), (48, 48))):
-        p.append(prop(f"ward_lantern_{i + 1}", TOWN + "lantern.glb", (x, y + 7.2, z), 0.0, 1.4))
-    p.append(prop("association_arch", TOWN + "wall-arch-top-detail.glb", (0.0, y + 4.0, -158.0), 90.0, (8.0, 2.2, 6.0)))
-    p.append(prop("gate_pillars_n", TOWN + "pillar-stone.glb", (-6.0, y, -156.0), 0.0, (5, 6, 5), 2, (12, 0, 0)))
-    p.append(prop("gate_pillars_s", TOWN + "pillar-stone.glb", (-6.0, y, 156.0), 0.0, (5, 6, 5), 2, (12, 0, 0)))
-    p.append(prop("gate_pillars_e", TOWN + "pillar-stone.glb", (156.0, y, 24.0), 0.0, (5, 6, 5), 2, (0, 0, 12)))
-    for i, (x, b) in enumerate(((-40, "red"), (-20, "green"), (20, "green"), (40, "red"))):
-        p.append(prop(f"banner_n{i + 1}", TOWN + f"banner-{b}.glb", (x, y + 1.0, -52.0), 90.0, 3))
-    p.append(prop("fountain", TOWN + "fountain-square-detail.glb", (0, y, 0), 0.0, (3.2, 2.4, 3.2)))
-    for i, x in enumerate((-48, -36, 36, 48)):
-        p.append(prop(f"stall_{i + 1}", TOWN + ("stall-red.glb" if i % 2 == 0 else "stall-green.glb"),
-                      (x, y, -22), 0.0, (3.2, 1.5, 2.0)))
-    p.append(prop("cart", TOWN + "cart-high.glb", (-54, y, -22), 90.0, 1.8))
-    p.append(wall_x("flagon_n", TOWN + "wall-wood-window-shutters.glb", -52, -36, 18, 4, 0.4, tile=4, y=y))
-    p.append(wall_x("flagon_s", TOWN + "wall-wood-window-glass.glb", -52, -36, 30, 4, 0.4, tile=4, flip=True, y=y))
-    p.append(wall_z("flagon_w", TOWN + "wall-wood.glb", 18, 30, -52, 4, 0.4, tile=4, y=y))
-    p.append(wall_z("flagon_e", TOWN + "wall-wood-door.glb", 18, 30, -36, 4, 0.4, tile=6, flip=True, y=y))
-    p.append(prop("flagon_roof", TOWN + "roof-high-point.glb", (-44, y + 4, 24), 0.0, (14.5, 3.2, 11)))
-    p.append(prop("flagon_chimney", TOWN + "chimney.glb", (-50, y + 5.4, 22), 0.0, 2.2))
-    p.append(prop("flagon_lantern", TOWN + "lantern.glb", (-34.5, y, 20), 0.0, 1.4))
-    p.append(prop("gate_lantern_n", TOWN + "lantern.glb", (8, y, -154), 0.0, 1.4))
-    p.append(prop("gate_lantern_s", TOWN + "lantern.glb", (8, y, 154), 0.0, 1.4))
-    p.append(prop("gate_lantern_e", TOWN + "lantern.glb", (154, y, 38), 0.0, 1.4))
-    for i, (x, z, sc) in enumerate(((-100, 40, 3.2), (-110, -50, 2.8), (40, 100, 3.4), (90, -80, 2.6), (80, 90, 3.0))):
-        p.append(prop(f"grove_tree_{i + 1}", NATURE + "tree_oak.glb", (x, 0.0, z), float(i * 40), sc, snap=True))
-        p.append(prop(f"outcrop_{i + 1}", TOWN + "rock-wide.glb", (x + 6, 0.0, z - 4), float(i * 25), 2.4, snap=True))
-    return hide, "".join(p)
+    # 0.11.3: the painting in docs/maps/levels/town.jpg. Props come from spec_town.
+    import spec_town
+    return spec_town.hide_names(), spec_town.dress_block()
 
 
 def hall() -> tuple[set[str], str]:

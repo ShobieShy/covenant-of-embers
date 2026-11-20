@@ -25,7 +25,11 @@ AMBIENT = ROOT / "assets" / "ambientcg"
 
 # The filters that were already there. Terrain globs are appended, sorted.
 BASE = (
-    "tests/*, archive/*, playtest/*, docs/*, tools/*, "
+    "tests/*, archive/*, playtest/*, tools/*, "
+    "docs/*.md, docs/*.json, docs/concepts/*, docs/credits/*, docs/archive/*, "
+    "docs/design/*, docs/adr/*, docs/perf/*, docs/release/*, "
+    "docs/maps/eldoria-and-the-labyrinth.jpg, docs/maps/eldoria-hub-map.jpg, "
+    "docs/maps/labyrinth-cross-section.jpg, docs/maps/elyria-world-map.jpg, "
     "assets/kenney/blaster-kit/Models/FBX format/*, "
     "assets/kenney/blaster-kit/Models/OBJ format/*, "
     "assets/kenney/blaster-kit/Previews/*, "

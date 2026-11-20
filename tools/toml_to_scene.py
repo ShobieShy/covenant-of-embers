@@ -179,15 +179,16 @@ def _props(items: list, out: dict) -> None:
     seen: set[str] = set()
     for i, pr in enumerate(items):
         w = f"prop {i + 1}"
-        _only(pr, {"name", "model", "position", "rotation_deg", "scale", "count", "step", "poi", "snap"}, w)
+        _only(pr, {"name", "model", "position", "rotation_deg", "scale", "count", "step", "poi", "snap", "tint", "tex"}, w)
         name = str(pr.get("name", f"prop_{i + 1}"))
         if name in seen:
             raise LevelError(f"duplicate prop name '{name}'")
         seen.add(name)
         w = f"prop '{name}'"
         model = str(_need(pr, "model", w))
-        if not model.startswith("assets/") or not model.endswith((".glb", ".gltf")) or not (ROOT / model).is_file():
-            raise LevelError(f"{w}: no model {model} (an assets/...glb or .gltf)")
+        generated = model == "generated:block"
+        if not generated and (not model.startswith("assets/") or not model.endswith((".glb", ".gltf")) or not (ROOT / model).is_file()):
+            raise LevelError(f"{w}: no model {model} (an assets/...glb or .gltf, or generated:block)")
         sc = pr.get("scale", 1.0)
         if isinstance(sc, (int, float)) and not isinstance(sc, bool):
             sc = [sc, sc, sc]
@@ -204,7 +205,11 @@ def _props(items: list, out: dict) -> None:
             "step": _vec(pr.get("step", [0, 0, 0]), f"{w} step"),
             "poi": str(pr.get("poi", "")),
             "snap": _bool(pr.get("snap", False), f"{w} snap"),
+            "tint": _color(pr["tint"], f"{w} tint") if "tint" in pr else None,
+            "tex": str(pr.get("tex", "")),
         })
+        if out["props"][-1]["tex"] and not (ROOT / out["props"][-1]["tex"] / "color.jpg").is_file():
+            raise LevelError(f"{w}: no texture {out['props'][-1]['tex']}/color.jpg")
         if out["props"][-1]["poi"] and out["props"][-1]["poi"] not in {p["name"] for p in out["pois"]}:
             raise LevelError(f"{w}: unknown poi '{out['props'][-1]['poi']}'")
 
@@ -314,7 +319,8 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate", "chest", "camp"}, "top level")
+               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate", "chest", "camp",
+               "underlay"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -325,7 +331,10 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     if len(wo) != 2 or any(x % 16.0 for x in wo):
         raise LevelError("world_offset must be [x, z], multiples of 16 m")
     env = d["environment"]
-    _only(env, {"sky_color", "ambient_color", "fog_density", "sky", "volumetric_fog", "fog_albedo", "grade"}, "[environment]")
+    _only(env, {"sky_color", "ambient_color", "fog_density", "sky", "volumetric_fog", "fog_albedo", "grade", "dome"}, "[environment]")
+    dome = float(env.get("dome", 0.0))
+    if not 0.0 <= dome <= 400.0:
+        raise LevelError("dome must be a radius in [0, 400]")
     vfog = float(env.get("volumetric_fog", 0.0))
     if not 0.0 <= vfog <= 0.2:
         raise LevelError("volumetric_fog must be in [0, 0.2]")
@@ -354,6 +363,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "volumetric_fog": vfog,
         "fog_albedo": _color(env.get("fog_albedo", [1.0, 1.0, 1.0]), "fog_albedo"),
         "grade": grade,
+        "dome": dome,
         "to_light": [x / ln for x in tl],
         "sun_color": _color(_need(sun, "color", "[sun]"), "sun color"),
         "start_position": _vec(_need(ps, "position", "[player_start]"), "player_start position"),
@@ -376,7 +386,19 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "gates": [],
         "chests": [],
         "camps": [],
+        "underlay": None,
     }
+    und = d.get("underlay")
+    if und:
+        _only(und, {"image", "center", "size"}, "[underlay]")
+        image = str(_need(und, "image", "[underlay]"))
+        if not image.startswith("docs/maps/levels/") or not (ROOT / image).is_file():
+            raise LevelError(f"[underlay] image must be a file under docs/maps/levels/ (got {image})")
+        size = _vec(_need(und, "size", "[underlay]"), "[underlay] size", 2)
+        if not all(8.0 <= x <= 4000.0 for x in size):
+            raise LevelError("[underlay] size must be 8..4000 m")
+        out["underlay"] = {"image": image, "center": _vec(_need(und, "center", "[underlay]"), "[underlay] center"),
+                           "size": size}
     # Step 75: [materials] kind = "assets/<vendor>/<set>" (color/normal/roughness.jpg there),
     # uv_scale = world tiling per metre (triplanar, so boxes of any size tile evenly).
     mats = d.get("materials", {})
@@ -532,7 +554,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
 
 
 TERRAIN_KEYS = {"size", "center", "height", "seed", "spacing", "rim", "map_version", "layers", "pad_margin",
-                "blend", "stepped", "pad_y", "cliff", "foliage", "carves"}
+                "blend", "stepped", "pad_y", "cliff", "foliage", "carves", "plateau", "lobe", "keep"}
 
 
 def _num(t: dict, k: str, default: float, lo: float, hi: float) -> float:
@@ -603,12 +625,22 @@ def _terrain(t: dict, boxes: list[dict]) -> dict:
     foliage = t.get("foliage", 0)
     if not isinstance(foliage, int) or isinstance(foliage, bool) or not 0 <= foliage <= 8000:
         raise LevelError("[terrain] foliage must be an integer in [0, 8000]")
+    def _ellipse(key: str, n: int) -> list[float]:
+        if key not in t:
+            return [0.0] * n
+        v = _vec(t[key], f"[terrain] {key}", n)
+        return v
+
+    plateau = _ellipse("plateau", 4)  # cx, cz, radius, drop
+    if plateau[2] < 0.0 or plateau[2] > 2000.0 or not 0.0 <= plateau[3] <= 40.0:
+        raise LevelError("[terrain] plateau must be [cx, cz, radius, drop] with drop in [0, 40]")
     return {"size": size, "center": center, "height": _num(t, "height", 10.0, 0.0, 120.0), "seed": seed,
             "spacing": _num(t, "spacing", 1.0, 0.25, 4.0), "rim": _num(t, "rim", 16.0, 0.0, 80.0),
             "cliff": _num(t, "cliff", 24.0, 2.0, 80.0), "foliage": foliage, "carves": carves,
             "blend": _num(t, "blend", 14.0, 1.0, 100.0), "map_version": mv, "layers": [str(x) for x in layers],
             "pads": pads, "pad_heights": pad_heights if stepped else [],
-            "pad_y": _num(t, "pad_y", -0.02, -40.0, 40.0)}
+            "pad_y": _num(t, "pad_y", -0.02, -40.0, 40.0),
+            "plateau": plateau, "lobe": _ellipse("lobe", 4), "keep": _ellipse("keep", 4)}
 
 
 # ---------------------------------------------------------------- .tscn writer
@@ -750,6 +782,37 @@ def to_tscn(lv: dict, source: str) -> str:
     nodes.append(f'[node name="Sun" type="DirectionalLight3D" parent="."]\n'
                  f'transform = {_xf(sun_basis(lv["to_light"]), [0, 10, 0])}\n'
                  f'light_color = {_color_str(lv["sun_color"])}\nlight_energy = 1.3\nshadow_enabled = true\n')
+    und = lv.get("underlay")
+    if und:
+        plane = sub("PlaneMesh", ("underlay", tuple(und["size"])),
+                    f"size = Vector2({_f(und['size'][0])}, {_f(und['size'][1])})")
+        umat = sub("StandardMaterial3D", ("underlay", und["image"]), "\n".join([
+            f'albedo_texture = ExtResource("{ext_id(und["image"])}")',
+            "texture_filter = 2",
+            "cull_mode = 2",
+            "shading_mode = 0",
+        ]))
+        nodes.append(f'[node name="Underlay" type="MeshInstance3D" parent="."]\n'
+                     f'transform = {_xf([[1, 0, 0], [0, 1, 0], [0, 0, 1]], und["center"])}\n'
+                     f'mesh = SubResource("{plane}")\nsurface_material_override/0 = SubResource("{umat}")\n'
+                     f'cast_shadow = 0\n')
+    if lv.get("dome", 0.0) > 0.0:
+        radius = lv["dome"]
+        sphere = sub("SphereMesh", ("dome", radius),
+                     f"radius = {_f(radius)}\nheight = {_f(radius * 2)}\nradial_segments = 48\nrings = 24")
+        dmat = sub("StandardMaterial3D", "dome", "\n".join([
+            "transparency = 1",
+            "albedo_color = Color(0.95, 0.78, 0.95, 0.34)",
+            "emission_enabled = true",
+            "emission = Color(0.42, 0.25, 0.72, 1)",
+            "emission_energy_multiplier = 0.4",
+            "cull_mode = 1",
+            "shading_mode = 0",
+        ]))
+        nodes.append(f'[node name="Dome" type="MeshInstance3D" parent="."]\n'
+                     f'transform = {_xf([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [0, 20, 0])}\n'
+                     f'mesh = SubResource("{sphere}")\nsurface_material_override/0 = SubResource("{dmat}")\n'
+                     f'cast_shadow = 0\n')
     nodes.append('[node name="Boxes" type="Node3D" parent="."]\n')
     for i, b in enumerate(lv["boxes"]):
         sk = tuple(b["size"])
@@ -787,6 +850,16 @@ def to_tscn(lv: dict, source: str) -> str:
                      + (f'foliage = {tr["foliage"]}\n' if tr["foliage"] else "")
                      + (f'carves = PackedVector4Array({", ".join(_f(x) for c in tr["carves"] for x in c)})\n'
                         if tr["carves"] else "")
+                     + (f'plateau_center = Vector2({_f(tr["plateau"][0])}, {_f(tr["plateau"][1])})\n'
+                        f'plateau_radius = {_f(tr["plateau"][2])}\nplateau_drop = {_f(tr["plateau"][3])}\n'
+                        f'plateau_fall = 18.0\n'
+                        if tr.get("plateau") and tr["plateau"][2] > 0 else "")
+                     + (f'lobe_center = Vector2({_f(tr["lobe"][0])}, {_f(tr["lobe"][1])})\n'
+                        f'lobe_radii = Vector2({_f(tr["lobe"][2])}, {_f(tr["lobe"][3])})\n'
+                        if tr.get("lobe") and tr["lobe"][2] > 0 else "")
+                     + (f'keep_center = Vector2({_f(tr["keep"][0])}, {_f(tr["keep"][1])})\n'
+                        f'keep_radii = Vector2({_f(tr["keep"][2])}, {_f(tr["keep"][3])})\n'
+                        if tr.get("keep") and tr["keep"][2] > 0 else "")
                      + f'blend = {_f(tr["blend"])}\n')
     scenes: dict[str, str] = {}
     if any(not pr["poi"] for pr in lv["props"]):
@@ -797,15 +870,40 @@ def to_tscn(lv: dict, source: str) -> str:
             nodes.append(f'[node name="{p["name"]}" type="Node3D" parent="Pois"]\n'
                          f'metadata/center = {_v3(p["center"])}\nmetadata/radius = {_f(p["radius"])}\n')
     for pr in lv["props"]:
-        sid = scenes.setdefault(pr["model"], f"{len(scenes) + 1}_glb")
         m = rot_yxz(pr["rotation_deg"])
         basis = [[m[r][c] * pr["scale"][c] for c in range(3)] for r in range(3)]
+        mat_id = ""
+        if pr.get("tint") and pr.get("tex"):
+            body = "\n".join([
+                f'albedo_color = {_color_str(pr["tint"])}',
+                f'albedo_texture = ExtResource("{ext_id(pr["tex"] + "/color.jpg")}")',
+                "roughness = 0.82",
+                f'roughness_texture = ExtResource("{ext_id(pr["tex"] + "/roughness.jpg")}")',
+                "roughness_texture_channel = 0",
+                "uv1_scale = Vector3(0.08, 0.08, 0.08)",
+                "uv1_triplanar = true",
+                "texture_filter = 5",
+            ])
+            mat_id = sub("StandardMaterial3D", ("tint", tuple(pr["tint"]), pr["tex"]), body)
+        box = ""
+        if pr["model"] == "generated:block":
+            box = sub("BoxMesh", "unit", "size = Vector3(1, 1, 1)")
+        else:
+            scenes.setdefault(pr["model"], f"{len(scenes) + 1}_glb")
         for k in range(pr["count"]):
             pos = [pr["position"][j] + k * pr["step"][j] for j in range(3)]
             nm = pr["name"] if pr["count"] == 1 else f'{pr["name"]}_{k + 1}'
             par = f'Pois/{pr["poi"]}' if pr["poi"] else "Props"
-            nodes.append(f'[node name="{nm}" parent="{par}" instance=ExtResource("{sid}")]\n'
-                         f'transform = {_xf(basis, pos)}\n' + ('metadata/snap = true\n' if pr["snap"] else ""))
+            snap = 'metadata/snap = true\n' if pr["snap"] else ""
+            if pr["model"] == "generated:block":
+                nodes.append(f'[node name="{nm}" type="MeshInstance3D" parent="{par}"]\n'
+                             f'transform = {_xf(basis, pos)}\nmesh = SubResource("{box}")\n'
+                             + (f'surface_material_override/0 = SubResource("{mat_id}")\n' if mat_id else "")
+                             + snap)
+            else:
+                sid = scenes[pr["model"]]
+                nodes.append(f'[node name="{nm}" parent="{par}" instance=ExtResource("{sid}")]\n'
+                             f'transform = {_xf(basis, pos)}\n' + snap)
     nodes.append('[node name="Navigation" type="NavigationRegion3D" parent="."]\n'
                  'script = ExtResource("1_nav")\nsource = NodePath("../Boxes")\n')
     nodes.append(f'[node name="PlayerStart" type="Marker3D" parent="."]\n'

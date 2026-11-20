@@ -1,8 +1,4 @@
-# Eldoria Town Square, 0.11.1. A hub ring about 320 m across. The paved
-# square is 120 m and sits at y 2, with roads north, south, and east.
-# The west arc is a cliff. Grass, hills, a shallow moat, and rock
-# outcrops are the Terrain3D ground. Kenney rock-large stands in for
-# the Ember Art cliff mesh. The dome is the sky.
+# Eldoria, 0.11.3. Packed onto the town painting. Streets sit on a plateau.
 
 [level]
 id = "town_square"
@@ -11,558 +7,7493 @@ world_offset = [0.0, 0.0]
 
 [materials]
 ground = "assets/ambientcg/PavingStones131"
-uv_scale = 0.4
+uv_scale = 0.25
 
 [environment]
-sky_color = [0.62, 0.48, 0.82]
-ambient_color = [0.42, 0.4, 0.5]
-fog_density = 0.003
+sky_color = [0.55, 0.62, 0.86]
+ambient_color = [0.48, 0.42, 0.36]
+fog_density = 0.0014
 sky = true
-grade = [1.03, 1.05, 1.12]
+grade = [1.05, 1.08, 1.14]
+dome = 250.0
 
 [sun]
-to_light = [0.4, 0.8, 0.3]
-color = [1.0, 0.95, 0.85]
+to_light = [0.62, 0.68, 0.24]
+color = [1.0, 0.82, 0.58]
 
 [player_start]
-position = [0.0, 2.0, 36.0]
+position = [0.0, 12.0, 160.993]
 yaw_deg = 0.0
 
+[underlay]
+image = "docs/maps/levels/town.jpg"
+center = [0.0, -4.0, 0.0]
+size = [569.976, 569.976]
+
 [terrain]
-size = [360, 360]
-center = [0, 0]
-height = 8
-seed = 100
-rim = 14
-cliff = 8
-blend = 24
+size = [780, 780]
+center = [30, 0]
+height = 1.4
+seed = 113
+rim = 0
+cliff = 24
+blend = 12
 spacing = 2
-map_version = 3
-pad_y = 1.95
-foliage = 6000
+map_version = 5
+pad_y = 11.95
+pad_margin = 0.6
+stepped = true
+foliage = 7000
 layers = ["grass", "rock", "path_cobble"]
-carves = [[95.1, -113.4, 22, -9], [95.1, 113.4, 22, -9], [-95.1, 113.4, 22, -9], [-139.1, 50.6, 22, -9], [-139.1, -50.6, 22, -9], [-95.1, -113.4, 22, -9], [-100.0, 40.0, 18, 5.0], [-110.0, -50.0, 16, 4.5], [40.0, 100.0, 18, 5.0], [90.0, -80.0, 16, 4.0], [80.0, 90.0, 16, 4.5], [-70.0, 110.0, 14, 3.5]]
+plateau = [11.4, 11.4, 176.0, 14.0]
+lobe = [182.392, -68.397, 78.0, 66.0]
+keep = [11.4, -58.6, 96.0, 110.0]
 
 [[box]]
 name = "square"
 kind = "ground"
-center = [0.0, 1.9, 0.0]
-size = [120.0, 0.2, 120.0]
+center = [0.0, 11.9, 28.499]
+size = [18.0, 0.2, 18.0]
 color = [0.36, 0.34, 0.31]
 [[box]]
-name = "street_n"
+name = "plaza_0"
 kind = "ground"
-center = [0.0, 1.9, -116.0]
-size = [14.0, 0.2, 112.0]
-color = [0.32, 0.30, 0.28]
+center = [0.0, 11.9, 44.499]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
 [[box]]
-name = "street_s"
+name = "plaza_1"
 kind = "ground"
-center = [0.0, 1.9, 116.0]
-size = [14.0, 0.2, 112.0]
-color = [0.32, 0.30, 0.28]
+center = [5.472, 11.9, 43.534]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
 [[box]]
-name = "street_e"
+name = "plaza_2"
 kind = "ground"
-center = [116.0, 1.9, 30.0]
-size = [112.0, 0.2, 14.0]
-color = [0.32, 0.30, 0.28]
+center = [10.285, 11.9, 40.756]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
 [[box]]
-name = "ward_1"
+name = "plaza_3"
+kind = "ground"
+center = [13.856, 11.9, 36.499]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_4"
+kind = "ground"
+center = [15.757, 11.9, 31.277]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_5"
+kind = "ground"
+center = [15.757, 11.9, 25.72]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_6"
+kind = "ground"
+center = [13.856, 11.9, 20.499]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_7"
+kind = "ground"
+center = [10.285, 11.9, 16.242]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_8"
+kind = "ground"
+center = [5.472, 11.9, 13.464]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_9"
+kind = "ground"
+center = [0.0, 11.9, 12.499]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_10"
+kind = "ground"
+center = [-5.472, 11.9, 13.464]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_11"
+kind = "ground"
+center = [-10.285, 11.9, 16.242]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_12"
+kind = "ground"
+center = [-13.856, 11.9, 20.499]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_13"
+kind = "ground"
+center = [-15.757, 11.9, 25.72]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_14"
+kind = "ground"
+center = [-15.757, 11.9, 31.277]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_15"
+kind = "ground"
+center = [-13.856, 11.9, 36.499]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_16"
+kind = "ground"
+center = [-10.285, 11.9, 40.756]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "plaza_17"
+kind = "ground"
+center = [-5.472, 11.9, 43.534]
+size = [12.0, 0.2, 12.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_0"
+kind = "ground"
+center = [0.766, 11.9, 168.319]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_1"
+kind = "ground"
+center = [2.195, 11.9, 162.916]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_2"
+kind = "ground"
+center = [3.488, 11.9, 157.437]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_3"
+kind = "ground"
+center = [4.645, 11.9, 151.883]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_4"
+kind = "ground"
+center = [5.665, 11.9, 146.253]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_5"
+kind = "ground"
+center = [6.55, 11.9, 140.548]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_6"
+kind = "ground"
+center = [7.299, 11.9, 134.767]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_7"
+kind = "ground"
+center = [7.911, 11.9, 128.911]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_8"
+kind = "ground"
+center = [8.388, 11.9, 122.98]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_9"
+kind = "ground"
+center = [8.728, 11.9, 116.973]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_10"
+kind = "ground"
+center = [8.932, 11.9, 110.891]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_11"
+kind = "ground"
+center = [9.0, 11.9, 104.733]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_12"
+kind = "ground"
+center = [8.932, 11.9, 98.5]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_13"
+kind = "ground"
+center = [8.728, 11.9, 92.192]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_14"
+kind = "ground"
+center = [8.388, 11.9, 85.808]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_15"
+kind = "ground"
+center = [7.911, 11.9, 79.348]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_16"
+kind = "ground"
+center = [7.299, 11.9, 72.813]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_17"
+kind = "ground"
+center = [6.55, 11.9, 66.203]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_18"
+kind = "ground"
+center = [5.665, 11.9, 59.518]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_19"
+kind = "ground"
+center = [4.645, 11.9, 52.756]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_20"
+kind = "ground"
+center = [3.488, 11.9, 45.92]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_21"
+kind = "ground"
+center = [2.195, 11.9, 39.008]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_22"
+kind = "ground"
+center = [0.766, 11.9, 32.021]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_23"
+kind = "ground"
+center = [-1.096, 11.9, 27.029]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_24"
+kind = "ground"
+center = [-3.148, 11.9, 23.909]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_25"
+kind = "ground"
+center = [-5.012, 11.9, 20.551]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_26"
+kind = "ground"
+center = [-6.688, 11.9, 16.953]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_27"
+kind = "ground"
+center = [-8.176, 11.9, 13.115]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_28"
+kind = "ground"
+center = [-9.476, 11.9, 9.038]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_29"
+kind = "ground"
+center = [-10.588, 11.9, 4.722]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_30"
+kind = "ground"
+center = [-11.512, 11.9, 0.166]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_31"
+kind = "ground"
+center = [-12.248, 11.9, -4.629]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_32"
+kind = "ground"
+center = [-12.796, 11.9, -9.664]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_33"
+kind = "ground"
+center = [-13.156, 11.9, -14.938]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_34"
+kind = "ground"
+center = [-13.328, 11.9, -20.451]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_35"
+kind = "ground"
+center = [-13.312, 11.9, -26.204]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_36"
+kind = "ground"
+center = [-13.108, 11.9, -32.196]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_37"
+kind = "ground"
+center = [-12.716, 11.9, -38.428]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_38"
+kind = "ground"
+center = [-12.136, 11.9, -44.899]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_39"
+kind = "ground"
+center = [-11.368, 11.9, -51.609]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_40"
+kind = "ground"
+center = [-10.411, 11.9, -58.559]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_41"
+kind = "ground"
+center = [-9.267, 11.9, -65.748]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_42"
+kind = "ground"
+center = [-7.935, 11.9, -73.176]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_43"
+kind = "ground"
+center = [-6.415, 11.9, -80.844]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_44"
+kind = "ground"
+center = [-4.707, 11.9, -88.752]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_45"
+kind = "ground"
+center = [-2.811, 11.9, -96.898]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_46"
+kind = "ground"
+center = [-0.727, 11.9, -105.284]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_47"
+kind = "ground"
+center = [1.545, 11.9, -113.91]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_48"
+kind = "ground"
+center = [-1.847, 11.9, 28.937]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_49"
+kind = "ground"
+center = [-5.717, 11.9, 29.715]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_50"
+kind = "ground"
+center = [-9.821, 11.9, 30.361]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_51"
+kind = "ground"
+center = [-14.157, 11.9, 30.875]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_52"
+kind = "ground"
+center = [-18.728, 11.9, 31.259]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_53"
+kind = "ground"
+center = [-23.532, 11.9, 31.51]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_54"
+kind = "ground"
+center = [-28.569, 11.9, 31.631]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_55"
+kind = "ground"
+center = [-33.84, 11.9, 31.619]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_56"
+kind = "ground"
+center = [-39.344, 11.9, 31.477]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_57"
+kind = "ground"
+center = [-45.082, 11.9, 31.202]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_58"
+kind = "ground"
+center = [-51.053, 11.9, 30.797]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_59"
+kind = "ground"
+center = [-57.258, 11.9, 30.26]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_60"
+kind = "ground"
+center = [-63.696, 11.9, 29.591]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_61"
+kind = "ground"
+center = [-70.368, 11.9, 28.791]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_62"
+kind = "ground"
+center = [-77.274, 11.9, 27.859]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_63"
+kind = "ground"
+center = [-84.412, 11.9, 26.796]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_64"
+kind = "ground"
+center = [-91.785, 11.9, 25.602]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_65"
+kind = "ground"
+center = [-99.391, 11.9, 24.276]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_66"
+kind = "ground"
+center = [-107.23, 11.9, 22.818]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_67"
+kind = "ground"
+center = [-115.303, 11.9, 21.229]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_68"
+kind = "ground"
+center = [-123.609, 11.9, 19.509]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_69"
+kind = "ground"
+center = [-132.149, 11.9, 17.657]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_70"
+kind = "ground"
+center = [-134.165, 11.9, 15.694]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_71"
+kind = "ground"
+center = [-129.687, 11.9, 13.501]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_72"
+kind = "ground"
+center = [-125.48, 11.9, 11.02]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_73"
+kind = "ground"
+center = [-121.545, 11.9, 8.252]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_74"
+kind = "ground"
+center = [-117.881, 11.9, 5.195]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_75"
+kind = "ground"
+center = [-114.488, 11.9, 1.85]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_76"
+kind = "ground"
+center = [-111.368, 11.9, -1.782]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_77"
+kind = "ground"
+center = [-108.519, 11.9, -5.702]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_78"
+kind = "ground"
+center = [-105.941, 11.9, -9.911]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_79"
+kind = "ground"
+center = [-103.635, 11.9, -14.407]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_80"
+kind = "ground"
+center = [-101.6, 11.9, -19.191]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_81"
+kind = "ground"
+center = [-99.837, 11.9, -24.263]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_82"
+kind = "ground"
+center = [-98.346, 11.9, -29.624]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_83"
+kind = "ground"
+center = [-97.126, 11.9, -35.272]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_84"
+kind = "ground"
+center = [-96.178, 11.9, -41.208]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_85"
+kind = "ground"
+center = [-95.501, 11.9, -47.432]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_86"
+kind = "ground"
+center = [-95.095, 11.9, -53.944]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_87"
+kind = "ground"
+center = [-94.962, 11.9, -60.744]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_88"
+kind = "ground"
+center = [-95.099, 11.9, -67.831]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_89"
+kind = "ground"
+center = [-95.509, 11.9, -75.207]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_90"
+kind = "ground"
+center = [-96.189, 11.9, -82.871]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_91"
+kind = "ground"
+center = [-92.242, 11.9, -87.409]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_92"
+kind = "ground"
+center = [-83.729, 11.9, -88.665]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_93"
+kind = "ground"
+center = [-75.571, 11.9, -90.001]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_94"
+kind = "ground"
+center = [-67.769, 11.9, -91.416]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_95"
+kind = "ground"
+center = [-60.323, 11.9, -92.911]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_96"
+kind = "ground"
+center = [-53.232, 11.9, -94.485]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_97"
+kind = "ground"
+center = [-46.497, 11.9, -96.139]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_98"
+kind = "ground"
+center = [-40.118, 11.9, -97.873]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_99"
+kind = "ground"
+center = [-34.094, 11.9, -99.686]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_100"
+kind = "ground"
+center = [-28.426, 11.9, -101.579]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_101"
+kind = "ground"
+center = [-23.113, 11.9, -103.551]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_102"
+kind = "ground"
+center = [-18.156, 11.9, -105.603]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_103"
+kind = "ground"
+center = [-13.554, 11.9, -107.735]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_104"
+kind = "ground"
+center = [-9.308, 11.9, -109.946]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_105"
+kind = "ground"
+center = [-5.418, 11.9, -112.237]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_106"
+kind = "ground"
+center = [-1.883, 11.9, -114.608]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_107"
+kind = "ground"
+center = [1.296, 11.9, -117.058]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_108"
+kind = "ground"
+center = [3.634, 11.9, 27.993]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_109"
+kind = "ground"
+center = [10.576, 11.9, 26.768]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_110"
+kind = "ground"
+center = [17.085, 11.9, 25.259]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_111"
+kind = "ground"
+center = [23.159, 11.9, 23.467]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_112"
+kind = "ground"
+center = [28.8, 11.9, 21.391]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_113"
+kind = "ground"
+center = [34.006, 11.9, 19.031]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_114"
+kind = "ground"
+center = [38.779, 11.9, 16.388]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_115"
+kind = "ground"
+center = [43.118, 11.9, 13.46]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_116"
+kind = "ground"
+center = [47.023, 11.9, 10.249]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_117"
+kind = "ground"
+center = [50.494, 11.9, 6.755]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_118"
+kind = "ground"
+center = [53.531, 11.9, 2.976]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_119"
+kind = "ground"
+center = [56.135, 11.9, -1.086]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_120"
+kind = "ground"
+center = [58.304, 11.9, -5.432]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_121"
+kind = "ground"
+center = [60.04, 11.9, -10.061]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_122"
+kind = "ground"
+center = [61.341, 11.9, -14.974]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_123"
+kind = "ground"
+center = [62.209, 11.9, -20.171]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_124"
+kind = "ground"
+center = [62.643, 11.9, -25.652]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_125"
+kind = "ground"
+center = [64.815, 11.9, -27.104]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_126"
+kind = "ground"
+center = [68.934, 11.9, -24.13]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_127"
+kind = "ground"
+center = [72.901, 11.9, -20.91]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_128"
+kind = "ground"
+center = [76.715, 11.9, -17.442]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_129"
+kind = "ground"
+center = [80.376, 11.9, -13.729]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_130"
+kind = "ground"
+center = [83.884, 11.9, -9.768]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_131"
+kind = "ground"
+center = [87.239, 11.9, -5.561]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_132"
+kind = "ground"
+center = [90.441, 11.9, -1.107]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_133"
+kind = "ground"
+center = [93.491, 11.9, 3.594]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_134"
+kind = "ground"
+center = [96.387, 11.9, 8.541]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_135"
+kind = "ground"
+center = [99.131, 11.9, 13.735]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_136"
+kind = "ground"
+center = [101.722, 11.9, 19.176]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_137"
+kind = "ground"
+center = [104.16, 11.9, 24.863]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_138"
+kind = "ground"
+center = [106.445, 11.9, 30.798]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_139"
+kind = "ground"
+center = [108.577, 11.9, 36.978]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_140"
+kind = "ground"
+center = [110.556, 11.9, 43.406]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_141"
+kind = "ground"
+center = [112.383, 11.9, 50.08]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_142"
+kind = "ground"
+center = [114.056, 11.9, 57.0]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_143"
+kind = "ground"
+center = [115.577, 11.9, 64.168]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_144"
+kind = "ground"
+center = [116.945, 11.9, 71.582]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_145"
+kind = "ground"
+center = [118.159, 11.9, 79.243]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_146"
+kind = "ground"
+center = [119.221, 11.9, 87.15]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_147"
+kind = "ground"
+center = [65.747, 11.9, -29.946]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_148"
+kind = "ground"
+center = [71.847, 11.9, -32.715]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_149"
+kind = "ground"
+center = [77.947, 11.9, -35.318]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_150"
+kind = "ground"
+center = [84.046, 11.9, -37.755]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_151"
+kind = "ground"
+center = [90.146, 11.9, -40.026]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_152"
+kind = "ground"
+center = [96.246, 11.9, -42.13]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_153"
+kind = "ground"
+center = [102.346, 11.9, -44.069]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_154"
+kind = "ground"
+center = [108.445, 11.9, -45.842]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_155"
+kind = "ground"
+center = [114.545, 11.9, -47.448]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_156"
+kind = "ground"
+center = [120.645, 11.9, -48.888]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_157"
+kind = "ground"
+center = [126.744, 11.9, -50.163]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_158"
+kind = "ground"
+center = [132.844, 11.9, -51.271]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_159"
+kind = "ground"
+center = [138.944, 11.9, -52.213]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_160"
+kind = "ground"
+center = [145.043, 11.9, -52.989]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_161"
+kind = "ground"
+center = [151.143, 11.9, -53.599]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_162"
+kind = "ground"
+center = [157.243, 11.9, -54.043]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_163"
+kind = "ground"
+center = [163.343, 11.9, -54.321]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_164"
+kind = "ground"
+center = [-2.643, 11.9, 28.097]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_165"
+kind = "ground"
+center = [-7.692, 11.9, 27.001]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_166"
+kind = "ground"
+center = [-12.425, 11.9, 25.514]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_167"
+kind = "ground"
+center = [-16.843, 11.9, 23.638]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_168"
+kind = "ground"
+center = [-20.945, 11.9, 21.371]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_169"
+kind = "ground"
+center = [-24.732, 11.9, 18.713]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_170"
+kind = "ground"
+center = [-28.203, 11.9, 15.666]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_171"
+kind = "ground"
+center = [-31.359, 11.9, 12.228]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_172"
+kind = "ground"
+center = [-34.199, 11.9, 8.4]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_173"
+kind = "ground"
+center = [-36.723, 11.9, 4.181]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_174"
+kind = "ground"
+center = [-38.932, 11.9, -0.428]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_175"
+kind = "ground"
+center = [-40.825, 11.9, -5.427]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_176"
+kind = "ground"
+center = [-42.403, 11.9, -10.816]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_177"
+kind = "ground"
+center = [-43.665, 11.9, -16.596]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_178"
+kind = "ground"
+center = [-44.612, 11.9, -22.766]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_179"
+kind = "ground"
+center = [-45.243, 11.9, -29.326]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_180"
+kind = "ground"
+center = [-45.559, 11.9, -36.277]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_181"
+kind = "ground"
+center = [11.4, 11.9, 114.32]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_182"
+kind = "ground"
+center = [29.271, 11.9, 112.756]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_183"
+kind = "ground"
+center = [46.6, 11.9, 108.113]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_184"
+kind = "ground"
+center = [62.86, 11.9, 100.531]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_185"
+kind = "ground"
+center = [77.555, 11.9, 90.241]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_186"
+kind = "ground"
+center = [90.241, 11.9, 77.555]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_187"
+kind = "ground"
+center = [100.531, 11.9, 62.86]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_188"
+kind = "ground"
+center = [108.113, 11.9, 46.6]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_189"
+kind = "ground"
+center = [112.756, 11.9, 29.271]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_190"
+kind = "ground"
+center = [114.32, 11.9, 11.4]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_191"
+kind = "ground"
+center = [140.625, 11.9, -11.386]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_192"
+kind = "ground"
+center = [155.696, 11.9, -41.12]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_193"
+kind = "ground"
+center = [141.853, 11.9, -63.918]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_194"
+kind = "ground"
+center = [109.378, 11.9, -70.815]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_195"
+kind = "ground"
+center = [77.555, 11.9, -67.442]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_196"
+kind = "ground"
+center = [62.86, 11.9, -77.732]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_197"
+kind = "ground"
+center = [46.6, 11.9, -85.314]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_198"
+kind = "ground"
+center = [29.271, 11.9, -89.957]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_199"
+kind = "ground"
+center = [11.4, 11.9, -91.52]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_200"
+kind = "ground"
+center = [-6.472, 11.9, -89.957]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_201"
+kind = "ground"
+center = [-23.801, 11.9, -85.314]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_202"
+kind = "ground"
+center = [-40.06, 11.9, -77.732]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_203"
+kind = "ground"
+center = [-54.756, 11.9, -67.442]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_204"
+kind = "ground"
+center = [-67.442, 11.9, -54.756]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_205"
+kind = "ground"
+center = [-77.732, 11.9, -40.06]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_206"
+kind = "ground"
+center = [-85.314, 11.9, -23.801]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_207"
+kind = "ground"
+center = [-89.957, 11.9, -6.472]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_208"
+kind = "ground"
+center = [-91.52, 11.9, 11.4]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_209"
+kind = "ground"
+center = [-89.957, 11.9, 29.271]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_210"
+kind = "ground"
+center = [-85.314, 11.9, 46.6]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_211"
+kind = "ground"
+center = [-77.732, 11.9, 62.86]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_212"
+kind = "ground"
+center = [-67.442, 11.9, 77.555]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_213"
+kind = "ground"
+center = [-54.756, 11.9, 90.241]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_214"
+kind = "ground"
+center = [-40.06, 11.9, 100.531]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_215"
+kind = "ground"
+center = [-23.801, 11.9, 108.113]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_216"
+kind = "ground"
+center = [-6.472, 11.9, 112.756]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "path_217"
+kind = "ground"
+center = [11.4, 11.9, 114.32]
+size = [8.0, 0.2, 8.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_0"
+kind = "ground"
+center = [0.8, 10.3, 180.393]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_1"
+kind = "ground"
+center = [2.4, 8.7, 187.193]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_2"
+kind = "ground"
+center = [4.0, 7.1, 193.993]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_3"
+kind = "ground"
+center = [5.6, 5.5, 200.793]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_4"
+kind = "ground"
+center = [7.2, 3.9, 207.593]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_5"
+kind = "ground"
+center = [6.833, 2.3, 214.16]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_6"
+kind = "ground"
+center = [4.5, 0.7, 220.493]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_7"
+kind = "ground"
+center = [2.167, -0.9, 226.826]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_8"
+kind = "ground"
+center = [-0.167, -2.5, 233.16]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_9"
+kind = "ground"
+center = [-2.5, -4.1, 239.493]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_s_10"
+kind = "ground"
+center = [-4.833, -5.7, 245.826]
+size = [8.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_e_0"
+kind = "ground"
+center = [121.895, 10.5, 101.996]
+size = [7.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_e_1"
+kind = "ground"
+center = [126.295, 9.1, 107.596]
+size = [7.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_e_2"
+kind = "ground"
+center = [130.695, 7.7, 113.196]
+size = [7.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_e_3"
+kind = "ground"
+center = [135.095, 6.3, 118.796]
+size = [7.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_e_4"
+kind = "ground"
+center = [139.495, 4.9, 124.396]
+size = [7.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_e_5"
+kind = "ground"
+center = [143.495, 3.5, 130.596]
+size = [7.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_e_6"
+kind = "ground"
+center = [147.095, 2.1, 137.396]
+size = [7.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_e_7"
+kind = "ground"
+center = [150.695, 0.7, 144.196]
+size = [7.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_e_8"
+kind = "ground"
+center = [154.295, -0.7, 150.996]
+size = [7.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "slope_e_9"
+kind = "ground"
+center = [157.895, -2.1, 157.796]
+size = [7.0, 0.2, 7.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "gate_pad"
+kind = "ground"
+center = [0.0, 11.9, 164.993]
+size = [20.0, 0.2, 16.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "oak_pad"
+kind = "ground"
+center = [166.392, 11.9, -54.397]
+size = [10.0, 0.2, 10.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "door_pad"
+kind = "ground"
+center = [2.752, 11.9, -94.313]
+size = [14.0, 0.2, 10.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "flagon_pad"
+kind = "ground"
+center = [-122.506, 11.9, 16.682]
+size = [10.0, 0.2, 10.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "market_w_pad"
+kind = "ground"
+center = [-45.598, 11.9, -39.898]
+size = [22.0, 0.2, 14.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "market_e_pad"
+kind = "ground"
+center = [62.697, 11.9, -28.499]
+size = [26.0, 0.2, 14.0]
+color = [0.36, 0.34, 0.31]
+[[box]]
+name = "col_1"
 kind = "wall"
-center = [-48.0, 5.5, -48.0]
-size = [1.4, 7.0, 1.4]
-color = [0.45, 0.28, 0.85]
-[[box]]
-name = "ward_2"
-kind = "wall"
-center = [48.0, 5.5, -48.0]
-size = [1.4, 7.0, 1.4]
-color = [0.45, 0.28, 0.85]
-[[box]]
-name = "ward_3"
-kind = "wall"
-center = [-48.0, 5.5, 48.0]
-size = [1.4, 7.0, 1.4]
-color = [0.45, 0.28, 0.85]
-[[box]]
-name = "ward_4"
-kind = "wall"
-center = [48.0, 5.5, 48.0]
-size = [1.4, 7.0, 1.4]
-color = [0.45, 0.28, 0.85]
-[[box]]
-name = "fountain"
-kind = "heap"
-center = [0.0, 2.4, 0.0]
-size = [6.0, 0.8, 6.0]
-color = [0.6, 0.6, 0.65]
+center = [16.246, 16.5, 173.327]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 91.714, 0.0]
+color = [0.42, 0.4, 0.37]
 hidden = true
 [[box]]
-name = "stall_1"
-kind = "crate"
-center = [-48.0, 2.7, -22.0]
-size = [3.0, 1.4, 2.0]
-color = [0.6, 0.4, 0.25]
-hidden = true
-[[box]]
-name = "stall_2"
-kind = "crate"
-center = [-36.0, 2.7, -22.0]
-size = [3.0, 1.4, 2.0]
-color = [0.6, 0.4, 0.25]
-hidden = true
-[[box]]
-name = "stall_3"
-kind = "crate"
-center = [36.0, 2.7, -22.0]
-size = [3.0, 1.4, 2.0]
-color = [0.6, 0.4, 0.25]
-hidden = true
-[[box]]
-name = "stall_4"
-kind = "crate"
-center = [48.0, 2.7, -22.0]
-size = [3.0, 1.4, 2.0]
-color = [0.6, 0.4, 0.25]
-hidden = true
-[[box]]
-name = "flagon"
+name = "col_2"
 kind = "wall"
-center = [-44.0, 4.0, 24.0]
-size = [16.0, 4.0, 12.0]
-color = [0.45, 0.32, 0.22]
+center = [21.088, 16.5, 173.11]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 93.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_3"
+kind = "wall"
+center = [25.921, 16.5, 172.747]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 95.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_4"
+kind = "wall"
+center = [30.741, 16.5, 172.241]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 96.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_5"
+kind = "wall"
+center = [35.544, 16.5, 171.59]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 98.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_6"
+kind = "wall"
+center = [40.326, 16.5, 170.796]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 100.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_7"
+kind = "wall"
+center = [45.081, 16.5, 169.859]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 102.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_8"
+kind = "wall"
+center = [49.807, 16.5, 168.781]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 103.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_9"
+kind = "wall"
+center = [54.497, 16.5, 167.562]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 105.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_10"
+kind = "wall"
+center = [59.15, 16.5, 166.202]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 107.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_11"
+kind = "wall"
+center = [63.759, 16.5, 164.705]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 108.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_12"
+kind = "wall"
+center = [68.322, 16.5, 163.07]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 110.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_13"
+kind = "wall"
+center = [72.834, 16.5, 161.299]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 112.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_14"
+kind = "wall"
+center = [77.291, 16.5, 159.394]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 114.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_15"
+kind = "wall"
+center = [81.689, 16.5, 157.356]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 115.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_16"
+kind = "wall"
+center = [86.024, 16.5, 155.188]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 117.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_17"
+kind = "wall"
+center = [90.292, 16.5, 152.892]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 119.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_18"
+kind = "wall"
+center = [94.489, 16.5, 150.468]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 120.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_19"
+kind = "wall"
+center = [98.612, 16.5, 147.92]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 122.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_20"
+kind = "wall"
+center = [102.657, 16.5, 145.25]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 124.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_21"
+kind = "wall"
+center = [106.621, 16.5, 142.46]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 126.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_22"
+kind = "wall"
+center = [110.499, 16.5, 139.553]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 127.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_23"
+kind = "wall"
+center = [114.288, 16.5, 136.531]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 129.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_24"
+kind = "wall"
+center = [117.986, 16.5, 133.397]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 131.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_25"
+kind = "wall"
+center = [121.588, 16.5, 130.154]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 132.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_26"
+kind = "wall"
+center = [125.091, 16.5, 126.804]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 134.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_27"
+kind = "wall"
+center = [128.492, 16.5, 123.352]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 136.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_28"
+kind = "wall"
+center = [131.789, 16.5, 119.799]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 138.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_29"
+kind = "wall"
+center = [134.978, 16.5, 116.149]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 139.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_30"
+kind = "wall"
+center = [138.056, 16.5, 112.405]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 141.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_31"
+kind = "wall"
+center = [141.021, 16.5, 108.571]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 143.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_32"
+kind = "wall"
+center = [143.87, 16.5, 104.649]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 144.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_33"
+kind = "wall"
+center = [146.6, 16.5, 100.645]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 146.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_34"
+kind = "wall"
+center = [149.21, 16.5, 96.56]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 148.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_35"
+kind = "wall"
+center = [151.696, 16.5, 92.4]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 150.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_36"
+kind = "wall"
+center = [154.056, 16.5, 88.166]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 151.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_37"
+kind = "wall"
+center = [156.289, 16.5, 83.864]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 153.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_38"
+kind = "wall"
+center = [158.392, 16.5, 79.497]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 155.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_39"
+kind = "wall"
+center = [160.363, 16.5, 75.07]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 156.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_40"
+kind = "wall"
+center = [162.201, 16.5, 70.585]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 158.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_41"
+kind = "wall"
+center = [163.904, 16.5, 66.047]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 160.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_42"
+kind = "wall"
+center = [165.471, 16.5, 61.46]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 162.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_43"
+kind = "wall"
+center = [166.899, 16.5, 56.829]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 163.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_44"
+kind = "wall"
+center = [168.189, 16.5, 52.157]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 165.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_45"
+kind = "wall"
+center = [169.338, 16.5, 47.448]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 167.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_46"
+kind = "wall"
+center = [170.346, 16.5, 42.707]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 168.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_47"
+kind = "wall"
+center = [171.211, 16.5, 37.938]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 170.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_48"
+kind = "wall"
+center = [171.933, 16.5, 33.145]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 172.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_49"
+kind = "wall"
+center = [172.512, 16.5, 28.333]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 174.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_50"
+kind = "wall"
+center = [172.947, 16.5, 23.506]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 175.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_51"
+kind = "wall"
+center = [173.236, 16.5, 18.668]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 177.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_52"
+kind = "wall"
+center = [173.381, 16.5, 13.823]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 179.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_53"
+kind = "wall"
+center = [173.381, 16.5, 8.976]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -179.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_54"
+kind = "wall"
+center = [173.236, 16.5, 4.131]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -177.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_55"
+kind = "wall"
+center = [172.947, 16.5, -0.707]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -175.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_56"
+kind = "wall"
+center = [172.512, 16.5, -5.534]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -174.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_57"
+kind = "wall"
+center = [171.933, 16.5, -10.346]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -172.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_58"
+kind = "wall"
+center = [210.898, 16.5, -21.729]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -170.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_59"
+kind = "wall"
+center = [223.32, 16.5, -30.342]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -168.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_60"
+kind = "wall"
+center = [230.94, 16.5, -38.709]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -167.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_61"
+kind = "wall"
+center = [235.913, 16.5, -46.962]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -165.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_62"
+kind = "wall"
+center = [238.951, 16.5, -55.08]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -163.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_63"
+kind = "wall"
+center = [240.405, 16.5, -63.009]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -162.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_64"
+kind = "wall"
+center = [240.486, 16.5, -70.69]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -160.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_65"
+kind = "wall"
+center = [239.339, 16.5, -78.06]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -158.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_66"
+kind = "wall"
+center = [237.073, 16.5, -85.058]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -156.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_67"
+kind = "wall"
+center = [233.775, 16.5, -91.622]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -155.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_68"
+kind = "wall"
+center = [229.516, 16.5, -97.689]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -153.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_69"
+kind = "wall"
+center = [224.356, 16.5, -103.197]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -151.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_70"
+kind = "wall"
+center = [218.344, 16.5, -108.08]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -150.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_71"
+kind = "wall"
+center = [211.518, 16.5, -112.265]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -148.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_72"
+kind = "wall"
+center = [203.899, 16.5, -115.668]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -146.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_73"
+kind = "wall"
+center = [195.481, 16.5, -118.181]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -144.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_74"
+kind = "wall"
+center = [186.214, 16.5, -119.65]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -143.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_75"
+kind = "wall"
+center = [175.951, 16.5, -119.826]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -141.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_76"
+kind = "wall"
+center = [164.29, 16.5, -118.195]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -139.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_77"
+kind = "wall"
+center = [149.666, 16.5, -113.096]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -138.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_78"
+kind = "wall"
+center = [128.492, 16.5, -100.553]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -136.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_79"
+kind = "wall"
+center = [125.091, 16.5, -104.005]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -134.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_80"
+kind = "wall"
+center = [121.588, 16.5, -107.355]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -132.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_81"
+kind = "wall"
+center = [117.986, 16.5, -110.598]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -131.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_82"
+kind = "wall"
+center = [114.288, 16.5, -113.732]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -129.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_83"
+kind = "wall"
+center = [110.499, 16.5, -116.754]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -127.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_84"
+kind = "wall"
+center = [106.621, 16.5, -119.661]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -126.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_85"
+kind = "wall"
+center = [102.657, 16.5, -122.451]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -124.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_86"
+kind = "wall"
+center = [98.612, 16.5, -125.121]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -122.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_87"
+kind = "wall"
+center = [94.489, 16.5, -127.669]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -120.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_88"
+kind = "wall"
+center = [90.292, 16.5, -130.093]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -119.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_89"
+kind = "wall"
+center = [86.024, 16.5, -132.389]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -117.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_90"
+kind = "wall"
+center = [81.689, 16.5, -134.557]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -115.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_91"
+kind = "wall"
+center = [77.291, 16.5, -136.595]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -114.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_92"
+kind = "wall"
+center = [72.834, 16.5, -138.5]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -112.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_93"
+kind = "wall"
+center = [68.322, 16.5, -140.271]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -110.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_94"
+kind = "wall"
+center = [63.759, 16.5, -141.906]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -108.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_95"
+kind = "wall"
+center = [59.15, 16.5, -143.403]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -107.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_96"
+kind = "wall"
+center = [54.497, 16.5, -144.762]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -105.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_97"
+kind = "wall"
+center = [49.807, 16.5, -145.982]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -103.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_98"
+kind = "wall"
+center = [45.081, 16.5, -147.06]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -102.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_99"
+kind = "wall"
+center = [40.326, 16.5, -147.997]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -100.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_100"
+kind = "wall"
+center = [35.544, 16.5, -148.791]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -98.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_101"
+kind = "wall"
+center = [30.741, 16.5, -149.442]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -96.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_102"
+kind = "wall"
+center = [25.921, 16.5, -149.948]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -95.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_103"
+kind = "wall"
+center = [21.088, 16.5, -150.311]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -93.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_104"
+kind = "wall"
+center = [16.246, 16.5, -150.528]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -91.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_105"
+kind = "wall"
+center = [11.4, 16.5, -150.6]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -90.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_106"
+kind = "wall"
+center = [6.553, 16.5, -150.528]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -88.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_107"
+kind = "wall"
+center = [1.711, 16.5, -150.311]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -86.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_108"
+kind = "wall"
+center = [-3.122, 16.5, -149.948]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -84.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_109"
+kind = "wall"
+center = [-7.942, 16.5, -149.442]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -83.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_110"
+kind = "wall"
+center = [-12.745, 16.5, -148.791]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -81.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_111"
+kind = "wall"
+center = [-17.527, 16.5, -147.997]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -79.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_112"
+kind = "wall"
+center = [-22.282, 16.5, -147.06]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -78.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_113"
+kind = "wall"
+center = [-27.007, 16.5, -145.982]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -76.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_114"
+kind = "wall"
+center = [-31.698, 16.5, -144.762]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -74.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_115"
+kind = "wall"
+center = [-36.351, 16.5, -143.403]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -72.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_116"
+kind = "wall"
+center = [-40.96, 16.5, -141.906]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -71.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_117"
+kind = "wall"
+center = [-45.523, 16.5, -140.271]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -69.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_118"
+kind = "wall"
+center = [-50.035, 16.5, -138.5]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -67.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_119"
+kind = "wall"
+center = [-54.492, 16.5, -136.595]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -66.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_120"
+kind = "wall"
+center = [-58.89, 16.5, -134.557]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -64.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_121"
+kind = "wall"
+center = [-63.225, 16.5, -132.389]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -62.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_122"
+kind = "wall"
+center = [-67.493, 16.5, -130.093]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -60.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_123"
+kind = "wall"
+center = [-71.69, 16.5, -127.669]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -59.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_124"
+kind = "wall"
+center = [-75.813, 16.5, -125.121]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -57.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_125"
+kind = "wall"
+center = [-79.858, 16.5, -122.451]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -55.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_126"
+kind = "wall"
+center = [-83.822, 16.5, -119.661]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -54.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_127"
+kind = "wall"
+center = [-87.7, 16.5, -116.754]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -52.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_128"
+kind = "wall"
+center = [-91.489, 16.5, -113.732]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -50.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_129"
+kind = "wall"
+center = [-95.187, 16.5, -110.598]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -48.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_130"
+kind = "wall"
+center = [-98.788, 16.5, -107.355]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -47.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_131"
+kind = "wall"
+center = [-102.292, 16.5, -104.005]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -45.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_132"
+kind = "wall"
+center = [-105.693, 16.5, -100.553]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -43.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_133"
+kind = "wall"
+center = [-108.99, 16.5, -97.0]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -42.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_134"
+kind = "wall"
+center = [-112.179, 16.5, -93.35]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -40.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_135"
+kind = "wall"
+center = [-115.257, 16.5, -89.606]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -38.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_136"
+kind = "wall"
+center = [-118.222, 16.5, -85.772]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -36.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_137"
+kind = "wall"
+center = [-121.071, 16.5, -81.85]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -35.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_138"
+kind = "wall"
+center = [-123.801, 16.5, -77.846]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -33.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_139"
+kind = "wall"
+center = [-126.411, 16.5, -73.761]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -31.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_140"
+kind = "wall"
+center = [-128.897, 16.5, -69.6]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -30.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_141"
+kind = "wall"
+center = [-131.257, 16.5, -65.367]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -28.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_142"
+kind = "wall"
+center = [-133.49, 16.5, -61.065]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -26.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_143"
+kind = "wall"
+center = [-135.593, 16.5, -56.698]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -24.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_144"
+kind = "wall"
+center = [-137.564, 16.5, -52.271]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -23.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_145"
+kind = "wall"
+center = [-139.402, 16.5, -47.786]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -21.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_146"
+kind = "wall"
+center = [-141.105, 16.5, -43.248]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -19.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_147"
+kind = "wall"
+center = [-142.672, 16.5, -38.661]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -18.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_148"
+kind = "wall"
+center = [-144.1, 16.5, -34.03]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -16.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_149"
+kind = "wall"
+center = [-145.39, 16.5, -29.358]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -14.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_150"
+kind = "wall"
+center = [-146.539, 16.5, -24.649]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -12.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_151"
+kind = "wall"
+center = [-147.547, 16.5, -19.908]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -11.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_152"
+kind = "wall"
+center = [-148.412, 16.5, -15.139]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -9.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_153"
+kind = "wall"
+center = [-149.134, 16.5, -10.346]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -7.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_154"
+kind = "wall"
+center = [-149.713, 16.5, -5.534]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -6.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_155"
+kind = "wall"
+center = [-150.147, 16.5, -0.707]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -4.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_156"
+kind = "wall"
+center = [-150.437, 16.5, 4.131]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -2.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_157"
+kind = "wall"
+center = [-150.582, 16.5, 8.976]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, -0.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_158"
+kind = "wall"
+center = [-150.582, 16.5, 13.823]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 0.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_159"
+kind = "wall"
+center = [-150.437, 16.5, 18.668]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 2.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_160"
+kind = "wall"
+center = [-150.147, 16.5, 23.506]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 4.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_161"
+kind = "wall"
+center = [-149.713, 16.5, 28.333]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 6.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_162"
+kind = "wall"
+center = [-149.134, 16.5, 33.145]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 7.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_163"
+kind = "wall"
+center = [-148.412, 16.5, 37.938]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 9.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_164"
+kind = "wall"
+center = [-147.547, 16.5, 42.707]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 11.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_165"
+kind = "wall"
+center = [-146.539, 16.5, 47.448]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 12.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_166"
+kind = "wall"
+center = [-145.39, 16.5, 52.157]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 14.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_167"
+kind = "wall"
+center = [-144.1, 16.5, 56.829]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 16.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_168"
+kind = "wall"
+center = [-142.672, 16.5, 61.46]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 18.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_169"
+kind = "wall"
+center = [-141.105, 16.5, 66.047]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 19.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_170"
+kind = "wall"
+center = [-139.402, 16.5, 70.585]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 21.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_171"
+kind = "wall"
+center = [-137.564, 16.5, 75.07]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 23.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_172"
+kind = "wall"
+center = [-135.593, 16.5, 79.497]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 24.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_173"
+kind = "wall"
+center = [-133.49, 16.5, 83.864]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 26.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_174"
+kind = "wall"
+center = [-131.257, 16.5, 88.166]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 28.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_175"
+kind = "wall"
+center = [-128.897, 16.5, 92.4]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 30.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_176"
+kind = "wall"
+center = [-126.411, 16.5, 96.56]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 31.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_177"
+kind = "wall"
+center = [-123.801, 16.5, 100.645]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 33.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_178"
+kind = "wall"
+center = [-121.071, 16.5, 104.649]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 35.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_179"
+kind = "wall"
+center = [-118.222, 16.5, 108.571]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 36.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_180"
+kind = "wall"
+center = [-115.257, 16.5, 112.405]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 38.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_181"
+kind = "wall"
+center = [-112.179, 16.5, 116.149]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 40.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_182"
+kind = "wall"
+center = [-108.99, 16.5, 119.799]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 42.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_183"
+kind = "wall"
+center = [-105.693, 16.5, 123.352]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 43.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_184"
+kind = "wall"
+center = [-102.292, 16.5, 126.804]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 45.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_185"
+kind = "wall"
+center = [-98.788, 16.5, 130.154]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 47.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_186"
+kind = "wall"
+center = [-95.187, 16.5, 133.397]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 48.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_187"
+kind = "wall"
+center = [-91.489, 16.5, 136.531]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 50.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_188"
+kind = "wall"
+center = [-87.7, 16.5, 139.553]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 52.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_189"
+kind = "wall"
+center = [-83.822, 16.5, 142.46]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 54.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_190"
+kind = "wall"
+center = [-79.858, 16.5, 145.25]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 55.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_191"
+kind = "wall"
+center = [-75.813, 16.5, 147.92]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 57.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_192"
+kind = "wall"
+center = [-71.69, 16.5, 150.468]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 59.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_193"
+kind = "wall"
+center = [-67.493, 16.5, 152.892]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 60.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_194"
+kind = "wall"
+center = [-63.225, 16.5, 155.188]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 62.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_195"
+kind = "wall"
+center = [-58.89, 16.5, 157.356]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 64.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_196"
+kind = "wall"
+center = [-54.492, 16.5, 159.394]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 66.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_197"
+kind = "wall"
+center = [-50.035, 16.5, 161.299]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 67.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_198"
+kind = "wall"
+center = [-45.523, 16.5, 163.07]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 69.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_199"
+kind = "wall"
+center = [-40.96, 16.5, 164.705]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 71.143, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_200"
+kind = "wall"
+center = [-36.351, 16.5, 166.202]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 72.857, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_201"
+kind = "wall"
+center = [-31.698, 16.5, 167.562]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 74.571, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_202"
+kind = "wall"
+center = [-27.007, 16.5, 168.781]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 76.286, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_203"
+kind = "wall"
+center = [-22.282, 16.5, 169.859]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 78.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_204"
+kind = "wall"
+center = [-17.527, 16.5, 170.796]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 79.714, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_205"
+kind = "wall"
+center = [-12.745, 16.5, 171.59]
+size = [2.4, 9.2, 3.6]
+rotation_deg = [0.0, 81.429, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_cathedral"
+kind = "wall"
+center = [2.752, 26.0, -118.313]
+size = [62.0, 28.0, 44.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_library"
+kind = "wall"
+center = [60.752, 20.0, -112.313]
+size = [52.0, 16.0, 20.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_flagon"
+kind = "wall"
+center = [-136.506, 18.0, 16.682]
+size = [22.0, 14.0, 16.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_oak"
+kind = "wall"
+center = [182.392, 28.0, -68.397]
+size = [14.0, 30.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_tower_w"
+kind = "wall"
+center = [-12.0, 21.0, 168.993]
+size = [3.4, 18.0, 3.4]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_tower_e"
+kind = "wall"
+center = [12.0, 21.0, 168.993]
+size = [3.4, 18.0, 3.4]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h0"
+kind = "wall"
+center = [52.437, 18.0, 137.7]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h1"
+kind = "wall"
+center = [89.457, 18.0, 118.837]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h2"
+kind = "wall"
+center = [118.837, 18.0, 89.457]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h3"
+kind = "wall"
+center = [137.7, 18.0, 52.437]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h4"
+kind = "wall"
+center = [143.472, 18.0, -2.482]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h5"
+kind = "wall"
+center = [185.326, 18.0, -81.079]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h6"
+kind = "wall"
+center = [93.159, 18.0, -93.248]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h7"
+kind = "wall"
+center = [-29.638, 18.0, -114.901]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h8"
+kind = "wall"
+center = [-70.36, 18.0, -93.248]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h9"
+kind = "wall"
+center = [-101.221, 18.0, -58.974]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h10"
+kind = "wall"
+center = [-118.498, 18.0, -16.211]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h11"
+kind = "wall"
+center = [-116.256, 18.0, 48.004]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h12"
+kind = "wall"
+center = [-87.29, 18.0, 100.26]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h13"
+kind = "wall"
+center = [-46.816, 18.0, 130.759]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h14"
+kind = "wall"
+center = [-7.083, 18.0, 142.907]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h15"
+kind = "wall"
+center = [45.159, 18.0, 87.224]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h16"
+kind = "wall"
+center = [85.999, 18.0, 47.784]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h17"
+kind = "wall"
+center = [115.614, 18.0, -6.976]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h18"
+kind = "wall"
+center = [52.9, 18.0, -60.481]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h19"
+kind = "wall"
+center = [-30.1, 18.0, -60.481]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h20"
+kind = "wall"
+center = [-66.595, 18.0, -16.988]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h21"
+kind = "wall"
+center = [-60.481, 18.0, 52.9]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
+hidden = true
+[[box]]
+name = "col_h22"
+kind = "wall"
+center = [-8.68, 18.0, 91.934]
+size = [16.0, 12.0, 14.0]
+rotation_deg = [0.0, 0.0, 0.0]
+color = [0.42, 0.4, 0.37]
 hidden = true
 
 [[exit]]
 name = "to_association"
 to = "mage_association"
-position = [0.0, 2.0, -160.0]
+position = [2.752, 12.0, -92.313]
 [[exit]]
 name = "to_landfill"
 to = "midden"
-position = [0.0, 2.0, 160.0]
+position = [0.0, 12.0, 170.993]
 [[exit]]
 name = "to_old_oak"
 to = "old_oak"
-position = [160.0, 2.0, 30.0]
+position = [166.392, 12.0, -54.397]
 [[npc]]
 name = "guard_gate"
 speaker = "Bored Guard"
-position = [3.0, 2.0, 148.0]
+position = [7.0, 12.0, 166.993]
 yaw_deg = 180.0
 [[npc]]
 name = "merchant"
 speaker = "Potion Merchant"
-position = [-36.0, 2.0, -14.0]
-yaw_deg = 0.0
+position = [-51.598, 12.0, -39.898]
+yaw_deg = 90.0
 [[npc]]
 name = "tailor"
 speaker = "Tailor"
-position = [-36.0, 2.0, -6.0]
-yaw_deg = 0.0
+position = [-39.598, 12.0, -36.898]
+yaw_deg = 180.0
 [[npc]]
 name = "runesmith"
 speaker = "Runesmith"
-position = [36.0, 2.0, -14.0]
-yaw_deg = 0.0
+position = [62.697, 12.0, -24.499]
+yaw_deg = 200.0
 [[npc]]
 name = "patron"
 speaker = "Grizzled Patron"
-position = [-28.0, 2.0, 24.0]
+position = [-122.506, 12.0, 16.682]
 yaw_deg = 90.0
 
 [[waystone]]
 point = "town_gate"
-position = [0.0, 2.0, 28.0]
-yaw_deg = 180.0
+position = [-7.0, 12.0, 162.993]
+yaw_deg = 0.0
 
 # ---- EXPAND_BEGIN (generated by tools/expand_maps.py; edit that, not this) ----
 # ---- EXPAND_END ----
 
 # ---- DRESS_BEGIN (generated by tools/dress_levels.py; edit that, not this) ----
 [[prop]]
-name = "rim_rock_2"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [43.0, 0.0, -160.3]
-rotation_deg = [0.0, 15.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+name = "curtain_1"
+model = "generated:block"
+position = [16.246, 4.6, 173.327]
+rotation_deg = [0.0, 91.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_1"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [16.246, 0.0, 173.327]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
 snap = true
 [[prop]]
-name = "rim_rock_3"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [83.0, 0.0, -143.8]
-rotation_deg = [0.0, 30.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+name = "gem_1"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [16.246, 16.0, 173.327]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.4
 snap = true
 [[prop]]
-name = "rim_rock_4"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [117.4, 0.0, -117.4]
-rotation_deg = [0.0, 45.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+name = "curtain_2"
+model = "generated:block"
+position = [21.088, 4.6, 173.11]
+rotation_deg = [0.0, 93.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_3"
+model = "generated:block"
+position = [25.921, 4.6, 172.747]
+rotation_deg = [0.0, 95.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_4"
+model = "generated:block"
+position = [30.741, 4.6, 172.241]
+rotation_deg = [0.0, 96.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_5"
+model = "generated:block"
+position = [35.544, 4.6, 171.59]
+rotation_deg = [0.0, 98.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_6"
+model = "generated:block"
+position = [40.326, 4.6, 170.796]
+rotation_deg = [0.0, 100.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_6"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [40.326, 0.0, 170.796]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
 snap = true
 [[prop]]
-name = "rim_rock_5"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [143.8, 0.0, -83.0]
-rotation_deg = [0.0, 60.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+name = "gem_6"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [40.326, 16.0, 170.796]
+rotation_deg = [0.0, 100.0, 0.0]
+scale = 2.4
 snap = true
 [[prop]]
-name = "rim_rock_9"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [143.8, 0.0, 83.0]
-rotation_deg = [0.0, 120.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+name = "curtain_7"
+model = "generated:block"
+position = [45.081, 4.6, 169.859]
+rotation_deg = [0.0, 102.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_8"
+model = "generated:block"
+position = [49.807, 4.6, 168.781]
+rotation_deg = [0.0, 103.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_9"
+model = "generated:block"
+position = [54.497, 4.6, 167.562]
+rotation_deg = [0.0, 105.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_10"
+model = "generated:block"
+position = [59.15, 4.6, 166.202]
+rotation_deg = [0.0, 107.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_11"
+model = "generated:block"
+position = [63.759, 4.6, 164.705]
+rotation_deg = [0.0, 108.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_11"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [63.759, 0.0, 164.705]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
 snap = true
 [[prop]]
-name = "rim_rock_10"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [117.4, 0.0, 117.4]
-rotation_deg = [0.0, 135.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+name = "gem_11"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [63.759, 16.0, 164.705]
+rotation_deg = [0.0, 200.0, 0.0]
+scale = 2.4
 snap = true
 [[prop]]
-name = "rim_rock_11"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [83.0, 0.0, 143.8]
-rotation_deg = [0.0, 150.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+name = "curtain_12"
+model = "generated:block"
+position = [68.322, 4.6, 163.07]
+rotation_deg = [0.0, 110.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_13"
+model = "generated:block"
+position = [72.834, 4.6, 161.299]
+rotation_deg = [0.0, 112.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_14"
+model = "generated:block"
+position = [77.291, 4.6, 159.394]
+rotation_deg = [0.0, 114.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_15"
+model = "generated:block"
+position = [81.689, 4.6, 157.356]
+rotation_deg = [0.0, 115.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_16"
+model = "generated:block"
+position = [86.024, 4.6, 155.188]
+rotation_deg = [0.0, 117.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_16"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [86.024, 0.0, 155.188]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
 snap = true
 [[prop]]
-name = "rim_rock_12"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [43.0, 0.0, 160.3]
-rotation_deg = [0.0, 165.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_14"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-43.0, 0.0, 160.3]
-rotation_deg = [0.0, 195.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_15"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-83.0, 0.0, 143.8]
-rotation_deg = [0.0, 210.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_16"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-117.4, 0.0, 117.4]
-rotation_deg = [0.0, 225.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_17"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-143.8, 0.0, 83.0]
-rotation_deg = [0.0, 240.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_18"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-160.3, 0.0, 43.0]
-rotation_deg = [0.0, 255.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_19"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-166.0, 0.0, 0.0]
-rotation_deg = [0.0, 270.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_20"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-160.3, 0.0, -43.0]
-rotation_deg = [0.0, 285.0, 0.0]
-scale = [5.5, 4.0, 3.5]
-snap = true
-[[prop]]
-name = "rim_rock_21"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-143.8, 0.0, -83.0]
+name = "gem_16"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [86.024, 16.0, 155.188]
 rotation_deg = [0.0, 300.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+scale = 2.4
 snap = true
 [[prop]]
-name = "rim_rock_22"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-117.4, 0.0, -117.4]
-rotation_deg = [0.0, 315.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+name = "curtain_17"
+model = "generated:block"
+position = [90.292, 4.6, 152.892]
+rotation_deg = [0.0, 119.143, 0.0]
+scale = [3.6, 9.2, 6.6]
 snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
 [[prop]]
-name = "rim_rock_23"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-83.0, 0.0, -143.8]
-rotation_deg = [0.0, 330.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+name = "curtain_18"
+model = "generated:block"
+position = [94.489, 4.6, 150.468]
+rotation_deg = [0.0, 120.857, 0.0]
+scale = [3.6, 9.2, 6.6]
 snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
 [[prop]]
-name = "rim_rock_24"
-model = "assets/kenney/fantasy-town-kit/rock-large.glb"
-position = [-43.0, 0.0, -160.3]
-rotation_deg = [0.0, 345.0, 0.0]
-scale = [5.5, 4.0, 3.5]
+name = "curtain_19"
+model = "generated:block"
+position = [98.612, 4.6, 147.92]
+rotation_deg = [0.0, 122.571, 0.0]
+scale = [3.6, 9.2, 6.6]
 snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
 [[prop]]
-name = "ward_lantern_1"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-48, 9.2, -48]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+name = "curtain_20"
+model = "generated:block"
+position = [102.657, 4.6, 145.25]
+rotation_deg = [0.0, 124.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
 [[prop]]
-name = "ward_lantern_2"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [48, 9.2, -48]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+name = "curtain_21"
+model = "generated:block"
+position = [106.621, 4.6, 142.46]
+rotation_deg = [0.0, 126.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
 [[prop]]
-name = "ward_lantern_3"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-48, 9.2, 48]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "ward_lantern_4"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [48, 9.2, 48]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "association_arch"
-model = "assets/kenney/fantasy-town-kit/wall-arch-top-detail.glb"
-position = [0.0, 6.0, -158.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = [8.0, 2.2, 6.0]
-[[prop]]
-name = "gate_pillars_n"
+name = "tower_21"
 model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
-position = [-6.0, 2.0, -156.0]
+position = [106.621, 0.0, 142.46]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = [5, 6, 5]
-count = 2
-step = [12, 0, 0]
+scale = [32.0, 16.0, 32.0]
+snap = true
 [[prop]]
-name = "gate_pillars_s"
+name = "gem_21"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [106.621, 16.0, 142.46]
+rotation_deg = [0.0, 400.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_22"
+model = "generated:block"
+position = [110.499, 4.6, 139.553]
+rotation_deg = [0.0, 127.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_23"
+model = "generated:block"
+position = [114.288, 4.6, 136.531]
+rotation_deg = [0.0, 129.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_24"
+model = "generated:block"
+position = [117.986, 4.6, 133.397]
+rotation_deg = [0.0, 131.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_25"
+model = "generated:block"
+position = [121.588, 4.6, 130.154]
+rotation_deg = [0.0, 132.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_26"
+model = "generated:block"
+position = [125.091, 4.6, 126.804]
+rotation_deg = [0.0, 134.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_26"
 model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
-position = [-6.0, 2.0, 156.0]
+position = [125.091, 0.0, 126.804]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = [5, 6, 5]
-count = 2
-step = [12, 0, 0]
+scale = [32.0, 16.0, 32.0]
+snap = true
 [[prop]]
-name = "gate_pillars_e"
+name = "gem_26"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [125.091, 16.0, 126.804]
+rotation_deg = [0.0, 500.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_27"
+model = "generated:block"
+position = [128.492, 4.6, 123.352]
+rotation_deg = [0.0, 136.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_28"
+model = "generated:block"
+position = [131.789, 4.6, 119.799]
+rotation_deg = [0.0, 138.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_29"
+model = "generated:block"
+position = [134.978, 4.6, 116.149]
+rotation_deg = [0.0, 139.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_30"
+model = "generated:block"
+position = [138.056, 4.6, 112.405]
+rotation_deg = [0.0, 141.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_31"
+model = "generated:block"
+position = [141.021, 4.6, 108.571]
+rotation_deg = [0.0, 143.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_31"
 model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
-position = [156.0, 2.0, 24.0]
+position = [141.021, 0.0, 108.571]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = [5, 6, 5]
-count = 2
-step = [0, 0, 12]
+scale = [32.0, 16.0, 32.0]
+snap = true
 [[prop]]
-name = "banner_n1"
-model = "assets/kenney/fantasy-town-kit/banner-red.glb"
-position = [-40, 3.0, -52.0]
+name = "gem_31"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [141.021, 16.0, 108.571]
+rotation_deg = [0.0, 600.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_32"
+model = "generated:block"
+position = [143.87, 4.6, 104.649]
+rotation_deg = [0.0, 144.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_33"
+model = "generated:block"
+position = [146.6, 4.6, 100.645]
+rotation_deg = [0.0, 146.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_34"
+model = "generated:block"
+position = [149.21, 4.6, 96.56]
+rotation_deg = [0.0, 148.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_35"
+model = "generated:block"
+position = [151.696, 4.6, 92.4]
+rotation_deg = [0.0, 150.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_36"
+model = "generated:block"
+position = [154.056, 4.6, 88.166]
+rotation_deg = [0.0, 151.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_36"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [154.056, 0.0, 88.166]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_36"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [154.056, 16.0, 88.166]
+rotation_deg = [0.0, 700.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_37"
+model = "generated:block"
+position = [156.289, 4.6, 83.864]
+rotation_deg = [0.0, 153.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_38"
+model = "generated:block"
+position = [158.392, 4.6, 79.497]
+rotation_deg = [0.0, 155.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_39"
+model = "generated:block"
+position = [160.363, 4.6, 75.07]
+rotation_deg = [0.0, 156.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_40"
+model = "generated:block"
+position = [162.201, 4.6, 70.585]
+rotation_deg = [0.0, 158.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_41"
+model = "generated:block"
+position = [163.904, 4.6, 66.047]
+rotation_deg = [0.0, 160.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_41"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [163.904, 0.0, 66.047]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_41"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [163.904, 16.0, 66.047]
+rotation_deg = [0.0, 800.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_42"
+model = "generated:block"
+position = [165.471, 4.6, 61.46]
+rotation_deg = [0.0, 162.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_43"
+model = "generated:block"
+position = [166.899, 4.6, 56.829]
+rotation_deg = [0.0, 163.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_44"
+model = "generated:block"
+position = [168.189, 4.6, 52.157]
+rotation_deg = [0.0, 165.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_45"
+model = "generated:block"
+position = [169.338, 4.6, 47.448]
+rotation_deg = [0.0, 167.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_46"
+model = "generated:block"
+position = [170.346, 4.6, 42.707]
+rotation_deg = [0.0, 168.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_46"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [170.346, 0.0, 42.707]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_46"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [170.346, 16.0, 42.707]
+rotation_deg = [0.0, 900.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_47"
+model = "generated:block"
+position = [171.211, 4.6, 37.938]
+rotation_deg = [0.0, 170.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_48"
+model = "generated:block"
+position = [171.933, 4.6, 33.145]
+rotation_deg = [0.0, 172.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_49"
+model = "generated:block"
+position = [172.512, 4.6, 28.333]
+rotation_deg = [0.0, 174.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_50"
+model = "generated:block"
+position = [172.947, 4.6, 23.506]
+rotation_deg = [0.0, 175.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_51"
+model = "generated:block"
+position = [173.236, 4.6, 18.668]
+rotation_deg = [0.0, 177.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_51"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [173.236, 0.0, 18.668]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_51"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [173.236, 16.0, 18.668]
+rotation_deg = [0.0, 1000.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_52"
+model = "generated:block"
+position = [173.381, 4.6, 13.823]
+rotation_deg = [0.0, 179.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_53"
+model = "generated:block"
+position = [173.381, 4.6, 8.976]
+rotation_deg = [0.0, -179.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_54"
+model = "generated:block"
+position = [173.236, 4.6, 4.131]
+rotation_deg = [0.0, -177.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_55"
+model = "generated:block"
+position = [172.947, 4.6, -0.707]
+rotation_deg = [0.0, -175.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_56"
+model = "generated:block"
+position = [172.512, 4.6, -5.534]
+rotation_deg = [0.0, -174.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_56"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [172.512, 0.0, -5.534]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_56"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [172.512, 16.0, -5.534]
+rotation_deg = [0.0, 1100.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_57"
+model = "generated:block"
+position = [171.933, 4.6, -10.346]
+rotation_deg = [0.0, -172.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_58"
+model = "generated:block"
+position = [210.898, 4.6, -21.729]
+rotation_deg = [0.0, -170.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_59"
+model = "generated:block"
+position = [223.32, 4.6, -30.342]
+rotation_deg = [0.0, -168.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_60"
+model = "generated:block"
+position = [230.94, 4.6, -38.709]
+rotation_deg = [0.0, -167.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_61"
+model = "generated:block"
+position = [235.913, 4.6, -46.962]
+rotation_deg = [0.0, -165.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_61"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [235.913, 0.0, -46.962]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_61"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [235.913, 16.0, -46.962]
+rotation_deg = [0.0, 1200.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_62"
+model = "generated:block"
+position = [238.951, 4.6, -55.08]
+rotation_deg = [0.0, -163.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_63"
+model = "generated:block"
+position = [240.405, 4.6, -63.009]
+rotation_deg = [0.0, -162.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_64"
+model = "generated:block"
+position = [240.486, 4.6, -70.69]
+rotation_deg = [0.0, -160.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_65"
+model = "generated:block"
+position = [239.339, 4.6, -78.06]
+rotation_deg = [0.0, -158.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_66"
+model = "generated:block"
+position = [237.073, 4.6, -85.058]
+rotation_deg = [0.0, -156.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_66"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [237.073, 0.0, -85.058]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_66"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [237.073, 16.0, -85.058]
+rotation_deg = [0.0, 1300.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_67"
+model = "generated:block"
+position = [233.775, 4.6, -91.622]
+rotation_deg = [0.0, -155.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_68"
+model = "generated:block"
+position = [229.516, 4.6, -97.689]
+rotation_deg = [0.0, -153.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_69"
+model = "generated:block"
+position = [224.356, 4.6, -103.197]
+rotation_deg = [0.0, -151.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_70"
+model = "generated:block"
+position = [218.344, 4.6, -108.08]
+rotation_deg = [0.0, -150.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_71"
+model = "generated:block"
+position = [211.518, 4.6, -112.265]
+rotation_deg = [0.0, -148.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_71"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [211.518, 0.0, -112.265]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_71"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [211.518, 16.0, -112.265]
+rotation_deg = [0.0, 1400.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_72"
+model = "generated:block"
+position = [203.899, 4.6, -115.668]
+rotation_deg = [0.0, -146.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_73"
+model = "generated:block"
+position = [195.481, 4.6, -118.181]
+rotation_deg = [0.0, -144.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_74"
+model = "generated:block"
+position = [186.214, 4.6, -119.65]
+rotation_deg = [0.0, -143.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_75"
+model = "generated:block"
+position = [175.951, 4.6, -119.826]
+rotation_deg = [0.0, -141.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_76"
+model = "generated:block"
+position = [164.29, 4.6, -118.195]
+rotation_deg = [0.0, -139.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_76"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [164.29, 0.0, -118.195]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_76"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [164.29, 16.0, -118.195]
+rotation_deg = [0.0, 1500.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_77"
+model = "generated:block"
+position = [149.666, 4.6, -113.096]
+rotation_deg = [0.0, -138.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_78"
+model = "generated:block"
+position = [128.492, 4.6, -100.553]
+rotation_deg = [0.0, -136.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_79"
+model = "generated:block"
+position = [125.091, 4.6, -104.005]
+rotation_deg = [0.0, -134.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_80"
+model = "generated:block"
+position = [121.588, 4.6, -107.355]
+rotation_deg = [0.0, -132.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_81"
+model = "generated:block"
+position = [117.986, 4.6, -110.598]
+rotation_deg = [0.0, -131.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_81"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [117.986, 0.0, -110.598]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_81"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [117.986, 16.0, -110.598]
+rotation_deg = [0.0, 1600.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_82"
+model = "generated:block"
+position = [114.288, 4.6, -113.732]
+rotation_deg = [0.0, -129.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_83"
+model = "generated:block"
+position = [110.499, 4.6, -116.754]
+rotation_deg = [0.0, -127.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_84"
+model = "generated:block"
+position = [106.621, 4.6, -119.661]
+rotation_deg = [0.0, -126.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_85"
+model = "generated:block"
+position = [102.657, 4.6, -122.451]
+rotation_deg = [0.0, -124.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_86"
+model = "generated:block"
+position = [98.612, 4.6, -125.121]
+rotation_deg = [0.0, -122.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_86"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [98.612, 0.0, -125.121]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_86"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [98.612, 16.0, -125.121]
+rotation_deg = [0.0, 1700.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_87"
+model = "generated:block"
+position = [94.489, 4.6, -127.669]
+rotation_deg = [0.0, -120.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_88"
+model = "generated:block"
+position = [90.292, 4.6, -130.093]
+rotation_deg = [0.0, -119.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_89"
+model = "generated:block"
+position = [86.024, 4.6, -132.389]
+rotation_deg = [0.0, -117.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_90"
+model = "generated:block"
+position = [81.689, 4.6, -134.557]
+rotation_deg = [0.0, -115.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_91"
+model = "generated:block"
+position = [77.291, 4.6, -136.595]
+rotation_deg = [0.0, -114.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_91"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [77.291, 0.0, -136.595]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_91"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [77.291, 16.0, -136.595]
+rotation_deg = [0.0, 1800.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_92"
+model = "generated:block"
+position = [72.834, 4.6, -138.5]
+rotation_deg = [0.0, -112.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_93"
+model = "generated:block"
+position = [68.322, 4.6, -140.271]
+rotation_deg = [0.0, -110.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_94"
+model = "generated:block"
+position = [63.759, 4.6, -141.906]
+rotation_deg = [0.0, -108.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_95"
+model = "generated:block"
+position = [59.15, 4.6, -143.403]
+rotation_deg = [0.0, -107.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_96"
+model = "generated:block"
+position = [54.497, 4.6, -144.762]
+rotation_deg = [0.0, -105.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_96"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [54.497, 0.0, -144.762]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_96"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [54.497, 16.0, -144.762]
+rotation_deg = [0.0, 1900.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_97"
+model = "generated:block"
+position = [49.807, 4.6, -145.982]
+rotation_deg = [0.0, -103.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_98"
+model = "generated:block"
+position = [45.081, 4.6, -147.06]
+rotation_deg = [0.0, -102.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_99"
+model = "generated:block"
+position = [40.326, 4.6, -147.997]
+rotation_deg = [0.0, -100.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_100"
+model = "generated:block"
+position = [35.544, 4.6, -148.791]
+rotation_deg = [0.0, -98.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_101"
+model = "generated:block"
+position = [30.741, 4.6, -149.442]
+rotation_deg = [0.0, -96.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_101"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [30.741, 0.0, -149.442]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_101"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [30.741, 16.0, -149.442]
+rotation_deg = [0.0, 2000.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_102"
+model = "generated:block"
+position = [25.921, 4.6, -149.948]
+rotation_deg = [0.0, -95.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_103"
+model = "generated:block"
+position = [21.088, 4.6, -150.311]
+rotation_deg = [0.0, -93.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_104"
+model = "generated:block"
+position = [16.246, 4.6, -150.528]
+rotation_deg = [0.0, -91.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_105"
+model = "generated:block"
+position = [11.4, 4.6, -150.6]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_106"
+model = "generated:block"
+position = [6.553, 4.6, -150.528]
+rotation_deg = [0.0, -88.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_106"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [6.553, 0.0, -150.528]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_106"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [6.553, 16.0, -150.528]
+rotation_deg = [0.0, 2100.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_107"
+model = "generated:block"
+position = [1.711, 4.6, -150.311]
+rotation_deg = [0.0, -86.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_108"
+model = "generated:block"
+position = [-3.122, 4.6, -149.948]
+rotation_deg = [0.0, -84.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_109"
+model = "generated:block"
+position = [-7.942, 4.6, -149.442]
+rotation_deg = [0.0, -83.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_110"
+model = "generated:block"
+position = [-12.745, 4.6, -148.791]
+rotation_deg = [0.0, -81.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_111"
+model = "generated:block"
+position = [-17.527, 4.6, -147.997]
+rotation_deg = [0.0, -79.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_111"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-17.527, 0.0, -147.997]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_111"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-17.527, 16.0, -147.997]
+rotation_deg = [0.0, 2200.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_112"
+model = "generated:block"
+position = [-22.282, 4.6, -147.06]
+rotation_deg = [0.0, -78.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_113"
+model = "generated:block"
+position = [-27.007, 4.6, -145.982]
+rotation_deg = [0.0, -76.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_114"
+model = "generated:block"
+position = [-31.698, 4.6, -144.762]
+rotation_deg = [0.0, -74.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_115"
+model = "generated:block"
+position = [-36.351, 4.6, -143.403]
+rotation_deg = [0.0, -72.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_116"
+model = "generated:block"
+position = [-40.96, 4.6, -141.906]
+rotation_deg = [0.0, -71.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_116"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-40.96, 0.0, -141.906]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_116"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-40.96, 16.0, -141.906]
+rotation_deg = [0.0, 2300.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_117"
+model = "generated:block"
+position = [-45.523, 4.6, -140.271]
+rotation_deg = [0.0, -69.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_118"
+model = "generated:block"
+position = [-50.035, 4.6, -138.5]
+rotation_deg = [0.0, -67.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_119"
+model = "generated:block"
+position = [-54.492, 4.6, -136.595]
+rotation_deg = [0.0, -66.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_120"
+model = "generated:block"
+position = [-58.89, 4.6, -134.557]
+rotation_deg = [0.0, -64.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_121"
+model = "generated:block"
+position = [-63.225, 4.6, -132.389]
+rotation_deg = [0.0, -62.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_121"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-63.225, 0.0, -132.389]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_121"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-63.225, 16.0, -132.389]
+rotation_deg = [0.0, 2400.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_122"
+model = "generated:block"
+position = [-67.493, 4.6, -130.093]
+rotation_deg = [0.0, -60.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_123"
+model = "generated:block"
+position = [-71.69, 4.6, -127.669]
+rotation_deg = [0.0, -59.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_124"
+model = "generated:block"
+position = [-75.813, 4.6, -125.121]
+rotation_deg = [0.0, -57.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_125"
+model = "generated:block"
+position = [-79.858, 4.6, -122.451]
+rotation_deg = [0.0, -55.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_126"
+model = "generated:block"
+position = [-83.822, 4.6, -119.661]
+rotation_deg = [0.0, -54.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_126"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-83.822, 0.0, -119.661]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_126"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-83.822, 16.0, -119.661]
+rotation_deg = [0.0, 2500.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_127"
+model = "generated:block"
+position = [-87.7, 4.6, -116.754]
+rotation_deg = [0.0, -52.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_128"
+model = "generated:block"
+position = [-91.489, 4.6, -113.732]
+rotation_deg = [0.0, -50.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_129"
+model = "generated:block"
+position = [-95.187, 4.6, -110.598]
+rotation_deg = [0.0, -48.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_130"
+model = "generated:block"
+position = [-98.788, 4.6, -107.355]
+rotation_deg = [0.0, -47.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_131"
+model = "generated:block"
+position = [-102.292, 4.6, -104.005]
+rotation_deg = [0.0, -45.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_131"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-102.292, 0.0, -104.005]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_131"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-102.292, 16.0, -104.005]
+rotation_deg = [0.0, 2600.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_132"
+model = "generated:block"
+position = [-105.693, 4.6, -100.553]
+rotation_deg = [0.0, -43.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_133"
+model = "generated:block"
+position = [-108.99, 4.6, -97.0]
+rotation_deg = [0.0, -42.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_134"
+model = "generated:block"
+position = [-112.179, 4.6, -93.35]
+rotation_deg = [0.0, -40.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_135"
+model = "generated:block"
+position = [-115.257, 4.6, -89.606]
+rotation_deg = [0.0, -38.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_136"
+model = "generated:block"
+position = [-118.222, 4.6, -85.772]
+rotation_deg = [0.0, -36.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_136"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-118.222, 0.0, -85.772]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_136"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-118.222, 16.0, -85.772]
+rotation_deg = [0.0, 2700.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_137"
+model = "generated:block"
+position = [-121.071, 4.6, -81.85]
+rotation_deg = [0.0, -35.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_138"
+model = "generated:block"
+position = [-123.801, 4.6, -77.846]
+rotation_deg = [0.0, -33.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_139"
+model = "generated:block"
+position = [-126.411, 4.6, -73.761]
+rotation_deg = [0.0, -31.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_140"
+model = "generated:block"
+position = [-128.897, 4.6, -69.6]
+rotation_deg = [0.0, -30.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_141"
+model = "generated:block"
+position = [-131.257, 4.6, -65.367]
+rotation_deg = [0.0, -28.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_141"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-131.257, 0.0, -65.367]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_141"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-131.257, 16.0, -65.367]
+rotation_deg = [0.0, 2800.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_142"
+model = "generated:block"
+position = [-133.49, 4.6, -61.065]
+rotation_deg = [0.0, -26.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_143"
+model = "generated:block"
+position = [-135.593, 4.6, -56.698]
+rotation_deg = [0.0, -24.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_144"
+model = "generated:block"
+position = [-137.564, 4.6, -52.271]
+rotation_deg = [0.0, -23.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_145"
+model = "generated:block"
+position = [-139.402, 4.6, -47.786]
+rotation_deg = [0.0, -21.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_146"
+model = "generated:block"
+position = [-141.105, 4.6, -43.248]
+rotation_deg = [0.0, -19.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_146"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-141.105, 0.0, -43.248]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_146"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-141.105, 16.0, -43.248]
+rotation_deg = [0.0, 2900.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_147"
+model = "generated:block"
+position = [-142.672, 4.6, -38.661]
+rotation_deg = [0.0, -18.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_148"
+model = "generated:block"
+position = [-144.1, 4.6, -34.03]
+rotation_deg = [0.0, -16.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_149"
+model = "generated:block"
+position = [-145.39, 4.6, -29.358]
+rotation_deg = [0.0, -14.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_150"
+model = "generated:block"
+position = [-146.539, 4.6, -24.649]
+rotation_deg = [0.0, -12.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_151"
+model = "generated:block"
+position = [-147.547, 4.6, -19.908]
+rotation_deg = [0.0, -11.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_151"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-147.547, 0.0, -19.908]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_151"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-147.547, 16.0, -19.908]
+rotation_deg = [0.0, 3000.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_152"
+model = "generated:block"
+position = [-148.412, 4.6, -15.139]
+rotation_deg = [0.0, -9.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_153"
+model = "generated:block"
+position = [-149.134, 4.6, -10.346]
+rotation_deg = [0.0, -7.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_154"
+model = "generated:block"
+position = [-149.713, 4.6, -5.534]
+rotation_deg = [0.0, -6.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_155"
+model = "generated:block"
+position = [-150.147, 4.6, -0.707]
+rotation_deg = [0.0, -4.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_156"
+model = "generated:block"
+position = [-150.437, 4.6, 4.131]
+rotation_deg = [0.0, -2.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_156"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-150.437, 0.0, 4.131]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_156"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-150.437, 16.0, 4.131]
+rotation_deg = [0.0, 3100.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_157"
+model = "generated:block"
+position = [-150.582, 4.6, 8.976]
+rotation_deg = [0.0, -0.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_158"
+model = "generated:block"
+position = [-150.582, 4.6, 13.823]
+rotation_deg = [0.0, 0.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_159"
+model = "generated:block"
+position = [-150.437, 4.6, 18.668]
+rotation_deg = [0.0, 2.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_160"
+model = "generated:block"
+position = [-150.147, 4.6, 23.506]
+rotation_deg = [0.0, 4.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_161"
+model = "generated:block"
+position = [-149.713, 4.6, 28.333]
+rotation_deg = [0.0, 6.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_161"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-149.713, 0.0, 28.333]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_161"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-149.713, 16.0, 28.333]
+rotation_deg = [0.0, 3200.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_162"
+model = "generated:block"
+position = [-149.134, 4.6, 33.145]
+rotation_deg = [0.0, 7.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_163"
+model = "generated:block"
+position = [-148.412, 4.6, 37.938]
+rotation_deg = [0.0, 9.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_164"
+model = "generated:block"
+position = [-147.547, 4.6, 42.707]
+rotation_deg = [0.0, 11.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_165"
+model = "generated:block"
+position = [-146.539, 4.6, 47.448]
+rotation_deg = [0.0, 12.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_166"
+model = "generated:block"
+position = [-145.39, 4.6, 52.157]
+rotation_deg = [0.0, 14.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_166"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-145.39, 0.0, 52.157]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_166"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-145.39, 16.0, 52.157]
+rotation_deg = [0.0, 3300.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_167"
+model = "generated:block"
+position = [-144.1, 4.6, 56.829]
+rotation_deg = [0.0, 16.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_168"
+model = "generated:block"
+position = [-142.672, 4.6, 61.46]
+rotation_deg = [0.0, 18.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_169"
+model = "generated:block"
+position = [-141.105, 4.6, 66.047]
+rotation_deg = [0.0, 19.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_170"
+model = "generated:block"
+position = [-139.402, 4.6, 70.585]
+rotation_deg = [0.0, 21.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_171"
+model = "generated:block"
+position = [-137.564, 4.6, 75.07]
+rotation_deg = [0.0, 23.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_171"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-137.564, 0.0, 75.07]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_171"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-137.564, 16.0, 75.07]
+rotation_deg = [0.0, 3400.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_172"
+model = "generated:block"
+position = [-135.593, 4.6, 79.497]
+rotation_deg = [0.0, 24.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_173"
+model = "generated:block"
+position = [-133.49, 4.6, 83.864]
+rotation_deg = [0.0, 26.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_174"
+model = "generated:block"
+position = [-131.257, 4.6, 88.166]
+rotation_deg = [0.0, 28.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_175"
+model = "generated:block"
+position = [-128.897, 4.6, 92.4]
+rotation_deg = [0.0, 30.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_176"
+model = "generated:block"
+position = [-126.411, 4.6, 96.56]
+rotation_deg = [0.0, 31.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_176"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-126.411, 0.0, 96.56]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_176"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-126.411, 16.0, 96.56]
+rotation_deg = [0.0, 3500.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_177"
+model = "generated:block"
+position = [-123.801, 4.6, 100.645]
+rotation_deg = [0.0, 33.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_178"
+model = "generated:block"
+position = [-121.071, 4.6, 104.649]
+rotation_deg = [0.0, 35.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_179"
+model = "generated:block"
+position = [-118.222, 4.6, 108.571]
+rotation_deg = [0.0, 36.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_180"
+model = "generated:block"
+position = [-115.257, 4.6, 112.405]
+rotation_deg = [0.0, 38.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_181"
+model = "generated:block"
+position = [-112.179, 4.6, 116.149]
+rotation_deg = [0.0, 40.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_181"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-112.179, 0.0, 116.149]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_181"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-112.179, 16.0, 116.149]
+rotation_deg = [0.0, 3600.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_182"
+model = "generated:block"
+position = [-108.99, 4.6, 119.799]
+rotation_deg = [0.0, 42.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_183"
+model = "generated:block"
+position = [-105.693, 4.6, 123.352]
+rotation_deg = [0.0, 43.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_184"
+model = "generated:block"
+position = [-102.292, 4.6, 126.804]
+rotation_deg = [0.0, 45.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_185"
+model = "generated:block"
+position = [-98.788, 4.6, 130.154]
+rotation_deg = [0.0, 47.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_186"
+model = "generated:block"
+position = [-95.187, 4.6, 133.397]
+rotation_deg = [0.0, 48.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_186"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-95.187, 0.0, 133.397]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_186"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-95.187, 16.0, 133.397]
+rotation_deg = [0.0, 3700.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_187"
+model = "generated:block"
+position = [-91.489, 4.6, 136.531]
+rotation_deg = [0.0, 50.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_188"
+model = "generated:block"
+position = [-87.7, 4.6, 139.553]
+rotation_deg = [0.0, 52.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_189"
+model = "generated:block"
+position = [-83.822, 4.6, 142.46]
+rotation_deg = [0.0, 54.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_190"
+model = "generated:block"
+position = [-79.858, 4.6, 145.25]
+rotation_deg = [0.0, 55.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_191"
+model = "generated:block"
+position = [-75.813, 4.6, 147.92]
+rotation_deg = [0.0, 57.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_191"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-75.813, 0.0, 147.92]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_191"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-75.813, 16.0, 147.92]
+rotation_deg = [0.0, 3800.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_192"
+model = "generated:block"
+position = [-71.69, 4.6, 150.468]
+rotation_deg = [0.0, 59.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_193"
+model = "generated:block"
+position = [-67.493, 4.6, 152.892]
+rotation_deg = [0.0, 60.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_194"
+model = "generated:block"
+position = [-63.225, 4.6, 155.188]
+rotation_deg = [0.0, 62.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_195"
+model = "generated:block"
+position = [-58.89, 4.6, 157.356]
+rotation_deg = [0.0, 64.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_196"
+model = "generated:block"
+position = [-54.492, 4.6, 159.394]
+rotation_deg = [0.0, 66.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_196"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-54.492, 0.0, 159.394]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_196"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-54.492, 16.0, 159.394]
+rotation_deg = [0.0, 3900.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_197"
+model = "generated:block"
+position = [-50.035, 4.6, 161.299]
+rotation_deg = [0.0, 67.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_198"
+model = "generated:block"
+position = [-45.523, 4.6, 163.07]
+rotation_deg = [0.0, 69.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_199"
+model = "generated:block"
+position = [-40.96, 4.6, 164.705]
+rotation_deg = [0.0, 71.143, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_200"
+model = "generated:block"
+position = [-36.351, 4.6, 166.202]
+rotation_deg = [0.0, 72.857, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_201"
+model = "generated:block"
+position = [-31.698, 4.6, 167.562]
+rotation_deg = [0.0, 74.571, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "tower_201"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-31.698, 0.0, 167.562]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [32.0, 16.0, 32.0]
+snap = true
+[[prop]]
+name = "gem_201"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-31.698, 16.0, 167.562]
+rotation_deg = [0.0, 4000.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "curtain_202"
+model = "generated:block"
+position = [-27.007, 4.6, 168.781]
+rotation_deg = [0.0, 76.286, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_203"
+model = "generated:block"
+position = [-22.282, 4.6, 169.859]
+rotation_deg = [0.0, 78.0, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_204"
+model = "generated:block"
+position = [-17.527, 4.6, 170.796]
+rotation_deg = [0.0, 79.714, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "curtain_205"
+model = "generated:block"
+position = [-12.745, 4.6, 171.59]
+rotation_deg = [0.0, 81.429, 0.0]
+scale = [3.6, 9.2, 6.6]
+snap = true
+tint = [0.72, 0.66, 0.58]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "gate_s"
+model = "assets/kenney/fantasy-town-kit/wall-doorway-square-wide.glb"
+position = [0.0, 0.0, 170.993]
 rotation_deg = [0.0, 90.0, 0.0]
-scale = 3
+scale = [14.0, 11.0, 20.0]
+snap = true
 [[prop]]
-name = "banner_n2"
-model = "assets/kenney/fantasy-town-kit/banner-green.glb"
-position = [-20, 3.0, -52.0]
+name = "gate_e"
+model = "assets/kenney/fantasy-town-kit/wall-doorway-round.glb"
+position = [119.695, 0.0, 91.196]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [12.0, 9.0, 16.0]
+snap = true
+[[prop]]
+name = "gatetower_w"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-12.0, 0.0, 169.993]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [36.0, 20.0, 36.0]
+snap = true
+[[prop]]
+name = "gategem_w"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-12.0, 20.0, 169.993]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.8
+snap = true
+[[prop]]
+name = "gatetower_e"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [12.0, 0.0, 169.993]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [36.0, 20.0, 36.0]
+snap = true
+[[prop]]
+name = "gategem_e"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [12.0, 20.0, 169.993]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.8
+snap = true
+[[prop]]
+name = "cathedral_front"
+model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
+position = [-23.248, 0.0, -98.313]
 rotation_deg = [0.0, 90.0, 0.0]
-scale = 3
+scale = [18.0, 24.0, 4.0]
+count = 14
+step = [4.0, 0.0, 0.0]
+snap = true
 [[prop]]
-name = "banner_n3"
-model = "assets/kenney/fantasy-town-kit/banner-green.glb"
-position = [20, 3.0, -52.0]
+name = "cathedral_door"
+model = "assets/kenney/fantasy-town-kit/wall-doorway-round.glb"
+position = [2.752, 0.0, -98.313]
 rotation_deg = [0.0, 90.0, 0.0]
-scale = 3
+scale = [16.0, 22.0, 12.0]
+snap = true
 [[prop]]
-name = "banner_n4"
-model = "assets/kenney/fantasy-town-kit/banner-red.glb"
-position = [40, 3.0, -52.0]
+name = "cathedral_west"
+model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
+position = [-25.248, 0.0, -134.313]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [18.0, 24.0, 4.0]
+count = 9
+step = [0.0, 0.0, 4.0]
+snap = true
+[[prop]]
+name = "cathedral_east"
+model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
+position = [30.752, 0.0, -134.313]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [18.0, 24.0, 4.0]
+count = 9
+step = [0.0, 0.0, 4.0]
+snap = true
+[[prop]]
+name = "cathedral_roof"
+model = "generated:block"
+position = [2.752, 28.0, -118.313]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [60.0, 8.0, 42.0]
+snap = true
+tint = [0.26, 0.36, 0.55]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "spire_w"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-23.248, 0.0, -102.313]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [40.0, 50.0, 40.0]
+snap = true
+[[prop]]
+name = "spire_cap_w"
+model = "generated:block"
+position = [-23.248, 52.0, -102.313]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [8.0, 6.0, 8.0]
+snap = true
+tint = [0.26, 0.36, 0.55]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "spire_e"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [28.752, 0.0, -102.313]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [40.0, 50.0, 40.0]
+snap = true
+[[prop]]
+name = "spire_cap_e"
+model = "generated:block"
+position = [28.752, 52.0, -102.313]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [8.0, 6.0, 8.0]
+snap = true
+tint = [0.26, 0.36, 0.55]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "library_front"
+model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
+position = [38.752, 0.0, -103.313]
 rotation_deg = [0.0, 90.0, 0.0]
-scale = 3
+scale = [14.0, 14.0, 4.0]
+count = 12
+step = [4.0, 0.0, 0.0]
+snap = true
 [[prop]]
-name = "fountain"
-model = "assets/kenney/fantasy-town-kit/fountain-square-detail.glb"
-position = [0, 2.0, 0]
+name = "library_roof"
+model = "generated:block"
+position = [60.752, 16.0, -112.313]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.2, 2.4, 3.2]
+scale = [50.0, 4.0, 18.0]
+snap = true
+tint = [0.26, 0.36, 0.55]
+tex = "assets/ambientcg/Bricks076C"
 [[prop]]
-name = "stall_1"
-model = "assets/kenney/fantasy-town-kit/stall-red.glb"
-position = [-48, 2.0, -22]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.2, 1.5, 2.0]
-[[prop]]
-name = "stall_2"
-model = "assets/kenney/fantasy-town-kit/stall-green.glb"
-position = [-36, 2.0, -22]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.2, 1.5, 2.0]
-[[prop]]
-name = "stall_3"
-model = "assets/kenney/fantasy-town-kit/stall-red.glb"
-position = [36, 2.0, -22]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.2, 1.5, 2.0]
-[[prop]]
-name = "stall_4"
-model = "assets/kenney/fantasy-town-kit/stall-green.glb"
-position = [48, 2.0, -22]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.2, 1.5, 2.0]
-[[prop]]
-name = "cart"
-model = "assets/kenney/fantasy-town-kit/cart-high.glb"
-position = [-54, 2.0, -22]
+name = "h0_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [46.437, 0.0, 131.7]
 rotation_deg = [0.0, 90.0, 0.0]
-scale = 1.8
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h0_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [46.437, 0.0, 143.7]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h0_roof"
+model = "generated:block"
+position = [52.437, 12.0, 137.7]
+rotation_deg = [0.0, 18.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h1_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [83.457, 0.0, 112.837]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h1_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [83.457, 0.0, 124.837]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h1_roof"
+model = "generated:block"
+position = [89.457, 12.0, 118.837]
+rotation_deg = [0.0, 36.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h2_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [112.837, 0.0, 83.457]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h2_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [112.837, 0.0, 95.457]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h2_roof"
+model = "generated:block"
+position = [118.837, 12.0, 89.457]
+rotation_deg = [0.0, 54.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h3_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [131.7, 0.0, 46.437]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h3_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [131.7, 0.0, 58.437]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h3_roof"
+model = "generated:block"
+position = [137.7, 12.0, 52.437]
+rotation_deg = [0.0, 72.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h4_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [137.472, 0.0, -8.482]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h4_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [137.472, 0.0, 3.518]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h4_roof"
+model = "generated:block"
+position = [143.472, 12.0, -2.482]
+rotation_deg = [0.0, 96.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h5_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [179.326, 0.0, -87.079]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h5_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [179.326, 0.0, -75.079]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h5_roof"
+model = "generated:block"
+position = [185.326, 12.0, -81.079]
+rotation_deg = [0.0, 118.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h6_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [87.159, 0.0, -99.248]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h6_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [87.159, 0.0, -87.248]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h6_roof"
+model = "generated:block"
+position = [93.159, 12.0, -93.248]
+rotation_deg = [0.0, 142.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h7_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-35.638, 0.0, -120.901]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h7_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-35.638, 0.0, -108.901]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h7_roof"
+model = "generated:block"
+position = [-29.638, 12.0, -114.901]
+rotation_deg = [0.0, 198.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h8_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-76.36, 0.0, -99.248]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h8_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-76.36, 0.0, -87.248]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h8_roof"
+model = "generated:block"
+position = [-70.36, 12.0, -93.248]
+rotation_deg = [0.0, 218.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h9_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-107.221, 0.0, -64.974]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h9_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-107.221, 0.0, -52.974]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h9_roof"
+model = "generated:block"
+position = [-101.221, 12.0, -58.974]
+rotation_deg = [0.0, 238.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h10_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-124.498, 0.0, -22.211]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h10_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-124.498, 0.0, -10.211]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h10_roof"
+model = "generated:block"
+position = [-118.498, 12.0, -16.211]
+rotation_deg = [0.0, 258.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h11_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-122.256, 0.0, 42.004]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h11_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-122.256, 0.0, 54.004]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h11_roof"
+model = "generated:block"
+position = [-116.256, 12.0, 48.004]
+rotation_deg = [0.0, 286.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h12_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-93.29, 0.0, 94.26]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h12_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-93.29, 0.0, 106.26]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h12_roof"
+model = "generated:block"
+position = [-87.29, 12.0, 100.26]
+rotation_deg = [0.0, 312.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h13_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-52.816, 0.0, 124.759]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h13_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-52.816, 0.0, 136.759]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h13_roof"
+model = "generated:block"
+position = [-46.816, 12.0, 130.759]
+rotation_deg = [0.0, 334.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h14_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-13.083, 0.0, 136.907]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h14_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-13.083, 0.0, 148.907]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h14_roof"
+model = "generated:block"
+position = [-7.083, 12.0, 142.907]
+rotation_deg = [0.0, 352.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h15_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [39.159, 0.0, 81.224]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h15_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [39.159, 0.0, 93.224]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h15_roof"
+model = "generated:block"
+position = [45.159, 12.0, 87.224]
+rotation_deg = [0.0, 24.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h16_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [79.999, 0.0, 41.784]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h16_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [79.999, 0.0, 53.784]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h16_roof"
+model = "generated:block"
+position = [85.999, 12.0, 47.784]
+rotation_deg = [0.0, 64.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h17_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [109.614, 0.0, -12.976]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h17_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [109.614, 0.0, -0.976]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h17_roof"
+model = "generated:block"
+position = [115.614, 12.0, -6.976]
+rotation_deg = [0.0, 100.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h18_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [46.9, 0.0, -66.481]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h18_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [46.9, 0.0, -54.481]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h18_roof"
+model = "generated:block"
+position = [52.9, 12.0, -60.481]
+rotation_deg = [0.0, 150.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h19_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-36.1, 0.0, -66.481]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h19_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-36.1, 0.0, -54.481]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h19_roof"
+model = "generated:block"
+position = [-30.1, 12.0, -60.481]
+rotation_deg = [0.0, 210.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h20_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-72.595, 0.0, -22.988]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h20_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-72.595, 0.0, -10.988]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h20_roof"
+model = "generated:block"
+position = [-66.595, 12.0, -16.988]
+rotation_deg = [0.0, 250.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
+[[prop]]
+name = "h21_n"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-66.481, 0.0, 46.9]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h21_s"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-66.481, 0.0, 58.9]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h21_roof"
+model = "generated:block"
+position = [-60.481, 12.0, 52.9]
+rotation_deg = [0.0, 300.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.34, 0.45, 0.62]
+tex = "assets/ambientcg/Bricks076C"
+[[prop]]
+name = "h22_n"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-14.68, 0.0, 85.934]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h22_s"
+model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
+position = [-14.68, 0.0, 97.934]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 10.0, 4.0]
+count = 4
+step = [4.0, 0.0, 0.0]
+snap = true
+[[prop]]
+name = "h22_roof"
+model = "generated:block"
+position = [-8.68, 12.0, 91.934]
+rotation_deg = [0.0, 346.0, 0.0]
+scale = [16.0, 4.0, 13.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
 [[prop]]
 name = "flagon_n"
 model = "assets/kenney/fantasy-town-kit/wall-wood-window-shutters.glb"
-position = [-50.0, 2.0, 19.8]
+position = [-144.506, 0.0, 9.682]
 rotation_deg = [0.0, 90.0, 0.0]
-scale = [4.0, 4, 4.0]
-count = 4
-step = [4.0, 0, 0]
+scale = [16.0, 12.0, 4.0]
+count = 5
+step = [4.0, 0.0, 0.0]
+snap = true
 [[prop]]
 name = "flagon_s"
 model = "assets/kenney/fantasy-town-kit/wall-wood-window-glass.glb"
-position = [-50.0, 2.0, 28.2]
-rotation_deg = [0.0, -90.0, 0.0]
-scale = [4.0, 4, 4.0]
-count = 4
-step = [4.0, 0, 0]
+position = [-144.506, 0.0, 23.682]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [16.0, 12.0, 4.0]
+count = 5
+step = [4.0, 0.0, 0.0]
+snap = true
 [[prop]]
-name = "flagon_w"
-model = "assets/kenney/fantasy-town-kit/wall-wood.glb"
-position = [-53.8, 2.0, 20.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [4.0, 4, 4.0]
-count = 3
-step = [0, 0, 4.0]
-[[prop]]
-name = "flagon_e"
+name = "flagon_door"
 model = "assets/kenney/fantasy-town-kit/wall-wood-door.glb"
-position = [-34.2, 2.0, 21.0]
+position = [-126.506, 0.0, 16.682]
 rotation_deg = [0.0, 180.0, 0.0]
-scale = [4.0, 4, 6.0]
-count = 2
-step = [0, 0, 6.0]
+scale = [8.0, 12.0, 8.0]
+snap = true
 [[prop]]
 name = "flagon_roof"
-model = "assets/kenney/fantasy-town-kit/roof-high-point.glb"
-position = [-44, 6.0, 24]
+model = "generated:block"
+position = [-136.506, 14.0, 16.682]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = [14.5, 3.2, 11]
+scale = [22.0, 4.0, 16.0]
+snap = true
+tint = [0.18, 0.16, 0.15]
+tex = "assets/ambientcg/Rock030"
 [[prop]]
 name = "flagon_chimney"
 model = "assets/kenney/fantasy-town-kit/chimney.glb"
-position = [-50, 7.4, 22]
+position = [-140.506, 16.0, 14.682]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4.0, 4.0, 4.0]
+snap = true
+[[prop]]
+name = "flagon_sign"
+model = "assets/kenney/fantasy-town-kit/banner-red.glb"
+position = [-125.506, 6.0, 18.682]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = 3.0
+snap = true
+[[prop]]
+name = "fountain_0"
+model = "assets/kenney/fantasy-town-kit/fountain-round-detail.glb"
+position = [0.0, 0.0, 28.499]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [6.5, 6.0, 6.5]
+snap = true
+[[prop]]
+name = "fountain_1"
+model = "assets/kenney/fantasy-town-kit/fountain-round-detail.glb"
+position = [0.0, 2.2, 28.499]
+rotation_deg = [0.0, 30.0, 0.0]
+scale = [4.2, 6.0, 4.2]
+snap = true
+[[prop]]
+name = "fountain_2"
+model = "assets/kenney/fantasy-town-kit/fountain-round-detail.glb"
+position = [0.0, 4.0, 28.499]
+rotation_deg = [0.0, 60.0, 0.0]
+scale = [2.4, 6.0, 2.4]
+snap = true
+[[prop]]
+name = "plaza_lamp_0"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [0.0, 0.0, 52.499]
 rotation_deg = [0.0, 0.0, 0.0]
 scale = 2.2
+snap = true
 [[prop]]
-name = "flagon_lantern"
+name = "plaza_lamp_1"
 model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-34.5, 2.0, 20]
+position = [14.107, 0.0, 47.915]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+scale = 2.2
+snap = true
 [[prop]]
-name = "gate_lantern_n"
+name = "plaza_lamp_2"
 model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [8, 2.0, -154]
+position = [22.825, 0.0, 35.915]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+scale = 2.2
+snap = true
 [[prop]]
-name = "gate_lantern_s"
+name = "plaza_lamp_3"
 model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [8, 2.0, 154]
+position = [22.825, 0.0, 21.082]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+scale = 2.2
+snap = true
 [[prop]]
-name = "gate_lantern_e"
+name = "plaza_lamp_4"
 model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [154, 2.0, 38]
+position = [14.107, 0.0, 9.082]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+scale = 2.2
+snap = true
 [[prop]]
-name = "grove_tree_1"
+name = "plaza_lamp_5"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [0.0, 0.0, 4.499]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "plaza_lamp_6"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-14.107, 0.0, 9.082]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "plaza_lamp_7"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-22.825, 0.0, 21.082]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "plaza_lamp_8"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-22.825, 0.0, 35.915]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "plaza_lamp_9"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-14.107, 0.0, 47.915]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "stall_w_0"
+model = "assets/kenney/fantasy-town-kit/stall-red.glb"
+position = [-53.598, 0.0, -39.898]
+rotation_deg = [0.0, 15.0, 0.0]
+scale = [5.5, 4.0, 4.5]
+snap = true
+[[prop]]
+name = "stall_w_1"
+model = "assets/kenney/fantasy-town-kit/stall-red.glb"
+position = [-47.598, 0.0, -39.898]
+rotation_deg = [0.0, 15.0, 0.0]
+scale = [5.5, 4.0, 4.5]
+snap = true
+[[prop]]
+name = "stall_w_2"
+model = "assets/kenney/fantasy-town-kit/stall-red.glb"
+position = [-41.598, 0.0, -39.898]
+rotation_deg = [0.0, 15.0, 0.0]
+scale = [5.5, 4.0, 4.5]
+snap = true
+[[prop]]
+name = "stall_e_0"
+model = "assets/kenney/fantasy-town-kit/stall-red.glb"
+position = [54.697, 0.0, -28.499]
+rotation_deg = [0.0, -20.0, 0.0]
+scale = [5.2, 3.8, 4.2]
+snap = true
+[[prop]]
+name = "stall_e_1"
+model = "assets/kenney/fantasy-town-kit/stall-green.glb"
+position = [60.697, 0.0, -28.499]
+rotation_deg = [0.0, -20.0, 0.0]
+scale = [5.2, 3.8, 4.2]
+snap = true
+[[prop]]
+name = "stall_e_2"
+model = "assets/kenney/fantasy-town-kit/stall-red.glb"
+position = [66.697, 0.0, -28.499]
+rotation_deg = [0.0, -20.0, 0.0]
+scale = [5.2, 3.8, 4.2]
+snap = true
+[[prop]]
+name = "stall_e_3"
+model = "assets/kenney/fantasy-town-kit/stall-green.glb"
+position = [72.697, 0.0, -28.499]
+rotation_deg = [0.0, -20.0, 0.0]
+scale = [5.2, 3.8, 4.2]
+snap = true
+[[prop]]
+name = "market_crates"
+model = "assets/original/ember_art/warrens/crate_stack.glb"
+position = [-37.598, 0.0, -35.898]
+rotation_deg = [0.0, 20.0, 0.0]
+scale = 2.6
+snap = true
+[[prop]]
+name = "market_cart"
+model = "assets/kenney/fantasy-town-kit/cart.glb"
+position = [74.697, 0.0, -33.499]
+rotation_deg = [0.0, 30.0, 0.0]
+scale = 2.8
+snap = true
+[[prop]]
+name = "garden_fountain"
+model = "assets/kenney/fantasy-town-kit/fountain-round.glb"
+position = [-96.632, 0.0, -86.811]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4.5, 4.0, 4.5]
+snap = true
+[[prop]]
+name = "garden_tree_0"
 model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [-100, 0.0, 40]
+position = [-96.632, 0.0, -70.811]
 rotation_deg = [0.0, 0.0, 0.0]
 scale = 3.2
 snap = true
 [[prop]]
-name = "outcrop_1"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [-94, 0.0, 36]
+name = "garden_flower_0"
+model = "assets/kenney/nature-kit/flower_redA.glb"
+position = [-93.516, 0.0, -80.363]
 rotation_deg = [0.0, 0.0, 0.0]
 scale = 2.4
 snap = true
 [[prop]]
-name = "grove_tree_2"
+name = "garden_tree_1"
 model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [-110, 0.0, -50]
+position = [-82.559, 0.0, -76.835]
 rotation_deg = [0.0, 40.0, 0.0]
-scale = 2.8
+scale = 3.2
 snap = true
 [[prop]]
-name = "outcrop_2"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [-104, 0.0, -54]
-rotation_deg = [0.0, 25.0, 0.0]
+name = "garden_flower_1"
+model = "assets/kenney/nature-kit/flower_redA.glb"
+position = [-88.928, 0.0, -84.922]
+rotation_deg = [0.0, 0.0, 0.0]
 scale = 2.4
 snap = true
 [[prop]]
-name = "grove_tree_3"
+name = "garden_tree_2"
 model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [40, 0.0, 100]
+position = [-79.083, 0.0, -90.371]
 rotation_deg = [0.0, 80.0, 0.0]
-scale = 3.4
+scale = 3.2
 snap = true
 [[prop]]
-name = "outcrop_3"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [46, 0.0, 96]
-rotation_deg = [0.0, 50.0, 0.0]
+name = "garden_flower_2"
+model = "assets/kenney/nature-kit/flower_redA.glb"
+position = [-90.141, 0.0, -90.903]
+rotation_deg = [0.0, 0.0, 0.0]
 scale = 2.4
 snap = true
 [[prop]]
-name = "grove_tree_4"
+name = "garden_tree_3"
 model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [90, 0.0, -80]
+position = [-88.822, 0.0, -101.226]
 rotation_deg = [0.0, 120.0, 0.0]
+scale = 3.2
+snap = true
+[[prop]]
+name = "garden_flower_3"
+model = "assets/kenney/nature-kit/flower_redA.glb"
+position = [-96.241, 0.0, -93.802]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "garden_tree_4"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-104.442, 0.0, -101.226]
+rotation_deg = [0.0, 160.0, 0.0]
+scale = 3.2
+snap = true
+[[prop]]
+name = "garden_flower_4"
+model = "assets/kenney/nature-kit/flower_redA.glb"
+position = [-102.636, 0.0, -91.437]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "garden_tree_5"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-114.18, 0.0, -90.371]
+rotation_deg = [0.0, 200.0, 0.0]
+scale = 3.2
+snap = true
+[[prop]]
+name = "garden_flower_5"
+model = "assets/kenney/nature-kit/flower_redA.glb"
+position = [-104.509, 0.0, -85.588]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "garden_tree_6"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-110.705, 0.0, -76.835]
+rotation_deg = [0.0, 240.0, 0.0]
+scale = 3.2
+snap = true
+[[prop]]
+name = "garden_flower_6"
+model = "assets/kenney/nature-kit/flower_redA.glb"
+position = [-100.45, 0.0, -80.66]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.4
+snap = true
+[[prop]]
+name = "oak_landmark"
+model = "assets/original/old_oak/OldOak_Giant.glb"
+position = [182.392, 0.0, -68.397]
+rotation_deg = [0.0, 30.0, 0.0]
+scale = 4.8
+snap = true
+[[prop]]
+name = "oak_door"
+model = "assets/kenney/fantasy-town-kit/wall-wood-arch.glb"
+position = [172.392, 0.0, -58.397]
+rotation_deg = [0.0, 40.0, 0.0]
+scale = [8.0, 7.0, 8.0]
+snap = true
+[[prop]]
+name = "oak_gem_0"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [172.392, 0.0, -74.397]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "oak_gem_1"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [191.392, 0.0, -75.397]
+rotation_deg = [0.0, 25.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "oak_gem_2"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [174.392, 0.0, -60.397]
+rotation_deg = [0.0, 50.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "oak_gem_3"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [193.392, 0.0, -63.397]
+rotation_deg = [0.0, 75.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "oak_gem_4"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [182.392, 0.0, -80.397]
+rotation_deg = [0.0, 100.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "oak_gem_5"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [170.392, 0.0, -67.397]
+rotation_deg = [0.0, 125.0, 0.0]
+scale = 2.2
+snap = true
+[[prop]]
+name = "ward_plinth_0"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-96.896, 0.0, -45.598]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [14.0, 6.0, 14.0]
+snap = true
+[[prop]]
+name = "ward_0"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-96.896, 6.0, -45.598]
+rotation_deg = [0.0, 0.0, 0.0]
 scale = 2.6
 snap = true
 [[prop]]
-name = "outcrop_4"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [96, 0.0, -84]
-rotation_deg = [0.0, 75.0, 0.0]
-scale = 2.4
+name = "ward_plinth_1"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-85.496, 0.0, 56.998]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [14.0, 6.0, 14.0]
 snap = true
 [[prop]]
-name = "grove_tree_5"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [80, 0.0, 90]
-rotation_deg = [0.0, 160.0, 0.0]
-scale = 3.0
+name = "ward_1"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-85.496, 6.0, 56.998]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.6
 snap = true
 [[prop]]
-name = "outcrop_5"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [86, 0.0, 86]
-rotation_deg = [0.0, 100.0, 0.0]
-scale = 2.4
+name = "ward_plinth_2"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-68.397, 0.0, 102.596]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [14.0, 6.0, 14.0]
+snap = true
+[[prop]]
+name = "ward_2"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-68.397, 6.0, 102.596]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.6
+snap = true
+[[prop]]
+name = "ward_plinth_3"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [68.397, 0.0, 91.196]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [14.0, 6.0, 14.0]
+snap = true
+[[prop]]
+name = "ward_3"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [68.397, 6.0, 91.196]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.6
+snap = true
+[[prop]]
+name = "ward_plinth_4"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [108.296, 0.0, -56.998]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [14.0, 6.0, 14.0]
+snap = true
+[[prop]]
+name = "ward_4"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [108.296, 6.0, -56.998]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.6
+snap = true
+[[prop]]
+name = "ward_plinth_5"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-82.089, 0.0, -118.446]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [14.0, 6.0, 14.0]
+snap = true
+[[prop]]
+name = "ward_5"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-82.089, 6.0, -118.446]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.6
+snap = true
+[[prop]]
+name = "ward_plinth_6"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-136.549, 0.0, -49.52]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [14.0, 6.0, 14.0]
+snap = true
+[[prop]]
+name = "ward_6"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [-136.549, 6.0, -49.52]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.6
+snap = true
+[[prop]]
+name = "ward_plinth_7"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [112.718, 0.0, -112.434]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [14.0, 6.0, 14.0]
+snap = true
+[[prop]]
+name = "ward_7"
+model = "assets/original/ember_art/props/ward_crystal.gltf"
+position = [112.718, 6.0, -112.434]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.6
+snap = true
+[[prop]]
+name = "lamp_s_0"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [5.25, 0.0, 162.087]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_s_1"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [7.75, 0.0, 144.275]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_s_2"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [10.25, 0.0, 126.464]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_s_3"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [12.75, 0.0, 108.652]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_s_4"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [12.75, 0.0, 90.84]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_s_5"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [10.25, 0.0, 73.028]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_s_6"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [7.75, 0.0, 55.216]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_s_7"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [5.25, 0.0, 37.405]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_n_0"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [4.172, 0.0, 19.323]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_n_1"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [4.516, 0.0, 0.972]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_n_2"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [4.86, 0.0, -17.38]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_n_3"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [5.204, 0.0, -35.731]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_n_4"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [5.548, 0.0, -54.083]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_n_5"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [5.892, 0.0, -72.434]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_n_6"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [6.236, 0.0, -90.785]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_n_7"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [6.58, 0.0, -109.137]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_0"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-4.532, 0.0, 27.76]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_1"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-21.595, 0.0, 26.283]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_2"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-38.658, 0.0, 24.806]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_3"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-55.721, 0.0, 23.329]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_4"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-72.785, 0.0, 21.852]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_5"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-89.848, 0.0, 20.375]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_6"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-106.911, 0.0, 18.898]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_7"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-123.975, 0.0, 17.42]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_8"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-129.183, 0.0, 8.057]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_9"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-122.538, 0.0, -9.191]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_10"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-115.892, 0.0, -26.44]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_11"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-109.246, 0.0, -43.689]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_12"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-102.6, 0.0, -60.938]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_w_13"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-95.955, 0.0, -78.186]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_0"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [10.27, 0.0, 22.799]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_1"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [22.809, 0.0, 11.4]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_2"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [35.349, 0.0, 0.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_3"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [47.888, 0.0, -11.4]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_4"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [60.428, 0.0, -22.799]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_5"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [70.769, 0.0, -19.949]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_6"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [78.911, 0.0, -2.85]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_7"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [87.054, 0.0, 14.249]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_8"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [95.196, 0.0, 31.349]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_9"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [103.339, 0.0, 48.448]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_10"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [111.481, 0.0, 65.547]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
+snap = true
+[[prop]]
+name = "lamp_e_11"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [119.624, 0.0, 82.647]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.0
 snap = true
