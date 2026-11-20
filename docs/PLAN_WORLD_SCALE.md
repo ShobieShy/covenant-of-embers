@@ -144,6 +144,8 @@ A Kenney cliff that is still standing is named in that version's notes. It does 
 
 ## Painted level maps
 
+The full set, including Breach and Acts I–IV, is listed in [maps/levels/README.md](maps/levels/README.md). Creature sheets are in [concepts/creatures/README.md](concepts/creatures/README.md). The normalized layout taken off each painting is in [specs/](specs/). A build uses that painting as the underlay and has to pass the overlay check in the spec.
+
 These are the visual target for each level. They are arrangements, not surveys: the meter table above is the size, and these paintings are the look. Each file is already under 1 MB.
 
 - [Town](maps/levels/town.jpg). A round walled close: paved square, fountain, striped stalls, the Flagon on the west, four purple ward crystals, main gate south, east gate, the cathedral and its glowing circle to the north, the Old Oak outside the east wall. The cathedral and the oak are the neighboring levels, seen through those gates. The town level is the ring.
