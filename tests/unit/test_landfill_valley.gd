@@ -51,6 +51,10 @@ func test_areas_run_south_to_north_and_the_filth_is_last() -> void:
 	check(gate.z < spawn.z - 8.0, "the Breach road is past the Filth (%.1f vs %.1f)" % [gate.z, spawn.z])
 	check(town.z > start.z, "town is back at the south lip")
 	check(start.distance_to(gate) > 8.0, "the Breach road is not the arrival spot")
+	check(
+		town.distance_to(gate) > 860.0 and town.distance_to(gate) < 960.0,
+		"the valley is about 900 m (%.0f)" % town.distance_to(gate)
+	)
 	var rule := LevelFlow.rule("midden", "breach")
 	var intro: Array = IntroDirector.GATE_RULES["midden"]["breach"]
 	check(rule[0] == "filth_defeated" and String(intro[0]) == "filth_defeated", "beating the Filth opens the Breach")

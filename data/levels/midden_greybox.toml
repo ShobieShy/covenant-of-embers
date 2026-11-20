@@ -1,6 +1,7 @@
-# The Landfill, 0.10.1. A valley 48 m wide and 150 m long. The yard stays at
-# y 0. The bowl and the north road stay at y -2. Berms close both sides.
-# A ridge holds the town gate. A rock cut holds the Breach gate.
+# The Landfill, 0.11.2. A valley about 220 m wide and 900 m long. The yard
+# stays at y 0, where the tutorial already stands. The bowl and the north
+# road stay at y -2. The outer edge is a cliff. A ridge holds the town
+# gate. A rock cut holds the Breach gate.
 # Kenney rocks stand in for the Ember Art berm mesh. The tutorial band,
 # Joe, the Filth, the waystone, and the intro anchors stay put.
 # (formerly "The Ashen Midden", Q25)
@@ -53,14 +54,18 @@ position = [0.0, 0.0, 12.5]
 yaw_deg = 0.0                       # facing north (-Z); pitch starts level
 
 [terrain]
-size = [48, 150]
-center = [0, -16]
-height = 6
+size = [220, 1020]
+center = [0, -390]
+height = 8
 seed = 101
-rim = 8
-blend = 10
+rim = 14
+cliff = 8
+blend = 18
+spacing = 2
 pad_y = -2.05
-layers = ["Ground037", "Rock030"]
+foliage = 6000
+layers = ["rubble_junk", "rock", "mud_filth"]
+carves = [[48, 20, 22, 6], [-52, -10, 20, 5], [60, -80, 24, 6], [-58, -140, 22, 5], [70, -260, 26, 6], [-64, -400, 24, 5], [55, -560, 22, 6], [-60, -700, 24, 5], [36, -33, 18, -4], [-36, -33, 18, -4], [0, -58, 16, -3], [48, -200, 14, -4], [-50, -480, 16, -4]]
 
 
 # --- floors. Upper trench top is y 0 (the tutorial band). The bowl and the road drop to y -2. ---
@@ -80,13 +85,29 @@ center = [0.0, -3.0, -33.0]
 size = [28.0, 2.0, 34.0]
 color = [0.30, 0.28, 0.20]
 
-# road_floor: z -66..-48, x -4..4, top y -2. Empty road north of the bowl.
+# road_floor: z -66..-48, top y -2. The short step out of the bowl.
 [[box]]
 name = "road_floor"
 kind = "ground"
 center = [0.0, -3.0, -57.0]
 size = [28.0, 2.0, 18.0]
 color = [0.30, 0.28, 0.20]
+
+# north_road: z -880..-70, top y -2. The empty road to the Breach. No fights.
+[[box]]
+name = "north_road"
+kind = "ground"
+center = [0.0, -3.0, -475.0]
+size = [28.0, 2.0, 810.0]
+color = [0.30, 0.28, 0.20]
+
+# filth_pool: a green sheet on the bowl, same top as the floor, so it is not the kill line.
+[[box]]
+name = "filth_pool"
+kind = "platform"
+center = [0.0, -2.02, -33.0]
+size = [16.0, 0.04, 16.0]
+color = [0.35, 0.62, 0.18]
 
 # --- trash walls. Heaps, not a slate ring. Inner face stays outside x ±10 on the upper trench. ---
 [[box]]
@@ -113,8 +134,8 @@ hidden = true
 [[box]]
 name = "rock_cut"
 kind = "wall"
-center = [0.0, 1.0, -68.0]
-size = [40.0, 8.0, 4.0]
+center = [0.0, 1.0, -892.0]
+size = [48.0, 10.0, 6.0]
 color = [0.34, 0.30, 0.24]
 hidden = true
 
@@ -340,7 +361,7 @@ enemies = [{ enemy = "the_filth", count = 1, at = "north_ledge" }]
 [[exit]]
 name = "to_breach"
 to = "breach"
-position = [0.0, -2.0, -60.0]
+position = [0.0, -2.0, -870.0]
 [[exit]]
 name = "to_town"
 to = "town_square"
