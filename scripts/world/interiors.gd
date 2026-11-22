@@ -51,14 +51,14 @@ const LINKS := {
 		"exits": {},
 		"logic": "labyrinth",
 	},
-	# 0.11.3: the upstairs room is its own scene. The door stands in the hollow, south of
-	# the trunk, so the crown cannot pass through the floor. Leaving lands on that spot.
+	# 0.11.4: the lab door is the Town oak's Door empty (yaw 135, threshold 6.2 m).
+	# Leaving lands on the ground beside that door. The grove keeps its own tree.
 	"bobs_lab":
 	{
 		"scene": "bobs_lab",
-		"inside": "old_oak",
-		"front": ["old_oak", "", [0.0, -4.0]],
-		"exits": {"old_oak": ["old_oak", "", [0.0, -4.0]]},
+		"inside": "town_square",
+		"front": ["town_square", "", [91.329, -40.129]],
+		"exits": {"town_square": ["town_square", "", [91.329, -40.129]]},
 	},
 }
 

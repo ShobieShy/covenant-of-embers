@@ -326,7 +326,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     if len(wo) != 2 or any(x % 16.0 for x in wo):
         raise LevelError("world_offset must be [x, z], multiples of 16 m")
     env = d["environment"]
-    _only(env, {"sky_color", "ambient_color", "fog_density", "sky", "volumetric_fog", "fog_albedo", "grade"}, "[environment]")
+    _only(env, {"sky_color", "ambient_color", "fog_density", "sky", "volumetric_fog", "fog_albedo", "fog_light", "grade"}, "[environment]")
     vfog = float(env.get("volumetric_fog", 0.0))
     if not 0.0 <= vfog <= 0.2:
         raise LevelError("volumetric_fog must be in [0, 0.2]")
@@ -354,6 +354,9 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "sky": bool(env.get("sky", False)),
         "volumetric_fog": vfog,
         "fog_albedo": _color(env.get("fog_albedo", [1.0, 1.0, 1.0]), "fog_albedo"),
+        # Distance fog stays the sky colour unless a level sets fog_light. fog_albedo is
+        # the volumetric haze only, so Landfill and Breach keep the sky-tinted distance fog.
+        "fog_light": _color(env["fog_light"], "fog_light") if "fog_light" in env else None,
         "grade": grade,
         "to_light": [x / ln for x in tl],
         "sun_color": _color(_need(sun, "color", "[sun]"), "sun color"),
@@ -728,7 +731,7 @@ def to_tscn(lv: dict, source: str) -> str:
         f"adjustment_saturation = {_f(lv['grade'][2])}",
         f"fog_enabled = {'true' if lv['fog_density'] > 0 else 'false'}",
         "fog_mode = 0",
-        f"fog_light_color = {_color_str(lv['sky_color'])}",
+        f"fog_light_color = {_color_str(lv['fog_light'] or lv['sky_color'])}",
         f"fog_density = {_f(lv['fog_density'])}",
         "fog_sky_affect = 0.0",
     ] + ([

@@ -89,8 +89,8 @@ def town() -> tuple[set[str], str]:
     p.append(prop("gate_lantern_n", TOWN + "lantern.glb", (8, y, -154), 0.0, 1.4))
     p.append(prop("gate_lantern_s", TOWN + "lantern.glb", (8, y, 154), 0.0, 1.4))
     p.append(prop("gate_lantern_e", TOWN + "lantern.glb", (154, y, 38), 0.0, 1.4))
-    for i, (x, z, sc) in enumerate(((-100, 40, 3.2), (-110, -50, 2.8), (40, 100, 3.4), (90, -80, 2.6), (80, 90, 3.0))):
-        p.append(prop(f"grove_tree_{i + 1}", NATURE + "tree_oak.glb", (x, 0.0, z), float(i * 40), sc, snap=True))
+    # 0.11.4: the Kenney cube oaks read as placeholders. Rocks stay; no new trees.
+    for i, (x, z) in enumerate(((-100, 40), (-110, -50), (40, 100), (90, -80), (80, 90))):
         p.append(prop(f"outcrop_{i + 1}", TOWN + "rock-wide.glb", (x + 6, 0.0, z - 4), float(i * 25), 2.4, snap=True))
     return hide, "".join(p)
 

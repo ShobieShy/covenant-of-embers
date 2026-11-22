@@ -223,3 +223,10 @@ author = "Ember Art"
 license = "CC0 1.0"
 source = "batch_12_act2_blightcoil (original work, Blender 4.5)"
 line = "Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch) by Ember Art, CC0 1.0"
+
+[[credit]]
+name = "Old Oak v4 (Town east lobe)"
+author = "Ember Art; bark and door wood by Lennart Demes"
+license = "CC0 1.0"
+source = "Ember Art Old Oak v4, hand-built in Blender. Bark014 and Wood051 are CC0 materials from ambientCG."
+line = "Old Oak v4 (Town east lobe) by Ember Art; bark and door wood by Lennart Demes, CC0 1.0"

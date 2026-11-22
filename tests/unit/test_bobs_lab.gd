@@ -28,5 +28,5 @@ func test_the_room_is_its_own_scene() -> void:
 	check(not on_room.is_empty() and (on_room["collider"] as Node).name == "lab_floor", "the room has a floor")
 	var rail := space.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(0, 0.8, 0), Vector3(4, 0.8, 0)))
 	check(not rail.is_empty(), "the open edge has a rail")
-	check(lab.get_node_or_null("Exits/to_oak") != null, "the door leads back to the oak")
+	check(lab.get_node_or_null("Exits/to_town") != null, "the door leads back to the town")
 	lab.free()

@@ -343,3 +343,13 @@ license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-11-05"
 use = "Labyrinth Act II creatures: spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch"
+
+[[asset]]
+name = "Old Oak v4 (Town east lobe)"
+path = "assets/landmarks/old_oak"
+author = "Ember Art; bark and door wood by Lennart Demes (ambientCG Bark014, Wood051)"
+source = "Ember Art Old Oak v4, hand-built in Blender. Bark014 and Wood051 are CC0 materials from ambientCG."
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-22"
+use = "The Town east-lobe Old Oak, its root ramp, and the door into Bob's lab"

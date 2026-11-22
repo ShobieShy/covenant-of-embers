@@ -22,6 +22,8 @@ func _init(t := "breach") -> void:
 
 func _ready() -> void:
 	Interaction.register(self, 1.2, 0.8)
+	if get_meta(&"plain", false):
+		return  # the mesh is the door; no greybox pillar
 	var box := CSGBox3D.new()
 	box.size = Vector3(1.0, 2.4, 0.3)
 	box.position.y = 1.2

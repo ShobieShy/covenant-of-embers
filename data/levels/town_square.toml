@@ -14,9 +14,10 @@ ground = "assets/ambientcg/PavingStones131"
 uv_scale = 0.4
 
 [environment]
-sky_color = [0.62, 0.48, 0.82]
-ambient_color = [0.42, 0.4, 0.5]
-fog_density = 0.003
+sky_color = [0.56, 0.64, 0.74]
+ambient_color = [0.52, 0.48, 0.42]
+fog_density = 0.0007
+fog_light = [0.93, 0.86, 0.72]
 sky = true
 grade = [1.03, 1.05, 1.12]
 
@@ -41,7 +42,7 @@ map_version = 3
 pad_y = 1.95
 foliage = 6000
 layers = ["grass", "rock", "path_cobble"]
-carves = [[95.1, -113.4, 22, -9], [95.1, 113.4, 22, -9], [-95.1, 113.4, 22, -9], [-139.1, 50.6, 22, -9], [-139.1, -50.6, 22, -9], [-95.1, -113.4, 22, -9], [-100.0, 40.0, 18, 5.0], [-110.0, -50.0, 16, 4.5], [40.0, 100.0, 18, 5.0], [90.0, -80.0, 16, 4.0], [80.0, 90.0, 16, 4.5], [-70.0, 110.0, 14, 3.5]]
+carves = [[95.1, -113.4, 22, -9], [95.1, 113.4, 22, -9], [-95.1, 113.4, 22, -9], [-139.1, 50.6, 22, -9], [-139.1, -50.6, 22, -9], [-95.1, -113.4, 22, -9], [-100.0, 40.0, 18, 5.0], [-110.0, -50.0, 16, 4.5], [40.0, 100.0, 40, -6.0], [90.0, -80.0, 16, 4.0], [80.0, 90.0, 28, -4.0], [-70.0, 110.0, 14, 3.5], [62.0, 55.0, 46.0, -7.0], [84.0, 12.0, 36.0, -6.0], [96.0, -36.0, 30.0, -4.0], [86.0, -35.0, 12.0, 2.2]]
 
 [[box]]
 name = "square"
@@ -146,6 +147,16 @@ position = [0.0, 2.0, 160.0]
 name = "to_old_oak"
 to = "old_oak"
 position = [160.0, 2.0, 30.0]
+
+# 0.11.4: Ember Art Old Oak v4. Spec point (0.82, 0.38) on the 320 m town.
+# Yaw 135 turns the local -Z door toward the south-west. snap sits the origin
+# on the ground, so the 2.6 m root dip is in the earth and the ramp can be walked.
+[[prop]]
+name = "east_oak"
+model = "assets/landmarks/old_oak/old_oak.gltf"
+position = [96.0, 0.0, -44.8]
+rotation_deg = [0.0, 135.0, 0.0]
+snap = true
 [[npc]]
 name = "guard_gate"
 speaker = "Bored Guard"
@@ -497,25 +508,11 @@ position = [154, 2.0, 38]
 rotation_deg = [0.0, 0.0, 0.0]
 scale = 1.4
 [[prop]]
-name = "grove_tree_1"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [-100, 0.0, 40]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 3.2
-snap = true
-[[prop]]
 name = "outcrop_1"
 model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
 position = [-94, 0.0, 36]
 rotation_deg = [0.0, 0.0, 0.0]
 scale = 2.4
-snap = true
-[[prop]]
-name = "grove_tree_2"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [-110, 0.0, -50]
-rotation_deg = [0.0, 40.0, 0.0]
-scale = 2.8
 snap = true
 [[prop]]
 name = "outcrop_2"
@@ -525,13 +522,6 @@ rotation_deg = [0.0, 25.0, 0.0]
 scale = 2.4
 snap = true
 [[prop]]
-name = "grove_tree_3"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [40, 0.0, 100]
-rotation_deg = [0.0, 80.0, 0.0]
-scale = 3.4
-snap = true
-[[prop]]
 name = "outcrop_3"
 model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
 position = [46, 0.0, 96]
@@ -539,25 +529,11 @@ rotation_deg = [0.0, 50.0, 0.0]
 scale = 2.4
 snap = true
 [[prop]]
-name = "grove_tree_4"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [90, 0.0, -80]
-rotation_deg = [0.0, 120.0, 0.0]
-scale = 2.6
-snap = true
-[[prop]]
 name = "outcrop_4"
 model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
 position = [96, 0.0, -84]
 rotation_deg = [0.0, 75.0, 0.0]
 scale = 2.4
-snap = true
-[[prop]]
-name = "grove_tree_5"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [80, 0.0, 90]
-rotation_deg = [0.0, 160.0, 0.0]
-scale = 3.0
 snap = true
 [[prop]]
 name = "outcrop_5"
