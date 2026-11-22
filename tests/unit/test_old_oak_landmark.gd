@@ -36,10 +36,12 @@ func test_the_east_lobe_oak_is_walkable() -> void:
 			if c is CollisionShape3D and (c as CollisionShape3D).shape is ConcavePolygonShape3D:
 				hull = (c as CollisionShape3D).shape.get_faces().size() / 3
 	check(absi(hull - 194) < 8, "collision tris %d" % hull)
-	await runner_tree.physics_frame
+	for _i in 4:
+		await runner_tree.physics_frame
 	var space: PhysicsDirectSpaceState3D = town.get_world_3d().direct_space_state
 	var fwd := door.global_transform.basis * Vector3(0, 0, -1)
-	check(_ramp_meets_the_ground(space, door, fwd), "a player can walk the ramp from the ground to the door")
+	var ramp := _ramp_meets_the_ground(space, door, fwd)
+	check(ramp == "", ramp)
 	var tz := town.get_node(^"Terrain") as TerrainZone
 	var eye := Vector3(0.0, tz.height_at(0.0, 148.0) + 1.7, 148.0)
 	var trunk := Vector3(oak.global_position.x, oak.global_position.y + 4.0, oak.global_position.z)
@@ -53,30 +55,59 @@ func test_the_east_lobe_oak_is_walkable() -> void:
 	town.free()
 
 
-## The authored ramp is a 37 deg root. Its foot has to meet the ground, or the step is a wall.
-func _ramp_meets_the_ground(space: PhysicsDirectSpaceState3D, door: Node3D, fwd: Vector3) -> bool:
-	var prev := 0.0
-	var on_ramp := false
-	var foot := 0.0
-	for i in 16:
+## The authored ramp is a 37 deg root. The player climbs 0.35 m, so the ground may
+## sit a little above the ramp foot but not a full step below it. A root under the
+## doorway is not the deck, and a graze on the door frame is not a wall.
+func _ramp_meets_the_ground(space: PhysicsDirectSpaceState3D, door: Node3D, fwd: Vector3) -> String:
+	var peak := -1.0e8
+	var hits: Array[Dictionary] = []
+	for i in 18:
 		var dist := float(i) * 0.6
 		var from: Vector3 = door.global_position + fwd * dist + Vector3(0, 16, 0)
 		var hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(from, from + Vector3(0, -40, 0)))
 		if hit.is_empty() or (hit["normal"] as Vector3).y < 0.7:
-			return false
+			continue
 		var at := hit["position"] as Vector3
 		var oak_hit := String((hit["collider"] as Node).name) == "old_oak"
 		if oak_hit:
-			if on_ramp and at.y > prev + 0.05:
-				return false
-			if on_ramp and (prev - at.y) / 0.6 > 1.0:
-				return false
-			on_ramp = true
-			prev = at.y
-			foot = at.y
-		elif on_ramp:
-			return absf(foot - at.y) < 0.45
-	return false
+			peak = maxf(peak, at.y)
+		hits.append({"y": at.y, "oak": oak_hit, "dist": dist})
+	var started := false
+	var foot := 0.0
+	var prev_y := 0.0
+	var prev_dist := 0.0
+	var ground := -1.0
+	for h in hits:
+		var y: float = h["y"]
+		var dist: float = h["dist"]
+		if h["oak"]:
+			if not started:
+				if y < peak - 0.2:
+					continue
+				started = true
+			else:
+				var run := maxf(dist - prev_dist, 0.05)
+				if y > prev_y + 0.05:
+					return "the ramp rises on the way down from the door"
+				if (prev_y - y) / run > 1.0:
+					return "the ramp is steeper than the player can walk"
+			prev_y = y
+			prev_dist = dist
+			foot = y
+		elif started:
+			if y < foot - 0.3:
+				return "a %.2f m step where the ramp meets the ground" % (foot - y)
+			if ground >= 0.0:
+				var run := maxf(dist - prev_dist, 0.05)
+				if (ground - y) / run > 1.0:
+					return "the ground in front of the ramp is steeper than the player can walk"
+			ground = y
+			prev_dist = dist
+	if not started:
+		return "the ramp does not leave the doorway"
+	if ground < 0.0:
+		return "the ramp does not reach the ground"
+	return ""
 
 
 func _tris(root: Node) -> int:
