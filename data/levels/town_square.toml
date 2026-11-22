@@ -17,7 +17,7 @@ uv_scale = 0.4
 sky_color = [0.56, 0.64, 0.74]
 ambient_color = [0.52, 0.48, 0.42]
 fog_density = 0.0007
-fog_albedo = [0.93, 0.86, 0.72]
+fog_light = [0.93, 0.86, 0.72]
 sky = true
 grade = [1.03, 1.05, 1.12]
 
