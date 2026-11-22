@@ -132,14 +132,17 @@ func _shoot_level(label: String, node: Node3D) -> void:
 	var centre := box.get_center()
 	var span := maxf(box.size.x, box.size.z)
 	await _save_cam(label + "_top", stage, node, _ortho(centre, span))
+	# Stand outside the bounds. A camera inside a trunk or a wall is a flat frame.
+	var floor_y := box.position.y + 1.7
+	var look := Vector3(centre.x, box.position.y + 1.4, centre.z)
 	var eyes: Array[Vector3] = [
-		centre + Vector3(0, 1.7, span * 0.28),
-		centre + Vector3(span * 0.22, 1.7, span * 0.08),
-		centre + Vector3(-span * 0.16, 1.7, -span * 0.18),
+		Vector3(centre.x, floor_y, box.end.z + 6.0),
+		Vector3(box.end.x + 6.0, floor_y, centre.z),
+		Vector3(box.position.x - 6.0, floor_y, box.position.z - 6.0),
 	]
 	var n := 1
 	for eye in eyes:
-		await _save_cam("%s_eye_%d" % [label, n], stage, node, _persp(eye, centre + Vector3(0, 1.2, 0)))
+		await _save_cam("%s_eye_%d" % [label, n], stage, node, _persp(eye, look))
 		n += 1
 	_clear(stage)
 
@@ -218,17 +221,26 @@ func _stage() -> Node3D:
 	stage.name = "Stage"
 	root.add_child(stage)
 	var sun := DirectionalLight3D.new()
+	sun.name = "Fill"
 	sun.rotation_degrees = Vector3(-48, 32, 0)
 	sun.light_energy = 0.75
+	sun.light_specular = 0.2
 	sun.shadow_enabled = false
 	stage.add_child(sun)
 	return stage
 
 
-func _tame(node: Node) -> void:
+## The level's own sun is enough. A second light blows the terrain out to white.
+func _tame(node: Node) -> bool:
 	var sun := node.find_child("Sun", true, false) as DirectionalLight3D
-	if sun:
-		sun.light_energy = minf(sun.light_energy, 0.85)
+	if sun == null:
+		return false
+	sun.light_energy = 0.65
+	sun.light_specular = 0.15
+	var fill := node.get_parent().get_node_or_null("Fill") as DirectionalLight3D
+	if fill:
+		fill.light_energy = 0.0
+	return true
 
 
 func _env() -> Environment:
@@ -249,7 +261,8 @@ func _ortho(centre: Vector3, span: float) -> Camera3D:
 	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
 	cam.size = maxf(span * 1.06, 4.0)
 	cam.environment = _env()
-	cam.look_at_from_position(centre + Vector3(0, maxf(30.0, span), 0.001), centre)
+	cam.position = centre + Vector3(0, maxf(30.0, span), 0)
+	cam.rotation_degrees = Vector3(-90, 0, 0)
 	return cam
 
 
