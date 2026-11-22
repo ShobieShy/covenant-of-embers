@@ -182,7 +182,7 @@ ShobieShy, 22 Nov 2026. These answers replace the open questions above.
 
 1. **Art gate.** Yes. CI fails a shipped scene that contains PrimitiveMesh or CSG geometry, other than collision shapes and debug nodes. Scenes that have not been remade yet are reported and do not fail the build. A remade scene does. Nothing ships until Ember QA and ShobieShy have both scored it 4/5 or higher against its painting.
 2. **Image-to-3D.** Yes. Ember Art may turn the concept sheets into 3D with an image-to-3D tool (for example TRELLIS) for landmarks and creatures. Imports are retopologized or decimated to the budget and given PBR materials before they enter the game.
-3. **PR #88.** Closed, not merged. The Town starts fresh. PR #88's buildings, terrain, and splines are not the layout base. PR #85 stays open until he says otherwise.
+3. **PR #88 and PR #85.** Both closed, not merged. The Town starts fresh. Neither attempt's buildings, terrain, or dressing are the layout base.
 4. **Bosses.** All seven stay in the single 0.14.0 phase. The Drowned Choir stays one body.
 5. **Start.** Building starts at 0.11.3: the art gate and the capture fixes. The Core stays closed. Music stays silent. No new names.
 
