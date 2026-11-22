@@ -51,6 +51,15 @@ const LINKS := {
 		"exits": {},
 		"logic": "labyrinth",
 	},
+	# 0.11.3: the upstairs room is its own scene. The door stands in the hollow, south of
+	# the trunk, so the crown cannot pass through the floor. Leaving lands on that spot.
+	"bobs_lab":
+	{
+		"scene": "bobs_lab",
+		"inside": "old_oak",
+		"front": ["old_oak", "", [0.0, -4.0]],
+		"exits": {"old_oak": ["old_oak", "", [0.0, -4.0]]},
+	},
 }
 
 var current := ""

@@ -21,6 +21,8 @@ done
 if [ "$MODE" = fast ] && [ "${TEST_CLASSIC:-}" = 1 ]; then echo "--classic is a full-tier option"; exit 2; fi
 # The fast tier's always-run list: save/load, player, casting, loot, UI basics, Labyrinth.
 CORE_TESTS="test_quest_chain.gd,test_smoke.gd,test_branding.gd,test_save.gd,test_save_migration.gd,test_world_save_migration.gd,test_player.gd,test_crouch_jump.gd,test_casting.gd,test_damage.gd,test_inventory.gd,test_pickup.gd,test_combat_style.gd,test_hud.gd,test_settings.gd,test_labyrinth_state.gd,test_labyrinth_floor.gd,test_labyrinth_sync.gd,test_audio.gd,test_flow.gd,test_level.gd,test_linear_flow.gd,test_linear_migration.gd,test_gate_vote.gd,test_blightcoil_cavern.gd,test_blight_gate.gd,test_blight_hazard.gd,test_blight_aggro.gd,test_blight_story.gd,test_blightmaw.gd,test_blightcoil_kit.gd,test_act_loot.gd,test_slagworks_floor.gd,test_slagworks_gate.gd,test_slag_hazard.gd,test_slag_aggro.gd,test_slag_story.gd,test_forgemaw.gd,test_slagworks_kit.gd"
+python3 tools/check_primitives.py --self-test
+python3 tools/check_primitives.py
 python3 tools/toml_to_scene.py --self-test
 python3 tools/expand_maps.py --check
 python3 tools/toml_to_scene.py --check
@@ -29,6 +31,7 @@ python3 tools/import_magewar_parts.py --check
 python3 tools/labyrinth_gen.py --self-test  # L1
 python3 tools/labyrinth_gen.py --check
 timeout 300 "$GODOT" --headless --path . --import >/dev/null 2>&1
+timeout 90 "$GODOT" --headless --path . -s res://tools/art_capture.gd -- --self-test
 # Unit tests and the smoke run must also log no SCRIPT ERROR / ERROR lines: a GDScript
 # runtime error inside a test doesn't fail it by itself (step 8 fix).
 log="$(mktemp)"

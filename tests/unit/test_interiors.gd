@@ -16,7 +16,10 @@ func test_links_resolve() -> void:
 			check(found, "%s has an exit to %s" % [id, to])
 			var link: Array = Interiors.LINKS[id]["exits"][to]
 			var out := (load(GameFlow.level_scene(link[0])) as PackedScene).instantiate()
-			check(out.has_node(NodePath("Exits/" + link[1])), "%s has %s" % link)
+			if link.size() >= 3:
+				check((link[2] as Array).size() == 2, "%s exit is a coordinate" % id)
+			else:
+				check(out.has_node(NodePath("Exits/" + link[1])), "%s has %s" % link)
 			out.free()
 		lvl.free()
 

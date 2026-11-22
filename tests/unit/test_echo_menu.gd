@@ -38,6 +38,21 @@ func test_missions_read_the_current_log() -> void:
 	runner_tree.paused = false
 
 
+func test_hud_hides_while_the_menu_is_open() -> void:
+	var hud := Hud.new()
+	hud.add_to_group(&"hud")
+	runner_tree.root.add_child(hud)
+	var e := EchoMenu.new()
+	runner_tree.root.add_child(e)
+	e.open("map")
+	check(e.visible and not hud.visible, "the combat hud hides")
+	e.press("resume")
+	check(not e.visible and hud.visible, "the combat hud returns")
+	e.free()
+	hud.free()
+	runner_tree.paused = false
+
+
 func test_reduced_motion_skips_the_slide() -> void:
 	UiAnim.force_motion = true
 	UiAnim.reduced_motion = true

@@ -129,8 +129,8 @@ def hall() -> tuple[set[str], str]:
 
 
 def oak() -> tuple[set[str], str]:
-    # The Old Oak itself (tree_oak at 8x) stands just outside the hollow's north bark, so
-    # its crown leans over the room; a darker 6x oak behind it fills out the canopy.
+    # The Old Oak stands just outside the hollow's north bark. The upstairs room is
+    # bobs_lab, its own scene, so the crown does not pass through a floor.
     # Step 119: the batch_03 giant oak replaces the small 8x tree_oak crown.
     p = [prop("old_oak", OAK, (0, -0.1, -13.0), 0.0, 1.0)]
     for i, (x, z) in enumerate(((-6.6, -6.6), (6.6, -6.6), (-6.6, 6.6), (6.6, 6.6))):
@@ -146,12 +146,16 @@ def oak() -> tuple[set[str], str]:
         p.append(prop(f"deco_{i + 1}", NATURE + f"{m}.glb", (x, 0.05 * 3, z), 40.0 * i, 3))
     p.append(prop("stool", NATURE + "stump_roundDetailed.glb", (3.8, 0.15, -5.5), 0.0, 3))
     p.append(prop("table", NATURE + "stump_squareDetailedWide.glb", (-1.6, 0.15, 3.4), 20.0, 3))
-    # 0.10.3: Kenney stand-ins for the missing lab meshes. The room is the boxes above.
-    p.append(prop("lab_chart", TOWN + "banner-green.glb", (-4.0, 5.3, -6.5), 0.0, 2.2))
-    p.append(prop("lab_slab_top", TOWN + "stall-bench.glb", (-5.2, 4.15, -5.2), 90.0, 1.4))
-    p.append(prop("lab_shelf_front", TOWN + "stall.glb", (-2.0, 4.05, -5.8), 0.0, 1.3))
-    for i, x in enumerate((-3.2, -2.4, -1.6)):
-        p.append(prop(f"lab_pot_{i + 1}", TOWN + "stall-stool.glb", (x, 4.15, -3.4), 0.0, 0.7))
+    return set(), "".join(p)
+
+
+def lab() -> tuple[set[str], str]:
+    # The room that used to sit in the oak's crown. Kenney stand-ins until the remake.
+    p = [prop("lab_chart", TOWN + "banner-green.glb", (1.6, 1.7, -1.7), 0.0, 2.2)]
+    p.append(prop("lab_slab_top", TOWN + "stall-bench.glb", (-1.2, 0.7, -1.0), 90.0, 1.4))
+    p.append(prop("lab_shelf_front", TOWN + "stall.glb", (1.6, 0.55, -1.5), 0.0, 1.3))
+    for i, x in enumerate((-0.6, 0.2, 1.0)):
+        p.append(prop(f"lab_pot_{i + 1}", TOWN + "stall-stool.glb", (x, 0.55, -0.4), 0.0, 0.7))
     return set(), "".join(p)
 
 
@@ -227,7 +231,7 @@ def breach() -> tuple[set[str], str]:
 
 FILES = {"data/levels/town_square.toml": town, "data/levels/mage_association.toml": hall,
          "data/levels/old_oak.toml": oak, "data/levels/midden_greybox.toml": midden,
-         "data/levels/breach_slice.toml": breach}
+         "data/levels/breach_slice.toml": breach, "data/levels/bobs_lab.toml": lab}
 
 
 def render(text: str, hide: set[str], block: str) -> str:

@@ -14,6 +14,7 @@ const LEVELS := {
 	"town_square": "res://scenes/levels/town_square.tscn",  # step 65
 	"mage_association": "res://scenes/levels/mage_association.tscn",
 	"old_oak": "res://scenes/levels/old_oak.tscn",  # step 66
+	"bobs_lab": "res://scenes/levels/bobs_lab.tscn",  # 0.11.3: the room, separate from the oak
 }
 const LEVEL_IDS := {
 	"midden_greybox": "midden",

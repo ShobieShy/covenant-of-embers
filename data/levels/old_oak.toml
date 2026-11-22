@@ -1,6 +1,6 @@
-# The Old Oak, 0.10.3. The hollow is unchanged. A stair in the west bark
-# climbs to one room in the branches: a star chart, an autopsy slab, a shelf,
-# and a short bench of potion pots. Bob is still met downstairs.
+# The Old Oak, 0.11.3. The hollow is unchanged. The upstairs room is the
+# bobs_lab interior, so the crown does not pass through a floor.
+# Bob is still met downstairs.
 
 [level]
 id = "old_oak"
@@ -128,51 +128,8 @@ center = [5.0, 0.05, 0.5]
 size = [2.5, 0.1, 2.5]
 color = [0.18, 0.14, 0.1]
 
-# The branch room. The stair rises along the west bark, clear of Bob, the
-# beds, the stash, and the door. Rails close every edge the bark does not.
-[[box]]
-name = "lab_stair"
-kind = "ramp"
-center = [-6.8, 2.0, 1.0]
-size = [1.0, 0.3, 7.211]
-rotation_deg = [33.69, 0.0, 0.0]
-color = [0.42, 0.32, 0.2]
-[[box]]
-name = "lab_floor"
-kind = "platform"
-center = [-4.0, 3.85, -4.35]
-size = [6.0, 0.3, 4.3]
-color = [0.4, 0.3, 0.18]
-[[box]]
-name = "lab_rail_s"
-kind = "wall"
-center = [-3.6, 4.5, -2.2]
-size = [5.2, 1.0, 0.25]
-color = [0.35, 0.26, 0.16]
-[[box]]
-name = "lab_rail_e"
-kind = "wall"
-center = [-1.0, 4.5, -4.35]
-size = [0.25, 1.0, 4.3]
-color = [0.35, 0.26, 0.16]
-[[box]]
-name = "lab_slab"
-kind = "platform"
-center = [-5.2, 4.25, -5.2]
-size = [1.6, 0.5, 0.8]
-color = [0.55, 0.55, 0.52]
-[[box]]
-name = "lab_shelf"
-kind = "wall"
-center = [-2.0, 5.0, -6.2]
-size = [1.4, 1.6, 0.3]
-color = [0.42, 0.3, 0.18]
-[[box]]
-name = "lab_pots"
-kind = "crate"
-center = [-2.4, 4.2, -3.4]
-size = [2.2, 0.35, 0.4]
-color = [0.25, 0.45, 0.22]
+# 0.11.3: the upstairs room is scenes/levels/bobs_lab.tscn. The door is placed
+# by Interiors at (0, -4), in the hollow and south of the trunk.
 
 [[exit]]
 name = "to_town"
@@ -302,39 +259,3 @@ model = "assets/kenney/nature-kit/stump_squareDetailedWide.glb"
 position = [-1.6, 0.15, 3.4]
 rotation_deg = [0.0, 20.0, 0.0]
 scale = 3
-[[prop]]
-name = "lab_chart"
-model = "assets/kenney/fantasy-town-kit/banner-green.glb"
-position = [-4.0, 5.3, -6.5]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.2
-[[prop]]
-name = "lab_slab_top"
-model = "assets/kenney/fantasy-town-kit/stall-bench.glb"
-position = [-5.2, 4.15, -5.2]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "lab_shelf_front"
-model = "assets/kenney/fantasy-town-kit/stall.glb"
-position = [-2.0, 4.05, -5.8]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.3
-[[prop]]
-name = "lab_pot_1"
-model = "assets/kenney/fantasy-town-kit/stall-stool.glb"
-position = [-3.2, 4.15, -3.4]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 0.7
-[[prop]]
-name = "lab_pot_2"
-model = "assets/kenney/fantasy-town-kit/stall-stool.glb"
-position = [-2.4, 4.15, -3.4]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 0.7
-[[prop]]
-name = "lab_pot_3"
-model = "assets/kenney/fantasy-town-kit/stall-stool.glb"
-position = [-1.6, 4.15, -3.4]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 0.7

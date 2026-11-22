@@ -94,6 +94,8 @@ func _ready() -> void:
 		numbers.connect_bolts(player.bolts)
 		# Step 29: HUD (CanvasLayer 2, above the viewmodel overlay).
 		var hud := Hud.new()
+		hud.name = "Hud"
+		hud.add_to_group(&"hud")
 		add_child(hud)
 		hud.bind(player, spawner)
 		_boss_spawner = spawner

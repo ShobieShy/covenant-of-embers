@@ -17,10 +17,6 @@
 [ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/flower_redC.glb" id="9_glb"]
 [ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_roundDetailed.glb" id="10_glb"]
 [ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/stump_squareDetailedWide.glb" id="11_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/banner-green.glb" id="12_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall-bench.glb" id="13_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall.glb" id="14_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall-stool.glb" id="15_glb"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -123,66 +119,6 @@ size = Vector3(2.5, 0.1, 2.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
 albedo_color = Color(0.461356, 0.410021, 0.34919, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_9"]
-size = Vector3(1, 0.3, 7.211)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_9"]
-size = Vector3(1, 0.3, 7.211)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
-albedo_color = Color(0.679976, 0.601243, 0.484529, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_10"]
-size = Vector3(6, 0.3, 4.3)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_10"]
-size = Vector3(6, 0.3, 4.3)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8"]
-albedo_color = Color(0.665185, 0.583831, 0.461356, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_11"]
-size = Vector3(5.2, 1, 0.25)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_11"]
-size = Vector3(5.2, 1, 0.25)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_9"]
-albedo_color = Color(0.62621, 0.546854, 0.436627, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_12"]
-size = Vector3(0.25, 1, 4.3)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_12"]
-size = Vector3(0.25, 1, 4.3)
-
-[sub_resource type="BoxMesh" id="BoxMesh_13"]
-size = Vector3(1.6, 0.5, 0.8)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_13"]
-size = Vector3(1.6, 0.5, 0.8)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_10"]
-albedo_color = Color(0.767376, 0.767376, 0.748379, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_14"]
-size = Vector3(1.4, 1.6, 0.3)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_14"]
-size = Vector3(1.4, 1.6, 0.3)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11"]
-albedo_color = Color(0.679976, 0.583831, 0.461356, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_15"]
-size = Vector3(2.2, 0.35, 0.4)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_15"]
-size = Vector3(2.2, 0.35, 0.4)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_12"]
-albedo_color = Color(0.537099, 0.701411, 0.506386, 1)
 
 [node name="OldOak" type="Node3D" groups=["kill_line"]]
 metadata/level_id = "old_oak"
@@ -406,90 +342,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_6")
 [node name="Shape" type="CollisionShape3D" parent="Boxes/slot_portals"]
 shape = SubResource("BoxShape3D_8")
 
-[node name="lab_stair" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 0.832051, -0.554699, 0, 0.554699, 0.832051, -6.8, 2, 1)
-metadata/kind = "ramp"
-metadata/toml_index = 17
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_stair"]
-mesh = SubResource("BoxMesh_9")
-surface_material_override/0 = SubResource("StandardMaterial3D_7")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_stair"]
-shape = SubResource("BoxShape3D_9")
-
-[node name="lab_floor" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3.85, -4.35)
-metadata/kind = "platform"
-metadata/toml_index = 18
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_floor"]
-mesh = SubResource("BoxMesh_10")
-surface_material_override/0 = SubResource("StandardMaterial3D_8")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_floor"]
-shape = SubResource("BoxShape3D_10")
-
-[node name="lab_rail_s" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 4.5, -2.2)
-metadata/kind = "wall"
-metadata/toml_index = 19
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_rail_s"]
-mesh = SubResource("BoxMesh_11")
-surface_material_override/0 = SubResource("StandardMaterial3D_9")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_rail_s"]
-shape = SubResource("BoxShape3D_11")
-
-[node name="lab_rail_e" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 4.5, -4.35)
-metadata/kind = "wall"
-metadata/toml_index = 20
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_rail_e"]
-mesh = SubResource("BoxMesh_12")
-surface_material_override/0 = SubResource("StandardMaterial3D_9")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_rail_e"]
-shape = SubResource("BoxShape3D_12")
-
-[node name="lab_slab" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 4.25, -5.2)
-metadata/kind = "platform"
-metadata/toml_index = 21
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_slab"]
-mesh = SubResource("BoxMesh_13")
-surface_material_override/0 = SubResource("StandardMaterial3D_10")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_slab"]
-shape = SubResource("BoxShape3D_13")
-
-[node name="lab_shelf" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 5, -6.2)
-metadata/kind = "wall"
-metadata/toml_index = 22
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_shelf"]
-mesh = SubResource("BoxMesh_14")
-surface_material_override/0 = SubResource("StandardMaterial3D_11")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_shelf"]
-shape = SubResource("BoxShape3D_14")
-
-[node name="lab_pots" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 4.2, -3.4)
-metadata/kind = "crate"
-metadata/toml_index = 23
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_pots"]
-mesh = SubResource("BoxMesh_15")
-surface_material_override/0 = SubResource("StandardMaterial3D_12")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_pots"]
-shape = SubResource("BoxShape3D_15")
-
 [node name="Props" type="Node3D" parent="."]
 
 [node name="old_oak" parent="Props" instance=ExtResource("1_glb")]
@@ -548,24 +400,6 @@ transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 3.8, 0.15, -5.5)
 
 [node name="table" parent="Props" instance=ExtResource("11_glb")]
 transform = Transform3D(2.819078, 0, 1.02606, 0, 3, 0, -1.02606, 0, 2.819078, -1.6, 0.15, 3.4)
-
-[node name="lab_chart" parent="Props" instance=ExtResource("12_glb")]
-transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, -4, 5.3, -6.5)
-
-[node name="lab_slab_top" parent="Props" instance=ExtResource("13_glb")]
-transform = Transform3D(0, 0, 1.4, 0, 1.4, 0, -1.4, 0, 0, -5.2, 4.15, -5.2)
-
-[node name="lab_shelf_front" parent="Props" instance=ExtResource("14_glb")]
-transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -2, 4.05, -5.8)
-
-[node name="lab_pot_1" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, -3.2, 4.15, -3.4)
-
-[node name="lab_pot_2" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, -2.4, 4.15, -3.4)
-
-[node name="lab_pot_3" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, -1.6, 4.15, -3.4)
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
 script = ExtResource("1_nav")
