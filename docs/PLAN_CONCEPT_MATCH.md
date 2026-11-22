@@ -2,7 +2,7 @@
 
 Written 20 Nov 2026, against master `781a260` (v0.11.2-prealpha). This extends [PLAN_WORLD_SCALE.md](PLAN_WORLD_SCALE.md). It is a plan. It does not change a level, a mesh, a hitbox, or a release.
 
-0.11.3, the town dressed to [maps/levels/town.jpg](maps/levels/town.jpg), is in review and is not part of this document's build list. Nothing in the sequence below starts until ShobieShy has reviewed that town and approved this plan.
+The approved review and the build order are in [PLAN_VISUAL_AUDIT.md](PLAN_VISUAL_AUDIT.md). ShobieShy approved that plan on 22 Nov 2026. Where this note and that plan disagree, the visual audit wins. 0.11.3 is the art gate, not a Town dressing. PR #88 and PR #85 are closed. The Town starts fresh at 0.12.0. The Core stays closed.
 
 The paintings are the look. The numbers already in `data/enemies/*.toml` are the hitboxes. A figure drawn twice a person's height is not a request to double `size`. Where a sheet and the data disagree, the data wins unless a decision at the end says otherwise.
 
