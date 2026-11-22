@@ -146,6 +146,16 @@ position = [0.0, 2.0, 160.0]
 name = "to_old_oak"
 to = "old_oak"
 position = [160.0, 2.0, 30.0]
+
+# 0.11.4: Ember Art Old Oak v4. Spec point (0.82, 0.38) on the 320 m town.
+# Yaw 135 turns the local -Z door toward the south-west. snap sits the origin
+# on the ground, so the 2.6 m root dip is in the earth and the ramp can be walked.
+[[prop]]
+name = "east_oak"
+model = "assets/landmarks/old_oak/old_oak.gltf"
+position = [96.0, 0.0, -44.8]
+rotation_deg = [0.0, 135.0, 0.0]
+snap = true
 [[npc]]
 name = "guard_gate"
 speaker = "Bored Guard"

@@ -222,6 +222,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="Exits" type="Node3D" parent="."]
 
-[node name="to_oak" type="Marker3D" parent="Exits"]
+[node name="to_town" type="Marker3D" parent="Exits"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.8)
-metadata/to = "old_oak"
+metadata/to = "town_square"

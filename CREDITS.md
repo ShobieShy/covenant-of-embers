@@ -34,6 +34,7 @@
 | Quaternius "Goblin" and "Orc" (recoloured; Ember Art batch 08b goblin grunt/archer/shaman, Goblin King) | Quaternius | CC0 1.0 | https://poly.pizza/m/OdCOFSmEhl, https://poly.pizza/m/5vO2YJsPEf | 2026-10-28 |
 | Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine) | Ember Art | CC0 1.0 | this repository | 2026-11-05 |
 | Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch) | Ember Art | CC0 1.0 | this repository | 2026-11-05 |
+| Old Oak v4 (Town east lobe) | Ember Art | CC0 1.0 | this repository; bark and door wood from ambientCG Bark014 and Wood051 | 2026-11-22 |
 
 3D models: Kenney (www.kenney.nl) — Fantasy Town Kit, Nature Kit (CC0). Delivered by Ember Art as batch 01; the full per-file list is in docs/credits/kenney_batch_01.md.
 
@@ -48,6 +49,8 @@ Ember Art (0.1.4): the junk mountain, Association spire, Old Oak LOD set, Breach
 Ember Art terrain sets (batch 07, based on ambientCG): the 10 Terrain3D texture sets (dirt, grass, rock, rubble, ash, mud, sand, snow, crystal, cobble path) are modified (blurred, posterized, tinted, overlays added) from ambientCG Ground080, Grass004, Rock030, Gravel022, Ground037, Ground054, Ground033, Snow006, Rocks011 and PavingStones131 by Lennart Demes, CC0 1.0. Textures based on ambientCG.com (CC0). Batch 07 also adds the belt and grimoire icons and the junk mountain collision hulls (original, CC0 1.0).
 
 CC0 does not require attribution; Kenney and ambientCG are credited anyway with thanks. Support: https://kenney.nl/donate
+
+Old Oak v4 (0.11.4): the Town east-lobe tree is original Ember Art geometry, CC0. Its bark is ambientCG Bark014 and its door wood is ambientCG Wood051, both by Lennart Demes, CC0 1.0. Credit is not required for CC0; it is recorded here with the other ambientCG materials.
 
 ## Libraries
 | Name | Author | License | Source | Added |
