@@ -39,16 +39,44 @@ func test_the_east_lobe_oak_is_walkable() -> void:
 	await runner_tree.physics_frame
 	var space: PhysicsDirectSpaceState3D = town.get_world_3d().direct_space_state
 	var fwd := door.global_transform.basis * Vector3(0, 0, -1)
-	var side := door.global_transform.basis * Vector3(1, 0, 0)
-	var heights: Array[float] = []
-	for dist: float in [2.0, 10.0, 20.0]:
-		var from: Vector3 = door.global_position + fwd * dist + side * 2.0 + Vector3(0, 8, 0)
-		var hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(from, from + Vector3(0, -20, 0)))
-		check(not hit.is_empty() and (hit["normal"] as Vector3).y > 0.5, "walkable at %.0f m" % dist)
-		if not hit.is_empty():
-			heights.append((hit["position"] as Vector3).y)
-	check(heights.size() == 3 and heights[2] < heights[0] - 1.5, "the ramp descends (%s)" % [heights])
+	check(_ramp_meets_the_ground(space, door, fwd), "a player can walk the ramp from the ground to the door")
+	var tz := town.get_node(^"Terrain") as TerrainZone
+	var eye := Vector3(0.0, tz.height_at(0.0, 148.0) + 1.7, 148.0)
+	var trunk := Vector3(oak.global_position.x, oak.global_position.y + 4.0, oak.global_position.z)
+	var clear := true
+	for i in 7:
+		var p: Vector3 = eye.lerp(trunk, float(i + 1) / 8.0)
+		if tz.height_at(p.x, p.z) > p.y - 0.8:
+			clear = false
+	check(clear, "the trunk is visible from the Main Gate")
+	check(town.get_node_or_null(^"Props/grove_tree_1") == null, "no placeholder oaks")
 	town.free()
+
+
+## The authored ramp is a 37 deg root. Its foot has to meet the ground, or the step is a wall.
+func _ramp_meets_the_ground(space: PhysicsDirectSpaceState3D, door: Node3D, fwd: Vector3) -> bool:
+	var prev := 0.0
+	var on_ramp := false
+	var foot := 0.0
+	for i in 16:
+		var dist := float(i) * 0.6
+		var from: Vector3 = door.global_position + fwd * dist + Vector3(0, 16, 0)
+		var hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(from, from + Vector3(0, -40, 0)))
+		if hit.is_empty() or (hit["normal"] as Vector3).y < 0.7:
+			return false
+		var at := hit["position"] as Vector3
+		var oak_hit := String((hit["collider"] as Node).name) == "old_oak"
+		if oak_hit:
+			if on_ramp and at.y > prev + 0.05:
+				return false
+			if on_ramp and (prev - at.y) / 0.6 > 1.0:
+				return false
+			on_ramp = true
+			prev = at.y
+			foot = at.y
+		elif on_ramp:
+			return absf(foot - at.y) < 0.45
+	return false
 
 
 func _tris(root: Node) -> int:

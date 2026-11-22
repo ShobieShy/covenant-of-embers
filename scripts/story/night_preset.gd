@@ -4,12 +4,14 @@ extends RefCounted
 
 # Step 127 (FX F1): moonlit, readable night. A preset swap (moon light + sky-tinted ambient +
 # warm lantern fill), not a multiplied-down sun, so the cinematic frames are never black.
-const NIGHT_AMBIENT := Color(0.22, 0.27, 0.48)
-const NIGHT_AMBIENT_ENERGY := 0.75
-const NIGHT_SKY := Color(0.05, 0.07, 0.16)
-const MOON_COLOR := Color(0.62, 0.72, 1.0)
-const MOON_ENERGY := 0.45
+const NIGHT_AMBIENT := Color(0.42, 0.5, 0.7)
+const NIGHT_AMBIENT_ENERGY := 1.15
+const NIGHT_SKY := Color(0.04, 0.06, 0.14)
+const MOON_COLOR := Color(0.78, 0.86, 1.0)
+const MOON_ENERGY := 0.95
 const LANTERN_COLOR := Color(1.0, 0.7, 0.4)
+## Far landmarks stay readable. The day fog, left on, turns the oak into a silhouette.
+const NIGHT_FOG := 0.0004
 
 
 ## Swap a level to the night preset. Static so tools/level_shots.gd and tests can use it.
@@ -20,9 +22,11 @@ static func apply(lvl: Node, anchor: Vector3) -> void:
 		env.ambient_light_color = NIGHT_AMBIENT
 		env.ambient_light_energy = NIGHT_AMBIENT_ENERGY
 		env.background_mode = Environment.BG_COLOR  # step 124: night drops the day sky
+		env.sky = null
 		env.background_color = NIGHT_SKY
-		env.fog_light_color = NIGHT_SKY
-		env.tonemap_exposure = 1.25
+		env.fog_light_color = Color(0.45, 0.52, 0.68)
+		env.fog_density = NIGHT_FOG
+		env.tonemap_exposure = 1.15
 		we.environment = env
 	var sun := lvl.get_node_or_null("Sun") as DirectionalLight3D
 	if sun:
@@ -36,3 +40,4 @@ static func apply(lvl: Node, anchor: Vector3) -> void:
 		lamp.omni_range = 9.0
 		lvl.add_child(lamp)
 		lamp.position = anchor + Vector3(0.8, 2.2, -1.2)
+	OldOakLandmark.glow_stars(lvl, true)

@@ -354,6 +354,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "sky": bool(env.get("sky", False)),
         "volumetric_fog": vfog,
         "fog_albedo": _color(env.get("fog_albedo", [1.0, 1.0, 1.0]), "fog_albedo"),
+        "fog_light": _color(env["fog_albedo"], "fog_albedo") if "fog_albedo" in env else None,
         "grade": grade,
         "to_light": [x / ln for x in tl],
         "sun_color": _color(_need(sun, "color", "[sun]"), "sun color"),
@@ -728,7 +729,7 @@ def to_tscn(lv: dict, source: str) -> str:
         f"adjustment_saturation = {_f(lv['grade'][2])}",
         f"fog_enabled = {'true' if lv['fog_density'] > 0 else 'false'}",
         "fog_mode = 0",
-        f"fog_light_color = {_color_str(lv['sky_color'])}",
+        f"fog_light_color = {_color_str(lv['fog_light'] or lv['sky_color'])}",
         f"fog_density = {_f(lv['fog_density'])}",
         "fog_sky_affect = 0.0",
     ] + ([

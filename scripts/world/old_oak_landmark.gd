@@ -11,6 +11,7 @@ const YAW_DEG := 135.0
 ## LOD0 (30,998 tris) through 60 m, then LOD1 (9,350). A 40 m shot stays on LOD0.
 const LOD0_END := 60.0
 const SCISSOR := 0.35
+const STAR_GLOW := 0.6
 
 
 ## Configures the instanced glTF: visibility ranges, foliage cards, the hidden
@@ -29,6 +30,30 @@ static func prepare(level: Node3D, player: Player = null, on_used: Callable = Ca
 	_door(oak, player, on_used)
 	oak.set_meta(&"oak_ready", true)
 	return oak
+
+
+## Night only. The violet star flowers pick up a faint glow so they stay readable.
+static func glow_stars(level: Node, on: bool) -> void:
+	var oak := level.get_node_or_null(^"Props/east_oak") as Node3D
+	if oak == null:
+		return
+	for n in oak.find_children("Flowers*", "MeshInstance3D", true, false):
+		var mi := n as MeshInstance3D
+		if on:
+			if mi.has_meta(&"star_day"):
+				continue
+			mi.set_meta(&"star_day", mi.material_override)
+			var base := mi.get_active_material(0) as StandardMaterial3D
+			if base == null:
+				continue
+			var m := base.duplicate() as StandardMaterial3D
+			m.emission_enabled = true
+			m.emission = Color(0.62, 0.38, 0.95)
+			m.emission_energy_multiplier = STAR_GLOW
+			mi.material_override = m
+		elif mi.has_meta(&"star_day"):
+			mi.material_override = mi.get_meta(&"star_day")
+			mi.remove_meta(&"star_day")
 
 
 static func _range(root: Node3D, begin: float, end: float) -> void:

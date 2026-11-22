@@ -41,7 +41,7 @@ func _run(out: String) -> void:
 	root.size = Vector2i(1280, 800)
 	await _shot(out, "steam_deck_low", eye, aim, false, true)
 	root.size = Vector2i(1280, 720)
-	await _shot(out, "night", Vector3(0, 4.2, 148), aim, true, false)
+	await _shot(out, "night", eye, aim, true, false)
 	print("[oak_trial] wrote ", out)
 	quit(0)
 
@@ -68,6 +68,9 @@ func _shot(out: String, label: String, eye: Vector3, at: Vector3, night: bool, l
 		town.add_child(cam)
 	cam.fov = 50.0
 	cam.current = true
+	var we := town.get_node_or_null(^"WorldEnvironment") as WorldEnvironment
+	if we:
+		cam.environment = we.environment
 	cam.look_at_from_position(eye, at)
 	for _i in 4:
 		await process_frame

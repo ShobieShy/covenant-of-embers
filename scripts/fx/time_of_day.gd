@@ -52,7 +52,12 @@ static func apply(lvl: Node, preset: Preset, seconds := 0.0) -> Tween:
 		env = we.environment
 		if preset == Preset.NIGHT:
 			env.background_mode = Environment.BG_COLOR
+			if not env.has_meta(&"authored_fog"):
+				env.set_meta(&"authored_fog", env.fog_density)
+			env.fog_density = NightPreset.NIGHT_FOG
 		elif env.sky != null:
+			if env.has_meta(&"authored_fog"):
+				env.fog_density = env.get_meta(&"authored_fog")
 			env.background_mode = Environment.BG_SKY
 			var sm := env.sky.sky_material as ProceduralSkyMaterial
 			if sm:
@@ -70,6 +75,7 @@ static func apply(lvl: Node, preset: Preset, seconds := 0.0) -> Tween:
 		targets.append([env, "background_color", p["bg"]])
 		targets.append([env, "fog_light_color", p["bg"]])
 		targets.append([env, "tonemap_exposure", p["exposure"]])
+	OldOakLandmark.glow_stars(lvl, preset == Preset.NIGHT)
 	if seconds <= 0.0 or not lvl.is_inside_tree():
 		for t in targets:
 			t[0].set(t[1], t[2])
