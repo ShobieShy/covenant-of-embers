@@ -197,6 +197,48 @@ func _fit(inst: Node3D, height: float = HEIGHT) -> void:
 	var s := height / box.size.y
 	inst.scale *= s
 	inst.position.y = -box.position.y * s
+	plant_feet(inst)
+
+
+## Drops a rig so its lowest foot bone sits on y = 0. The mesh box used for scaling
+## includes packs and weapons, which leaves the feet in the air. Rigs with no foot
+## bone keep the mesh fit. `root` is the instanced GLB (the node whose position the
+## fit already set).
+static func plant_feet(root: Node3D) -> void:
+	var mover := _glb(root)
+	var drop := _foot_drop(mover)
+	if is_nan(drop):
+		return
+	mover.position.y -= drop
+
+
+## How far the lowest foot bone sits above y = 0, in `root`'s parent space.
+## NAN when the rig has no foot bone. The CharacterModel wrapper reports the glb child.
+static func foot_clearance(root: Node3D) -> float:
+	return _foot_drop(_glb(root))
+
+
+static func _glb(root: Node3D) -> Node3D:
+	if root is CharacterModel and root.get_child_count() > 0 and root.get_child(0) is Node3D:
+		return root.get_child(0) as Node3D
+	return root
+
+
+static func _foot_drop(inst: Node3D) -> float:
+	var sk := inst.find_child("Skeleton3D", true, false) as Skeleton3D
+	if sk == null:
+		return NAN
+	var found := false
+	var lowest := 0.0
+	for i in sk.get_bone_count():
+		var n := String(sk.get_bone_name(i)).to_lower()
+		if "foot" not in n and "feet" not in n:
+			continue
+		var local_y := (_local_xform(inst, sk) * sk.get_bone_global_pose(i)).origin.y
+		var visual := inst.position.y + local_y * inst.scale.y
+		lowest = visual if not found else minf(lowest, visual)
+		found = true
+	return lowest if found else NAN
 
 
 static func _local_xform(root: Node3D, n: Node3D) -> Transform3D:

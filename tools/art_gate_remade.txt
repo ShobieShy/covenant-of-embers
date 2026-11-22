@@ -1,0 +1,5 @@
+# Scenes listed here have been remade. A PrimitiveMesh or a CSG node in one of
+# them fails CI. Collision shapes and nodes with "collision" or "debug" in the
+# name stay allowed. One path per line (scenes/... or res://scenes/...).
+# Unlisted scenes are reported and do not fail the build.
+# Nothing is remade yet. 0.11.4 and later add a path here when that scene ships.

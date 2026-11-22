@@ -8,6 +8,9 @@ func _scale_ok(path: String, cm: CharacterModel) -> void:
 	if cm:
 		var s := (cm.get_child(0) as Node3D).scale.y
 		check(s > 0.01 and s < 10.0, "%s fit scale %f" % [path, s])
+		var feet := CharacterModel.foot_clearance(cm)
+		if not is_nan(feet):
+			check(absf(feet) < 0.06, "%s feet on the ground (%.3f)" % [path, feet])
 		cm.free()
 
 

@@ -279,6 +279,17 @@ func _need_scribe() -> void:
 	print("[intro] " + why)
 
 
+## The combat HUD is a sibling CanvasLayer in the "hud" group. It stays hidden for the
+## whole time this menu is open, including the pause-only shell.
+func _set_game_hud(show_hud: bool) -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	for n in tree.get_nodes_in_group(&"hud"):
+		if n is CanvasLayer:
+			(n as CanvasLayer).visible = show_hud
+
+
 func _apply_shell() -> void:
 	if title_label:
 		title_label.text = "Paused" if pause_only else "Auto-Scribe™"
@@ -291,6 +302,7 @@ func _open_shell() -> void:
 	status.text = ""
 	_leave_armed = false
 	_apply_shell()
+	_set_game_hud(false)
 	if player:
 		player.ui_open = true
 	if is_inside_tree():
@@ -301,6 +313,7 @@ func _open_shell() -> void:
 
 func _closed() -> void:
 	_release_hosted()
+	_set_game_hud(true)
 	if player:
 		player.ui_open = false
 	if is_inside_tree():
