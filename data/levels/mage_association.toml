@@ -1,48 +1,52 @@
-# The Mage Association, 0.10.2. A close about 64 m by 56 m. The hall is 24 m
-# by 32 m. The library is 18 m by 22 m on the east. The courtyard is 22 m by
-# 24 m on the west. The 90 m wings are gone. The summoning circle stays the
-# landmark from the south door. The back door to the Landfill stays behind
-# the dais.
+# The Mage Association. A round stone close on grassy hills: gothic nave,
+# blue-slate roofs, summoning circle, east library wing, west garden.
+# Gameplay spots stay on the old pads (south door, dais, back door, side gates).
 
 [level]
 id = "mage_association"
 name = "Eldoria - Mage Association"
-world_offset = [0.0, -256.0]  # OW1: docs/WORLD_LAYOUT.md
+world_offset = [0.0, -256.0]
 
-[materials]                  # step 127 (FX F1): textured CC0 ground so it reads under AgX
+[materials]
 ground = "assets/ambientcg/PavingStones131"
-uv_scale = 0.4
+uv_scale = 0.45
 
 [environment]
-sky_color = [0.12, 0.1, 0.2]
-ambient_color = [0.35, 0.3, 0.45]
-fog_density = 0.01
-grade = [1.0, 1.08, 1.0]            # step 132 (FX F6): cool hall
+sky = true
+sky_color = [0.62, 0.72, 0.95]
+ambient_color = [0.46, 0.40, 0.34]
+fog_density = 0.0035
+fog_light = [0.90, 0.72, 0.48]
+grade = [1.04, 1.05, 1.02]
 
 [sun]
-to_light = [0.4, 0.8, 0.3]
-color = [0.8, 0.7, 1.0]
+to_light = [0.42, -0.58, -0.55]
+color = [1.0, 0.64, 0.36]
 
 [player_start]
 position = [0.0, 0.0, 12.0]
 yaw_deg = 0.0
 
 [terrain]
-size = [80, 72]
-center = [-2, 0]
-height = 4
-seed = 102
+size = [220, 200]
+center = [0, 6]
+height = 8
+seed = 77
 rim = 6
-blend = 8
+blend = 16
 pad_y = -0.15
-layers = ["path_cobble", "rock", "dirt"]
+cliff = 20
+foliage = 0
+layers = ["grass", "rock", "dirt"]
 
+# ---- hall collision (meshes are hidden; the glTF is the visible shell) ----
 [[box]]
 name = "ground"
 kind = "ground"
 center = [0.0, -0.1, 0.0]
 size = [24.0, 0.2, 32.0]
 color = [0.3, 0.28, 0.35]
+hidden = true
 [[box]]
 name = "wall_north"
 kind = "wall"
@@ -88,43 +92,43 @@ hidden = true
 [[box]]
 name = "pillar_w1"
 kind = "wall"
-center = [-5.0, 3.0, -8.0]
-size = [1.0, 6.0, 1.0]
+center = [-5.0, 3.3, -8.0]
+size = [0.9, 6.6, 0.9]
 color = [0.45, 0.4, 0.55]
 hidden = true
 [[box]]
 name = "pillar_e1"
 kind = "wall"
-center = [5.0, 3.0, -8.0]
-size = [1.0, 6.0, 1.0]
+center = [5.0, 3.3, -8.0]
+size = [0.9, 6.6, 0.9]
 color = [0.45, 0.4, 0.55]
 hidden = true
 [[box]]
 name = "pillar_w2"
 kind = "wall"
-center = [-5.0, 3.0, -2.0]
-size = [1.0, 6.0, 1.0]
+center = [-5.0, 3.3, -2.0]
+size = [0.9, 6.6, 0.9]
 color = [0.45, 0.4, 0.55]
 hidden = true
 [[box]]
 name = "pillar_e2"
 kind = "wall"
-center = [5.0, 3.0, -2.0]
-size = [1.0, 6.0, 1.0]
+center = [5.0, 3.3, -2.0]
+size = [0.9, 6.6, 0.9]
 color = [0.45, 0.4, 0.55]
 hidden = true
 [[box]]
 name = "pillar_w3"
 kind = "wall"
-center = [-5.0, 3.0, 4.0]
-size = [1.0, 6.0, 1.0]
+center = [-5.0, 3.3, 4.0]
+size = [0.9, 6.6, 0.9]
 color = [0.45, 0.4, 0.55]
 hidden = true
 [[box]]
 name = "pillar_e3"
 kind = "wall"
-center = [5.0, 3.0, 4.0]
-size = [1.0, 6.0, 1.0]
+center = [5.0, 3.3, 4.0]
+size = [0.9, 6.6, 0.9]
 color = [0.45, 0.4, 0.55]
 hidden = true
 [[box]]
@@ -133,24 +137,24 @@ kind = "platform"
 center = [0.0, 0.15, -10.0]
 size = [6.0, 0.3, 4.0]
 color = [0.5, 0.3, 0.6]
+hidden = true
 
 [[exit]]
 name = "to_town"
 to = "town_square"
 position = [0.0, 0.0, 13.0]
 
-# Step 114 (Q20): the staff-only back door behind the dais opens on the Landfill.
 [[exit]]
 name = "to_landfill"
 to = "midden"
 position = [0.0, 0.0, -13.5]
+
 [[npc]]
 name = "crazy_joe"
 speaker = "Crazy Joe"
 position = [0.0, 0.3, -10.0]
 yaw_deg = 0.0
 
-# Intro spots. The constants in IntroDirector stay as the fallback.
 [[anchor]]
 name = "dais"
 position = [0.0, 0.3, -7.5]
@@ -179,69 +183,101 @@ position = [-1.0, 0.3, -9.0]
 [[box]]
 name = "library_floor"
 kind = "ground"
-center = [21.0, -0.1, 0.0]
-size = [18.0, 0.2, 22.0]
-color = [0.5, 0.47, 0.44]
+center = [24.0, -0.1, 0.0]
+size = [24.0, 0.2, 26.0]
+color = [0.45, 0.32, 0.2]
+hidden = true
 
 [[box]]
 name = "library_outer"
 kind = "wall"
-center = [30.5, 4.0, 0.0]
-size = [1.0, 8.0, 22.0]
-color = [0.62, 0.58, 0.55]
+center = [35.7, 3.3, 0.0]
+size = [0.8, 6.6, 26.0]
+color = [0.5, 0.48, 0.45]
+hidden = true
 
 [[box]]
 name = "library_north"
 kind = "wall"
-center = [21.0, 4.0, -11.5]
-size = [18.0, 8.0, 1.0]
-color = [0.62, 0.58, 0.55]
+center = [24.0, 3.3, -13.1]
+size = [23.2, 6.6, 0.8]
+color = [0.5, 0.48, 0.45]
+hidden = true
 
 [[box]]
 name = "library_south"
 kind = "wall"
-center = [21.0, 4.0, 11.5]
-size = [18.0, 8.0, 1.0]
-color = [0.62, 0.58, 0.55]
+center = [24.0, 3.3, 13.1]
+size = [23.2, 6.6, 0.8]
+color = [0.5, 0.48, 0.45]
+hidden = true
 
 [[box]]
-name = "shelf_1"
+name = "shelf_east_n"
 kind = "wall"
-center = [26.0, 1.6, -8.0]
-size = [6.0, 3.2, 1.0]
+center = [34.3, 2.55, -6.2]
+size = [1.15, 5.1, 10.0]
 color = [0.42, 0.3, 0.2]
+hidden = true
 
 [[box]]
-name = "shelf_2"
+name = "shelf_east_s"
 kind = "wall"
-center = [26.0, 1.6, -4.0]
-size = [6.0, 3.2, 1.0]
+center = [34.3, 2.55, 6.2]
+size = [1.15, 5.1, 10.0]
 color = [0.42, 0.3, 0.2]
+hidden = true
 
 [[box]]
-name = "shelf_3"
+name = "shelf_mid_n"
 kind = "wall"
-center = [26.0, 1.6, 0.0]
-size = [6.0, 3.2, 1.0]
+center = [27.2, 2.55, -6.6]
+size = [1.05, 5.1, 8.8]
 color = [0.42, 0.3, 0.2]
+hidden = true
 
 [[box]]
-name = "shelf_4"
+name = "shelf_mid_s"
 kind = "wall"
-center = [26.0, 1.6, 4.0]
-size = [6.0, 3.2, 1.0]
+center = [27.2, 2.55, 6.6]
+size = [1.05, 5.1, 8.8]
 color = [0.42, 0.3, 0.2]
+hidden = true
+
+[[box]]
+name = "shelf_west_n"
+kind = "wall"
+center = [19.4, 2.55, -6.8]
+size = [0.9, 5.1, 8.4]
+color = [0.42, 0.3, 0.2]
+hidden = true
+
+[[box]]
+name = "shelf_west_s"
+kind = "wall"
+center = [19.4, 2.55, 3.9]
+size = [0.9, 5.1, 2.6]
+color = [0.42, 0.3, 0.2]
+hidden = true
+
+[[box]]
+name = "shelf_west_s2"
+kind = "wall"
+center = [19.4, 2.55, 9.9]
+size = [0.9, 5.1, 2.6]
+color = [0.42, 0.3, 0.2]
+hidden = true
 
 [[chest]]
 name = "library_chest"
-position = [24.0, 0.0, -8.0]
-yaw_deg = 0.0
+position = [30.5, 0.0, -9.5]
+yaw_deg = 90.0
 tier = "normal"
 
 [[chest]]
 name = "archive_hidden"
-position = [26.0, 0.0, 8.0]
-yaw_deg = 0.0
+position = [22.4, 0.0, 9.2]
+yaw_deg = 180.0
 tier = "hidden"
 
 [[anchor]]
@@ -251,8 +287,8 @@ yaw_deg = 270.0
 
 [[poi]]
 name = "library"
-center = [21.0, 0.0, 0.0]
-radius = 12
+center = [24.0, 0.0, 0.0]
+radius = 16
 
 [[gate]]
 name = "east_wing_door"
@@ -264,97 +300,23 @@ reason = "The Archmage's wings are closed to novices."
 [[box]]
 name = "courtyard_floor"
 kind = "ground"
-center = [-23.0, -0.1, 0.0]
-size = [22.0, 0.2, 24.0]
-color = [0.34, 0.4, 0.28]
-
-[[box]]
-name = "courtyard_outer"
-kind = "wall"
-center = [-34.5, 3.0, 0.0]
-size = [1.0, 6.0, 24.0]
-color = [0.62, 0.58, 0.55]
-
-[[box]]
-name = "courtyard_north"
-kind = "wall"
-center = [-23.0, 3.0, -12.5]
-size = [22.0, 6.0, 1.0]
-color = [0.62, 0.58, 0.55]
-
-[[box]]
-name = "courtyard_south"
-kind = "wall"
-center = [-23.0, 3.0, 12.5]
-size = [22.0, 6.0, 1.0]
-color = [0.62, 0.58, 0.55]
+center = [-27.0, -0.1, 4.0]
+size = [30.0, 0.2, 36.0]
+color = [0.3, 0.4, 0.24]
+hidden = true
 
 [[box]]
 name = "fountain"
 kind = "wall"
-center = [-23.0, 0.5, 0.0]
-size = [6.0, 1.0, 6.0]
-color = [0.62, 0.58, 0.55]
-
-[[box]]
-name = "fountain_water"
-kind = "platform"
-center = [-23.0, 1.02, 0.0]
-size = [5.0, 0.04, 5.0]
-color = [0.16, 0.28, 0.38]
-
-[[prop]]
-name = "courtyard_tree_1"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [-30.0, 0.0, -8.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 3.5
-poi = "courtyard"
-
-[[prop]]
-name = "courtyard_tree_2"
-model = "assets/kenney/nature-kit/tree_fat.glb"
-position = [-18.0, 0.0, -8.0]
-rotation_deg = [0.0, 37.0, 0.0]
-scale = 3.5
-poi = "courtyard"
-
-[[prop]]
-name = "courtyard_tree_3"
-model = "assets/kenney/nature-kit/tree_detailed.glb"
-position = [-30.0, 0.0, 0.0]
-rotation_deg = [0.0, 74.0, 0.0]
-scale = 3.5
-poi = "courtyard"
-
-[[prop]]
-name = "courtyard_tree_4"
-model = "assets/kenney/nature-kit/tree_oak_dark.glb"
-position = [-18.0, 0.0, 0.0]
-rotation_deg = [0.0, 111.0, 0.0]
-scale = 3.5
-poi = "courtyard"
-
-[[prop]]
-name = "courtyard_tree_5"
-model = "assets/kenney/nature-kit/tree_oak.glb"
-position = [-30.0, 0.0, 8.0]
-rotation_deg = [0.0, 148.0, 0.0]
-scale = 3.5
-poi = "courtyard"
-
-[[prop]]
-name = "courtyard_tree_6"
-model = "assets/kenney/nature-kit/tree_fat.glb"
-position = [-18.0, 0.0, 8.0]
-rotation_deg = [0.0, 185.0, 0.0]
-scale = 3.5
-poi = "courtyard"
+center = [-26.0, 1.5, 6.0]
+size = [5.6, 3.0, 5.6]
+color = [0.5, 0.5, 0.48]
+hidden = true
 
 [[chest]]
 name = "courtyard_chest"
-position = [-30.0, 0.0, 6.0]
-yaw_deg = 0.0
+position = [-36.0, 0.0, 14.0]
+yaw_deg = 40.0
 tier = "normal"
 
 [[anchor]]
@@ -364,8 +326,8 @@ yaw_deg = 90.0
 
 [[poi]]
 name = "courtyard"
-center = [-23.0, 0.0, 0.0]
-radius = 14
+center = [-28.0, 0.0, 6.0]
+radius = 18
 
 [[gate]]
 name = "west_wing_door"
@@ -375,402 +337,426 @@ requires_flag = "tutorial_done"
 reason = "The Archmage's wings are closed to novices."
 
 [[box]]
-name = "back_berm"
-kind = "wall"
-center = [-2.0, 3.0, -22.0]
-size = [64.0, 7.0, 4.0]
-color = [0.42, 0.4, 0.38]
+name = "precinct_pad"
+kind = "ground"
+center = [-1.0, -0.1, 6.0]
+size = [84.0, 0.2, 76.0]
+color = [0.32, 0.38, 0.26]
 hidden = true
 
-[[prop]]
-name = "back_rock_1"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [-28.0, 0.0, -22.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
+[[box]]
+name = "curtain_00"
+kind = "wall"
+center = [40.284, 1.45, 10.918]
+size = [10.289, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 98.279, 0.0]
+hidden = true
 
-[[prop]]
-name = "back_rock_2"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [-20.0, 0.0, -22.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
+[[box]]
+name = "curtain_01"
+kind = "wall"
+center = [37.471, 1.45, 20.418]
+size = [10.43, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 114.599, 0.0]
+hidden = true
 
-[[prop]]
-name = "back_rock_3"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [-12.0, 0.0, -22.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
+[[box]]
+name = "curtain_02"
+kind = "wall"
+center = [32.036, 1.45, 28.935]
+size = [10.669, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 130.301, 0.0]
+hidden = true
 
-[[prop]]
-name = "back_rock_4"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [-4.0, 0.0, -22.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
+[[box]]
+name = "curtain_03"
+kind = "wall"
+center = [24.349, 1.45, 35.89]
+size = [10.939, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 145.23, 0.0]
+hidden = true
 
-[[prop]]
-name = "back_rock_5"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [4.0, 0.0, -22.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
+[[box]]
+name = "curtain_04"
+kind = "wall"
+center = [14.935, 1.45, 40.807]
+size = [11.168, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 159.456, 0.0]
+hidden = true
 
-[[prop]]
-name = "back_rock_6"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [12.0, 0.0, -22.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
+[[box]]
+name = "curtain_05"
+kind = "wall"
+center = [4.435, 1.45, 43.353]
+size = [11.297, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 173.207, 0.0]
+hidden = true
 
-[[prop]]
-name = "back_rock_7"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [20.0, 0.0, -22.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
+[[box]]
+name = "curtain_06"
+kind = "wall"
+center = [-6.435, 1.45, 43.353]
+size = [11.297, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -173.207, 0.0]
+hidden = true
 
-[[prop]]
-name = "back_rock_8"
-model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
-position = [28.0, 0.0, -22.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
+[[box]]
+name = "curtain_07"
+kind = "wall"
+center = [-16.935, 1.45, 40.807]
+size = [11.168, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -159.456, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_08"
+kind = "wall"
+center = [-26.349, 1.45, 35.89]
+size = [10.939, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -145.23, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_09"
+kind = "wall"
+center = [-34.036, 1.45, 28.935]
+size = [10.669, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -130.301, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_10"
+kind = "wall"
+center = [-39.471, 1.45, 20.418]
+size = [10.43, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -114.599, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_11"
+kind = "wall"
+center = [-42.284, 1.45, 10.918]
+size = [10.289, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -98.279, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_12"
+kind = "wall"
+center = [-42.284, 1.45, 1.082]
+size = [10.289, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -81.721, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_13"
+kind = "wall"
+center = [-39.471, 1.45, -8.418]
+size = [10.43, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -65.401, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_14"
+kind = "wall"
+center = [-34.036, 1.45, -16.935]
+size = [10.669, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -49.699, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_15"
+kind = "wall"
+center = [-26.349, 1.45, -23.89]
+size = [10.939, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -34.77, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_16"
+kind = "wall"
+center = [-16.935, 1.45, -28.807]
+size = [11.168, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -20.544, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_17"
+kind = "wall"
+center = [-6.435, 1.45, -31.353]
+size = [11.297, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, -6.793, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_18"
+kind = "wall"
+center = [4.435, 1.45, -31.353]
+size = [11.297, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 6.793, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_19"
+kind = "wall"
+center = [14.935, 1.45, -28.807]
+size = [11.168, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 20.544, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_20"
+kind = "wall"
+center = [24.349, 1.45, -23.89]
+size = [10.939, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 34.77, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_21"
+kind = "wall"
+center = [32.036, 1.45, -16.935]
+size = [10.669, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 49.699, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_22"
+kind = "wall"
+center = [37.471, 1.45, -8.418]
+size = [10.43, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 65.401, 0.0]
+hidden = true
+
+[[box]]
+name = "curtain_23"
+kind = "wall"
+center = [40.284, 1.45, 1.082]
+size = [10.289, 2.9, 0.8]
+color = [0.45, 0.44, 0.42]
+rotation_deg = [0.0, 81.721, 0.0]
+hidden = true
+
+[[box]]
+name = "gate_tower_w"
+kind = "wall"
+center = [-4.6, 2.4, 43.6]
+size = [2.4, 4.8, 2.4]
+color = [0.45, 0.44, 0.42]
+hidden = true
+
+[[box]]
+name = "gate_tower_e"
+kind = "wall"
+center = [2.6, 2.4, 43.6]
+size = [2.4, 4.8, 2.4]
+color = [0.45, 0.44, 0.42]
+hidden = true
 # ---- EXPAND_END ----
 
-# ---- DRESS_BEGIN (generated by tools/dress_levels.py; edit that, not this) ----
+# ---- DRESS_BEGIN (hall kit; expand_maps inserts the close above this) ----
 [[prop]]
-name = "north_w"
-model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
-position = [-9.5, 0.0, -11.0]
+name = "hall"
+model = "assets/original/ember_art/association/hall.gltf"
+position = [0.0, 0.0, 0.0]
+[[prop]]
+name = "hall_roof"
+model = "assets/original/ember_art/association/hall_roof.gltf"
+position = [0.0, 0.0, 0.0]
+[[prop]]
+name = "library"
+model = "assets/original/ember_art/association/library.gltf"
+position = [0.0, 0.0, 0.0]
+[[prop]]
+name = "library_roof"
+model = "assets/original/ember_art/association/library_roof.gltf"
+position = [0.0, 0.0, 0.0]
+[[prop]]
+name = "precinct"
+model = "assets/original/ember_art/association/precinct.gltf"
+position = [0.0, 0.0, 0.0]
+[[prop]]
+name = "circle"
+model = "assets/original/ember_art/association/circle.gltf"
+position = [0.0, 0.0, 0.8]
+[[prop]]
+name = "fountain_tiers"
+model = "assets/original/ember_art/association/fountain.gltf"
+position = [-26.0, 0.0, 6.0]
+[[prop]]
+name = "flames"
+model = "assets/original/ember_art/association/flames.gltf"
+position = [0.0, 0.0, 0.0]
+[[prop]]
+name = "bench_w1"
+model = "assets/original/ember_art/association/table.gltf"
+position = [-7.5, 0.0, -5.0]
 rotation_deg = [0.0, 90.0, 0.0]
-scale = [10.0, 6, 5.0]
-count = 2
-step = [5.0, 0, 0]
 [[prop]]
-name = "back_door"
-model = "assets/kenney/fantasy-town-kit/wall-door.glb"
-position = [0.0, 0.0, -11.0]
+name = "bench_w2"
+model = "assets/original/ember_art/association/table.gltf"
+position = [-7.5, 0.0, 2.5]
 rotation_deg = [0.0, 90.0, 0.0]
-scale = [10.0, 6, 4.0]
 [[prop]]
-name = "north_e"
-model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
-position = [4.5, 0.0, -11.0]
+name = "bench_w3"
+model = "assets/original/ember_art/association/table.gltf"
+position = [-7.5, 0.0, 8.5]
 rotation_deg = [0.0, 90.0, 0.0]
-scale = [10.0, 6, 5.0]
-count = 2
-step = [5.0, 0, 0]
 [[prop]]
-name = "south_w"
-model = "assets/kenney/fantasy-town-kit/wall.glb"
-position = [-9.5, 0.0, 11.0]
-rotation_deg = [0.0, -90.0, 0.0]
-scale = [10.0, 6, 5.0]
-count = 2
-step = [5.0, 0, 0]
+name = "bench_e1"
+model = "assets/original/ember_art/association/table.gltf"
+position = [7.5, 0.0, -5.0]
+rotation_deg = [0.0, 90.0, 0.0]
 [[prop]]
-name = "front_door"
-model = "assets/kenney/fantasy-town-kit/wall-doorway-round.glb"
-position = [0.0, 0.0, 11.0]
-rotation_deg = [0.0, -90.0, 0.0]
-scale = [10.0, 6, 4.0]
+name = "bench_e2"
+model = "assets/original/ember_art/association/table.gltf"
+position = [7.5, 0.0, 2.5]
+rotation_deg = [0.0, 90.0, 0.0]
 [[prop]]
-name = "south_e"
-model = "assets/kenney/fantasy-town-kit/wall.glb"
-position = [4.5, 0.0, 11.0]
-rotation_deg = [0.0, -90.0, 0.0]
-scale = [10.0, 6, 5.0]
-count = 2
-step = [5.0, 0, 0]
+name = "bench_e3"
+model = "assets/original/ember_art/association/table.gltf"
+position = [7.5, 0.0, 8.5]
+rotation_deg = [0.0, 90.0, 0.0]
 [[prop]]
-name = "west"
-model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
-position = [-16.0, 0.0, -13.75]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [10.0, 6, 4.5]
-count = 3
-step = [0, 0, 4.5]
-[[prop]]
-name = "west_s"
-model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
-position = [-16.0, 0.0, 4.75]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [10.0, 6, 4.5]
-count = 3
-step = [0, 0, 4.5]
-[[prop]]
-name = "west_door"
-model = "assets/kenney/fantasy-town-kit/wall-door.glb"
-position = [-16.0, 0.0, 0.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [10.0, 6, 4.0]
-[[prop]]
-name = "east"
-model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
-position = [16.0, 0.0, -13.75]
-rotation_deg = [0.0, 180.0, 0.0]
-scale = [10.0, 6, 4.5]
-count = 3
-step = [0, 0, 4.5]
-[[prop]]
-name = "east_s"
-model = "assets/kenney/fantasy-town-kit/wall-window-stone.glb"
-position = [16.0, 0.0, 4.75]
-rotation_deg = [0.0, 180.0, 0.0]
-scale = [10.0, 6, 4.5]
-count = 3
-step = [0, 0, 4.5]
-[[prop]]
-name = "east_door"
-model = "assets/kenney/fantasy-town-kit/wall-door.glb"
-position = [16.0, 0.0, 0.0]
-rotation_deg = [0.0, 180.0, 0.0]
-scale = [10.0, 6, 4.0]
-[[prop]]
-name = "pillar_w"
-model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
-position = [-5, 0, -8]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [6.25, 6, 6.25]
-count = 3
-step = [0, 0, 6]
-[[prop]]
-name = "arch_w"
-model = "assets/kenney/fantasy-town-kit/wall-arch-top-detail.glb"
-position = [-9.5, 4.5, -5]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [10, 1.5, 6]
-count = 2
-step = [0, 0, 6]
-[[prop]]
-name = "pillar_e"
-model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
-position = [5, 0, -8]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [6.25, 6, 6.25]
-count = 3
-step = [0, 0, 6]
-[[prop]]
-name = "arch_e"
-model = "assets/kenney/fantasy-town-kit/wall-arch-top-detail.glb"
-position = [0.5, 4.5, -5]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [10, 1.5, 6]
-count = 2
-step = [0, 0, 6]
-[[prop]]
-name = "banner_w1"
-model = "assets/kenney/fantasy-town-kit/banner-red.glb"
-position = [-10.09, 1.2, -11]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 3
-[[prop]]
-name = "banner_e1"
-model = "assets/kenney/fantasy-town-kit/banner-green.glb"
-position = [10.09, 1.2, -11]
-rotation_deg = [0.0, 180.0, 0.0]
-scale = 3
-[[prop]]
-name = "banner_w2"
-model = "assets/kenney/fantasy-town-kit/banner-green.glb"
-position = [-10.09, 1.2, -5]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 3
-[[prop]]
-name = "banner_e2"
-model = "assets/kenney/fantasy-town-kit/banner-red.glb"
-position = [10.09, 1.2, -5]
-rotation_deg = [0.0, 180.0, 0.0]
-scale = 3
-[[prop]]
-name = "banner_w3"
-model = "assets/kenney/fantasy-town-kit/banner-red.glb"
-position = [-10.09, 1.2, 1]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 3
-[[prop]]
-name = "banner_e3"
-model = "assets/kenney/fantasy-town-kit/banner-green.glb"
-position = [10.09, 1.2, 1]
-rotation_deg = [0.0, 180.0, 0.0]
-scale = 3
-[[prop]]
-name = "banner_w4"
-model = "assets/kenney/fantasy-town-kit/banner-green.glb"
-position = [-10.09, 1.2, 7]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 3
-[[prop]]
-name = "banner_e4"
-model = "assets/kenney/fantasy-town-kit/banner-red.glb"
-position = [10.09, 1.2, 7]
-rotation_deg = [0.0, 180.0, 0.0]
-scale = 3
-[[prop]]
-name = "dais_lantern_1"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-3.6, 0, -10]
+name = "dais_book"
+model = "assets/kaykit/props/spellbook_open.gltf"
+position = [0.0, 1.05, -10.15]
 rotation_deg = [0.0, 0.0, 0.0]
 scale = 1.6
 [[prop]]
+name = "banner_w1"
+model = "assets/kenney/fantasy-town-kit/banner-red.glb"
+position = [-10.15, 2.4, -8.0]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = 2.4
+[[prop]]
+name = "banner_w2"
+model = "assets/kenney/fantasy-town-kit/banner-green.glb"
+position = [-10.15, 2.4, 6.0]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = 2.4
+[[prop]]
+name = "banner_e1"
+model = "assets/kenney/fantasy-town-kit/banner-green.glb"
+position = [10.15, 2.4, -8.0]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = 2.4
+[[prop]]
+name = "banner_e2"
+model = "assets/kenney/fantasy-town-kit/banner-red.glb"
+position = [10.15, 2.4, 6.0]
+rotation_deg = [0.0, -90.0, 0.0]
+scale = 2.4
+[[prop]]
 name = "door_lantern_1"
 model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-2.88, 0, 14.6]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "dais_lantern_2"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [3.6, 0, -10]
-rotation_deg = [0.0, 0.0, 0.0]
+position = [-3.2, 0.0, 14.4]
 scale = 1.6
 [[prop]]
 name = "door_lantern_2"
 model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [2.88, 0, 14.6]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
+position = [3.2, 0.0, 14.4]
+scale = 1.6
 [[prop]]
-name = "roof"
-model = "assets/kenney/fantasy-town-kit/roof-high-flat.glb"
-position = [0, 6, 0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [24, 1, 32]
-[[prop]]
-name = "dais_steps"
-model = "assets/kenney/fantasy-town-kit/stairs-wide-stone.glb"
-position = [0, 0, -7.85]
-rotation_deg = [0.0, 180.0, 0.0]
-scale = [6, 0.3, 0.3]
-[[prop]]
-name = "bench_w1"
-model = "assets/kenney/fantasy-town-kit/stall-bench.glb"
-position = [-7.6, 0, -2.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 2.2
-[[prop]]
-name = "stool_w1"
-model = "assets/kenney/fantasy-town-kit/stall-stool.glb"
-position = [-6.3, 0, -2.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "book_w1"
-model = "assets/kaykit/props/spellbook_open.gltf"
-position = [-7.6, 1.1, -2.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 0.9
-[[prop]]
-name = "bench_w2"
-model = "assets/kenney/fantasy-town-kit/stall-bench.glb"
-position = [-7.6, 0, 4.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 2.2
-[[prop]]
-name = "stool_w2"
-model = "assets/kenney/fantasy-town-kit/stall-stool.glb"
-position = [-6.3, 0, 4.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "book_w2"
-model = "assets/kaykit/props/spellbook_closed.gltf"
-position = [-7.6, 1.1, 4.0]
-rotation_deg = [0.0, 115.0, 0.0]
-scale = 0.9
-[[prop]]
-name = "bench_w3"
-model = "assets/kenney/fantasy-town-kit/stall-bench.glb"
-position = [-7.6, 0, 10.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 2.2
-[[prop]]
-name = "stool_w3"
-model = "assets/kenney/fantasy-town-kit/stall-stool.glb"
-position = [-6.3, 0, 10.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "book_w3"
-model = "assets/kaykit/props/spellbook_open.gltf"
-position = [-7.6, 1.1, 10.0]
-rotation_deg = [0.0, 140.0, 0.0]
-scale = 0.9
-[[prop]]
-name = "wall_lantern_w"
+name = "dais_lantern_1"
 model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-8.588, 0, 1.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.3
-count = 2
-step = [0, 0, 6]
-[[prop]]
-name = "bench_e1"
-model = "assets/kenney/fantasy-town-kit/stall-bench.glb"
-position = [7.6, 0, -2.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 2.2
-[[prop]]
-name = "stool_e1"
-model = "assets/kenney/fantasy-town-kit/stall-stool.glb"
-position = [6.3, 0, -2.0]
-rotation_deg = [0.0, 0.0, 0.0]
+position = [-3.4, 0.3, -10.6]
 scale = 1.4
 [[prop]]
-name = "book_e1"
-model = "assets/kaykit/props/spellbook_open.gltf"
-position = [7.6, 1.1, -2.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 0.9
-[[prop]]
-name = "bench_e2"
-model = "assets/kenney/fantasy-town-kit/stall-bench.glb"
-position = [7.6, 0, 4.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 2.2
-[[prop]]
-name = "stool_e2"
-model = "assets/kenney/fantasy-town-kit/stall-stool.glb"
-position = [6.3, 0, 4.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "book_e2"
-model = "assets/kaykit/props/spellbook_closed.gltf"
-position = [7.6, 1.1, 4.0]
-rotation_deg = [0.0, 115.0, 0.0]
-scale = 0.9
-[[prop]]
-name = "bench_e3"
-model = "assets/kenney/fantasy-town-kit/stall-bench.glb"
-position = [7.6, 0, 10.0]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = 2.2
-[[prop]]
-name = "stool_e3"
-model = "assets/kenney/fantasy-town-kit/stall-stool.glb"
-position = [6.3, 0, 10.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.4
-[[prop]]
-name = "book_e3"
-model = "assets/kaykit/props/spellbook_open.gltf"
-position = [7.6, 1.1, 10.0]
-rotation_deg = [0.0, 140.0, 0.0]
-scale = 0.9
-[[prop]]
-name = "wall_lantern_e"
+name = "dais_lantern_2"
 model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [8.588, 0, 1.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.3
-count = 2
-step = [0, 0, 6]
+position = [3.4, 0.3, -10.6]
+scale = 1.4
 [[prop]]
-name = "dais_book"
-model = "assets/kaykit/props/spellbook_open.gltf"
-position = [0, 0.95, -10.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.0
+name = "garden_tree_1"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-36.0, 0.0, -8.0]
+scale = 4.2
+[[prop]]
+name = "garden_tree_2"
+model = "assets/kenney/nature-kit/tree_fat.glb"
+position = [-39.0, 0.0, 4.0]
+rotation_deg = [0.0, 40.0, 0.0]
+scale = 4.6
+[[prop]]
+name = "garden_tree_3"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
+position = [-33.0, 0.0, 16.0]
+rotation_deg = [0.0, 15.0, 0.0]
+scale = 4.0
+[[prop]]
+name = "garden_tree_4"
+model = "assets/kenney/nature-kit/tree_oak_dark.glb"
+position = [-20.0, 0.0, 18.0]
+scale = 3.8
+[[prop]]
+name = "garden_tree_5"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-18.5, 0.0, -12.0]
+rotation_deg = [0.0, 80.0, 0.0]
+scale = 4.0
+[[prop]]
+name = "garden_tree_6"
+model = "assets/kenney/nature-kit/tree_fat.glb"
+position = [-34.0, 0.0, -16.0]
+scale = 3.6
+[[prop]]
+name = "hill_tree_1"
+model = "assets/kenney/nature-kit/tree_oak.glb"
+position = [-58.0, 0.0, 8.0]
+scale = 5.5
+snap = true
+[[prop]]
+name = "hill_tree_2"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
+position = [55.0, 0.0, 18.0]
+scale = 5.2
+snap = true
+[[prop]]
+name = "hill_tree_3"
+model = "assets/kenney/nature-kit/tree_fat.glb"
+position = [12.0, 0.0, 62.0]
+scale = 5.0
+snap = true
+[[prop]]
+name = "hill_tree_4"
+model = "assets/kenney/nature-kit/tree_oak_dark.glb"
+position = [-18.0, 0.0, -48.0]
+scale = 5.4
+snap = true
+[[prop]]
+name = "hill_rock_1"
+model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
+position = [28.0, 0.0, -46.0]
+scale = 2.8
+snap = true
+[[prop]]
+name = "hill_rock_2"
+model = "assets/kenney/fantasy-town-kit/rock-wide.glb"
+position = [-40.0, 0.0, -44.0]
+rotation_deg = [0.0, 25.0, 0.0]
+scale = 2.4
+snap = true

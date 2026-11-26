@@ -53,8 +53,8 @@ class Map:
         if abs(bz - az) > 0.01:
             self.pad(name + "_z", bx, (az + bz) / 2, w, abs(bz - az) + w, color)
 
-    def wall(self, name, center, size, color=ROCK, rot=None):
-        self.box(name, "wall", center, size, color, rot)
+    def wall(self, name, center, size, color=ROCK, rot=None, hidden=False):
+        self.box(name, "wall", center, size, color, rot, hidden)
 
     def poi(self, name, center, radius):
         self.out.append(f'[[poi]]\nname = "{name}"\ncenter = {v(center)}\nradius = {radius}\n')
@@ -135,41 +135,58 @@ WOOD = [0.42, 0.3, 0.2]
 
 
 def association() -> Map:
-    """0.10.2: a 64 by 56 m close. Library 18 by 22 on the east, courtyard 22 by 24
-    on the west. The 90 m wings, the mezzanine, and the archive stair are gone.
-    Side doors stay shut until the tutorial ends."""
+    """Round close from association.jpg. Library on the east, garden on the west,
+    curtain wall around both. Anchors stay at (16, 0, 0) and (-16, 0, 0).
+    Side doors stay shut until the tutorial ends. Boxes are hidden: the glTF kit
+    is the visible shell."""
     m = Map(None)
-    # Library, east of the hall. The anchor stays at (16, 0, 0).
-    m.box("library_floor", "ground", [21, -0.1, 0], [18, 0.2, 22], [0.5, 0.47, 0.44])
-    m.wall("library_outer", [30.5, 4, 0], [1, 8, 22], HALL_STONE)
-    m.wall("library_north", [21, 4, -11.5], [18, 8, 1], HALL_STONE)
-    m.wall("library_south", [21, 4, 11.5], [18, 8, 1], HALL_STONE)
-    for i in range(4):
-        m.box(f"shelf_{i + 1}", "wall", [26, 1.6, -8 + i * 4], [6, 3.2, 1], WOOD)
-    m.chest("library_chest", [24, 0, -8], "normal")
-    m.chest("archive_hidden", [26, 0, 8], "hidden")
+    stone = [0.5, 0.48, 0.45]
+    m.box("library_floor", "ground", [24, -0.1, 0], [24, 0.2, 26], [0.45, 0.32, 0.2], hidden=True)
+    m.wall("library_outer", [35.7, 3.3, 0], [0.8, 6.6, 26], stone, hidden=True)
+    m.wall("library_north", [24, 3.3, -13.1], [23.2, 6.6, 0.8], stone, hidden=True)
+    m.wall("library_south", [24, 3.3, 13.1], [23.2, 6.6, 0.8], stone, hidden=True)
+    shelves = (
+        ("shelf_east_n", [34.3, 2.55, -6.2], [1.15, 5.1, 10.0]),
+        ("shelf_east_s", [34.3, 2.55, 6.2], [1.15, 5.1, 10.0]),
+        ("shelf_mid_n", [27.2, 2.55, -6.6], [1.05, 5.1, 8.8]),
+        ("shelf_mid_s", [27.2, 2.55, 6.6], [1.05, 5.1, 8.8]),
+        ("shelf_west_n", [19.4, 2.55, -6.8], [0.9, 5.1, 8.4]),
+        ("shelf_west_s", [19.4, 2.55, 3.9], [0.9, 5.1, 2.6]),
+        ("shelf_west_s2", [19.4, 2.55, 9.9], [0.9, 5.1, 2.6]),
+    )
+    for name, center, size in shelves:
+        m.box(name, "wall", center, size, WOOD, hidden=True)
+    m.chest("library_chest", [30.5, 0, -9.5], "normal", yaw=90.0)
+    m.chest("archive_hidden", [22.4, 0, 9.2], "hidden", yaw=180.0)
     m.anchor("library", [16, 0, 0], 270.0)
-    m.poi("library", [21, 0, 0], 12)
+    m.poi("library", [24, 0, 0], 16)
     m.gate("east_wing_door", [11.6, 1.75, 0], [0.5, 3.5, 4.4],
            "The Archmage's wings are closed to novices.", "tutorial_done")
-    # Courtyard, west of the hall. The anchor stays at (-16, 0, 0).
-    m.box("courtyard_floor", "ground", [-23, -0.1, 0], [22, 0.2, 24], [0.34, 0.4, 0.28])
-    m.wall("courtyard_outer", [-34.5, 3, 0], [1, 6, 24], HALL_STONE)
-    m.wall("courtyard_north", [-23, 3, -12.5], [22, 6, 1], HALL_STONE)
-    m.wall("courtyard_south", [-23, 3, 12.5], [22, 6, 1], HALL_STONE)
-    m.box("fountain", "wall", [-23, 0.5, 0], [6, 1, 6], HALL_STONE)
-    m.box("fountain_water", "platform", [-23, 1.02, 0], [5, 0.04, 5], [0.16, 0.28, 0.38])
-    for i, (x, z) in enumerate(((-30, -8), (-18, -8), (-30, 0), (-18, 0), (-30, 8), (-18, 8))):
-        m.prop(f"courtyard_tree_{i + 1}", TREES[i % len(TREES)], [x, 0, z], 37.0 * i, 3.5, poi="courtyard")
-    m.chest("courtyard_chest", [-30, 0, 6], "normal")
+    m.box("courtyard_floor", "ground", [-27, -0.1, 4], [30, 0.2, 36], [0.3, 0.4, 0.24], hidden=True)
+    m.box("fountain", "wall", [-26, 1.5, 6], [5.6, 3.0, 5.6], [0.5, 0.5, 0.48], hidden=True)
+    m.chest("courtyard_chest", [-36, 0, 14], "normal", yaw=40.0)
     m.anchor("courtyard", [-16, 0, 0], 90.0)
-    m.poi("courtyard", [-23, 0, 0], 14)
+    m.poi("courtyard", [-28, 0, 6], 18)
     m.gate("west_wing_door", [-11.6, 1.75, 0], [0.5, 3.5, 4.4],
            "The Archmage's wings are closed to novices.", "tutorial_done")
-    # The back of the close is a berm. Kenney rock stands in for the missing mesh.
-    m.box("back_berm", "wall", [-2, 3, -22], [64, 7, 4], ROCK, hidden=True)
-    for i, x in enumerate(range(-28, 30, 8)):
-        m.prop(f"back_rock_{i + 1}", "assets/kenney/fantasy-town-kit/rock-wide.glb", [x, 0, -22], 0.0, 2.4)
+    m.box("precinct_pad", "ground", [-1, -0.1, 6], [84, 0.2, 76], [0.32, 0.38, 0.26], hidden=True)
+    # Round curtain. Same ellipse as tools/build_association_kit.py.
+    cx, cz, rx, rz, segments = -1.0, 6.0, 42.0, 38.0, 24
+    pts = [(cx + rx * math.cos(math.tau * i / segments), cz + rz * math.sin(math.tau * i / segments))
+           for i in range(segments)]
+    for i in range(segments):
+        p0, p1 = pts[i], pts[(i + 1) % segments]
+        mx, mz = (p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2
+        if mz > cz + rz * 0.86 and abs(mx - cx) < 4.2:
+            continue
+        dx, dz = p1[0] - p0[0], p1[1] - p0[1]
+        length = math.hypot(dx, dz) + 0.35
+        yaw = math.degrees(math.atan2(dz, dx))
+        m.box(f"curtain_{i:02d}", "wall", [mx, 1.45, mz], [length, 2.9, 0.8], [0.45, 0.44, 0.42],
+              rot=[0.0, yaw, 0.0], hidden=True)
+    gz = cz + rz
+    for side, x in (("w", cx - 3.6), ("e", cx + 3.6)):
+        m.box(f"gate_tower_{side}", "wall", [x, 2.4, gz - 0.4], [2.4, 4.8, 2.4], [0.45, 0.44, 0.42], hidden=True)
     return m
 
 
