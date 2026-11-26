@@ -13,7 +13,7 @@ trunk_radius = 4.0
 trunk_top = 28.0
 outer_radius = 33.0
 inner_open = 8.0
-ramp_width = 8.0
+ramp_width = 4.0
 ramp_thickness = 0.35
 void_y = -8.0
 fog_y = 12.0
@@ -26,7 +26,7 @@ checkpoint = 6
 waystone = "blightcoil_sump"
 center = [0.0, 0.0, 8.0]
 size = [56.0, 44.0]
-pad = [6.0, 0.0, 14.0]
+pad = [-24.0, 0.0, 28.0]
 
 [[slab]]
 id = "canopy"
@@ -34,7 +34,7 @@ checkpoint = 7
 waystone = "blightcoil_canopy"
 center = [2.0, 12.0, 11.0]
 size = [28.0, 16.0]
-pad = [2.0, 12.0, 12.0]
+pad = [-1.0, 12.0, 8.0]
 
 [[slab]]
 id = "crown"
@@ -42,7 +42,7 @@ checkpoint = 8
 waystone = "blightcoil_crown"
 center = [-16.0, 24.0, -10.0]
 size = [18.0, 14.0]
-pad = [-16.0, 24.0, -11.0]
+pad = [16.0, 24.0, -8.0]
 
 # Each ramp leaves the near edge of its slab and lands on the next, so the
 # rising span is not a ceiling over the pad it just left.
@@ -54,9 +54,9 @@ lip = [-2.0, 12.0, 10.0]
 
 [[ramp]]
 id = "to_crown"
-fr = [-2.0, 12.0, 15.0]
-to = [-18.0, 24.0, -6.0]
-lip = [-17.0, 24.0, -9.0]
+fr = [2.0, 12.0, 8.0]
+to = [18.0, 24.0, -10.0]
+lip = [17.0, 24.0, -8.0]
 
 [[deck]]
 id = "canopy_west"
@@ -70,8 +70,8 @@ size = [12.0, 6.0]
 
 [[deck]]
 id = "canopy_east"
-center = [20.0, 12.0, 8.0]
-size = [12.0, 16.0]
+center = [30.0, 12.0, 8.0]
+size = [8.0, 10.0]
 
 [[deck]]
 id = "crown_east"

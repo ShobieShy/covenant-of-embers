@@ -386,7 +386,7 @@ def build_floors() -> Mesh:
     add_shelf(mesh, -5.2, 3.0, 16.0, 19.0, 12.02, skirt=2.3, hole=4.6)
     add_shelf(mesh, -24.0, -6.0, -14.0, 10.0, 12.02, skirt=2.0)
     add_shelf(mesh, -17.0, -7.0, -5.0, -1.0, 12.02, skirt=1.6, hole=4.6)
-    add_shelf(mesh, 14.0, 0.0, 26.0, 16.0, 12.02, skirt=2.0)
+    add_shelf(mesh, 26.0, 3.0, 34.0, 13.0, 12.02, skirt=2.0)
     # Crown arena, west, after the landing pull (z max -5.2) plus a lip to the ramp.
     add_shelf(mesh, -25.0, -17.0, -7.0, -6.6, 24.02, skirt=2.4, hole=4.8)
     add_shelf(mesh, 8.0, -14.0, 24.0, 6.0, 24.02, skirt=2.2)
@@ -400,7 +400,7 @@ def build_ramps() -> Mesh:
     mesh = Mesh()
     spans = [
         ((-20.0, 0.15, 24.0), (-4.0, 12.1, 8.0)),
-        ((-2.0, 12.15, 15.0), (-18.0, 24.1, -6.0)),
+        ((2.0, 12.15, 8.0), (18.0, 24.1, -10.0)),
     ]
     for a, b in spans:
         d = vsub(b, a)
@@ -636,17 +636,17 @@ def build_shrine() -> Mesh:
         return corners
 
     # Altar in front of the trunk, mother stands just to the east (+X).
-    box((0.4, 12.45, 12.4), (3.2, 0.9, 1.8))
-    box((-0.85, 13.45, 12.15), (0.46, 1.8, 0.46))
-    box((1.65, 13.45, 12.15), (0.46, 1.8, 0.46))
-    box((0.4, 14.5, 12.15), (3.0, 0.38, 0.55))
+    box((-1.4, 12.45, 8.2), (2.2, 0.9, 1.4))
+    box((-2.2, 13.35, 8.0), (0.4, 1.5, 0.4))
+    box((-0.6, 13.35, 8.0), (0.4, 1.5, 0.4))
+    box((-1.4, 14.2, 8.0), (2.2, 0.34, 0.46))
     # Broken arch curve.
     for i in range(7):
         t = i / 6
         ang = math.pi * (1 - t)
-        cx = 0.4 + math.cos(ang) * 1.15
-        cy = 13.9 + math.sin(ang) * 0.85
-        box((cx, cy, 12.15), (0.32, 0.28, 0.36))
+        cx = -1.4 + math.cos(ang) * 0.9
+        cy = 14.05 + math.sin(ang) * 0.65
+        box((cx, cy, 8.0), (0.3, 0.26, 0.34))
     return mesh
 
 

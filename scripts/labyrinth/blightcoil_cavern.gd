@@ -328,8 +328,9 @@ func _ramp(walk: Node3D, ramp: Dictionary) -> void:
 	walk.add_child(slope)
 	var horiz := Vector3(to.x - fr.x, 0.0, to.z - fr.z).normalized()
 	var side_h := Vector3(-horiz.z, 0.0, horiz.x)
-	var land := to + horiz * 1.3
-	land.y = to.y - thick * 0.5
+	var land := to + horiz * 1.6
+	# The tread top is flush with the slab. A lower lip catches the capsule.
+	land.y = to.y - 0.15
 	_flat_tread(walk, "Land_" + String(ramp["id"]), land, side_h, horiz, width, 2.8)
 	var midp := fr.lerp(to, 0.45)
 	_volume("vine", midp + Vector3(0, 1.0, 0), Vector3(3.0, 2.4, 3.0), Color(0.18, 0.42, 0.16))
@@ -429,14 +430,16 @@ func _spawns(state: LabyrinthState) -> void:
 	var root := Node3D.new()
 	root.name = "EnemySpawns"
 	add_child(root)
-	_enemy(root, "sump_husk_a", "spore_husk", 6, Vector3(8.0, 0, 12.5))
-	_enemy(root, "sump_husk_b", "spore_husk", 6, Vector3(4.0, 0, 16.0))
-	_enemy(root, "sump_treant", "mossbound_treant", 6, Vector3(9.0, 0, 15.0), "sump_elite")
-	_enemy(root, "canopy_husk", "spore_husk", 7, Vector3(4.5, 12, 11.0))
-	_enemy(root, "canopy_beast", "spore_beast", 7, Vector3(0.5, 12, 14.5))
-	_enemy(root, "canopy_treant", "mossbound_treant", 7, Vector3(3.5, 12, 13.0), "canopy_elite")
-	_enemy(root, "crown_beast", "spore_beast", 8, Vector3(-14.0, 24, -13.0))
-	_enemy(root, "crown_treant", "mossbound_treant", 8, Vector3(-19.0, 24, -9.5), "crown_elite")
+	_enemy(root, "sump_husk_a", "spore_husk", 6, Vector3(-26.0, 0, 26.0))
+	_enemy(root, "sump_husk_b", "spore_husk", 6, Vector3(-22.0, 0, 26.5))
+	_enemy(root, "sump_treant", "mossbound_treant", 6, Vector3(-25.0, 0, 24.5), "sump_elite")
+	# East wing, clear of the west ramp. A foe within 20 m of the Sump makes the
+	# playtest fight instead of climbing.
+	_enemy(root, "canopy_husk", "spore_husk", 7, Vector3(32.0, 12, 8.0))
+	_enemy(root, "canopy_beast", "spore_beast", 7, Vector3(30.0, 12, 6.0))
+	_enemy(root, "canopy_treant", "mossbound_treant", 7, Vector3(28.0, 12, 10.0), "canopy_elite")
+	_enemy(root, "crown_beast", "spore_beast", 8, Vector3(22.0, 24, -4.0))
+	_enemy(root, "crown_treant", "mossbound_treant", 8, Vector3(12.0, 24, -12.0), "crown_elite")
 	var boss_at := pad_local(8) + Vector3(0, 0, 1.8)
 	if state == null or not state.bosses.has(BOSS):
 		var boss := _enemy(root, "matriarch", BOSS, 8, boss_at)
@@ -603,10 +606,10 @@ func _rim(walk: Node3D) -> void:
 		var a := TAU * float(i) / float(count)
 		var body := StaticBody3D.new()
 		body.name = "Rim_%d" % i
-		body.position = Vector3(cos(a) * 38.0, 16.0, sin(a) * 36.0)
+		body.position = Vector3(cos(a) * 52.0, 16.0, sin(a) * 50.0)
 		var shape := CollisionShape3D.new()
 		var box := BoxShape3D.new()
-		box.size = Vector3(12.0, 40.0, 12.0)
+		box.size = Vector3(8.0, 40.0, 8.0)
 		shape.shape = box
 		body.add_child(shape)
 		walk.add_child(body)
