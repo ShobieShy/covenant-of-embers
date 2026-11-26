@@ -225,6 +225,20 @@ source = "batch_12_act2_blightcoil (original work, Blender 4.5)"
 line = "Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch) by Ember Art, CC0 1.0"
 
 [[credit]]
+name = "ambientCG Rock 035"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Rock035"
+line = "ambientCG Rock 035 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "Inverted Spire kit"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "original (this repository, tools/gen_spire_meshes.py); false-sky texture painted for Act V"
+line = "Inverted Spire kit by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
 name = "Old Oak v4 (Town east lobe)"
 author = "Ember Art; bark and door wood by Lennart Demes"
 license = "CC0 1.0"
