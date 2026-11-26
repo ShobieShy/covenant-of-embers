@@ -30,9 +30,9 @@ func _go(out: String) -> void:
 	await process_frame
 	await process_frame
 	root.get_texture().get_image().save_png(out + "/gate.png")
-	var fy := tz.height_at(-6.4, 28.0) + 1.7
-	cam.global_position = Vector3(-6.4, fy, 28.0)
-	cam.look_at(Vector3(-6.4, fy - 0.4, 9.6))
+	var fy := tz.height_at(-16.0, 24.0) + 2.4
+	cam.global_position = Vector3(-16.0, fy, 24.0)
+	cam.look_at(Vector3(-6.4, 3.2, 9.6))
 	await process_frame
 	await process_frame
 	root.get_texture().get_image().save_png(out + "/square.png")
