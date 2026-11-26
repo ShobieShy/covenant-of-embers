@@ -42,9 +42,25 @@ static func build_crucible(floor: SlagworksFloor, arena: Node3D) -> void:
 	to_arena.y = 0.0
 	var dir := to_arena.normalized()
 	var pad_at := furnace + dir * 26.0 + Vector3(0, 3.0, 0)
-	_stone_path(arena, [entry, paint(0.12, 0.28), paint(0.11, 0.46), paint(0.15, 0.64), paint(0.28, 0.74), paint(0.42, 0.80), paint(0.50, 0.84), door_at])
-	_stone_path(arena, [paint(0.58, 0.80), paint(0.72, 0.70), paint(0.82, 0.55), paint(0.78, 0.40), arena_c + Vector3(0, 0, 16)])
-	_stone_path(arena, [entry, paint(0.28, 0.18), furnace + Vector3(0, 0, 6), plat, lift_at, slag_at + Vector3(0, 0, -8)])
+	_stone_path(
+		arena,
+		[
+			entry,
+			paint(0.12, 0.28),
+			paint(0.11, 0.46),
+			paint(0.15, 0.64),
+			paint(0.28, 0.74),
+			paint(0.42, 0.80),
+			paint(0.50, 0.84),
+			door_at
+		]
+	)
+	_stone_path(
+		arena, [paint(0.58, 0.80), paint(0.72, 0.70), paint(0.82, 0.55), paint(0.78, 0.40), arena_c + Vector3(0, 0, 16)]
+	)
+	_stone_path(
+		arena, [entry, paint(0.28, 0.18), furnace + Vector3(0, 0, 6), plat, lift_at, slag_at + Vector3(0, 0, -8)]
+	)
 	_lava_run(floor, arena, [paint(0.16, 0.26), paint(0.14, 0.40), paint(0.18, 0.55), paint(0.24, 0.66)], 5.5)
 	_lava_run(floor, arena, [paint(0.78, 0.36), paint(0.86, 0.48), paint(0.84, 0.62)], 5.5)
 	_arena(floor, arena, arena_c)
@@ -56,9 +72,30 @@ static func build_crucible(floor: SlagworksFloor, arena: Node3D) -> void:
 	deck.set_meta(&"deck_top", 3.0)
 	floor._add_ramp(arena, Vector3(pad_at.x, 0, pad_at.z) - dir * 6.0, dir * 6.0)
 	floor._pad(pad_at)
-	floor._segment(arena, "GantryA", arena_c + Vector3(-12, 2.8, 0), Vector3(3.6, 0.4, 8.0), arena_c + Vector3(-18, 0, 0), Vector3(6, 0, 0))
-	floor._segment(arena, "GantryB", arena_c + Vector3(12, 2.8, 0), Vector3(3.6, 0.4, 8.0), arena_c + Vector3(18, 0, 0), Vector3(-6, 0, 0))
-	floor._segment(arena, "GantryC", arena_c + Vector3(0, 2.8, 12), Vector3(8.0, 0.4, 3.6), arena_c + Vector3(0, 0, 18), Vector3(0, 0, -6))
+	floor._segment(
+		arena,
+		"GantryA",
+		arena_c + Vector3(-12, 2.8, 0),
+		Vector3(3.6, 0.4, 8.0),
+		arena_c + Vector3(-18, 0, 0),
+		Vector3(6, 0, 0)
+	)
+	floor._segment(
+		arena,
+		"GantryB",
+		arena_c + Vector3(12, 2.8, 0),
+		Vector3(3.6, 0.4, 8.0),
+		arena_c + Vector3(18, 0, 0),
+		Vector3(-6, 0, 0)
+	)
+	floor._segment(
+		arena,
+		"GantryC",
+		arena_c + Vector3(0, 2.8, 12),
+		Vector3(8.0, 0.4, 3.6),
+		arena_c + Vector3(0, 0, 18),
+		Vector3(0, 0, -6)
+	)
 	floor._stairs("StairsUp", LabyrinthStairs.UP, entry + Vector3(0, 0, 1.2))
 	floor._shrine(lift_at + Vector3(3.2, 0, 1.4))
 	floor._place_boss(arena_c + Vector3(0, 0.1, 11))
@@ -343,7 +380,9 @@ static func _bowl_collision(floor: SlagworksFloor, arena: Node3D) -> void:
 			var nx := x / hx
 			var nz := z / hz
 			if nx * nx + nz * nz <= 1.0:
-				floor._walk_box(arena, Vector3(x, -0.25, z), Vector3(step + 0.6, 0.5, step + 0.6), "Bowl", "boss", false)
+				floor._walk_box(
+					arena, Vector3(x, -0.25, z), Vector3(step + 0.6, 0.5, step + 0.6), "Bowl", "boss", false
+				)
 			z += step
 		x += step
 
@@ -745,7 +784,14 @@ static func _sheet(w: float, d: float) -> ArrayMesh:
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var hx := w * 0.5
 	var hz := d * 0.5
-	for p in [Vector3(-hx, 0, -hz), Vector3(hx, 0, -hz), Vector3(hx, 0, hz), Vector3(-hx, 0, -hz), Vector3(hx, 0, hz), Vector3(-hx, 0, hz)]:
+	for p in [
+		Vector3(-hx, 0, -hz),
+		Vector3(hx, 0, -hz),
+		Vector3(hx, 0, hz),
+		Vector3(-hx, 0, -hz),
+		Vector3(hx, 0, hz),
+		Vector3(-hx, 0, hz)
+	]:
 		st.set_uv(Vector2(p.x, p.z))
 		st.add_vertex(p)
 	st.generate_normals()

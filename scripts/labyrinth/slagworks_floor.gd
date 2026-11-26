@@ -622,7 +622,9 @@ func _slag_cast(parent: Node3D, at := Vector3(0, 0, 15)) -> void:
 	SlagworksDress.attach_cast(cast)
 
 
-func _walk_box(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String, visual := true) -> StaticBody3D:
+func _walk_box(
+	parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String, visual := true
+) -> StaticBody3D:
 	var b := _solid(parent, centre, size, nm, kind, true, visual)
 	b.add_to_group(&"slag_walk")
 	return b
@@ -632,7 +634,9 @@ func _wall(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: Str
 	return _solid(parent, centre, size, nm, "wall" if kind == "wall" else kind, false)
 
 
-func _solid(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String, collide: bool, visual := true) -> StaticBody3D:
+func _solid(
+	parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String, collide: bool, visual := true
+) -> StaticBody3D:
 	var b := StaticBody3D.new()
 	b.name = nm
 	b.position = centre
