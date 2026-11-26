@@ -35,6 +35,7 @@
 | Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine) | Ember Art | CC0 1.0 | this repository | 2026-11-05 |
 | Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch) | Ember Art | CC0 1.0 | this repository | 2026-11-05 |
 | Old Oak v4 (Town east lobe) | Ember Art | CC0 1.0 | this repository; bark and door wood from ambientCG Bark014 and Wood051 | 2026-11-22 |
+| Bob's lab interior | Covenant of Embers project | CC0 1.0 | original work; Wood049, Rock030 and Metal032 from ambientCG | 2026-11-26 |
 
 3D models: Kenney (www.kenney.nl) — Fantasy Town Kit, Nature Kit (CC0). Delivered by Ember Art as batch 01; the full per-file list is in docs/credits/kenney_batch_01.md.
 

@@ -20,13 +20,16 @@ func test_the_room_is_its_own_scene() -> void:
 	check(lab.get_node_or_null("Props/old_oak") == null, "the tree is not inside the room")
 	var floor := lab.get_node("Boxes/lab_floor") as StaticBody3D
 	var space := lab.get_world_3d().direct_space_state
+	# The spiral crosses the origin, so the floor check stands on the open south boards.
 	var on_room := space.intersect_ray(
-		PhysicsRayQueryParameters3D.create(
-			floor.global_position + Vector3(0, 3, 0), floor.global_position + Vector3(0, -1, 0)
-		)
+		PhysicsRayQueryParameters3D.create(Vector3(0.9, 1.2, 2.0), Vector3(0.9, -0.2, 2.0))
 	)
 	check(not on_room.is_empty() and (on_room["collider"] as Node).name == "lab_floor", "the room has a floor")
-	var rail := space.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(0, 0.8, 0), Vector3(4, 0.8, 0)))
-	check(not rail.is_empty(), "the open edge has a rail")
+	var wall := space.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(0, 0.8, 0), Vector3(4, 0.8, 0)))
+	check(not wall.is_empty(), "the hollow is walled")
+	var loft := space.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(1.6, 5.0, 0.0), Vector3(1.6, 2.5, 0.0)))
+	check(not loft.is_empty() and str((loft["collider"] as Node).name).begins_with("lab_loft"), "the loft has a floor")
+	check(lab.get_node_or_null("Props/hollow") != null, "the hollow mesh is in the room")
 	check(lab.get_node_or_null("Exits/to_town") != null, "the door leads back to the town")
+	check(lab.get_node_or_null("PlayerStart") != null, "the spawn stays")
 	lab.free()

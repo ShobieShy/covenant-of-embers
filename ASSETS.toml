@@ -353,3 +353,13 @@ license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-11-22"
 use = "The Town east-lobe Old Oak, its root ramp, and the door into Bob's lab"
+
+[[asset]]
+name = "Bob's lab interior"
+path = "assets/levels/bobs_lab"
+author = "Covenant of Embers project"
+source = "Original hollow for the Bob's lab cutaway. Wood, rock and metal maps are ambientCG Wood049, Rock030 and Metal032 (CC0)."
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-26"
+use = "Bob's lab hollow, spiral stair, shelves, stone table and cauldrons"

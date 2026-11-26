@@ -3,3 +3,4 @@
 # name stay allowed. One path per line (scenes/... or res://scenes/...).
 # Unlisted scenes are reported and do not fail the build.
 # Nothing is remade yet. 0.11.4 and later add a path here when that scene ships.
+scenes/levels/bobs_lab.tscn
