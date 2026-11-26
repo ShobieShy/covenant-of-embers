@@ -1,13 +1,13 @@
 class_name Inventory
 extends RefCounted
-## The backpack (BUILD_PLAN steps 23-24; PLAN §30.3: 30-slot grid): staffs/wands
+## The backpack (BUILD_PLAN steps 23-24; 0.11.5: 60-slot grid, was 30): staffs/wands
 ## (WieldableInstance), loose parts (WieldablePart) and equipment (EquipmentItem), one item
 ## per slot, plus the Arcane Dust counter (step 26 salvage currency, not a slot item).
 ## Magewar uses Cogito's grid inventory; this is a plain model the screens (step 30) draw.
 
 signal changed
 
-const CAPACITY := 30
+const CAPACITY := 60  ## 0.11.5: was 30. Saves store a dense item list, so old packs keep their slots.
 const STARTING_GOLD := 50
 
 var capacity := CAPACITY

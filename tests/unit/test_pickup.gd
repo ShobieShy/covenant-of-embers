@@ -66,9 +66,7 @@ func test_walk_over_collects() -> void:
 		p.tick(PlayerInput.hold([&"forward"]), DT)
 		await runner_tree.physics_frame
 	check(not is_instance_valid(orb) or not orb.is_inside_tree(), "orb collected")
-	check(
-		p.mana.value >= 65.0 - 1e-3 and p.mana.value <= 72.0, "orb restored 25 mana (+1.5 s regen): %.1f" % p.mana.value
-	)
+	check(p.mana.value >= 73.0 and p.mana.value <= 75.5, "orb restored 25 mana (+1.5 s at 6/s): %.1f" % p.mana.value)
 	check(p.inventory.dust == 7, "dust 7, got %d" % p.inventory.dust)
 	check(p.equipment.potion_count == 5, "potion slot filled to 5, got %d" % p.equipment.potion_count)
 	check(is_instance_valid(pot) and pot.is_inside_tree() and pot.amount == 2, "2 potions stay on the ground")
@@ -118,7 +116,7 @@ func test_interact_picks_item() -> void:
 	p.tick(PlayerInput.hold([&"interact"], [&"interact"]), DT)
 	check(t2.is_inside_tree() and not p.inventory.has(d2.item), "full backpack refuses")
 	check(p.last_hint == PickupCollector.HINT_FULL, "hint: " + p.last_hint)
-	check(p.inventory.size() == Inventory.CAPACITY, "30 slots")
+	check(p.inventory.size() == Inventory.CAPACITY, "60 slots")
 	w.queue_free()
 
 

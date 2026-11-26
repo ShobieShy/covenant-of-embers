@@ -288,21 +288,36 @@ func test_rolled_parts_assemble() -> void:
 		PartRoller.from_seed(5, P.CHARM, "rare")
 	]
 	var dmg := 10.0
+	var cast := 0.0
+	var acc := 0.0
 	for p in parts:
 		staff.parts.append(p)
 		dmg += p.damage_bonus
-	check_near(staff.damage(), dmg, 1e-6, "10 + rolled damage bonuses")
+		for line in PartRoller.brand_lines(p):
+			var signed := BrandRolls.signed(line)
+			if String(line["stat"]) == "damage":
+				pass
+			elif String(line["stat"]) == "cast_rate":
+				cast += signed
+			elif String(line["stat"]) == "accuracy":
+				acc += signed
+	var dmg_pct := 0.0
+	for p in parts:
+		for line in PartRoller.brand_lines(p):
+			if String(line["stat"]) == "damage":
+				dmg_pct += BrandRolls.signed(line)
+	check_near(staff.damage(), dmg * (1.0 + dmg_pct / 100.0), 1e-6, "10 + rolled damage, then brand percent")
 	check_near(
 		staff.cooldown(),
-		maxf(0.1, 0.4 * parts[1].fire_rate_modifier * parts[4].fire_rate_modifier),
+		maxf(0.1, 0.4 * parts[1].fire_rate_modifier * parts[4].fire_rate_modifier * (1.0 - cast / 100.0)),
 		1e-6,
-		"cooldown x exterior x charm"
+		"cooldown x exterior x charm x brand cast rate"
 	)
 	check_near(
 		staff.accuracy(),
-		minf(100.0, 50.0 + parts[0].accuracy_bonus + parts[3].accuracy_bonus + parts[4].accuracy_bonus),
+		minf(100.0, 50.0 + parts[0].accuracy_bonus + parts[3].accuracy_bonus + parts[4].accuracy_bonus + acc),
 		1e-6,
-		"accuracy"
+		"accuracy plus brand lines"
 	)
 	check(staff.element() == E.WATER, "rolled Head element overrides Fire")
 	print("    rare roll staff: %.2f dmg / %.3f s / %.1f %%" % [staff.damage(), staff.cooldown(), staff.accuracy()])

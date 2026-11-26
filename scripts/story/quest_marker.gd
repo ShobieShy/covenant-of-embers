@@ -2,16 +2,7 @@ class_name QuestMarker
 extends Node3D
 ## 0.9.2: one world mark for the tracked quest. While the intro has its own mark,
 ## this one stays hidden so the playtest still walks to a single point.
-## A kill step marks the level entrance, not every enemy. A collect step is text only.
-
-const KILL_LEVEL := {
-	"the_filth": "midden",
-	"gnawer": "midden",
-	"blightmaw_matriarch": "labyrinth",
-	"forgemaw": "labyrinth",
-	"drowned_choir": "labyrinth",
-	"storm_warden": "labyrinth",
-}
+## 0.11.5: QuestWaypoint picks the spot. A finished step and a missing exit leave no mark.
 
 var main: Node
 var mark: Label3D
@@ -112,34 +103,11 @@ func _resolve() -> Variant:
 	var o := log.current_objective(log.tracked)
 	if o.is_empty():
 		return null
-	var kind := String(o["kind"])
-	var target := String(o["target"])
-	if kind == "collect":
-		return null
-	if kind == "talk":
-		return _speaker(target)
-	if kind == "kill":
-		target = String(KILL_LEVEL.get(target, ""))
-		if target == "":
-			return null
-	return _gate(target)
-
-
-func _speaker(name: String) -> Variant:
-	for n in main.find_children("*", "Node3D", true, false):
-		if n is Npc and String(n.get("speaker")) == name:
-			return (n as Node3D).global_position
-	return null
-
-
-func _gate(level_id: String) -> Variant:
-	for n in main.find_children("*", "Node3D", true, false):
-		if n is LevelGate and String(n.get("target")) == level_id:
-			return (n as Node3D).global_position
-	for n in main.find_children("*", "Node3D", true, false):
-		if n is Waystone:
-			return (n as Node3D).global_position
-	return null
+	var survey := QuestWaypoint.survey(main)
+	var here := ""
+	if main.has_method(&"here_id"):
+		here = String(main.call(&"here_id"))
+	return QuestWaypoint.resolve(String(o["kind"]), String(o["target"]), here, int(survey.get("floor", 0)), survey)
 
 
 func _minimap(at: Vector2) -> void:

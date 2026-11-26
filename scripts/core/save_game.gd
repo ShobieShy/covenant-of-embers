@@ -208,6 +208,7 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 	p.level_mana_bonus = Progression.MANA_PER_LEVEL * (pr.level - 1)
 	p.level_breath_bonus = Progression.BREATH_PER_LEVEL * (pr.level - 1)
 	p.inventory.items.clear()
+	p.inventory.capacity = Inventory.CAPACITY  # old saves have no stored size; slots stay in list order
 	p.inventory.dust = maxi(0, int(pl.get("dust", 0)))
 	p.inventory.gold = maxi(0, int(pl.get("gold", Inventory.STARTING_GOLD)))
 	var arch := Archetype.valid(String(pl.get("archetype", Archetype.DEFAULT)))

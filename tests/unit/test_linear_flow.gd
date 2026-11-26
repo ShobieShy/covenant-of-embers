@@ -90,7 +90,10 @@ func test_forward_gates_follow_the_story() -> void:
 	fill.free()
 	var breach := _game("breach", ["intro_done", "filth_defeated"])
 	var portal := _gate(breach, "labyrinth")
-	check(portal != null and not portal.locked(), "the crater portal is the Labyrinth gate")
+	check(portal != null and portal.locked(), "the Labyrinth gate waits on the Breach Warden")
+	breach.story_flags.set_flag("warden_defeated")
+	breach.apply_linear_gates()
+	check(not portal.locked(), "the Warden's death opens the Labyrinth gate")
 	check(breach.get_node_or_null("Level/Props/old_oak") == null, "no east-gate oak on this level")
 	portal.use()
 	var ints := breach.get_node_or_null("LinearInteriors") as Interiors

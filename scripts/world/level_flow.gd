@@ -27,7 +27,7 @@ const FORWARD := {
 	},
 	"breach":
 	{
-		"labyrinth": ["filth_defeated", "The crater portal is dark."],
+		"labyrinth": ["warden_defeated", "The vault is shut. The Breach Warden still holds the gate."],
 	},
 }
 

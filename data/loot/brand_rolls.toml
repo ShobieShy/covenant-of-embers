@@ -1,0 +1,56 @@
+# 0.11.5 brand part lines. One buff line, and sometimes one debuff line, on top of
+# the Magewar part roll. Magnitudes are percent. A debuff rolls half of that range.
+# Arcane is the unbranded even pool. Weights are the brand's casting tradeoff.
+# Debuff chance rises with rarity: basic 0.15, uncommon 0.20, rare 0.25,
+# mythic 0.30, primordial 0.35, unique 0.40.
+
+[magnitude]
+damage = [8.0, 16.0]
+cast_rate = [8.0, 16.0]
+accuracy = [6.0, 12.0]
+handling = [6.0, 12.0]
+mana_cost = [8.0, 16.0]
+projectile_speed = [8.0, 16.0]
+
+[debuff_chance]
+basic = 0.15
+uncommon = 0.20
+rare = 0.25
+mythic = 0.30
+primordial = 0.35
+unique = 0.40
+
+[[pool]]
+id = "arcane"
+buff = [{ stat = "damage", weight = 1 }, { stat = "cast_rate", weight = 1 }, { stat = "accuracy", weight = 1 }, { stat = "handling", weight = 1 }, { stat = "mana_cost", weight = 1 }, { stat = "projectile_speed", weight = 1 }]
+debuff = [{ stat = "damage", weight = 1 }, { stat = "cast_rate", weight = 1 }, { stat = "accuracy", weight = 1 }, { stat = "handling", weight = 1 }, { stat = "mana_cost", weight = 1 }, { stat = "projectile_speed", weight = 1 }]
+
+[[pool]]
+id = "pyrowning_arms"
+buff = [{ stat = "cast_rate", weight = 3 }, { stat = "accuracy", weight = 1 }]
+debuff = [{ stat = "damage", weight = 2 }, { stat = "mana_cost", weight = 2 }]
+
+[[pool]]
+id = "sigil_sauer"
+buff = [{ stat = "damage", weight = 3 }, { stat = "projectile_speed", weight = 1 }]
+debuff = [{ stat = "cast_rate", weight = 2 }, { stat = "mana_cost", weight = 1 }]
+
+[[pool]]
+id = "moss_and_berg"
+buff = [{ stat = "damage", weight = 3 }]
+debuff = [{ stat = "cast_rate", weight = 2 }, { stat = "projectile_speed", weight = 2 }]
+
+[[pool]]
+id = "windchester"
+buff = [{ stat = "cast_rate", weight = 3 }, { stat = "handling", weight = 1 }]
+debuff = [{ stat = "damage", weight = 2 }, { stat = "accuracy", weight = 1 }]
+
+[[pool]]
+id = "coltara_halo"
+buff = [{ stat = "accuracy", weight = 3 }, { stat = "cast_rate", weight = 1 }]
+debuff = [{ stat = "mana_cost", weight = 2 }, { stat = "damage", weight = 1 }]
+
+[[pool]]
+id = "hexler_and_koch"
+buff = [{ stat = "accuracy", weight = 3 }, { stat = "damage", weight = 1 }]
+debuff = [{ stat = "cast_rate", weight = 2 }, { stat = "projectile_speed", weight = 1 }]

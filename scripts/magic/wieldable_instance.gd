@@ -89,7 +89,7 @@ func handling() -> float:
 	var h := 0.0
 	for p in parts:
 		h += p.handling_bonus
-	return h
+	return h + _brand_pct("handling")
 
 
 ## Swap-in time for a `base_seconds` draw (Loadout.swap_seconds), shortened by handling().
@@ -106,10 +106,13 @@ func gem_slots() -> int:
 
 func damage() -> float:
 	var bonuses := PackedFloat64Array()
+	var gems := 0.0
 	for p in parts:
-		bonuses.append(p.damage_bonus + ElementGem.GEM_DAMAGE * p.gems.size())
+		bonuses.append(p.damage_bonus)
+		gems += ElementGem.GEM_DAMAGE * p.gems.size()
 	var r := rarity()
-	return Damage.wieldable_damage(def.damage, r.multiplier if r != null else 1.0, bonuses)
+	var base := Damage.wieldable_damage(def.damage, r.multiplier if r != null else 1.0, bonuses)
+	return base * (1.0 + _brand_pct("damage") / 100.0) + gems
 
 
 func cooldown() -> float:
@@ -117,6 +120,7 @@ func cooldown() -> float:
 	for p in parts:
 		if p.part_type in WieldablePart.FIRE_RATE_TYPES:
 			rate *= p.fire_rate_modifier
+	rate *= 1.0 - _brand_pct("cast_rate") / 100.0
 	return maxf(WieldableDef.MIN_COOLDOWN, rate)
 
 
@@ -125,7 +129,7 @@ func accuracy() -> float:
 	for p in parts:
 		if p.part_type in WieldablePart.ACCURACY_TYPES:
 			acc += p.accuracy_bonus
-	return clampf(acc, 0.0, 100.0)
+	return clampf(acc + _brand_pct("accuracy"), 0.0, 100.0)
 
 
 ## Step 26: the Head's first socketed gem wins, then the Head's element, then the base's.
@@ -149,11 +153,24 @@ func element() -> ElementTable.Element:
 
 
 func mana_cost() -> float:
-	return def.mana_cost
+	return maxf(0.0, def.mana_cost * (1.0 + _brand_pct("mana_cost") / 100.0))
 
 
 func projectile_speed() -> float:
-	return def.projectile_speed
+	return def.projectile_speed * (1.0 + _brand_pct("projectile_speed") / 100.0)
+
+
+## Signed percent from every rolled part's brand lines. Mana cost up is positive.
+func _brand_pct(stat: String) -> float:
+	var total := 0.0
+	for p in parts:
+		if p == null:
+			continue
+		for line in PartRoller.brand_lines(p):
+			if String(line.get("stat", "")) != stat:
+				continue
+			total += BrandRolls.signed(line)
+	return total
 
 
 func range_m() -> float:

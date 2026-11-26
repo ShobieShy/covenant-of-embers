@@ -17,7 +17,9 @@ const P := WieldablePart.PartType
 ## A basic staff (or wand) whose Head is `e` (ARCANE = unbranded), same seed and rarity.
 static func build(e: E, wand := false, rarity := "basic", seed := 99) -> WieldableInstance:
 	var base := "swift_wind_wand" if wand else "apprentice_fire_staff"
-	var parts: Array[WieldablePart] = [PartRoller.from_seed(seed, P.HEAD, rarity, e)]
+	var head := PartRoller.from_seed(seed, P.HEAD, rarity, e)
+	head.roll_seed = -1  # the ±15% band is the fire mode, not the loot line
+	var parts: Array[WieldablePart] = [head]
 	for id in ["basic_exterior"] if wand else ["basic_exterior", "basic_interior", "basic_handle"]:
 		parts.append(WieldablePart.load_part(id))
 	return Assembly.assemble(WieldableInstance.load_base(base).def, parts)

@@ -56,9 +56,12 @@ static func for_item(item: Resource, player: Player = null, against_active := fa
 				cw.dark_chance_bonus() * 100.0 if cw else NAN,
 				true
 			)
+		var lines: Array = []
 		for part in w.parts:
 			if part != null:
 				c._add_gems(part.gems)
+				lines.append_array(PartRoller.brand_lines(part))
+		c._brand_rows(lines, [])
 	elif item is WieldablePart:
 		var p := item as WieldablePart
 		c.title = p.display_name
@@ -72,6 +75,7 @@ static func for_item(item: Resource, player: Player = null, against_active := fa
 		c._row("gem_slots", "Gem slots", p.gem_slots, NAN, true)
 		if p.dark_chance_bonus() > 0.0:
 			c._row("dark_bonus", "Dark conversion %", p.dark_chance_bonus() * 100.0, NAN, true)
+		c._brand_rows(PartRoller.brand_lines(p), [])
 		c._add_gems(p.gems)
 	elif item is EquipmentItem:
 		var e := item as EquipmentItem
@@ -155,8 +159,41 @@ func brand_line() -> String:
 	return s
 
 
+func _brand_rows(lines: Array, _against: Array) -> void:
+	if lines.is_empty():
+		return
+	for line in lines:
+		var debuff := bool(line.get("debuff", false))
+		var pct := float(line.get("percent", 0.0))
+		var shown := -pct if debuff else pct
+		var stat := String(line.get("stat", ""))
+		var label := String(_LINE_LABELS.get(stat, stat))
+		var higher := stat != "mana_cost"
+		_row("brand_" + stat, label, shown, NAN, higher)
+		rows[rows.size() - 1]["debuff"] = debuff
+	_row("brand_score", "Score", BrandRolls.score(lines), NAN, true)
+
+
+const _LINE_LABELS := {
+	"damage": "Damage %",
+	"cast_rate": "Cast rate %",
+	"accuracy": "Accuracy %",
+	"handling": "Handling %",
+	"mana_cost": "Mana cost %",
+	"projectile_speed": "Bolt speed %",
+}
+
+
 func _row(stat: String, label: String, value: float, cur: float, higher_better: bool) -> void:
-	var r := {"stat": stat, "label": label, "value": value, "compared": not is_nan(cur), "delta": 0.0, "better": false}
+	var r := {
+		"stat": stat,
+		"label": label,
+		"value": value,
+		"compared": not is_nan(cur),
+		"delta": 0.0,
+		"better": false,
+		"debuff": false,
+	}
 	if not is_nan(cur):
 		r["delta"] = value - cur
 		r["better"] = (value > cur) if higher_better else (value < cur)
@@ -174,7 +211,10 @@ func to_bbcode() -> String:
 	if not effect.is_empty():
 		s += "[color=#%s]%s[/color]\n" % [color.to_html(false), effect]
 	for r in rows:
-		s += "%s: %s" % [r.label, snapped(r.value, 0.01)]
+		if r.get("debuff", false):
+			s += "%s: [color=#%s]%s[/color]" % [r.label, WORSE.to_html(false), snapped(r.value, 0.01)]
+		else:
+			s += "%s: %s" % [r.label, snapped(r.value, 0.01)]
 		if r.compared and not is_zero_approx(r.delta):
 			var tint: Color = BETTER if r.better else WORSE
 			s += " [color=#%s](%+.2f)[/color]" % [tint.to_html(false), r.delta]

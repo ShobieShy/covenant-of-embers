@@ -126,13 +126,86 @@ func test_main_chain_from_a_new_game() -> void:
 	check(q.state("report_to_bob") == "active", "Bob's report stays open")
 	check(q.state("the_breach") == "active", "the Filth hands off to the Breach")
 	check(q.current_objective("the_breach").get("target") == "breach", "the north road is the next step")
+	check(q.tracked == "report_to_bob", "Bob stays on the marker until the report is done")
 	q.notify("talk", "Bob")
 	_require_quest(q, "after Bob")
-	check(q.current_objective("the_breach").get("target") == "breach", "Bob does not pull you off the Breach")
+	check(q.state("report_to_bob") == "done", "the report is done")
+	check(q.tracked == "the_breach" and q.current_objective("the_breach").get("target") == "breach", "then the crater")
 	q.notify("reach", "breach")
 	_require_quest(q, "the Breach")
-	check(q.current_objective("the_breach").get("target") == "labyrinth", "then into the Labyrinth")
-	q.notify("reach", "labyrinth")
-	_require_quest(q, "Act II")
-	check(q.current_objective("the_breach").get("target") == "blightmaw_matriarch", "Act II stays on the quest log")
+	check(q.current_objective("the_breach").get("target") == "breach_warden", "the Warden is the last Breach step")
+	q.notify("kill", "blightmaw_matriarch")
+	check(q.current_objective("the_breach").get("target") == "breach_warden", "the Matriarch is not this quest")
+	q.notify("kill", "breach_warden")
+	check(q.state("the_breach") == "done" and flags.has("warden_defeated"), "the Warden opens the gate")
+	flags.set_flag("labyrinth_entered")
+	_require_quest(q, "Act I")
+	check(q.tracked == "the_goblin_warrens", "Act I is tracked")
+	check(q.current_objective("the_goblin_warrens").get("target") == "goblin_king", "Act I is the King")
+	q.known_bosses = ["goblin_king"]
+	q.notify("kill", "goblin_king")
+	q.check_auto_start()
+	check(q.state("the_goblin_warrens") == "done", "the King completes Act I")
+	check(q.state("the_overgrown_deep") == "active", "Act II starts from the King's death")
+	q.known_bosses = ["goblin_king", "blightmaw_matriarch"]
+	q.notify("kill", "blightmaw_matriarch")
+	q.check_auto_start()
+	check(q.state("the_overgrown_deep") == "done", "the Matriarch completes Act II")
+	check(q.state("the_slagworks") == "active", "Act III starts from the Matriarch")
+	q.known_bosses = ["goblin_king", "blightmaw_matriarch", "forgemaw"]
+	q.notify("kill", "forgemaw")
+	q.check_auto_start()
+	check(q.state("the_slagworks") == "done" and q.state("the_sunken_ruins") == "active", "Act IV starts from Forgemaw")
+	q.known_bosses = ["goblin_king", "blightmaw_matriarch", "forgemaw", "drowned_choir"]
+	q.notify("kill", "drowned_choir")
+	q.check_auto_start()
+	check(q.state("the_sunken_ruins") == "done", "the Choir completes Act IV")
+	check(q.state("the_inverted_spire") == "active", "Act V starts from the Choir")
+	q.notify("kill", "storm_warden")
+	check(q.state("the_inverted_spire") == "done", "the Storm Warden completes Act V")
+	check(q.tracked == "", "the trail has no further main quest")
 	_restore()
+
+
+func test_old_breach_save_waiting_on_the_matriarch() -> void:
+	var open_gate := StoryFlags.new()
+	var q := QuestLog.create(open_gate)
+	q.vault_was_open = true
+	var old := {
+		"active": {"the_breach": {"step": 2, "have": 0}}, "done": ["a_new_home", "the_landfill", "report_to_bob"]
+	}
+	q.from_dict(old)
+	check(q.state("the_breach") == "done" and open_gate.has("warden_defeated"), "an open vault finishes the old step")
+	var waiting := StoryFlags.new()
+	var q2 := QuestLog.create(waiting)
+	q2.vault_was_open = false
+	q2.from_dict(old)
+	check(q2.state("the_breach") == "active", "a shut vault keeps the quest")
+	check(q2.current_objective("the_breach").get("target") == "breach_warden", "it now waits on the Warden")
+
+
+func test_waypoint_marks_the_vault_and_the_next_hop() -> void:
+	var dais := Vector3(0, 1, -7)
+	var survey := {"points": [{"id": "boss_dais", "at": dais}], "gates": [], "floor": 0}
+	var at: Variant = QuestWaypoint.resolve("kill", "breach_warden", "breach", 0, survey)
+	check(at is Vector3 and (at as Vector3).is_equal_approx(dais), "the Warden step marks the vault dais")
+	var town := {
+		"gates":
+		[
+			{"target": "bobs_lab", "at": Vector3(9, 0, 1)},
+			{"target": "old_oak", "at": Vector3(3, 0, 4)},
+			{"target": "midden", "at": Vector3(0, 0, 8)},
+		],
+		"points": [],
+		"floor": 0,
+	}
+	var door: Variant = QuestWaypoint.resolve("reach", "old_oak", "town_square", 0, town)
+	check(door is Vector3 and (door as Vector3).is_equal_approx(Vector3(9, 0, 1)), "A New Home marks the lab door")
+	var stair := Vector3(2, 0, 2)
+	var down := {"points": [], "gates": [], "stairs_down": stair, "floor": 1}
+	var hop: Variant = QuestWaypoint.resolve("kill", "goblin_king", "labyrinth", 1, down)
+	check(hop is Vector3 and (hop as Vector3).is_equal_approx(stair), "Act I marks the downward stair")
+	var done: Variant = QuestWaypoint.resolve(
+		"kill", "goblin_king", "labyrinth", 5, {"points": [], "gates": [], "floor": 5}
+	)
+	check(done == null, "no boss and no stair leaves no mark")
