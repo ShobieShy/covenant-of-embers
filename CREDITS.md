@@ -52,6 +52,8 @@ CC0 does not require attribution; Kenney and ambientCG are credited anyway with 
 
 Old Oak v4 (0.11.4): the Town east-lobe tree is original Ember Art geometry, CC0. Its bark is ambientCG Bark014 and its door wood is ambientCG Wood051, both by Lennart Demes, CC0 1.0. Credit is not required for CC0; it is recorded here with the other ambientCG materials.
 
+Slagworks mine kit: the Act III cavern meshes (cliffs, stone, gantries, rails, lava sheet, furnace-anvil, arch, door, lift, slag cast, ore, cart, boulders, chains, pillars) are original geometry, CC0. Their materials are ambientCG Rock 035, ambientCG Lava 004, ambientCG Metal 034, and the existing ambientCG Wood 049, all by Lennart Demes, CC0 1.0.
+
 ## Libraries
 | Name | Author | License | Source | Added |
 |---|---|---|---|---|

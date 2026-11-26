@@ -63,6 +63,7 @@ var _mats := {}
 var _ramp_i := 0
 var _pad_at := Vector3.ZERO
 var path_note := ""
+var nav_points: Array[Vector3] = []
 
 
 static func is_floor(n: int) -> bool:
@@ -285,6 +286,7 @@ func _build_kit() -> void:
 			_pad(room.position)
 			_shrine(room.position + Vector3(2.4, 0, 0))
 		_place_pack(room, kind)
+	SlagworksDress.dress_kit(self)
 
 
 func _build_crucible() -> void:
@@ -293,38 +295,7 @@ func _build_crucible() -> void:
 	arena.set_meta(&"kind", "boss")
 	add_child(arena)
 	rooms.append(arena)
-	_walk_box(arena, Vector3(0, -0.25, -16), Vector3(36, 0.5, 4), "RingN", "boss")
-	_walk_box(arena, Vector3(0, -0.25, 16), Vector3(36, 0.5, 4), "RingS", "boss")
-	_walk_box(arena, Vector3(16, -0.25, 0), Vector3(4, 0.5, 28.5), "RingE", "boss")
-	_walk_box(arena, Vector3(-16, -0.25, 0), Vector3(4, 0.5, 28.5), "RingW", "boss")
-	_lava_strip(arena, "LavaStrip0", Vector3(0, 0.6, -4))
-	_lava_strip(arena, "LavaStrip1", Vector3(0, 0.6, 4))
-	var pad_at := Vector3(0, 3.0, -12)
-	var deck := _walk_box(arena, Vector3(0, 2.8, -12), Vector3(4.5, 0.4, 4.5), "PadDeck", "gantry")
-	deck.set_meta(&"deck_top", 3.0)
-	_add_ramp(arena, Vector3(0, 0, -17), Vector3(0, 0, RAMP_RUN))
-	_pad(pad_at)
-	_segment(arena, "GantryA", Vector3(-12, 2.8, 0), Vector3(3.4, 0.4, 8), Vector3(-17, 0, 0), Vector3(RAMP_RUN, 0, 0))
-	_segment(arena, "GantryB", Vector3(12, 2.8, 0), Vector3(3.4, 0.4, 8), Vector3(17, 0, 0), Vector3(-RAMP_RUN, 0, 0))
-	_segment(arena, "GantryC", Vector3(0, 2.8, 12), Vector3(8, 0.4, 3.4), Vector3(0, 0, 17), Vector3(0, 0, -RAMP_RUN))
-	var anvil := _anvil(arena, Vector3(0, 0, -1))
-	anvil.position = Vector3(0, 0, 0)
-	_stairs("StairsUp", LabyrinthStairs.UP, Vector3(-14, 0, -16))
-	_place_boss()
-	_shrine(Vector3(6, 0, -16))
-	_slag_prop(arena, "MainLift", "lift", Vector3(8, 1.0, -16))
-	_slag_cast(arena)
-	_slag_prop(arena, "SunkenDoor", "sunken", Vector3(0, 1.0, 16.5))
-	var rail := Node3D.new()
-	rail.name = "RailProp"
-	rail.position = Vector3(-8, 0.4, 15)
-	arena.add_child(rail)
-	for side in 4:
-		var horiz := side == 0 or side == 2
-		var dir := _side_dir(side)
-		var edge := dir * 18.3 + Vector3(0, 1.5, 0)
-		var full := Vector3(36.6, 3.0, 0.4) if horiz else Vector3(0.4, 3.0, 36.6)
-		_wall(arena, edge, full, "Lip%d" % side, "wall")
+	SlagworksDress.build_crucible(self, arena)
 
 
 func _segment(parent: Node3D, nm: String, centre: Vector3, size: Vector3, ramp_start: Vector3, horiz: Vector3) -> void:
@@ -449,12 +420,12 @@ func _anvil(parent: Node3D, face: Vector3) -> Node3D:
 	var f := face if face.length() > 0.01 else Vector3(0, 0, -1)
 	a.basis = Basis.looking_at(f.normalized(), Vector3.UP)
 	parent.add_child(a)
-	_solid(a, Vector3(0, 1.15, 0.15), Vector3(2.4, 2.2, 1.5), "Body", "elite", false)
 	var mouth := Marker3D.new()
 	mouth.name = "Mouth"
-	mouth.position = Vector3(0, 1.25, -1.2)
+	mouth.position = Vector3(0, 1.55, -2.4)
 	a.add_child(mouth)
-	_volume(a, Vector3(0, 1.15, -2.1), Vector3(2.0, 1.8, 1.5), "shimmer")
+	_volume(a, Vector3(0, 1.55, -3.1), Vector3(2.2, 1.8, 1.6), "shimmer")
+	SlagworksDress.attach_furnace(a)
 	return a
 
 
@@ -466,10 +437,10 @@ func _place_pack(room: Node3D, kind: String) -> void:
 		_spawn_marker("forge_construct", room.position, false, String(room.name))
 
 
-func _place_boss() -> void:
+func _place_boss(at := Vector3(0, 0, 4)) -> void:
 	if _state and _state.bosses.has(BOSS):
 		return
-	_spawn_marker(BOSS, Vector3(0, 0, 4), true, "")
+	_spawn_marker(BOSS, at, true, "")
 
 
 func _spawn_marker(id: String, at: Vector3, boss: bool, elite: String) -> void:
@@ -508,9 +479,10 @@ func apply_phase(next: int) -> void:
 			if cs and cs.shape is BoxShape3D:
 				var box := cs.shape as BoxShape3D
 				box.size.z = wide
-			var mesh := n.get_node_or_null("Greybox") as MeshInstance3D
-			if mesh and mesh.mesh is BoxMesh:
-				(mesh.mesh as BoxMesh).size.z = wide
+			var visual := n.get_node_or_null("LavaVisual") as Node3D
+			if visual and n.has_meta(&"visual_base_scale_z"):
+				var base := float(n.get_meta(&"base_width"))
+				visual.scale.z = float(n.get_meta(&"visual_base_scale_z")) * (wide / base)
 
 
 func _pad(at: Vector3) -> void:
@@ -561,8 +533,8 @@ func _slag_prop(parent: Node3D, nm: String, role: String, at: Vector3) -> void:
 	a.role = role
 	a.host = self
 	a.position = at
-	_solid(a, Vector3(0, 0, 0), Vector3(1.8, 2.4, 0.45), "Greybox", "boss", false)
 	parent.add_child(a)
+	SlagworksDress.attach_role(a, role)
 
 
 func prop_line(role: String) -> String:
@@ -641,27 +613,17 @@ func _prop_area(parent: Node3D, nm: String, at: Vector3) -> Area3D:
 	return a
 
 
-func _slag_cast(parent: Node3D) -> void:
+func _slag_cast(parent: Node3D, at := Vector3(0, 0, 15)) -> void:
 	var cast := Node3D.new()
 	cast.name = "SlagCast"
-	cast.position = Vector3(0, 0, 15)
+	cast.position = at
 	cast.visible = _state != null and _state.bosses.has(BOSS)
 	parent.add_child(cast)
-	_solid(cast, Vector3(0, 0.35, 0), Vector3(2.4, 0.7, 1.4), "Pool", "wall", false)
-	var gap := MeshInstance3D.new()
-	gap.name = "Negative"
-	var bm := BoxMesh.new()
-	bm.size = Vector3(0.7, 1.5, 0.35)
-	gap.mesh = bm
-	gap.position = Vector3(0, 1.15, 0)
-	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.05, 0.04, 0.04)
-	gap.material_override = m
-	cast.add_child(gap)
+	SlagworksDress.attach_cast(cast)
 
 
-func _walk_box(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String) -> StaticBody3D:
-	var b := _solid(parent, centre, size, nm, kind, true)
+func _walk_box(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String, visual := true) -> StaticBody3D:
+	var b := _solid(parent, centre, size, nm, kind, true, visual)
 	b.add_to_group(&"slag_walk")
 	return b
 
@@ -670,20 +632,15 @@ func _wall(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: Str
 	return _solid(parent, centre, size, nm, "wall" if kind == "wall" else kind, false)
 
 
-func _solid(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String, collide: bool) -> StaticBody3D:
+func _solid(parent: Node3D, centre: Vector3, size: Vector3, nm: String, kind: String, collide: bool, visual := true) -> StaticBody3D:
 	var b := StaticBody3D.new()
 	b.name = nm
 	b.position = centre
 	if not collide:
 		b.collision_layer = 0
 		b.collision_mask = 0
-	var mi := MeshInstance3D.new()
-	mi.name = "Greybox"
-	var bm := BoxMesh.new()
-	bm.size = size
-	mi.mesh = bm
-	mi.material_override = _mat(kind)
-	b.add_child(mi)
+	if visual:
+		SlagworksDress.clothe(b, size, kind, nm)
 	if collide:
 		var cs := CollisionShape3D.new()
 		cs.name = "CollisionShape3D"
@@ -710,16 +667,7 @@ func _volume(parent: Node3D, centre: Vector3, size: Vector3, kind: String) -> Ar
 	sh.size = size
 	cs.shape = sh
 	a.add_child(cs)
-	var mi := MeshInstance3D.new()
-	mi.name = "Greybox"
-	var bm := BoxMesh.new()
-	bm.size = size
-	mi.mesh = bm
-	var m := StandardMaterial3D.new()
-	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	m.albedo_color = (Color(1.0, 0.45, 0.15, 0.28) if kind == "shimmer" else Color(0.95, 0.28, 0.05, 0.72))
-	mi.material_override = m
-	a.add_child(mi)
+	SlagworksDress.clothe_volume(a, size, kind)
 	parent.add_child(a)
 	return a
 
@@ -796,6 +744,10 @@ func _mesh_from_walk() -> NavigationMesh:
 
 func _safe_points() -> Array[Vector3]:
 	var pts: Array[Vector3] = [_pad_at + Vector3(0, 0.05, 0)]
+	if not nav_points.is_empty():
+		for p in nav_points:
+			pts.append(p)
+		return pts
 	if layout.is_empty():
 		pts.append(Vector3(0, 1.5, -14.5))
 		pts.append(Vector3(0, 0.05, -16))
@@ -962,7 +914,7 @@ func _path_in_lava(path: PackedVector3Array) -> bool:
 func _cache_hash() -> String:
 	var f := FileAccess.open(TOML, FileAccess.READ)
 	var text := "" if f == null else f.get_as_text()
-	return ("%s|%d|%d|%d" % [text, floor_no, seed_value, phase]).sha256_text()
+	return ("%s|%d|%d|%d|bowl2" % [text, floor_no, seed_value, phase]).sha256_text()
 
 
 func _read_cache(hashed: String) -> NavigationMesh:
