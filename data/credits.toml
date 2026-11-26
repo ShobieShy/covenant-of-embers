@@ -43,6 +43,13 @@ source = "original (this repository)"
 line = "Covenant of Embers icon by Covenant of Embers project, Apache-2.0"
 
 [[credit]]
+name = "ambientCG Ground 080"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Ground080"
+line = "ambientCG Ground 080 by Lennart Demes, CC0 1.0"
+
+[[credit]]
 name = "ambientCG Ground 037"
 author = "Lennart Demes"
 license = "CC0 1.0"

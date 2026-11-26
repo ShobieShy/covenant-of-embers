@@ -161,6 +161,8 @@ func _room(nm: String, kind: String, centre: Vector3, size: Vector2, open: Array
 	if dressed:
 		WarrensKit.dress_room(r, size, open, slot, kind == "exit", stair_row)
 		WarrensKit.props(r, kind, size)
+		if kit_id == "warrens":
+			WarrensDress.room(r, floor_no, kind, size, open, slot, kind == "exit", stair_row)
 	rooms.append(r)
 	return r
 
@@ -227,6 +229,8 @@ func _build_rooms(kit: Dictionary) -> void:
 				_stairs("StairsDown", LabyrinthStairs.DOWN, foot if dressed else c)
 			"rest":
 				_shrine(c)
+	if dressed and kit_id == "warrens":
+		WarrensDress.finish(self)
 
 
 func _ready() -> void:
@@ -364,6 +368,8 @@ func _build_boss(state: LabyrinthState) -> void:
 		arena.add_child(hall)
 		arena.set_meta(&"kind", "boss")
 		rooms.append(arena)
+		if dressed and kit_id == "warrens":
+			WarrensDress.throne(arena, hall)
 	else:
 		arena = _room("Room1_boss_arena", "boss", Vector3(0, 0, -30), BOSS_ARENA, [2] as Array[int], 24.0)
 	var bs := _marker(self, "BossSpawn", arena.position + Vector3(0, 0, -8))

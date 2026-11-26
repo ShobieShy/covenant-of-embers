@@ -22,6 +22,7 @@
 | Kenney Pixel UI Pack, Fantasy UI Borders, Tiny Dungeon icons, Cursor Pixel Pack, Kenney Fonts | Kenney | CC0 1.0 | https://kenney.nl/assets/pixel-ui-pack | 2026-10-24 |
 | Magewar item resources | ShobieShy (Magewar) | MIT (~/game LICENSE) | local ~/game/magewar/resources | 2026-10-23 |
 | Covenant of Embers icon | Covenant of Embers project | Apache 2.0 (original) | this repository | 2026-10-24 |
+| ambientCG Ground 080 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground080 | 2026-11-26 |
 | ambientCG Ground 037 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground037 | 2026-10-24 |
 | ambientCG Bricks 076 C | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Bricks076C | 2026-10-24 |
 | ambientCG Rock 030 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Rock030 | 2026-10-24 |
@@ -65,6 +66,8 @@ Development uses Steam's public test app id 480 (steam_appid.txt); Steam is opti
 
 ## Engine
 Built with Godot Engine 4.7.2 (MIT, https://godotengine.org/license), Jolt Physics module (MIT).
+
+Goblin Warrens burrow dress (Act I): the rounded burrow shells are built in play from the room graph. The hero props (bone throne, ward pots, crystal clusters, sigil crates, timber, barrels, roots, the one Joe's Graffiti plaque) are original meshes in assets/original/ember_art/warrens/pbr/, CC0 1.0. Floors use ambientCG Ground 080, Rock 030, Wood 049 and Metal 032, tinted to the painting. The plaque repeats the painting's existing landmark and adds no new line of graffiti.
 
 Ember Art Labyrinth Act I (0.3.0 work, batch 08a): the Goblin Warrens tile kit (floor, ceiling, 4 m / 2 m / door walls, pillar, stairs), props (torch sconce, barricade, bone pile, crate stack, spike trap, goblin banner, mushrooms), the fungus-cellar rest set (bedroll, cook fire, craft bench), the throne hall, the labyrinth gate and the Warrens map are original work made for Covenant of Embers (Blender 4.5 script + PIL), CC0 1.0. See docs/credits/ember_art_batch_08a_CREDITS.md.
 

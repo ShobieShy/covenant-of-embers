@@ -65,6 +65,17 @@ source = "original (this repository)"
 license = "Apache-2.0"
 
 [[asset]]
+name = "ambientCG Ground 080"
+path = "assets/ambientcg/Ground080"
+author = "Lennart Demes (ambientCG.com)"
+source = "https://ambientcg.com/view?id=Ground080"
+download = "https://ambientcg.com/get?file=Ground080_1K-JPG.zip"
+license = "CC0-1.0"
+license_url = "https://docs.ambientcg.com/license/"
+date_added = "2026-11-26"
+use = "Goblin Warrens packed-earth floors (color/normal/roughness, tinted warm)"
+
+[[asset]]
 name = "ambientCG Ground 037"
 path = "assets/ambientcg/Ground037"
 author = "Lennart Demes (ambientCG.com)"
