@@ -33,19 +33,20 @@
 [ext_resource type="PackedScene" path="res://assets/original/ember_art/town/flagon.glb" id="24_glb"]
 [ext_resource type="PackedScene" path="res://assets/original/ember_art/town/garden.glb" id="25_glb"]
 [ext_resource type="PackedScene" path="res://assets/original/ember_art/town/wall_tower.glb" id="26_glb"]
-[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/hedge.glb" id="27_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_oak.glb" id="27_glb"]
 [ext_resource type="PackedScene" path="res://assets/original/ember_art/town/wall_segment.glb" id="28_glb"]
 [ext_resource type="PackedScene" path="res://assets/original/ember_art/town/crystal_pylon.glb" id="29_glb"]
 [ext_resource type="PackedScene" path="res://assets/original/ember_art/town/stall_striped.glb" id="30_glb"]
 [ext_resource type="PackedScene" path="res://assets/original/ember_art/town/flower_bed.glb" id="31_glb"]
 [ext_resource type="PackedScene" path="res://assets/original/ember_art/town/lantern_post.glb" id="32_glb"]
-[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/town_tree.glb" id="33_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/tree_detailed.glb" id="33_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/dome_haze.glb" id="34_glb"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
-sky_top_color = Color(0.308, 0.416, 0.777, 1)
-sky_horizon_color = Color(0.773573, 0.82098, 0.875606, 1)
-ground_bottom_color = Color(0.463739, 0.446724, 0.419571, 1)
-ground_horizon_color = Color(0.773573, 0.82098, 0.875606, 1)
+sky_top_color = Color(0.495, 0.403, 0.42, 1)
+sky_horizon_color = Color(0.954687, 0.809468, 0.665185, 1)
+ground_bottom_color = Color(0.510617, 0.437905, 0.368734, 1)
+ground_horizon_color = Color(0.954687, 0.809468, 0.665185, 1)
 sky_curve = 0.12
 sun_angle_max = 20.0
 
@@ -55,9 +56,9 @@ sky_material = SubResource("ProceduralSkyMaterial_1")
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 2
 sky = SubResource("Sky_1")
-background_color = Color(0.773573, 0.82098, 0.875606, 1)
+background_color = Color(0.954687, 0.809468, 0.665185, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.748379, 0.722027, 0.679976, 1)
+ambient_light_color = Color(0.82098, 0.70837, 0.601243, 1)
 ambient_light_energy = 0.45
 tonemap_mode = 4
 tonemap_exposure = 1.0
@@ -75,7 +76,7 @@ adjustment_contrast = 1.05
 adjustment_saturation = 1.12
 fog_enabled = true
 fog_mode = 0
-fog_light_color = Color(0.968577, 0.935741, 0.865042, 1)
+fog_light_color = Color(0.991157, 0.875606, 0.722027, 1)
 fog_density = 0.0007
 fog_sky_affect = 0.0
 
@@ -152,8 +153,8 @@ metadata/kill_line_y = -6
 environment = SubResource("Environment_1")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.292219, -0.514133, 0.806397, 0, 0.843201, 0.537598, -0.956352, -0.157096, 0.246399, 0, 10, 0)
-light_color = Color(1, 0.916274, 0.809468, 1)
+transform = Transform3D(0.161132, -0.267851, 0.949891, 0, 0.962467, 0.271397, -0.986933, -0.043731, 0.155084, 0, 10, 0)
+light_color = Color(1, 0.854306, 0.679976, 1)
 light_energy = 1.3
 shadow_enabled = true
 
@@ -575,7 +576,7 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -90, 0, 0)
 metadata/snap = true
 
 [node name="hedge_0" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(0, 0, 1.6, 0, 1.6, 0, -1.6, 0, 0, -83, 0, 0)
+transform = Transform3D(0, 0, 1.35, 0, 1.35, 0, -1.35, 0, 0, -83, 0, 0)
 metadata/snap = true
 
 [node name="wall_1" parent="Props" instance=ExtResource("28_glb")]
@@ -587,7 +588,7 @@ transform = Transform3D(0.18378, 0, 0.982967, 0, 1, 0, -0.982967, 0, 0.18378, -8
 metadata/snap = true
 
 [node name="hedge_2" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(0.294048, 0, 1.572748, 0, 1.6, 0, -1.572748, 0, 0.294048, -81.59, 0, -15.25)
+transform = Transform3D(0.248103, 0, 1.327006, 0, 1.35, 0, -1.327006, 0, 0.248103, -81.59, 0, -15.25)
 metadata/snap = true
 
 [node name="wall_3" parent="Props" instance=ExtResource("28_glb")]
@@ -599,7 +600,7 @@ transform = Transform3D(0.361299, 0, 0.93245, 0, 1, 0, -0.93245, 0, 0.361299, -8
 metadata/snap = true
 
 [node name="hedge_4" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(0.578079, 0, 1.49192, 0, 1.6, 0, -1.49192, 0, 0.578079, -77.4, 0, -29.98)
+transform = Transform3D(0.487754, 0, 1.258807, 0, 1.35, 0, -1.258807, 0, 0.487754, -77.4, 0, -29.98)
 metadata/snap = true
 
 [node name="wall_5" parent="Props" instance=ExtResource("28_glb")]
@@ -611,7 +612,7 @@ transform = Transform3D(0.526362, 0, 0.85026, 0, 1, 0, -0.85026, 0, 0.526362, -7
 metadata/snap = true
 
 [node name="hedge_6" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(0.84218, 0, 1.360417, 0, 1.6, 0, -1.360417, 0, 0.84218, -70.57, 0, -43.69)
+transform = Transform3D(0.710589, 0, 1.147852, 0, 1.35, 0, -1.147852, 0, 0.710589, -70.57, 0, -43.69)
 metadata/snap = true
 
 [node name="wall_7" parent="Props" instance=ExtResource("28_glb")]
@@ -623,7 +624,7 @@ transform = Transform3D(0.673658, 0, 0.739043, 0, 1, 0, -0.739043, 0, 0.673658, 
 metadata/snap = true
 
 [node name="hedge_8" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(1.077852, 0, 1.18247, 0, 1.6, 0, -1.18247, 0, 1.077852, -61.34, 0, -55.92)
+transform = Transform3D(0.909438, 0, 0.997709, 0, 1.35, 0, -0.997709, 0, 0.909438, -61.34, 0, -55.92)
 metadata/snap = true
 
 [node name="wall_9" parent="Props" instance=ExtResource("28_glb")]
@@ -635,7 +636,7 @@ transform = Transform3D(0.798005, 0, 0.602651, 0, 1, 0, -0.602651, 0, 0.798005, 
 metadata/snap = true
 
 [node name="hedge_10" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(1.276808, 0, 0.964242, 0, 1.6, 0, -0.964242, 0, 1.276808, -50.02, 0, -66.24)
+transform = Transform3D(1.077307, 0, 0.813579, 0, 1.35, 0, -0.813579, 0, 1.077307, -50.02, 0, -66.24)
 metadata/snap = true
 
 [node name="wall_11" parent="Props" instance=ExtResource("28_glb")]
@@ -647,7 +648,7 @@ transform = Transform3D(0.895168, 0, 0.445729, 0, 1, 0, -0.445729, 0, 0.895168, 
 metadata/snap = true
 
 [node name="hedge_12" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(1.432269, 0, 0.713167, 0, 1.6, 0, -0.713167, 0, 1.432269, -37, 0, -74.3)
+transform = Transform3D(1.208477, 0, 0.601734, 0, 1.35, 0, -0.601734, 0, 1.208477, -37, 0, -74.3)
 metadata/snap = true
 
 [node name="wall_13" parent="Props" instance=ExtResource("28_glb")]
@@ -659,7 +660,7 @@ transform = Transform3D(0.961837, 0, 0.273623, 0, 1, 0, -0.273623, 0, 0.961837, 
 metadata/snap = true
 
 [node name="hedge_14" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(1.538939, 0, 0.437798, 0, 1.6, 0, -0.437798, 0, 1.538939, -22.71, 0, -79.83)
+transform = Transform3D(1.29848, 0, 0.369392, 0, 1.35, 0, -0.369392, 0, 1.29848, -22.71, 0, -79.83)
 metadata/snap = true
 
 [node name="wall_15" parent="Props" instance=ExtResource("28_glb")]
@@ -671,7 +672,7 @@ transform = Transform3D(0.995741, 0, 0.092197, 0, 1, 0, -0.092197, 0, 0.995741, 
 metadata/snap = true
 
 [node name="hedge_16" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(1.593185, 0, 0.147515, 0, 1.6, 0, -0.147515, 0, 1.593185, -7.66, 0, -82.65)
+transform = Transform3D(1.34425, 0, 0.124466, 0, 1.35, 0, -0.124466, 0, 1.34425, -7.66, 0, -82.65)
 metadata/snap = true
 
 [node name="wall_17" parent="Props" instance=ExtResource("28_glb")]
@@ -683,7 +684,7 @@ transform = Transform3D(0.995741, 0, -0.092197, 0, 1, 0, 0.092197, 0, 0.995741, 
 metadata/snap = true
 
 [node name="hedge_18" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(1.593185, 0, -0.147515, 0, 1.6, 0, 0.147515, 0, 1.593185, 7.66, 0, -82.65)
+transform = Transform3D(1.34425, 0, -0.124466, 0, 1.35, 0, 0.124466, 0, 1.34425, 7.66, 0, -82.65)
 metadata/snap = true
 
 [node name="wall_19" parent="Props" instance=ExtResource("28_glb")]
@@ -695,7 +696,7 @@ transform = Transform3D(0.961837, 0, -0.273623, 0, 1, 0, 0.273623, 0, 0.961837, 
 metadata/snap = true
 
 [node name="hedge_20" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(1.538939, 0, -0.437798, 0, 1.6, 0, 0.437798, 0, 1.538939, 22.71, 0, -79.83)
+transform = Transform3D(1.29848, 0, -0.369392, 0, 1.35, 0, 0.369392, 0, 1.29848, 22.71, 0, -79.83)
 metadata/snap = true
 
 [node name="wall_21" parent="Props" instance=ExtResource("28_glb")]
@@ -707,7 +708,7 @@ transform = Transform3D(0.895168, 0, -0.445729, 0, 1, 0, 0.445729, 0, 0.895168, 
 metadata/snap = true
 
 [node name="hedge_22" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(1.432269, 0, -0.713167, 0, 1.6, 0, 0.713167, 0, 1.432269, 37, 0, -74.3)
+transform = Transform3D(1.208477, 0, -0.601734, 0, 1.35, 0, 0.601734, 0, 1.208477, 37, 0, -74.3)
 metadata/snap = true
 
 [node name="wall_23" parent="Props" instance=ExtResource("28_glb")]
@@ -719,7 +720,7 @@ transform = Transform3D(0.798005, 0, -0.602651, 0, 1, 0, 0.602651, 0, 0.798005, 
 metadata/snap = true
 
 [node name="hedge_24" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(1.276808, 0, -0.964242, 0, 1.6, 0, 0.964242, 0, 1.276808, 51.46, 0, -68.14)
+transform = Transform3D(1.077307, 0, -0.813579, 0, 1.35, 0, 0.813579, 0, 1.077307, 51.46, 0, -68.14)
 metadata/snap = true
 
 [node name="wall_25" parent="Props" instance=ExtResource("28_glb")]
@@ -731,7 +732,7 @@ transform = Transform3D(0.673658, 0, -0.739043, 0, 1, 0, 0.739043, 0, 0.673658, 
 metadata/snap = true
 
 [node name="hedge_26" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(1.077852, 0, -1.18247, 0, 1.6, 0, 1.18247, 0, 1.077852, 68.77, 0, -62.69)
+transform = Transform3D(0.909438, 0, -0.997709, 0, 1.35, 0, 0.997709, 0, 0.909438, 68.77, 0, -62.69)
 metadata/snap = true
 
 [node name="wall_27" parent="Props" instance=ExtResource("28_glb")]
@@ -743,7 +744,7 @@ transform = Transform3D(0.526362, 0, -0.85026, 0, 1, 0, 0.85026, 0, 0.526362, 96
 metadata/snap = true
 
 [node name="hedge_28" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(0.84218, 0, -1.360417, 0, 1.6, 0, 1.360417, 0, 0.84218, 90.12, 0, -55.8)
+transform = Transform3D(0.710589, 0, -1.147852, 0, 1.35, 0, 1.147852, 0, 0.710589, 90.12, 0, -55.8)
 metadata/snap = true
 
 [node name="wall_29" parent="Props" instance=ExtResource("28_glb")]
@@ -755,7 +756,7 @@ transform = Transform3D(0.361299, 0, -0.93245, 0, 1, 0, 0.93245, 0, 0.361299, 10
 metadata/snap = true
 
 [node name="hedge_30" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(0.578079, 0, -1.49192, 0, 1.6, 0, 1.49192, 0, 0.578079, 103.01, 0, -39.91)
+transform = Transform3D(0.487754, 0, -1.258807, 0, 1.35, 0, 1.258807, 0, 0.487754, 103.01, 0, -39.91)
 metadata/snap = true
 
 [node name="wall_31" parent="Props" instance=ExtResource("28_glb")]
@@ -767,7 +768,7 @@ transform = Transform3D(0.18378, 0, -0.982967, 0, 1, 0, 0.982967, 0, 0.18378, 10
 metadata/snap = true
 
 [node name="hedge_32" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(0.294048, 0, -1.572748, 0, 1.6, 0, 1.572748, 0, 0.294048, 94.45, 0, -17.66)
+transform = Transform3D(0.248103, 0, -1.327006, 0, 1.35, 0, 1.327006, 0, 0.248103, 94.45, 0, -17.66)
 metadata/snap = true
 
 [node name="wall_33" parent="Props" instance=ExtResource("28_glb")]
@@ -779,7 +780,7 @@ transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93.97, 0, 0)
 metadata/snap = true
 
 [node name="hedge_34" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(0, 0, -1.6, 0, 1.6, 0, 1.6, 0, 0, 86.97, 0, 0)
+transform = Transform3D(0, 0, -1.35, 0, 1.35, 0, 1.35, 0, 0, 86.97, 0, 0)
 metadata/snap = true
 
 [node name="wall_35" parent="Props" instance=ExtResource("28_glb")]
@@ -791,7 +792,7 @@ transform = Transform3D(-0.18378, 0, -0.982967, 0, 1, 0, 0.982967, 0, -0.18378, 
 metadata/snap = true
 
 [node name="hedge_36" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-0.294048, 0, -1.572748, 0, 1.6, 0, 1.572748, 0, -0.294048, 81.72, 0, 15.28)
+transform = Transform3D(-0.248103, 0, -1.327006, 0, 1.35, 0, 1.327006, 0, -0.248103, 81.72, 0, 15.28)
 metadata/snap = true
 
 [node name="wall_37" parent="Props" instance=ExtResource("28_glb")]
@@ -803,7 +804,7 @@ transform = Transform3D(-0.361299, 0, -0.93245, 0, 1, 0, 0.93245, 0, -0.361299, 
 metadata/snap = true
 
 [node name="hedge_38" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-0.578079, 0, -1.49192, 0, 1.6, 0, 1.49192, 0, -0.578079, 77.4, 0, 29.98)
+transform = Transform3D(-0.487754, 0, -1.258807, 0, 1.35, 0, 1.258807, 0, -0.487754, 77.4, 0, 29.98)
 metadata/snap = true
 
 [node name="wall_39" parent="Props" instance=ExtResource("28_glb")]
@@ -815,7 +816,7 @@ transform = Transform3D(-0.673658, 0, -0.739043, 0, 1, 0, 0.739043, 0, -0.673658
 metadata/snap = true
 
 [node name="hedge_42" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-1.077852, 0, -1.18247, 0, 1.6, 0, 1.18247, 0, -1.077852, 61.34, 0, 55.92)
+transform = Transform3D(-0.909438, 0, -0.997709, 0, 1.35, 0, 0.997709, 0, -0.909438, 61.34, 0, 55.92)
 metadata/snap = true
 
 [node name="wall_43" parent="Props" instance=ExtResource("28_glb")]
@@ -827,7 +828,7 @@ transform = Transform3D(-0.798005, 0, -0.602651, 0, 1, 0, 0.602651, 0, -0.798005
 metadata/snap = true
 
 [node name="hedge_44" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-1.276808, 0, -0.964242, 0, 1.6, 0, 0.964242, 0, -1.276808, 50.02, 0, 66.24)
+transform = Transform3D(-1.077307, 0, -0.813579, 0, 1.35, 0, 0.813579, 0, -1.077307, 50.02, 0, 66.24)
 metadata/snap = true
 
 [node name="wall_45" parent="Props" instance=ExtResource("28_glb")]
@@ -839,7 +840,7 @@ transform = Transform3D(-0.895168, 0, -0.445729, 0, 1, 0, 0.445729, 0, -0.895168
 metadata/snap = true
 
 [node name="hedge_46" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-1.432269, 0, -0.713167, 0, 1.6, 0, 0.713167, 0, -1.432269, 37, 0, 74.3)
+transform = Transform3D(-1.208477, 0, -0.601734, 0, 1.35, 0, 0.601734, 0, -1.208477, 37, 0, 74.3)
 metadata/snap = true
 
 [node name="wall_47" parent="Props" instance=ExtResource("28_glb")]
@@ -851,7 +852,7 @@ transform = Transform3D(-0.961837, 0, -0.273623, 0, 1, 0, 0.273623, 0, -0.961837
 metadata/snap = true
 
 [node name="hedge_48" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-1.538939, 0, -0.437798, 0, 1.6, 0, 0.437798, 0, -1.538939, 22.71, 0, 79.83)
+transform = Transform3D(-1.29848, 0, -0.369392, 0, 1.35, 0, 0.369392, 0, -1.29848, 22.71, 0, 79.83)
 metadata/snap = true
 
 [node name="wall_49" parent="Props" instance=ExtResource("28_glb")]
@@ -863,7 +864,7 @@ transform = Transform3D(-0.995741, 0, -0.092197, 0, 1, 0, 0.092197, 0, -0.995741
 metadata/snap = true
 
 [node name="hedge_50" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-1.593185, 0, -0.147515, 0, 1.6, 0, 0.147515, 0, -1.593185, 7.66, 0, 82.65)
+transform = Transform3D(-1.34425, 0, -0.124466, 0, 1.35, 0, 0.124466, 0, -1.34425, 7.66, 0, 82.65)
 metadata/snap = true
 
 [node name="wall_54" parent="Props" instance=ExtResource("26_glb")]
@@ -871,7 +872,7 @@ transform = Transform3D(-0.961837, 0, 0.273623, 0, 1, 0, -0.273623, 0, -0.961837
 metadata/snap = true
 
 [node name="hedge_54" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-1.538939, 0, 0.437798, 0, 1.6, 0, -0.437798, 0, -1.538939, -22.71, 0, 79.83)
+transform = Transform3D(-1.29848, 0, 0.369392, 0, 1.35, 0, -0.369392, 0, -1.29848, -22.71, 0, 79.83)
 metadata/snap = true
 
 [node name="wall_55" parent="Props" instance=ExtResource("28_glb")]
@@ -883,7 +884,7 @@ transform = Transform3D(-0.895168, 0, 0.445729, 0, 1, 0, -0.445729, 0, -0.895168
 metadata/snap = true
 
 [node name="hedge_56" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-1.432269, 0, 0.713167, 0, 1.6, 0, -0.713167, 0, -1.432269, -37, 0, 74.3)
+transform = Transform3D(-1.208477, 0, 0.601734, 0, 1.35, 0, -0.601734, 0, -1.208477, -37, 0, 74.3)
 metadata/snap = true
 
 [node name="wall_57" parent="Props" instance=ExtResource("28_glb")]
@@ -895,7 +896,7 @@ transform = Transform3D(-0.798005, 0, 0.602651, 0, 1, 0, -0.602651, 0, -0.798005
 metadata/snap = true
 
 [node name="hedge_58" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-1.276808, 0, 0.964242, 0, 1.6, 0, -0.964242, 0, -1.276808, -50.02, 0, 66.24)
+transform = Transform3D(-1.077307, 0, 0.813579, 0, 1.35, 0, -0.813579, 0, -1.077307, -50.02, 0, 66.24)
 metadata/snap = true
 
 [node name="wall_59" parent="Props" instance=ExtResource("28_glb")]
@@ -907,7 +908,7 @@ transform = Transform3D(-0.673658, 0, 0.739043, 0, 1, 0, -0.739043, 0, -0.673658
 metadata/snap = true
 
 [node name="hedge_60" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-1.077852, 0, 1.18247, 0, 1.6, 0, -1.18247, 0, -1.077852, -61.34, 0, 55.92)
+transform = Transform3D(-0.909438, 0, 0.997709, 0, 1.35, 0, -0.997709, 0, -0.909438, -61.34, 0, 55.92)
 metadata/snap = true
 
 [node name="wall_61" parent="Props" instance=ExtResource("28_glb")]
@@ -919,7 +920,7 @@ transform = Transform3D(-0.526362, 0, 0.85026, 0, 1, 0, -0.85026, 0, -0.526362, 
 metadata/snap = true
 
 [node name="hedge_62" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-0.84218, 0, 1.360417, 0, 1.6, 0, -1.360417, 0, -0.84218, -70.57, 0, 43.69)
+transform = Transform3D(-0.710589, 0, 1.147852, 0, 1.35, 0, -1.147852, 0, -0.710589, -70.57, 0, 43.69)
 metadata/snap = true
 
 [node name="wall_63" parent="Props" instance=ExtResource("28_glb")]
@@ -931,7 +932,7 @@ transform = Transform3D(-0.361299, 0, 0.93245, 0, 1, 0, -0.93245, 0, -0.361299, 
 metadata/snap = true
 
 [node name="hedge_64" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-0.578079, 0, 1.49192, 0, 1.6, 0, -1.49192, 0, -0.578079, -77.4, 0, 29.98)
+transform = Transform3D(-0.487754, 0, 1.258807, 0, 1.35, 0, -1.258807, 0, -0.487754, -77.4, 0, 29.98)
 metadata/snap = true
 
 [node name="wall_65" parent="Props" instance=ExtResource("28_glb")]
@@ -943,7 +944,7 @@ transform = Transform3D(-0.18378, 0, 0.982967, 0, 1, 0, -0.982967, 0, -0.18378, 
 metadata/snap = true
 
 [node name="hedge_66" parent="Props" instance=ExtResource("27_glb")]
-transform = Transform3D(-0.294048, 0, 1.572748, 0, 1.6, 0, -1.572748, 0, -0.294048, -81.59, 0, 15.25)
+transform = Transform3D(-0.248103, 0, 1.327006, 0, 1.35, 0, -1.327006, 0, -0.248103, -81.59, 0, 15.25)
 metadata/snap = true
 
 [node name="wall_67" parent="Props" instance=ExtResource("28_glb")]
@@ -1067,67 +1068,280 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 2.06, -8.4)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.33, 2.06, -3.13)
 
 [node name="tree_0" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(2.1, 0, 0, 0, 2.1, 0, 0, 0, 2.1, -30, 0, 36)
+transform = Transform3D(3.6, 0, 0, 0, 3.6, 0, 0, 0, 3.6, -30, 0, 36)
 metadata/snap = true
 
 [node name="tree_1" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(1.677135, 0, 1.263812, 0, 2.1, 0, -1.263812, 0, 1.677135, -36, 0, 58)
+transform = Transform3D(2.875088, 0, 2.166534, 0, 3.6, 0, -2.166534, 0, 2.875088, -36, 0, 58)
 metadata/snap = true
 
 [node name="tree_2" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(0.578838, 0, 2.01865, 0, 2.1, 0, -2.01865, 0, 0.578838, 20, 0, 42)
+transform = Transform3D(0.992294, 0, 3.460542, 0, 3.6, 0, -3.460542, 0, 0.992294, 20, 0, 42)
 metadata/snap = true
 
 [node name="tree_3" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(-0.752573, 0, 1.960519, 0, 2.1, 0, -1.960519, 0, -0.752573, 28, 0, 64)
+transform = Transform3D(-1.290125, 0, 3.36089, 0, 3.6, 0, -3.36089, 0, -1.290125, 28, 0, 64)
 metadata/snap = true
 
 [node name="tree_4" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(-1.780901, 0, 1.11283, 0, 2.1, 0, -1.11283, 0, -1.780901, -42, 0, -8)
+transform = Transform3D(-3.052973, 0, 1.907709, 0, 3.6, 0, -1.907709, 0, -3.052973, -42, 0, -8)
 metadata/snap = true
 
 [node name="tree_5" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(-2.092009, 0, -0.183027, 0, 2.1, 0, 0.183027, 0, -2.092009, 32, 0, -18)
+transform = Transform3D(-3.586301, 0, -0.313761, 0, 3.6, 0, 0.313761, 0, -3.586301, 32, 0, -18)
 metadata/snap = true
 
 [node name="tree_6" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(-1.560604, 0, -1.405174, 0, 2.1, 0, 1.405174, 0, -1.560604, 62, 0, -28)
+transform = Transform3D(-2.675321, 0, -2.40887, 0, 3.6, 0, 2.40887, 0, -2.675321, 62, 0, -28)
 metadata/snap = true
 
 [node name="tree_7" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(-0.400699, 0, -2.061417, 0, 2.1, 0, 2.061417, 0, -0.400699, 84, 0, -58)
+transform = Transform3D(-0.686912, 0, -3.533858, 0, 3.6, 0, 3.533858, 0, -0.686912, 84, 0, -58)
 metadata/snap = true
 
 [node name="tree_8" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(0.920579, 0, -1.887467, 0, 2.1, 0, 1.887467, 0, 0.920579, -24, 0, -28)
+transform = Transform3D(1.578136, 0, -3.235659, 0, 3.6, 0, 3.235659, 0, 1.578136, -24, 0, -28)
 metadata/snap = true
 
 [node name="tree_9" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(1.871114, 0, -0.95338, 0, 2.1, 0, 0.95338, 0, 1.871114, 10, 0, -42)
+transform = Transform3D(3.207623, 0, -1.634366, 0, 3.6, 0, 1.634366, 0, 3.207623, 10, 0, -42)
 metadata/snap = true
 
 [node name="tree_10" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(2.068096, 0, 0.364661, 0, 2.1, 0, -0.364661, 0, 2.068096, -55, 0, 18)
+transform = Transform3D(3.545308, 0, 0.625133, 0, 3.6, 0, -0.625133, 0, 3.545308, -55, 0, 18)
 metadata/snap = true
 
 [node name="tree_11" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(1.432197, 0, 1.535843, 0, 2.1, 0, -1.535843, 0, 1.432197, 48, 0, 18)
+transform = Transform3D(2.455194, 0, 2.632873, 0, 3.6, 0, -2.632873, 0, 2.455194, 48, 0, 18)
 metadata/snap = true
 
 [node name="tree_12" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(0.21951, 0, 2.088496, 0, 2.1, 0, -2.088496, 0, 0.21951, -70, 0, -40)
+transform = Transform3D(0.376302, 0, 3.580279, 0, 3.6, 0, -3.580279, 0, 0.376302, -70, 0, -40)
 metadata/snap = true
 
 [node name="tree_13" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(-1.08158, 0, 1.800051, 0, 2.1, 0, -1.800051, 0, -1.08158, 55, 0, -60)
+transform = Transform3D(-1.854137, 0, 3.085802, 0, 3.6, 0, -3.085802, 0, -1.854137, 55, 0, -60)
 metadata/snap = true
 
 [node name="tree_14" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(-1.947086, 0, 0.786674, 0, 2.1, 0, -0.786674, 0, -1.947086, -18, 0, 70)
+transform = Transform3D(-3.337862, 0, 1.348584, 0, 3.6, 0, -1.348584, 0, -3.337862, -18, 0, 70)
 metadata/snap = true
 
 [node name="tree_15" parent="Props" instance=ExtResource("33_glb")]
-transform = Transform3D(-2.028444, 0, -0.54352, 0, 2.1, 0, 0.54352, 0, -2.028444, 14, 0, 78)
+transform = Transform3D(-3.477333, 0, -0.931749, 0, 3.6, 0, 0.931749, 0, -3.477333, 14, 0, 78)
+metadata/snap = true
+
+[node name="dome_haze" parent="Props" instance=ExtResource("34_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="light_crystal_ring_0" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76, 2.8, 0)
+light_color = Color(0.809468, 0.649956, 1, 1)
+light_energy = 0.9
+omni_range = 9
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_crystal_ring_1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -53.74, 2.8, -53.74)
+light_color = Color(0.809468, 0.649956, 1, 1)
+light_energy = 0.9
+omni_range = 9
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_crystal_ring_2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, -76)
+light_color = Color(0.809468, 0.649956, 1, 1)
+light_energy = 0.9
+omni_range = 9
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_crystal_ring_3" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.74, 2.8, -53.74)
+light_color = Color(0.809468, 0.649956, 1, 1)
+light_energy = 0.9
+omni_range = 9
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_crystal_ring_4" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76, 2.8, 0)
+light_color = Color(0.809468, 0.649956, 1, 1)
+light_energy = 0.9
+omni_range = 9
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_crystal_ring_5" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.74, 2.8, 53.74)
+light_color = Color(0.809468, 0.649956, 1, 1)
+light_energy = 0.9
+omni_range = 9
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_crystal_ring_6" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 76)
+light_color = Color(0.809468, 0.649956, 1, 1)
+light_energy = 0.9
+omni_range = 9
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_crystal_ring_7" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -53.74, 2.8, 53.74)
+light_color = Color(0.809468, 0.649956, 1, 1)
+light_energy = 0.9
+omni_range = 9
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_crystal_gate_w" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.2, 2.8, 90.2)
+light_color = Color(0.809468, 0.649956, 1, 1)
+light_energy = 0.9
+omni_range = 9
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_crystal_gate_e" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 2.8, 90.2)
+light_color = Color(0.809468, 0.649956, 1, 1)
+light_energy = 0.9
+omni_range = 9
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_w_0" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.4, 2.5, 30)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_e_0" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 2.5, 30)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_w_1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.4, 2.5, 42)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_e_1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 2.5, 42)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_w_2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.4, 2.5, 54)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_e_2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 2.5, 54)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_w_3" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.4, 2.5, 66)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_e_3" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 2.5, 66)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_sq_0" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 2.5, 9.6)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_sq_1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.33, 2.5, 22.33)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_sq_2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 2.5, 27.6)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_sq_3" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.13, 2.5, 22.33)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_sq_4" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.4, 2.5, 9.6)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_sq_5" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.13, 2.5, -3.13)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_sq_6" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 2.5, -8.4)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
+metadata/snap = true
+
+[node name="light_lamp_sq_7" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.33, 2.5, -3.13)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.15
+omni_range = 11
+shadow_enabled = false
 metadata/snap = true
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]

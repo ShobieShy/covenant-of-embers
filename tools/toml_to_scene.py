@@ -316,7 +316,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     except tomllib.TOMLDecodeError as e:
         raise LevelError(f"TOML: {e}") from e
     _only(d, {"level", "environment", "sun", "player_start", "box", "enemy", "spawn_point", "waves", "wave", "exit", "npc",
-               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate", "chest", "camp"}, "top level")
+               "encounter", "switch", "materials", "prop", "terrain", "poi", "anchor", "waystone", "gate", "chest", "camp", "light"}, "top level")
     known = enemy_ids() if known_enemies is None else known_enemies
     for sec in ("level", "environment", "sun", "player_start"):
         if sec not in d:
@@ -375,6 +375,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "switches": [],
         "materials": {},
         "props": [],
+        "lights": [],
         "pois": [],
         "anchors": [],
         "waystones": [],
@@ -533,6 +534,24 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
             if not on_surface(out["boxes"], pos):
                 raise LevelError(f"{sec} '{name}' position (feet) must lie on a box surface (within 5 cm)")
             out[key].append({"name": name, extra: val, "position": pos, "yaw_deg": float(x.get("yaw_deg", 0.0))})
+    seen_l: set[str] = set()
+    for i, lit in enumerate(d.get("light", [])):
+        w = f"light {i + 1}"
+        _only(lit, {"name", "position", "color", "energy", "range", "snap"}, w)
+        name = str(_need(lit, "name", w))
+        if name in seen_l:
+            raise LevelError(f"duplicate light name '{name}'")
+        seen_l.add(name)
+        pos = _vec(_need(lit, "position", w), f"{w} position")
+        color = [float(c) for c in lit.get("color", [1.0, 0.72, 0.42])]
+        if len(color) != 3:
+            raise LevelError(f"{w} color must be [r, g, b]")
+        out["lights"].append({
+            "name": name, "position": pos, "color": color,
+            "energy": float(lit.get("energy", 1.0)),
+            "range": float(lit.get("range", 8.0)),
+            "snap": _bool(lit.get("snap", False), f"{w} snap"),
+        })
     return out
 
 
@@ -820,6 +839,17 @@ def to_tscn(lv: dict, source: str) -> str:
             par = f'Pois/{pr["poi"]}' if pr["poi"] else "Props"
             nodes.append(f'[node name="{nm}" parent="{par}" instance=ExtResource("{sid}")]\n'
                          f'transform = {_xf(basis, pos)}\n' + ('metadata/snap = true\n' if pr["snap"] else ""))
+    if lv.get("lights"):
+        nodes.append('[node name="Lights" type="Node3D" parent="."]\n')
+        for lit in lv["lights"]:
+            nodes.append(
+                f'[node name="{lit["name"]}" type="OmniLight3D" parent="Lights"]\n'
+                f'transform = {_xf(rot_yxz([0, 0, 0]), lit["position"])}\n'
+                f'light_color = {_color_str(lit["color"])}\n'
+                f'light_energy = {_f(lit["energy"])}\nomni_range = {_f(lit["range"])}\n'
+                f'shadow_enabled = false\n'
+                + ('metadata/snap = true\n' if lit["snap"] else "")
+            )
     nodes.append('[node name="Navigation" type="NavigationRegion3D" parent="."]\n'
                  'script = ExtResource("1_nav")\nsource = NodePath("../Boxes")\n')
     nodes.append(f'[node name="PlayerStart" type="Marker3D" parent="."]\n'

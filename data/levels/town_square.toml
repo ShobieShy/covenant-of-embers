@@ -14,16 +14,16 @@ ground = "assets/ambientcg/PavingStones131"
 uv_scale = 0.4
 
 [environment]
-sky_color = [0.56, 0.64, 0.74]
-ambient_color = [0.52, 0.48, 0.42]
+sky_color = [0.9, 0.62, 0.4]
+ambient_color = [0.64, 0.46, 0.32]
 fog_density = 0.0007
-fog_light = [0.93, 0.86, 0.72]
+fog_light = [0.98, 0.74, 0.48]
 sky = true
 grade = [1.03, 1.05, 1.12]
 
 [sun]
-to_light = [0.72, 0.48, 0.22]
-color = [1.0, 0.82, 0.62]
+to_light = [0.98, 0.28, 0.16]
+color = [1.0, 0.7, 0.42]
 
 [player_start]
 position = [0.0, 2.0, 36.0]
@@ -614,10 +614,10 @@ snap = true
 
 [[prop]]
 name = "hedge_0"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-83.00, 0.00, -0.00]
 rotation_deg = [0.0, 90.00, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -638,10 +638,10 @@ snap = true
 
 [[prop]]
 name = "hedge_2"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-81.59, 0.00, -15.25]
 rotation_deg = [0.0, 79.41, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -662,10 +662,10 @@ snap = true
 
 [[prop]]
 name = "hedge_4"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-77.40, 0.00, -29.98]
 rotation_deg = [0.0, 68.82, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -686,10 +686,10 @@ snap = true
 
 [[prop]]
 name = "hedge_6"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-70.57, 0.00, -43.69]
 rotation_deg = [0.0, 58.24, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -710,10 +710,10 @@ snap = true
 
 [[prop]]
 name = "hedge_8"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-61.34, 0.00, -55.92]
 rotation_deg = [0.0, 47.65, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -734,10 +734,10 @@ snap = true
 
 [[prop]]
 name = "hedge_10"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-50.02, 0.00, -66.24]
 rotation_deg = [0.0, 37.06, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -758,10 +758,10 @@ snap = true
 
 [[prop]]
 name = "hedge_12"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-37.00, 0.00, -74.30]
 rotation_deg = [0.0, 26.47, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -782,10 +782,10 @@ snap = true
 
 [[prop]]
 name = "hedge_14"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-22.71, 0.00, -79.83]
 rotation_deg = [0.0, 15.88, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -806,10 +806,10 @@ snap = true
 
 [[prop]]
 name = "hedge_16"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-7.66, 0.00, -82.65]
 rotation_deg = [0.0, 5.29, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -830,10 +830,10 @@ snap = true
 
 [[prop]]
 name = "hedge_18"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [7.66, 0.00, -82.65]
 rotation_deg = [0.0, 354.71, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -854,10 +854,10 @@ snap = true
 
 [[prop]]
 name = "hedge_20"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [22.71, 0.00, -79.83]
 rotation_deg = [0.0, 344.12, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -878,10 +878,10 @@ snap = true
 
 [[prop]]
 name = "hedge_22"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [37.00, 0.00, -74.30]
 rotation_deg = [0.0, 333.53, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -902,10 +902,10 @@ snap = true
 
 [[prop]]
 name = "hedge_24"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [51.46, 0.00, -68.14]
 rotation_deg = [0.0, 322.94, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -926,10 +926,10 @@ snap = true
 
 [[prop]]
 name = "hedge_26"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [68.77, 0.00, -62.69]
 rotation_deg = [0.0, 312.35, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -950,10 +950,10 @@ snap = true
 
 [[prop]]
 name = "hedge_28"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [90.12, 0.00, -55.80]
 rotation_deg = [0.0, 301.76, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -974,10 +974,10 @@ snap = true
 
 [[prop]]
 name = "hedge_30"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [103.01, 0.00, -39.91]
 rotation_deg = [0.0, 291.18, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -998,10 +998,10 @@ snap = true
 
 [[prop]]
 name = "hedge_32"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [94.45, 0.00, -17.66]
 rotation_deg = [0.0, 280.59, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1022,10 +1022,10 @@ snap = true
 
 [[prop]]
 name = "hedge_34"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [86.97, 0.00, 0.00]
 rotation_deg = [0.0, 270.00, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1046,10 +1046,10 @@ snap = true
 
 [[prop]]
 name = "hedge_36"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [81.72, 0.00, 15.28]
 rotation_deg = [0.0, 259.41, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1070,10 +1070,10 @@ snap = true
 
 [[prop]]
 name = "hedge_38"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [77.40, 0.00, 29.98]
 rotation_deg = [0.0, 248.82, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1094,10 +1094,10 @@ snap = true
 
 [[prop]]
 name = "hedge_42"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [61.34, 0.00, 55.92]
 rotation_deg = [0.0, 227.65, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1118,10 +1118,10 @@ snap = true
 
 [[prop]]
 name = "hedge_44"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [50.02, 0.00, 66.24]
 rotation_deg = [0.0, 217.06, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1142,10 +1142,10 @@ snap = true
 
 [[prop]]
 name = "hedge_46"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [37.00, 0.00, 74.30]
 rotation_deg = [0.0, 206.47, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1166,10 +1166,10 @@ snap = true
 
 [[prop]]
 name = "hedge_48"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [22.71, 0.00, 79.83]
 rotation_deg = [0.0, 195.88, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1190,10 +1190,10 @@ snap = true
 
 [[prop]]
 name = "hedge_50"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [7.66, 0.00, 82.65]
 rotation_deg = [0.0, 185.29, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1206,10 +1206,10 @@ snap = true
 
 [[prop]]
 name = "hedge_54"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-22.71, 0.00, 79.83]
 rotation_deg = [0.0, 164.12, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1230,10 +1230,10 @@ snap = true
 
 [[prop]]
 name = "hedge_56"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-37.00, 0.00, 74.30]
 rotation_deg = [0.0, 153.53, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1254,10 +1254,10 @@ snap = true
 
 [[prop]]
 name = "hedge_58"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-50.02, 0.00, 66.24]
 rotation_deg = [0.0, 142.94, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1278,10 +1278,10 @@ snap = true
 
 [[prop]]
 name = "hedge_60"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-61.34, 0.00, 55.92]
 rotation_deg = [0.0, 132.35, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1302,10 +1302,10 @@ snap = true
 
 [[prop]]
 name = "hedge_62"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-70.57, 0.00, 43.69]
 rotation_deg = [0.0, 121.76, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1326,10 +1326,10 @@ snap = true
 
 [[prop]]
 name = "hedge_64"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-77.40, 0.00, 29.98]
 rotation_deg = [0.0, 111.18, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1350,10 +1350,10 @@ snap = true
 
 [[prop]]
 name = "hedge_66"
-model = "assets/original/ember_art/town/hedge.glb"
+model = "assets/kenney/nature-kit/tree_oak.glb"
 position = [-81.59, 0.00, 15.25]
 rotation_deg = [0.0, 100.59, 0.0]
-scale = 1.60
+scale = 1.35
 snap = true
 
 [[prop]]
@@ -1626,129 +1626,344 @@ scale = 1.00
 
 [[prop]]
 name = "tree_0"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [-30.00, 0.00, 36.00]
 rotation_deg = [0.0, 0.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_1"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [-36.00, 0.00, 58.00]
 rotation_deg = [0.0, 37.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_2"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [20.00, 0.00, 42.00]
 rotation_deg = [0.0, 74.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_3"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [28.00, 0.00, 64.00]
 rotation_deg = [0.0, 111.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_4"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [-42.00, 0.00, -8.00]
 rotation_deg = [0.0, 148.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_5"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [32.00, 0.00, -18.00]
 rotation_deg = [0.0, 185.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_6"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [62.00, 0.00, -28.00]
 rotation_deg = [0.0, 222.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_7"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [84.00, 0.00, -58.00]
 rotation_deg = [0.0, 259.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_8"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [-24.00, 0.00, -28.00]
 rotation_deg = [0.0, 296.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_9"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [10.00, 0.00, -42.00]
 rotation_deg = [0.0, 333.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_10"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [-55.00, 0.00, 18.00]
 rotation_deg = [0.0, 10.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_11"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [48.00, 0.00, 18.00]
 rotation_deg = [0.0, 47.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_12"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [-70.00, 0.00, -40.00]
 rotation_deg = [0.0, 84.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_13"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [55.00, 0.00, -60.00]
 rotation_deg = [0.0, 121.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_14"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [-18.00, 0.00, 70.00]
 rotation_deg = [0.0, 158.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
 [[prop]]
 name = "tree_15"
-model = "assets/original/ember_art/town/town_tree.glb"
+model = "assets/kenney/nature-kit/tree_detailed.glb"
 position = [14.00, 0.00, 78.00]
 rotation_deg = [0.0, 195.00, 0.0]
-scale = 2.10
+scale = 3.6
 snap = true
 
+
+[[prop]]
+name = "dome_haze"
+model = "assets/original/ember_art/town/dome_haze.glb"
+position = [0.0, 0.0, 0.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1
+
+[[light]]
+name = "light_crystal_ring_0"
+position = [-76.00, 2.80, -0.00]
+color = [0.62, 0.38, 1.0]
+energy = 0.9
+range = 9.0
+snap = true
+
+[[light]]
+name = "light_crystal_ring_1"
+position = [-53.74, 2.80, -53.74]
+color = [0.62, 0.38, 1.0]
+energy = 0.9
+range = 9.0
+snap = true
+
+[[light]]
+name = "light_crystal_ring_2"
+position = [0.00, 2.80, -76.00]
+color = [0.62, 0.38, 1.0]
+energy = 0.9
+range = 9.0
+snap = true
+
+[[light]]
+name = "light_crystal_ring_3"
+position = [53.74, 2.80, -53.74]
+color = [0.62, 0.38, 1.0]
+energy = 0.9
+range = 9.0
+snap = true
+
+[[light]]
+name = "light_crystal_ring_4"
+position = [76.00, 2.80, 0.00]
+color = [0.62, 0.38, 1.0]
+energy = 0.9
+range = 9.0
+snap = true
+
+[[light]]
+name = "light_crystal_ring_5"
+position = [53.74, 2.80, 53.74]
+color = [0.62, 0.38, 1.0]
+energy = 0.9
+range = 9.0
+snap = true
+
+[[light]]
+name = "light_crystal_ring_6"
+position = [0.00, 2.80, 76.00]
+color = [0.62, 0.38, 1.0]
+energy = 0.9
+range = 9.0
+snap = true
+
+[[light]]
+name = "light_crystal_ring_7"
+position = [-53.74, 2.80, 53.74]
+color = [0.62, 0.38, 1.0]
+energy = 0.9
+range = 9.0
+snap = true
+
+[[light]]
+name = "light_crystal_gate_w"
+position = [-13.20, 2.80, 90.20]
+color = [0.62, 0.38, 1.0]
+energy = 0.9
+range = 9.0
+snap = true
+
+[[light]]
+name = "light_crystal_gate_e"
+position = [0.40, 2.80, 90.20]
+color = [0.62, 0.38, 1.0]
+energy = 0.9
+range = 9.0
+snap = true
+
+[[light]]
+name = "light_lamp_w_0"
+position = [-12.40, 2.50, 30.00]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_e_0"
+position = [-0.40, 2.50, 30.00]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_w_1"
+position = [-12.40, 2.50, 42.00]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_e_1"
+position = [-0.40, 2.50, 42.00]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_w_2"
+position = [-12.40, 2.50, 54.00]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_e_2"
+position = [-0.40, 2.50, 54.00]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_w_3"
+position = [-12.40, 2.50, 66.00]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_e_3"
+position = [-0.40, 2.50, 66.00]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_sq_0"
+position = [11.60, 2.50, 9.60]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_sq_1"
+position = [6.33, 2.50, 22.33]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_sq_2"
+position = [-6.40, 2.50, 27.60]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_sq_3"
+position = [-19.13, 2.50, 22.33]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_sq_4"
+position = [-24.40, 2.50, 9.60]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_sq_5"
+position = [-19.13, 2.50, -3.13]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_sq_6"
+position = [-6.40, 2.50, -8.40]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true
+
+[[light]]
+name = "light_lamp_sq_7"
+position = [6.33, 2.50, -3.13]
+color = [1.0, 0.68, 0.38]
+energy = 1.15
+range = 11.0
+snap = true

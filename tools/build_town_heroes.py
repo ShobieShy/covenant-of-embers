@@ -238,24 +238,31 @@ def build_gate(stone, slate, wood):
     export("gatehouse")
 
 
+def _gem(loc, radius, height, mat, yaw=0.0):
+    bpy.ops.mesh.primitive_cone_add(vertices=6, radius1=radius, depth=height * 0.5, location=(loc[0], loc[1], loc[2] + height * 0.18))
+    top = bpy.context.active_object
+    top.rotation_euler[2] = yaw
+    assign(top, mat)
+    bpy.ops.mesh.primitive_cone_add(
+        vertices=6, radius1=radius, depth=height * 0.5,
+        location=(loc[0], loc[1], loc[2] - height * 0.12), rotation=(math.pi, 0, yaw)
+    )
+    bot = bpy.context.active_object
+    assign(bot, mat)
+    return [top, bot]
+
+
 def build_crystal(stone):
     clear()
-    gem_m = flat("gem", (0.45, 0.22, 0.82), 0.15, (0.55, 0.28, 0.95), 1.1, 0.9)
+    gem_m = flat("gem", (0.48, 0.25, 0.9), 0.12, (0.58, 0.32, 1.0), 1.3, 0.88)
     parts = [
-        cube("plinth", (0, 0, 1.3), (0.85, 0.85, 1.3), stone, 1.5),
-        cube("cap", (0, 0, 2.7), (1.0, 1.0, 0.12), stone, 1.0),
+        cube("plinth", (0, 0, 0.55), (0.7, 0.7, 0.55), stone, 1.4),
+        cube("cap", (0, 0, 1.15), (0.82, 0.82, 0.08), stone, 1.0),
     ]
-    for loc, sc in (
-        ((0, 0, 4.3), (0.55, 0.55, 1.5)),
-        ((0.38, 0.1, 3.6), (0.32, 0.32, 0.9)),
-        ((-0.32, 0.18, 3.5), (0.28, 0.28, 0.85)),
-        ((0.05, -0.36, 3.4), (0.26, 0.26, 0.7)),
-    ):
-        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=0.45, location=loc)
-        ob = bpy.context.active_object
-        ob.scale = sc
-        assign(ob, gem_m)
-        parts.append(ob)
+    parts += _gem((0.0, 0.0, 2.15), 0.28, 1.7, gem_m, 0.2)
+    parts += _gem((0.32, 0.08, 1.85), 0.16, 1.05, gem_m, 0.8)
+    parts += _gem((-0.28, 0.12, 1.8), 0.15, 0.95, gem_m, 1.4)
+    parts += _gem((0.05, -0.3, 1.75), 0.14, 0.85, gem_m, 2.1)
     join("crystal_pylon", parts)
     export("crystal_pylon")
 
