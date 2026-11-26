@@ -20,6 +20,7 @@ func _go(out: String) -> void:
 		await process_frame
 	OldOakLandmark.prepare(slice)
 	_blossoms(slice)
+	_door_frame(slice)
 	_people(slice)
 	_stand_bob_at_the_door(slice)
 	_lanterns(slice)
@@ -64,6 +65,7 @@ func _go(out: String) -> void:
 	var dome := slice.get_node_or_null("Props/dome") as Node3D
 	if dome:
 		dome.visible = false
+	_false_color(slice)
 	await _frame()
 	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
 	cam.size = 280.0
@@ -79,18 +81,66 @@ func _blossoms(slice: Node3D) -> void:
 	var oak := slice.get_node_or_null("Props/east_oak") as Node3D
 	if oak == null:
 		return
+	var packed := load("res://assets/original/ember_art/town/blossom.glb") as PackedScene
+	if packed == null:
+		return
+	var spawned := 0
 	for n in oak.find_children("Flowers*", "MeshInstance3D", true, false):
 		var mi := n as MeshInstance3D
-		var base := mi.get_active_material(0) as StandardMaterial3D
-		if base == null:
-			continue
-		var m := base.duplicate() as StandardMaterial3D
-		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		m.albedo_color = Color(0.42, 0.18, 0.62, 0.55)
-		m.emission_enabled = true
-		m.emission = Color(0.55, 0.28, 0.9)
-		m.emission_energy_multiplier = 0.55
-		m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		mi.visible = false
+		var arrays: Array = mi.mesh.surface_get_arrays(0)
+		var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var step := maxi(1, verts.size() / 140)
+		var i := 0
+		while i < verts.size() and spawned < 160:
+			var blossom := packed.instantiate() as Node3D
+			oak.add_child(blossom)
+			blossom.global_position = mi.global_transform * verts[i]
+			blossom.scale = Vector3(0.55, 0.55, 0.55)
+			spawned += 1
+			i += step
+
+
+func _door_frame(slice: Node3D) -> void:
+	var door := _door(slice)
+	if door == null:
+		return
+	var packed := load("res://assets/original/ember_art/town/door_frame.glb") as PackedScene
+	if packed == null:
+		return
+	var frame := packed.instantiate() as Node3D
+	slice.add_child(frame)
+	frame.global_transform = door.global_transform
+	_warm(slice, door.global_position + Vector3(0, 1.8, 0), 5.5, 1.6)
+
+
+func _false_color(slice: Node3D) -> void:
+	for mi in slice.find_children("*", "MeshInstance3D", true, false):
+		var key := str(mi.get_path()).to_lower()
+		var col := Color(0.55, 0.55, 0.55)
+		if "wall" in key or "tower" in key:
+			col = Color(0.15, 0.9, 1.0)
+		elif "gate" in key:
+			col = Color(1.0, 0.85, 0.15)
+		elif "fountain" in key:
+			col = Color(1.0, 0.45, 0.1)
+		elif "stall" in key:
+			col = Color(0.95, 0.2, 0.25)
+		elif "plaza" in key or "path" in key:
+			col = Color(0.95, 0.92, 0.45)
+		elif "oak" in key or "blossom" in key or "door_frame" in key:
+			col = Color(0.9, 0.25, 0.95)
+		elif "crystal" in key:
+			col = Color(0.6, 0.25, 1.0)
+		elif "association" in key:
+			col = Color(0.35, 0.5, 1.0)
+		elif "flagon" in key:
+			col = Color(0.55, 0.28, 0.12)
+		elif "garden" in key or "hedge" in key or "tree" in key or "bed" in key:
+			col = Color(0.2, 0.75, 0.3)
+		var m := StandardMaterial3D.new()
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.albedo_color = col
 		mi.material_override = m
 
 
@@ -102,9 +152,13 @@ func _lanterns(slice: Node3D) -> void:
 		var who := n as Node3D
 		if who == null:
 			continue
-		if not String(who.name).begins_with("lamp") and who.name != "east_oak":
+		var label := String(who.name)
+		if not label.begins_with("lamp") and not label.begins_with("crystal") and label != "east_oak":
 			continue
-		if who.name == "east_oak":
+		if label.begins_with("crystal"):
+			_warm(slice, who.global_position + Vector3(0, 3.2, 0), 8.0, 0.8, Color(0.65, 0.4, 1.0))
+			continue
+		if label == "east_oak":
 			var door := _door(slice)
 			if door == null:
 				continue
@@ -113,9 +167,9 @@ func _lanterns(slice: Node3D) -> void:
 		_warm(slice, who.global_position + Vector3(0, 2.4, 0), 9.0, 0.9)
 
 
-func _warm(slice: Node3D, at: Vector3, radius: float, energy: float) -> void:
+func _warm(slice: Node3D, at: Vector3, radius: float, energy: float, color := Color(1.0, 0.72, 0.42)) -> void:
 	var light := OmniLight3D.new()
-	light.light_color = Color(1.0, 0.72, 0.42)
+	light.light_color = color
 	light.light_energy = energy
 	light.omni_range = radius
 	light.shadow_enabled = false
