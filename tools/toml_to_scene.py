@@ -758,13 +758,16 @@ def to_tscn(lv: dict, source: str) -> str:
     nodes.append('[node name="Boxes" type="Node3D" parent="."]\n')
     for i, b in enumerate(lv["boxes"]):
         sk = tuple(b["size"])
-        shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
-        nodes.append(f'[node name="{b["name"]}" type="StaticBody3D" parent="Boxes"]\n'
-                     f'transform = {_xf(rot_yxz(b["rotation_deg"]), b["center"])}\n'
-                     f'metadata/kind = "{b["kind"]}"\nmetadata/toml_index = {i}\n')
-        # A hidden pad is a collider. It does not keep a primitive mesh.
-        if not b["hidden"]:
+        # The Town remake keeps hidden pads as collision only. Other levels
+        # still hide the mesh in place, and the sub-resource order stays the
+        # same as before so those scenes do not change.
+        town_pad = b["hidden"] and lv["id"] in ("town_square", "town_golden_slice")
+        mesh = ""
+        mat = ""
+        if not town_pad:
             mesh = sub("BoxMesh", sk, f"size = {_v3(b['size'])}")
+        shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
+        if not town_pad:
             tex = lv.get("materials", {}).get(b["kind"])
             if tex:
                 gs = GROUND_TINT if b["kind"] == "ground" else 1.0
@@ -772,8 +775,13 @@ def to_tscn(lv: dict, source: str) -> str:
                           _textured(b["color"], tex, lv["uv_scale"], ext_id, gs))
             else:
                 mat = sub("StandardMaterial3D", tuple(b["color"]), f"albedo_color = {_color_str(b['color'])}")
+        nodes.append(f'[node name="{b["name"]}" type="StaticBody3D" parent="Boxes"]\n'
+                     f'transform = {_xf(rot_yxz(b["rotation_deg"]), b["center"])}\n'
+                     f'metadata/kind = "{b["kind"]}"\nmetadata/toml_index = {i}\n')
+        if not town_pad:
             nodes.append(f'[node name="Mesh" type="MeshInstance3D" parent="Boxes/{b["name"]}"]\n'
-                         f'mesh = SubResource("{mesh}")\nsurface_material_override/0 = SubResource("{mat}")\n')
+                         f'mesh = SubResource("{mesh}")\nsurface_material_override/0 = SubResource("{mat}")\n'
+                         + ("visible = false\n" if b["hidden"] else ""))
         nodes.append(f'[node name="Shape" type="CollisionShape3D" parent="Boxes/{b["name"]}"]\n'
                      f'shape = SubResource("{shape}")\n')
     tr = lv.get("terrain")
@@ -1026,7 +1034,7 @@ def self_test() -> int:
     lp = parse_level(hdr + box.replace('color = [1, 0, 0]', 'color = [1, 0, 0]\nhidden = true') + prop)
     sp2 = to_tscn(lp, "t.toml")
     assert lp["props"][0]["scale"] == [2.0, 2.0, 2.0] and sp2.count('parent="Props" instance=') == 3, sp2
-    assert f'type="PackedScene" path="res://{fk}"' in sp2 and "MeshInstance3D" not in sp2 and 'name="f_3"' in sp2
+    assert f'type="PackedScene" path="res://{fk}"' in sp2 and "visible = false" in sp2 and 'name="f_3"' in sp2
     assert "Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 0, 2)" in sp2, sp2
     bad[box + prop.replace(fk, "assets/nope.glb")] = "no model assets/nope.glb"
     bad[box + prop.replace("scale = 2", "scale = 0")] = "scale must be > 0"
