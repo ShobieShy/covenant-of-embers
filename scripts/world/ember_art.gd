@@ -50,7 +50,7 @@ const LOD_RANGES := {
 	"association_spire": [90.0, 260.0],
 	"oak_lod": [45.0, 120.0, 300.0],
 }
-const SCALE := {"junk_mountain": 0.6}
+const SCALE := {"junk_mountain": 0.6, "breach_crater_rim": 3.35}
 ## The waystone GLBs' emission read nearly white; scale it down.
 const WAYSTONE_GLOW := 0.3
 ## Placeholder tints (body, trim) per chest tier.

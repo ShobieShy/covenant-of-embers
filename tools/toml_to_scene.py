@@ -35,7 +35,8 @@ Mapping (same rules as the archived C++ loader, archive/cpp-engine/game/world/le
     sibling of Boxes (Boxes keeps its node path): at load it bakes a NavigationMesh from
     the StaticBody3D colliders under ../Boxes, which the Gnawer paths on.
   * Town art: a box with `hidden = true` keeps its collider (and so navigation) but its
-    Mesh is invisible. `collision_only = true` omits the Mesh entirely (no primitive).
+    Mesh is invisible. `collision_only = true` (the Breach toml says `collide_only`)
+    omits the Mesh entirely (no primitive).
     [[prop]] {name, model = "assets/...glb", position, rotation_deg,
     scale (number or [x, y, z]), count, step} -> `count` instances of the GLB under a
     visual-only Props node (no collision), the i-th at position + i * step. Art dresses
@@ -352,7 +353,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         if sec not in d:
             raise LevelError(f"missing [{sec}]")
     lv = d["level"]
-    _only(lv, {"id", "name", "world_offset", "props_only"}, "[level]")
+    _only(lv, {"id", "name", "world_offset", "props_only", "script"}, "[level]")
     wo = [float(x) for x in lv.get("world_offset", [0.0, 0.0])]  # OW1: [x, z] metres into world space
     if len(wo) != 2 or any(x % 16.0 for x in wo):
         raise LevelError("world_offset must be [x, z], multiples of 16 m")
@@ -378,9 +379,13 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         raise LevelError("sun energy must be in (0, 16]")
     ps = d["player_start"]
     _only(ps, {"position", "yaw_deg"}, "[player_start]")
+    script = str(lv.get("script", ""))
+    if script and (not script.startswith("scripts/") or not script.endswith(".gd") or not (ROOT / script).is_file()):
+        raise LevelError(f"[level] script: no {script} (a scripts/...gd in the tree)")
     out = {
         "id": str(_need(lv, "id", "[level]")),
         "name": str(_need(lv, "name", "[level]")),
+        "script": script,
         "world_offset": wo,
         # Collision stays in the boxes. The meshes live in [[prop]] so a remade level
         # can ship with no PrimitiveMesh in the scene.
@@ -436,7 +441,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     names: set[str] = set()
     for i, b in enumerate(d.get("box", [])):
         w = f"box {i + 1}"
-        _only(b, {"name", "kind", "center", "size", "rotation_deg", "color", "hidden", "collision_only"}, w)
+        _only(b, {"name", "kind", "center", "size", "rotation_deg", "color", "hidden", "collision_only", "collide_only"}, w)
         name = str(_need(b, "name", w))
         w = f"box '{name}'"
         if name in names:
@@ -455,7 +460,9 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
             "color": _color(_need(b, "color", w), f"{w} color"),
             "hidden": _bool(b.get("hidden", False), f"{w} hidden"),
             # Collision without a PrimitiveMesh, so a remade room can pass the art gate.
-            "collision_only": _bool(b.get("collision_only", False), f"{w} collision_only"),
+            # The Breach toml still says collide_only; town levels say collision_only.
+            "collision_only": _bool(b.get("collision_only", False) or b.get("collide_only", False), f"{w} collision_only"),
+            "collide_only": _bool(b.get("collision_only", False) or b.get("collide_only", False), f"{w} collide_only"),
         })
     if not out["boxes"]:
         raise LevelError("need at least one [[box]]")
@@ -788,7 +795,8 @@ def to_tscn(lv: dict, source: str) -> str:
     nodes: list[str] = []
     root = "Midden" if lv["id"].startswith("midden") else "".join(w.capitalize() for w in lv["id"].split("_"))
     kill = _kill_line(lv["boxes"])
-    nodes.append(f'[node name="{root}" type="Node3D" groups=["kill_line"]]\nmetadata/level_id = "{lv["id"]}"\n'
+    root_script = 'script = ExtResource("1_look")\n' if lv.get("script") else ""
+    nodes.append(f'[node name="{root}" type="Node3D" groups=["kill_line"]]\n{root_script}metadata/level_id = "{lv["id"]}"\n'
                  f'metadata/level_name = "{lv["name"]}"\n'
                  f'metadata/world_offset = Vector2({_f(lv["world_offset"][0])}, {_f(lv["world_offset"][1])})\n'
                  f'metadata/source = "res://{source}"\n'
@@ -964,6 +972,8 @@ def to_tscn(lv: dict, source: str) -> str:
             f"; rerun the tool (tools/run_tests.sh fails while this file is stale).\n"
             f"[gd_scene format=3]\n")
     ext = f'[ext_resource type="Script" path="{NAV_SCRIPT}" id="1_nav"]\n'
+    if lv.get("script"):
+        ext += f'[ext_resource type="Script" path="res://{lv["script"]}" id="1_look"]\n'
     if tr:
         ext += f'[ext_resource type="Script" path="{TERRAIN_SCRIPT}" id="1_terrain"]\n'
     if lv.get("props_only"):
@@ -1113,6 +1123,12 @@ def self_test() -> int:
     bad[box.replace("color = [1, 0, 0]", "color = [1, 0, 0]\ncollision_only = 1")] = "collision_only must be true or false"
     bad[box + lamp.replace("energy = 1.5", "energy = 0")] = "energy must be in (0, 16]"
     assert "Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 0, 2)" in sp2, sp2
+    co = parse_level(hdr + box.replace("color = [1, 0, 0]", "color = [1, 0, 0]\ncollide_only = true"))
+    assert co["boxes"][0]["collide_only"] and not co["boxes"][0]["hidden"]
+    co_s = to_tscn(co, "co.toml")
+    assert "BoxMesh" not in co_s and 'type="CollisionShape3D"' in co_s, co_s
+    looked = to_tscn(parse_level(hdr.replace("[level]\n", '[level]\nscript = "scripts/world/breach.gd"\n') + box), "s.toml")
+    assert 'path="res://scripts/world/breach.gd" id="1_look"' in looked and 'script = ExtResource("1_look")' in looked
     bad[box + prop.replace(fk, "assets/nope.glb")] = "no model assets/nope.glb"
     bad[box + prop.replace("scale = 2", "scale = 0")] = "scale must be > 0"
     bad[box + prop.replace("count = 3", "count = 0")] = "count must be an integer"
