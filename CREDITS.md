@@ -33,6 +33,9 @@
 | ambientCG Gravel 022 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Gravel022 | 2026-10-26 |
 | ambientCG Ground 054 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground054 | 2026-10-26 |
 | Quaternius "Goblin" and "Orc" (recoloured; Ember Art batch 08b goblin grunt/archer/shaman, Goblin King) | Quaternius | CC0 1.0 | https://poly.pizza/m/OdCOFSmEhl, https://poly.pizza/m/5vO2YJsPEf | 2026-10-28 |
+| ambientCG Bark 014 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Bark014 | 2026-11-26 |
+| ambientCG Moss 004 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Moss004 | 2026-11-26 |
+| Blightcoil cavern look (shell, Rotheart, shelves) | Covenant of Embers project; bark and moss by Lennart Demes (ambientCG) | CC0 1.0 | this repository; textures ambientCG Bark014, Moss004, Rock030, Ground037 | 2026-11-26 |
 | Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine) | Ember Art | CC0 1.0 | this repository | 2026-11-05 |
 | Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch) | Ember Art | CC0 1.0 | this repository | 2026-11-05 |
 | Old Oak v4 (Town east lobe) | Ember Art | CC0 1.0 | this repository; bark and door wood from ambientCG Bark014 and Wood051 | 2026-11-22 |

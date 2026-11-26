@@ -218,6 +218,27 @@ source = "incoming_art/batch_07 (modified: blurred, posterized, tinted, overlays
 line = "Ember Art terrain sets (batch 07, based on ambientCG) by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
+name = "ambientCG Bark 014"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Bark014"
+line = "ambientCG Bark 014 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Moss 004"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Moss004"
+line = "ambientCG Moss 004 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "Blightcoil cavern look (shell, Rotheart, shelves)"
+author = "Covenant of Embers project; bark and moss by Lennart Demes"
+license = "CC0 1.0"
+source = "tools/build_blightcoil_look.py. Embedded CC0 textures: ambientCG Bark014, Moss004, Rock030, Ground037."
+line = "Blightcoil cavern look (shell, Rotheart, shelves) by Covenant of Embers project; bark and moss by Lennart Demes, CC0 1.0"
+
+[[credit]]
 name = "Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine)"
 author = "Ember Art"
 license = "CC0 1.0"

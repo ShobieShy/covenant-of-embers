@@ -15,28 +15,19 @@ var last_line := ""
 
 func _ready() -> void:
 	Interaction.register(self, 1.6, 0.6)
-	var body := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = Vector3(2.2, 3.2, 0.4)
-	body.mesh = mesh
-	body.position.y = 1.6
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.25, 0.28, 0.32)
-	body.material_override = mat
-	add_child(body)
+	var art := BlightcoilKit.visual("forge_door")
+	if art:
+		art.name = "ForgeArt"
+		add_child(art)
 	var shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()
 	box.size = Vector3(2.2, 3.2, 0.4)
 	shape.shape = box
 	shape.position.y = 1.6
 	var solid := StaticBody3D.new()
+	solid.name = "DoorCollision"
 	solid.add_child(shape)
 	add_child(solid)
-	var art := BlightcoilKit.visual("forge_door")
-	if art:
-		body.visible = false
-		art.name = "ForgeArt"
-		add_child(art)
 
 
 func line() -> String:
