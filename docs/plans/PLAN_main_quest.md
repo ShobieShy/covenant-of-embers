@@ -92,7 +92,7 @@ These are the handoffs that exist. They are flags and boss ids, not a quest grap
 
 `start` sets `tracked` to every new main quest. The Filth completion therefore starts Report to Bob, tracks it, then starts The Breach and tracks that instead. Report to Bob stays active and leaves the HUD. `tests/unit/test_quest_chain.gd` locks this: after the Filth, the tracked Breach step is `breach`, and talking to Bob does not change it.
 
-`tests/unit/test_quest_chain.gd` loads the Association, the Town, the Old Oak room, the Landfill, and the Breach, then drives the log with `notify` only as far as "the Breach quest's current target is `blightmaw_matriarch`". It never kills the Goblin King, Forgemaw, the Choir, or the Storm Warden, and it never reads a waypoint.
+`tests/unit/test_quest_chain.gd`, before 0.11.5, loaded the Association, the Town, the Old Oak room, the Landfill, and the Breach, then drove the log with `notify` only as far as the Matriarch. 0.11.5 extends that test through the Storm Warden and checks the Warden migration and the vault waypoint.
 
 ## The chain
 
@@ -105,7 +105,7 @@ Status words: **works** means the row exists, the completion event fires, and a 
 | A New Home | Reach `old_oak` | Entering the level `old_oak` notifies `reach` / `old_oak` | Gate whose target is `old_oak` | Broken after 0.11.4 for the door players see. The east-lobe door opens `bobs_lab`. Entering the lab notifies `bobs_lab`, which is not the objective. The ring exit `to_old_oak` still targets `old_oak` and still completes the step | `quests.toml` `a_new_home`; `data/levels/town_square.toml` exit `to_old_oak`; `scripts/world/old_oak_landmark.gd` lab door; `fast_travel.gd` `LEVEL_POINT` |
 | Trash Talk | Reach `landfill`; kill 3 `gnawer`; kill `the_filth`; collect `joes_discards` | Reach maps `midden` to `landfill`. Kills use the enemy id. The Filth drops `joes_discards` | Reach and kill look for a gate to `midden`. The collect step has no mark, including the trash on the ground | Works as a log. Waypoint missing on the collect step | `quests.toml` `the_landfill`; `quest_driver.gd`; `filth.gd` `DROP_ID`; `test_tutorial.gd` |
 | Report to Bob | Talk `Bob` | Dialogue end with speaker Bob | NPC named Bob in the current scene only | Broken on the HUD. The Breach steals `tracked` in the same flag pass, so the marker leaves Bob | `quests.toml` `report_to_bob`; `quest_log.gd` `start`; `test_quest_chain.gd` |
-| The Breach | Reach `breach`; reach `labyrinth`; kill `blightmaw_matriarch` | Level enter, then a Matriarch kill | Gate to `breach`, then a gate to `labyrinth`, then the labyrinth-wide kill fallback | Broken as an Act I handoff. The third step is the Act II boss. The Breach Warden is a fight in the crater and is not a step | `quests.toml` `the_breach`; `test_quest_chain.gd` last checks; `LABYRINTH_ACTS_STORY.md` Act I opening |
+| The Breach | Reach `breach`; kill `breach_warden` | Level enter, then the Warden's death. That completion sets `warden_defeated`, opens the vault, and unlocks the Labyrinth gate. The Matriarch is not this quest | The vault dais (`boss_dais`) while you are in the Breach. From another level, the gate that leads to the Breach | Decided 26 Nov 2026. The old row ended on the Matriarch. An old save still on that step finishes if `progress.vault_open` is set, and otherwise waits on the Warden | `quests.toml` `the_breach`; `scripts/world/level_flow.gd`; `scripts/world/breach.gd` |
 
 ### Act I — The Goblin Warrens
 
@@ -124,7 +124,7 @@ Story: the Verdant Mother asks you to burn out the infection. Three of Joe's mar
 
 | Quest | Objectives | Completion | Waypoint | Status | Files |
 |---|---|---|---|---|---|
-| The Overgrown Deep | Kill `blightmaw_matriarch` | Kill event, or instant complete if she is already in `known_bosses` when the quest starts | `KILL_LEVEL` sends every labyrinth boss to a gate targeted `labyrinth`, else the first waystone | Broken waypoint. The log works only after `verdant_met`. Killing her before the talk does not start this row; The Breach's third step is the one that was already open | `quests.toml` `the_overgrown_deep`; `dialogue.toml` `verdant_intro`; `quest_log.gd` `_seed_act2`; `test_blight_story.gd` |
+| The Overgrown Deep | Kill `blightmaw_matriarch` | Kill event, or instant complete if she is already in `known_bosses` when the quest starts | `KILL_LEVEL` sends every labyrinth boss to a gate targeted `labyrinth`, else the first waystone | Broken waypoint. The log works after `verdant_met`, and 0.11.5 also starts the row when the Goblin King is already dead. The Matriarch is no longer a step of The Breach | `quests.toml` `the_overgrown_deep`; `dialogue.toml` `verdant_intro`; `quest_log.gd` `_seed_act2`; `test_blight_story.gd` |
 | Joe's Marks (side) | Collect 3 `joe_mark` | Pickup plus `mark:<id>` flags. Seeded if the flags already exist | Collect resolves to nothing | Works as a count. Waypoint missing. Not on the HUD unless Track is pressed | `blight_mark.gd`; `quests.toml` `joes_marks`; `test_quest_rules.gd` |
 
 ### Act III — The Slagworks
@@ -162,7 +162,7 @@ No Core quest. The Core stays closed. No Demon Lord step.
 
 Edit `data/story/quests.toml` and the seed rules. No new ids that are not already creature or level ids.
 
-- The Breach ends at `reach` / `labyrinth`. Drop the Matriarch step from that row. The Matriarch stays on The Overgrown Deep.
+- The Breach ends on `kill` / `breach_warden`. Drop the Labyrinth reach and the Matriarch step. The Matriarch stays on The Overgrown Deep. The quest reward flag `warden_defeated` is what `LevelFlow` requires before the crater's Labyrinth gate opens. The same completion calls `Breach.open_vault()`. The Warden's death already opens the vault from `breach.gd`; the quest flag is what opens the gate.
 - Add one main quest for Act I, started when the player reaches `labyrinth`, with one objective: kill `goblin_king`. Title from the act name already in the story docs: The Goblin Warrens. The kill id `goblin_king` already exists.
 - Keep Acts II–V on the rows they have. Act II and Act III still start from the Verdant Mother and the Scrap-spirit. If the boss is already dead when the talk happens, the seed complete stays.
 - Also start `the_overgrown_deep` when `goblin_king` is in `known_bosses`, the same way Act IV starts from Forgemaw. Otherwise a player who never talks to the Verdant Mother has no Act II row after the King. The talk can remain the moment the side quest Joe's Marks starts.
@@ -170,7 +170,7 @@ Edit `data/story/quests.toml` and the seed rules. No new ids that are not alread
 - `start` stops overwriting `tracked` when an earlier main quest is still active. File order becomes the trail: A New Home, Trash Talk, Report to Bob, The Breach, The Goblin Warrens, The Overgrown Deep, The Slagworks, The Sunken Ruins, The Inverted Spire. `_follow_main` already walks that order. `start` should call it instead of assigning `tracked = id`.
 - A New Home's reach target accepts `bobs_lab` as well as `old_oak`, so the east-lobe door counts. That is a second reach step or a `notify` alias inside `QuestDriver.reach_id`, not a new place name. `bobs_lab` is already the level id.
 
-The Breach Warden stays off the table unless the open question below says otherwise. The crater already gates the Labyrinth on his death. Adding him is a `kill` / `breach_warden` step on The Breach, between the crater and the Labyrinth. The id exists. No new art.
+The Breach Warden is the final step of The Breach. ShobieShy decided this on 26 Nov 2026, overriding the earlier default. His id already exists. No new art. The waypoint in the Breach is the vault dais, `WaveSpawns/boss_dais`.
 
 ### 2. Waypoints
 
@@ -195,7 +195,7 @@ The intro mark still wins while the intro is running. When the intro ends, the q
 
 Save version stays 1. `from_dict` gains a repair, not a version bump:
 
-- A saved step index past the end of a shortened row (The Breach losing its third step) clamps to the last open step or completes the row if that step's target was already satisfied.
+- A saved Breach step past the new row (the old Matriarch step) is the migration. If `progress.vault_open` is set, the quest is completed and `warden_defeated` is set. Otherwise the step becomes `kill` / `breach_warden`.
 - After load, `check_auto_start` runs so a save that already has `goblin_king` in `known_bosses` picks up The Goblin Warrens without a new game.
 - Unknown ids are still dropped.
 
@@ -225,7 +225,7 @@ Existing tests that lock the old Breach-to-Matriarch handoff (`test_quest_chain.
 
 ## Open questions
 
-1. The Breach Warden. Leave him as the crater's gate, with no quest step, or add `kill` / `breach_warden` on The Breach before `reach` / `labyrinth`? The plan defaults to no new step. His death already opens the Labyrinth.
+1. The Breach Warden. Decided. He is the final step of The Breach. Killing him opens the vault and the Labyrinth gate. The Matriarch is Act II only. An old save waiting on the Matriarch completes if the vault is already open, and otherwise waits on the Warden.
 2. Report to Bob versus The Breach. Both open after the Filth. The plan keeps the marker on Report to Bob until the talk completes, then moves to The Breach. Say if the crater should win instead.
 3. Act II and Act III auto-start from the previous boss, with the Verdant Mother and the Scrap-spirit still starting the side quests. Say if those talks should remain the only way the main rows start.
 4. Joe's Marks and Joe's Seals. The plan gives them a pickup waypoint and leaves them off the HUD unless Track is pressed. Say if the main trail should ignore side pickups entirely.
