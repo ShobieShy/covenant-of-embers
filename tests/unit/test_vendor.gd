@@ -122,3 +122,87 @@ func test_shop_screen() -> void:
 	ui.close()
 	check(not p.ui_open, "closed")
 	_w.queue_free()
+
+
+func _hat(seed_: int, rarity: String) -> EquipmentItem:
+	return EquipmentRoller.from_seed(seed_, EquipmentItem.Slot.HAT, rarity, ElementTable.Element.FIRE)
+
+
+func test_bulk_sale_confirms_and_skips_favorites() -> void:
+	var p := _player()
+	var ui := VendorUi.new()
+	_w.add_child(ui)
+	ui.bind(p)
+	var vendor := Vendor.for_speaker("Tailor")
+	ui.open(vendor)
+	var a := _hat(11, "basic")
+	var b := _hat(12, "basic")
+	var c := _hat(13, "rare")
+	var plain := _hat(14, "basic")
+	for it in [a, b, c, plain]:
+		p.inventory.add(it)
+	p.inventory.set_junk(a, true)
+	p.inventory.set_junk(b, true)
+	p.inventory.set_favorite(c, true)
+	var g0 := p.inventory.gold
+	var price := Vendor.sell_price(a) + Vendor.sell_price(b)
+	check(not ui.sell_junk() and ui.confirm_row.visible and ui.keep_button.has_focus(), "junk asks, Keep focused")
+	check(ui.confirm_label.text == "Sell 2 items for %d gold." % price, "count and gold: %s" % ui.confirm_label.text)
+	ui.cancel_sale(true)
+	check(not ui.confirm_row.visible and p.inventory.gold == g0 and p.inventory.size() == 4, "Keep changes nothing")
+	check(ui.sell_junk_button.has_focus(), "focus returns to Sell all junk")
+	ui.sell_junk()
+	var cancel := InputEventAction.new()
+	cancel.action = &"ui_cancel"
+	cancel.pressed = true
+	ui._unhandled_input(cancel)
+	check(ui.visible and p.ui_open and not ui.confirm_row.visible and p.inventory.gold == g0, "Esc leaves the shop")
+	ui.sell_junk()
+	check(ui.confirm_sale() and p.inventory.gold == g0 + price, "paid once")
+	check(p.inventory.has(c) and p.inventory.has(plain) and not p.inventory.has(a), "only junk left the pack")
+	var other := Inventory.new()
+	other.gold = 3
+	other.add(_hat(15, "basic"))
+	p.inventory.set_favorite(plain, true)
+	var locked_gold := p.inventory.gold
+	check(not ui.sell_all() and ui.status.text == "Everything left is locked.", "all favorite")
+	check(p.inventory.gold == locked_gold and other.gold == 3 and other.size() == 1, "no pay, other pack untouched")
+	p.inventory.remove(plain)
+	p.inventory.remove(c)
+	check(not ui.sell_all() and ui.status.text == "Nothing to sell.", "empty pack")
+	check(not ui.sell_junk() and ui.status.text == "Nothing marked as junk.", "no junk")
+	var fav := _hat(16, "basic")
+	p.inventory.add(fav)
+	p.inventory.set_favorite(fav, true)
+	ui.refresh()
+	ui.pack_list.select(0)
+	check(
+		ui.sell_selected() and not ui.confirm_row.visible and not p.inventory.has(fav), "single Sell skips the confirm"
+	)
+	var gem := ElementGem.make(ElementTable.Element.FIRE)
+	var rare := _hat(17, "rare")
+	p.inventory.add(gem)
+	p.inventory.add(rare)
+	var worn := _hat(18, "basic")
+	p.inventory.add(worn)
+	check(p.equip_from_inventory(worn), "worn")
+	p.quest_items.append("breach_key")
+	var both := _hat(19, "basic")
+	p.inventory.add(both)
+	p.inventory.junk.append(both)
+	p.inventory.favorite.append(both)
+	check(vendor.sell_junk(p.inventory) == 0 and p.inventory.has(both), "a favorite stuck in junk is not sold")
+	ui.sell_all()
+	var expect := Vendor.sell_price(gem) + Vendor.sell_price(rare)
+	check(
+		ui.confirm_label.text.contains("Sell 2 items for %d gold." % expect), "gem and rare: %s" % ui.confirm_label.text
+	)
+	check(ui.confirm_label.text.contains("1 Rare or better") and ui.confirm_label.text.contains("1 gems"), "tally")
+	check(Vendor.sell_price(gem) == 5, "gem sells at 5")
+	vendor.sell_all(p.inventory)
+	var gold_once := p.inventory.gold
+	check(not ui.confirm_sale() and p.inventory.gold == gold_once, "accept after the rows are gone pays nothing")
+	check(p.equipment.item(EquipmentItem.Slot.HAT) == worn, "worn hat stayed")
+	check(p.quest_items.has("breach_key"), "quest id stayed")
+	check(p.inventory.has(both), "favorite stayed")
+	_w.queue_free()

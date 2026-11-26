@@ -116,15 +116,75 @@ func sell(inv: Inventory, item: Resource) -> String:
 	return ""
 
 
-## t74u: sells every junk-marked backpack item; returns the gold earned (0 when none).
-func sell_junk(inv: Inventory) -> int:
+## Backpack rows a bulk sale may take. Favorites are skipped. Equipped gear, quest
+## ids, and key items are not backpack rows, so they are not in this list.
+static func bulk_targets(inv: Inventory, junk_only: bool) -> Array[Resource]:
+	var out: Array[Resource] = []
+	var src: Array = inv.junk_items() if junk_only else inv.items
+	for it in src:
+		if it is Resource and inv.has(it) and not inv.is_favorite(it):
+			out.append(it)
+	return out
+
+
+## Confirm line: count, sell-price gold, and a tally when any special count is above zero.
+static func confirm_text(items: Array) -> String:
+	var gold := 0
+	var rare := 0
+	var gems := 0
+	var relics := 0
+	var shields := 0
+	for it in items:
+		var item := it as Resource
+		if item == null:
+			continue
+		gold += sell_price(item)
+		if item is ElementGem:
+			gems += 1
+		elif item is RelicDrop:
+			relics += 1
+		elif item is ShieldDrop:
+			shields += 1
+		elif tier_of(item) >= Rarity.Tier.RARE:
+			rare += 1
+	var line := "Sell %d items for %d gold." % [items.size(), gold]
+	var extra := PackedStringArray()
+	if rare > 0:
+		extra.append("%d Rare or better" % rare)
+	if gems > 0:
+		extra.append("%d gems" % gems)
+	if relics > 0:
+		extra.append("%d relics" % relics)
+	if shields > 0:
+		extra.append("%d shields" % shields)
+	if extra.size() > 0:
+		line += " Includes %s." % ", ".join(extra)
+	return line
+
+
+## Sells `items` that are still eligible. Favorites are skipped again at sell time.
+func sell_items(inv: Inventory, items: Array) -> int:
 	var earned := 0
-	for it in inv.junk_items():
-		var price := sell_price(it)
-		if inv.remove(it):
+	for it in items:
+		var item := it as Resource
+		if item == null or inv.is_favorite(item):
+			continue
+		var price := sell_price(item)
+		if inv.remove(item):
 			earned += price
-	inv.add_gold(earned)
+	if earned > 0:
+		inv.add_gold(earned)
 	return earned
+
+
+## t74u: sells every junk-marked backpack item that is not favorite.
+func sell_junk(inv: Inventory) -> int:
+	return sell_items(inv, bulk_targets(inv, true))
+
+
+## Sells every backpack item that is not favorite.
+func sell_all(inv: Inventory) -> int:
+	return sell_items(inv, bulk_targets(inv, false))
 
 
 ## Runesmith: new roll for a rolled loose part; "" on success. `seed_rng` draws the new seed.

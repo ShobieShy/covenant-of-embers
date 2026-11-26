@@ -29,10 +29,13 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 		eq.append(ItemCodes.encode(it) if it else "")
 	var inv: Array = []
 	var junk: Array = []  # t74u: indices into "inventory" of junk-marked items
+	var favorite: Array = []  # indices of favorite items; optional on load
 	for it in p.inventory.items:
 		var c := ItemCodes.encode(it)
 		if not c.is_empty():
-			if p.inventory.is_junk(it):
+			if p.inventory.is_favorite(it):
+				favorite.append(inv.size())
+			elif p.inventory.is_junk(it):
 				junk.append(inv.size())
 			inv.append(c)
 	var staff := p.loadout.wieldable(Loadout.Slot.STAFF)
@@ -77,6 +80,7 @@ static func capture(p: Player, progress := {}) -> Dictionary:
 			),
 			"inventory": inv,
 			"junk": junk,
+			"favorite": favorite,
 		},
 		"progress": progress.duplicate(true),
 	}
@@ -194,6 +198,19 @@ static func _decode(code: String, want: Script, warnings: PackedStringArray, wha
 	return m
 
 
+## A save index list, or empty when the key is missing or not an array.
+static func _index_list(raw: Variant) -> Array:
+	return raw if raw is Array else []
+
+
+## True when `n` is in `arr`. JSON load turns whole numbers into floats.
+static func _has_index(arr: Array, n: int) -> bool:
+	for v in arr:
+		if (v is int or v is float) and int(v) == n:
+			return true
+	return false
+
+
 ## Applies `data` (from read()) to `p`; returns the warnings (dropped codes).
 static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 	var warn := PackedStringArray()
@@ -208,6 +225,8 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 	p.level_mana_bonus = Progression.MANA_PER_LEVEL * (pr.level - 1)
 	p.level_breath_bonus = Progression.BREATH_PER_LEVEL * (pr.level - 1)
 	p.inventory.items.clear()
+	p.inventory.junk.clear()
+	p.inventory.favorite.clear()
 	p.inventory.capacity = Inventory.CAPACITY  # old saves have no stored size; slots stay in list order
 	p.inventory.dust = maxi(0, int(pl.get("dust", 0)))
 	p.inventory.gold = maxi(0, int(pl.get("gold", Inventory.STARTING_GOLD)))
@@ -218,12 +237,17 @@ static func apply(p: Player, data: Dictionary) -> PackedStringArray:
 	p.character_color = (
 		Color.from_string(col, Archetype.default_color(arch)) if not col.is_empty() else Archetype.default_color(arch)
 	)
-	var junk_idx: Array = it.get("junk", [])  # t74u; absent in older saves
+	var junk_idx := _index_list(it.get("junk", []))  # t74u; absent in older saves
+	var fav_idx := _index_list(it.get("favorite", []))  # absent means no favorites
 	var n := 0
 	for c in it.get("inventory", []):
 		var m := _decode(String(c), null, warn, "inventory")
-		if m and p.inventory.add(m.item) and junk_idx.has(n):
-			p.inventory.set_junk(m.item, true)
+		if m and p.inventory.add(m.item):
+			# An index in both arrays is favorite only. JSON numbers load as floats.
+			if _has_index(fav_idx, n):
+				p.inventory.set_favorite(m.item, true)
+			elif _has_index(junk_idx, n):
+				p.inventory.set_junk(m.item, true)
 		n += 1
 	for s in ["staff", "wand"]:
 		var m := _decode(String(it.get(s, "")), WieldableInstance, warn, s)
