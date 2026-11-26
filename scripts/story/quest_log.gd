@@ -22,7 +22,9 @@ const LEVEL_OF := {
 	"labyrinth": 5,
 	"gnawer": 1,
 	"the_filth": 1,
+	"breach_warden": 8,
 	"bob": 1,
+	"goblin_king": 12,
 	"blightmaw_matriarch": 22,
 	"forgemaw": 34,
 	"drowned_choir": 46,
@@ -39,6 +41,21 @@ var done: PackedStringArray = []
 var clues: PackedStringArray = []
 var known_bosses: Array = []  ## Labyrinth boss ids, for Act II quest seeding
 var tracked := ""  ## 0.9.2: the one HUD quest. A main quest takes it. A side quest does not.
+## 0.11.5: file order of the main trail. The marker stays on the earliest open step.
+const MAIN_CHAIN: PackedStringArray = [
+	"a_new_home",
+	"the_landfill",
+	"report_to_bob",
+	"the_breach",
+	"the_goblin_warrens",
+	"the_overgrown_deep",
+	"the_slagworks",
+	"the_sunken_ruins",
+	"the_inverted_spire",
+]
+## Set from the save's progress.vault_open before from_dict. The old Breach row ended on
+## the Matriarch; a save still on that step migrates here.
+var vault_was_open := false
 
 
 static func create(f: StoryFlags = null, path := DEFAULT_PATH) -> QuestLog:
@@ -123,17 +140,22 @@ func start(id: String) -> bool:
 	if not quests.has(id) or active.has(id) or done.has(id):
 		return false
 	active[id] = {"step": 0, "have": 0, "opt": {}}
+	_seed_act1(id)
 	_seed_act2(id)
 	_seed_act3(id)
 	_seed_sunken(id)
 	_seed_spire(id)
 	if active.has(id):
-		if kind_of(id) == "main":
-			tracked = id
 		_skip_optional(id)
+		_follow_main()
 	if active.has(id):
 		quest_started.emit(id)
 	return true
+
+
+func _seed_act1(id: String) -> void:
+	if id == "the_goblin_warrens" and known_bosses.has("goblin_king"):
+		_complete(id)
 
 
 func _seed_act2(id: String) -> void:
@@ -181,6 +203,18 @@ func check_auto_start() -> void:
 		var a: Array = quests[id]["auto"]
 		if not a.is_empty() and state(id) == "available" and flags.all_of(a):
 			start(id)
+	if (
+		known_bosses.has("goblin_king")
+		and quests.has("the_overgrown_deep")
+		and state("the_overgrown_deep") == "available"
+	):
+		start("the_overgrown_deep")
+	if (
+		known_bosses.has("blightmaw_matriarch")
+		and quests.has("the_slagworks")
+		and state("the_slagworks") == "available"
+	):
+		start("the_slagworks")
 	if known_bosses.has("forgemaw") and quests.has("the_sunken_ruins") and state("the_sunken_ruins") == "available":
 		start("the_sunken_ruins")
 	if (
@@ -305,8 +339,65 @@ func from_dict(d: Dictionary) -> void:
 		if int(fd[k]) != 0 and not flags.values.has(String(k)):
 			flags.values[String(k)] = int(fd[k])
 	tracked = String(d.get("tracked", ""))
+	_migrate_breach()
 	if tracked == "" or not active.has(tracked):
 		_follow_main()
+
+
+## An old Breach row ended on the Matriarch (step 2). That step is gone. The Warden's
+## death, saved as progress.vault_open, finishes the quest. Otherwise the log waits on him.
+func _migrate_breach() -> void:
+	if not active.has("the_breach"):
+		return
+	var steps: Array = quests["the_breach"]["objectives"]
+	var step := int(active["the_breach"]["step"])
+	if step < steps.size():
+		return
+	if vault_was_open:
+		_complete("the_breach")
+		return
+	active["the_breach"]["step"] = steps.size() - 1
+	active["the_breach"]["have"] = 0
+
+
+## Debug and tests. Earlier main quests are done. The named one starts on its first step.
+func jump_to(id: String) -> void:
+	if not quests.has(id):
+		return
+	var bosses: PackedStringArray = []
+	var passed := false
+	for qid in MAIN_CHAIN:
+		if qid == id:
+			passed = true
+			break
+		if quests.has(qid) and not done.has(qid):
+			active.erase(qid)
+			done.append(qid)
+		if qid == "the_goblin_warrens":
+			bosses.append("goblin_king")
+		elif qid == "the_overgrown_deep":
+			bosses.append("blightmaw_matriarch")
+		elif qid == "the_slagworks":
+			bosses.append("forgemaw")
+		elif qid == "the_sunken_ruins":
+			bosses.append("drowned_choir")
+	if not passed:
+		return
+	known_bosses = Array(bosses)
+	flags.set_flag("permit_given")
+	if done.has("a_new_home"):
+		flags.set_flag("starter_gear_given")
+	if done.has("the_landfill"):
+		flags.set_flag("filth_defeated")
+	if done.has("the_breach"):
+		flags.set_flag("warden_defeated")
+		flags.set_flag("labyrinth_entered")
+	if done.has("the_goblin_warrens"):
+		flags.set_flag("labyrinth_entered")
+	check_auto_start()
+	if state(id) == "available":
+		start(id)
+	_follow_main()
 
 
 func kind_of(id: String) -> String:

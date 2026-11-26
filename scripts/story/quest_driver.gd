@@ -36,6 +36,9 @@ func _on_item(_p: Player, id: String) -> void:
 
 
 static func reach_id(level_id: String) -> String:
+	# 0.11.5: the east-lobe door opens Bob's lab. That visit is finding the Old Oak.
+	if level_id == "bobs_lab":
+		return "old_oak"
 	return String(FastTravel.LEVEL_POINT.get(level_id, level_id))
 
 
@@ -43,7 +46,10 @@ func reached(level_id: String) -> void:
 	if level_id == _seen:
 		return
 	_seen = level_id
-	log.notify("reach", reach_id(level_id))
+	var rid := reach_id(level_id)
+	log.notify("reach", rid)
+	if rid == "labyrinth":
+		log.flags.set_flag("labyrinth_entered")
 	var hud := get_tree().get_first_node_in_group(&"hud") if is_inside_tree() else null
 	if hud and hud.has_method(&"show_banner"):
 		hud.show_banner(WorldMap.level_name(level_id))

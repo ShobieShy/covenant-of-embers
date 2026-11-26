@@ -24,6 +24,7 @@ var quests: QuestLog  # step 67: the tutorial chain (saved in progress["quests"]
 var quest_driver: QuestDriver
 var quest_ui: QuestTrackerUI
 var _loaded_quests := {}
+var _loaded_vault := false
 var _loaded_bounties := {}
 var _join_side := {}
 var _join_bounties := {}
@@ -236,7 +237,9 @@ func _setup_flow(player: Player) -> void:
 			load_warnings = SaveGame.apply(player, r["data"])
 			saved_progress = (r["data"] as Dictionary).get("progress", {})
 			story_flags.from_dict((r["data"] as Dictionary).get("progress", {}).get("flags", {}))
-			_loaded_quests = (r["data"] as Dictionary).get("progress", {}).get("quests", {})
+			var progress: Dictionary = (r["data"] as Dictionary).get("progress", {})
+			_loaded_quests = progress.get("quests", {})
+			_loaded_vault = bool(progress.get("vault_open", false))
 			_loaded_bounties = (r["data"] as Dictionary).get("progress", {}).get("bounties", {})
 			labyrinth = LabyrinthState.from_save(r["data"])
 			PostClear.from_dict((r["data"] as Dictionary).get("progress", {}).get("post_clear", {}))
@@ -324,6 +327,12 @@ func _setup_exits(player: Player, here: String) -> void:
 
 
 ## 0.4.0: forward gates follow the story. The intro's own rules win while it is running.
+func _on_quest_completed(id: String) -> void:
+	apply_linear_gates()
+	if id == "the_breach" and breach:
+		breach.open_vault()
+
+
 func apply_linear_gates() -> void:
 	if intro != null and is_instance_valid(intro):
 		return
@@ -506,10 +515,19 @@ func talk_to(speaker: String) -> bool:
 func _setup_quests(player: Player, here: String) -> void:
 	quests = QuestLog.create(story_flags)
 	quests.player = player
+	quests.vault_was_open = _loaded_vault
 	if not _loaded_quests.is_empty():
 		quests.from_dict(_loaded_quests)
 	quests.known_bosses = labyrinth.bosses
 	quests.check_auto_start()
+	var jump := OS.get_environment("QUEST_AT")
+	if jump != "":
+		quests.jump_to(jump)
+		for b in quests.known_bosses:
+			if not labyrinth.bosses.has(String(b)):
+				labyrinth.bosses.append(String(b))
+	quests.quest_completed.connect(_on_quest_completed)
+	apply_linear_gates()
 	quest_driver = QuestDriver.make(quests)
 	add_child(quest_driver)
 	var layer := CanvasLayer.new()

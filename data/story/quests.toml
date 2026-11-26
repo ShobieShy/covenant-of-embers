@@ -142,6 +142,7 @@ id = "the_breach"
 title = "The Breach"
 auto_start_when = ["filth_defeated"]  # north road opens here; Bob's crystal stays on report_to_bob
 reward_xp = 40
+reward_flags = ["warden_defeated"]  # 0.11.5: his death opens the vault and the Labyrinth gate
 
 [[objective]]
 quest = "the_breach"
@@ -151,15 +152,22 @@ text = "Go to the Breach"
 
 [[objective]]
 quest = "the_breach"
-kind = "reach"
-target = "labyrinth"
-text = "Enter the Labyrinth"
+kind = "kill"
+target = "breach_warden"
+text = "Defeat the Breach Warden"
+
+[[quest]]
+id = "the_goblin_warrens"
+title = "The Goblin Warrens"
+kind = "main"
+auto_start_when = ["labyrinth_entered"]
+reward_xp = 80
 
 [[objective]]
-quest = "the_breach"
+quest = "the_goblin_warrens"
 kind = "kill"
-target = "blightmaw_matriarch"
-text = "Face the Blightmaw Matriarch"
+target = "goblin_king"
+text = "Defeat the Goblin King"
 
 [[clue]]
 id = "joes_seals_clue"
