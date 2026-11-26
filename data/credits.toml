@@ -230,3 +230,31 @@ author = "Ember Art; bark and door wood by Lennart Demes"
 license = "CC0 1.0"
 source = "Ember Art Old Oak v4, hand-built in Blender. Bark014 and Wood051 are CC0 materials from ambientCG."
 line = "Old Oak v4 (Town east lobe) by Ember Art; bark and door wood by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Rock 035"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Rock035"
+line = "ambientCG Rock 035 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Lava 004"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Lava004"
+line = "ambientCG Lava 004 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Metal 034"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Metal034"
+line = "ambientCG Metal 034 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "Slagworks mine kit"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "tools/make_slag_meshes.py (original geometry for Act III; materials are ambientCG Rock035, Lava004, Metal034, Wood049)"
+line = "Slagworks mine kit by Covenant of Embers project, CC0 1.0"

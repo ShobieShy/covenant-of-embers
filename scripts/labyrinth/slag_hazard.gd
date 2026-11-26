@@ -206,6 +206,7 @@ func _ensure_carts() -> void:
 		cart.name = "Cart"
 		cart.set_meta(&"mover", true)
 		host.add_child(cart)
+		SlagworksDress.attach_cart(cart)
 		n.set_meta(&"cart", cart)
 	_remember_carts()
 
