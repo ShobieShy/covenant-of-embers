@@ -56,21 +56,32 @@ def referenced_layers() -> set[str]:
     return ids
 
 
-def _used_as_material(folder: str) -> bool:
-    needle = f"assets/ambientcg/{folder}"
-    for path in list(LEVELS.glob("*.toml")) + list((ROOT / "scenes").rglob("*.tscn")):
-        if needle in path.read_text(encoding="utf-8", errors="replace"):
-            return True
-    return False
+def _quoted_sources() -> str:
+    chunks: list[str] = []
+    for folder in ("scripts", "scenes", "resources"):
+        base = ROOT / folder
+        if not base.is_dir():
+            continue
+        for path in base.rglob("*"):
+            if path.suffix in {".gd", ".tscn", ".tres"}:
+                chunks.append(path.read_text(encoding="utf-8", errors="replace"))
+    return "\n".join(chunks)
+
+
+def _used_as_material(folder: str, quoted: str) -> bool:
+    return f"assets/ambientcg/{folder}" in quoted
 
 
 def exclude_patterns() -> list[str]:
     used = referenced_layers()
+    quoted = _quoted_sources()
     patterns: list[str] = []
     if EMBER.is_dir():
         for png in sorted(EMBER.glob("*_albedo_height.png")):
             layer = png.name[: -len("_albedo_height.png")]
-            if layer not in used:
+            # A script may load the pair without naming the id in [terrain].
+            named = f"{layer}_albedo_height.png" in quoted or f"{layer}_normal_roughness.png" in quoted
+            if layer not in used and not named:
                 patterns.append(f"assets/original/ember_art/terrain/{layer}_*.png")
     if AMBIENT.is_dir():
         for folder in sorted(p for p in AMBIENT.iterdir() if p.is_dir()):
@@ -78,8 +89,9 @@ def exclude_patterns() -> list[str]:
                 continue
             if folder.name not in used:
                 patterns.append(f"assets/ambientcg/{folder.name}/terrain_*.png")
-            # Ground054's colour set is not a level material either.
-            if folder.name == "Ground054" and "Ground054" not in used and not _used_as_material("Ground054"):
+            # The colour set ships when a level material or a script loads it.
+            # terrain_*.png above still stays out when the id is not a layer.
+            if folder.name == "Ground054" and "Ground054" not in used and not _used_as_material("Ground054", quoted):
                 patterns.append("assets/ambientcg/Ground054/*")
     return patterns
 
@@ -123,6 +135,7 @@ def check() -> int:
         return bad
     patterns = _split(want)
     used = referenced_layers()
+    quoted = _quoted_sources()
     for layer in sorted(used):
         candidates = [
             f"assets/original/ember_art/terrain/{layer}_albedo_height.png",
@@ -149,9 +162,24 @@ def check() -> int:
             layer = png.name.replace("_albedo_height.png", "").replace("_normal_roughness.png", "")
             if layer in used:
                 continue
+            if f"{layer}_albedo_height.png" in quoted or f"{layer}_normal_roughness.png" in quoted:
+                continue
             rel = str(png.relative_to(ROOT))
             if not _matches(rel, patterns):
                 print(f"[export_set] unused terrain still exported: {rel}", file=sys.stderr)
+                bad += 1
+    # Runtime loads (Sunken Ground054, Warrens crystal) are not [terrain] layers.
+    for match in re.findall(r'["\']res://(assets/[^"\']+\.(?:png|jpg|jpeg|webp))["\']', quoted):
+        if (ROOT / match).is_file() and _matches(match, patterns):
+            print(f"[export_set] script texture is excluded: {match}", file=sys.stderr)
+            bad += 1
+    for folder in re.findall(r'["\']res://(assets/[^"\']+/)["\']', quoted):
+        if "%s" in folder:
+            continue
+        for name in ("color.jpg", "normal.jpg", "roughness.jpg", "metalness.jpg", "emission.jpg"):
+            rel = folder + name
+            if (ROOT / rel).is_file() and _matches(rel, patterns):
+                print(f"[export_set] script texture is excluded: {rel}", file=sys.stderr)
                 bad += 1
     return bad
 
