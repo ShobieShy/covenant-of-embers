@@ -69,10 +69,10 @@ volumetric_fog_albedo = Color(0.735357, 0.701411, 0.797738, 1)
 volumetric_fog_length = 48.0
 volumetric_fog_sky_affect = 0.0
 
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
 size = Vector3(30, 0.2, 48)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
 size = Vector3(30, 0.2, 48)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
@@ -88,10 +88,10 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5
 
-[sub_resource type="BoxMesh" id="BoxMesh_2"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
 size = Vector3(1, 4, 10)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
 size = Vector3(1, 4, 10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
@@ -107,10 +107,10 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5
 
-[sub_resource type="BoxMesh" id="BoxMesh_3"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_3"]
 size = Vector3(5, 4, 1)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_3"]
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
 size = Vector3(5, 4, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
@@ -126,10 +126,10 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5
 
-[sub_resource type="BoxMesh" id="BoxMesh_4"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_4"]
 size = Vector3(16, 0.2, 56)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_4"]
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
 size = Vector3(16, 0.2, 56)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
@@ -145,52 +145,52 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5
 
-[sub_resource type="BoxMesh" id="BoxMesh_5"]
-size = Vector3(1, 4, 39)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_5"]
 size = Vector3(1, 4, 39)
 
-[sub_resource type="BoxMesh" id="BoxMesh_6"]
-size = Vector3(1, 4, 13)
+[sub_resource type="BoxMesh" id="BoxMesh_5"]
+size = Vector3(1, 4, 39)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6"]
 size = Vector3(1, 4, 13)
 
-[sub_resource type="BoxMesh" id="BoxMesh_7"]
-size = Vector3(1, 4, 27)
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(1, 4, 13)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_7"]
 size = Vector3(1, 4, 27)
 
-[sub_resource type="BoxMesh" id="BoxMesh_8"]
-size = Vector3(1, 4, 25)
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
+size = Vector3(1, 4, 27)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8"]
 size = Vector3(1, 4, 25)
 
-[sub_resource type="BoxMesh" id="BoxMesh_9"]
-size = Vector3(6, 4, 1)
+[sub_resource type="BoxMesh" id="BoxMesh_8"]
+size = Vector3(1, 4, 25)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_9"]
 size = Vector3(6, 4, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_10"]
-size = Vector3(10, 4, 1)
+[sub_resource type="BoxMesh" id="BoxMesh_9"]
+size = Vector3(6, 4, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_10"]
 size = Vector3(10, 4, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_11"]
-size = Vector3(1, 4, 26)
+[sub_resource type="BoxMesh" id="BoxMesh_10"]
+size = Vector3(10, 4, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_11"]
 size = Vector3(1, 4, 26)
 
-[sub_resource type="BoxMesh" id="BoxMesh_12"]
-size = Vector3(4, 4, 1)
+[sub_resource type="BoxMesh" id="BoxMesh_11"]
+size = Vector3(1, 4, 26)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_12"]
+size = Vector3(4, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_12"]
 size = Vector3(4, 4, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
@@ -206,16 +206,16 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5
 
-[sub_resource type="BoxMesh" id="BoxMesh_13"]
-size = Vector3(1, 4, 8)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_13"]
 size = Vector3(1, 4, 8)
 
-[sub_resource type="BoxMesh" id="BoxMesh_14"]
-size = Vector3(6, 0.2, 3)
+[sub_resource type="BoxMesh" id="BoxMesh_13"]
+size = Vector3(1, 4, 8)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_14"]
+size = Vector3(6, 0.2, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_14"]
 size = Vector3(6, 0.2, 3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
@@ -231,10 +231,10 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5
 
-[sub_resource type="BoxMesh" id="BoxMesh_15"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_15"]
 size = Vector3(1.5, 3, 1.5)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_15"]
+[sub_resource type="BoxMesh" id="BoxMesh_15"]
 size = Vector3(1.5, 3, 1.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
@@ -250,28 +250,28 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5
 
-[sub_resource type="BoxMesh" id="BoxMesh_16"]
-size = Vector3(5.5, 4, 1)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_16"]
 size = Vector3(5.5, 4, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_17"]
-size = Vector3(1.5, 1.2, 1.5)
+[sub_resource type="BoxMesh" id="BoxMesh_16"]
+size = Vector3(5.5, 4, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_17"]
 size = Vector3(1.5, 1.2, 1.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_18"]
-size = Vector3(1.5, 1, 1.5)
+[sub_resource type="BoxMesh" id="BoxMesh_17"]
+size = Vector3(1.5, 1.2, 1.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_18"]
 size = Vector3(1.5, 1, 1.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_19"]
-size = Vector3(1.5, 1.5, 1.5)
+[sub_resource type="BoxMesh" id="BoxMesh_18"]
+size = Vector3(1.5, 1, 1.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_19"]
+size = Vector3(1.5, 1.5, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_19"]
 size = Vector3(1.5, 1.5, 1.5)
 
 [node name="BreachSlice" type="Node3D" groups=["kill_line"]]

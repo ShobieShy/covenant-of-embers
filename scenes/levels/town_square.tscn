@@ -64,10 +64,10 @@ fog_light_color = Color(0.968577, 0.935741, 0.865042, 1)
 fog_density = 0.0007
 fog_sky_affect = 0.0
 
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
 size = Vector3(120, 0.2, 120)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
 size = Vector3(120, 0.2, 120)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
@@ -83,10 +83,10 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5
 
-[sub_resource type="BoxMesh" id="BoxMesh_2"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
 size = Vector3(14, 0.2, 112)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
 size = Vector3(14, 0.2, 112)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
@@ -102,47 +102,29 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5
 
-[sub_resource type="BoxMesh" id="BoxMesh_3"]
-size = Vector3(112, 0.2, 14)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_3"]
 size = Vector3(112, 0.2, 14)
 
-[sub_resource type="BoxMesh" id="BoxMesh_4"]
-size = Vector3(1.4, 7, 1.4)
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(112, 0.2, 14)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4"]
+size = Vector3(1.4, 7, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
 size = Vector3(1.4, 7, 1.4)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
 albedo_color = Color(0.701411, 0.565728, 0.930925, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_5"]
-size = Vector3(6, 0.8, 6)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_5"]
 size = Vector3(6, 0.8, 6)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
-albedo_color = Color(0.797738, 0.797738, 0.826657, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_6"]
-size = Vector3(3, 1.4, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6"]
 size = Vector3(3, 1.4, 2)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
-albedo_color = Color(0.797738, 0.665185, 0.537099, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_7"]
-size = Vector3(16, 4, 12)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_7"]
 size = Vector3(16, 4, 12)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
-albedo_color = Color(0.701411, 0.601243, 0.506386, 1)
 
 [node name="TownSquare" type="Node3D" groups=["kill_line"]]
 metadata/level_id = "town_square"
@@ -263,11 +245,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
 metadata/kind = "heap"
 metadata/toml_index = 8
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/fountain"]
-mesh = SubResource("BoxMesh_5")
-surface_material_override/0 = SubResource("StandardMaterial3D_4")
-visible = false
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/fountain"]
 shape = SubResource("BoxShape3D_5")
 
@@ -275,11 +252,6 @@ shape = SubResource("BoxShape3D_5")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48, 2.7, -22)
 metadata/kind = "crate"
 metadata/toml_index = 9
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/stall_1"]
-mesh = SubResource("BoxMesh_6")
-surface_material_override/0 = SubResource("StandardMaterial3D_5")
-visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/stall_1"]
 shape = SubResource("BoxShape3D_6")
@@ -289,11 +261,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 2.7, -22)
 metadata/kind = "crate"
 metadata/toml_index = 10
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/stall_2"]
-mesh = SubResource("BoxMesh_6")
-surface_material_override/0 = SubResource("StandardMaterial3D_5")
-visible = false
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/stall_2"]
 shape = SubResource("BoxShape3D_6")
 
@@ -301,11 +268,6 @@ shape = SubResource("BoxShape3D_6")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, 2.7, -22)
 metadata/kind = "crate"
 metadata/toml_index = 11
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/stall_3"]
-mesh = SubResource("BoxMesh_6")
-surface_material_override/0 = SubResource("StandardMaterial3D_5")
-visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/stall_3"]
 shape = SubResource("BoxShape3D_6")
@@ -315,11 +277,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 2.7, -22)
 metadata/kind = "crate"
 metadata/toml_index = 12
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/stall_4"]
-mesh = SubResource("BoxMesh_6")
-surface_material_override/0 = SubResource("StandardMaterial3D_5")
-visible = false
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/stall_4"]
 shape = SubResource("BoxShape3D_6")
 
@@ -327,11 +284,6 @@ shape = SubResource("BoxShape3D_6")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -44, 4, 24)
 metadata/kind = "wall"
 metadata/toml_index = 13
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/flagon"]
-mesh = SubResource("BoxMesh_7")
-surface_material_override/0 = SubResource("StandardMaterial3D_6")
-visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/flagon"]
 shape = SubResource("BoxShape3D_7")

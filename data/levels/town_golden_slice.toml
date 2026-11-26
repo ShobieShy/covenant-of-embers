@@ -1,7 +1,7 @@
-# 0.12.0 golden slice. The plaza is the detailed 60 m square. The terrain
-# is large enough that a camera at the Main Gate can see the fountain,
-# a stand-in Association, and the Old Oak. Coordinates are the painting
-# lock in docs/specs/TOWN_GOLDEN_SLICE_0.12.0.md. The live Town is unchanged.
+# 0.12.0 golden slice. Plaza, Main Gate, and the painted landmarks.
+# Coordinates are docs/specs/TOWN_GOLDEN_SLICE_0.12.0.md. The live Town
+# is unchanged. Hidden pads are collision only so the cobble stays flat.
+# Every visible mesh is a Kenney, Quaternius, or Ember Art model.
 
 [level]
 id = "town_golden_slice"
@@ -47,7 +47,7 @@ name = "gate_pad"
 kind = "ground"
 hidden = true
 center = [-6.4, 1.9, 50.0]
-size = [14.0, 0.2, 90.0]
+size = [16.0, 0.2, 100.0]
 color = [0.4, 0.4, 0.4]
 [[box]]
 name = "plaza_pad"
@@ -56,46 +56,190 @@ hidden = true
 center = [-6.4, 1.9, 9.6]
 size = [60.0, 0.2, 60.0]
 color = [0.4, 0.4, 0.4]
+[[box]]
+name = "oak_pad"
+kind = "ground"
+hidden = true
+center = [82.0, 1.9, -30.0]
+size = [8.0, 0.2, 8.0]
+color = [0.4, 0.4, 0.4]
 
+# Three basins. The Kenney rings stand in for the painted fountain.
 [[prop]]
-name = "fountain"
-model = "assets/kenney/fantasy-town-kit/fountain-round-detail.glb"
+name = "fountain_base"
+model = "assets/kenney/fantasy-town-kit/fountain-round.glb"
 position = [-6.4, 2.0, 9.6]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = [4.0, 3.0, 4.0]
+scale = [6.2, 1.15, 6.2]
+[[prop]]
+name = "fountain_mid"
+model = "assets/kenney/fantasy-town-kit/fountain-round-detail.glb"
+position = [-6.4, 2.85, 9.6]
+rotation_deg = [0.0, 30.0, 0.0]
+scale = [3.8, 1.15, 3.8]
+[[prop]]
+name = "fountain_top"
+model = "assets/kenney/fantasy-town-kit/fountain-center.glb"
+position = [-6.4, 3.7, 9.6]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [1.7, 1.5, 1.7]
+
 [[prop]]
 name = "east_oak"
 model = "assets/landmarks/old_oak/old_oak.gltf"
 position = [96.0, 0.0, -44.8]
 rotation_deg = [0.0, 135.0, 0.0]
 snap = true
+# Main Gate. Two wall jambs, a stone arch across them, then the curtain wall.
+[[prop]]
+name = "gate_jamb_w"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-11.6, 2.0, 89.6]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [2.4, 3.4, 2.2]
+[[prop]]
+name = "gate_jamb_e"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-1.2, 2.0, 89.6]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [2.4, 3.4, 2.2]
+[[prop]]
+name = "gate_lintel"
+model = "assets/kenney/fantasy-town-kit/wall-arch-top-detail.glb"
+position = [-6.4, 3.15, 89.6]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [7.5, 2.2, 4.5]
+[[prop]]
+name = "gate_tower_w"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [-16.5, 2.0, 89.6]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [2.4, 4.2, 2.4]
+[[prop]]
+name = "gate_tower_e"
+model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
+position = [3.7, 2.0, 89.6]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [2.4, 4.2, 2.4]
+[[prop]]
+name = "gate_wall_w"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [-24.0, 2.0, 89.6]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [3.0, 2.6, 2.2]
+count = 2
+step = [-7.0, 0.0, 0.0]
+[[prop]]
+name = "gate_wall_e"
+model = "assets/kenney/fantasy-town-kit/wall.glb"
+position = [11.0, 2.0, 89.6]
+rotation_deg = [0.0, 90.0, 0.0]
+scale = [3.0, 2.6, 2.2]
+count = 2
+step = [7.0, 0.0, 0.0]
+
+# Road lamps, about every 15 m, from the gate toward the plaza.
+[[prop]]
+name = "road_lamp_w"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-12.5, 2.0, 72.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.5
+count = 3
+step = [0.0, 0.0, -16.0]
+[[prop]]
+name = "road_lamp_e"
+model = "assets/kenney/fantasy-town-kit/lantern.glb"
+position = [-0.3, 2.0, 72.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 1.5
+count = 3
+step = [0.0, 0.0, -16.0]
+
+# Market. Painting puts red stalls north-west of the square and mixed stalls north-east.
 [[prop]]
 name = "stall_nw_a"
 model = "assets/kenney/fantasy-town-kit/stall-red.glb"
-position = [-28.0, 2.0, -4.0]
-rotation_deg = [0.0, 20.0, 0.0]
-scale = [2.4, 1.6, 1.8]
+position = [-28.0, 2.0, -12.0]
+rotation_deg = [0.0, 25.0, 0.0]
+scale = [2.6, 1.8, 2.0]
 [[prop]]
 name = "stall_nw_b"
 model = "assets/kenney/fantasy-town-kit/stall-red.glb"
-position = [-22.0, 2.0, -8.0]
-rotation_deg = [0.0, 20.0, 0.0]
-scale = [2.4, 1.6, 1.8]
+position = [-20.0, 2.0, -16.0]
+rotation_deg = [0.0, 15.0, 0.0]
+scale = [2.6, 1.8, 2.0]
 [[prop]]
 name = "stall_ne_a"
 model = "assets/kenney/fantasy-town-kit/stall-green.glb"
-position = [12.0, 2.0, -6.0]
+position = [12.0, 2.0, -14.0]
 rotation_deg = [0.0, -20.0, 0.0]
-scale = [2.4, 1.6, 1.8]
+scale = [2.6, 1.8, 2.0]
 [[prop]]
 name = "stall_ne_b"
 model = "assets/kenney/fantasy-town-kit/stall-red.glb"
-position = [18.0, 2.0, -2.0]
-rotation_deg = [0.0, -20.0, 0.0]
-scale = [2.4, 1.6, 1.8]
+position = [20.0, 2.0, -10.0]
+rotation_deg = [0.0, -30.0, 0.0]
+scale = [2.6, 1.8, 2.0]
 [[prop]]
-name = "gate_arch"
-model = "assets/kenney/fantasy-town-kit/wall-doorway-round.glb"
-position = [-6.4, 2.0, 89.6]
+name = "cart_nw"
+model = "assets/kenney/fantasy-town-kit/cart.glb"
+position = [-24.0, 2.0, -8.0]
+rotation_deg = [0.0, 40.0, 0.0]
+scale = 2.0
+[[prop]]
+name = "cart_ne"
+model = "assets/kenney/fantasy-town-kit/cart-high.glb"
+position = [16.0, 2.0, -6.0]
+rotation_deg = [0.0, -10.0, 0.0]
+scale = 2.0
+[[prop]]
+name = "banner_nw"
+model = "assets/kenney/fantasy-town-kit/banner-red.glb"
+position = [-32.0, 2.0, -4.0]
 rotation_deg = [0.0, 0.0, 0.0]
-scale = [3.0, 2.4, 2.0]
+scale = 2.4
+[[prop]]
+name = "banner_ne"
+model = "assets/kenney/fantasy-town-kit/banner-green.glb"
+position = [24.0, 2.0, -2.0]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = 2.4
+
+[[prop]]
+name = "grass_w"
+model = "assets/kenney/nature-kit/grass_large.glb"
+position = [-18.0, 2.0, 40.0]
+rotation_deg = [0.0, 10.0, 0.0]
+scale = 1.6
+count = 4
+step = [0.0, 0.0, -18.0]
+[[prop]]
+name = "grass_e"
+model = "assets/kenney/nature-kit/grass_large.glb"
+position = [6.0, 2.0, 40.0]
+rotation_deg = [0.0, -20.0, 0.0]
+scale = 1.6
+count = 4
+step = [0.0, 0.0, -18.0]
+
+[[npc]]
+name = "guard_gate"
+speaker = "Bored Guard"
+position = [-4.2, 2.0, 76.0]
+yaw_deg = 180.0
+[[npc]]
+name = "merchant"
+speaker = "Potion Merchant"
+position = [-26.0, 2.0, -9.0]
+yaw_deg = 110.0
+[[npc]]
+name = "tailor"
+speaker = "Tailor"
+position = [14.0, 2.0, -8.0]
+yaw_deg = -70.0
+[[npc]]
+name = "bob"
+speaker = "Bob"
+position = [82.0, 2.0, -30.0]
+yaw_deg = 40.0

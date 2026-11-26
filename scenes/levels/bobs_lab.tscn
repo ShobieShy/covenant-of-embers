@@ -34,52 +34,52 @@ fog_light_color = Color(0.436627, 0.395881, 0.34919, 1)
 fog_density = 0
 fog_sky_affect = 0.0
 
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
 size = Vector3(6, 0.3, 4.3)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
 size = Vector3(6, 0.3, 4.3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
 albedo_color = Color(0.665185, 0.583831, 0.461356, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_2"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
 size = Vector3(6, 1, 0.25)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
 size = Vector3(6, 1, 0.25)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
 albedo_color = Color(0.62621, 0.546854, 0.436627, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_3"]
-size = Vector3(0.25, 1, 4.3)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_3"]
 size = Vector3(0.25, 1, 4.3)
 
-[sub_resource type="BoxMesh" id="BoxMesh_4"]
-size = Vector3(1.6, 0.5, 0.8)
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(0.25, 1, 4.3)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4"]
+size = Vector3(1.6, 0.5, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
 size = Vector3(1.6, 0.5, 0.8)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
 albedo_color = Color(0.767376, 0.767376, 0.748379, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_5"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_5"]
 size = Vector3(1.4, 1.6, 0.3)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_5"]
+[sub_resource type="BoxMesh" id="BoxMesh_5"]
 size = Vector3(1.4, 1.6, 0.3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
 albedo_color = Color(0.679976, 0.583831, 0.461356, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_6"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_6"]
 size = Vector3(2.2, 0.35, 0.4)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_6"]
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
 size = Vector3(2.2, 0.35, 0.4)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
