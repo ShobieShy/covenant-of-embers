@@ -52,6 +52,7 @@ LEVELS = {  # source TOML -> generated scene
     "data/levels/midden_greybox.toml": "scenes/levels/midden.tscn",
     "data/levels/breach_slice.toml": "scenes/levels/breach.tscn",
     "data/levels/town_square.toml": "scenes/levels/town_square.tscn",
+    "data/levels/town_golden_slice.toml": "scenes/levels/town_golden_slice.tscn",
     "data/levels/mage_association.toml": "scenes/levels/mage_association.tscn",
     "data/levels/old_oak.toml": "scenes/levels/old_oak.tscn",
     "data/levels/bobs_lab.toml": "scenes/levels/bobs_lab.tscn",
@@ -757,21 +758,30 @@ def to_tscn(lv: dict, source: str) -> str:
     nodes.append('[node name="Boxes" type="Node3D" parent="."]\n')
     for i, b in enumerate(lv["boxes"]):
         sk = tuple(b["size"])
-        mesh = sub("BoxMesh", sk, f"size = {_v3(b['size'])}")
+        # The Town remake keeps hidden pads as collision only. Other levels
+        # still hide the mesh in place, and the sub-resource order stays the
+        # same as before so those scenes do not change.
+        town_pad = b["hidden"] and lv["id"] in ("town_square", "town_golden_slice")
+        mesh = ""
+        mat = ""
+        if not town_pad:
+            mesh = sub("BoxMesh", sk, f"size = {_v3(b['size'])}")
         shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
-        tex = lv.get("materials", {}).get(b["kind"])
-        if tex:
-            gs = GROUND_TINT if b["kind"] == "ground" else 1.0
-            mat = sub("StandardMaterial3D", (tuple(b["color"]), tex, gs),
-                      _textured(b["color"], tex, lv["uv_scale"], ext_id, gs))
-        else:
-            mat = sub("StandardMaterial3D", tuple(b["color"]), f"albedo_color = {_color_str(b['color'])}")
+        if not town_pad:
+            tex = lv.get("materials", {}).get(b["kind"])
+            if tex:
+                gs = GROUND_TINT if b["kind"] == "ground" else 1.0
+                mat = sub("StandardMaterial3D", (tuple(b["color"]), tex, gs),
+                          _textured(b["color"], tex, lv["uv_scale"], ext_id, gs))
+            else:
+                mat = sub("StandardMaterial3D", tuple(b["color"]), f"albedo_color = {_color_str(b['color'])}")
         nodes.append(f'[node name="{b["name"]}" type="StaticBody3D" parent="Boxes"]\n'
                      f'transform = {_xf(rot_yxz(b["rotation_deg"]), b["center"])}\n'
                      f'metadata/kind = "{b["kind"]}"\nmetadata/toml_index = {i}\n')
-        nodes.append(f'[node name="Mesh" type="MeshInstance3D" parent="Boxes/{b["name"]}"]\n'
-                     f'mesh = SubResource("{mesh}")\nsurface_material_override/0 = SubResource("{mat}")\n'
-                     + ("visible = false\n" if b["hidden"] else ""))
+        if not town_pad:
+            nodes.append(f'[node name="Mesh" type="MeshInstance3D" parent="Boxes/{b["name"]}"]\n'
+                         f'mesh = SubResource("{mesh}")\nsurface_material_override/0 = SubResource("{mat}")\n'
+                         + ("visible = false\n" if b["hidden"] else ""))
         nodes.append(f'[node name="Shape" type="CollisionShape3D" parent="Boxes/{b["name"]}"]\n'
                      f'shape = SubResource("{shape}")\n')
     tr = lv.get("terrain")
