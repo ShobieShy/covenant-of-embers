@@ -465,6 +465,16 @@ static func _act2_cavern(h: PlaytestBot, lab: LabyrinthState) -> void:
 		if on_pad and foe and foe.global_position.distance_to(h.player.global_position) < 3.2 and not foe is Blightmaw:
 			h.fight(foe)
 			return
+		# The sump treant shoots across the floor. Clear it before the ramp, or a
+		# missed pad 6 becomes a respawn loop under that tree.
+		if (
+			local_y < 8.0
+			and foe
+			and not foe is Blightmaw
+			and foe.global_position.distance_to(h.player.global_position) < 20.0
+		):
+			h.fight(foe)
+			return
 		var marks: Array[Vector3] = [
 			cav.pad_global(6),
 			cav.global_transform * cav._v3(cav.doc["ramp"][0]["fr"]),
@@ -490,12 +500,16 @@ static func _act2_cavern(h: PlaytestBot, lab: LabyrinthState) -> void:
 		if local_y < 3.0 and h._act2_step > 2:
 			h._act2_step = 0
 		while h._act2_step < marks.size() - 1 and h.player.global_position.distance_to(marks[h._act2_step]) <= 2.2:
+			var pad_here := 6 if h._act2_step == 0 else 7 if h._act2_step == 3 else 0
+			if pad_here != 0 and not h._act2_heights.has(pad_here):
+				break
 			h._act2_step += 1
 		var next: Vector3 = marks[h._act2_step]
-		if next == marks[marks.size() - 1] and h.player.global_position.distance_to(next) <= 2.2:
-			if h._act2_heights.has(6) and h._act2_heights.has(7) and h._act2_heights.has(8):
-				h._goto("act2_fight")
-				return
+		var on_crown := next == marks[marks.size() - 1] and h.player.global_position.distance_to(next) <= 1.6
+		var crowned: bool = bool(h.main.story_flags.has("waystone:" + cav.waystone_for(8)))
+		if on_crown and crowned and h._act2_heights.has(6) and h._act2_heights.has(7) and h._act2_heights.has(8):
+			h._goto("act2_fight")
+			return
 		if h.t > 160.0 and not h._act2_heights.has(8):
 			h._finish(false, "act2 stuck at %s heights %s" % [h.player.global_position, h._act2_heights])
 			return
