@@ -1,0 +1,101 @@
+# 0.12.0 golden slice. The plaza is the detailed 60 m square. The terrain
+# is large enough that a camera at the Main Gate can see the fountain,
+# a stand-in Association, and the Old Oak. Coordinates are the painting
+# lock in docs/specs/TOWN_GOLDEN_SLICE_0.12.0.md. The live Town is unchanged.
+
+[level]
+id = "town_golden_slice"
+name = "Eldoria - Town slice"
+world_offset = [0.0, 0.0]
+
+[materials]
+ground = "assets/ambientcg/PavingStones131"
+uv_scale = 0.4
+
+[environment]
+sky_color = [0.62, 0.66, 0.78]
+ambient_color = [0.55, 0.48, 0.40]
+fog_density = 0.0007
+fog_light = [0.93, 0.86, 0.72]
+sky = true
+grade = [1.03, 1.05, 1.12]
+
+[sun]
+to_light = [0.55, 0.75, 0.25]
+color = [1.0, 0.90, 0.72]
+
+[player_start]
+position = [-6.4, 2.0, 80.0]
+yaw_deg = 0.0
+
+[terrain]
+size = [280, 280]
+center = [20, 0]
+height = 6
+seed = 120
+rim = 10
+cliff = 4
+blend = 16
+spacing = 2
+map_version = 1
+pad_y = 1.95
+foliage = 0
+layers = ["grass", "path_cobble"]
+
+[[box]]
+name = "gate_pad"
+kind = "ground"
+hidden = true
+center = [-6.4, 1.9, 50.0]
+size = [14.0, 0.2, 90.0]
+color = [0.4, 0.4, 0.4]
+[[box]]
+name = "plaza_pad"
+kind = "ground"
+hidden = true
+center = [-6.4, 1.9, 9.6]
+size = [60.0, 0.2, 60.0]
+color = [0.4, 0.4, 0.4]
+
+[[prop]]
+name = "fountain"
+model = "assets/kenney/fantasy-town-kit/fountain-round-detail.glb"
+position = [-6.4, 2.0, 9.6]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [4.0, 3.0, 4.0]
+[[prop]]
+name = "east_oak"
+model = "assets/landmarks/old_oak/old_oak.gltf"
+position = [96.0, 0.0, -44.8]
+rotation_deg = [0.0, 135.0, 0.0]
+snap = true
+[[prop]]
+name = "stall_nw_a"
+model = "assets/kenney/fantasy-town-kit/stall-red.glb"
+position = [-28.0, 2.0, -4.0]
+rotation_deg = [0.0, 20.0, 0.0]
+scale = [2.4, 1.6, 1.8]
+[[prop]]
+name = "stall_nw_b"
+model = "assets/kenney/fantasy-town-kit/stall-red.glb"
+position = [-22.0, 2.0, -8.0]
+rotation_deg = [0.0, 20.0, 0.0]
+scale = [2.4, 1.6, 1.8]
+[[prop]]
+name = "stall_ne_a"
+model = "assets/kenney/fantasy-town-kit/stall-green.glb"
+position = [12.0, 2.0, -6.0]
+rotation_deg = [0.0, -20.0, 0.0]
+scale = [2.4, 1.6, 1.8]
+[[prop]]
+name = "stall_ne_b"
+model = "assets/kenney/fantasy-town-kit/stall-red.glb"
+position = [18.0, 2.0, -2.0]
+rotation_deg = [0.0, -20.0, 0.0]
+scale = [2.4, 1.6, 1.8]
+[[prop]]
+name = "gate_arch"
+model = "assets/kenney/fantasy-town-kit/wall-doorway-round.glb"
+position = [-6.4, 2.0, 89.6]
+rotation_deg = [0.0, 0.0, 0.0]
+scale = [3.0, 2.4, 2.0]

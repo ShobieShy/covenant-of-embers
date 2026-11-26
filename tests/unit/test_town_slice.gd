@@ -13,6 +13,15 @@ func test_painting_landmarks_match_the_spec() -> void:
 	var gate := _world(0.50, 0.80)
 	var fountain := _world(0.50, 0.55)
 	check(absf(gate.y - fountain.y) > 60.0, "the gate sits outside the 60 m square")
+	var slice: Node3D = (load("res://scenes/levels/town_golden_slice.tscn") as PackedScene).instantiate()
+	runner_tree.root.add_child(slice)
+	var placed := slice.get_node("Props/fountain") as Node3D
+	check(_near(Vector2(placed.position.x, placed.position.z), fountain), "fountain is in the slice")
+	var oak := slice.get_node("Props/east_oak") as Node3D
+	check(_near(Vector2(oak.position.x, oak.position.z), _world(0.82, 0.38)), "oak is at the painted point")
+	var start := slice.get_node("PlayerStart") as Node3D
+	check(start.position.z < 89.6 and start.position.z > 70.0, "the start stands just inside the gate")
+	slice.queue_free()
 
 
 func _world(paint_x: float, paint_y: float) -> Vector2:

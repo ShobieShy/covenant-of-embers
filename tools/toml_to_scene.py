@@ -52,6 +52,7 @@ LEVELS = {  # source TOML -> generated scene
     "data/levels/midden_greybox.toml": "scenes/levels/midden.tscn",
     "data/levels/breach_slice.toml": "scenes/levels/breach.tscn",
     "data/levels/town_square.toml": "scenes/levels/town_square.tscn",
+    "data/levels/town_golden_slice.toml": "scenes/levels/town_golden_slice.tscn",
     "data/levels/mage_association.toml": "scenes/levels/mage_association.tscn",
     "data/levels/old_oak.toml": "scenes/levels/old_oak.tscn",
     "data/levels/bobs_lab.toml": "scenes/levels/bobs_lab.tscn",
