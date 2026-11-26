@@ -36,8 +36,10 @@ var hovered: Variant = null
 var trash_button: Button
 var junk_button: Button
 var favorite_button: Button
-var slot_menu: VBoxContainer
+var slot_menu: PanelContainer
+var slot_rows: Array[Button] = []
 var slot_menu_open := false
+const SLOT_MENU_SIZE := Vector2(188, 124)
 var qty: SpinBox
 var confirm_row: VBoxContainer
 var confirm_label: Label
@@ -120,6 +122,7 @@ func _init() -> void:
 	card.custom_minimum_size = Vector2(300, 300)
 	right.add_child(card)
 	var eq := _button("Equip")
+	eq.name = "Equip"
 	eq.pressed.connect(equip_selected)
 	right.add_child(eq)
 	var uq := _button("Unequip")  # t60u: every worn slot, staff and wand included
@@ -145,19 +148,6 @@ func _init() -> void:
 	favorite_button.custom_minimum_size = Vector2(120, 0)
 	favorite_button.pressed.connect(toggle_favorite)
 	th.add_child(favorite_button)
-	slot_menu = VBoxContainer.new()
-	slot_menu.name = "SlotMenu"
-	slot_menu.visible = false
-	right.add_child(slot_menu)
-	var junk_row := _button("Mark junk")
-	junk_row.pressed.connect(func(): _menu_pick(MENU_JUNK))
-	slot_menu.add_child(junk_row)
-	var fav_row := _button("Favorite")
-	fav_row.pressed.connect(func(): _menu_pick(MENU_FAV))
-	slot_menu.add_child(fav_row)
-	var trash_row := _button("Trash")
-	trash_row.pressed.connect(func(): _menu_pick(MENU_TRASH))
-	slot_menu.add_child(trash_row)
 	confirm_row = VBoxContainer.new()
 	confirm_row.visible = false
 	right.add_child(confirm_row)
@@ -196,6 +186,32 @@ func _init() -> void:
 	right.add_child(im)
 	status = _label("")
 	right.add_child(status)
+	_build_slot_menu()
+
+
+## Floating menu, not a row in the detail column. top_level keeps the panel theme
+## and skips the layout, so the labels are not clipped by the Equip column.
+func _build_slot_menu() -> void:
+	slot_menu = PanelContainer.new()
+	slot_menu.name = "SlotMenu"
+	slot_menu.visible = false
+	slot_menu.top_level = true
+	slot_menu.z_index = 20
+	slot_menu.mouse_filter = Control.MOUSE_FILTER_STOP
+	slot_menu.custom_minimum_size = SLOT_MENU_SIZE
+	slot_menu.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	add_child(slot_menu)
+	var rows := VBoxContainer.new()
+	slot_menu.add_child(rows)
+	for pair in [["Mark junk", MENU_JUNK], ["Favorite", MENU_FAV], ["Trash", MENU_TRASH]]:
+		var b := Button.new()
+		b.text = pair[0]
+		b.clip_text = false
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.custom_minimum_size = Vector2(SLOT_MENU_SIZE.x - 16, 36)
+		b.pressed.connect(_menu_pick.bind(pair[1]))
+		rows.add_child(b)
+		slot_rows.append(b)
 
 
 static func ensure_trash_action() -> void:
@@ -296,6 +312,7 @@ func open() -> void:
 
 
 func close() -> void:
+	_close_slot_menu()
 	if echo and echo.is_open():
 		echo.close()
 		return
@@ -562,18 +579,53 @@ func _slot_click(i: int, ev: InputEvent) -> void:
 	if it == null:
 		return
 	select(it)
-	_open_slot_menu(it)
+	_open_slot_menu(it, mb.global_position)
 
 
 ## Right-click menu for a backpack item. Worn gear and quest ids get no menu.
-func _open_slot_menu(item: Variant) -> bool:
+## `at` is a viewport point (the cursor). INF places it on that item's slot.
+func _open_slot_menu(item: Variant, at := Vector2(INF, INF)) -> bool:
 	if player == null or not (item is Resource) or not player.inventory.has(item):
 		return false
 	select(item)
 	slot_menu_open = true
 	slot_menu.visible = true
 	_retitle_slot_menu()
+	if not at.is_finite():
+		at = _slot_anchor(item)
+	if slot_menu.theme == null:
+		var inherited := root.theme
+		if inherited == null and is_inside_tree() and get_tree().root.theme != null:
+			inherited = get_tree().root.theme
+		if inherited != null:
+			slot_menu.theme = inherited
+	_place_slot_menu(at)
 	return true
+
+
+func _slot_anchor(item: Resource) -> Vector2:
+	var i := player.inventory.items.find(item)
+	if i >= 0 and i < slot_buttons.size():
+		return slot_buttons[i].global_position + Vector2(4, 4)
+	return Vector2.ZERO
+
+
+## Keep the full menu inside the viewport, next to the click, off the detail column.
+func _place_slot_menu(at: Vector2) -> void:
+	var sz := SLOT_MENU_SIZE
+	slot_menu.size = sz
+	var vp := get_viewport().get_visible_rect().size
+	slot_menu.global_position = menu_position(at, sz, vp)
+
+
+## Viewport point for a menu of `menu_size` opened at `at`.
+static func menu_position(at: Vector2, menu_size: Vector2, viewport: Vector2) -> Vector2:
+	var pos := Vector2.ZERO
+	if viewport.x > menu_size.x:
+		pos.x = clampf(at.x, 0.0, viewport.x - menu_size.x)
+	if viewport.y > menu_size.y:
+		pos.y = clampf(at.y, 0.0, viewport.y - menu_size.y)
+	return pos
 
 
 func _close_slot_menu() -> void:
@@ -583,12 +635,12 @@ func _close_slot_menu() -> void:
 
 
 func _retitle_slot_menu() -> void:
-	if slot_menu == null or slot_menu.get_child_count() < 3 or player == null:
+	if slot_rows.size() < 3 or player == null:
 		return
 	var junked := selected is Resource and player.inventory.is_junk(selected)
 	var fav := selected is Resource and player.inventory.is_favorite(selected)
-	(slot_menu.get_child(0) as Button).text = "Unmark junk" if junked else "Mark junk"
-	(slot_menu.get_child(1) as Button).text = "Unfavorite" if fav else "Favorite"
+	slot_rows[0].text = "Unmark junk" if junked else "Mark junk"
+	slot_rows[1].text = "Unfavorite" if fav else "Favorite"
 
 
 func _menu_pick(which: int) -> void:

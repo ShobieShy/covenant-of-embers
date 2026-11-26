@@ -174,9 +174,28 @@ func test_junk_hotkey_menu_and_favorite_button() -> void:
 	var click := InputEventMouseButton.new()
 	click.button_index = MOUSE_BUTTON_RIGHT
 	click.pressed = true
+	click.global_position = ui.slot_buttons[0].global_position + Vector2(8, 8)
 	ui._slot_click(0, click)
 	check(ui.slot_menu_open and ui.selected == a, "right-click selects and opens the menu")
-	check((ui.slot_menu.get_child(0) as Button).text == "Unmark junk", "menu row")
+	check(ui.slot_rows[0].text == "Unmark junk" and not ui.slot_rows[0].clip_text, "full junk label")
+	check(ui.slot_rows[1].text == "Favorite" and ui.slot_rows[2].text == "Trash", "full favorite and trash labels")
+	var screen := Vector2(1600, 900)
+	var corner := InventoryUi.menu_position(Vector2(99999, 99999), InventoryUi.SLOT_MENU_SIZE, screen)
+	check(corner == Vector2(1600, 900) - InventoryUi.SLOT_MENU_SIZE, "a corner click stays inside 1600x900")
+	var near_slot := InventoryUi.menu_position(Vector2(360, 280), InventoryUi.SLOT_MENU_SIZE, screen)
+	var menu_at_slot := Rect2(near_slot, InventoryUi.SLOT_MENU_SIZE)
+	var detail := Rect2(Vector2(980, 180), Vector2(280, 520))
+	check(
+		near_slot == Vector2(360, 280) and not menu_at_slot.intersects(detail),
+		"menu at a backpack slot misses the detail column"
+	)
+	check(ui.slot_menu.size.x >= 180, "menu is wide enough for Unmark junk")
+	var vp := ui.get_viewport().get_visible_rect().size
+	if vp.x >= InventoryUi.SLOT_MENU_SIZE.x and vp.y >= InventoryUi.SLOT_MENU_SIZE.y:
+		var live := ui.slot_menu.get_global_rect()
+		check(live.end.x <= vp.x + 0.5 and live.end.y <= vp.y + 0.5, "live menu is clamped")
+		var equip := ui.root.find_child("Equip", true, false) as Button
+		check(equip != null and not live.intersects(equip.get_global_rect()), "live menu misses Equip")
 	ui._menu_pick(InventoryUi.MENU_JUNK)
 	check(not ui.slot_menu_open and not p.inventory.is_junk(a), "menu unmarks and closes")
 	ui.select(a)
@@ -190,6 +209,7 @@ func test_junk_hotkey_menu_and_favorite_button() -> void:
 	check(not p.inventory.is_favorite(a), "button clears favorite")
 	p.inventory.set_favorite(a, true)
 	ui._open_slot_menu(a)
+	check(ui.slot_rows[1].text == "Unfavorite" and ui.slot_rows[0].text == "Mark junk", "labels follow the marks")
 	ui._menu_pick(InventoryUi.MENU_JUNK)
 	check(p.inventory.is_junk(a) and not p.inventory.is_favorite(a), "menu junk clears favorite")
 	ui._open_slot_menu(a)
