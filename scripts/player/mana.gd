@@ -9,7 +9,7 @@ extends RefCounted
 ##   * spend(cost) = spend_mana: refused (nothing changes, the regen delay is NOT
 ##     restarted) when value < cost (exactly enough is fine); otherwise subtracts and
 ##     restarts the delay;
-##   * regen (mana_regen_speed 3 + equipment regen bonus)/s once regen_delay 1.5 s has
+##   * regen (base 6, was Magewar mana_regen_speed 3, + equipment regen bonus)/s once regen_delay 1.5 s has
 ##     passed since the last successful spend; never above the max; auto_regenerate off =
 ##     no regen;
 ##   * equipment (magewar_player.gd _apply/_remove_equipment_bonuses, step 19):
@@ -28,7 +28,7 @@ signal refused(cost: float)  ## a spend() was refused (not enough mana)
 const EPS := 1e-9  # snaps float drift (100 x 3/60 s regains exactly 5)
 
 var base_max := 100.0  ## ManaAttribute value_max (player scene)
-var regen_per_sec := 3.0  ## mana_regen_speed
+var regen_per_sec := 6.0  ## 0.11.5 base. Gear and skills add through regen_bonus.
 var regen_delay := 1.5  ## seconds since the last successful spend before regen
 var auto_regenerate := true  ## auto_regenerate
 

@@ -111,6 +111,14 @@ static func from_seed(
 	return p
 
 
+## Brand buff/debuff lines for a rolled part. Hand-made parts (no seed) have none.
+## A second generator, so the Magewar stat draws above stay byte-for-byte.
+static func brand_lines(part: WieldablePart) -> Array:
+	if part == null or part.roll_seed < 0:
+		return []
+	return BrandRolls.lines(part.roll_seed, part.rarity, part.element)
+
+
 ## Rebuilds a rolled part from what it stores (roll_seed, type, rarity, element); null for a
 ## hand-made part (roll_seed < 0).
 static func regenerate(part: WieldablePart) -> WieldablePart:

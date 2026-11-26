@@ -23,7 +23,7 @@ extends Resource
 @export var breath_resume_at := 20.0  ## an emptied pool allows sprint again at 20
 @export_group("Mana")
 @export var mana_max := 100.0  ## PLAN §30.1 = Magewar ManaAttribute value_max
-@export var mana_regen_per_sec := 3.0  ## Magewar mana_regen_speed
+@export var mana_regen_per_sec := 6.0  ## 0.11.5: double the Magewar mana_regen_speed of 3
 @export var mana_regen_delay := 1.5  ## Magewar regen_delay: s since the last cast
 @export var mana_auto_regenerate := true  ## Magewar auto_regenerate
 @export_group("Health")

@@ -7,9 +7,9 @@ extends TestCase
 ##    on tick 646 +-1 (456 + 90 delay + 100 for 5 mana); also at 144 Hz and through Player;
 ##  - spend refuses when short (exactly enough is fine), counts/emits refusals; Magewar's
 ##    other bases empty the pool after 40 / 16 / 33 casts;
-##  - regen starts exactly 1.5 s after the last cast at 30/60/144 Hz, +3/s; a cast in the
-##    delay restarts it, a refusal doesn't; empty -> full in 1.5 + 100/3 = 34.83 s;
-##  - regen bonus (Novice Grimoire +0.5 -> 3.5/s, negative total never drains), max bonus
+##  - regen starts exactly 1.5 s after the last cast at 30/60/144 Hz, +6/s; a cast in the
+##    delay restarts it, a refusal doesn't; empty -> full in 1.5 + 100/6 = 18.17 s;
+##  - regen bonus (Novice Grimoire +0.5 -> 6.5/s, negative total never drains), max bonus
 ##    (Magewar equip: raises max and value, removal clamps), refill, restore (potion 25),
 ##    auto_regenerate off;
 ##  - Player: caster.mana_spender = mana.spend, mana ticks before the cast, a refused
@@ -27,7 +27,7 @@ func _ticks(m: Mana, n: int, dt: float = DT) -> void:
 func test_defaults_spend_and_refuse() -> void:
 	var m := Mana.new()
 	check(m.value == 100.0 and m.max_value() == 100.0 and m.fraction() == 1.0, "starts full at 100")
-	check(m.regen_per_sec == 3.0 and m.regen_delay == 1.5 and m.regen_rate() == 3.0, "3/s after 1.5 s")
+	check(m.regen_per_sec == 6.0 and m.regen_delay == 1.5 and m.regen_rate() == 6.0, "6/s after 1.5 s")
 	check(not m.regenerating(), "full: not regenerating")
 	var got := []
 	m.refused.connect(func(cost: float) -> void: got.append(cost))
@@ -94,14 +94,14 @@ func test_fire_staff_20_casts_21st_refused_casts_again_at_646() -> void:
 	)
 	check(r[0] == 19 * 24, "20th cast at tick 456 (got %d)" % r[0])
 	check(r[1] == 480, "21st press (tick 480, cooldown over) refused for mana (got %d)" % r[1])
-	check(absi(r[2] - 646) <= 1, "casts again at tick 646 +-1 (got %d)" % r[2])
+	check(absi(r[2] - 596) <= 1, "casts again at tick 596 +-1 (got %d)" % r[2])
 	check(
 		c.casts == 21 and c.mana_refused == r[2] - 480, "every press 480..%d refused (%d)" % [r[2] - 1, c.mana_refused]
 	)
 	check(m.spends == 21 and absf(m.value) < 0.06, "spent the 5 it regained (%f)" % m.value)
-	# 144 Hz: a cast every 58 ticks (0.4028 s), regen from 1.5 s, 5 mana after 5/3 s.
+	# 144 Hz: a cast every 58 ticks (0.4028 s), regen from 1.5 s, 5 mana after 5/6 s.
 	var h := _twenty_casts(144)
-	var expect_next := 19 * 58 + 216 + 240
+	var expect_next := 19 * 58 + 216 + 120
 	print("    mana @144 Hz: 20th cast tick %d, next cast tick %d (expect %d +-1)" % [h[0], h[2], expect_next])
 	check(h[0] == 19 * 58 and absi(h[2] - expect_next) <= 1, "144 Hz timing (%d, %d)" % [h[0], h[2]])
 
@@ -117,12 +117,12 @@ func _regen_timing(hz: int) -> void:
 	check_near(m.value, 50.0, 1e-4, "@%d Hz: exactly 1.5 s (a rounding sliver at most)" % hz)
 	check(m.regenerating(), "@%d Hz: regenerating at 1.5 s" % hz)
 	_ticks(m, 1, dt)
-	check_near(m.value, 50.0 + 3.0 * dt, 1e-6, "@%d Hz: first regen tick" % hz)
+	check_near(m.value, 50.0 + 6.0 * dt, 1e-6, "@%d Hz: first regen tick" % hz)
 	_ticks(m, hz - 1, dt)
-	print("    mana @%d Hz: %.5f after 1.5 s delay + 1 s regen (53)" % [hz, m.value])
-	check_near(m.value, 53.0, 1e-6, "@%d Hz: +3 after 1 s of regen" % hz)
-	_ticks(m, 10 * hz, dt)
-	check_near(m.value, 83.0, 1e-6, "@%d Hz: +30 after 10 s more" % hz)
+	print("    mana @%d Hz: %.5f after 1.5 s delay + 1 s regen (56)" % [hz, m.value])
+	check_near(m.value, 56.0, 1e-6, "@%d Hz: +6 after 1 s of regen" % hz)
+	_ticks(m, 4 * hz, dt)
+	check_near(m.value, 80.0, 1e-6, "@%d Hz: +24 after 4 s more" % hz)
 	# A cast inside the delay restarts it: casts at 0 and 1.4 s, regen only from 2.9 s.
 	var r := Mana.new()
 	check(r.spend(10.0), "spend 10")
@@ -131,7 +131,7 @@ func _regen_timing(hz: int) -> void:
 	_ticks(r, delay_ticks, dt)
 	check_near(r.value, 80.0, 1e-4, "@%d Hz: delay restarted by the second cast" % hz)
 	_ticks(r, hz, dt)
-	check_near(r.value, 83.0, 1e-4, "@%d Hz: then +3/s" % hz)
+	check_near(r.value, 86.0, 1e-4, "@%d Hz: then +6/s" % hz)
 
 
 func test_regen_delay_and_rate_30_60_144_hz() -> void:
@@ -148,7 +148,7 @@ func test_refusal_does_not_reset_delay() -> void:
 		check(not q.spend(5.0) and q.value == 1.0 and q.refusals == 1, "@%d Hz: refused at 1 s" % hz)
 		check_near(q.seconds_since_spend, 1.0, 1e-9, "@%d Hz: refusal kept the timer" % hz)
 		_ticks(q, hz * 3 / 2, dt)  # 2.5 s after the cast: 1 s of regen
-		check_near(q.value, 4.0, 1e-6, "@%d Hz: regen 1.5 s after the *successful* cast" % hz)
+		check_near(q.value, 7.0, 1e-6, "@%d Hz: regen 1.5 s after the *successful* cast" % hz)
 		# Refusing every tick (Fire held with hold_to_repeat) doesn't hold regen back either.
 		var h := Mana.new()
 		check(h.spend(100.0), "empty")
@@ -156,7 +156,7 @@ func test_refusal_does_not_reset_delay() -> void:
 		while not h.spend(5.0) and n < 100 * hz:
 			h.tick(dt)
 			n += 1
-		var expect := int(ceil((1.5 + 5.0 / 3.0) * hz - 1e-6))
+		var expect := int(ceil((1.5 + 5.0 / 6.0) * hz - 1e-6))
 		check(
 			absi(n - expect) <= 1,
 			"@%d Hz: refused every tick, still affords 5 after %d ticks (got %d)" % [hz, expect, n]
@@ -172,35 +172,35 @@ func test_empty_to_full_in_34_83_s() -> void:
 		while e.value < e.max_value() and n < 100 * hz:
 			e.tick(dt)
 			n += 1
-		var expect := int(ceil((1.5 + 100.0 / 3.0) * hz - 1e-6))
+		var expect := int(ceil((1.5 + 100.0 / 6.0) * hz - 1e-6))
 		print(
 			(
-				"    mana @%d Hz: empty -> full in %d ticks = %.4f s (expect %d = 34.833 s)"
+				"    mana @%d Hz: empty -> full in %d ticks = %.4f s (expect %d = 18.167 s)"
 				% [hz, n, float(n) / hz, expect]
 			)
 		)
 		check(absi(n - expect) <= 1 and e.value == 100.0, "@%d Hz: full after %d ticks (got %d)" % [hz, expect, n])
-		check_near(float(n) / hz, 34.8333, 1.0 / hz + 1e-4, "@%d Hz: 34.83 s" % hz)
+		check_near(float(n) / hz, 18.1667, 1.0 / hz + 1e-4, "@%d Hz: 18.17 s" % hz)
 		_ticks(e, hz, dt)
 		check(e.value == 100.0 and not e.regenerating(), "@%d Hz: never above the max" % hz)
 
 
 func test_regen_and_max_bonus_hooks() -> void:
-	# Equipment regen (step 19): Novice Grimoire mana_regen_bonus 0.5 -> 3.5/s.
+	# Equipment regen still adds on top of the doubled base: +0.5 -> 6.5/s.
 	var m := Mana.new()
 	m.set_regen_bonus(0.5)
-	check(m.regen_rate() == 3.5 and m.regen_bonus == 0.5, "3.5/s")
+	check(m.regen_rate() == 6.5 and m.regen_bonus == 0.5, "6.5/s")
 	check(m.spend(50.0), "spend 50")
 	_ticks(m, 90 + 60)
-	print("    mana: regen bonus +0.5 -> %.4f after 1.5 s + 1 s (53.5)" % m.value)
-	check_near(m.value, 53.5, 1e-6, "+3.5 in 1 s")
+	print("    mana: regen bonus +0.5 -> %.4f after 1.5 s + 1 s (56.5)" % m.value)
+	check_near(m.value, 56.5, 1e-6, "+6.5 in 1 s")
 	m.set_regen_bonus(2.0)
 	_ticks(m, 60)
-	check_near(m.value, 58.5, 1e-6, "+5 at 5/s")
+	check_near(m.value, 64.5, 1e-6, "+8 at 8/s")
 	m.set_regen_bonus(-10.0)
 	check(m.regen_rate() == 0.0, "never negative")
 	_ticks(m, 60)
-	check_near(m.value, 58.5, 1e-6, "never drains")
+	check_near(m.value, 64.5, 1e-6, "never drains")
 	# Max bonus = Magewar equip: max and current both +bonus (clamped); removal clamps.
 	var x := Mana.new()
 	check(x.spend(20.0), "spend 20")
@@ -240,12 +240,12 @@ func test_regen_and_max_bonus_hooks() -> void:
 func test_from_tuning() -> void:
 	var t := PlayerTuning.new()
 	check(
-		t.mana_max == 100.0 and t.mana_regen_per_sec == 3.0 and t.mana_regen_delay == 1.5 and t.mana_auto_regenerate,
+		t.mana_max == 100.0 and t.mana_regen_per_sec == 6.0 and t.mana_regen_delay == 1.5 and t.mana_auto_regenerate,
 		"PlayerTuning mana = PLAN §30.1"
 	)
 	var tres := load("res://resources/player/player_tuning.tres") as PlayerTuning
 	check(
-		tres != null and tres.mana_max == 100.0 and tres.mana_regen_per_sec == 3.0 and tres.mana_regen_delay == 1.5,
+		tres != null and tres.mana_max == 100.0 and tres.mana_regen_per_sec == 6.0 and tres.mana_regen_delay == 1.5,
 		"player_tuning.tres mana"
 	)
 	t.mana_max = 80.0
@@ -319,7 +319,7 @@ func test_player_spends_mana_and_shows_not_enough_mana() -> void:
 			% [next, p.not_enough_mana_cues]
 		)
 	)
-	check(absi(next - 646) <= 1, "player casts again at tick 646 +-1 (got %d)" % next)
+	check(absi(next - 596) <= 1, "player casts again at tick 596 +-1 (got %d)" % next)
 	check(
 		(
 			p.not_enough_mana_cues == next - 480
@@ -334,7 +334,7 @@ func test_player_spends_mana_and_shows_not_enough_mana() -> void:
 	var idle := PlayerInput.hold()
 	for i in 150:
 		p.tick(idle, DT)
-	check_near(p.mana.value, 93.0, 1e-6, "player regenerates once per tick")
+	check_near(p.mana.value, 96.0, 1e-6, "player regenerates once per tick")
 	# set_mana() rebinds the caster.
 	var bigger := Mana.new()
 	bigger.base_max = 150.0

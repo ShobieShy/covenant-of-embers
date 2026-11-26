@@ -6,7 +6,7 @@ extends TestCase
 ##    difference, removal clamps); resist cap: two 0.4 Fire pieces -> 0.8 stored, 0.6
 ##    applied by Damage.resolve_hit;
 ##  - Leather Belt -> Breath max 115 without refill; Traveler's Shoes -> walk 4.6 m/s;
-##  - Novice Grimoire (+5 / +0.5) on 80/100 -> 85/105 and 3.5/s; removed -> 85/100, 3/s;
+##  - Novice Grimoire (+5 / +0.5) on 80/100 -> 85/105 and 6.5/s; removed -> 85/100, 6/s;
 ##    its +3 spell damage reaches every caster;
 ##  - Mana Potion 30 -> 55 (refused when full), Health Potion +30, stacks of 5;
 ##  - EquipmentRoller = Magewar generate_equipment_with_rng: ranges × rarity, Clothes resist
@@ -147,7 +147,7 @@ func test_bonuses_applied_and_removed_exactly() -> void:
 	var m0 := p.mana.max_value()
 	var b0 := p.breath.max_value()
 	var r0 := p.mana.regen_rate()
-	check(h0 == 100.0 and m0 == 100.0 and b0 == 100.0 and r0 == 3.0, "base 100/100/100, 3/s")
+	check(h0 == 100.0 and m0 == 100.0 and b0 == 100.0 and r0 == 6.0, "base 100/100/100, 6/s")
 	for id in EquipmentItem.list_ids():
 		check(p.equip_item(EquipmentItem.load_item(id)) == null, "%s into an empty slot" % id)
 	# Hat 10 + Robes 5 + Grimoire 5 mana; Robes 5 + Shoes 5 health; Belt 15 + Shoes 5 stamina.
@@ -157,7 +157,7 @@ func test_bonuses_applied_and_removed_exactly() -> void:
 	)
 	check(p.mana.max_value() == 120.0 and p.mana.value == 120.0, "mana 120 (+20 added)")
 	check(p.breath.max_value() == 120.0 and p.breath.value == 100.0, "Breath max 120, not refilled")
-	check(is_equal_approx(p.mana.regen_rate(), 4.0), "regen 3 + 0.5 + 0.5 = 4 (%f)" % p.mana.regen_rate())
+	check(is_equal_approx(p.mana.regen_rate(), 7.0), "regen 6 + 0.5 + 0.5 = 7 (%f)" % p.mana.regen_rate())
 	check(is_equal_approx(p.speed_multiplier, 1.15), "speed x1.15")
 	check(
 		is_equal_approx(p.damage_target.resist[E.ARCANE], 0.05), "Arcane robes 5 %% vs Arcane (Magewar affinity rule)"
@@ -172,7 +172,7 @@ func test_bonuses_applied_and_removed_exactly() -> void:
 	check(p.unequip_item(S.HAT) == null, "empty slot: nothing")
 	check(p.health.max_value() == h0 and p.mana.max_value() == m0 and p.breath.max_value() == b0, "maxes back exactly")
 	check(p.health.value == 100.0 and p.mana.value == 100.0 and p.breath.value == 100.0, "values clamped to the base")
-	check(p.mana.regen_rate() == r0 and p.speed_multiplier == 1.0, "regen 3, speed x1 exactly")
+	check(p.mana.regen_rate() == r0 and p.speed_multiplier == 1.0, "regen 6, speed x1 exactly")
 	var zero := true
 	for e in ElementTable.COUNT:
 		zero = zero and p.damage_target.resist[e] == 0.0
@@ -268,7 +268,7 @@ func test_grimoire_mana_and_spell_damage() -> void:
 	p.mana.value = 80.0
 	p.equip_item(EquipmentItem.load_item("novice_grimoire"))
 	check(p.mana.value == 85.0 and p.mana.max_value() == 105.0, "85/105 (%f/%f)" % [p.mana.value, p.mana.max_value()])
-	check(is_equal_approx(p.mana.regen_rate(), 3.5), "3.5/s")
+	check(is_equal_approx(p.mana.regen_rate(), 6.5), "6.5/s")
 	check(p.caster.damage_bonus == 3.0, "spell damage +3 on the caster")
 	# The flat bonus reaches the bolt: Caster spawn damage = wieldable damage + 3.
 	var staff := WieldableInstance.load_base("apprentice_fire_staff")
@@ -283,7 +283,7 @@ func test_grimoire_mana_and_spell_damage() -> void:
 	p.mana.value = 85.0
 	p.unequip_item(S.GRIMOIRE)
 	check(p.mana.value == 85.0 and p.mana.max_value() == 100.0, "removed: 85/100")
-	check(is_equal_approx(p.mana.regen_rate(), 3.0) and p.caster.damage_bonus == 0.0, "3/s, no spell bonus")
+	check(is_equal_approx(p.mana.regen_rate(), 6.0) and p.caster.damage_bonus == 0.0, "6/s, no spell bonus")
 	w.free()
 
 
