@@ -44,10 +44,10 @@ fog_light_color = Color(0.247801, 0.220916, 0.189748, 1)
 fog_density = 0.02
 fog_sky_affect = 0.0
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
 size = Vector3(16, 0.2, 16)
 
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
 size = Vector3(16, 0.2, 16)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
@@ -63,58 +63,58 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
 size = Vector3(16, 8, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_2"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
 size = Vector3(16, 8, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
 albedo_color = Color(0.565728, 0.484529, 0.395881, 1)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_3"]
-size = Vector3(1, 8, 14)
-
 [sub_resource type="BoxMesh" id="BoxMesh_3"]
 size = Vector3(1, 8, 14)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_4"]
-size = Vector3(1, 8, 5.5)
+[sub_resource type="BoxShape3D" id="BoxShape3D_3"]
+size = Vector3(1, 8, 14)
 
 [sub_resource type="BoxMesh" id="BoxMesh_4"]
 size = Vector3(1, 8, 5.5)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_5"]
-size = Vector3(2, 0.4, 3)
+[sub_resource type="BoxShape3D" id="BoxShape3D_4"]
+size = Vector3(1, 8, 5.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_5"]
+size = Vector3(2, 0.4, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5"]
 size = Vector3(2, 0.4, 3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
 albedo_color = Color(0.537099, 0.665185, 0.423583, 1)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_6"]
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
 size = Vector3(0.2, 1, 0.2)
 
-[sub_resource type="BoxMesh" id="BoxMesh_6"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_6"]
 size = Vector3(0.2, 1, 0.2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
 albedo_color = Color(1, 0.930925, 0.735357, 1)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_7"]
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
 size = Vector3(1.6, 1, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_7"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_7"]
 size = Vector3(1.6, 1, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
 albedo_color = Color(0.701411, 0.583831, 0.423583, 1)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_8"]
+[sub_resource type="BoxMesh" id="BoxMesh_8"]
 size = Vector3(2.5, 0.1, 2.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_8"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_8"]
 size = Vector3(2.5, 0.1, 2.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
