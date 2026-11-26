@@ -205,5 +205,7 @@ func test_waypoint_marks_the_vault_and_the_next_hop() -> void:
 	var down := {"points": [], "gates": [], "stairs_down": stair, "floor": 1}
 	var hop: Variant = QuestWaypoint.resolve("kill", "goblin_king", "labyrinth", 1, down)
 	check(hop is Vector3 and (hop as Vector3).is_equal_approx(stair), "Act I marks the downward stair")
-	var done: Variant = QuestWaypoint.resolve("kill", "goblin_king", "labyrinth", 5, {"points": [], "gates": [], "floor": 5})
+	var done: Variant = QuestWaypoint.resolve(
+		"kill", "goblin_king", "labyrinth", 5, {"points": [], "gates": [], "floor": 5}
+	)
 	check(done == null, "no boss and no stair leaves no mark")

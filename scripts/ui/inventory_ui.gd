@@ -61,9 +61,15 @@ func _init() -> void:
 	var left := VBoxContainer.new()
 	h.add_child(left)
 	left.add_child(_label("Backpack"))
+	var scroll := ScrollContainer.new()
+	scroll.name = "BackpackScroll"
+	scroll.custom_minimum_size = Vector2(420, 320)
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	left.add_child(scroll)
 	grid = GridContainer.new()
 	grid.columns = 6
-	left.add_child(grid)
+	scroll.add_child(grid)
 	for i in Inventory.CAPACITY:
 		var b := _button("")
 		b.custom_minimum_size = Vector2(64, 64)  # icon-only slot; the name is the tooltip + card title

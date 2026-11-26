@@ -1,6 +1,6 @@
 extends TestCase
 ## Step 24 done check: inventory capacity; equip/unequip from the backpack updates stats.
-##  - 30 slots, add/remove, no duplicates, only backpack item types, dust counter;
+##  - 60 slots, add/remove, no duplicates, only backpack item types, dust counter;
 ##  - equip_from_inventory: gear -> Equipment (bonuses applied, replaced piece back in the
 ##    backpack), staff/wand -> Loadout slot (replacing the one in hand starts a draw);
 ##  - unequip to the backpack restores the stats; refused (with a hint) when full;
@@ -21,13 +21,13 @@ func _player() -> Player:
 
 func test_capacity_and_types() -> void:
 	var inv := Inventory.new()
-	check(inv.capacity == 30 and inv.free_slots() == 30, "30 slots")
+	check(inv.capacity == 60 and inv.free_slots() == 60, "60 slots")
 	var part := WieldablePart.new()
 	check(inv.add(part) and not inv.add(part), "no duplicates")
 	check(not inv.add(null) and not inv.add(ConsumableItem.new()), "only backpack types")
-	for i in 29:
+	for i in 59:
 		check(inv.add(EquipmentItem.new()), "fill %d" % i)
-	check(inv.is_full() and not inv.add(WieldablePart.new()), "full at 30")
+	check(inv.is_full() and not inv.add(WieldablePart.new()), "full at 60")
 	check(inv.remove(part) and inv.free_slots() == 1, "remove frees a slot")
 	inv.add_dust(12)
 	check(inv.spend_dust(5) and not inv.spend_dust(8) and inv.dust == 7, "dust")
@@ -85,6 +85,36 @@ func test_wieldables_and_draw() -> void:
 	check(not p.unequip_wieldable_to_inventory(Loadout.Slot.WAND) and p.caster.wieldable == staff, "full: refused")
 	check(p.last_hint == PickupCollector.HINT_FULL, "full hint")
 	p.queue_free()
+
+
+func test_old_thirty_slot_save_keeps_order() -> void:
+	var p := _player()
+	for i in 30:
+		var part := PartRoller.from_seed(8000 + i, WieldablePart.PartType.HEAD, "basic", ElementTable.Element.FIRE)
+		check(p.inventory.add(part), "pack %d" % i)
+	var data := SaveGame.capture(p)
+	var q := _player()
+	var warn := SaveGame.apply(q, data)
+	check(warn.is_empty(), "every code loads")
+	check(q.inventory.capacity == 60 and q.inventory.size() == 30, "30 items in a 60-slot pack")
+	check(q.inventory.free_slots() == 30, "thirty slots still free")
+	check(ItemCodes.same_item(p.inventory.at(0), q.inventory.at(0)), "slot 0 unchanged")
+	check(ItemCodes.same_item(p.inventory.at(29), q.inventory.at(29)), "slot 29 unchanged")
+	check(SaveGame.VERSION == 1, "save version stays 1")
+	p.queue_free()
+	q.queue_free()
+
+
+func test_screen_scrolls_and_pose_shares_the_size() -> void:
+	var ui := InventoryUi.new()
+	runner_tree.root.add_child(ui)
+	check(ui.slot_buttons.size() == 60, "sixty slots drawn")
+	check(ui.grid.get_parent() is ScrollContainer, "the grid is in a scroller")
+	ui.queue_free()
+	var rp := RemotePlayer.new()
+	rp.apply_pose({"bag": Inventory.CAPACITY, "p": Vector3.ZERO})
+	check(rp.bag_capacity == 60, "co-op pose carries the bag size")
+	rp.free()
 
 
 func test_use_potion_key() -> void:

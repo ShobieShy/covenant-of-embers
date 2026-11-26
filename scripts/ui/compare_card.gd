@@ -167,7 +167,7 @@ func _brand_rows(lines: Array, _against: Array) -> void:
 		var pct := float(line.get("percent", 0.0))
 		var shown := -pct if debuff else pct
 		var stat := String(line.get("stat", ""))
-		var label := _LINE_LABELS.get(stat, stat)
+		var label := String(_LINE_LABELS.get(stat, stat))
 		var higher := stat != "mana_cost"
 		_row("brand_" + stat, label, shown, NAN, higher)
 		rows[rows.size() - 1]["debuff"] = debuff

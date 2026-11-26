@@ -106,11 +106,13 @@ func gem_slots() -> int:
 
 func damage() -> float:
 	var bonuses := PackedFloat64Array()
+	var gems := 0.0
 	for p in parts:
-		bonuses.append(p.damage_bonus + ElementGem.GEM_DAMAGE * p.gems.size())
+		bonuses.append(p.damage_bonus)
+		gems += ElementGem.GEM_DAMAGE * p.gems.size()
 	var r := rarity()
 	var base := Damage.wieldable_damage(def.damage, r.multiplier if r != null else 1.0, bonuses)
-	return base * (1.0 + _brand_pct("damage") / 100.0)
+	return base * (1.0 + _brand_pct("damage") / 100.0) + gems
 
 
 func cooldown() -> float:

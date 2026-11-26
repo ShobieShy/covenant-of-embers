@@ -41,6 +41,7 @@ var _hit_cs: CollisionShape3D
 var reconnecting := false
 var downed_left := 0.0
 var shield := 0.0
+var bag_capacity := Inventory.CAPACITY  ## 0.11.5: the other player's backpack size
 var crouched := false  ## pose "cr": the sender's hull is the crouch capsule
 var ping_at := Vector3.INF
 var ping_left := 0.0
@@ -107,6 +108,8 @@ func apply_pose(d: Dictionary) -> void:
 	reconnecting = bool(d.get("rc", false))
 	downed_left = float(d.get("dtl", 0.0))
 	shield = float(d.get("sh", 0.0))
+	if d.has("bag"):
+		bag_capacity = maxi(1, int(d["bag"]))
 	_set_wisp(int(d.get("sm", 0)) == 1)
 	var next_crouch := int(d.get("cr", 0)) != 0
 	if next_crouch != crouched or poses == 0:

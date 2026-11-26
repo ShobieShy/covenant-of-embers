@@ -196,6 +196,9 @@ func local_pose() -> Dictionary:
 	var pr: Variant = player.get(&"progression")
 	if pr != null:
 		d["l"] = int(pr.get(&"level"))
+	var inv: Variant = player.get(&"inventory")
+	if inv is Inventory:
+		d["bag"] = (inv as Inventory).capacity
 	var fx := brand_fx_of(player)
 	if not fx.is_empty():  # step 142: the held brand's FX state (bits, meter, colour)
 		d["bf"] = fx
