@@ -316,6 +316,16 @@ date_added = "2026-10-26"
 use = "Step 152 terrain mud layer (color/normal/roughness/height at 512 px + Terrain3D packed PNGs)"
 
 [[asset]]
+name = "Landfill pit meshes"
+path = "assets/original/landfill"
+author = "Covenant of Embers project"
+source = "assets/original/landfill/build_meshes.py (original meshes; textures are the repo's ambientCG sets)"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-26"
+use = "The Landfill pit, toxic pool, crystal clusters, shacks, town gate and Breach crater"
+
+[[asset]]
 name = "Ember Art (0.1.4)"
 path = "assets/original/ember_art"
 author = "Covenant of Embers project (Ember Art)"

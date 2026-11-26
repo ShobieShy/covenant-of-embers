@@ -178,32 +178,42 @@ def hall_dressing() -> list[str]:
 
 
 def midden() -> tuple[set[str], str]:
-    """Trash along the valley heaps. Decorative only, off the centre lane, the Light shrine's
-    east side (the scavenger lies there), and the empty road past the Filth."""
-    # x, y, z, model, yaw, scale factor. y matches the floor: 0 upper trench, 1.5 ledge, -2 bowl and road.
-    spots = ((-7.2, 0.0, 20.0, "Trash_Bags", 15, 1.5), (7.4, 0.0, 19.0, "Trash_Bags", 80, 1.6),
-             (-6.8, 0.0, 14.0, "Trashcan", 20, 1.3), (6.6, 0.0, 13.0, "Can_Broken", -20, 1.3),
-             (-7.0, 0.0, 11.2, "Trash_Bag", 140, 1.4), (7.2, 0.0, 10.6, "Trash_Bags", 40, 1.4),
-             (6.5, 0.0, 8.4, "Trash_Bags", 200, 1.3), (-7.4, 0.0, 5.0, "Trashcan_Small", 0, 1.3),
-             (6.2, 0.0, 6.2, "Trash_Bag", 110, 1.2), (-7.2, 0.0, 2.2, "Trash_Bags", 60, 1.5),
-             (6.6, 0.0, 1.2, "Can_Broken", 80, 1.3), (-6.2, 0.0, -2.4, "Trash_Bag", 30, 1.3),
-             (6.2, 0.0, -8.0, "Trash_Bags", 95, 1.4), (-5.4, 1.5, -12.2, "Can_Broken", 15, 1.2),
-             (5.2, 1.5, -11.0, "Trash_Bag", 300, 1.1), (-8.0, -2.0, -30.0, "Trash_Bags", 20, 1.6),
-             (8.2, -2.0, -34.0, "Trash_Bags", 70, 1.5), (-7.4, -2.0, -40.0, "Can_Broken", 45, 1.3),
-             (7.6, -2.0, -43.0, "Trashcan", 10, 1.2), (-2.7, -2.0, -53.0, "Trash_Bag", 0, 1.2),
-             (2.6, -2.0, -57.0, "Can_Broken", 90, 1.1))
-    mul = {"Trashcan": 0.8, "Trashcan_Small": 1.2, "Trash_Bag": 3.2, "Trash_Bags": 3.2, "Can_Broken": 2.2}
-    p = [prop(f"trash_{i + 1}", TRASH + f"{m}.glb", (x, y, z), float(r), round(s * mul[m], 3))
-         for i, (x, y, z, m, r, s) in enumerate(spots)]
-    # 0.10.1: Kenney rocks stand in for the missing Ember Art berm mesh.
-    hide = {"berm_w", "berm_e", "ridge", "rock_cut"}
-    for i, z in enumerate(range(-64, 36, 8)):
-        y = 0.0 if z > -18 else -2.0
-        p.append(prop(f"berm_rock_w{i + 1}", TOWN + "rock-large.glb", (-18.0, y, float(z)), 0.0, (2.2, 3.5, 2.2)))
-        p.append(prop(f"berm_rock_e{i + 1}", TOWN + "rock-large.glb", (18.0, y, float(z)), 0.0, (2.2, 3.5, 2.2)))
-    p.append(prop("ridge_rocks", TOWN + "rock-wide.glb", (-14.0, 0.0, 36.0), 0.0, (3, 3, 2), 5, (7, 0, 0)))
-    p.append(prop("cut_rocks", TOWN + "rock-wide.glb", (-14.0, -2.0, -68.0), 0.0, (3, 3, 2), 5, (7, 0, 0)))
-    return hide, "".join(p)
+    """Round junk pit. The ground mesh, gate, pool, shacks and crater are original
+    meshes on ambientCG maps. Kit props fill the lobes. Nothing sits on the centre
+    lane or on the Light shrine's east side, where the scavenger lies."""
+    L = "assets/original/landfill/"
+    p = [prop("pit", L + "pit.gltf", (0, 0, 0), 0.0, 1.0)]
+    p.append(prop("filth_disc", L + "pool.gltf", (0, -2.02, -40), 0.0, 1.0))
+    p.append(prop("town_gate", L + "gate.gltf", (0, 0, 33), 0.0, 1.0))
+    p.append(prop("breach_crater", L + "crater.gltf", (-116, -2.0, -14), 15.0, 1.15))
+    shacks = ((-46, -2, -16, 90, "shack"), (50, -2, -24, -80, "shack"),
+              (-38, -2, -68, 20, "shack"), (68, -2, -52, -100, "shack_stilts"))
+    for i, (x, y, z, yaw, kind) in enumerate(shacks):
+        p.append(prop(f"shack_{i + 1}", L + f"{kind}.gltf", (x, y, z), float(yaw), 1.15))
+    mounds = ((-14, 0.15, -8, 20, 1.3), (16, 0.2, -24, -15, 1.45), (-16, 0.45, -50, 40, 1.35),
+              (28, -2, -62, 10, 1.1), (-32, -2, -36, 70, 1.05))
+    for i, (x, y, z, yaw, sc) in enumerate(mounds):
+        p.append(prop(f"mound_{i + 1}", L + "mound.gltf", (x, y, z), float(yaw), sc))
+    crystals = ((-22, -2, -30, 1.8), (24, -2, -34, 1.5), (14, -2, -58, 2.1), (-8, -2, -72, 1.6),
+                (36, -2, -12, 1.3), (-58, -2, -22, 1.7), (-112, -1.2, -8, 2.4), (18, 0, 24, 1.2))
+    for i, (x, y, z, sc) in enumerate(crystals):
+        p.append(prop(f"crystal_{i + 1}", L + "crystal.gltf", (x, y, z), float(i * 37), sc))
+    p.append(prop("cart_e", TOWN + "cart.glb", (42, -2, -38), 30.0, 1.6))
+    p.append(prop("cart_w", TOWN + "cart-high.glb", (-28, -2, -58), -50.0, 1.5))
+    p.append(prop("fence_e", TOWN + "fence-broken.glb", (34, -2, -8), 80.0, 1.4))
+    p.append(prop("fence_w", TOWN + "fence.glb", (-22, 0, 16), 15.0, 1.3))
+    # x, y, z, model, yaw, scale. Off the lane (|x| < 4 from z 0 to 25) and off (-5..0, z 2..6).
+    spots = ((-10.5, 0.0, 18.0, "Trash_Bags", 15, 1.6), (11.2, 0.0, 17.0, "Trash_Bag", 80, 1.5),
+             (-12.0, 0.0, 8.0, "Trashcan", 20, 1.1), (12.4, 0.0, 6.5, "Can_Broken", -20, 1.4),
+             (10.5, 0.0, 22.0, "Trash_Bags", 40, 1.7), (-11.0, 0.0, -2.0, "Trash_Bag", 140, 1.5),
+             (-22, -2.0, -18, "Trash_Bags", 30, 1.8), (26, -2.0, -18, "Trash_Bag", 70, 1.6),
+             (22, -2.0, -46, "Can_Broken", 10, 1.5), (-26, -2.0, -44, "Trashcan", 45, 1.2),
+             (8, -2.0, -64, "Trash_Bags", 0, 1.7), (-6, -2.0, -60, "Trash_Bag", 90, 1.4),
+             (48, -2.0, -40, "Can_Broken", 15, 1.3), (-52, -2.0, -28, "Trash_Bags", 110, 1.6))
+    mul = {"Trashcan": 0.8, "Trashcan_Small": 1.2, "Trash_Bag": 2.4, "Trash_Bags": 2.4, "Can_Broken": 1.8}
+    p += [prop(f"trash_{i + 1}", TRASH + f"{m}.glb", (x, y, z), float(r), round(s * mul[m], 3))
+          for i, (x, y, z, m, r, s) in enumerate(spots)]
+    return set(), "".join(p)
 
 
 def breach() -> tuple[set[str], str]:

@@ -6,3 +6,4 @@
 scenes/labyrinth/drowned_choir_nave.tscn
 scenes/labyrinth/spire_arena.tscn
 scenes/levels/mage_association.tscn
+scenes/levels/midden.tscn

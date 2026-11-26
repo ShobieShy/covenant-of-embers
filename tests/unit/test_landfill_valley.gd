@@ -1,6 +1,6 @@
 extends TestCase
-## The Landfill is a closed valley. South to north: entry dump, compactor, deeper rot,
-## the Filth bowl, then an empty road into the Breach. The Filth is the last fight.
+## The Landfill is a round pit. South lip, then the yard, then the Filth at the
+## centre. The Breach crater is the west cut, outside the bowl. The Filth is the last fight.
 
 const SCENE := "res://scenes/levels/midden.tscn"
 
@@ -48,12 +48,12 @@ func test_areas_run_south_to_north_and_the_filth_is_last() -> void:
 	check(is_equal_approx(northmost, spawn.z), "no enemy stands north of the Filth")
 	var gate := (level.get_node("Exits/to_breach") as Node3D).position
 	var town := (level.get_node("Exits/to_town") as Node3D).position
-	check(gate.z < spawn.z - 8.0, "the Breach road is past the Filth (%.1f vs %.1f)" % [gate.z, spawn.z])
+	check(gate.x < -40.0 and gate.distance_to(spawn) > 30.0, "the Breach crater is west of the Filth")
 	check(town.z > start.z, "town is back at the south lip")
 	check(start.distance_to(gate) > 8.0, "the Breach road is not the arrival spot")
 	check(
-		town.distance_to(gate) > 860.0 and town.distance_to(gate) < 960.0,
-		"the valley is about 900 m (%.0f)" % town.distance_to(gate)
+		town.distance_to(gate) > 90.0 and town.distance_to(gate) < 170.0,
+		"the pit is about 120 m from the town lip to the Breach (%.0f)" % town.distance_to(gate)
 	)
 	var rule := LevelFlow.rule("midden", "breach")
 	var intro: Array = IntroDirector.GATE_RULES["midden"]["breach"]

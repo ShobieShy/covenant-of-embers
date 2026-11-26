@@ -204,6 +204,13 @@ source = "https://ambientcg.com/view?id=Ground054"
 line = "ambientCG Ground 054 by Lennart Demes, CC0 1.0"
 
 [[credit]]
+name = "Landfill pit meshes"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "assets/original/landfill/build_meshes.py (original meshes; textures are the repo's ambientCG sets)"
+line = "Landfill pit meshes by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
 name = "Ember Art (0.1.4)"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
