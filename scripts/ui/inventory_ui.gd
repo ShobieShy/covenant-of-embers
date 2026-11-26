@@ -12,6 +12,10 @@ const ACTION := &"inventory"
 const BETTER := Color(0.35, 0.9, 0.35)
 const WORSE := Color(0.95, 0.35, 0.3)
 const TRASH_ACTION := &"inventory_trash"
+const JUNK_ACTION := &"inventory_junk"
+const MENU_JUNK := 1
+const MENU_FAV := 2
+const MENU_TRASH := 3
 ## 0.3.1 P6 (M6): the confirm focuses Keep; pad Y must be held PAD_HOLD_S to trash; the
 ## last trashed item can be put back for UNDO_S ("Undo" toast); the card fades in.
 const PAD_HOLD_S := 0.5
@@ -31,6 +35,9 @@ var selected: Variant = null  ## a Resource, or a quest item id (String)
 var hovered: Variant = null
 var trash_button: Button
 var junk_button: Button
+var favorite_button: Button
+var slot_menu: VBoxContainer
+var slot_menu_open := false
 var qty: SpinBox
 var confirm_row: VBoxContainer
 var confirm_label: Label
@@ -75,8 +82,10 @@ func _init() -> void:
 		b.custom_minimum_size = Vector2(64, 64)  # icon-only slot; the name is the tooltip + card title
 		b.theme_type_variation = UiTheme.SLOT
 		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.pressed.connect(func(): select(player.inventory.at(i) if player else null))
-		b.mouse_entered.connect(func(): hovered = player.inventory.at(i) if player else null)
+		var slot := i
+		b.pressed.connect(func(): select(player.inventory.at(slot) if player else null))
+		b.gui_input.connect(func(ev: InputEvent): _slot_click(slot, ev))
+		b.mouse_entered.connect(func(): hovered = player.inventory.at(slot) if player else null)
 		b.mouse_exited.connect(func(): hovered = null)
 		grid.add_child(b)
 		slot_buttons.append(b)
@@ -132,6 +141,23 @@ func _init() -> void:
 	junk_button.custom_minimum_size = Vector2(120, 0)
 	junk_button.pressed.connect(toggle_junk)
 	th.add_child(junk_button)
+	favorite_button = _button("Favorite")
+	favorite_button.custom_minimum_size = Vector2(120, 0)
+	favorite_button.pressed.connect(toggle_favorite)
+	th.add_child(favorite_button)
+	slot_menu = VBoxContainer.new()
+	slot_menu.name = "SlotMenu"
+	slot_menu.visible = false
+	right.add_child(slot_menu)
+	var junk_row := _button("Mark junk")
+	junk_row.pressed.connect(func(): _menu_pick(MENU_JUNK))
+	slot_menu.add_child(junk_row)
+	var fav_row := _button("Favorite")
+	fav_row.pressed.connect(func(): _menu_pick(MENU_FAV))
+	slot_menu.add_child(fav_row)
+	var trash_row := _button("Trash")
+	trash_row.pressed.connect(func(): _menu_pick(MENU_TRASH))
+	slot_menu.add_child(trash_row)
 	confirm_row = VBoxContainer.new()
 	confirm_row.visible = false
 	right.add_child(confirm_row)
@@ -185,8 +211,18 @@ static func ensure_trash_action() -> void:
 	InputMap.action_add_event(TRASH_ACTION, j)
 
 
+static func ensure_junk_action() -> void:
+	if InputMap.has_action(JUNK_ACTION):
+		return
+	InputMap.add_action(JUNK_ACTION)
+	var e := InputEventKey.new()
+	e.physical_keycode = KEY_J
+	InputMap.action_add_event(JUNK_ACTION, e)
+
+
 func bind(p: Player) -> void:
 	ensure_trash_action()
+	ensure_junk_action()
 	player = p
 	p.inventory.changed.connect(refresh)
 	p.equipment.changed.connect(func(_s): refresh())
@@ -285,10 +321,20 @@ func _unhandled_input(event: InputEvent) -> void:
 			toggle()
 		get_viewport().set_input_as_handled()
 	elif _panel_shown() and event.is_action_pressed(&"ui_cancel"):
-		if pending_trash != null:
+		if slot_menu_open:
+			_close_slot_menu()
+		elif pending_trash != null:
 			cancel_trash()
 		else:
 			close()
+		get_viewport().set_input_as_handled()
+	elif _panel_shown() and InputMap.has_action(JUNK_ACTION) and event.is_action_pressed(JUNK_ACTION):
+		if code_field.has_focus():
+			return  # typing into the Ember Mark field
+		var marked: Variant = _hotkey_target()
+		if marked != null:
+			select(marked)
+			toggle_junk()
 		get_viewport().set_input_as_handled()
 	elif _panel_shown() and InputMap.has_action(TRASH_ACTION) and event.is_action_pressed(TRASH_ACTION):
 		if code_field.has_focus():
@@ -358,7 +404,10 @@ func refresh() -> void:
 		if it and player.inventory.is_junk(it):
 			slot_buttons[i].modulate = slot_buttons[i].modulate.darkened(0.55)
 			slot_buttons[i].tooltip_text += " (junk)"
+		elif it and player.inventory.is_favorite(it):
+			slot_buttons[i].tooltip_text += " (favorite)"
 		_junk_badge(slot_buttons[i], it if it and player.inventory.is_junk(it) else null)
+		_fav_mark(slot_buttons[i], it if it and player.inventory.is_favorite(it) else null)
 	var pot := player.equipment.potion
 	potion_button.text = ("Potions: %s x%d" % [name_of(pot), player.equipment.potion_count] if pot else "Potions: -")
 	for c in quest_box.get_children():
@@ -371,11 +420,20 @@ func refresh() -> void:
 	var is_pot: bool = selected is ConsumableItem
 	qty.visible = is_pot
 	qty.max_value = maxi(1, player.equipment.potion_count) if is_pot else 1
-	junk_button.disabled = not (selected is Resource and player.inventory.has(selected))
-	junk_button.text = ("Unmark junk" if selected is Resource and player.inventory.is_junk(selected) else "Mark junk")
+	var in_pack := selected is Resource and player.inventory.has(selected)
+	junk_button.disabled = not in_pack
+	junk_button.text = ("Unmark junk" if in_pack and player.inventory.is_junk(selected) else "Mark junk")
+	favorite_button.disabled = not in_pack
+	favorite_button.text = ("Unfavorite" if in_pack and player.inventory.is_favorite(selected) else "Favorite")
+	if slot_menu_open:
+		_retitle_slot_menu()
 	trash_button.disabled = selected == null
 	card.text = card_text(selected)
-	if selected != _card_for:  # P6: the card fades in on a new item
+	# A quest id (String) and a backpack item (Resource) are not comparable with !=.
+	var card_changed := typeof(selected) != typeof(_card_for)
+	if not card_changed:
+		card_changed = selected != _card_for
+	if card_changed:  # P6: the card fades in on a new item
 		_card_for = selected
 		UiAnim.fade_in(card)
 
@@ -475,6 +533,74 @@ func toggle_junk() -> bool:
 	return ok
 
 
+func toggle_favorite() -> bool:
+	if player == null or not (selected is Resource):
+		return false
+	var on := not player.inventory.is_favorite(selected)
+	var ok := player.inventory.set_favorite(selected, on)
+	status.text = (("Marked as favorite." if on else "Unmarked.") if ok else "Only backpack items can be favorite.")
+	refresh()
+	return ok
+
+
+func _hotkey_target() -> Variant:
+	var target: Variant = hovered if hovered != null else selected
+	if target == null and player:
+		var f := get_viewport().gui_get_focus_owner()
+		var i := slot_buttons.find(f)
+		target = player.inventory.at(i) if i >= 0 else null
+	return target
+
+
+func _slot_click(i: int, ev: InputEvent) -> void:
+	if not (ev is InputEventMouseButton) or player == null:
+		return
+	var mb := ev as InputEventMouseButton
+	if not mb.pressed or mb.button_index != MOUSE_BUTTON_RIGHT:
+		return
+	var it := player.inventory.at(i)
+	if it == null:
+		return
+	select(it)
+	_open_slot_menu(it)
+
+
+## Right-click menu for a backpack item. Worn gear and quest ids get no menu.
+func _open_slot_menu(item: Variant) -> bool:
+	if player == null or not (item is Resource) or not player.inventory.has(item):
+		return false
+	select(item)
+	slot_menu_open = true
+	slot_menu.visible = true
+	_retitle_slot_menu()
+	return true
+
+
+func _close_slot_menu() -> void:
+	slot_menu_open = false
+	if slot_menu:
+		slot_menu.visible = false
+
+
+func _retitle_slot_menu() -> void:
+	if slot_menu == null or slot_menu.get_child_count() < 3 or player == null:
+		return
+	var junked := selected is Resource and player.inventory.is_junk(selected)
+	var fav := selected is Resource and player.inventory.is_favorite(selected)
+	(slot_menu.get_child(0) as Button).text = "Unmark junk" if junked else "Mark junk"
+	(slot_menu.get_child(1) as Button).text = "Unfavorite" if fav else "Favorite"
+
+
+func _menu_pick(which: int) -> void:
+	_close_slot_menu()
+	if which == MENU_JUNK:
+		toggle_junk()
+	elif which == MENU_FAV:
+		toggle_favorite()
+	elif which == MENU_TRASH:
+		request_trash(selected)
+
+
 ## The compare card as BBCode: title in rarity colour, rows with green/red deltas.
 func card_text(item: Variant) -> String:
 	if item == null:
@@ -567,3 +693,24 @@ func _junk_badge(b: Button, it: Resource) -> void:
 		r.offset_bottom = 18
 		b.add_child(r)
 	r.texture = tex
+
+
+## A text mark in the opposite corner from the junk badge. No new art.
+func _fav_mark(b: Button, it: Resource) -> void:
+	var old := b.get_node_or_null(^"FavMark")
+	if it == null:
+		if old:
+			old.queue_free()
+		return
+	var lab := old as Label
+	if lab == null:
+		lab = Label.new()
+		lab.name = "FavMark"
+		lab.text = "F"
+		lab.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lab.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+		lab.offset_left = 4
+		lab.offset_top = -18
+		lab.offset_right = 18
+		lab.offset_bottom = -2
+		b.add_child(lab)

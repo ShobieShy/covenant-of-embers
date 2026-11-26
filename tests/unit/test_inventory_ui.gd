@@ -136,3 +136,79 @@ func test_unequip_everything() -> void:
 	check(ui.equip_selected() and p.loadout.wieldable(0) == worn[0], "re-equip works")
 	p.queue_free()
 	ui.queue_free()
+
+
+func _press(action: StringName) -> InputEventAction:
+	var ev := InputEventAction.new()
+	ev.action = action
+	ev.pressed = true
+	return ev
+
+
+func test_junk_hotkey_menu_and_favorite_button() -> void:
+	var s := _setup()
+	var p: Player = s[0]
+	var ui: InventoryUi = s[1]
+	ui.open()
+	var a := _hat("basic", 21)
+	var b := _hat("basic", 22)
+	var rare := _hat("rare", 23)
+	p.inventory.add(a)
+	p.inventory.add(b)
+	p.inventory.add(rare)
+	ui.select(a)
+	ui.code_field.grab_focus()
+	ui._unhandled_input(_press(InventoryUi.JUNK_ACTION))
+	check(not p.inventory.is_junk(a), "J does nothing in the Ember Mark field")
+	ui.code_field.release_focus()
+	ui.hovered = b
+	ui._unhandled_input(_press(InventoryUi.JUNK_ACTION))
+	check(p.inventory.is_junk(b) and not p.inventory.is_junk(a), "hovered slot wins")
+	check(ui.status.text == "Marked as junk.", "status")
+	ui.hovered = null
+	ui.select(a)
+	ui._unhandled_input(_press(InventoryUi.JUNK_ACTION))
+	check(p.inventory.is_junk(a), "selected slot when nothing is hovered")
+	ui.refresh()
+	check(ui.slot_buttons[0].tooltip_text.ends_with(" (junk)"), "junk tooltip")
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_RIGHT
+	click.pressed = true
+	ui._slot_click(0, click)
+	check(ui.slot_menu_open and ui.selected == a, "right-click selects and opens the menu")
+	check((ui.slot_menu.get_child(0) as Button).text == "Unmark junk", "menu row")
+	ui._menu_pick(InventoryUi.MENU_JUNK)
+	check(not ui.slot_menu_open and not p.inventory.is_junk(a), "menu unmarks and closes")
+	ui.select(a)
+	check(not ui.favorite_button.disabled, "favorite button on")
+	ui.favorite_button.pressed.emit()
+	check(p.inventory.is_favorite(a) and not p.inventory.is_junk(a), "button sets favorite")
+	ui.refresh()
+	check(ui.slot_buttons[0].tooltip_text.ends_with(" (favorite)"), "favorite tooltip")
+	check(ui.slot_buttons[0].get_node_or_null(^"FavMark") != null, "F mark")
+	ui.favorite_button.pressed.emit()
+	check(not p.inventory.is_favorite(a), "button clears favorite")
+	p.inventory.set_favorite(a, true)
+	ui._open_slot_menu(a)
+	ui._menu_pick(InventoryUi.MENU_JUNK)
+	check(p.inventory.is_junk(a) and not p.inventory.is_favorite(a), "menu junk clears favorite")
+	ui._open_slot_menu(a)
+	ui._menu_pick(InventoryUi.MENU_FAV)
+	check(p.inventory.is_favorite(a) and not p.inventory.is_junk(a), "menu favorite clears junk")
+	var worn := _hat("basic", 24)
+	p.inventory.add(worn)
+	check(p.equip_from_inventory(worn), "equipped")
+	check(not ui._open_slot_menu(worn), "worn gear has no menu")
+	p.quest_items.append("joes_trash")
+	ui.select("joes_trash")
+	check(ui.favorite_button.disabled and not ui._open_slot_menu("joes_trash"), "quest id has no menu")
+	ui._open_slot_menu(b)
+	ui._unhandled_input(_press(&"ui_cancel"))
+	check(ui.is_open() and not ui.slot_menu_open, "Esc closes the menu and leaves the inventory")
+	ui.select(rare)
+	ui._open_slot_menu(rare)
+	ui._menu_pick(InventoryUi.MENU_TRASH)
+	check(ui.confirm_row.visible and p.inventory.has(rare), "rare trash still asks")
+	ui.close()
+	p.queue_free()
+	ui.queue_free()
