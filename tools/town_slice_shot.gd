@@ -19,8 +19,10 @@ func _go(out: String) -> void:
 	for _i in 16:
 		await process_frame
 	OldOakLandmark.prepare(slice)
+	_blossoms(slice)
 	_people(slice)
 	_stand_bob_at_the_door(slice)
+	_lanterns(slice)
 	for _i in 8:
 		await process_frame
 	var cam := Camera3D.new()
@@ -35,8 +37,8 @@ func _go(out: String) -> void:
 	await _frame()
 	_save(out + "/gate.png")
 	# Plaza, eye height, fountain in front, stalls to either side.
-	cam.global_position = Vector3(-6.4, 3.6, 28.0)
-	cam.look_at(Vector3(-6.4, 2.6, 9.6))
+	cam.global_position = Vector3(-6.4, 3.4, 22.0)
+	cam.look_at(Vector3(-6.4, 2.4, 9.6))
 	await _frame()
 	_save(out + "/square.png")
 	var door := _door(slice)
@@ -51,6 +53,17 @@ func _go(out: String) -> void:
 	await _face(cam, slice, "merchant", out + "/npc_market.png")
 	await _bob(cam, slice, out + "/npc_bob.png")
 	root.size = Vector2i(1024, 1024)
+	root.transparent_bg = true
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0, 0, 0, 0)
+	env.sky = null
+	for hide_name in ["Terrain", "Boxes"]:
+		var hide := slice.get_node_or_null(hide_name) as Node3D
+		if hide:
+			hide.visible = false
+	var dome := slice.get_node_or_null("Props/dome") as Node3D
+	if dome:
+		dome.visible = false
 	await _frame()
 	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
 	cam.size = 280.0
@@ -60,6 +73,54 @@ func _go(out: String) -> void:
 	await _frame()
 	_save(out + "/topdown.png")
 	quit(0)
+
+
+func _blossoms(slice: Node3D) -> void:
+	var oak := slice.get_node_or_null("Props/east_oak") as Node3D
+	if oak == null:
+		return
+	for n in oak.find_children("Flowers*", "MeshInstance3D", true, false):
+		var mi := n as MeshInstance3D
+		var base := mi.get_active_material(0) as StandardMaterial3D
+		if base == null:
+			continue
+		var m := base.duplicate() as StandardMaterial3D
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.albedo_color = Color(0.42, 0.18, 0.62, 0.55)
+		m.emission_enabled = true
+		m.emission = Color(0.55, 0.28, 0.9)
+		m.emission_energy_multiplier = 0.55
+		m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		mi.material_override = m
+
+
+func _lanterns(slice: Node3D) -> void:
+	var props := slice.get_node_or_null("Props")
+	if props == null:
+		return
+	for n in props.get_children():
+		var who := n as Node3D
+		if who == null:
+			continue
+		if not String(who.name).begins_with("lamp") and who.name != "east_oak":
+			continue
+		if who.name == "east_oak":
+			var door := _door(slice)
+			if door == null:
+				continue
+			_warm(slice, door.global_position + Vector3(0, 1.2, 0), 6.0, 1.4)
+			continue
+		_warm(slice, who.global_position + Vector3(0, 2.4, 0), 9.0, 0.9)
+
+
+func _warm(slice: Node3D, at: Vector3, radius: float, energy: float) -> void:
+	var light := OmniLight3D.new()
+	light.light_color = Color(1.0, 0.72, 0.42)
+	light.light_energy = energy
+	light.omni_range = radius
+	light.shadow_enabled = false
+	slice.add_child(light)
+	light.global_position = at
 
 
 func _people(slice: Node3D) -> void:
@@ -80,6 +141,8 @@ func _people(slice: Node3D) -> void:
 			at.y = terrain.height_at(at.x, at.z)
 		npc.global_position = at
 		npc.rotation_degrees.y = float(who.get_meta(&"yaw_deg", 0.0))
+		for lab in npc.find_children("*", "Label3D", true, false):
+			(lab as Node3D).visible = false
 
 
 func _stand_bob_at_the_door(slice: Node3D) -> void:

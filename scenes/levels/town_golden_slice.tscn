@@ -4,27 +4,24 @@
 
 [ext_resource type="Script" path="res://scripts/world/level_navigation.gd" id="1_nav"]
 [ext_resource type="Script" path="res://scripts/world/terrain_zone.gd" id="1_terrain"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/fountain-round.glb" id="1_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/fountain-round-detail.glb" id="2_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/fountain-center.glb" id="3_glb"]
-[ext_resource type="PackedScene" path="res://assets/landmarks/old_oak/old_oak.gltf" id="4_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall.glb" id="5_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/wall-arch-top-detail.glb" id="6_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/pillar-stone.glb" id="7_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/lantern.glb" id="8_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall-red.glb" id="9_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall-green.glb" id="10_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/cart.glb" id="11_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/cart-high.glb" id="12_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/banner-red.glb" id="13_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/banner-green.glb" id="14_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/nature-kit/grass_large.glb" id="15_glb"]
+[ext_resource type="PackedScene" path="res://assets/landmarks/old_oak/old_oak.gltf" id="1_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/plaza_cobble.glb" id="2_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/gate_path.glb" id="3_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/fountain.glb" id="4_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/gatehouse.glb" id="5_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/wall_tower.glb" id="6_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/crystal_pylon.glb" id="7_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/hedge.glb" id="8_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/wall_segment.glb" id="9_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/stall_striped.glb" id="10_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/lantern_post.glb" id="11_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/ember_art/town/town_tree.glb" id="12_glb"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
-sky_top_color = Color(0.341, 0.429, 0.819, 1)
-sky_horizon_color = Color(0.809468, 0.832284, 0.896244, 1)
-ground_bottom_color = Color(0.476005, 0.446724, 0.410021, 1)
-ground_horizon_color = Color(0.809468, 0.832284, 0.896244, 1)
+sky_top_color = Color(0.429, 0.403, 0.483, 1)
+sky_horizon_color = Color(0.896244, 0.809468, 0.70837, 1)
+ground_bottom_color = Color(0.503184, 0.437905, 0.379574, 1)
+ground_horizon_color = Color(0.896244, 0.809468, 0.70837, 1)
 sky_curve = 0.12
 sun_angle_max = 20.0
 
@@ -34,9 +31,9 @@ sky_material = SubResource("ProceduralSkyMaterial_1")
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 2
 sky = SubResource("Sky_1")
-background_color = Color(0.809468, 0.832284, 0.896244, 1)
+background_color = Color(0.896244, 0.809468, 0.70837, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.767376, 0.722027, 0.665185, 1)
+ambient_light_color = Color(0.809468, 0.70837, 0.618031, 1)
 ambient_light_energy = 0.45
 tonemap_mode = 4
 tonemap_exposure = 1.0
@@ -49,23 +46,23 @@ glow_intensity = 0.6
 glow_bloom = 0.05
 glow_hdr_threshold = 1.0
 adjustment_enabled = true
-adjustment_brightness = 1.03
-adjustment_contrast = 1.05
-adjustment_saturation = 1.12
+adjustment_brightness = 1.14
+adjustment_contrast = 1.04
+adjustment_saturation = 0.88
 fog_enabled = true
 fog_mode = 0
-fog_light_color = Color(0.968577, 0.935741, 0.865042, 1)
-fog_density = 0.0007
+fog_light_color = Color(0.982207, 0.896244, 0.767376, 1)
+fog_density = 0.0014
 fog_sky_affect = 0.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1"]
-size = Vector3(16, 0.2, 100)
+size = Vector3(18, 0.2, 70)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2"]
-size = Vector3(60, 0.2, 60)
+size = Vector3(8, 0.2, 8)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3"]
-size = Vector3(8, 0.2, 8)
+size = Vector3(52, 0.2, 52)
 
 [node name="TownGoldenSlice" type="Node3D" groups=["kill_line"]]
 metadata/level_id = "town_golden_slice"
@@ -78,166 +75,619 @@ metadata/kill_line_y = -6
 environment = SubResource("Environment_1")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.413803, -0.708958, 0.571092, 0, 0.62732, 0.778761, -0.910366, -0.322254, 0.259587, 0, 10, 0)
-light_color = Color(1, 0.954687, 0.865042, 1)
+transform = Transform3D(0.164399, -0.412454, 0.896022, 0, 0.908381, 0.418143, -0.986394, -0.068742, 0.149337, 0, 10, 0)
+light_color = Color(1, 0.896244, 0.748379, 1)
 light_energy = 1.3
 shadow_enabled = true
 
 [node name="Boxes" type="Node3D" parent="."]
 
 [node name="gate_pad" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 1.9, 50)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 1.9, 62)
 metadata/kind = "ground"
 metadata/toml_index = 0
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/gate_pad"]
 shape = SubResource("BoxShape3D_1")
 
-[node name="plaza_pad" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 1.9, 9.6)
+[node name="oak_pad" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, 1.9, -36)
 metadata/kind = "ground"
 metadata/toml_index = 1
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/plaza_pad"]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/oak_pad"]
 shape = SubResource("BoxShape3D_2")
 
-[node name="oak_pad" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 82, 1.9, -30)
+[node name="plaza_pad" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 1.9, 9.6)
 metadata/kind = "ground"
 metadata/toml_index = 2
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/oak_pad"]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/plaza_pad"]
 shape = SubResource("BoxShape3D_3")
 
 [node name="Terrain" type="Node3D" parent="."]
 script = ExtResource("1_terrain")
 size = Vector2(280, 280)
 center = Vector2(20, 0)
-height = 6
+height = 1.1
 noise_seed = 120
 spacing = 2
-rim = 10
-map_version = 1
+rim = 0
+map_version = 2
 layers = PackedStringArray("grass", "path_cobble")
-pads = Array[Rect2]([Rect2(-16.4, -2, 20, 104), Rect2(-38.4, -22.4, 64, 64), Rect2(76, -36, 12, 12)])
+pads = Array[Rect2]([Rect2(-17.4, 25, 22, 74), Rect2(82, -42, 12, 12), Rect2(-34.4, -18.4, 56, 56)])
 pad_y = 1.95
-cliff_width = 4
-blend = 16
+cliff_width = 2
+blend = 18
 
 [node name="Props" type="Node3D" parent="."]
 
-[node name="fountain_base" parent="Props" instance=ExtResource("1_glb")]
-transform = Transform3D(6.2, 0, 0, 0, 1.15, 0, 0, 0, 6.2, -6.4, 2, 9.6)
-
-[node name="fountain_mid" parent="Props" instance=ExtResource("2_glb")]
-transform = Transform3D(3.290897, 0, 1.9, 0, 1.15, 0, -1.9, 0, 3.290897, -6.4, 2.85, 9.6)
-
-[node name="fountain_top" parent="Props" instance=ExtResource("3_glb")]
-transform = Transform3D(1.7, 0, 0, 0, 1.5, 0, 0, 0, 1.7, -6.4, 3.7, 9.6)
-
-[node name="east_oak" parent="Props" instance=ExtResource("4_glb")]
+[node name="east_oak" parent="Props" instance=ExtResource("1_glb")]
 transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, 96, 0, -44.8)
 metadata/snap = true
 
-[node name="gate_jamb_w" parent="Props" instance=ExtResource("5_glb")]
-transform = Transform3D(0, 0, 2.2, 0, 3.4, 0, -2.4, 0, 0, -11.6, 2, 89.6)
+[node name="plaza" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 2.02, 9.6)
 
-[node name="gate_jamb_e" parent="Props" instance=ExtResource("5_glb")]
-transform = Transform3D(0, 0, 2.2, 0, 3.4, 0, -2.4, 0, 0, -1.2, 2, 89.6)
+[node name="gate_path" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 2.03, 55)
 
-[node name="gate_lintel" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(0, 0, 4.5, 0, 2.2, 0, -7.5, 0, 0, -6.4, 3.15, 89.6)
+[node name="fountain" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 2.05, 9.6)
 
-[node name="gate_tower_w" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(2.4, 0, 0, 0, 4.2, 0, 0, 0, 2.4, -16.5, 2, 89.6)
+[node name="gatehouse" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -6.4, 2, 89.6)
 
-[node name="gate_tower_e" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(2.4, 0, 0, 0, 4.2, 0, 0, 0, 2.4, 3.7, 2, 89.6)
+[node name="east_gate" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(-0.427059, 0, -0.579673, 0, 0.72, 0, 0.579673, 0, -0.427059, 72.46, 0, 53.39)
+metadata/snap = true
 
-[node name="gate_wall_w_1" parent="Props" instance=ExtResource("5_glb")]
-transform = Transform3D(0, 0, 2.2, 0, 2.6, 0, -3, 0, 0, -24, 2, 89.6)
+[node name="wall_0" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -90, 0, 0)
+metadata/snap = true
 
-[node name="gate_wall_w_2" parent="Props" instance=ExtResource("5_glb")]
-transform = Transform3D(0, 0, 2.2, 0, 2.6, 0, -3, 0, 0, -31, 2, 89.6)
+[node name="crystal_w_0" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -90, 9.1, 0)
+metadata/snap = true
 
-[node name="gate_wall_e_1" parent="Props" instance=ExtResource("5_glb")]
-transform = Transform3D(0, 0, 2.2, 0, 2.6, 0, -3, 0, 0, 11, 2, 89.6)
+[node name="hedge_0" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0, 0, 1.4, 0, 1.4, 0, -1.4, 0, 0, -83.5, 0, 0)
+metadata/snap = true
 
-[node name="gate_wall_e_2" parent="Props" instance=ExtResource("5_glb")]
-transform = Transform3D(0, 0, 2.2, 0, 2.6, 0, -3, 0, 0, 18, 2, 89.6)
+[node name="wall_1" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.088373, 0, 0.996087, 0, 1, 0, -0.996087, 0, 0.088373, -89.65, 0, -7.95)
+metadata/snap = true
 
-[node name="road_lamp_w_1" parent="Props" instance=ExtResource("8_glb")]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -12.5, 2, 72)
+[node name="wall_2" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.176054, 0, 0.984381, 0, 1, 0, -0.984381, 0, 0.176054, -88.59, 0, -15.85)
+metadata/snap = true
 
-[node name="road_lamp_w_2" parent="Props" instance=ExtResource("8_glb")]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -12.5, 2, 56)
+[node name="hedge_2" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0.246476, 0, 1.378133, 0, 1.4, 0, -1.378133, 0, 0.246476, -82.2, 0, -14.7)
+metadata/snap = true
 
-[node name="road_lamp_w_3" parent="Props" instance=ExtResource("8_glb")]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -12.5, 2, 40)
+[node name="wall_3" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.262358, 0, 0.964971, 0, 1, 0, -0.964971, 0, 0.262358, -86.85, 0, -23.61)
+metadata/snap = true
 
-[node name="road_lamp_e_1" parent="Props" instance=ExtResource("8_glb")]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -0.3, 2, 72)
+[node name="wall_4" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.346608, 0, 0.93801, 0, 1, 0, -0.93801, 0, 0.346608, -84.42, 0, -31.2)
+metadata/snap = true
 
-[node name="road_lamp_e_2" parent="Props" instance=ExtResource("8_glb")]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -0.3, 2, 56)
+[node name="hedge_4" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0.485252, 0, 1.313214, 0, 1.4, 0, -1.313214, 0, 0.485252, -78.32, 0, -28.94)
+metadata/snap = true
 
-[node name="road_lamp_e_3" parent="Props" instance=ExtResource("8_glb")]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -0.3, 2, 40)
+[node name="wall_5" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.428147, 0, 0.903709, 0, 1, 0, -0.903709, 0, 0.428147, -81.33, 0, -38.54)
+metadata/snap = true
 
-[node name="stall_nw_a" parent="Props" instance=ExtResource("9_glb")]
-transform = Transform3D(2.3564, 0, 0.845237, 0, 1.8, 0, -1.098807, 0, 1.812616, -28, 2, -12)
+[node name="wall_6" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.506335, 0, 0.862337, 0, 1, 0, -0.862337, 0, 0.506335, -77.61, 0, -45.57)
+metadata/snap = true
 
-[node name="stall_nw_b" parent="Props" instance=ExtResource("9_glb")]
-transform = Transform3D(2.511407, 0, 0.517638, 0, 1.8, 0, -0.67293, 0, 1.931852, -20, 2, -16)
+[node name="hedge_6" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0.708869, 0, 1.207272, 0, 1.4, 0, -1.207272, 0, 0.708869, -72, 0, -42.28)
+metadata/snap = true
 
-[node name="stall_ne_a" parent="Props" instance=ExtResource("10_glb")]
-transform = Transform3D(2.443201, 0, -0.68404, 0, 1.8, 0, 0.889252, 0, 1.879385, 12, 2, -14)
+[node name="wall_7" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(0.580561, 0, 0.814217, 0, 1, 0, -0.814217, 0, 0.580561, -73.28, 0, -52.25)
+metadata/snap = true
 
-[node name="stall_ne_b" parent="Props" instance=ExtResource("9_glb")]
-transform = Transform3D(2.251666, 0, -1, 0, 1.8, 0, 1.3, 0, 1.732051, 20, 2, -10)
+[node name="crystal_w_7" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(0.580561, 0, 0.814217, 0, 1, 0, -0.814217, 0, 0.580561, -73.28, 9.1, -52.25)
+metadata/snap = true
 
-[node name="cart_nw" parent="Props" instance=ExtResource("11_glb")]
-transform = Transform3D(1.532089, 0, 1.285575, 0, 2, 0, -1.285575, 0, 1.532089, -24, 2, -8)
+[node name="wall_8" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.650244, 0, 0.759725, 0, 1, 0, -0.759725, 0, 0.650244, -68.37, 0, -58.53)
+metadata/snap = true
 
-[node name="cart_ne" parent="Props" instance=ExtResource("12_glb")]
-transform = Transform3D(1.969616, 0, -0.347296, 0, 2, 0, 0.347296, 0, 1.969616, 16, 2, -6)
+[node name="hedge_8" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0.910342, 0, 1.063616, 0, 1.4, 0, -1.063616, 0, 0.910342, -63.43, 0, -54.3)
+metadata/snap = true
 
-[node name="banner_nw" parent="Props" instance=ExtResource("13_glb")]
-transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, -32, 2, -4)
+[node name="wall_9" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.714839, 0, 0.699289, 0, 1, 0, -0.699289, 0, 0.714839, -62.93, 0, -64.34)
+metadata/snap = true
 
-[node name="banner_ne" parent="Props" instance=ExtResource("14_glb")]
-transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 24, 2, -2)
+[node name="wall_10" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.77384, 0, 0.633381, 0, 1, 0, -0.633381, 0, 0.77384, -57, 0, -69.65)
+metadata/snap = true
 
-[node name="grass_w_1" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(1.575692, 0, 0.277837, 0, 1.6, 0, -0.277837, 0, 1.575692, -18, 2, 40)
+[node name="hedge_10" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.083376, 0, 0.886733, 0, 1.4, 0, -0.886733, 0, 1.083376, -52.88, 0, -64.62)
+metadata/snap = true
 
-[node name="grass_w_2" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(1.575692, 0, 0.277837, 0, 1.6, 0, -0.277837, 0, 1.575692, -18, 2, 22)
+[node name="wall_11" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.826786, 0, 0.562516, 0, 1, 0, -0.562516, 0, 0.826786, -50.62, 0, -74.41)
+metadata/snap = true
 
-[node name="grass_w_3" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(1.575692, 0, 0.277837, 0, 1.6, 0, -0.277837, 0, 1.575692, -18, 2, 4)
+[node name="wall_12" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.873347, 0, 0.487098, 0, 1, 0, -0.487098, 0, 0.873347, -43.85, 0, -78.6)
+metadata/snap = true
 
-[node name="grass_w_4" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(1.575692, 0, 0.277837, 0, 1.6, 0, -0.277837, 0, 1.575692, -18, 2, -14)
+[node name="hedge_12" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.222686, 0, 0.681937, 0, 1.4, 0, -0.681937, 0, 1.222686, -40.68, 0, -72.92)
+metadata/snap = true
 
-[node name="grass_e_1" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(1.503508, 0, -0.547232, 0, 1.6, 0, 0.547232, 0, 1.503508, 6, 2, 40)
+[node name="wall_13" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.912977, 0, 0.408012, 0, 1, 0, -0.408012, 0, 0.912977, -36.73, 0, -82.17)
+metadata/snap = true
 
-[node name="grass_e_2" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(1.503508, 0, -0.547232, 0, 1.6, 0, 0.547232, 0, 1.503508, 6, 2, 22)
+[node name="wall_14" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(0.945462, 0, 0.325733, 0, 1, 0, -0.325733, 0, 0.945462, -29.32, 0, -85.09)
+metadata/snap = true
 
-[node name="grass_e_3" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(1.503508, 0, -0.547232, 0, 1.6, 0, 0.547232, 0, 1.503508, 6, 2, 4)
+[node name="crystal_w_14" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(0.945462, 0, 0.325733, 0, 1, 0, -0.325733, 0, 0.945462, -29.32, 9.1, -85.09)
+metadata/snap = true
 
-[node name="grass_e_4" parent="Props" instance=ExtResource("15_glb")]
-transform = Transform3D(1.503508, 0, -0.547232, 0, 1.6, 0, 0.547232, 0, 1.503508, 6, 2, -14)
+[node name="hedge_14" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.323646, 0, 0.456026, 0, 1.4, 0, -0.456026, 0, 1.323646, -27.2, 0, -78.94)
+metadata/snap = true
+
+[node name="wall_15" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.970549, 0, 0.240906, 0, 1, 0, -0.240906, 0, 0.970549, -21.69, 0, -87.35)
+metadata/snap = true
+
+[node name="wall_16" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.988041, 0, 0.154193, 0, 1, 0, -0.154193, 0, 0.988041, -13.88, 0, -88.92)
+metadata/snap = true
+
+[node name="hedge_16" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.383257, 0, 0.21587, 0, 1.4, 0, -0.21587, 0, 1.383257, -12.88, 0, -82.5)
+metadata/snap = true
+
+[node name="wall_17" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.997801, 0, 0.066274, 0, 1, 0, -0.066274, 0, 0.997801, -5.97, 0, -89.8)
+metadata/snap = true
+
+[node name="wall_18" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.999754, 0, -0.022164, 0, 1, 0, 0.022164, 0, 0.999754, 1.99, 0, -89.98)
+metadata/snap = true
+
+[node name="hedge_18" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.399656, 0, -0.031029, 0, 1.4, 0, 0.031029, 0, 1.399656, 1.85, 0, -83.48)
+metadata/snap = true
+
+[node name="wall_19" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.993884, 0, -0.110428, 0, 1, 0, 0.110428, 0, 0.993884, 9.94, 0, -89.45)
+metadata/snap = true
+
+[node name="wall_20" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.980237, 0, -0.197828, 0, 1, 0, 0.197828, 0, 0.980237, 17.8, 0, -88.22)
+metadata/snap = true
+
+[node name="hedge_20" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.372331, 0, -0.27696, 0, 1.4, 0, 0.27696, 0, 1.372331, 16.52, 0, -81.85)
+metadata/snap = true
+
+[node name="wall_21" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(0.958919, 0, -0.283681, 0, 1, 0, 0.283681, 0, 0.958919, 25.53, 0, -86.3)
+metadata/snap = true
+
+[node name="crystal_w_21" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(0.958919, 0, -0.283681, 0, 1, 0, 0.283681, 0, 0.958919, 25.53, 9.1, -86.3)
+metadata/snap = true
+
+[node name="wall_22" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.930097, 0, -0.367313, 0, 1, 0, 0.367313, 0, 0.930097, 33.06, 0, -83.71)
+metadata/snap = true
+
+[node name="hedge_22" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.302136, 0, -0.514238, 0, 1.4, 0, 0.514238, 0, 1.302136, 30.67, 0, -77.66)
+metadata/snap = true
+
+[node name="wall_23" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.893998, 0, -0.448071, 0, 1, 0, 0.448071, 0, 0.893998, 40.33, 0, -80.46)
+metadata/snap = true
+
+[node name="wall_24" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.850903, 0, -0.525323, 0, 1, 0, 0.525323, 0, 0.850903, 47.54, 0, -77)
+metadata/snap = true
+
+[node name="hedge_24" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.191264, 0, -0.735452, 0, 1.4, 0, 0.735452, 0, 1.191264, 44.12, 0, -71.47)
+metadata/snap = true
+
+[node name="wall_25" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.801149, 0, -0.598464, 0, 1, 0, 0.598464, 0, 0.801149, 55.13, 0, -73.8)
+metadata/snap = true
+
+[node name="wall_26" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.745127, 0, -0.666923, 0, 1, 0, 0.666923, 0, 0.745127, 63.28, 0, -70.7)
+metadata/snap = true
+
+[node name="hedge_26" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.043178, 0, -0.933692, 0, 1.4, 0, 0.933692, 0, 1.043178, 58.95, 0, -65.86)
+metadata/snap = true
+
+[node name="wall_27" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.683274, 0, -0.730162, 0, 1, 0, 0.730162, 0, 0.683274, 72.14, 0, -67.5)
+metadata/snap = true
+
+[node name="wall_28" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(0.616074, 0, -0.787688, 0, 1, 0, 0.787688, 0, 0.616074, 81.79, 0, -63.97)
+metadata/snap = true
+
+[node name="crystal_w_28" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(0.616074, 0, -0.787688, 0, 1, 0, 0.787688, 0, 0.616074, 81.79, 9.1, -63.97)
+metadata/snap = true
+
+[node name="hedge_28" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0.862504, 0, -1.102764, 0, 1.4, 0, 1.102764, 0, 0.862504, 76.67, 0, -59.96)
+metadata/snap = true
+
+[node name="wall_29" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.544053, 0, -0.839051, 0, 1, 0, 0.839051, 0, 0.544053, 92.32, 0, -59.85)
+metadata/snap = true
+
+[node name="wall_30" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.467776, 0, -0.883847, 0, 1, 0, 0.883847, 0, 0.467776, 103.72, 0, -54.89)
+metadata/snap = true
+
+[node name="hedge_30" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0.654886, 0, -1.237386, 0, 1.4, 0, 1.237386, 0, 0.654886, 97.98, 0, -51.85)
+metadata/snap = true
+
+[node name="wall_31" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.387837, 0, -0.921728, 0, 1, 0, 0.921728, 0, 0.387837, 109.14, 0, -45.91)
+metadata/snap = true
+
+[node name="wall_32" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.304864, 0, -0.952396, 0, 1, 0, 0.952396, 0, 0.304864, 105.65, 0, -33.81)
+metadata/snap = true
+
+[node name="hedge_32" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0.42681, 0, -1.333354, 0, 1.4, 0, 1.333354, 0, 0.42681, 99.46, 0, -31.83)
+metadata/snap = true
+
+[node name="wall_33" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.219506, 0, -0.975611, 0, 1, 0, 0.975611, 0, 0.219506, 102.04, 0, -22.95)
+metadata/snap = true
+
+[node name="wall_34" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(0.132429, 0, -0.991192, 0, 1, 0, 0.991192, 0, 0.132429, 98.52, 0, -13.16)
+metadata/snap = true
+
+[node name="hedge_34" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0.185401, 0, -1.387669, 0, 1.4, 0, 1.387669, 0, 0.185401, 92.08, 0, -12.29)
+metadata/snap = true
+
+[node name="wall_35" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(0.044317, 0, -0.999018, 0, 1, 0, 0.999018, 0, 0.044317, 95.24, 0, -4.22)
+metadata/snap = true
+
+[node name="crystal_w_35" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(0.044317, 0, -0.999018, 0, 1, 0, 0.999018, 0, 0.044317, 95.24, 9.1, -4.22)
+metadata/snap = true
+
+[node name="wall_36" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.044317, 0, -0.999018, 0, 1, 0, 0.999018, 0, -0.044317, 92.33, 0, 4.09)
+metadata/snap = true
+
+[node name="hedge_36" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-0.062044, 0, -1.398625, 0, 1.4, 0, 1.398625, 0, -0.062044, 85.83, 0, 3.8)
+metadata/snap = true
+
+[node name="wall_37" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.132429, 0, -0.991192, 0, 1, 0, 0.991192, 0, -0.132429, 89.84, 0, 12)
+metadata/snap = true
+
+[node name="wall_38" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.219506, 0, -0.975611, 0, 1, 0, 0.975611, 0, -0.219506, 87.81, 0, 19.75)
+metadata/snap = true
+
+[node name="hedge_38" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-0.307308, 0, -1.365856, 0, 1.4, 0, 1.365856, 0, -0.307308, 81.47, 0, 18.32)
+metadata/snap = true
+
+[node name="wall_39" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.304864, 0, -0.952396, 0, 1, 0, 0.952396, 0, -0.304864, 85.72, 0, 27.43)
+metadata/snap = true
+
+[node name="wall_40" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.387837, 0, -0.921728, 0, 1, 0, 0.921728, 0, -0.387837, 82.96, 0, 34.9)
+metadata/snap = true
+
+[node name="hedge_40" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-0.542972, 0, -1.290419, 0, 1.4, 0, 1.290419, 0, -0.542972, 76.97, 0, 32.38)
+metadata/snap = true
+
+[node name="wall_41" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.467776, 0, -0.883847, 0, 1, 0, 0.883847, 0, -0.467776, 79.55, 0, 42.1)
+metadata/snap = true
+
+[node name="wall_42" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.683274, 0, -0.730162, 0, 1, 0, 0.730162, 0, -0.683274, 65.72, 0, 61.49)
+metadata/snap = true
+
+[node name="hedge_42" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-0.956583, 0, -1.022227, 0, 1.4, 0, 1.022227, 0, -0.956583, 60.97, 0, 57.05)
+metadata/snap = true
+
+[node name="wall_43" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.745127, 0, -0.666923, 0, 1, 0, 0.666923, 0, -0.745127, 60.02, 0, 67.06)
+metadata/snap = true
+
+[node name="wall_44" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.801149, 0, -0.598464, 0, 1, 0, 0.598464, 0, -0.801149, 53.86, 0, 72.1)
+metadata/snap = true
+
+[node name="hedge_44" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-1.121609, 0, -0.83785, 0, 1.4, 0, 0.83785, 0, -1.121609, 49.97, 0, 66.9)
+metadata/snap = true
+
+[node name="wall_45" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.850903, 0, -0.525323, 0, 1, 0, 0.525323, 0, -0.850903, 47.28, 0, 76.58)
+metadata/snap = true
+
+[node name="wall_46" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.893998, 0, -0.448071, 0, 1, 0, 0.448071, 0, -0.893998, 40.33, 0, 80.46)
+metadata/snap = true
+
+[node name="hedge_46" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-1.251597, 0, -0.6273, 0, 1.4, 0, 0.6273, 0, -1.251597, 37.41, 0, 74.65)
+metadata/snap = true
+
+[node name="wall_47" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(-0.930097, 0, -0.367313, 0, 1, 0, 0.367313, 0, -0.930097, 33.06, 0, 83.71)
+metadata/snap = true
+
+[node name="crystal_w_47" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(-0.930097, 0, -0.367313, 0, 1, 0, 0.367313, 0, -0.930097, 33.06, 9.1, 83.71)
+metadata/snap = true
+
+[node name="wall_48" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.958919, 0, -0.283681, 0, 1, 0, 0.283681, 0, -0.958919, 25.53, 0, 86.3)
+metadata/snap = true
+
+[node name="hedge_48" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-1.342486, 0, -0.397153, 0, 1.4, 0, 0.397153, 0, -1.342486, 23.69, 0, 80.07)
+metadata/snap = true
+
+[node name="wall_49" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.980237, 0, -0.197828, 0, 1, 0, 0.197828, 0, -0.980237, 17.8, 0, 88.22)
+metadata/snap = true
+
+[node name="wall_50" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.993884, 0, -0.110428, 0, 1, 0, 0.110428, 0, -0.993884, 9.94, 0, 89.45)
+metadata/snap = true
+
+[node name="hedge_50" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-1.391438, 0, -0.154599, 0, 1.4, 0, 0.154599, 0, -1.391438, 9.22, 0, 82.99)
+metadata/snap = true
+
+[node name="wall_51" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(-0.970549, 0, 0.240906, 0, 1, 0, -0.240906, 0, -0.970549, -21.69, 0, 87.35)
+metadata/snap = true
+
+[node name="crystal_w_51" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(-0.970549, 0, 0.240906, 0, 1, 0, -0.240906, 0, -0.970549, -21.69, 9.1, 87.35)
+metadata/snap = true
+
+[node name="wall_52" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.945462, 0, 0.325733, 0, 1, 0, -0.325733, 0, -0.945462, -29.32, 0, 85.09)
+metadata/snap = true
+
+[node name="hedge_52" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-1.323646, 0, 0.456026, 0, 1.4, 0, -0.456026, 0, -1.323646, -27.2, 0, 78.94)
+metadata/snap = true
+
+[node name="wall_53" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.912977, 0, 0.408012, 0, 1, 0, -0.408012, 0, -0.912977, -36.73, 0, 82.17)
+metadata/snap = true
+
+[node name="wall_54" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.873347, 0, 0.487098, 0, 1, 0, -0.487098, 0, -0.873347, -43.85, 0, 78.6)
+metadata/snap = true
+
+[node name="hedge_54" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-1.222686, 0, 0.681937, 0, 1.4, 0, -0.681937, 0, -1.222686, -40.68, 0, 72.92)
+metadata/snap = true
+
+[node name="wall_55" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.826786, 0, 0.562516, 0, 1, 0, -0.562516, 0, -0.826786, -50.62, 0, 74.41)
+metadata/snap = true
+
+[node name="wall_56" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.77384, 0, 0.633381, 0, 1, 0, -0.633381, 0, -0.77384, -57, 0, 69.65)
+metadata/snap = true
+
+[node name="hedge_56" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-1.083376, 0, 0.886733, 0, 1.4, 0, -0.886733, 0, -1.083376, -52.88, 0, 64.62)
+metadata/snap = true
+
+[node name="wall_57" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.714839, 0, 0.699289, 0, 1, 0, -0.699289, 0, -0.714839, -62.93, 0, 64.34)
+metadata/snap = true
+
+[node name="wall_58" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(-0.650244, 0, 0.759725, 0, 1, 0, -0.759725, 0, -0.650244, -68.37, 0, 58.53)
+metadata/snap = true
+
+[node name="crystal_w_58" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(-0.650244, 0, 0.759725, 0, 1, 0, -0.759725, 0, -0.650244, -68.37, 9.1, 58.53)
+metadata/snap = true
+
+[node name="hedge_58" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-0.910342, 0, 1.063616, 0, 1.4, 0, -1.063616, 0, -0.910342, -63.43, 0, 54.3)
+metadata/snap = true
+
+[node name="wall_59" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.580561, 0, 0.814217, 0, 1, 0, -0.814217, 0, -0.580561, -73.28, 0, 52.25)
+metadata/snap = true
+
+[node name="wall_60" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.506335, 0, 0.862337, 0, 1, 0, -0.862337, 0, -0.506335, -77.61, 0, 45.57)
+metadata/snap = true
+
+[node name="hedge_60" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-0.708869, 0, 1.207272, 0, 1.4, 0, -1.207272, 0, -0.708869, -72, 0, 42.28)
+metadata/snap = true
+
+[node name="wall_61" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.428147, 0, 0.903709, 0, 1, 0, -0.903709, 0, -0.428147, -81.33, 0, 38.54)
+metadata/snap = true
+
+[node name="wall_62" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.346608, 0, 0.93801, 0, 1, 0, -0.93801, 0, -0.346608, -84.42, 0, 31.2)
+metadata/snap = true
+
+[node name="hedge_62" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-0.485252, 0, 1.313214, 0, 1.4, 0, -1.313214, 0, -0.485252, -78.32, 0, 28.94)
+metadata/snap = true
+
+[node name="wall_63" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.262358, 0, 0.964971, 0, 1, 0, -0.964971, 0, -0.262358, -86.85, 0, 23.61)
+metadata/snap = true
+
+[node name="wall_64" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(-0.176054, 0, 0.984381, 0, 1, 0, -0.984381, 0, -0.176054, -88.59, 0, 15.85)
+metadata/snap = true
+
+[node name="hedge_64" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-0.246476, 0, 1.378133, 0, 1.4, 0, -1.378133, 0, -0.246476, -82.2, 0, 14.7)
+metadata/snap = true
+
+[node name="wall_65" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(-0.088373, 0, 0.996087, 0, 1, 0, -0.996087, 0, -0.088373, -89.65, 0, 7.95)
+metadata/snap = true
+
+[node name="crystal_w_65" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(-0.088373, 0, 0.996087, 0, 1, 0, -0.996087, 0, -0.088373, -89.65, 9.1, 7.95)
+metadata/snap = true
+
+[node name="crystal_s_0" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.64, 2.05, 15.07)
+
+[node name="crystal_s_1" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.62, 2.05, 25.36)
+
+[node name="crystal_s_2" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.66, 2.05, 19.88)
+
+[node name="crystal_s_3" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.44, 2.05, 4.13)
+
+[node name="crystal_s_4" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.18, 2.05, -6.16)
+
+[node name="crystal_s_5" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.86, 2.05, -0.68)
+
+[node name="stall_0" parent="Props" instance=ExtResource("10_glb")]
+transform = Transform3D(0.675, 0, -1.169134, 0, 1.35, 0, 1.169134, 0, 0.675, -18.52, 2.05, 16.6)
+
+[node name="stall_1" parent="Props" instance=ExtResource("10_glb")]
+transform = Transform3D(-0.11766, 0, -1.344863, 0, 1.35, 0, 1.344863, 0, -0.11766, -20.35, 2.05, 8.38)
+
+[node name="stall_2" parent="Props" instance=ExtResource("10_glb")]
+transform = Transform3D(-0.675, 0, -1.169134, 0, 1.35, 0, 1.169134, 0, -0.675, -18.52, 2.05, 2.6)
+
+[node name="stall_3" parent="Props" instance=ExtResource("10_glb")]
+transform = Transform3D(-0.675, 0, 1.169134, 0, 1.35, 0, -1.169134, 0, -0.675, 5.72, 2.05, 2.6)
+
+[node name="stall_4" parent="Props" instance=ExtResource("10_glb")]
+transform = Transform3D(0.234425, 0, 1.32949, 0, 1.35, 0, -1.32949, 0, 0.234425, 7.39, 2.05, 12.03)
+
+[node name="lamp_w_0" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.2, 2.05, 28)
+
+[node name="lamp_e_0" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 2.05, 28)
+
+[node name="lamp_w_1" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.2, 2.05, 42)
+
+[node name="lamp_e_1" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 2.05, 42)
+
+[node name="lamp_w_2" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.2, 2.05, 56)
+
+[node name="lamp_e_2" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 2.05, 56)
+
+[node name="lamp_w_3" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.2, 2.05, 70)
+
+[node name="lamp_e_3" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 2.05, 70)
+
+[node name="tree_0" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, -28, 0, 30)
+metadata/snap = true
+
+[node name="tree_1" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(1.37888, 0, 1.157018, 0, 1.8, 0, -1.157018, 0, 1.37888, -34, 0, 55)
+metadata/snap = true
+
+[node name="tree_2" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(0.312567, 0, 1.772654, 0, 1.8, 0, -1.772654, 0, 0.312567, 18, 0, 40)
+metadata/snap = true
+
+[node name="tree_3" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(-0.9, 0, 1.558846, 0, 1.8, 0, -1.558846, 0, -0.9, 24, 0, 62)
+metadata/snap = true
+
+[node name="tree_4" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(-1.691447, 0, 0.615636, 0, 1.8, 0, -0.615636, 0, -1.691447, -40, 0, -10)
+metadata/snap = true
+
+[node name="tree_5" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(-1.691447, 0, -0.615636, 0, 1.8, 0, 0.615636, 0, -1.691447, 30, 0, -16)
+metadata/snap = true
+
+[node name="tree_6" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(-0.9, 0, -1.558846, 0, 1.8, 0, 1.558846, 0, -0.9, 70, 0, -20)
+metadata/snap = true
+
+[node name="tree_7" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(0.312567, 0, -1.772654, 0, 1.8, 0, 1.772654, 0, 0.312567, 78, 0, -55)
+metadata/snap = true
+
+[node name="tree_8" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(1.37888, 0, -1.157018, 0, 1.8, 0, 1.157018, 0, 1.37888, -22, 0, -30)
+metadata/snap = true
+
+[node name="tree_9" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, 8, 0, -40)
+metadata/snap = true
+
+[node name="crystal_gate_w" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1.35, 0, 0, 0, 1.35, 0, 0, 0, 1.35, -14.5, 2, 89.6)
+
+[node name="crystal_gate_e" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1.35, 0, 0, 0, 1.35, 0, 0, 0, 1.35, 1.7, 2, 89.6)
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
 script = ExtResource("1_nav")
 source = NodePath("../Boxes")
 
 [node name="PlayerStart" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 2, 80)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 2, 78)
 metadata/yaw_deg = 0
 
 [node name="Eye" type="Marker3D" parent="PlayerStart"]
@@ -247,18 +697,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="NPCs" type="Node3D" parent="."]
 
+[node name="bob" type="Marker3D" parent="NPCs"]
+transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, 88, 2, -36)
+metadata/speaker = "Bob"
+
 [node name="guard_gate" type="Marker3D" parent="NPCs"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -4.2, 2, 76)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3, 2, 84)
 metadata/speaker = "Bored Guard"
 
 [node name="merchant" type="Marker3D" parent="NPCs"]
-transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, -26, 2, -9)
+transform = Transform3D(-0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, -0.939693, -16.2, 2, 9.4)
 metadata/speaker = "Potion Merchant"
 
 [node name="tailor" type="Marker3D" parent="NPCs"]
-transform = Transform3D(0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, 0.34202, 14, 2, -8)
+transform = Transform3D(-0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, -0.939693, 6, 2, 16)
 metadata/speaker = "Tailor"
-
-[node name="bob" type="Marker3D" parent="NPCs"]
-transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, 82, 2, -30)
-metadata/speaker = "Bob"

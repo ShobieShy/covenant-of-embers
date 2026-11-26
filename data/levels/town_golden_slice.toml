@@ -1,7 +1,6 @@
-# 0.12.0 golden slice. Plaza, Main Gate, and the painted landmarks.
-# Coordinates are docs/specs/TOWN_GOLDEN_SLICE_0.12.0.md. The live Town
-# is unchanged. Hidden pads are collision only so the cobble stays flat.
-# Every visible mesh is a Kenney, Quaternius, or Ember Art model.
+# 0.12.0 golden slice. Stone gatehouse, curtain wall, three-tier fountain,
+# striped stalls and crystal pylons are Ember Art meshes built from the
+# painting. The Old Oak v4 stays the oak. The live Town is unchanged.
 
 [level]
 id = "town_golden_slice"
@@ -9,35 +8,35 @@ name = "Eldoria - Town slice"
 world_offset = [0.0, 0.0]
 
 [materials]
-ground = "assets/ambientcg/PavingStones131"
-uv_scale = 0.4
+ground = "assets/ambientcg/Grass004"
+uv_scale = 0.25
 
 [environment]
-sky_color = [0.62, 0.66, 0.78]
-ambient_color = [0.55, 0.48, 0.40]
-fog_density = 0.0007
-fog_light = [0.93, 0.86, 0.72]
+sky_color = [0.78, 0.62, 0.46]
+ambient_color = [0.62, 0.46, 0.34]
+fog_density = 0.0014
+fog_light = [0.96, 0.78, 0.55]
 sky = true
-grade = [1.03, 1.05, 1.12]
+grade = [1.14, 1.04, 0.88]
 
 [sun]
-to_light = [0.55, 0.75, 0.25]
-color = [1.0, 0.90, 0.72]
+to_light = [0.9, 0.42, 0.15]
+color = [1.0, 0.78, 0.52]
 
 [player_start]
-position = [-6.4, 2.0, 80.0]
+position = [-6.4, 2.0, 78.0]
 yaw_deg = 0.0
 
 [terrain]
 size = [280, 280]
 center = [20, 0]
-height = 6
+height = 1.1
 seed = 120
-rim = 10
-cliff = 4
-blend = 16
+rim = 0
+cliff = 2
+blend = 18
 spacing = 2
-map_version = 1
+map_version = 2
 pad_y = 1.95
 foliage = 0
 layers = ["grass", "path_cobble"]
@@ -46,43 +45,23 @@ layers = ["grass", "path_cobble"]
 name = "gate_pad"
 kind = "ground"
 hidden = true
-center = [-6.4, 1.9, 50.0]
-size = [16.0, 0.2, 100.0]
+center = [-6.4, 1.9, 62.0]
+size = [18.0, 0.2, 70.0]
+color = [0.4, 0.4, 0.4]
+[[box]]
+name = "oak_pad"
+kind = "ground"
+hidden = true
+center = [88.0, 1.9, -36.0]
+size = [8.0, 0.2, 8.0]
 color = [0.4, 0.4, 0.4]
 [[box]]
 name = "plaza_pad"
 kind = "ground"
 hidden = true
 center = [-6.4, 1.9, 9.6]
-size = [60.0, 0.2, 60.0]
+size = [52.0, 0.2, 52.0]
 color = [0.4, 0.4, 0.4]
-[[box]]
-name = "oak_pad"
-kind = "ground"
-hidden = true
-center = [82.0, 1.9, -30.0]
-size = [8.0, 0.2, 8.0]
-color = [0.4, 0.4, 0.4]
-
-# Three basins. The Kenney rings stand in for the painted fountain.
-[[prop]]
-name = "fountain_base"
-model = "assets/kenney/fantasy-town-kit/fountain-round.glb"
-position = [-6.4, 2.0, 9.6]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [6.2, 1.15, 6.2]
-[[prop]]
-name = "fountain_mid"
-model = "assets/kenney/fantasy-town-kit/fountain-round-detail.glb"
-position = [-6.4, 2.85, 9.6]
-rotation_deg = [0.0, 30.0, 0.0]
-scale = [3.8, 1.15, 3.8]
-[[prop]]
-name = "fountain_top"
-model = "assets/kenney/fantasy-town-kit/fountain-center.glb"
-position = [-6.4, 3.7, 9.6]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [1.7, 1.5, 1.7]
 
 [[prop]]
 name = "east_oak"
@@ -90,156 +69,1158 @@ model = "assets/landmarks/old_oak/old_oak.gltf"
 position = [96.0, 0.0, -44.8]
 rotation_deg = [0.0, 135.0, 0.0]
 snap = true
-# Main Gate. Two wall jambs, a stone arch across them, then the curtain wall.
 [[prop]]
-name = "gate_jamb_w"
-model = "assets/kenney/fantasy-town-kit/wall.glb"
-position = [-11.6, 2.0, 89.6]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = [2.4, 3.4, 2.2]
-[[prop]]
-name = "gate_jamb_e"
-model = "assets/kenney/fantasy-town-kit/wall.glb"
-position = [-1.2, 2.0, 89.6]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = [2.4, 3.4, 2.2]
-[[prop]]
-name = "gate_lintel"
-model = "assets/kenney/fantasy-town-kit/wall-arch-top-detail.glb"
-position = [-6.4, 3.15, 89.6]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = [7.5, 2.2, 4.5]
-[[prop]]
-name = "gate_tower_w"
-model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
-position = [-16.5, 2.0, 89.6]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [2.4, 4.2, 2.4]
-[[prop]]
-name = "gate_tower_e"
-model = "assets/kenney/fantasy-town-kit/pillar-stone.glb"
-position = [3.7, 2.0, 89.6]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = [2.4, 4.2, 2.4]
-[[prop]]
-name = "gate_wall_w"
-model = "assets/kenney/fantasy-town-kit/wall.glb"
-position = [-24.0, 2.0, 89.6]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = [3.0, 2.6, 2.2]
-count = 2
-step = [-7.0, 0.0, 0.0]
-[[prop]]
-name = "gate_wall_e"
-model = "assets/kenney/fantasy-town-kit/wall.glb"
-position = [11.0, 2.0, 89.6]
-rotation_deg = [0.0, 90.0, 0.0]
-scale = [3.0, 2.6, 2.2]
-count = 2
-step = [7.0, 0.0, 0.0]
-
-# Road lamps, about every 15 m, from the gate toward the plaza.
-[[prop]]
-name = "road_lamp_w"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-12.5, 2.0, 72.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.5
-count = 3
-step = [0.0, 0.0, -16.0]
-[[prop]]
-name = "road_lamp_e"
-model = "assets/kenney/fantasy-town-kit/lantern.glb"
-position = [-0.3, 2.0, 72.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 1.5
-count = 3
-step = [0.0, 0.0, -16.0]
-
-# Market. Painting puts red stalls north-west of the square and mixed stalls north-east.
-[[prop]]
-name = "stall_nw_a"
-model = "assets/kenney/fantasy-town-kit/stall-red.glb"
-position = [-28.0, 2.0, -12.0]
-rotation_deg = [0.0, 25.0, 0.0]
-scale = [2.6, 1.8, 2.0]
-[[prop]]
-name = "stall_nw_b"
-model = "assets/kenney/fantasy-town-kit/stall-red.glb"
-position = [-20.0, 2.0, -16.0]
-rotation_deg = [0.0, 15.0, 0.0]
-scale = [2.6, 1.8, 2.0]
-[[prop]]
-name = "stall_ne_a"
-model = "assets/kenney/fantasy-town-kit/stall-green.glb"
-position = [12.0, 2.0, -14.0]
-rotation_deg = [0.0, -20.0, 0.0]
-scale = [2.6, 1.8, 2.0]
-[[prop]]
-name = "stall_ne_b"
-model = "assets/kenney/fantasy-town-kit/stall-red.glb"
-position = [20.0, 2.0, -10.0]
-rotation_deg = [0.0, -30.0, 0.0]
-scale = [2.6, 1.8, 2.0]
-[[prop]]
-name = "cart_nw"
-model = "assets/kenney/fantasy-town-kit/cart.glb"
-position = [-24.0, 2.0, -8.0]
-rotation_deg = [0.0, 40.0, 0.0]
-scale = 2.0
-[[prop]]
-name = "cart_ne"
-model = "assets/kenney/fantasy-town-kit/cart-high.glb"
-position = [16.0, 2.0, -6.0]
-rotation_deg = [0.0, -10.0, 0.0]
-scale = 2.0
-[[prop]]
-name = "banner_nw"
-model = "assets/kenney/fantasy-town-kit/banner-red.glb"
-position = [-32.0, 2.0, -4.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
-[[prop]]
-name = "banner_ne"
-model = "assets/kenney/fantasy-town-kit/banner-green.glb"
-position = [24.0, 2.0, -2.0]
-rotation_deg = [0.0, 0.0, 0.0]
-scale = 2.4
+name = "plaza"
+model = "assets/original/ember_art/town/plaza_cobble.glb"
+position = [-6.40, 2.02, 9.60]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
 
 [[prop]]
-name = "grass_w"
-model = "assets/kenney/nature-kit/grass_large.glb"
-position = [-18.0, 2.0, 40.0]
-rotation_deg = [0.0, 10.0, 0.0]
-scale = 1.6
-count = 4
-step = [0.0, 0.0, -18.0]
-[[prop]]
-name = "grass_e"
-model = "assets/kenney/nature-kit/grass_large.glb"
-position = [6.0, 2.0, 40.0]
-rotation_deg = [0.0, -20.0, 0.0]
-scale = 1.6
-count = 4
-step = [0.0, 0.0, -18.0]
+name = "gate_path"
+model = "assets/original/ember_art/town/gate_path.glb"
+position = [-6.40, 2.03, 55.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
 
+[[prop]]
+name = "fountain"
+model = "assets/original/ember_art/town/fountain.glb"
+position = [-6.40, 2.05, 9.60]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "gatehouse"
+model = "assets/original/ember_art/town/gatehouse.glb"
+position = [-6.40, 2.00, 89.60]
+rotation_deg = [0.0, 180.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "east_gate"
+model = "assets/original/ember_art/town/gatehouse.glb"
+position = [72.46, 0.00, 53.39]
+rotation_deg = [0.0, 233.62, 0.0]
+scale = 0.72
+snap = true
+
+[[prop]]
+name = "wall_0"
+model = "assets/original/ember_art/town/wall_tower.glb"
+position = [-90.00, 0.00, -0.00]
+rotation_deg = [0.0, 90.00, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_w_0"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-90.00, 9.10, -0.00]
+rotation_deg = [0.0, 90.00, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_0"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-83.50, 0.00, -0.00]
+rotation_deg = [0.0, 90.00, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_1"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-89.65, 0.00, -7.95]
+rotation_deg = [0.0, 84.93, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_2"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-88.59, 0.00, -15.85]
+rotation_deg = [0.0, 79.86, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_2"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-82.20, 0.00, -14.70]
+rotation_deg = [0.0, 79.86, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_3"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-86.85, 0.00, -23.61]
+rotation_deg = [0.0, 74.79, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_4"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-84.42, 0.00, -31.20]
+rotation_deg = [0.0, 69.72, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_4"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-78.32, 0.00, -28.94]
+rotation_deg = [0.0, 69.72, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_5"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-81.33, 0.00, -38.54]
+rotation_deg = [0.0, 64.65, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_6"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-77.61, 0.00, -45.57]
+rotation_deg = [0.0, 59.58, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_6"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-72.00, 0.00, -42.28]
+rotation_deg = [0.0, 59.58, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_7"
+model = "assets/original/ember_art/town/wall_tower.glb"
+position = [-73.28, 0.00, -52.25]
+rotation_deg = [0.0, 54.51, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_w_7"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-73.28, 9.10, -52.25]
+rotation_deg = [0.0, 54.51, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_8"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-68.37, 0.00, -58.53]
+rotation_deg = [0.0, 49.44, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_8"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-63.43, 0.00, -54.30]
+rotation_deg = [0.0, 49.44, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_9"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-62.93, 0.00, -64.34]
+rotation_deg = [0.0, 44.37, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_10"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-57.00, 0.00, -69.65]
+rotation_deg = [0.0, 39.30, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_10"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-52.88, 0.00, -64.62]
+rotation_deg = [0.0, 39.30, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_11"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-50.62, 0.00, -74.41]
+rotation_deg = [0.0, 34.23, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_12"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-43.85, 0.00, -78.60]
+rotation_deg = [0.0, 29.15, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_12"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-40.68, 0.00, -72.92]
+rotation_deg = [0.0, 29.15, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_13"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-36.73, 0.00, -82.17]
+rotation_deg = [0.0, 24.08, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_14"
+model = "assets/original/ember_art/town/wall_tower.glb"
+position = [-29.32, 0.00, -85.09]
+rotation_deg = [0.0, 19.01, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_w_14"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-29.32, 9.10, -85.09]
+rotation_deg = [0.0, 19.01, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_14"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-27.20, 0.00, -78.94]
+rotation_deg = [0.0, 19.01, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_15"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-21.69, 0.00, -87.35]
+rotation_deg = [0.0, 13.94, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_16"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-13.88, 0.00, -88.92]
+rotation_deg = [0.0, 8.87, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_16"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-12.88, 0.00, -82.50]
+rotation_deg = [0.0, 8.87, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_17"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-5.97, 0.00, -89.80]
+rotation_deg = [0.0, 3.80, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_18"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [1.99, 0.00, -89.98]
+rotation_deg = [0.0, 358.73, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_18"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [1.85, 0.00, -83.48]
+rotation_deg = [0.0, 358.73, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_19"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [9.94, 0.00, -89.45]
+rotation_deg = [0.0, 353.66, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_20"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [17.80, 0.00, -88.22]
+rotation_deg = [0.0, 348.59, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_20"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [16.52, 0.00, -81.85]
+rotation_deg = [0.0, 348.59, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_21"
+model = "assets/original/ember_art/town/wall_tower.glb"
+position = [25.53, 0.00, -86.30]
+rotation_deg = [0.0, 343.52, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_w_21"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [25.53, 9.10, -86.30]
+rotation_deg = [0.0, 343.52, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_22"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [33.06, 0.00, -83.71]
+rotation_deg = [0.0, 338.45, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_22"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [30.67, 0.00, -77.66]
+rotation_deg = [0.0, 338.45, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_23"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [40.33, 0.00, -80.46]
+rotation_deg = [0.0, 333.38, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_24"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [47.54, 0.00, -77.00]
+rotation_deg = [0.0, 328.31, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_24"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [44.12, 0.00, -71.47]
+rotation_deg = [0.0, 328.31, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_25"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [55.13, 0.00, -73.80]
+rotation_deg = [0.0, 323.24, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_26"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [63.28, 0.00, -70.70]
+rotation_deg = [0.0, 318.17, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_26"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [58.95, 0.00, -65.86]
+rotation_deg = [0.0, 318.17, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_27"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [72.14, 0.00, -67.50]
+rotation_deg = [0.0, 313.10, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_28"
+model = "assets/original/ember_art/town/wall_tower.glb"
+position = [81.79, 0.00, -63.97]
+rotation_deg = [0.0, 308.03, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_w_28"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [81.79, 9.10, -63.97]
+rotation_deg = [0.0, 308.03, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_28"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [76.67, 0.00, -59.96]
+rotation_deg = [0.0, 308.03, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_29"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [92.32, 0.00, -59.85]
+rotation_deg = [0.0, 302.96, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_30"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [103.72, 0.00, -54.89]
+rotation_deg = [0.0, 297.89, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_30"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [97.98, 0.00, -51.85]
+rotation_deg = [0.0, 297.89, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_31"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [109.14, 0.00, -45.91]
+rotation_deg = [0.0, 292.82, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_32"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [105.65, 0.00, -33.81]
+rotation_deg = [0.0, 287.75, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_32"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [99.46, 0.00, -31.83]
+rotation_deg = [0.0, 287.75, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_33"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [102.04, 0.00, -22.95]
+rotation_deg = [0.0, 282.68, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_34"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [98.52, 0.00, -13.16]
+rotation_deg = [0.0, 277.61, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_34"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [92.08, 0.00, -12.29]
+rotation_deg = [0.0, 277.61, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_35"
+model = "assets/original/ember_art/town/wall_tower.glb"
+position = [95.24, 0.00, -4.22]
+rotation_deg = [0.0, 272.54, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_w_35"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [95.24, 9.10, -4.22]
+rotation_deg = [0.0, 272.54, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_36"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [92.33, 0.00, 4.09]
+rotation_deg = [0.0, 267.46, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_36"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [85.83, 0.00, 3.80]
+rotation_deg = [0.0, 267.46, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_37"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [89.84, 0.00, 12.00]
+rotation_deg = [0.0, 262.39, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_38"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [87.81, 0.00, 19.75]
+rotation_deg = [0.0, 257.32, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_38"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [81.47, 0.00, 18.32]
+rotation_deg = [0.0, 257.32, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_39"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [85.72, 0.00, 27.43]
+rotation_deg = [0.0, 252.25, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_40"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [82.96, 0.00, 34.90]
+rotation_deg = [0.0, 247.18, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_40"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [76.97, 0.00, 32.38]
+rotation_deg = [0.0, 247.18, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_41"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [79.55, 0.00, 42.10]
+rotation_deg = [0.0, 242.11, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_42"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [65.72, 0.00, 61.49]
+rotation_deg = [0.0, 226.90, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_42"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [60.97, 0.00, 57.05]
+rotation_deg = [0.0, 226.90, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_43"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [60.02, 0.00, 67.06]
+rotation_deg = [0.0, 221.83, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_44"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [53.86, 0.00, 72.10]
+rotation_deg = [0.0, 216.76, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_44"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [49.97, 0.00, 66.90]
+rotation_deg = [0.0, 216.76, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_45"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [47.28, 0.00, 76.58]
+rotation_deg = [0.0, 211.69, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_46"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [40.33, 0.00, 80.46]
+rotation_deg = [0.0, 206.62, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_46"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [37.41, 0.00, 74.65]
+rotation_deg = [0.0, 206.62, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_47"
+model = "assets/original/ember_art/town/wall_tower.glb"
+position = [33.06, 0.00, 83.71]
+rotation_deg = [0.0, 201.55, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_w_47"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [33.06, 9.10, 83.71]
+rotation_deg = [0.0, 201.55, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_48"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [25.53, 0.00, 86.30]
+rotation_deg = [0.0, 196.48, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_48"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [23.69, 0.00, 80.07]
+rotation_deg = [0.0, 196.48, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_49"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [17.80, 0.00, 88.22]
+rotation_deg = [0.0, 191.41, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_50"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [9.94, 0.00, 89.45]
+rotation_deg = [0.0, 186.34, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_50"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [9.22, 0.00, 82.99]
+rotation_deg = [0.0, 186.34, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_51"
+model = "assets/original/ember_art/town/wall_tower.glb"
+position = [-21.69, 0.00, 87.35]
+rotation_deg = [0.0, 166.06, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_w_51"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-21.69, 9.10, 87.35]
+rotation_deg = [0.0, 166.06, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_52"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-29.32, 0.00, 85.09]
+rotation_deg = [0.0, 160.99, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_52"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-27.20, 0.00, 78.94]
+rotation_deg = [0.0, 160.99, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_53"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-36.73, 0.00, 82.17]
+rotation_deg = [0.0, 155.92, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_54"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-43.85, 0.00, 78.60]
+rotation_deg = [0.0, 150.85, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_54"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-40.68, 0.00, 72.92]
+rotation_deg = [0.0, 150.85, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_55"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-50.62, 0.00, 74.41]
+rotation_deg = [0.0, 145.77, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_56"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-57.00, 0.00, 69.65]
+rotation_deg = [0.0, 140.70, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_56"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-52.88, 0.00, 64.62]
+rotation_deg = [0.0, 140.70, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_57"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-62.93, 0.00, 64.34]
+rotation_deg = [0.0, 135.63, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_58"
+model = "assets/original/ember_art/town/wall_tower.glb"
+position = [-68.37, 0.00, 58.53]
+rotation_deg = [0.0, 130.56, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_w_58"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-68.37, 9.10, 58.53]
+rotation_deg = [0.0, 130.56, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_58"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-63.43, 0.00, 54.30]
+rotation_deg = [0.0, 130.56, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_59"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-73.28, 0.00, 52.25]
+rotation_deg = [0.0, 125.49, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_60"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-77.61, 0.00, 45.57]
+rotation_deg = [0.0, 120.42, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_60"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-72.00, 0.00, 42.28]
+rotation_deg = [0.0, 120.42, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_61"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-81.33, 0.00, 38.54]
+rotation_deg = [0.0, 115.35, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_62"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-84.42, 0.00, 31.20]
+rotation_deg = [0.0, 110.28, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_62"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-78.32, 0.00, 28.94]
+rotation_deg = [0.0, 110.28, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_63"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-86.85, 0.00, 23.61]
+rotation_deg = [0.0, 105.21, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "wall_64"
+model = "assets/original/ember_art/town/wall_segment.glb"
+position = [-88.59, 0.00, 15.85]
+rotation_deg = [0.0, 100.14, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "hedge_64"
+model = "assets/original/ember_art/town/hedge.glb"
+position = [-82.20, 0.00, 14.70]
+rotation_deg = [0.0, 100.14, 0.0]
+scale = 1.4
+snap = true
+
+[[prop]]
+name = "wall_65"
+model = "assets/original/ember_art/town/wall_tower.glb"
+position = [-89.65, 0.00, 7.95]
+rotation_deg = [0.0, 95.07, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_w_65"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-89.65, 9.10, 7.95]
+rotation_deg = [0.0, 95.07, 0.0]
+scale = 1
+snap = true
+
+[[prop]]
+name = "crystal_s_0"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [8.64, 2.05, 15.07]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "crystal_s_1"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-3.62, 2.05, 25.36]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "crystal_s_2"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-18.66, 2.05, 19.88]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "crystal_s_3"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-21.44, 2.05, 4.13]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "crystal_s_4"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-9.18, 2.05, -6.16]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "crystal_s_5"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [5.86, 2.05, -0.68]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "stall_0"
+model = "assets/original/ember_art/town/stall_striped.glb"
+position = [-18.52, 2.05, 16.60]
+rotation_deg = [0.0, 300.00, 0.0]
+scale = 1.35
+
+[[prop]]
+name = "stall_1"
+model = "assets/original/ember_art/town/stall_striped.glb"
+position = [-20.35, 2.05, 8.38]
+rotation_deg = [0.0, 265.00, 0.0]
+scale = 1.35
+
+[[prop]]
+name = "stall_2"
+model = "assets/original/ember_art/town/stall_striped.glb"
+position = [-18.52, 2.05, 2.60]
+rotation_deg = [0.0, 240.00, 0.0]
+scale = 1.35
+
+[[prop]]
+name = "stall_3"
+model = "assets/original/ember_art/town/stall_striped.glb"
+position = [5.72, 2.05, 2.60]
+rotation_deg = [0.0, 120.00, 0.0]
+scale = 1.35
+
+[[prop]]
+name = "stall_4"
+model = "assets/original/ember_art/town/stall_striped.glb"
+position = [7.39, 2.05, 12.03]
+rotation_deg = [0.0, 80.00, 0.0]
+scale = 1.35
+
+[[prop]]
+name = "lamp_w_0"
+model = "assets/original/ember_art/town/lantern_post.glb"
+position = [-12.20, 2.05, 28.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "lamp_e_0"
+model = "assets/original/ember_art/town/lantern_post.glb"
+position = [-0.60, 2.05, 28.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "lamp_w_1"
+model = "assets/original/ember_art/town/lantern_post.glb"
+position = [-12.20, 2.05, 42.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "lamp_e_1"
+model = "assets/original/ember_art/town/lantern_post.glb"
+position = [-0.60, 2.05, 42.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "lamp_w_2"
+model = "assets/original/ember_art/town/lantern_post.glb"
+position = [-12.20, 2.05, 56.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "lamp_e_2"
+model = "assets/original/ember_art/town/lantern_post.glb"
+position = [-0.60, 2.05, 56.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "lamp_w_3"
+model = "assets/original/ember_art/town/lantern_post.glb"
+position = [-12.20, 2.05, 70.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "lamp_e_3"
+model = "assets/original/ember_art/town/lantern_post.glb"
+position = [-0.60, 2.05, 70.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.0
+
+[[prop]]
+name = "tree_0"
+model = "assets/original/ember_art/town/town_tree.glb"
+position = [-28.00, 0.00, 30.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.8
+snap = true
+
+[[prop]]
+name = "tree_1"
+model = "assets/original/ember_art/town/town_tree.glb"
+position = [-34.00, 0.00, 55.00]
+rotation_deg = [0.0, 40.00, 0.0]
+scale = 1.8
+snap = true
+
+[[prop]]
+name = "tree_2"
+model = "assets/original/ember_art/town/town_tree.glb"
+position = [18.00, 0.00, 40.00]
+rotation_deg = [0.0, 80.00, 0.0]
+scale = 1.8
+snap = true
+
+[[prop]]
+name = "tree_3"
+model = "assets/original/ember_art/town/town_tree.glb"
+position = [24.00, 0.00, 62.00]
+rotation_deg = [0.0, 120.00, 0.0]
+scale = 1.8
+snap = true
+
+[[prop]]
+name = "tree_4"
+model = "assets/original/ember_art/town/town_tree.glb"
+position = [-40.00, 0.00, -10.00]
+rotation_deg = [0.0, 160.00, 0.0]
+scale = 1.8
+snap = true
+
+[[prop]]
+name = "tree_5"
+model = "assets/original/ember_art/town/town_tree.glb"
+position = [30.00, 0.00, -16.00]
+rotation_deg = [0.0, 200.00, 0.0]
+scale = 1.8
+snap = true
+
+[[prop]]
+name = "tree_6"
+model = "assets/original/ember_art/town/town_tree.glb"
+position = [70.00, 0.00, -20.00]
+rotation_deg = [0.0, 240.00, 0.0]
+scale = 1.8
+snap = true
+
+[[prop]]
+name = "tree_7"
+model = "assets/original/ember_art/town/town_tree.glb"
+position = [78.00, 0.00, -55.00]
+rotation_deg = [0.0, 280.00, 0.0]
+scale = 1.8
+snap = true
+
+[[prop]]
+name = "tree_8"
+model = "assets/original/ember_art/town/town_tree.glb"
+position = [-22.00, 0.00, -30.00]
+rotation_deg = [0.0, 320.00, 0.0]
+scale = 1.8
+snap = true
+
+[[prop]]
+name = "tree_9"
+model = "assets/original/ember_art/town/town_tree.glb"
+position = [8.00, 0.00, -40.00]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.8
+snap = true
+
+[[prop]]
+name = "crystal_gate_w"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [-14.50, 2.00, 89.60]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.35
+
+[[prop]]
+name = "crystal_gate_e"
+model = "assets/original/ember_art/town/crystal_pylon.glb"
+position = [1.70, 2.00, 89.60]
+rotation_deg = [0.0, 0.00, 0.0]
+scale = 1.35
+
+[[npc]]
+name = "bob"
+speaker = "Bob"
+position = [88.0, 2.0, -36.0]
+yaw_deg = 40.0
 [[npc]]
 name = "guard_gate"
 speaker = "Bored Guard"
-position = [-4.2, 2.0, 76.0]
+position = [-3.0, 2.0, 84.0]
 yaw_deg = 180.0
 [[npc]]
 name = "merchant"
 speaker = "Potion Merchant"
-position = [-26.0, 2.0, -9.0]
-yaw_deg = 110.0
+position = [-16.2, 2.0, 9.4]
+yaw_deg = 200.0
 [[npc]]
 name = "tailor"
 speaker = "Tailor"
-position = [14.0, 2.0, -8.0]
-yaw_deg = -70.0
-[[npc]]
-name = "bob"
-speaker = "Bob"
-position = [82.0, 2.0, -30.0]
-yaw_deg = 40.0
+position = [6.0, 2.0, 16.0]
+yaw_deg = 200.0
