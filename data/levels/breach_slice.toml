@@ -3482,6 +3482,22 @@ size = [14, 0.16, 14]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
+[[box]]
+name = "gate_post_w"
+kind = "wall"
+center = [-3.65, 2, 125]
+size = [1.7, 4, 2.4]
+color = [0.30, 0.28, 0.26]
+collide_only = true
+
+[[box]]
+name = "gate_post_e"
+kind = "wall"
+center = [3.65, 2, 125]
+size = [1.7, 4, 2.4]
+color = [0.30, 0.28, 0.26]
+collide_only = true
+
 [waves]
 trigger_center = [0.0, 0.0, 64.0]
 trigger_radius = 5.0

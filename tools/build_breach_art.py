@@ -589,6 +589,9 @@ def boxes() -> list[dict]:
         ("pillar_se", (7.0, 1.7, 65.0), (1.3, 3.4, 1.3), "crate"),
         ("boss_dais", (DAIS[0], 0.1, DAIS[1]), (6.4, 0.2, 3.6), "platform"),
         ("gate_plinth", (0.0, 0.08, CZ), (14.0, 0.16, 14.0), "platform"),
+        # Same posts EmberArt puts on the labyrinth gate, so the nav opening matches the mesh.
+        ("gate_post_w", (-3.65, 2.0, CZ), (1.7, 4.0, 2.4), "wall"),
+        ("gate_post_e", (3.65, 2.0, CZ), (1.7, 4.0, 2.4), "wall"),
     ]
     for name, center, size, kind in walls:
         out.append({"name": name, "kind": kind, "center": center, "size": size})
