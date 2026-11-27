@@ -88,8 +88,10 @@ func test_box_sizes_rotations_colours() -> void:
 			)
 		var size := LevelToml.vec3(b["size"])
 		var shape := (n.get_node("Shape") as CollisionShape3D).shape as BoxShape3D
-		var mi := n.get_node("Mesh") as MeshInstance3D
 		check(shape != null and shape.size.distance_to(size) < EPS, "%s shape size" % n.name)
+		var mi := n.get_node_or_null("Mesh") as MeshInstance3D
+		if mi == null:
+			continue
 		check((mi.mesh as BoxMesh).size.distance_to(size) < EPS, "%s mesh size" % n.name)
 		var mat := mi.get_surface_override_material(0) as StandardMaterial3D
 		var c := LevelToml.color(b["color"])

@@ -322,7 +322,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         if sec not in d:
             raise LevelError(f"missing [{sec}]")
     lv = d["level"]
-    _only(lv, {"id", "name", "world_offset"}, "[level]")
+    _only(lv, {"id", "name", "world_offset", "props_only"}, "[level]")
     wo = [float(x) for x in lv.get("world_offset", [0.0, 0.0])]  # OW1: [x, z] metres into world space
     if len(wo) != 2 or any(x % 16.0 for x in wo):
         raise LevelError("world_offset must be [x, z], multiples of 16 m")
@@ -349,6 +349,9 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "id": str(_need(lv, "id", "[level]")),
         "name": str(_need(lv, "name", "[level]")),
         "world_offset": wo,
+        # Collision stays in the boxes. The meshes live in [[prop]] so a remade level
+        # can ship with no PrimitiveMesh in the scene.
+        "props_only": _bool(lv.get("props_only", False), "[level] props_only"),
         "sky_color": _color(_need(env, "sky_color", "[environment]"), "sky_color"),
         "ambient_color": _color(_need(env, "ambient_color", "[environment]"), "ambient_color"),
         "fog_density": fog,
@@ -777,16 +780,17 @@ def to_tscn(lv: dict, source: str) -> str:
     nodes.append('[node name="Boxes" type="Node3D" parent="."]\n')
     for i, b in enumerate(lv["boxes"]):
         sk = tuple(b["size"])
-        # The Town remake keeps hidden pads as collision only. Other levels
-        # still hide the mesh in place, and the sub-resource order stays the
-        # same as before so those scenes do not change.
+        # Hidden town pads and a props_only level keep collision and no primitive
+        # mesh. Every other box still emits mesh, then shape, then material, so
+        # those scenes do not change.
         town_pad = b["hidden"] and lv["id"] in ("town_square", "town_golden_slice")
-        mesh = ""
-        mat = ""
-        if not town_pad:
+        skip_mesh = bool(lv.get("props_only")) or town_pad
+        if skip_mesh:
+            shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
+            mesh = ""
+        else:
             mesh = sub("BoxMesh", sk, f"size = {_v3(b['size'])}")
-        shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
-        if not town_pad:
+            shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
             tex = lv.get("materials", {}).get(b["kind"])
             if tex:
                 gs = GROUND_TINT if b["kind"] == "ground" else 1.0
@@ -797,7 +801,7 @@ def to_tscn(lv: dict, source: str) -> str:
         nodes.append(f'[node name="{b["name"]}" type="StaticBody3D" parent="Boxes"]\n'
                      f'transform = {_xf(rot_yxz(b["rotation_deg"]), b["center"])}\n'
                      f'metadata/kind = "{b["kind"]}"\nmetadata/toml_index = {i}\n')
-        if not town_pad:
+        if mesh:
             nodes.append(f'[node name="Mesh" type="MeshInstance3D" parent="Boxes/{b["name"]}"]\n'
                          f'mesh = SubResource("{mesh}")\nsurface_material_override/0 = SubResource("{mat}")\n'
                          + ("visible = false\n" if b["hidden"] else ""))
@@ -821,6 +825,9 @@ def to_tscn(lv: dict, source: str) -> str:
                      + (f'carves = PackedVector4Array({", ".join(_f(x) for c in tr["carves"] for x in c)})\n'
                         if tr["carves"] else "")
                      + f'blend = {_f(tr["blend"])}\n')
+        if lv.get("props_only"):
+            nodes.append('[node name="LandfillDress" type="Node" parent="."]\n'
+                         'script = ExtResource("1_dress")\n')
     scenes: dict[str, str] = {}
     if any(not pr["poi"] for pr in lv["props"]):
         nodes.append('[node name="Props" type="Node3D" parent="."]\n')
@@ -938,6 +945,8 @@ def to_tscn(lv: dict, source: str) -> str:
     ext = f'[ext_resource type="Script" path="{NAV_SCRIPT}" id="1_nav"]\n'
     if tr:
         ext += f'[ext_resource type="Script" path="{TERRAIN_SCRIPT}" id="1_terrain"]\n'
+    if lv.get("props_only"):
+        ext += '[ext_resource type="Script" path="res://scenes/levels/midden_dress.gd" id="1_dress"]\n'
     if lv.get("gates"):
         ext += '[ext_resource type="Script" path="res://scripts/world/flag_gate.gd" id="1_gate"]\n'
     if lv["pois"]:
@@ -975,8 +984,12 @@ def self_test() -> int:
     assert sum(b["kind"] == "heap" for b in lv["boxes"]) >= 8
     assert lv["materials"]["wall"] == "assets/ambientcg/Rock030", lv["materials"]
     tscn = to_tscn(lv, "self-test")
-    # The valley uses the ground/heap set. Wall (Rock030) stays declared for the loader.
-    assert 'path="res://assets/ambientcg/Ground037/normal.jpg"' in tscn and "uv1_world_triplanar = true" in tscn
+    # A props_only level keeps the colliders and ships no primitive mesh. Textured
+    # BoxMesh output is checked on a synthetic level below.
+    if lv.get("props_only"):
+        assert "BoxMesh" not in tscn and "BoxShape3D" in tscn and 'id="1_dress"' in tscn
+    else:
+        assert 'path="res://assets/ambientcg/Ground037/normal.jpg"' in tscn and "uv1_world_triplanar = true" in tscn
     for bad in ('[materials]\nwall = "assets/nope"\n', '[materials]\nroof = "assets/ambientcg/Rock030"\n'):
         try:
             parse_level(_swap_materials(good, bad))
@@ -1006,6 +1019,9 @@ def self_test() -> int:
     box = '[[box]]\nname = "a"\nkind = "crate"\ncenter = [0, 0.5, 0]\nsize = [1, 1, 1]\ncolor = [1, 0, 0]\n'
     assert parse_level(hdr + box)["to_light"] == [0.0, 1.0, 0.0]
     floor = '[[box]]\nname = "f"\nkind = "ground"\ncenter = [20, -0.5, 0]\nsize = [10, 1, 10]\ncolor = [1, 0, 0]\n'
+    textured = hdr + '[materials]\nground = "assets/ambientcg/Ground037"\nuv_scale = 0.4\n' + box + floor
+    textured_scene = to_tscn(parse_level(textured), "self-test")
+    assert "Ground037/normal.jpg" in textured_scene and "uv1_world_triplanar = true" in textured_scene
     sp = '[[spawn_point]]\nname = "p"\nposition = [20, 0, 0]\n'
     wt = '[waves]\ntrigger_center = [20, 0, 0]\ntrigger_radius = 3\n'
     wave = '[[wave]]\nid = "w"\ndelay_s = 1\nenemies = [{ enemy = "gnawer", count = 3, at = "p" }]\n'

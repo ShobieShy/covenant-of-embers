@@ -4,31 +4,29 @@
 
 [ext_resource type="Script" path="res://scripts/world/level_navigation.gd" id="1_nav"]
 [ext_resource type="Script" path="res://scripts/world/terrain_zone.gd" id="1_terrain"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/color.jpg" id="2_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/roughness.jpg" id="3_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Ground037/normal.jpg" id="4_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Metal032/color.jpg" id="5_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Metal032/roughness.jpg" id="6_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Metal032/normal.jpg" id="7_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/color.jpg" id="8_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/roughness.jpg" id="9_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Rock030/normal.jpg" id="10_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/color.jpg" id="11_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/roughness.jpg" id="12_tex"]
-[ext_resource type="Texture2D" path="res://assets/ambientcg/Wood049/normal.jpg" id="13_tex"]
-[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trash_Bags.glb" id="1_glb"]
-[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trashcan.glb" id="2_glb"]
-[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Can_Broken.glb" id="3_glb"]
-[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trash_Bag.glb" id="4_glb"]
-[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trashcan_Small.glb" id="5_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-large.glb" id="6_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/rock-wide.glb" id="7_glb"]
+[ext_resource type="Script" path="res://scenes/levels/midden_dress.gd" id="1_dress"]
+[ext_resource type="PackedScene" path="res://assets/original/landfill/pit.gltf" id="1_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/landfill/pool.gltf" id="2_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/landfill/gate.gltf" id="3_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/landfill/crater.gltf" id="4_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/landfill/shack.gltf" id="5_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/landfill/shack_stilts.gltf" id="6_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/landfill/mound.gltf" id="7_glb"]
+[ext_resource type="PackedScene" path="res://assets/original/landfill/crystal.gltf" id="8_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/cart.glb" id="9_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/cart-high.glb" id="10_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/fence-broken.glb" id="11_glb"]
+[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/fence.glb" id="12_glb"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trash_Bags.glb" id="13_glb"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trash_Bag.glb" id="14_glb"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Trashcan.glb" id="15_glb"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/enemies/props/Can_Broken.glb" id="16_glb"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
-sky_top_color = Color(0.22, 0.227, 0.263, 1)
-sky_horizon_color = Color(0.665185, 0.62621, 0.537099, 1)
-ground_bottom_color = Color(0.345802, 0.320868, 0.262442, 1)
-ground_horizon_color = Color(0.665185, 0.62621, 0.537099, 1)
+sky_top_color = Color(0.303, 0.26, 0.273, 1)
+sky_horizon_color = Color(0.767376, 0.665185, 0.546854, 1)
+ground_bottom_color = Color(0.357491, 0.320868, 0.262442, 1)
+ground_horizon_color = Color(0.767376, 0.665185, 0.546854, 1)
 sky_curve = 0.12
 sun_angle_max = 20.0
 
@@ -38,9 +36,9 @@ sky_material = SubResource("ProceduralSkyMaterial_1")
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 2
 sky = SubResource("Sky_1")
-background_color = Color(0.665185, 0.62621, 0.537099, 1)
+background_color = Color(0.767376, 0.665185, 0.546854, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.565728, 0.527113, 0.436627, 1)
+ambient_light_color = Color(0.583831, 0.527113, 0.436627, 1)
 ambient_light_energy = 0.45
 tonemap_mode = 4
 tonemap_exposure = 1.0
@@ -53,301 +51,97 @@ glow_intensity = 0.6
 glow_bloom = 0.05
 glow_hdr_threshold = 1.0
 adjustment_enabled = true
-adjustment_brightness = 1
-adjustment_contrast = 1.08
-adjustment_saturation = 0.92
+adjustment_brightness = 1.02
+adjustment_contrast = 1.06
+adjustment_saturation = 0.96
 fog_enabled = true
 fog_mode = 0
-fog_light_color = Color(0.665185, 0.62621, 0.537099, 1)
-fog_density = 0.006
+fog_light_color = Color(0.767376, 0.665185, 0.546854, 1)
+fog_density = 0.0035
 fog_sky_affect = 0.0
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.03
-volumetric_fog_albedo = Color(0.767376, 0.797738, 0.62621, 1)
+volumetric_fog_density = 0.018
+volumetric_fog_albedo = Color(0.785777, 0.70837, 0.565728, 1)
 volumetric_fog_length = 48.0
 volumetric_fog_sky_affect = 0.0
-
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
-size = Vector3(28, 2, 54)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1"]
 size = Vector3(28, 2, 54)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
-albedo_color = Color(0.72, 0.691381, 0.647423, 1)
-albedo_texture = ExtResource("2_tex")
-roughness = 1.0
-roughness_texture = ExtResource("3_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("4_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_2"]
-size = Vector3(28, 2, 34)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_2"]
-size = Vector3(28, 2, 34)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
-albedo_color = Color(0.72, 0.708837, 0.658769, 1)
-albedo_texture = ExtResource("2_tex")
-roughness = 1.0
-roughness_texture = ExtResource("3_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("4_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_3"]
-size = Vector3(28, 2, 18)
+size = Vector3(170, 2, 160)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3"]
 size = Vector3(28, 2, 18)
 
-[sub_resource type="BoxMesh" id="BoxMesh_4"]
-size = Vector3(28, 2, 810)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_4"]
-size = Vector3(28, 2, 810)
-
-[sub_resource type="BoxMesh" id="BoxMesh_5"]
-size = Vector3(16, 0.04, 16)
+size = Vector3(40, 2, 22)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5"]
-size = Vector3(16, 0.04, 16)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
-albedo_color = Color(0.886803, 1, 0.784975, 1)
-albedo_texture = ExtResource("5_tex")
-roughness = 1.0
-roughness_texture = ExtResource("6_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("7_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_6"]
-size = Vector3(6, 7, 100)
+size = Vector3(22, 0.04, 22)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6"]
-size = Vector3(6, 7, 100)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
-albedo_color = Color(1, 0.970465, 0.921116, 1)
-albedo_texture = ExtResource("8_tex")
-roughness = 1.0
-roughness_texture = ExtResource("9_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("10_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_7"]
-size = Vector3(40, 8, 4)
+size = Vector3(8, 8, 32)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_7"]
 size = Vector3(40, 8, 4)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
-albedo_color = Color(1, 0.972332, 0.926445, 1)
-albedo_texture = ExtResource("8_tex")
-roughness = 1.0
-roughness_texture = ExtResource("9_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("10_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_8"]
-size = Vector3(48, 10, 6)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_8"]
-size = Vector3(48, 10, 6)
-
-[sub_resource type="BoxMesh" id="BoxMesh_9"]
-size = Vector3(3, 1.2, 3.6)
+size = Vector3(8, 14, 40)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_9"]
 size = Vector3(3, 1.2, 3.6)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
-albedo_color = Color(1, 0.967179, 0.931101, 1)
-albedo_texture = ExtResource("2_tex")
-roughness = 1.0
-roughness_texture = ExtResource("3_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("4_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_10"]
-size = Vector3(3.2, 1.4, 3.2)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_10"]
 size = Vector3(3.2, 1.4, 3.2)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
-albedo_color = Color(0.978777, 1, 0.897343, 1)
-albedo_texture = ExtResource("2_tex")
-roughness = 1.0
-roughness_texture = ExtResource("3_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("4_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_11"]
-size = Vector3(3.6, 1.1, 5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_11"]
 size = Vector3(3.6, 1.1, 5)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8"]
-albedo_color = Color(1, 0.974177, 0.934632, 1)
-albedo_texture = ExtResource("5_tex")
-roughness = 1.0
-roughness_texture = ExtResource("6_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("7_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_12"]
-size = Vector3(1, 0.9, 1)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_12"]
 size = Vector3(1, 0.9, 1)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_9"]
-albedo_color = Color(1, 0.924487, 0.81279, 1)
-albedo_texture = ExtResource("11_tex")
-roughness = 1.0
-roughness_texture = ExtResource("12_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("13_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_10"]
-albedo_color = Color(1, 0.929686, 0.822666, 1)
-albedo_texture = ExtResource("11_tex")
-roughness = 1.0
-roughness_texture = ExtResource("12_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("13_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_13"]
-size = Vector3(2, 0.7, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_13"]
 size = Vector3(2, 0.7, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_14"]
-size = Vector3(1.2, 1.1, 1.2)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_14"]
 size = Vector3(1.2, 1.1, 1.2)
-
-[sub_resource type="BoxMesh" id="BoxMesh_15"]
-size = Vector3(2.4, 1.1, 2.4)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_15"]
 size = Vector3(2.4, 1.1, 2.4)
 
-[sub_resource type="BoxMesh" id="BoxMesh_16"]
-size = Vector3(12, 1.5, 5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_16"]
 size = Vector3(12, 1.5, 5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_17"]
-size = Vector3(3, 0.3, 4.272)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_17"]
 size = Vector3(3, 0.3, 4.272)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11"]
-albedo_color = Color(1, 0.976203, 0.903583, 1)
-albedo_texture = ExtResource("5_tex")
-roughness = 1.0
-roughness_texture = ExtResource("6_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("7_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_18"]
-size = Vector3(4.4, 4, 12)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_18"]
 size = Vector3(4.4, 4, 12)
-
-[sub_resource type="BoxMesh" id="BoxMesh_19"]
-size = Vector3(14, 0.3, 5.696)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_19"]
 size = Vector3(14, 0.3, 5.696)
 
-[sub_resource type="BoxMesh" id="BoxMesh_20"]
-size = Vector3(4, 4, 3.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_20"]
 size = Vector3(4, 4, 3.5)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_12"]
-albedo_color = Color(0.970465, 1, 0.883668, 1)
-albedo_texture = ExtResource("2_tex")
-roughness = 1.0
-roughness_texture = ExtResource("3_tex")
-roughness_texture_channel = 0
-normal_enabled = true
-normal_texture = ExtResource("4_tex")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
-[sub_resource type="BoxMesh" id="BoxMesh_21"]
-size = Vector3(4.2, 1.4, 4.2)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_21"]
 size = Vector3(4.2, 1.4, 4.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_22"]
+size = Vector3(14, 2.4, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_23"]
+size = Vector3(16, 2.6, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_24"]
+size = Vector3(16, 2.8, 16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_25"]
+size = Vector3(10, 6, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_26"]
+size = Vector3(22, 16, 12)
 
 [node name="Midden" type="Node3D" groups=["kill_line"]]
 metadata/level_id = "midden_greybox"
@@ -360,8 +154,8 @@ metadata/kill_line_y = -10
 environment = SubResource("Environment_1")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.86562, -0.354048, 0.354052, 0, 0.707111, 0.707103, -0.500702, -0.612082, 0.612089, 0, 10, 0)
-light_color = Color(0.930925, 0.896244, 0.779706, 1)
+transform = Transform3D(0.76864, -0.397825, 0.500928, 0, 0.783089, 0.62191, -0.639682, -0.478025, 0.601913, 0, 10, 0)
+light_color = Color(0.991157, 0.896244, 0.722027, 1)
 light_energy = 1.3
 shadow_enabled = true
 
@@ -372,21 +166,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 7)
 metadata/kind = "ground"
 metadata/toml_index = 0
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/ground"]
-mesh = SubResource("BoxMesh_1")
-surface_material_override/0 = SubResource("StandardMaterial3D_1")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ground"]
 shape = SubResource("BoxShape3D_1")
 
 [node name="bowl_floor" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, -33)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, -40)
 metadata/kind = "ground"
 metadata/toml_index = 1
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/bowl_floor"]
-mesh = SubResource("BoxMesh_2")
-surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/bowl_floor"]
 shape = SubResource("BoxShape3D_2")
@@ -396,59 +182,37 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, -57)
 metadata/kind = "ground"
 metadata/toml_index = 2
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/road_floor"]
-mesh = SubResource("BoxMesh_3")
-surface_material_override/0 = SubResource("StandardMaterial3D_2")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/road_floor"]
 shape = SubResource("BoxShape3D_3")
 
 [node name="north_road" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, -475)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -105, -3, -16)
 metadata/kind = "ground"
 metadata/toml_index = 3
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/north_road"]
-mesh = SubResource("BoxMesh_4")
-surface_material_override/0 = SubResource("StandardMaterial3D_2")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/north_road"]
 shape = SubResource("BoxShape3D_4")
 
 [node name="filth_pool" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.02, -33)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.02, -40)
 metadata/kind = "platform"
 metadata/toml_index = 4
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/filth_pool"]
-mesh = SubResource("BoxMesh_5")
-surface_material_override/0 = SubResource("StandardMaterial3D_3")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/filth_pool"]
 shape = SubResource("BoxShape3D_5")
 
 [node name="berm_w" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 1.5, -16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 2, 20)
 metadata/kind = "wall"
 metadata/toml_index = 5
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/berm_w"]
-mesh = SubResource("BoxMesh_6")
-surface_material_override/0 = SubResource("StandardMaterial3D_4")
-visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/berm_w"]
 shape = SubResource("BoxShape3D_6")
 
 [node name="berm_e" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 1.5, -16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 2, 20)
 metadata/kind = "wall"
 metadata/toml_index = 6
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/berm_e"]
-mesh = SubResource("BoxMesh_6")
-surface_material_override/0 = SubResource("StandardMaterial3D_4")
-visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/berm_e"]
 shape = SubResource("BoxShape3D_6")
@@ -458,23 +222,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 36)
 metadata/kind = "wall"
 metadata/toml_index = 7
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/ridge"]
-mesh = SubResource("BoxMesh_7")
-surface_material_override/0 = SubResource("StandardMaterial3D_5")
-visible = false
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ridge"]
 shape = SubResource("BoxShape3D_7")
 
 [node name="rock_cut" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -892)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -136, 3, -16)
 metadata/kind = "wall"
 metadata/toml_index = 8
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/rock_cut"]
-mesh = SubResource("BoxMesh_8")
-surface_material_override/0 = SubResource("StandardMaterial3D_5")
-visible = false
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/rock_cut"]
 shape = SubResource("BoxShape3D_8")
@@ -484,10 +238,6 @@ transform = Transform3D(0.978148, 0, 0.207912, 0, 1, 0, -0.207912, 0, 0.978148, 
 metadata/kind = "heap"
 metadata/toml_index = 9
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/entry_pile_w"]
-mesh = SubResource("BoxMesh_9")
-surface_material_override/0 = SubResource("StandardMaterial3D_6")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/entry_pile_w"]
 shape = SubResource("BoxShape3D_9")
 
@@ -495,10 +245,6 @@ shape = SubResource("BoxShape3D_9")
 transform = Transform3D(0.970296, 0, -0.241922, 0, 1, 0, 0.241922, 0, 0.970296, 6.6, 0.7, 18.5)
 metadata/kind = "heap"
 metadata/toml_index = 10
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/entry_pile_e"]
-mesh = SubResource("BoxMesh_10")
-surface_material_override/0 = SubResource("StandardMaterial3D_7")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/entry_pile_e"]
 shape = SubResource("BoxShape3D_10")
@@ -508,10 +254,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 0.55, 7.6)
 metadata/kind = "platform"
 metadata/toml_index = 11
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/compactor"]
-mesh = SubResource("BoxMesh_11")
-surface_material_override/0 = SubResource("StandardMaterial3D_8")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/compactor"]
 shape = SubResource("BoxShape3D_11")
 
@@ -519,10 +261,6 @@ shape = SubResource("BoxShape3D_11")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 0.45, 10.2)
 metadata/kind = "crate"
 metadata/toml_index = 12
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/crate_w1"]
-mesh = SubResource("BoxMesh_12")
-surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/crate_w1"]
 shape = SubResource("BoxShape3D_12")
@@ -532,10 +270,6 @@ transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 
 metadata/kind = "crate"
 metadata/toml_index = 13
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/crate_w2"]
-mesh = SubResource("BoxMesh_12")
-surface_material_override/0 = SubResource("StandardMaterial3D_9")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/crate_w2"]
 shape = SubResource("BoxShape3D_12")
 
@@ -543,10 +277,6 @@ shape = SubResource("BoxShape3D_12")
 transform = Transform3D(0.882948, 0, 0.469472, 0, 1, 0, -0.469472, 0, 0.882948, -4.8, 1.35, 10.4)
 metadata/kind = "crate"
 metadata/toml_index = 14
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/crate_w3_stacked"]
-mesh = SubResource("BoxMesh_12")
-surface_material_override/0 = SubResource("StandardMaterial3D_10")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/crate_w3_stacked"]
 shape = SubResource("BoxShape3D_12")
@@ -556,10 +286,6 @@ transform = Transform3D(0.951057, 0, -0.309017, 0, 1, 0, 0.309017, 0, 0.951057, 
 metadata/kind = "crate"
 metadata/toml_index = 15
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/crate_e_wide"]
-mesh = SubResource("BoxMesh_13")
-surface_material_override/0 = SubResource("StandardMaterial3D_9")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/crate_e_wide"]
 shape = SubResource("BoxShape3D_13")
 
@@ -567,10 +293,6 @@ shape = SubResource("BoxShape3D_13")
 transform = Transform3D(0.978148, 0, 0.207912, 0, 1, 0, -0.207912, 0, 0.978148, 7.6, 0.55, 2.6)
 metadata/kind = "crate"
 metadata/toml_index = 16
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/crate_ne"]
-mesh = SubResource("BoxMesh_14")
-surface_material_override/0 = SubResource("StandardMaterial3D_9")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/crate_ne"]
 shape = SubResource("BoxShape3D_14")
@@ -580,10 +302,6 @@ transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 
 metadata/kind = "heap"
 metadata/toml_index = 17
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/midden_mound"]
-mesh = SubResource("BoxMesh_15")
-surface_material_override/0 = SubResource("StandardMaterial3D_7")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/midden_mound"]
 shape = SubResource("BoxShape3D_15")
 
@@ -591,10 +309,6 @@ shape = SubResource("BoxShape3D_15")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -11.5)
 metadata/kind = "platform"
 metadata/toml_index = 18
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/scrap_ledge"]
-mesh = SubResource("BoxMesh_16")
-surface_material_override/0 = SubResource("StandardMaterial3D_8")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/scrap_ledge"]
 shape = SubResource("BoxShape3D_16")
@@ -604,10 +318,6 @@ transform = Transform3D(1, 0, 0, 0, 0.936329, -0.351123, 0, 0.351123, 0.936329, 
 metadata/kind = "ramp"
 metadata/toml_index = 19
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/ramp_west"]
-mesh = SubResource("BoxMesh_17")
-surface_material_override/0 = SubResource("StandardMaterial3D_11")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ramp_west"]
 shape = SubResource("BoxShape3D_17")
 
@@ -615,10 +325,6 @@ shape = SubResource("BoxShape3D_17")
 transform = Transform3D(1, 0, 0, 0, 0.936329, -0.351123, 0, 0.351123, 0.936329, 4.5, 0.61, -7.05)
 metadata/kind = "ramp"
 metadata/toml_index = 20
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/ramp_east"]
-mesh = SubResource("BoxMesh_17")
-surface_material_override/0 = SubResource("StandardMaterial3D_11")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ramp_east"]
 shape = SubResource("BoxShape3D_17")
@@ -628,10 +334,6 @@ transform = Transform3D(1, 0, 0, 0, 0.936329, 0.351123, 0, -0.351123, 0.936329, 
 metadata/kind = "ramp"
 metadata/toml_index = 21
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/ramp_down_west"]
-mesh = SubResource("BoxMesh_17")
-surface_material_override/0 = SubResource("StandardMaterial3D_11")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ramp_down_west"]
 shape = SubResource("BoxShape3D_17")
 
@@ -639,10 +341,6 @@ shape = SubResource("BoxShape3D_17")
 transform = Transform3D(1, 0, 0, 0, 0.936329, 0.351123, 0, -0.351123, 0.936329, 4.5, 0.61, -15.947)
 metadata/kind = "ramp"
 metadata/toml_index = 22
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/ramp_down_east"]
-mesh = SubResource("BoxMesh_17")
-surface_material_override/0 = SubResource("StandardMaterial3D_11")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ramp_down_east"]
 shape = SubResource("BoxShape3D_17")
@@ -652,10 +350,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.2, 2, -11.5)
 metadata/kind = "heap"
 metadata/toml_index = 23
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/ledge_seal_w"]
-mesh = SubResource("BoxMesh_18")
-surface_material_override/0 = SubResource("StandardMaterial3D_7")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ledge_seal_w"]
 shape = SubResource("BoxShape3D_18")
 
@@ -663,10 +357,6 @@ shape = SubResource("BoxShape3D_18")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.2, 2, -11.5)
 metadata/kind = "heap"
 metadata/toml_index = 24
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/ledge_seal_e"]
-mesh = SubResource("BoxMesh_18")
-surface_material_override/0 = SubResource("StandardMaterial3D_7")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/ledge_seal_e"]
 shape = SubResource("BoxShape3D_18")
@@ -676,10 +366,6 @@ transform = Transform3D(1, 0, 0, 0, 0.936329, 0.351123, 0, -0.351123, 0.936329, 
 metadata/kind = "ramp"
 metadata/toml_index = 25
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/basin_ramp"]
-mesh = SubResource("BoxMesh_19")
-surface_material_override/0 = SubResource("StandardMaterial3D_11")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/basin_ramp"]
 shape = SubResource("BoxShape3D_19")
 
@@ -687,10 +373,6 @@ shape = SubResource("BoxShape3D_19")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 2, -19.2)
 metadata/kind = "heap"
 metadata/toml_index = 26
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/basin_seal_w"]
-mesh = SubResource("BoxMesh_20")
-surface_material_override/0 = SubResource("StandardMaterial3D_12")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/basin_seal_w"]
 shape = SubResource("BoxShape3D_20")
@@ -700,10 +382,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2, -19.2)
 metadata/kind = "heap"
 metadata/toml_index = 27
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/basin_seal_e"]
-mesh = SubResource("BoxMesh_20")
-surface_material_override/0 = SubResource("StandardMaterial3D_12")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/basin_seal_e"]
 shape = SubResource("BoxShape3D_20")
 
@@ -712,202 +390,328 @@ transform = Transform3D(0.951057, 0, 0.309017, 0, 1, 0, -0.309017, 0, 0.951057, 
 metadata/kind = "heap"
 metadata/toml_index = 28
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/filth_mound"]
-mesh = SubResource("BoxMesh_21")
-surface_material_override/0 = SubResource("StandardMaterial3D_12")
-
 [node name="Shape" type="CollisionShape3D" parent="Boxes/filth_mound"]
 shape = SubResource("BoxShape3D_21")
 
+[node name="path_mound_w" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, -1, -8)
+metadata/kind = "heap"
+metadata/toml_index = 29
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/path_mound_w"]
+shape = SubResource("BoxShape3D_22")
+
+[node name="path_mound_e" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, -1.1, -24)
+metadata/kind = "heap"
+metadata/toml_index = 30
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/path_mound_e"]
+shape = SubResource("BoxShape3D_23")
+
+[node name="path_mound_n" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, -0.9, -50)
+metadata/kind = "heap"
+metadata/toml_index = 31
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/path_mound_n"]
+shape = SubResource("BoxShape3D_24")
+
+[node name="bowl_bank_e" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 1, -36)
+metadata/kind = "heap"
+metadata/toml_index = 32
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/bowl_bank_e"]
+shape = SubResource("BoxShape3D_25")
+
+[node name="cliff_00" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 50)
+metadata/kind = "heap"
+metadata/toml_index = 33
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_00"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_01" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.959314, 0, 0.282341, 0, 1, 0, -0.282341, 0, 0.959314, 25.36, 5, 46.35)
+metadata/kind = "heap"
+metadata/toml_index = 34
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_01"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_02" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.841511, 0, 0.54024, 0, 1, 0, -0.54024, 0, 0.841511, 48.66, 5, 35.71)
+metadata/kind = "heap"
+metadata/toml_index = 35
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_02"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_03" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.654741, 0, 0.755853, 0, 1, 0, -0.755853, 0, 0.654741, 68.02, 5, 18.94)
+metadata/kind = "heap"
+metadata/toml_index = 36
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_03"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_04" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.414693, 0, 0.909961, 0, 1, 0, -0.909961, 0, 0.414693, 81.87, 5, -2.61)
+metadata/kind = "heap"
+metadata/toml_index = 37
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_04"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_05" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.142629, 0, 0.989776, 0, 1, 0, -0.989776, 0, 0.142629, 89.08, 5, -27.19)
+metadata/kind = "heap"
+metadata/toml_index = 38
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_05"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_06" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.142629, 0, 0.989776, 0, 1, 0, -0.989776, 0, -0.142629, 89.08, 5, -52.81)
+metadata/kind = "heap"
+metadata/toml_index = 39
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_06"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_07" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.414693, 0, 0.909961, 0, 1, 0, -0.909961, 0, -0.414693, 81.87, 5, -77.39)
+metadata/kind = "heap"
+metadata/toml_index = 40
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_07"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_08" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.654741, 0, 0.755853, 0, 1, 0, -0.755853, 0, -0.654741, 68.02, 5, -98.94)
+metadata/kind = "heap"
+metadata/toml_index = 41
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_08"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_09" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.841511, 0, 0.54024, 0, 1, 0, -0.54024, 0, -0.841511, 48.66, 5, -115.71)
+metadata/kind = "heap"
+metadata/toml_index = 42
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_09"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_10" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.959314, 0, 0.282341, 0, 1, 0, -0.282341, 0, -0.959314, 25.36, 5, -126.35)
+metadata/kind = "heap"
+metadata/toml_index = 43
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_10"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_11" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 5, -130)
+metadata/kind = "heap"
+metadata/toml_index = 44
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_11"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_12" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.959314, 0, -0.282341, 0, 1, 0, 0.282341, 0, -0.959314, -25.36, 5, -126.35)
+metadata/kind = "heap"
+metadata/toml_index = 45
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_12"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_13" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.841511, 0, -0.54024, 0, 1, 0, 0.54024, 0, -0.841511, -48.66, 5, -115.71)
+metadata/kind = "heap"
+metadata/toml_index = 46
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_13"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_14" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.654741, 0, -0.755853, 0, 1, 0, 0.755853, 0, -0.654741, -68.02, 5, -98.94)
+metadata/kind = "heap"
+metadata/toml_index = 47
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_14"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_15" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.414693, 0, -0.909961, 0, 1, 0, 0.909961, 0, -0.414693, -81.87, 5, -77.39)
+metadata/kind = "heap"
+metadata/toml_index = 48
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_15"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_16" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.841511, 0, -0.54024, 0, 1, 0, 0.54024, 0, 0.841511, -48.66, 5, 35.71)
+metadata/kind = "heap"
+metadata/toml_index = 49
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_16"]
+shape = SubResource("BoxShape3D_26")
+
+[node name="cliff_17" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.959314, 0, -0.282341, 0, 1, 0, 0.282341, 0, 0.959314, -25.36, 5, 46.35)
+metadata/kind = "heap"
+metadata/toml_index = 50
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/cliff_17"]
+shape = SubResource("BoxShape3D_26")
+
 [node name="Terrain" type="Node3D" parent="."]
 script = ExtResource("1_terrain")
-size = Vector2(220, 1020)
-center = Vector2(0, -390)
-height = 8
+size = Vector2(340, 340)
+center = Vector2(-10, -40)
+height = 16
 noise_seed = 101
 spacing = 2
-rim = 14
+rim = 18
 map_version = 1
-layers = Array[String](["rubble_junk", "rock", "mud_filth"])
-pads = Array[Rect2]([Rect2(-16, -22, 32, 58), Rect2(-16, -52, 32, 38), Rect2(-16, -68, 32, 22), Rect2(-16, -882, 32, 814)])
+layers = Array[String](["dirt", "rock", "rubble_junk"])
+pads = Array[Rect2]([Rect2(-16, -22, 32, 58), Rect2(-87, -122, 174, 164), Rect2(-16, -68, 32, 22), Rect2(-127, -29, 44, 26)])
+pad_heights = PackedFloat32Array(-0.05, -2.05, -2.05, -2.05)
 pad_y = -2.05
-cliff_width = 8
-foliage = 6000
-carves = PackedVector4Array(48, 20, 22, 6, -52, -10, 20, 5, 60, -80, 24, 6, -58, -140, 22, 5, 70, -260, 26, 6, -64, -400, 24, 5, 55, -560, 22, 6, -60, -700, 24, 5, 36, -33, 18, -4, -36, -33, 18, -4, 0, -58, 16, -3, 48, -200, 14, -4, -50, -480, 16, -4)
-blend = 18
+cliff_width = 16
+blend = 10
+
+[node name="LandfillDress" type="Node" parent="."]
+script = ExtResource("1_dress")
 
 [node name="Props" type="Node3D" parent="."]
 
-[node name="trash_1" parent="Props" instance=ExtResource("1_glb")]
-transform = Transform3D(4.636444, 0, 1.242331, 0, 4.8, 0, -1.242331, 0, 4.636444, -7.2, 0, 20)
+[node name="pit" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="trash_2" parent="Props" instance=ExtResource("1_glb")]
-transform = Transform3D(0.889079, 0, 5.042216, 0, 5.12, 0, -5.042216, 0, 0.889079, 7.4, 0, 19)
+[node name="filth_disc" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.02, -40)
 
-[node name="trash_3" parent="Props" instance=ExtResource("2_glb")]
-transform = Transform3D(0.97728, 0, 0.355701, 0, 1.04, 0, -0.355701, 0, 0.97728, -6.8, 0, 14)
+[node name="town_gate" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 33)
 
-[node name="trash_4" parent="Props" instance=ExtResource("3_glb")]
-transform = Transform3D(2.687521, 0, -0.978178, 0, 2.86, 0, 0.978178, 0, 2.687521, 6.6, 0, 13)
+[node name="breach_crater" parent="Props" instance=ExtResource("4_glb")]
+transform = Transform3D(1.110815, 0, 0.297642, 0, 1.15, 0, -0.297642, 0, 1.110815, -116, -2, -14)
 
-[node name="trash_5" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(-3.431879, 0, 2.879688, 0, 4.48, 0, -2.879688, 0, -3.431879, -7, 0, 11.2)
+[node name="shack_1" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(0, 0, 1.15, 0, 1.15, 0, -1.15, 0, 0, -46, -2, -16)
 
-[node name="trash_6" parent="Props" instance=ExtResource("1_glb")]
-transform = Transform3D(3.431879, 0, 2.879688, 0, 4.48, 0, -2.879688, 0, 3.431879, 7.2, 0, 10.6)
+[node name="shack_2" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(0.199695, 0, -1.132529, 0, 1.15, 0, 1.132529, 0, 0.199695, 50, -2, -24)
 
-[node name="trash_7" parent="Props" instance=ExtResource("1_glb")]
-transform = Transform3D(-3.909121, 0, -1.422804, 0, 4.16, 0, 1.422804, 0, -3.909121, 6.5, 0, 8.4)
+[node name="shack_3" parent="Props" instance=ExtResource("5_glb")]
+transform = Transform3D(1.080647, 0, 0.393323, 0, 1.15, 0, -0.393323, 0, 1.080647, -38, -2, -68)
 
-[node name="trash_8" parent="Props" instance=ExtResource("5_glb")]
-transform = Transform3D(1.56, 0, 0, 0, 1.56, 0, 0, 0, 1.56, -7.4, 0, 5)
+[node name="shack_4" parent="Props" instance=ExtResource("6_glb")]
+transform = Transform3D(-0.199695, 0, -1.132529, 0, 1.15, 0, 1.132529, 0, -0.199695, 68, -2, -52)
 
-[node name="trash_9" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(-1.313357, 0, 3.60842, 0, 3.84, 0, -3.60842, 0, -1.313357, 6.2, 0, 6.2)
+[node name="mound_1" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1.2216, 0, 0.444626, 0, 1.3, 0, -0.444626, 0, 1.2216, -14, 0.15, -8)
 
-[node name="trash_10" parent="Props" instance=ExtResource("1_glb")]
-transform = Transform3D(2.4, 0, 4.156922, 0, 4.8, 0, -4.156922, 0, 2.4, -7.2, 0, 2.2)
+[node name="mound_2" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1.400592, 0, -0.375288, 0, 1.45, 0, 0.375288, 0, 1.400592, 16, 0.2, -24)
 
-[node name="trash_11" parent="Props" instance=ExtResource("3_glb")]
-transform = Transform3D(0.496634, 0, 2.81655, 0, 2.86, 0, -2.81655, 0, 0.496634, 6.6, 0, 1.2)
+[node name="mound_3" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1.03416, 0, 0.867763, 0, 1.35, 0, -0.867763, 0, 1.03416, -16, 0.45, -50)
 
-[node name="trash_12" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(3.602666, 0, 2.08, 0, 4.16, 0, -2.08, 0, 3.602666, -6.2, 0, -2.4)
+[node name="mound_4" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(1.083289, 0, 0.191013, 0, 1.1, 0, -0.191013, 0, 1.083289, 28, -2, -62)
 
-[node name="trash_13" parent="Props" instance=ExtResource("1_glb")]
-transform = Transform3D(-0.390458, 0, 4.462952, 0, 4.48, 0, -4.462952, 0, -0.390458, 6.2, 0, -8)
+[node name="mound_5" parent="Props" instance=ExtResource("7_glb")]
+transform = Transform3D(0.359121, 0, 0.986677, 0, 1.05, 0, -0.986677, 0, 0.359121, -32, -2, -36)
 
-[node name="trash_14" parent="Props" instance=ExtResource("3_glb")]
-transform = Transform3D(2.550044, 0, 0.683282, 0, 2.64, 0, -0.683282, 0, 2.550044, -5.4, 1.5, -12.2)
+[node name="crystal_1" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, -22, -2, -30)
 
-[node name="trash_15" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(1.76, 0, -3.048409, 0, 3.52, 0, 3.048409, 0, 1.76, 5.2, 1.5, -11)
+[node name="crystal_2" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(1.197953, 0, 0.902723, 0, 1.5, 0, -0.902723, 0, 1.197953, 24, -2, -34)
 
-[node name="trash_16" parent="Props" instance=ExtResource("1_glb")]
-transform = Transform3D(4.811226, 0, 1.751143, 0, 5.12, 0, -1.751143, 0, 4.811226, -8, -2, -30)
+[node name="crystal_3" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(0.578838, 0, 2.01865, 0, 2.1, 0, -2.01865, 0, 0.578838, 14, -2, -58)
 
-[node name="trash_17" parent="Props" instance=ExtResource("1_glb")]
-transform = Transform3D(1.641697, 0, 4.510525, 0, 4.8, 0, -4.510525, 0, 1.641697, 8.2, -2, -34)
+[node name="crystal_4" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-0.573389, 0, 1.493729, 0, 1.6, 0, -1.493729, 0, -0.573389, -8, -2, -72)
 
-[node name="trash_18" parent="Props" instance=ExtResource("3_glb")]
-transform = Transform3D(2.022325, 0, 2.022325, 0, 2.86, 0, -2.022325, 0, 2.022325, -7.4, -2, -40)
+[node name="crystal_5" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-1.102463, 0, 0.688895, 0, 1.3, 0, -0.688895, 0, -1.102463, 36, -2, -12)
 
-[node name="trash_19" parent="Props" instance=ExtResource("2_glb")]
-transform = Transform3D(0.945415, 0, 0.166702, 0, 0.96, 0, -0.166702, 0, 0.945415, 7.6, -2, -43)
+[node name="crystal_6" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-1.693531, 0, -0.148165, 0, 1.7, 0, 0.148165, 0, -1.693531, -58, -2, -22)
 
-[node name="trash_20" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(3.84, 0, 0, 0, 3.84, 0, 0, 0, 3.84, -2.7, -2, -53)
+[node name="crystal_7" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-1.783548, 0, -1.605913, 0, 2.4, 0, 1.605913, 0, -1.783548, -112, -1.2, -8)
 
-[node name="trash_21" parent="Props" instance=ExtResource("3_glb")]
-transform = Transform3D(0, 0, 2.42, 0, 2.42, 0, -2.42, 0, 0, 2.6, -2, -57)
+[node name="crystal_8" parent="Props" instance=ExtResource("8_glb")]
+transform = Transform3D(-0.228971, 0, -1.177953, 0, 1.2, 0, 1.177953, 0, -0.228971, 18, 0, 24)
 
-[node name="berm_rock_w1" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, -2, -64)
+[node name="cart_e" parent="Props" instance=ExtResource("9_glb")]
+transform = Transform3D(1.385641, 0, 0.8, 0, 1.6, 0, -0.8, 0, 1.385641, 42, -2, -38)
 
-[node name="berm_rock_e1" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, -2, -64)
+[node name="cart_w" parent="Props" instance=ExtResource("10_glb")]
+transform = Transform3D(0.964181, 0, -1.149067, 0, 1.5, 0, 1.149067, 0, 0.964181, -28, -2, -58)
 
-[node name="berm_rock_w2" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, -2, -56)
+[node name="fence_e" parent="Props" instance=ExtResource("11_glb")]
+transform = Transform3D(0.243107, 0, 1.378731, 0, 1.4, 0, -1.378731, 0, 0.243107, 34, -2, -8)
 
-[node name="berm_rock_e2" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, -2, -56)
+[node name="fence_w" parent="Props" instance=ExtResource("12_glb")]
+transform = Transform3D(1.255704, 0, 0.336465, 0, 1.3, 0, -0.336465, 0, 1.255704, -22, 0, 16)
 
-[node name="berm_rock_w3" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, -2, -48)
+[node name="trash_1" parent="Props" instance=ExtResource("13_glb")]
+transform = Transform3D(3.709155, 0, 0.993865, 0, 3.84, 0, -0.993865, 0, 3.709155, -10.5, 0, 18)
 
-[node name="berm_rock_e3" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, -2, -48)
+[node name="trash_2" parent="Props" instance=ExtResource("14_glb")]
+transform = Transform3D(0.625133, 0, 3.545308, 0, 3.6, 0, -3.545308, 0, 0.625133, 11.2, 0, 17)
 
-[node name="berm_rock_w4" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, -2, -40)
+[node name="trash_3" parent="Props" instance=ExtResource("15_glb")]
+transform = Transform3D(0.82693, 0, 0.300978, 0, 0.88, 0, -0.300978, 0, 0.82693, -12, 0, 8)
 
-[node name="berm_rock_e4" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, -2, -40)
+[node name="trash_4" parent="Props" instance=ExtResource("16_glb")]
+transform = Transform3D(2.368025, 0, -0.861891, 0, 2.52, 0, 0.861891, 0, 2.368025, 12.4, 0, 6.5)
 
-[node name="berm_rock_w5" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, -2, -32)
+[node name="trash_5" parent="Props" instance=ExtResource("13_glb")]
+transform = Transform3D(3.125461, 0, 2.622573, 0, 4.08, 0, -2.622573, 0, 3.125461, 10.5, 0, 22)
 
-[node name="berm_rock_e5" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, -2, -32)
+[node name="trash_6" parent="Props" instance=ExtResource("14_glb")]
+transform = Transform3D(-2.75776, 0, 2.314035, 0, 3.6, 0, -2.314035, 0, -2.75776, -11, 0, -2)
 
-[node name="berm_rock_w6" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, -2, -24)
+[node name="trash_7" parent="Props" instance=ExtResource("13_glb")]
+transform = Transform3D(3.74123, 0, 2.16, 0, 4.32, 0, -2.16, 0, 3.74123, -22, -2, -18)
 
-[node name="berm_rock_e6" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, -2, -24)
+[node name="trash_8" parent="Props" instance=ExtResource("14_glb")]
+transform = Transform3D(1.313357, 0, 3.60842, 0, 3.84, 0, -3.60842, 0, 1.313357, 26, -2, -18)
 
-[node name="berm_rock_w7" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, 0, -16)
+[node name="trash_9" parent="Props" instance=ExtResource("16_glb")]
+transform = Transform3D(2.658981, 0, 0.46885, 0, 2.7, 0, -0.46885, 0, 2.658981, 22, -2, -46)
 
-[node name="berm_rock_e7" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, 0, -16)
+[node name="trash_10" parent="Props" instance=ExtResource("15_glb")]
+transform = Transform3D(0.678823, 0, 0.678823, 0, 0.96, 0, -0.678823, 0, 0.678823, -26, -2, -44)
 
-[node name="berm_rock_w8" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, 0, -8)
+[node name="trash_11" parent="Props" instance=ExtResource("13_glb")]
+transform = Transform3D(4.08, 0, 0, 0, 4.08, 0, 0, 0, 4.08, 8, -2, -64)
 
-[node name="berm_rock_e8" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, 0, -8)
+[node name="trash_12" parent="Props" instance=ExtResource("14_glb")]
+transform = Transform3D(0, 0, 3.36, 0, 3.36, 0, -3.36, 0, 0, -6, -2, -60)
 
-[node name="berm_rock_w9" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, 0, 0)
+[node name="trash_13" parent="Props" instance=ExtResource("16_glb")]
+transform = Transform3D(2.260266, 0, 0.605637, 0, 2.34, 0, -0.605637, 0, 2.260266, 48, -2, -40)
 
-[node name="berm_rock_e9" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, 0, 0)
+[node name="trash_14" parent="Props" instance=ExtResource("13_glb")]
+transform = Transform3D(-1.313357, 0, 3.60842, 0, 3.84, 0, -3.60842, 0, -1.313357, -52, -2, -28)
 
-[node name="berm_rock_w10" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, 0, 8)
+[node name="trash_15" parent="Props" instance=ExtResource("14_glb")]
+transform = Transform3D(3.045194, 0, 1.419997, 0, 3.36, 0, -1.419997, 0, 3.045194, 44, -2, -70)
 
-[node name="berm_rock_e10" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, 0, 8)
-
-[node name="berm_rock_w11" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, 0, 16)
-
-[node name="berm_rock_e11" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, 0, 16)
-
-[node name="berm_rock_w12" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, 0, 24)
-
-[node name="berm_rock_e12" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, 0, 24)
-
-[node name="berm_rock_w13" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, -16, 0, 32)
-
-[node name="berm_rock_e13" parent="Props" instance=ExtResource("6_glb")]
-transform = Transform3D(4, 0, 0, 0, 6, 0, 0, 0, 4, 16, 0, 32)
-
-[node name="ridge_rocks_1" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 4, -12, 0, 36)
-
-[node name="ridge_rocks_2" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 4, -6, 0, 36)
-
-[node name="ridge_rocks_3" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 4, 0, 0, 36)
-
-[node name="ridge_rocks_4" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 4, 6, 0, 36)
-
-[node name="ridge_rocks_5" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 4, 12, 0, 36)
-
-[node name="cut_rocks_1" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 4, -12, -2, -68)
-
-[node name="cut_rocks_2" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 4, -6, -2, -68)
-
-[node name="cut_rocks_3" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 4, 0, -2, -68)
-
-[node name="cut_rocks_4" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 4, 6, -2, -68)
-
-[node name="cut_rocks_5" parent="Props" instance=ExtResource("7_glb")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 4, 12, -2, -68)
+[node name="trash_16" parent="Props" instance=ExtResource("15_glb")]
+transform = Transform3D(0.44, 0, 0.762102, 0, 0.88, 0, -0.762102, 0, 0.44, -44, -2, -8)
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
 script = ExtResource("1_nav")
@@ -1021,7 +825,7 @@ metadata/enemies = [{"at": "north_ledge", "count": 1, "enemy": "the_filth"}]
 [node name="Exits" type="Node3D" parent="."]
 
 [node name="to_breach" type="Marker3D" parent="Exits"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, -870)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -116, -2, -14)
 metadata/to = "breach"
 
 [node name="to_town" type="Marker3D" parent="Exits"]
