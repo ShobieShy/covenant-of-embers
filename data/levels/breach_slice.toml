@@ -3365,16 +3365,16 @@ collide_only = true
 [[box]]
 name = "arena_s_w"
 kind = "wall"
-center = [-10.2, 2, 56.8]
-size = [13.6, 4, 1.6]
+center = [-15.6, 2, 56.8]
+size = [2.4, 4, 1.6]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
 [[box]]
 name = "arena_s_e"
 kind = "wall"
-center = [10.2, 2, 56.8]
-size = [13.6, 4, 1.6]
+center = [15.6, 2, 56.8]
+size = [2.4, 4, 1.6]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
@@ -3382,55 +3382,55 @@ collide_only = true
 name = "switch_gate"
 kind = "wall"
 center = [0, 2, 56.8]
-size = [10, 4, 1.6]
+size = [28, 4, 1.6]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
 [[box]]
 name = "arena_e_n"
 kind = "wall"
-center = [12.5, 2, 46.2]
-size = [1.2, 4, 3.6]
+center = [16.8, 2, 45.2]
+size = [1.6, 4, 1.6]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
 [[box]]
 name = "arena_e_s"
 kind = "wall"
-center = [12.5, 2, 57.6]
-size = [1.2, 4, 1.6]
+center = [16.8, 2, 57.6]
+size = [1.6, 4, 1.6]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
 [[box]]
 name = "vault_door"
 kind = "wall"
-center = [12.5, 2, 52.4]
-size = [1.4, 4, 9]
+center = [16.8, 2, 51.4]
+size = [1.6, 4, 11]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
 [[box]]
 name = "vault_west"
 kind = "wall"
-center = [20, 2, 47.2]
-size = [16, 4, 1.6]
+center = [22, 2, 45.6]
+size = [12, 4, 1.4]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
 [[box]]
 name = "vault_east"
 kind = "wall"
-center = [20, 2, 57.2]
-size = [16, 4, 1.6]
+center = [22, 2, 57.2]
+size = [12, 4, 1.4]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
 [[box]]
 name = "vault_back"
 kind = "wall"
-center = [27.4, 2, 52.2]
-size = [1.4, 4, 10.4]
+center = [27.2, 2, 51.4]
+size = [1.4, 4, 12]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
@@ -3467,10 +3467,10 @@ color = [0.30, 0.28, 0.26]
 collide_only = true
 
 [[box]]
-name = "approach_w"
+name = "door_shield"
 kind = "wall"
-center = [-2.5, 2, 71]
-size = [1.4, 4, 24]
+center = [-4.5, 2, 73.6]
+size = [8, 4, 1.2]
 color = [0.30, 0.28, 0.26]
 collide_only = true
 
@@ -3532,7 +3532,7 @@ yaw_deg = 180.0
 
 [[spawn_point]]
 name = "vault_chest"
-position = [16.0, 0.0, 52.0]
+position = [20.0, 0.0, 52.0]
 yaw_deg = 180.0
 
 [[wave]]

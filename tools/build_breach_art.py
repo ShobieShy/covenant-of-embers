@@ -38,7 +38,7 @@ LEV_E = (50.0, 144.0)
 DAIS = (0.0, 52.0)
 WING_W = (-9.0, 52.0)
 WING_E = (9.0, 52.0)
-CHEST = (16.0, 52.0)
+CHEST = (20.0, 52.0)
 DEN_POINT = (-0.25, 59.7)
 
 ROCK = ROOT / "assets/ambientcg/Rock030/color.jpg"
@@ -575,21 +575,21 @@ def boxes() -> list[dict]:
         ("corridor_east", (6.6, 2.0, 178.0), (1.3, 4.0, 24.0), "wall"),
         ("arena_n", (0.0, 2.0, 44.4), (36.0, 4.0, 1.6), "wall"),
         ("arena_w", (-16.8, 2.0, 51.2), (1.6, 4.0, 15.2), "wall"),
-        ("arena_s_w", (-10.2, 2.0, 56.8), (13.6, 4.0, 1.6), "wall"),
-        ("arena_s_e", (10.2, 2.0, 56.8), (13.6, 4.0, 1.6), "wall"),
-        ("switch_gate", (0.0, 2.0, 56.8), (10.0, 4.0, 1.6), "wall"),
-        ("arena_e_n", (12.5, 2.0, 46.2), (1.2, 4.0, 3.6), "wall"),
-        ("arena_e_s", (12.5, 2.0, 57.6), (1.2, 4.0, 1.6), "wall"),
-        ("vault_door", (12.5, 2.0, 52.4), (1.4, 4.0, 9.0), "wall"),
-        ("vault_west", (20.0, 2.0, 47.2), (16.0, 4.0, 1.6), "wall"),
-        ("vault_east", (20.0, 2.0, 57.2), (16.0, 4.0, 1.6), "wall"),
-        ("vault_back", (27.4, 2.0, 52.2), (1.4, 4.0, 10.4), "wall"),
+        ("arena_s_w", (-15.6, 2.0, 56.8), (2.4, 4.0, 1.6), "wall"),
+        ("arena_s_e", (15.6, 2.0, 56.8), (2.4, 4.0, 1.6), "wall"),
+        ("switch_gate", (0.0, 2.0, 56.8), (28.0, 4.0, 1.6), "wall"),
+        ("arena_e_n", (16.8, 2.0, 45.2), (1.6, 4.0, 1.6), "wall"),
+        ("arena_e_s", (16.8, 2.0, 57.6), (1.6, 4.0, 1.6), "wall"),
+        ("vault_door", (16.8, 2.0, 51.4), (1.6, 4.0, 11.0), "wall"),
+        ("vault_west", (22.0, 2.0, 45.6), (12.0, 4.0, 1.4), "wall"),
+        ("vault_east", (22.0, 2.0, 57.2), (12.0, 4.0, 1.4), "wall"),
+        ("vault_back", (27.2, 2.0, 51.4), (1.4, 4.0, 12.0), "wall"),
         ("pillar_nw", (-7.0, 1.7, 48.0), (1.3, 3.4, 1.3), "crate"),
         ("pillar_ne", (7.0, 1.7, 48.0), (1.3, 3.4, 1.3), "crate"),
         ("pillar_sw", (-7.0, 1.7, 55.0), (1.3, 3.4, 1.3), "crate"),
         ("pillar_se", (7.0, 1.7, 55.0), (1.3, 3.4, 1.3), "crate"),
-        # The landfill door trigger sits at (-4.5, 75). One wall keeps the open walk off it.
-        ("approach_w", (-2.5, 2.0, 71.0), (1.4, 4.0, 24.0), "wall"),
+        # North of the landfill door so routes from the arena do not step on its trigger.
+        ("door_shield", (-4.5, 2.0, 73.6), (8.0, 4.0, 1.2), "wall"),
         ("boss_dais", (DAIS[0], 0.1, DAIS[1]), (6.4, 0.2, 3.6), "platform"),
         ("gate_plinth", (0.0, 0.08, CZ), (14.0, 0.16, 14.0), "platform"),
         # Same posts EmberArt puts on the labyrinth gate, so the nav opening matches the mesh.
