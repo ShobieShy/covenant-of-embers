@@ -575,9 +575,12 @@ def boxes() -> list[dict]:
         ("corridor_east", (6.6, 2.0, 178.0), (1.3, 4.0, 24.0), "wall"),
         ("arena_n", (0.0, 2.0, 44.4), (36.0, 4.0, 1.6), "wall"),
         ("arena_w", (-16.8, 2.0, 51.2), (1.6, 4.0, 15.2), "wall"),
-        ("arena_s_w", (-15.6, 2.0, 56.8), (2.4, 4.0, 1.6), "wall"),
-        ("arena_s_e", (15.6, 2.0, 56.8), (2.4, 4.0, 1.6), "wall"),
-        ("switch_gate", (0.0, 2.0, 56.8), (28.0, 4.0, 1.6), "wall"),
+        # A narrow south door. A full-width opening let the wing gnawers slip west
+        # and stall the wave out of sight.
+        ("arena_s_w", (-9.9, 2.0, 56.8), (13.8, 4.0, 1.6), "wall"),
+        ("arena_s_e", (9.9, 2.0, 56.8), (13.8, 4.0, 1.6), "wall"),
+        ("switch_gate", (0.0, 2.0, 56.8), (6.0, 4.0, 1.6), "wall"),
+        ("flank_w", (-16.8, 2.0, 66.0), (1.6, 4.0, 16.8), "wall"),
         ("arena_e_n", (16.8, 2.0, 45.2), (1.6, 4.0, 1.6), "wall"),
         ("arena_e_s", (16.8, 2.0, 57.6), (1.6, 4.0, 1.6), "wall"),
         ("vault_door", (16.8, 2.0, 51.4), (1.6, 4.0, 11.0), "wall"),
