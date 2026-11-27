@@ -469,3 +469,13 @@ license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-11-26"
 use = "Act III Slagworks meshes: cliffs, stone, gantries, rails, lava, furnace-anvil, arch, door, lift, slag cast, ore, cart, boulders, chains, pillars"
+
+[[asset]]
+name = "Regular enemy sculpts"
+path = "assets/original/ember_art/regular_enemies"
+author = "Covenant of Embers project"
+source = "tools/build_regular_enemies.py (original meshes for the regular roster, matched to docs/concepts/creatures)"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-27"
+use = "Goblin grunt, archer and shaman, Gnawer, Heap, Ember Scorchling, Mire Ooze, training dummies, Spore-cap Husk, Mossbound Treant, Spore Beast, Branded Troll, Forge Construct, Drowned Cultist, Harpy, Storm Elemental"
