@@ -318,8 +318,8 @@ func _setup_exits(player: Player, here: String) -> void:
 			portal.name = "GateLabyrinth"
 			portal.player = player
 			add_child(portal)
-			# Same level-local spot as EmberArt's labyrinth_gate slot. Dress runs after the gates.
-			portal.global_position = $Level.global_position + Vector3(0, 0, 125)
+			# On the south slab (it ends at z 78). z 125 was past the floor.
+			portal.global_position = $Level.global_position + Vector3(0, 0.2, 70)
 			portal.used.connect(travel)
 			portal.blocked.connect(_on_gate_blocked)
 			gates.append(portal)

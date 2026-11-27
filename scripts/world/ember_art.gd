@@ -15,9 +15,9 @@ const SLOTS := {
 	"junk_mountain": {"kind": "model", "level": "midden", "at": Vector3(0, 0, 300)},
 	"association_spire": {"kind": "model", "level": "mage_association", "at": Vector3(0, 0, -15)},
 	"oak_lod": {"kind": "model", "level": "old_oak", "at": Vector3(0, 0, -13)},
-	"breach_crater_rim": {"kind": "model", "level": "breach", "at": Vector3(0, 0, 125)},
+	"breach_crater_rim": {"kind": "model", "level": "breach", "at": Vector3(0, 0.2, 70)},
 	# L3 (batch 08a): the Labyrinth gate stands on the crater door (Interiors LINKS labyrinth).
-	"labyrinth_gate": {"kind": "model", "level": "breach", "at": Vector3(0, 0, 125)},
+	"labyrinth_gate": {"kind": "model", "level": "breach", "at": Vector3(0, 0.2, 70)},
 	"waystone_town": {"kind": "model", "level": ""},
 	"waystone_landfill": {"kind": "model", "level": ""},
 	"waystone_oak": {"kind": "model", "level": ""},

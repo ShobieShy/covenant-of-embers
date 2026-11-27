@@ -223,6 +223,13 @@ func check_auto_start() -> void:
 		and state("the_inverted_spire") == "available"
 	):
 		start("the_inverted_spire")
+	# The Warden's death is the handoff. Entering the labyrinth still starts Act I for an older save.
+	if (
+		quests.has("the_goblin_warrens")
+		and state("the_goblin_warrens") == "available"
+		and (flags.has("warden_defeated") or flags.has("labyrinth_entered"))
+	):
+		start("the_goblin_warrens")
 
 
 func current_objective(id: String) -> Dictionary:

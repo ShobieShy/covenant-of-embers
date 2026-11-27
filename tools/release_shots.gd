@@ -10,7 +10,7 @@ const VIEWS := [
 	["overview_breach", "breach", Vector3(0, 160, 300), Vector3(0, 0, 80)],
 	["landfill_junk_mountain", "midden", Vector3(30, 12, 150), Vector3(0, 20, 300)],
 	["landfill_dump_camp", "midden", Vector3(18, 6, 120), Vector3(0, 1, 92)],
-	["breach_crater_rim", "breach", Vector3(0, 30, 200), Vector3(0, 0, 125)],
+	["breach_crater_rim", "breach", Vector3(0, 30, 140), Vector3(0, 0.2, 70)],
 	["association_spire", "mage_association", Vector3(0, 8, 40), Vector3(0, 20, -15)],
 ]
 
