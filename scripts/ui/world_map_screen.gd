@@ -7,6 +7,17 @@ signal travel_requested(point: String)
 signal closed
 
 const TEX := "res://world/map.png"
+## Painted plates. docs/maps is not exported, so these are the copies under the UI pack.
+const PLATES := "res://assets/original/ui_scribe/maps/"
+const LEVEL_PLATE := {
+	"town_square": "town.jpg",
+	"mage_association": "association.jpg",
+	"old_oak": "oak.jpg",
+	"bobs_lab": "oak.jpg",
+	"midden": "landfill.jpg",
+	"breach": "breach.jpg",
+}
+const ACT_PLATE := {1: "warrens.jpg", 2: "blightcoil.jpg", 3: "slagworks.jpg", 4: "sunken.jpg", 5: "spire.jpg"}
 const ZOOM_MIN := 0.5
 const ZOOM_MAX := 6.0
 const HIT := 10.0  ## px: how close a click must be to a marker
@@ -44,6 +55,8 @@ var go_button := Button.new()
 var list := VBoxContainer.new()  ## fallback: one button per attuned waystone
 var list_buttons := {}
 var hosted := false  ## 0.9.1: drawn inside the Echo map tab; Esc belongs to that menu
+var _plate_path := ""
+var _plate: Texture2D
 
 
 func _init() -> void:
@@ -75,6 +88,8 @@ func _init() -> void:
 	list.position = Vector2(16, 16)
 	list.visible = false
 	add_child(list)
+	if not resized.is_connected(queue_redraw):
+		resized.connect(queue_redraw)
 
 
 ## 0.3.1 M7: "Region" and "level band" lines for a destination's confirm card.
@@ -309,23 +324,51 @@ func _unhandled_input(e: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+## The painted chart for this level. A labyrinth floor uses that act's plate.
+static func painted_path(level_id: String, floor := 0) -> String:
+	if floor > 0:
+		var act := ActLoot.act_of(floor)
+		if ACT_PLATE.has(act):
+			return PLATES + String(ACT_PLATE[act])
+	return PLATES + String(LEVEL_PLATE.get(level_id, "elyria.jpg"))
+
+
+func _lab_floor() -> int:
+	var n: Node = self
+	while n:
+		var lab: Variant = n.get("labyrinth")
+		if lab is LabyrinthState:
+			return (lab as LabyrinthState).current
+		n = n.get_parent()
+	return 0
+
+
+func _plate_tex() -> Texture2D:
+	var path := painted_path(linear_level, _lab_floor())
+	if path != _plate_path:
+		_plate_path = path
+		_plate = load(path) as Texture2D if ResourceLoader.exists(path) else null
+	return _plate
+
+
 func _draw_linear() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size if size.x > 0.0 else Vector2(1600, 900)), Color(0.05, 0.04, 0.07))
-	var font := get_theme_default_font()
-	var lines: PackedStringArray = campaign.level_lines(linear_level) if campaign else PackedStringArray([linear_level])
-	var y := 56.0
-	for line in lines:
-		var here := line.ends_with(": Here") or line == WorldMap.level_name(linear_level)
-		draw_string(
-			font,
-			Vector2(64, y),
-			line,
-			HORIZONTAL_ALIGNMENT_LEFT,
-			-1,
-			28 if y < 80.0 else 22,
-			Color(1.0, 0.72, 0.35) if here else Color(0.92, 0.9, 0.84)
+	var bounds := Rect2(Vector2.ZERO, size if size.x > 0.0 else Vector2(1600, 900))
+	draw_rect(bounds, Color(0.45, 0.32, 0.18))
+	var plate := _plate_tex()
+	if plate == null:
+		var font := get_theme_default_font()
+		var lines: PackedStringArray = (
+			campaign.level_lines(linear_level) if campaign else PackedStringArray([linear_level])
 		)
-		y += 36.0
+		var y := 56.0
+		for line in lines:
+			draw_string(font, Vector2(64, y), line, HORIZONTAL_ALIGNMENT_LEFT, -1, 22, Color(0.22, 0.12, 0.06))
+			y += 32.0
+		return
+	var ts := plate.get_size()
+	var fit := minf(bounds.size.x / ts.x, bounds.size.y / ts.y)
+	var drawn := ts * fit
+	draw_texture_rect(plate, Rect2(bounds.position + (bounds.size - drawn) * 0.5, drawn), false)
 
 
 func _rebuild_fog() -> void:

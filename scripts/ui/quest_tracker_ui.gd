@@ -15,7 +15,8 @@ func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	# 0.9.1: left side, clear of the top-right minimap. Still every active quest until 0.9.2.
 	tracker.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	tracker.position = Vector2(16, 16)
+	# Below the framed bars, so the quest line is not hidden under them.
+	tracker.position = Vector2(24, 210)
 	tracker.size = Vector2(360, 220)
 	tracker.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	add_child(tracker)

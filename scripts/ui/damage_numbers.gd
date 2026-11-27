@@ -140,6 +140,7 @@ func add(world: Vector3, r: Damage.Result, element: ElementTable.Element, target
 		l.text = format(n.amount)
 		l.modulate = n.color
 		l.outline_modulate = Color(0, 0, 0, 1)
+		l.font = UiTheme.body_font()
 		l.font_size = FONT_SIZE
 		l.outline_size = 8
 		l.pixel_size = PIXEL_SIZE * n.scale
@@ -155,6 +156,7 @@ func add(world: Vector3, r: Damage.Result, element: ElementTable.Element, target
 			c.text = n.callout
 			c.modulate = n.callout_color
 			c.outline_modulate = Color(0, 0, 0, 1)
+			c.font = UiTheme.body_font()
 			c.font_size = CALLOUT_FONT_SIZE
 			c.outline_size = 6
 			c.pixel_size = PIXEL_SIZE

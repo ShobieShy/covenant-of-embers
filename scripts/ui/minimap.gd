@@ -153,7 +153,8 @@ func _draw() -> void:
 	if quest_at.x < 1.0e8:
 		var qs := clamp_rim(world_to_mini(Vector3(quest_at.x, 0, quest_at.y)))
 		draw_circle(qs, 4.0, Color(1.0, 0.85, 0.35))
-	draw_arc(mid, mid.x - 1.0, 0.0, TAU, 48, Color(0.8, 0.7, 0.5, 0.9), 2.0)
+	draw_arc(mid, mid.x - 2.0, 0.0, TAU, 64, Color(0.62, 0.45, 0.18, 0.95), 4.0)
+	draw_arc(mid, mid.x - 6.0, 0.0, TAU, 64, Color(0.35, 0.22, 0.10, 0.9), 1.5)
 	if not lock_north:  # the N tick rides the rim
 		draw_string(
 			get_theme_default_font(),
@@ -161,5 +162,5 @@ func _draw() -> void:
 			"N",
 			HORIZONTAL_ALIGNMENT_LEFT,
 			-1,
-			12
+			16
 		)

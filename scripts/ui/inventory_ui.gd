@@ -128,26 +128,31 @@ func _init() -> void:
 	var uq := _button("Unequip")  # t60u: every worn slot, staff and wand included
 	uq.pressed.connect(unequip_selected)
 	right.add_child(uq)
-	var th := HBoxContainer.new()
-	right.add_child(th)
+	# Trash shares a row with the count. The long labels get the full detail width.
+	var trash_row := HBoxContainer.new()
+	trash_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	right.add_child(trash_row)
 	trash_button = _button("Trash")
 	trash_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	trash_button.clip_text = false
 	trash_button.pressed.connect(func(): request_trash(selected))
-	th.add_child(trash_button)
+	trash_row.add_child(trash_button)
 	qty = SpinBox.new()
 	qty.min_value = 1
 	qty.max_value = 1
 	qty.tooltip_text = "How many to trash"
-	qty.custom_minimum_size = Vector2(80, 0)
-	th.add_child(qty)
+	qty.custom_minimum_size = Vector2(96, 0)
+	trash_row.add_child(qty)
 	junk_button = _button("Mark junk")
-	junk_button.custom_minimum_size = Vector2(120, 0)
+	junk_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	junk_button.clip_text = false
 	junk_button.pressed.connect(toggle_junk)
-	th.add_child(junk_button)
+	right.add_child(junk_button)
 	favorite_button = _button("Favorite")
-	favorite_button.custom_minimum_size = Vector2(120, 0)
+	favorite_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	favorite_button.clip_text = false
 	favorite_button.pressed.connect(toggle_favorite)
-	th.add_child(favorite_button)
+	right.add_child(favorite_button)
 	confirm_row = VBoxContainer.new()
 	confirm_row.visible = false
 	right.add_child(confirm_row)

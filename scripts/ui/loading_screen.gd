@@ -172,13 +172,13 @@ func _build_ui() -> void:
 	root.add_child(backdrop)
 	var panel := PanelContainer.new()
 	panel.name = "Panel"
-	panel.add_theme_stylebox_override(&"panel", UiTheme.box("panels_9slice/pixel_ui/Ancient/brown.png", 16))
+	panel.add_theme_stylebox_override(&"panel", UiTheme.box("panel.png", 48, Color.WHITE, 4))
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-	panel.custom_minimum_size = Vector2(900, 170)
+	panel.custom_minimum_size = Vector2(900, 280)
 	panel.offset_left = -450
 	panel.offset_right = 450
-	panel.offset_top = -230
-	panel.offset_bottom = -60
+	panel.offset_top = -340
+	panel.offset_bottom = -40
 	root.add_child(panel)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override(&"separation", 10)
@@ -191,7 +191,7 @@ func _build_ui() -> void:
 	h.add_child(ember)
 	stage_label = Label.new()
 	stage_label.name = "Stage"
-	stage_label.add_theme_color_override(&"font_color", UiTheme.GOLD)
+	stage_label.add_theme_color_override(&"font_color", UiTheme.INK)
 	h.add_child(stage_label)
 	bar = ProgressBar.new()
 	bar.name = "Bar"
@@ -200,8 +200,10 @@ func _build_ui() -> void:
 	bar.step = 0.001
 	bar.show_percentage = false
 	bar.custom_minimum_size = Vector2(0, 22)
-	var fill := UiTheme.box("bars_sliders/bar_fill_xp.png", 3, Color.WHITE, 0)
-	var under := UiTheme.box("bars_sliders/bar_under.png", 3, Color.WHITE, 0)
+	var under := StyleBoxFlat.new()
+	under.bg_color = Color(0.22, 0.14, 0.08)
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = UiTheme.GOLD
 	bar.add_theme_stylebox_override(&"fill", fill)
 	bar.add_theme_stylebox_override(&"background", under)
 	v.add_child(bar)
@@ -210,7 +212,7 @@ func _build_ui() -> void:
 	tip_label.name = "Tip"
 	tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	tip_label.add_theme_font_size_override(&"font_size", 24)
-	tip_label.add_theme_color_override(&"font_color", UiTheme.PARCHMENT)
+	tip_label.add_theme_color_override(&"font_color", UiTheme.INK)
 	v.add_child(tip_label)
 	_refresh()
 

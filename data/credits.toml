@@ -363,3 +363,17 @@ author = "Covenant of Embers project"
 license = "CC0 1.0"
 source = "tools/make_weapon_parts.py (original meshes from the staff and wand concept sheets)"
 line = "Staff and wand part kit by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
+name = "Auto-Scribe parchment and brass"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "tools/gen_scribe_ui.py (original CC0 UI). Map plates are copies of the painted charts in docs/maps."
+line = "Auto-Scribe parchment and brass by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
+name = "Libre Baskerville"
+author = "Pablo Impallari and Rodrigo Fuenzalida"
+license = "OFL-1.1"
+source = "https://github.com/impallari/Libre-Baskerville"
+line = "Libre Baskerville by Pablo Impallari and Rodrigo Fuenzalida, OFL-1.1"
