@@ -14,12 +14,12 @@ const CPS := 45.0
 const ARROW := "res://assets/original/ember_art/ui/typewriter/continue_arrow_strip.png"
 const ARROW_FPS := 8.0
 const SPEAKER_COLORS: Array[Color] = [
-	Color(1.0, 0.8, 0.4),
-	Color(0.55, 0.85, 1.0),
-	Color(0.7, 1.0, 0.6),
-	Color(1.0, 0.6, 0.55),
-	Color(0.85, 0.7, 1.0),
-	Color(1.0, 0.95, 0.65),
+	Color(0.45, 0.28, 0.08),
+	Color(0.12, 0.28, 0.55),
+	Color(0.16, 0.38, 0.18),
+	Color(0.55, 0.16, 0.12),
+	Color(0.36, 0.18, 0.48),
+	Color(0.40, 0.30, 0.08),
 ]
 
 static var instant_text := false  ## Settings.apply_to() keeps this in sync

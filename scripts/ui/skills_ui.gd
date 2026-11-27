@@ -148,7 +148,10 @@ func bind(p: Player) -> void:
 		col.add_child(l)
 		for sid in t.in_branch(b["id"]):
 			var btn := Button.new()
-			btn.custom_minimum_size = Vector2(280, 36)
+			btn.custom_minimum_size = Vector2(280, 40)
+			btn.icon = SkillIcons.texture("ember")
+			btn.expand_icon = true
+			btn.add_theme_constant_override(&"icon_max_width", 28)
 			btn.pressed.connect(func(): take(sid))
 			btn.mouse_entered.connect(func(): _hover(btn))
 			btn.focus_entered.connect(func(): _hover(btn))
@@ -185,11 +188,19 @@ func _build_tabs() -> void:
 	show_tab("core")
 
 
+## Pale element colours (air, light) disappear on parchment. Keep the hue, drop the value.
+static func _inked(col: Color) -> Color:
+	return col.darkened(0.55) if col.get_luminance() > 0.55 else col.darkened(0.2)
+
+
 func _add_tab(key: String, label: String, col: Color) -> void:
 	var b := Button.new()
 	b.text = label
 	b.toggle_mode = true
-	b.add_theme_color_override("font_color", col)
+	b.icon = SkillIcons.texture(key) if key != "core" else SkillIcons.texture("ember")
+	b.expand_icon = true
+	b.add_theme_constant_override(&"icon_max_width", 22)
+	b.add_theme_color_override("font_color", _inked(col) if key != "core" else UiTheme.INK)
 	b.pressed.connect(func(): show_tab(key))
 	tabs.add_child(b)
 	tab_buttons[key] = b
@@ -233,7 +244,10 @@ func _build_element_page(el: String, t: SkillTree, col: Color) -> Control:
 func _el_button(el: String, s: Dictionary, col: Color, sz: Vector2) -> Button:
 	var b := Button.new()
 	b.custom_minimum_size = sz
-	b.add_theme_color_override("font_color", col.lightened(0.3))
+	b.icon = SkillIcons.texture(el)
+	b.expand_icon = true
+	b.add_theme_constant_override(&"icon_max_width", 28)
+	b.add_theme_color_override("font_color", _inked(col))
 	var sid := String(s["id"])
 	b.pressed.connect(func(): take_element(el, sid))
 	b.focus_entered.connect(func(): _card(el, sid))

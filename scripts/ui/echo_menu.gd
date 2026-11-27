@@ -83,10 +83,11 @@ func _init() -> void:
 	title_label = Label.new()
 	title_label.text = "Auto-Scribe™"
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title_label.add_theme_font_size_override(&"font_size", 36)
 	v.add_child(title_label)
 	var strip := Control.new()
 	tab_strip = strip
-	strip.custom_minimum_size = Vector2(0, 40)
+	strip.custom_minimum_size = Vector2(0, 84)
 	v.add_child(strip)
 	var row := HBoxContainer.new()
 	row.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -101,8 +102,8 @@ func _init() -> void:
 		row.add_child(b)
 		tab_buttons.append(b)
 	underline = ColorRect.new()
-	underline.color = Color(1.0, 0.62, 0.28)
-	underline.position = Vector2(0, 34)
+	underline.color = Color(0.55, 0.38, 0.14)
+	underline.position = Vector2(0, 50)
 	underline.size = Vector2(48, 2)
 	underline.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	strip.add_child(underline)
@@ -389,14 +390,16 @@ func _place_underline() -> void:
 		return
 	var b := tab_buttons[current]
 	var thick := 4.0 if Accessibility.high_contrast else 2.0
-	underline.color = Color.WHITE if Accessibility.high_contrast else Color(1.0, 0.62, 0.28)
+	underline.color = Color.WHITE if Accessibility.high_contrast else Color(0.55, 0.38, 0.14)
 	underline.size.y = thick
+	var y := b.size.y - thick if b.size.y > 4.0 else 50.0
 	if _line_tween and _line_tween.is_valid():
 		_line_tween.kill()
 	if _snap() or b.size.x <= 1.0:
-		underline.position = Vector2(b.position.x, 36.0 - thick)
+		underline.position = Vector2(b.position.x, y)
 		underline.size.x = maxf(b.size.x, 24.0)
 		return
+	underline.position.y = y
 	_line_tween = create_tween()
 	_line_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	_line_tween.set_ignore_time_scale(true)

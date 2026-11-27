@@ -46,7 +46,9 @@ func _init() -> void:
 	h.add_child(pack_list)
 	compare = Label.new()
 	v.add_child(compare)
-	var b := HBoxContainer.new()
+	var b := GridContainer.new()
+	b.columns = 3
+	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	v.add_child(b)
 	for pair in [
 		["Buy", buy_selected],
@@ -58,6 +60,8 @@ func _init() -> void:
 	]:
 		var btn := Button.new()
 		btn.text = pair[0]
+		btn.clip_text = false
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.pressed.connect(pair[1])
 		b.add_child(btn)
 		match pair[0]:
@@ -120,7 +124,10 @@ func close() -> void:
 
 static func name_of(item: Resource) -> String:
 	var n: Variant = item.get("display_name")
-	return String(n) if n != null and String(n) != "" else "Item"
+	if n == null:
+		return "Item"
+	var s := str(n)
+	return "Item" if s.is_empty() else s
 
 
 func refresh() -> void:

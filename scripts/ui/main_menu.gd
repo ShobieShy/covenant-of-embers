@@ -48,23 +48,25 @@ func _ready() -> void:
 	UiTheme.apply(get_tree().root)  # step 126: pixel fantasy UI
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var bg := ColorRect.new()
-	bg.color = Color(0.08, 0.05, 0.04)
+	bg.color = Color(0.28, 0.18, 0.10)
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
 	var c := CenterContainer.new()
 	c.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(c)
 	menu_column = c
+	var panel := PanelContainer.new()
+	c.add_child(panel)
 	var v := VBoxContainer.new()
-	v.custom_minimum_size = Vector2(320, 0)
+	v.custom_minimum_size = Vector2(720, 0)
 	v.add_theme_constant_override("separation", 10)
-	c.add_child(v)
+	panel.add_child(v)
 	var title := Label.new()
 	title_label = title
 	title.text = "Covenant of Embers"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 40)
-	title.add_theme_color_override("font_color", Color(1.0, 0.55, 0.2))
+	title.add_theme_font_size_override("font_size", 42)
+	title.add_theme_color_override("font_color", UiTheme.INK)
 	v.add_child(title)
 	UiAnim.fade_in(title, 0.8)
 	hover_player = AudioStreamPlayer.new()
@@ -75,7 +77,7 @@ func _ready() -> void:
 	version_label = Label.new()  # step 84
 	version_label.text = "%s  (%s)" % [release_name(), version_string()]
 	version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	version_label.modulate = Color(1, 1, 1, 0.6)
+	version_label.modulate = Color(UiTheme.INK, 0.75)
 	v.add_child(version_label)
 	var slots := HBoxContainer.new()
 	slots.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -83,7 +85,7 @@ func _ready() -> void:
 	for n in range(1, SaveGame.SLOTS + 1):
 		var sb := Button.new()
 		sb.toggle_mode = true
-		sb.custom_minimum_size = Vector2(150, 92)
+		sb.custom_minimum_size = Vector2(210, 128)
 		sb.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		sb.pressed.connect(select_slot.bind(n))
 		_hoverable(sb)

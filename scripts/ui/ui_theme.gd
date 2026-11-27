@@ -1,119 +1,137 @@
 class_name UiTheme
 extends RefCounted
-## Step 126 (Art A8, Ember Art batch_05, CC0 Kenney + original): pixel fantasy UI theme.
+## 0.15.1: parchment-and-brass Auto-Scribe theme, drawn to match the painted maps.
 ## Applied once to the root Window (main_menu._ready) so every Control inherits it.
-## 9-slice margins from batch_05 HANDOFF.md: 48 px panels/buttons 16, inlays 14, bar frame 3, slots 4.
+## 9-slice margins sit outside the corner knots so a stretched panel keeps them.
 
-const DIR := "res://assets/kenney/pixel-ui/"
-const SCALE := 2  # whole-number pixel scale for 9-slice corners
-const GOLD := Color(0.95, 0.8, 0.45)
-const PARCHMENT := Color(0.92, 0.85, 0.7)
-const SLOT := &"SlotButton"  ## Button variation: 24 px inventory slot art, 4 px 9-slice margin
-const SLOT_MARGIN := 4
+const DIR := "res://assets/original/ui_scribe/"
+const FONT_PATH := DIR + "scribe_serif.ttf"
+const GOLD := Color(0.72, 0.55, 0.28)
+const PARCHMENT := Color(0.92, 0.85, 0.7)  ## light paper; loading tips still use this
+const INK := Color(0.20, 0.11, 0.06)
+const INK_SOFT := Color(0.33, 0.20, 0.10)
+const SLOT := &"SlotButton"
+const SLOT_MARGIN := 16
+const BODY := 22  ## readable at 1080p; the pixel face this replaced was not
 
 
 static func tex(rel: String) -> Texture2D:
 	return load(DIR + rel) as Texture2D
 
 
-static func box(rel: String, margin: int, modulate := Color.WHITE, pad := 10) -> StyleBoxTexture:
+static func body_font() -> Font:
+	var f := load(FONT_PATH) as Font
+	return f if f != null else ThemeDB.fallback_font
+
+
+static func box(rel: String, margin: int, modulate := Color.WHITE, pad := 8) -> StyleBoxTexture:
 	var sb := StyleBoxTexture.new()
 	sb.texture = tex(rel)
+	# Content sits inside the brass, not under the corner knots.
+	var inset := margin + pad
 	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
 		sb.set_texture_margin(side, margin)
-		sb.set_content_margin(side, pad)
+		sb.set_content_margin(side, inset)
 	sb.modulate_color = modulate
 	return sb
 
 
-static func pixel_font(file: String) -> FontFile:
-	var f := (load(DIR + "fonts/" + file) as FontFile).duplicate() as FontFile
-	f.antialiasing = TextServer.FONT_ANTIALIASING_NONE
-	f.hinting = TextServer.HINTING_NONE
-	f.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_DISABLED
-	return f
-
-
 static func get_theme() -> Theme:
 	var t := Theme.new()
-	t.default_font = pixel_font("Kenney Pixel.ttf")
-	t.default_font_size = 32  # base 16 x2
-	# Buttons: Ancient brown stone/wood, pressed art sits 1 px lower.
-	t.set_stylebox(&"normal", &"Button", box("panels_9slice/pixel_ui/Ancient/brown.png", 16))
-	t.set_stylebox(&"hover", &"Button", box("panels_9slice/pixel_ui/Ancient/tan.png", 16))
-	var pressed := box("panels_9slice/pixel_ui/Ancient/brown_pressed.png", 16)
+	t.default_font = body_font()
+	t.default_font_size = BODY
+	t.set_stylebox(&"normal", &"Button", box("button.png", 26, Color.WHITE, 6))
+	t.set_stylebox(&"hover", &"Button", box("button_hover.png", 26, Color.WHITE, 6))
+	var pressed := box("button_pressed.png", 26, Color.WHITE, 6)
 	pressed.content_margin_top += 1
 	t.set_stylebox(&"pressed", &"Button", pressed)
-	t.set_stylebox(&"disabled", &"Button", box("panels_9slice/pixel_ui/Ancient/grey.png", 16, Color(1, 1, 1, 0.6)))
-	t.set_stylebox(&"focus", &"Button", box("panels_9slice/fantasy_borders/Border/panel-border-000.png", 16, GOLD))
-	(t.get_stylebox(&"focus", &"Button") as StyleBoxTexture).draw_center = false
-	t.set_color(&"font_color", &"Button", PARCHMENT)
-	t.set_color(&"font_hover_color", &"Button", Color.WHITE)
-	t.set_color(&"font_pressed_color", &"Button", GOLD)
-	t.set_color(&"font_outline_color", &"Button", Color(0.1, 0.06, 0.04))
-	t.set_constant(&"outline_size", &"Button", 4)
-	# Panels: dark filled fantasy panel tinted parchment-brown; inlay for recessed areas.
-	var panel := box("panels_9slice/fantasy_borders/Panel/panel-000.png", 16, Color(0.35, 0.27, 0.2, 0.95), 16)
+	t.set_stylebox(&"disabled", &"Button", box("button_disabled.png", 26, Color(1, 1, 1, 0.85), 6))
+	var focus := box("focus.png", 16, GOLD, 8)
+	focus.draw_center = false
+	t.set_stylebox(&"focus", &"Button", focus)
+	t.set_color(&"font_color", &"Button", INK)
+	t.set_color(&"font_hover_color", &"Button", INK)
+	t.set_color(&"font_pressed_color", &"Button", INK_SOFT)
+	t.set_color(&"font_disabled_color", &"Button", Color(INK, 0.45))
+	t.set_color(&"font_outline_color", &"Button", Color(0, 0, 0, 0))
+	t.set_constant(&"outline_size", &"Button", 0)
+	var panel := box("panel.png", 48, Color.WHITE, 10)
 	t.set_stylebox(&"panel", &"Panel", panel)
 	t.set_stylebox(&"panel", &"PanelContainer", panel)
 	t.set_stylebox(&"panel", &"PopupPanel", panel)
-	t.set_stylebox(&"normal", &"LineEdit", box("panels_9slice/pixel_ui/Ancient/brown_inlay.png", 14, Color.WHITE, 8))
-	t.set_stylebox(&"panel", &"ItemList", box("panels_9slice/pixel_ui/Ancient/brown_inlay.png", 14, Color.WHITE, 8))
-	# Slider
-	t.set_stylebox(&"slider", &"HSlider", box("bars_sliders/slider_track.png", 2, Color.WHITE, 3))
-	t.set_icon(&"grabber", &"HSlider", tex("bars_sliders/slider_grabber.png"))
-	t.set_icon(&"grabber_highlight", &"HSlider", tex("bars_sliders/slider_grabber_hover.png"))
-	# Item slots (t60u): inventory_slot*.png, 4 px corners, x2 scale keeps the border crisp.
+	var inlay := box("inlay.png", 14, Color.WHITE, 8)
+	t.set_stylebox(&"normal", &"LineEdit", inlay)
+	t.set_stylebox(&"focus", &"LineEdit", inlay)
+	t.set_stylebox(&"read_only", &"LineEdit", inlay)
+	t.set_color(&"font_color", &"LineEdit", INK)
+	t.set_color(&"font_placeholder_color", &"LineEdit", INK_SOFT)
+	t.set_stylebox(&"panel", &"ItemList", inlay)
+	t.set_color(&"font_color", &"ItemList", INK)
+	t.set_color(&"font_hovered_color", &"ItemList", INK)
+	t.set_color(&"font_selected_color", &"ItemList", INK)
+	t.set_stylebox(&"selected", &"ItemList", box("slot_selected.png", SLOT_MARGIN, Color(1, 1, 1, 0.35), 4))
+	t.set_stylebox(&"slider", &"HSlider", box("inlay.png", 10, Color.WHITE, 2))
+	t.set_icon(&"grabber", &"HSlider", tex("grabber.png"))
+	t.set_icon(&"grabber_highlight", &"HSlider", tex("grabber.png"))
 	t.set_type_variation(SLOT, &"Button")
-	var slot_dir := "inventory/inventory_slot"
-	t.set_stylebox(&"normal", SLOT, box(slot_dir + ".png", SLOT_MARGIN, Color.WHITE, 6))
-	t.set_stylebox(&"hover", SLOT, box(slot_dir + "_selected.png", SLOT_MARGIN, Color(1, 1, 1, 0.8), 6))
-	t.set_stylebox(&"pressed", SLOT, box(slot_dir + "_selected.png", SLOT_MARGIN, Color.WHITE, 6))
-	t.set_stylebox(&"focus", SLOT, box(slot_dir + "_selected.png", SLOT_MARGIN, GOLD, 6))
-	t.set_stylebox(&"disabled", SLOT, box(slot_dir + "_disabled.png", SLOT_MARGIN, Color.WHITE, 6))
+	t.set_stylebox(&"normal", SLOT, box("slot.png", SLOT_MARGIN, Color.WHITE, 4))
+	t.set_stylebox(&"hover", SLOT, box("slot_selected.png", SLOT_MARGIN, Color.WHITE, 4))
+	t.set_stylebox(&"pressed", SLOT, box("slot_selected.png", SLOT_MARGIN, Color.WHITE, 4))
+	t.set_stylebox(&"focus", SLOT, box("slot_selected.png", SLOT_MARGIN, GOLD, 4))
+	t.set_stylebox(&"disabled", SLOT, box("slot.png", SLOT_MARGIN, Color(1, 1, 1, 0.55), 4))
 	t.set_stylebox(&"normal", &"RichTextLabel", StyleBoxEmpty.new())
-	t.set_color(&"default_color", &"RichTextLabel", PARCHMENT)
+	t.set_color(&"default_color", &"RichTextLabel", INK)
 	for f in [&"normal_font", &"bold_font", &"italics_font", &"bold_italics_font"]:
 		t.set_font(f, &"RichTextLabel", t.default_font)
-	t.set_font_size(&"bold_font_size", &"RichTextLabel", 32)
-	t.set_color(&"font_color", &"Label", PARCHMENT)
-	t.set_color(&"font_outline_color", &"Label", Color(0.08, 0.05, 0.03))
+	t.set_font_size(&"normal_font_size", &"RichTextLabel", BODY)
+	t.set_font_size(&"bold_font_size", &"RichTextLabel", BODY)
+	t.set_color(&"font_color", &"Label", INK)
+	t.set_color(&"font_outline_color", &"Label", Color(0, 0, 0, 0))
+	t.set_constant(&"outline_size", &"Label", 0)
 	return t
 
 
-## Whole UI: theme, Nearest filtering for 2D, pixel cursors (hotspots per HANDOFF.md).
-## t60u: Controls under a CanvasLayer (every in-game screen) don't inherit the Window theme,
-## so the pixel theme is also merged into ThemeDB's default theme, the fallback for all of them.
+## Whole UI. CanvasLayer screens do not inherit the Window theme, so this also merges
+## into ThemeDB's default theme, the fallback for all of them.
 static func apply(win: Window) -> void:
 	if win.theme == null:  # no static cache: a static Theme leaks RIDs at exit
 		win.theme = get_theme()
 	var d := ThemeDB.get_default_theme()
-	if not d.has_meta(&"pixel"):
-		d.set_meta(&"pixel", true)
+	if not d.has_meta(&"scribe"):
+		d.set_meta(&"scribe", true)
 		d.merge_with(win.theme)
 		d.default_font = win.theme.default_font
 		d.default_font_size = win.theme.default_font_size
-	win.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
+	# Painted paper and the map plates, not the old pixel pack.
+	win.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR
 	if DisplayServer.get_name() != "headless":
-		Input.set_custom_mouse_cursor(tex("cursors/cursor_pointer.png"), Input.CURSOR_ARROW, Vector2(0, 0))
-		Input.set_custom_mouse_cursor(tex("cursors/cursor_hand_point.png"), Input.CURSOR_POINTING_HAND, Vector2(5, 1))
-		Input.set_custom_mouse_cursor(tex("cursors/cursor_busy_hourglass.png"), Input.CURSOR_BUSY, Vector2(8, 8))
+		var arrow := tex("cursor.png")
+		Input.set_custom_mouse_cursor(arrow, Input.CURSOR_ARROW, Vector2(1, 1))
+		Input.set_custom_mouse_cursor(arrow, Input.CURSOR_POINTING_HAND, Vector2(1, 1))
 
 
-## Pixel bar frame (bar_frame.png, margins 3) laid over a HUD ProgressBar; gameplay colours unchanged.
+## Brass rule laid over a HUD ProgressBar. The centre of the texture is clear.
 static func frame_bar(b: ProgressBar) -> void:
+	_frame(b, "bar_frame.png", 12, 5)
+	RitualFX.bar_shine(b)
+
+
+## Brass rule over a carry slot. Centre stays clear so the icon and rarity tint show.
+static func frame_slot(node: Control) -> void:
+	_frame(node, "slot_frame.png", 16, 4)
+
+
+static func _frame(node: Control, rel: String, margin: int, outset: int) -> void:
 	var f := NinePatchRect.new()
-	f.texture = tex("bars_sliders/bar_frame.png")
-	f.patch_margin_left = 3
-	f.patch_margin_top = 3
-	f.patch_margin_right = 3
-	f.patch_margin_bottom = 3
+	f.texture = tex(rel)
+	f.patch_margin_left = margin
+	f.patch_margin_top = margin
+	f.patch_margin_right = margin
+	f.patch_margin_bottom = margin
 	f.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	f.offset_left = -4
-	f.offset_top = -4
-	f.offset_right = 4
-	f.offset_bottom = 4
+	f.offset_left = -outset
+	f.offset_top = -outset
+	f.offset_right = outset
+	f.offset_bottom = outset
 	f.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	f.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	b.add_child(f)
-	RitualFX.bar_shine(b)  # step 133 (FX F7)
+	node.add_child(f)

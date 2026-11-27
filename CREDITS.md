@@ -20,6 +20,7 @@
 | Brand logos | Covenant of Embers project | CC0 1.0 | original work (tools/gen_brand_logos.py; fictional makers) | 2026-10-26 |
 | Quaternius enemies (Rat, Slime, Slime Enemy, Goleling, trash props; recoloured, garbage golems kitbashed) | Quaternius | CC0 1.0 | https://poly.pizza/u/Quaternius | 2026-10-24 |
 | Kenney Pixel UI Pack, Fantasy UI Borders, Tiny Dungeon icons, Cursor Pixel Pack, Kenney Fonts | Kenney | CC0 1.0 | https://kenney.nl/assets/pixel-ui-pack | 2026-10-24 |
+| Auto-Scribe parchment and brass | Covenant of Embers project | CC0 1.0 | tools/gen_scribe_ui.py; map plates from docs/maps | 2026-11-27 |
 | Magewar item resources | ShobieShy (Magewar) | MIT (~/game LICENSE) | local ~/game/magewar/resources | 2026-10-23 |
 | Covenant of Embers icon | Covenant of Embers project | Apache 2.0 (original) | this repository | 2026-10-24 |
 | ambientCG Ground 080 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground080 | 2026-11-26 |

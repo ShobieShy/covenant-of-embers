@@ -15,7 +15,7 @@ extends CanvasLayer
 ##    spawn-protection tint, level + XP line.
 
 const LAYER := 2
-const FONT_PATH := "res://assets/kenney/ui-pack/Font/Kenney Future.ttf"
+const FONT_PATH := "res://assets/original/ui_scribe/scribe_serif.ttf"
 const MANA_COLOR := Color(0.2, 0.4, 1.0)
 const HEALTH_COLOR := Color(0.85, 0.2, 0.2)
 const SHIELD_COLOR := Color(0.3, 0.85, 1.0)
@@ -25,7 +25,7 @@ const HINT_SECONDS := 1.5
 const MARKER_SECONDS := 0.25
 const FLASH_SECONDS := 0.3
 const BANNER_SECONDS := 2.5
-const BAR_SIZE := Vector2(260, 14)
+const BAR_SIZE := Vector2(280, 20)
 const CHIP_COLOR := Color(1.0, 0.93, 0.72, 0.85)  ## 0.3.1 P4 (M3): trailing damage chip
 const TOAST_S := 3.0  ## M2: pickup toast life
 const TOAST_FADE_S := 0.5
@@ -53,6 +53,8 @@ var pips: Array[ProgressBar] = []
 var pip_box: HBoxContainer
 var crosshair: Crosshair
 var slot_icons: Array[ColorRect] = []
+var slot_pics: Array[TextureRect] = []
+var slot_elements: Array[TextureRect] = []
 var world_card_bg: ColorRect
 var world_card: RichTextLabel
 var slot_gems: Array[ColorRect] = []
@@ -187,12 +189,12 @@ func _init() -> void:
 	breath_bar = _bar(BREATH_COLOR, bars)
 	pip_box = HBoxContainer.new()
 	bars.add_child(pip_box)
-	level_label = _label(14, bars)
-	skill_badge = _label(14, bars)
+	level_label = _label(20, bars)
+	skill_badge = _label(20, bars)
 	skill_badge.name = "SkillBadge"
 	skill_badge.add_theme_color_override(&"font_color", BADGE_COLOR)
 	skill_badge.visible = false
-	skill_cd = _label(14, bars)
+	skill_cd = _label(20, bars)
 	skill_cd.name = "ActionSkill"
 	crosshair = Crosshair.new()
 	crosshair.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -214,7 +216,7 @@ func _init() -> void:
 	world_card.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if font:
 		world_card.add_theme_font_override(&"normal_font", font)
-		world_card.add_theme_font_size_override(&"normal_font_size", 13)
+		world_card.add_theme_font_size_override(&"normal_font_size", 18)
 	world_card_bg.add_child(world_card)
 	brand_meter = BrandMeter.new()
 	brand_meter.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -228,19 +230,36 @@ func _init() -> void:
 	marker.visible = false
 	var slots := HBoxContainer.new()
 	slots.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	slots.position = Vector2(-300, -90)
+	slots.position = Vector2(-360, -110)
 	root.add_child(slots)
 	for i in Loadout.SLOT_COUNT:
 		var icon := ColorRect.new()
-		icon.custom_minimum_size = Vector2(64, 48)
+		icon.custom_minimum_size = Vector2(76, 60)
 		slots.add_child(icon)
-		var num := _label(12, icon)
+		var pic := TextureRect.new()
+		pic.position = Vector2(8, 6)
+		pic.size = Vector2(44, 44)
+		pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon.add_child(pic)
+		slot_pics.append(pic)
+		var num := _label(16, icon)
 		num.text = str(i + 1)
 		num.position = Vector2(4, 0)
 		var gem := ColorRect.new()
-		gem.size = Vector2(12, 12)
-		gem.position = Vector2(26, 6)
+		gem.size = Vector2(16, 16)
+		gem.position = Vector2(54, 6)
 		icon.add_child(gem)
+		var el := TextureRect.new()
+		el.position = Vector2(52, 4)
+		el.size = Vector2(20, 20)
+		el.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		el.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		el.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon.add_child(el)
+		slot_elements.append(el)
+		UiTheme.frame_slot(icon)
 		var dr := ProgressBar.new()
 		dr.show_percentage = false
 		dr.max_value = 1.0
@@ -333,7 +352,7 @@ func _label(px: int, parent: Control) -> Label:
 		l.add_theme_font_override(&"font", font)
 	l.add_theme_font_size_override(&"font_size", px)
 	l.add_theme_color_override(&"font_outline_color", Color.BLACK)
-	l.add_theme_constant_override(&"outline_size", 4)
+	l.add_theme_constant_override(&"outline_size", 2)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(l)
 	return l
@@ -564,9 +583,12 @@ func refresh(dt: float) -> void:
 	for i in slot_icons.size():
 		var w := player.loadout.wieldable(i)
 		slot_icons[i].color = w.rarity_color() if w else Color(0.2, 0.2, 0.2, 0.5)
+		slot_pics[i].texture = ItemIcons.for_item(w) if w else null
 		slot_gems[i].visible = w != null
+		slot_elements[i].texture = null
 		if w:
 			slot_gems[i].color = et.color(w.element())
+			slot_elements[i].texture = SkillIcons.texture(ElementTable.IDS[w.element()])
 		var on := player.loadout.active == i
 		slot_icons[i].modulate = Color.WHITE if on else Color(1, 1, 1, 0.45)
 		slot_draw[i].visible = on and player.loadout.swapping()

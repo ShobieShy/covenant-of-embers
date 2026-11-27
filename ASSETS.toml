@@ -549,3 +549,13 @@ license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-11-27"
 use = "Modular staff and wand parts: head, exterior, interior, handle and charm, six tiers, plus the plain shaft, focus gem, muzzle flare and scale figure"
+
+[[asset]]
+name = "Auto-Scribe parchment and brass"
+path = "assets/original/ui_scribe"
+author = "Covenant of Embers project"
+source = "tools/gen_scribe_ui.py (original CC0 UI). Map plates are copies of the painted charts in docs/maps."
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-27"
+use = "Auto-Scribe theme: parchment panels, brass frames, Scribe Serif, element medallions, painted level maps"
