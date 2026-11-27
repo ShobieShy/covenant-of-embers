@@ -388,17 +388,6 @@ date_added = "2026-11-05"
 use = "Labyrinth Act II creatures: spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch"
 
 [[asset]]
-name = "ambientCG Rock 035"
-path = "assets/ambientcg/Rock035"
-author = "Lennart Demes (ambientCG.com)"
-source = "https://ambientcg.com/view?id=Rock035"
-download = "https://ambientcg.com/get?file=Rock035_1K-JPG.zip"
-license = "CC0-1.0"
-license_url = "https://docs.ambientcg.com/license/"
-date_added = "2026-11-26"
-use = "Act V Inverted Spire shelves, void wall and tower stone (color/normal/roughness, 1K)"
-
-[[asset]]
 name = "Inverted Spire kit"
 path = "assets/spire"
 author = "Covenant of Embers project"
@@ -427,7 +416,7 @@ download = "https://ambientcg.com/get?file=Rock035_1K-JPG.zip"
 license = "CC0-1.0"
 license_url = "https://docs.ambientcg.com/license/"
 date_added = "2026-11-26"
-use = "Slagworks basalt: cavern shell, cliffs, stone paths, furnace, arch, lift, slag cast"
+use = "Slagworks basalt (cavern, cliffs, furnace, lift, slag cast) and Act V Inverted Spire shelves, void wall, and tower stone"
 
 [[asset]]
 name = "ambientCG Lava 004"
