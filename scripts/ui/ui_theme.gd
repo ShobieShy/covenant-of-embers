@@ -5,14 +5,14 @@ extends RefCounted
 ## 9-slice margins sit outside the corner knots so a stretched panel keeps them.
 
 const DIR := "res://assets/original/ui_scribe/"
-const FONT_PATH := DIR + "scribe_serif.ttf"
+const FONT_PATH := "res://assets/original/libre-baskerville/LibreBaskerville-Regular.ttf"
 const GOLD := Color(0.72, 0.55, 0.28)
 const PARCHMENT := Color(0.92, 0.85, 0.7)  ## light paper; loading tips still use this
 const INK := Color(0.20, 0.11, 0.06)
 const INK_SOFT := Color(0.33, 0.20, 0.10)
 const SLOT := &"SlotButton"
 const SLOT_MARGIN := 16
-const BODY := 22  ## readable at 1080p; the pixel face this replaced was not
+const BODY := 22  ## Libre Baskerville, drawn for small text on screen
 
 
 static func tex(rel: String) -> Texture2D:

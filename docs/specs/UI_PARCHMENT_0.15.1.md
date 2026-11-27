@@ -17,7 +17,7 @@ The combat HUD is not a page. It sits on the world. Bars and slots take the same
 
 ## What the screens do
 
-- Auto-Scribe, inventory, vendor, skills, settings, dialogue, and the main menu use the parchment panel, brass buttons, and the project serif. Body size is at least 20 px at 1080p. Button labels are dark ink. The title is the same face, larger.
+- Auto-Scribe, inventory, vendor, skills, settings, dialogue, and the main menu use the parchment panel, brass buttons, and Libre Baskerville. Body size is at least 20 px at 1080p. Button labels are dark ink. The title is the same face, larger.
 - The combat HUD frames health, shield, mana, and breath in brass. Carry slots show the wieldable's icon inside the brass slot, with the element colour kept. Skill buttons show a medallion for that element. Damage numbers use the same serif and the element's colour.
 - The Map tab draws the painted plate. Town, the Association, the Old Oak, Bob's laboratory, the Landfill, and the Breach each have one. A labyrinth floor uses `ActLoot.act_of` and that act's plate. An unknown place uses the Elyria chart. The legend text, travel list, and waystone card stay. The minimap and its quest pin are unchanged in behaviour. The HUD stays hidden while the Auto-Scribe is open.
 - The inventory detail row no longer puts Trash, the quantity, Unmark junk, and Favorite on one line. Trash and the quantity share a row. Unmark junk and Favorite each take the full width of the detail column, so the words are not clipped.
@@ -25,4 +25,4 @@ The combat HUD is not a page. It sits on the world. Bars and slots take the same
 
 ## Assets
 
-All new art is drawn for this project (CC0) or is a copy of a painted map already in the repo. Fonts and textures are registered in `ASSETS.toml`. No Kenney pixel panel is the menu surface anymore. Kenney cursors and item icons stay. Music stays silent. `SaveGame.VERSION` stays 1. The game version string is not moved to 1.0.
+Frames, medallions and the map plates are drawn for this project (CC0) or copied from the painted charts. The face is Libre Baskerville (OFL-1.1). Each is registered in `ASSETS.toml`. No Kenney pixel panel is the menu surface anymore. Kenney cursors and item icons stay. Music stays silent. `SaveGame.VERSION` stays 1. The game version string is not moved to 1.0.

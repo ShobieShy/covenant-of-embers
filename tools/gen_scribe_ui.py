@@ -527,9 +527,7 @@ def main() -> None:
     icons()
     cursor()
     copy_maps()
-    font_path = OUT / "scribe_serif.ttf"
-    build_font(font_path)
-    specimen(font_path)
+    # The UI face is Libre Baskerville (OFL), not a generated serif.
     print("wrote", OUT)
 
 

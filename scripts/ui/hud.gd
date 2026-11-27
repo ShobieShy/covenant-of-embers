@@ -15,7 +15,7 @@ extends CanvasLayer
 ##    spawn-protection tint, level + XP line.
 
 const LAYER := 2
-const FONT_PATH := "res://assets/original/ui_scribe/scribe_serif.ttf"
+const FONT_PATH := "res://assets/original/libre-baskerville/LibreBaskerville-Regular.ttf"
 const MANA_COLOR := Color(0.2, 0.4, 1.0)
 const HEALTH_COLOR := Color(0.85, 0.2, 0.2)
 const SHIELD_COLOR := Color(0.3, 0.85, 1.0)
