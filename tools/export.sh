@@ -11,6 +11,9 @@ touch build/.gdignore
 timeout 600 "$GODOT" --headless --path . --export-release Linux build/linux/covenant_of_embers.x86_64
 timeout 600 "$GODOT" --headless --path . --export-release Windows build/windows/covenant_of_embers.exe
 test -s build/linux/covenant_of_embers.x86_64 && test -s build/windows/covenant_of_embers.exe
+# Same exclude list on both presets. The Linux PCK is enough to catch a texture
+# the scenes or a runtime load() name that the pack dropped.
+python3 tools/check_export_textures.py build/linux/covenant_of_embers.x86_64
 # Step 84: Windows exe must carry the icon + version resources; Linux gets .desktop + icon.
 VERSION=$(sed -n 's/^config\/version="\(.*\)"/\1/p' project.godot)
 # PE versions are numeric, so drop a prerelease suffix: 0.1.0-prealpha -> 0.1.0.0

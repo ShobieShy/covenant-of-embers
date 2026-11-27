@@ -388,6 +388,16 @@ date_added = "2026-11-05"
 use = "Labyrinth Act II creatures: spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch"
 
 [[asset]]
+name = "Inverted Spire kit"
+path = "assets/spire"
+author = "Covenant of Embers project"
+source = "original (this repository, tools/gen_spire_meshes.py); false-sky texture painted for Act V"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-26"
+use = "Act V meshes: inverted tower, rock shelves, crystal clusters, harpy nest, false sky, void wall, light column, wind streak"
+
+[[asset]]
 name = "Old Oak v4 (Town east lobe)"
 path = "assets/landmarks/old_oak"
 author = "Ember Art; bark and door wood by Lennart Demes (ambientCG Bark014, Wood051)"
@@ -406,7 +416,7 @@ download = "https://ambientcg.com/get?file=Rock035_1K-JPG.zip"
 license = "CC0-1.0"
 license_url = "https://docs.ambientcg.com/license/"
 date_added = "2026-11-26"
-use = "Slagworks basalt: cavern shell, cliffs, stone paths, furnace, arch, lift, slag cast"
+use = "Slagworks basalt (cavern, cliffs, furnace, lift, slag cast) and Act V Inverted Spire shelves, void wall, and tower stone"
 
 [[asset]]
 name = "ambientCG Lava 004"

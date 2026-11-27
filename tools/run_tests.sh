@@ -27,6 +27,7 @@ python3 tools/toml_to_scene.py --self-test
 python3 tools/expand_maps.py --check
 python3 tools/toml_to_scene.py --check
 python3 tools/export_set.py --check
+python3 tools/check_export_textures.py --self-test
 python3 tools/import_magewar_parts.py --check
 python3 tools/labyrinth_gen.py --self-test  # L1
 python3 tools/labyrinth_gen.py --check
