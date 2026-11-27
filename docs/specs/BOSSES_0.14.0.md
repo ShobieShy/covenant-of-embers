@@ -4,6 +4,8 @@ Specs taken from the creature sheets in `docs/concepts/creatures/` before the me
 
 Each body is one skinned mesh (hips, spine, chest, head, arms, legs, feet) with Idle, Walk, Run, Attack, HitReact and Death. Phase nodes start hidden and turn on with the existing phase numbers. They do not change health, speeds, or collision.
 
+The mesh is a closed sculpt. The sheet is the reference for scale, silhouette and palette. It is not projected or extruded onto the surface, so the sides and the back are the same volume as the front.
+
 ## The Filth
 
 Landfill boss. A heap of slime, not a humanoid. About 5.5 m to the crown of the mound and wider than it is tall, next to a 1.8 m scavenger. The hitbox stays 2.2 × 2.0 × 2.2 m.

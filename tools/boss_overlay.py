@@ -74,7 +74,7 @@ def main() -> None:
     dst.mkdir(parents=True, exist_ok=True)
     tag = sys.argv[3] if len(sys.argv) > 3 else src.name
     for boss_id in CROPS:
-        front = src / f"{boss_id}_p1_front.png"
+        front = src / f"{boss_id}_p1_plate.png"
         if not front.is_file():
             print("missing", front)
             continue

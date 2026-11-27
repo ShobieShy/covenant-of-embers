@@ -312,47 +312,47 @@ line = "Slagworks mine kit by Covenant of Embers project, CC0 1.0"
 name = "The Filth hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_the_filth.jpg"
+source = "tools/sculpt_bosses.py (Blender volumetric sculpt; the sheet is reference only)"
 line = "The Filth hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Breach Warden hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_breach_warden.jpg"
+source = "tools/sculpt_bosses.py (Blender volumetric sculpt; the sheet is reference only)"
 line = "Breach Warden hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Goblin King hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_goblin_king.jpg"
+source = "tools/sculpt_bosses.py (Blender volumetric sculpt; the sheet is reference only)"
 line = "Goblin King hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Blightmaw Matriarch hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_blightmaw_matriarch.jpg"
+source = "tools/sculpt_bosses.py (Blender volumetric sculpt; the sheet is reference only)"
 line = "Blightmaw Matriarch hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Forgemaw hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_forgemaw.jpg"
+source = "tools/sculpt_bosses.py (Blender volumetric sculpt; the sheet is reference only)"
 line = "Forgemaw hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Drowned Choir hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_drowned_choir.jpg"
+source = "tools/sculpt_bosses.py (Blender volumetric sculpt; the sheet is reference only)"
 line = "Drowned Choir hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Storm Warden hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_storm_warden.jpg"
+source = "tools/sculpt_bosses.py (Blender volumetric sculpt; the sheet is reference only)"
 line = "Storm Warden hero mesh by Covenant of Embers project, CC0 1.0"
