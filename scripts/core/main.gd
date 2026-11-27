@@ -318,8 +318,9 @@ func _setup_exits(player: Player, here: String) -> void:
 			portal.name = "GateLabyrinth"
 			portal.player = player
 			add_child(portal)
-			# On the south slab (it ends at z 78). z 125 was past the floor.
-			portal.global_position = $Level.global_position + Vector3(0, 0.2, 76)
+			# Crater centre, the same spot as EmberArt's labyrinth_gate. The greybox
+			# floor ended at z 78; the remade bowl includes z 125.
+			portal.global_position = $Level.global_position + Vector3(0, 0, 125)
 			portal.used.connect(travel)
 			portal.blocked.connect(_on_gate_blocked)
 			gates.append(portal)

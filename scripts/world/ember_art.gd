@@ -17,7 +17,7 @@ const SLOTS := {
 	"oak_lod": {"kind": "model", "level": "old_oak", "at": Vector3(0, 0, -13)},
 	"breach_crater_rim": {"kind": "model", "level": "breach", "at": Vector3(0, 0, 125)},
 	# L3 (batch 08a): the Labyrinth gate stands on the crater door (Interiors LINKS labyrinth).
-	"labyrinth_gate": {"kind": "model", "level": "breach", "at": Vector3(0, 0.2, 76)},
+	"labyrinth_gate": {"kind": "model", "level": "breach", "at": Vector3(0, 0, 125)},
 	"waystone_town": {"kind": "model", "level": ""},
 	"waystone_landfill": {"kind": "model", "level": ""},
 	"waystone_oak": {"kind": "model", "level": ""},
@@ -50,7 +50,7 @@ const LOD_RANGES := {
 	"association_spire": [90.0, 260.0],
 	"oak_lod": [45.0, 120.0, 300.0],
 }
-const SCALE := {"junk_mountain": 0.6}
+const SCALE := {"junk_mountain": 0.6, "breach_crater_rim": 3.35}
 ## The waystone GLBs' emission read nearly white; scale it down.
 const WAYSTONE_GLOW := 0.3
 ## Placeholder tints (body, trim) per chest tier.

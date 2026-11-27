@@ -530,9 +530,18 @@ func walk_to(at: Vector3, held: Array = []) -> void:
 		if _path[i].distance_squared_to(feet) < _path[from].distance_squared_to(feet):
 			from = i
 	for i in range(from, _path.size()):
-		if Vector2(_path[i].x - feet.x, _path[i].z - feet.z).length() > 0.6:
-			next = _path[i]
-			break
+		var step := Vector2(_path[i].x - feet.x, _path[i].z - feet.z)
+		if step.length() <= 0.6:
+			continue
+		# An open straight span only has the point the bot already left. Targeting it
+		# turns the bot around every replan (the Breach crater walk never arrived).
+		# Skip a corner that sits behind the player relative to the following one.
+		if i + 1 < _path.size():
+			var further := Vector2(_path[i + 1].x - feet.x, _path[i + 1].z - feet.z)
+			if step.dot(further) < 0.0:
+				continue
+		next = _path[i]
+		break
 	look_at_point(next + Vector3(0, 1.0, 0))
 	player.set_look(player.yaw, 0.0)
 	# Step 96: wedged (no 0.3 m of progress in 1.5 s): jump and sidestep for 0.6 s.
