@@ -9,6 +9,8 @@ func test_five_floors_kill_void_and_warden() -> void:
 		runner_tree.root.add_child(hall)
 		check(hall.get_node_or_null("StairsDown") != null, "floor %d has stairs" % n)
 		check(hall.get_node_or_null("LitPath") == null, "floor %d is not the throat" % n)
+		check(hall.get_node_or_null("InvertedTower") != null, "floor %d hangs the tower" % n)
+		check(hall.get_node_or_null("Core") == null, "floor %d has no Core" % n)
 		check(hall.fall_kind(-30.0) == "kill", "floor %d void is a kill" % n)
 		check(hall.fall_kind(2.0) == "arena", "floor %d drop between platforms is not a kill" % n)
 		hall.free()

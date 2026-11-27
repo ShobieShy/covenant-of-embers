@@ -41,6 +41,7 @@ var renderer := "auto"  ## step 86: PlatformDisplay.RENDERERS (next launch)
 var window_mode := 0  ## PlatformDisplay.WINDOW_MODES
 var ui_scale := 0.0  ## 0 = auto (DPI)
 var minimap_north := false  ## OW8: lock the minimap north instead of rotating with the camera
+var auto_mark_basic_junk := false  ## mark Basic ground loot as junk; off unless the player turns it on
 var quality := -1  ## step 134: QualityPresets.Level, -1 = auto (Low on Steam Deck)
 
 
@@ -177,6 +178,7 @@ func apply_to(p: Player) -> void:
 	p.set_reduced_motion(reduced_motion)
 	p.feel.set_bob_scale(head_bob)
 	p.feel.set_shake_scale(0.0 if reduced_motion else shake)
+	p.auto_mark_basic_junk = auto_mark_basic_junk
 	GameAudio.apply_volumes(master_volume, sfx_volume, music_volume, voice_volume)
 
 
@@ -257,5 +259,6 @@ func _options() -> PackedStringArray:
 		"window_mode",
 		"ui_scale",
 		"quality",
-		"minimap_north"
+		"minimap_north",
+		"auto_mark_basic_junk",
 	]

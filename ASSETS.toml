@@ -65,6 +65,17 @@ source = "original (this repository)"
 license = "Apache-2.0"
 
 [[asset]]
+name = "ambientCG Ground 080"
+path = "assets/ambientcg/Ground080"
+author = "Lennart Demes (ambientCG.com)"
+source = "https://ambientcg.com/view?id=Ground080"
+download = "https://ambientcg.com/get?file=Ground080_1K-JPG.zip"
+license = "CC0-1.0"
+license_url = "https://docs.ambientcg.com/license/"
+date_added = "2026-11-26"
+use = "Goblin Warrens packed-earth floors (color/normal/roughness, tinted warm)"
+
+[[asset]]
 name = "ambientCG Ground 037"
 path = "assets/ambientcg/Ground037"
 author = "Lennart Demes (ambientCG.com)"
@@ -305,6 +316,16 @@ date_added = "2026-10-26"
 use = "Step 152 terrain mud layer (color/normal/roughness/height at 512 px + Terrain3D packed PNGs)"
 
 [[asset]]
+name = "Landfill pit meshes"
+path = "assets/original/landfill"
+author = "Covenant of Embers project"
+source = "assets/original/landfill/build_meshes.py (original meshes; textures are the repo's ambientCG sets)"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-26"
+use = "The Landfill pit, toxic pool, crystal clusters, shacks, town gate and Breach crater"
+
+[[asset]]
 name = "Ember Art (0.1.4)"
 path = "assets/original/ember_art"
 author = "Covenant of Embers project (Ember Art)"
@@ -323,6 +344,38 @@ license = "CC0-1.0"
 license_url = "https://docs.ambientcg.com/license/"
 date_added = "2026-10-27"
 use = "Terrain3D texture sets (albedo+height, normal+roughness, 1024 px): Textures based on ambientCG.com (CC0)"
+
+[[asset]]
+name = "ambientCG Bark 014"
+path = "assets/ambientcg/Bark014"
+author = "Lennart Demes (ambientCG.com)"
+source = "https://ambientcg.com/view?id=Bark014"
+download = "https://ambientcg.com/get?file=Bark014_1K-JPG.zip"
+license = "CC0-1.0"
+license_url = "https://docs.ambientcg.com/license/"
+date_added = "2026-11-26"
+use = "Act II Rotheart bark (color/normal/roughness, resized to 512 px)"
+
+[[asset]]
+name = "ambientCG Moss 004"
+path = "assets/ambientcg/Moss004"
+author = "Lennart Demes (ambientCG.com)"
+source = "https://ambientcg.com/view?id=Moss004"
+download = "https://ambientcg.com/get?file=Moss004_1K-JPG.zip"
+license = "CC0-1.0"
+license_url = "https://docs.ambientcg.com/license/"
+date_added = "2026-11-26"
+use = "Act II cave moss (color/normal/roughness, resized to 512 px)"
+
+[[asset]]
+name = "Blightcoil cavern look (shell, Rotheart, shelves)"
+path = "assets/original/ember_art/blightcoil_look"
+author = "Covenant of Embers project; bark and moss by Lennart Demes (ambientCG)"
+source = "tools/build_blightcoil_look.py. Embedded CC0 textures: ambientCG Bark014, Moss004, Rock030, Ground037."
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-26"
+use = "Act II Overgrown Deep: cavern shell, Rotheart, root shelves, pools, mushrooms, crystals, shrine, gate"
 
 [[asset]]
 name = "Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine)"
@@ -345,6 +398,16 @@ date_added = "2026-11-05"
 use = "Labyrinth Act II creatures: spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch"
 
 [[asset]]
+name = "Inverted Spire kit"
+path = "assets/spire"
+author = "Covenant of Embers project"
+source = "original (this repository, tools/gen_spire_meshes.py); false-sky texture painted for Act V"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-26"
+use = "Act V meshes: inverted tower, rock shelves, crystal clusters, harpy nest, false sky, void wall, light column, wind streak"
+
+[[asset]]
 name = "Old Oak v4 (Town east lobe)"
 path = "assets/landmarks/old_oak"
 author = "Ember Art; bark and door wood by Lennart Demes (ambientCG Bark014, Wood051)"
@@ -363,3 +426,46 @@ license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-11-26"
 use = "Bob's lab hollow, spiral stair, shelves, stone table and cauldrons"
+
+[[asset]]
+name = "ambientCG Rock 035"
+path = "assets/ambientcg/Rock035"
+author = "Lennart Demes (ambientCG.com)"
+source = "https://ambientcg.com/view?id=Rock035"
+download = "https://ambientcg.com/get?file=Rock035_1K-JPG.zip"
+license = "CC0-1.0"
+license_url = "https://docs.ambientcg.com/license/"
+date_added = "2026-11-26"
+use = "Slagworks basalt (cavern, cliffs, furnace, lift, slag cast) and Act V Inverted Spire shelves, void wall, and tower stone"
+
+[[asset]]
+name = "ambientCG Lava 004"
+path = "assets/ambientcg/Lava004"
+author = "Lennart Demes (ambientCG.com)"
+source = "https://ambientcg.com/view?id=Lava004"
+download = "https://ambientcg.com/get?file=Lava004_1K-JPG.zip"
+license = "CC0-1.0"
+license_url = "https://docs.ambientcg.com/license/"
+date_added = "2026-11-26"
+use = "Slagworks lava channels, furnace mouth, ore glow"
+
+[[asset]]
+name = "ambientCG Metal 034"
+path = "assets/ambientcg/Metal034"
+author = "Lennart Demes (ambientCG.com)"
+source = "https://ambientcg.com/view?id=Metal034"
+download = "https://ambientcg.com/get?file=Metal034_1K-JPG.zip"
+license = "CC0-1.0"
+license_url = "https://docs.ambientcg.com/license/"
+date_added = "2026-11-26"
+use = "Slagworks iron gantries, rails, chains, and mine carts"
+
+[[asset]]
+name = "Slagworks mine kit"
+path = "assets/original/slagworks"
+author = "Covenant of Embers project"
+source = "tools/make_slag_meshes.py (original geometry for Act III; materials are ambientCG Rock035, Lava004, Metal034, Wood049)"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-26"
+use = "Act III Slagworks meshes: cliffs, stone, gantries, rails, lava, furnace-anvil, arch, door, lift, slag cast, ore, cart, boulders, chains, pillars"

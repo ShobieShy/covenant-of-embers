@@ -22,7 +22,10 @@ var nav_from_cache := false
 var fog_cleared := false
 var _region: NavigationRegion3D
 var _stepped := {}
-var _mats := {}
+var _hooked: Camera3D
+var _prev_env: Environment
+var _sun_energy: Array = []
+var _suns_checked := false
 
 
 static func load_doc() -> Dictionary:
@@ -51,6 +54,9 @@ func _build(state: LabyrinthState) -> void:
 		_ramp(walk, ramp)
 	for pocket in doc.get("pocket", []):
 		_pocket(walk, pocket)
+	for deck in doc.get("deck", []):
+		_deck(walk, deck)
+	_rim(walk)
 	_pads()
 	_props(state)
 	_volumes()
@@ -221,6 +227,7 @@ func spawn_crown_vines() -> void:
 func _physics_process(_dt: float) -> void:
 	if not is_inside_tree():
 		return
+	_hold_look()
 	var who: Array = []
 	for n in get_tree().get_nodes_in_group(Player.GROUP):
 		who.append(n)
@@ -313,22 +320,17 @@ func _ramp(walk: Node3D, ramp: Dictionary) -> void:
 	var slope := StaticBody3D.new()
 	slope.name = "Slope_" + String(ramp["id"])
 	slope.transform = Transform3D(Basis(side, up, along), centre)
-	var mesh_node := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = Vector3(width, thick, span.length())
-	mesh_node.mesh = mesh
-	mesh_node.material_override = _mat(Color(0.34, 0.26, 0.14))
-	slope.add_child(mesh_node)
 	var shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()
-	box.size = mesh.size
+	box.size = Vector3(width, thick, span.length())
 	shape.shape = box
 	slope.add_child(shape)
 	walk.add_child(slope)
 	var horiz := Vector3(to.x - fr.x, 0.0, to.z - fr.z).normalized()
 	var side_h := Vector3(-horiz.z, 0.0, horiz.x)
-	var land := to + horiz * 1.3
-	land.y = to.y - thick * 0.5
+	var land := to + horiz * 1.6
+	# The tread top is flush with the slab. A lower lip catches the capsule.
+	land.y = to.y - 0.15
 	_flat_tread(walk, "Land_" + String(ramp["id"]), land, side_h, horiz, width, 2.8)
 	var midp := fr.lerp(to, 0.45)
 	_volume("vine", midp + Vector3(0, 1.0, 0), Vector3(3.0, 2.4, 3.0), Color(0.18, 0.42, 0.16))
@@ -338,14 +340,6 @@ func _trunk(walk: Node3D, radius: float, top: float) -> void:
 	var body := StaticBody3D.new()
 	body.name = "Trunk"
 	body.position = Vector3(0, top * 0.5 - 1.0, 0)
-	var mesh_node := MeshInstance3D.new()
-	var mesh := CylinderMesh.new()
-	mesh.top_radius = radius
-	mesh.bottom_radius = radius
-	mesh.height = top + 1.0
-	mesh_node.mesh = mesh
-	mesh_node.material_override = _mat(Color(0.28, 0.22, 0.14))
-	body.add_child(mesh_node)
 	var shape := CollisionShape3D.new()
 	var cyl := CylinderShape3D.new()
 	cyl.radius = radius
@@ -379,16 +373,18 @@ func _props(state: LabyrinthState) -> void:
 	mother.position = pad_local(7) + Vector3(1.6, 0, 0.4)
 	mother.set_meta(&"speaker", "Verdant Mother")
 	add_child(mother)
-	cocoon = _prop_box("Cocoon", pad_local(8) + Vector3(-2.2, 0, 1.4), Vector3(1.8, 1.6, 1.4), Color(0.55, 0.5, 0.32))
+	# The torn pod sits in the Rotheart, where the painting puts the empty cocoon.
+	cocoon = _anchor("Cocoon", Vector3(0.0, 14.4, 4.0))
 	var shell := BlightcoilKit.visual("torn_cocoon")
 	if shell:
-		cocoon.mesh = null
 		shell.name = "TornCocoon"
+		shell.scale = Vector3(2.1, 2.1, 2.1)
 		cocoon.add_child(shell)
 	cocoon.visible = state != null and state.bosses.has(BOSS)
 	forge = BlightForge.new()
 	forge.name = "ForgeDoor"
-	forge.position = pad_local(8) + Vector3(2.4, 0, -1.2)
+	forge.position = Vector3(0.0, 0.0, 26.0)
+	forge.rotation.y = PI
 	add_child(forge)
 	if state and state.bosses.has(BOSS):
 		forge.opened = true
@@ -418,21 +414,32 @@ func _ready() -> void:
 		hazard.rest_pad = pad_global(7)
 		hazard.last_pad = pad_global(floor_no)
 		hazard.cavern = self
+	var shrine := get_node_or_null("RestShrine")
+	if shrine:
+		for c in shrine.get_children():
+			if (c is CSGShape3D or c is Label3D) and c is Node3D:
+				(c as Node3D).visible = false
 	KillPlane.stamp(self)
+
+
+func _exit_tree() -> void:
+	_release_look()
 
 
 func _spawns(state: LabyrinthState) -> void:
 	var root := Node3D.new()
 	root.name = "EnemySpawns"
 	add_child(root)
-	_enemy(root, "sump_husk_a", "spore_husk", 6, Vector3(20.5, 0, 3.2))
-	_enemy(root, "sump_husk_b", "spore_husk", 6, Vector3(20.0, 0, 1.0))
-	_enemy(root, "sump_treant", "mossbound_treant", 6, Vector3(19.2, 0, 3.6), "sump_elite")
-	_enemy(root, "canopy_husk", "spore_husk", 7, Vector3(5.0, 12, 19.0))
-	_enemy(root, "canopy_beast", "spore_beast", 7, Vector3(3.2, 12, 23.2))
-	_enemy(root, "canopy_treant", "mossbound_treant", 7, Vector3(1.5, 12, 21.0), "canopy_elite")
-	_enemy(root, "crown_beast", "spore_beast", 8, Vector3(-20.0, 24, -6.0))
-	_enemy(root, "crown_treant", "mossbound_treant", 8, Vector3(-20.5, 24, -4.5), "crown_elite")
+	_enemy(root, "sump_husk_a", "spore_husk", 6, Vector3(-26.0, 0, 26.0))
+	_enemy(root, "sump_husk_b", "spore_husk", 6, Vector3(-22.0, 0, 26.5))
+	_enemy(root, "sump_treant", "mossbound_treant", 6, Vector3(-25.0, 0, 24.5), "sump_elite")
+	# East wing, clear of the west ramp. A foe within 20 m of the Sump makes the
+	# playtest fight instead of climbing.
+	_enemy(root, "canopy_husk", "spore_husk", 7, Vector3(32.0, 12, 8.0))
+	_enemy(root, "canopy_beast", "spore_beast", 7, Vector3(30.0, 12, 6.0))
+	_enemy(root, "canopy_treant", "mossbound_treant", 7, Vector3(28.0, 12, 10.0), "canopy_elite")
+	_enemy(root, "crown_beast", "spore_beast", 8, Vector3(22.0, 24, -4.0))
+	_enemy(root, "crown_treant", "mossbound_treant", 8, Vector3(12.0, 24, -12.0), "crown_elite")
 	var boss_at := pad_local(8) + Vector3(0, 0, 1.8)
 	if state == null or not state.bosses.has(BOSS):
 		var boss := _enemy(root, "matriarch", BOSS, 8, boss_at)
@@ -498,47 +505,29 @@ func _hide_fog_meshes() -> void:
 			(n as Node3D).visible = false
 
 
-func _volume(kind: String, at: Vector3, sz: Vector3, color: Color) -> Node3D:
+func _volume(kind: String, at: Vector3, sz: Vector3, _color: Color) -> Node3D:
 	var n := Node3D.new()
 	n.name = kind + "_" + str(get_child_count())
 	n.position = at
 	n.set_meta(&"kind", kind)
 	n.set_meta(&"size", sz)
 	n.add_to_group(&"blight_volume")
-	var mesh_node := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = sz
-	mesh_node.mesh = mesh
-	var mat := _mat(color)
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if color.a < 0.99 else BaseMaterial3D.TRANSPARENCY_DISABLED
-	mesh_node.material_override = mat
-	n.add_child(mesh_node)
 	add_child(n)
 	return n
 
 
-func _prop_box(nm: String, at: Vector3, sz: Vector3, color: Color) -> MeshInstance3D:
-	var mesh_node := MeshInstance3D.new()
-	mesh_node.name = nm
-	mesh_node.position = at
-	var mesh := BoxMesh.new()
-	mesh.size = sz
-	mesh_node.mesh = mesh
-	mesh_node.material_override = _mat(color)
-	add_child(mesh_node)
-	return mesh_node
+func _anchor(nm: String, at: Vector3) -> Node3D:
+	var n := Node3D.new()
+	n.name = nm
+	n.position = at
+	add_child(n)
+	return n
 
 
-func _box(parent: Node3D, nm: String, centre: Vector3, sz: Vector3, color: Color) -> StaticBody3D:
+func _box(parent: Node3D, nm: String, centre: Vector3, sz: Vector3, _color: Color) -> StaticBody3D:
 	var body := StaticBody3D.new()
 	body.name = nm
 	body.position = centre
-	var mesh_node := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = sz
-	mesh_node.mesh = mesh
-	mesh_node.material_override = _mat(color)
-	body.add_child(mesh_node)
 	var shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()
 	box.size = sz
@@ -554,15 +543,9 @@ func _flat_tread(
 	var body := StaticBody3D.new()
 	body.name = nm
 	body.transform = Transform3D(Basis(side, Vector3.UP, along).orthonormalized(), centre)
-	var mesh_node := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = Vector3(width, 0.3, depth)
-	mesh_node.mesh = mesh
-	mesh_node.material_override = _mat(Color(0.34, 0.26, 0.14))
-	body.add_child(mesh_node)
 	var shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()
-	box.size = mesh.size
+	box.size = Vector3(width, 0.3, depth)
 	shape.shape = box
 	body.add_child(shape)
 	parent.add_child(body)
@@ -594,19 +577,77 @@ func _slope_box(parent: Node3D, nm: String, fr: Vector3, to: Vector3) -> StaticB
 	body.name = nm
 	var mid := (fr + to) * 0.5 - up * (thick * 0.5)
 	body.transform = Transform3D(Basis(side, up, along).orthonormalized(), mid)
-	var mesh_node := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = Vector3(width, thick, delta.length())
-	mesh_node.mesh = mesh
-	mesh_node.material_override = _mat(Color(0.34, 0.26, 0.14))
-	body.add_child(mesh_node)
 	var shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()
-	box.size = mesh.size
+	box.size = Vector3(width, thick, delta.length())
 	shape.shape = box
 	body.add_child(shape)
 	parent.add_child(body)
 	return body
+
+
+func _deck(walk: Node3D, deck: Dictionary) -> void:
+	var c: Array = deck["center"]
+	var sz: Array = deck["size"]
+	var top := float(c[1])
+	_box(
+		walk,
+		"Deck_" + String(deck["id"]),
+		Vector3(float(c[0]), top - 0.25, float(c[2])),
+		Vector3(float(sz[0]), 0.5, float(sz[1])),
+		Color(0.3, 0.32, 0.22)
+	)
+
+
+func _rim(walk: Node3D) -> void:
+	# Invisible collar outside the shell so a step off a shelf does not leave the cavern.
+	var count := 28
+	for i in count:
+		var a := TAU * float(i) / float(count)
+		var body := StaticBody3D.new()
+		body.name = "Rim_%d" % i
+		body.position = Vector3(cos(a) * 52.0, 16.0, sin(a) * 50.0)
+		var shape := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		box.size = Vector3(8.0, 40.0, 8.0)
+		shape.shape = box
+		body.add_child(shape)
+		walk.add_child(body)
+
+
+func _hold_look() -> void:
+	var env: Environment = get_meta(&"cave_env") if has_meta(&"cave_env") else null
+	if env == null:
+		return
+	var cam := get_viewport().get_camera_3d()
+	if cam != _hooked:
+		if _hooked and is_instance_valid(_hooked) and _hooked.environment == env:
+			_hooked.environment = _prev_env
+		_hooked = cam
+		if cam:
+			_prev_env = cam.environment
+			cam.environment = env
+	if _suns_checked:
+		return
+	_suns_checked = true
+	for n in get_tree().root.find_children("*", "DirectionalLight3D", true, false):
+		if is_ancestor_of(n):
+			continue
+		var sun := n as DirectionalLight3D
+		_sun_energy.append([sun, sun.light_energy])
+		sun.light_energy = minf(sun.light_energy, 0.05)
+
+
+func _release_look() -> void:
+	var env: Environment = get_meta(&"cave_env") if has_meta(&"cave_env") else null
+	if _hooked and is_instance_valid(_hooked) and env and _hooked.environment == env:
+		_hooked.environment = _prev_env
+	_hooked = null
+	for row in _sun_energy:
+		var sun := row[0] as DirectionalLight3D
+		if sun and is_instance_valid(sun):
+			sun.light_energy = float(row[1])
+	_sun_energy.clear()
 
 
 func _ceiling_gap(local_at: Vector3, ignore: Node) -> float:
@@ -781,6 +822,7 @@ func _dress_art() -> void:
 	_dress_pods()
 	_dress_mires()
 	_dress_vines()
+	BlightcoilLook.dress(self)
 
 
 func _dress_trunk() -> void:
@@ -831,19 +873,8 @@ func _dress_ramps() -> void:
 
 
 func _dress_walls() -> void:
-	var cavern: Dictionary = doc["cavern"]
-	var radius := float(cavern.get("outer_radius", 22.0)) + 6.0
-	var count := 12
-	for tier_y in [0.0, 12.0, 24.0]:
-		for i in count:
-			var art := BlightcoilKit.visual("moss_wall")
-			if art == null:
-				return
-			var a := TAU * float(i) / float(count)
-			art.name = "MossWall_%d_%d" % [int(tier_y), i]
-			art.position = Vector3(sin(a) * radius, tier_y, cos(a) * radius)
-			art.rotation.y = a
-			add_child(art)
+	# The shell carries the rock and moss. The kit cards read as flat panels here.
+	return
 
 
 func _dress_pods() -> void:
@@ -858,7 +889,8 @@ func _dress_pods() -> void:
 
 
 func _dress_mires() -> void:
-	_dress_kind("mire", "mire_surface", 4.0)
+	# The sump lobes are in the cavern mesh. The kit plane washed them out.
+	return
 
 
 func _dress_vines() -> void:
@@ -891,12 +923,3 @@ func _color(id: String) -> Color:
 		"crown":
 			return Color(0.36, 0.42, 0.18)
 	return Color(0.3, 0.3, 0.28)
-
-
-func _mat(color: Color) -> StandardMaterial3D:
-	var key := color.to_html()
-	if not _mats.has(key):
-		var m := StandardMaterial3D.new()
-		m.albedo_color = color
-		_mats[key] = m
-	return _mats[key]

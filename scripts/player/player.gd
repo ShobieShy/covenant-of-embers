@@ -105,6 +105,7 @@ var aim_sensitivity := 1.0  ## on top of focus.look_scale(); Magewar-like raw = 
 var focus_toggle := false  ## action_secondary press latches focus
 var crouch_toggle := false  ## crouch press latches "held" (Cogito TOGGLE_CROUCH)
 var sprint_toggle := false  ## sprint press latches "held"
+var auto_mark_basic_junk := false  ## Settings: Basic ground loot becomes junk on pickup
 var _focus_latch := false
 var _crouch_latch := false
 var _sprint_latch := false

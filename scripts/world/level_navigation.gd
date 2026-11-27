@@ -56,6 +56,13 @@ static func make_mesh() -> NavigationMesh:
 
 
 func _ready() -> void:
+	if OS.get_environment("COE_SKIP_NAV") == "1":
+		return
+	# The scoring slice is a visual layout. Its pads are wide, and baking them
+	# is not part of the playable hub.
+	var lvl := get_parent()
+	if lvl and str(lvl.get_meta(&"level_id", "")) == "town_golden_slice":
+		return
 	if bake_on_ready and not _swapped_out():
 		bake_now()
 

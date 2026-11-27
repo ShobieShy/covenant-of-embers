@@ -55,6 +55,7 @@ LEVELS = {  # source TOML -> generated scene
     "data/levels/midden_greybox.toml": "scenes/levels/midden.tscn",
     "data/levels/breach_slice.toml": "scenes/levels/breach.tscn",
     "data/levels/town_square.toml": "scenes/levels/town_square.tscn",
+    "data/levels/town_golden_slice.toml": "scenes/levels/town_golden_slice.tscn",
     "data/levels/mage_association.toml": "scenes/levels/mage_association.tscn",
     "data/levels/old_oak.toml": "scenes/levels/old_oak.tscn",
     "data/levels/bobs_lab.toml": "scenes/levels/bobs_lab.tscn",
@@ -184,7 +185,7 @@ def _lights(items: list, out: dict) -> None:
     seen: set[str] = set()
     for i, lt in enumerate(items):
         w = f"light {i + 1}"
-        _only(lt, {"name", "position", "color", "energy", "range", "shadows"}, w)
+        _only(lt, {"name", "position", "color", "energy", "range", "shadows", "snap"}, w)
         name = str(_need(lt, "name", w))
         if name in seen:
             raise LevelError(f"duplicate light name '{name}'")
@@ -201,7 +202,8 @@ def _lights(items: list, out: dict) -> None:
             "color": _color(_need(lt, "color", w), f"{w} color"),
             "energy": float(energy),
             "range": float(rng),
-            "shadows": _bool(lt.get("shadows", True), f"{w} shadows"),
+            "shadows": _bool(lt.get("shadows", False), f"{w} shadows"),
+            "snap": _bool(lt.get("snap", False), f"{w} snap"),
         })
 
 
@@ -350,7 +352,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         if sec not in d:
             raise LevelError(f"missing [{sec}]")
     lv = d["level"]
-    _only(lv, {"id", "name", "world_offset"}, "[level]")
+    _only(lv, {"id", "name", "world_offset", "props_only"}, "[level]")
     wo = [float(x) for x in lv.get("world_offset", [0.0, 0.0])]  # OW1: [x, z] metres into world space
     if len(wo) != 2 or any(x % 16.0 for x in wo):
         raise LevelError("world_offset must be [x, z], multiples of 16 m")
@@ -380,6 +382,9 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "id": str(_need(lv, "id", "[level]")),
         "name": str(_need(lv, "name", "[level]")),
         "world_offset": wo,
+        # Collision stays in the boxes. The meshes live in [[prop]] so a remade level
+        # can ship with no PrimitiveMesh in the scene.
+        "props_only": _bool(lv.get("props_only", False), "[level] props_only"),
         "sky_color": _color(_need(env, "sky_color", "[environment]"), "sky_color"),
         "ambient_color": _color(_need(env, "ambient_color", "[environment]"), "ambient_color"),
         "fog_density": fog,
@@ -407,6 +412,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "switches": [],
         "materials": {},
         "props": [],
+        "lights": [],
         "pois": [],
         "anchors": [],
         "waystones": [],
@@ -791,22 +797,21 @@ def to_tscn(lv: dict, source: str) -> str:
     nodes.append(f'[node name="Sun" type="DirectionalLight3D" parent="."]\n'
                  f'transform = {_xf(sun_basis(lv["to_light"]), [0, 10, 0])}\n'
                  f'light_color = {_color_str(lv["sun_color"])}\nlight_energy = {_f(lv["sun_energy"])}\nshadow_enabled = true\n')
-    if lv["lights"]:
-        nodes.append('[node name="Lights" type="Node3D" parent="."]\n')
-        for lt in lv["lights"]:
-            nodes.append(f'[node name="{lt["name"]}" type="OmniLight3D" parent="Lights"]\n'
-                         f'transform = {_xf(rot_yxz([0, 0, 0]), lt["position"])}\n'
-                         f'light_color = {_color_str(lt["color"])}\n'
-                         f'light_energy = {_f(lt["energy"])}\nomni_range = {_f(lt["range"])}\n'
-                         f'shadow_enabled = {"true" if lt["shadows"] else "false"}\n')
     nodes.append('[node name="Boxes" type="Node3D" parent="."]\n')
     for i, b in enumerate(lv["boxes"]):
         sk = tuple(b["size"])
+        # Hidden town pads, props_only, and collision_only keep the collider and
+        # skip the primitive mesh. Every other box still emits mesh, then shape,
+        # then material, so those scenes do not change.
+        town_pad = b["hidden"] and lv["id"] in ("town_square", "town_golden_slice")
+        skip_mesh = bool(lv.get("props_only")) or b["collision_only"] or town_pad
         mesh = ""
-        if not b["collision_only"]:
+        mat = ""
+        if skip_mesh:
+            shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
+        else:
             mesh = sub("BoxMesh", sk, f"size = {_v3(b['size'])}")
-        shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
-        if not b["collision_only"]:
+            shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
             tex = lv.get("materials", {}).get(b["kind"])
             if tex:
                 gs = GROUND_TINT if b["kind"] == "ground" else 1.0
@@ -817,7 +822,7 @@ def to_tscn(lv: dict, source: str) -> str:
         nodes.append(f'[node name="{b["name"]}" type="StaticBody3D" parent="Boxes"]\n'
                      f'transform = {_xf(rot_yxz(b["rotation_deg"]), b["center"])}\n'
                      f'metadata/kind = "{b["kind"]}"\nmetadata/toml_index = {i}\n')
-        if not b["collision_only"]:
+        if not skip_mesh:
             nodes.append(f'[node name="Mesh" type="MeshInstance3D" parent="Boxes/{b["name"]}"]\n'
                          f'mesh = SubResource("{mesh}")\nsurface_material_override/0 = SubResource("{mat}")\n'
                          + ("visible = false\n" if b["hidden"] else ""))
@@ -832,7 +837,7 @@ def to_tscn(lv: dict, source: str) -> str:
                      f'center = Vector2({_f(tr["center"][0])}, {_f(tr["center"][1])})\n'
                      f'height = {_f(tr["height"])}\nnoise_seed = {tr["seed"]}\nspacing = {_f(tr["spacing"])}\n'
                      f'rim = {_f(tr["rim"])}\nmap_version = {tr["map_version"]}\n'
-                     f'layers = PackedStringArray({layers})\npads = Array[Rect2]([{pads}])\n'
+                     f'layers = Array[String]([{layers}])\npads = Array[Rect2]([{pads}])\n'
                      + (f'pad_heights = PackedFloat32Array({", ".join(_f(h) for h in tr["pad_heights"])})\n'
                         if tr.get("pad_heights") else "")
                      + (f'pad_y = {_f(tr["pad_y"])}\n' if abs(tr["pad_y"] + 0.02) > 0.001 else "")
@@ -841,6 +846,9 @@ def to_tscn(lv: dict, source: str) -> str:
                      + (f'carves = PackedVector4Array({", ".join(_f(x) for c in tr["carves"] for x in c)})\n'
                         if tr["carves"] else "")
                      + f'blend = {_f(tr["blend"])}\n')
+        if lv.get("props_only"):
+            nodes.append('[node name="LandfillDress" type="Node" parent="."]\n'
+                         'script = ExtResource("1_dress")\n')
     scenes: dict[str, str] = {}
     if any(not pr["poi"] for pr in lv["props"]):
         nodes.append('[node name="Props" type="Node3D" parent="."]\n')
@@ -859,6 +867,17 @@ def to_tscn(lv: dict, source: str) -> str:
             par = f'Pois/{pr["poi"]}' if pr["poi"] else "Props"
             nodes.append(f'[node name="{nm}" parent="{par}" instance=ExtResource("{sid}")]\n'
                          f'transform = {_xf(basis, pos)}\n' + ('metadata/snap = true\n' if pr["snap"] else ""))
+    if lv.get("lights"):
+        nodes.append('[node name="Lights" type="Node3D" parent="."]\n')
+        for lit in lv["lights"]:
+            nodes.append(
+                f'[node name="{lit["name"]}" type="OmniLight3D" parent="Lights"]\n'
+                f'transform = {_xf(rot_yxz([0, 0, 0]), lit["position"])}\n'
+                f'light_color = {_color_str(lit["color"])}\n'
+                f'light_energy = {_f(lit["energy"])}\nomni_range = {_f(lit["range"])}\n'
+                f'shadow_enabled = {"true" if lit["shadows"] else "false"}\n'
+                + ('metadata/snap = true\n' if lit["snap"] else "")
+            )
     nodes.append('[node name="Navigation" type="NavigationRegion3D" parent="."]\n'
                  'script = ExtResource("1_nav")\nsource = NodePath("../Boxes")\n')
     nodes.append(f'[node name="PlayerStart" type="Marker3D" parent="."]\n'
@@ -947,6 +966,8 @@ def to_tscn(lv: dict, source: str) -> str:
     ext = f'[ext_resource type="Script" path="{NAV_SCRIPT}" id="1_nav"]\n'
     if tr:
         ext += f'[ext_resource type="Script" path="{TERRAIN_SCRIPT}" id="1_terrain"]\n'
+    if lv.get("props_only"):
+        ext += '[ext_resource type="Script" path="res://scenes/levels/midden_dress.gd" id="1_dress"]\n'
     if lv.get("gates"):
         ext += '[ext_resource type="Script" path="res://scripts/world/flag_gate.gd" id="1_gate"]\n'
     if lv["pois"]:
@@ -984,8 +1005,12 @@ def self_test() -> int:
     assert sum(b["kind"] == "heap" for b in lv["boxes"]) >= 8
     assert lv["materials"]["wall"] == "assets/ambientcg/Rock030", lv["materials"]
     tscn = to_tscn(lv, "self-test")
-    # The valley uses the ground/heap set. Wall (Rock030) stays declared for the loader.
-    assert 'path="res://assets/ambientcg/Ground037/normal.jpg"' in tscn and "uv1_world_triplanar = true" in tscn
+    # A props_only level keeps the colliders and ships no primitive mesh. Textured
+    # BoxMesh output is checked on a synthetic level below.
+    if lv.get("props_only"):
+        assert "BoxMesh" not in tscn and "BoxShape3D" in tscn and 'id="1_dress"' in tscn
+    else:
+        assert 'path="res://assets/ambientcg/Ground037/normal.jpg"' in tscn and "uv1_world_triplanar = true" in tscn
     for bad in ('[materials]\nwall = "assets/nope"\n', '[materials]\nroof = "assets/ambientcg/Rock030"\n'):
         try:
             parse_level(_swap_materials(good, bad))
@@ -1015,6 +1040,9 @@ def self_test() -> int:
     box = '[[box]]\nname = "a"\nkind = "crate"\ncenter = [0, 0.5, 0]\nsize = [1, 1, 1]\ncolor = [1, 0, 0]\n'
     assert parse_level(hdr + box)["to_light"] == [0.0, 1.0, 0.0]
     floor = '[[box]]\nname = "f"\nkind = "ground"\ncenter = [20, -0.5, 0]\nsize = [10, 1, 10]\ncolor = [1, 0, 0]\n'
+    textured = hdr + '[materials]\nground = "assets/ambientcg/Ground037"\nuv_scale = 0.4\n' + box + floor
+    textured_scene = to_tscn(parse_level(textured), "self-test")
+    assert "Ground037/normal.jpg" in textured_scene and "uv1_world_triplanar = true" in textured_scene
     sp = '[[spawn_point]]\nname = "p"\nposition = [20, 0, 0]\n'
     wt = '[waves]\ntrigger_center = [20, 0, 0]\ntrigger_radius = 3\n'
     wave = '[[wave]]\nid = "w"\ndelay_s = 1\nenemies = [{ enemy = "gnawer", count = 3, at = "p" }]\n'
@@ -1103,6 +1131,8 @@ def self_test() -> int:
     assert tz["terrain"]["pads"] and tz["terrain"]["seed"] == 7, tz["terrain"]
     sc = to_tscn(tz, "x.toml")
     assert 'script = ExtResource("1_terrain")' in sc and "pads = Array[Rect2]([Rect2(" in sc
+    # PackedStringArray overrides are dropped by Godot 4.7's export pack.
+    assert 'layers = Array[String](["Grass004", "Rock030", "Gravel022"])' in sc, sc
     assert sc.index('name="Terrain"') < sc.index('name="Navigation"')
     for bad, msg in (('size = [10, 10]', "size must be"), ('size = [400, 400]\nlayers = ["Nope"]', "layer Nope"),
                      ('size = [400, 400]\nwhat = 1', "unknown"), ('size = [40, 40]', "4 m inside")):

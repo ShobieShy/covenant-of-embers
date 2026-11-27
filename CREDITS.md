@@ -22,6 +22,7 @@
 | Kenney Pixel UI Pack, Fantasy UI Borders, Tiny Dungeon icons, Cursor Pixel Pack, Kenney Fonts | Kenney | CC0 1.0 | https://kenney.nl/assets/pixel-ui-pack | 2026-10-24 |
 | Magewar item resources | ShobieShy (Magewar) | MIT (~/game LICENSE) | local ~/game/magewar/resources | 2026-10-23 |
 | Covenant of Embers icon | Covenant of Embers project | Apache 2.0 (original) | this repository | 2026-10-24 |
+| ambientCG Ground 080 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground080 | 2026-11-26 |
 | ambientCG Ground 037 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground037 | 2026-10-24 |
 | ambientCG Bricks 076 C | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Bricks076C | 2026-10-24 |
 | ambientCG Rock 030 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Rock030 | 2026-10-24 |
@@ -32,10 +33,16 @@
 | ambientCG Gravel 022 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Gravel022 | 2026-10-26 |
 | ambientCG Ground 054 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Ground054 | 2026-10-26 |
 | Quaternius "Goblin" and "Orc" (recoloured; Ember Art batch 08b goblin grunt/archer/shaman, Goblin King) | Quaternius | CC0 1.0 | https://poly.pizza/m/OdCOFSmEhl, https://poly.pizza/m/5vO2YJsPEf | 2026-10-28 |
+| ambientCG Bark 014 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Bark014 | 2026-11-26 |
+| ambientCG Moss 004 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Moss004 | 2026-11-26 |
+| Blightcoil cavern look (shell, Rotheart, shelves) | Covenant of Embers project; bark and moss by Lennart Demes (ambientCG) | CC0 1.0 | this repository; textures ambientCG Bark014, Moss004, Rock030, Ground037 | 2026-11-26 |
 | Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine) | Ember Art | CC0 1.0 | this repository | 2026-11-05 |
 | Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch) | Ember Art | CC0 1.0 | this repository | 2026-11-05 |
 | Old Oak v4 (Town east lobe) | Ember Art | CC0 1.0 | this repository; bark and door wood from ambientCG Bark014 and Wood051 | 2026-11-22 |
 | Bob's lab interior | Covenant of Embers project | CC0 1.0 | original work; Wood049, Rock030 and Metal032 from ambientCG | 2026-11-26 |
+| ambientCG Rock 035 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Rock035 | 2026-11-26 |
+| Inverted Spire kit | Covenant of Embers project | CC0 1.0 | original work (tools/gen_spire_meshes.py) | 2026-11-26 |
+| Landfill pit meshes | Covenant of Embers project | CC0 1.0 | assets/original/landfill/build_meshes.py; textures from the ambientCG sets above | 2026-11-26 |
 
 3D models: Kenney (www.kenney.nl) — Fantasy Town Kit, Nature Kit (CC0). Delivered by Ember Art as batch 01; the full per-file list is in docs/credits/kenney_batch_01.md.
 
@@ -45,13 +52,15 @@ Characters by Quaternius (quaternius.com), CC0. Delivered by Ember Art as batch 
 
 Staff brands (0.1.3): the six maker logos are original CC0 marks (tools/gen_brand_logos.py); brand VFX (heat glow, vent steam, charge glow, spin ring, orb/boulder heads, blasts) are procedural, made in code for this project; brand sounds reuse the Kenney Interface Sounds and Impact Sounds packs listed above (CC0). The makers are fictional.
 
-Ember Art (0.1.4): the junk mountain, Association spire, Old Oak LOD set, Breach crater rim, 4 waystone variants, 3 chest tiers, Filth decal, skyline strip, 8 world map paintings and the 16 px element / gear / junk icons are original work made for Covenant of Embers (Ember Art batch 06, Blender 4.5 script + PIL), CC0 1.0.
+Ember Art (0.1.4): the junk mountain, Association spire, Old Oak LOD set, Breach crater rim, 4 waystone variants, 3 chest tiers, Filth decal, skyline strip, 8 world map paintings and the 16 px element / gear / junk icons are original work made for Covenant of Embers (Ember Art batch 06, Blender 4.5 script + PIL), CC0 1.0. The Mage Association hall, library, fountain, circle and precinct wall (assets/original/ember_art/association/, tools/build_association_kit.py) are original geometry, CC0. Their stone, cobble, wood, grass and iron use ambientCG Rock030, PavingStones131, Wood049, Grass004 and Metal032 by Lennart Demes, CC0 1.0. The slate, glass and circle maps are original.
 
 Ember Art terrain sets (batch 07, based on ambientCG): the 10 Terrain3D texture sets (dirt, grass, rock, rubble, ash, mud, sand, snow, crystal, cobble path) are modified (blurred, posterized, tinted, overlays added) from ambientCG Ground080, Grass004, Rock030, Gravel022, Ground037, Ground054, Ground033, Snow006, Rocks011 and PavingStones131 by Lennart Demes, CC0 1.0. Textures based on ambientCG.com (CC0). Batch 07 also adds the belt and grimoire icons and the junk mountain collision hulls (original, CC0 1.0).
 
 CC0 does not require attribution; Kenney and ambientCG are credited anyway with thanks. Support: https://kenney.nl/donate
 
 Old Oak v4 (0.11.4): the Town east-lobe tree is original Ember Art geometry, CC0. Its bark is ambientCG Bark014 and its door wood is ambientCG Wood051, both by Lennart Demes, CC0 1.0. Credit is not required for CC0; it is recorded here with the other ambientCG materials.
+
+Slagworks mine kit: the Act III cavern meshes (cliffs, stone, gantries, rails, lava sheet, furnace-anvil, arch, door, lift, slag cast, ore, cart, boulders, chains, pillars) are original geometry, CC0. Their materials are ambientCG Rock 035, ambientCG Lava 004, ambientCG Metal 034, and the existing ambientCG Wood 049, all by Lennart Demes, CC0 1.0.
 
 ## Libraries
 | Name | Author | License | Source | Added |
@@ -64,6 +73,8 @@ Development uses Steam's public test app id 480 (steam_appid.txt); Steam is opti
 
 ## Engine
 Built with Godot Engine 4.7.2 (MIT, https://godotengine.org/license), Jolt Physics module (MIT).
+
+Goblin Warrens burrow dress (Act I): the rounded burrow shells are built in play from the room graph. The hero props (bone throne, ward pots, crystal clusters, sigil crates, timber, barrels, roots, the one Joe's Graffiti plaque) are original meshes in assets/original/ember_art/warrens/pbr/, CC0 1.0. Floors use ambientCG Ground 080, Rock 030, Wood 049 and Metal 032, tinted to the painting. The plaque repeats the painting's existing landmark and adds no new line of graffiti.
 
 Ember Art Labyrinth Act I (0.3.0 work, batch 08a): the Goblin Warrens tile kit (floor, ceiling, 4 m / 2 m / door walls, pillar, stairs), props (torch sconce, barricade, bone pile, crate stack, spike trap, goblin banner, mushrooms), the fungus-cellar rest set (bedroll, cook fire, craft bench), the throne hall, the labyrinth gate and the Warrens map are original work made for Covenant of Embers (Blender 4.5 script + PIL), CC0 1.0. See docs/credits/ember_art_batch_08a_CREDITS.md.
 

@@ -90,6 +90,7 @@ var level_left := 0.0
 var level_ups := 0
 var skill_badge: Label  ## M4: unspent skill points
 var skill_cd: Label  ## 0.8.6: action-skill cooldown
+var minimap: Minimap  ## quest pin; the world mark and this pin share one spot
 
 
 ## Tick marks around the screen centre.
@@ -164,6 +165,9 @@ func _init() -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
+	minimap = Minimap.new()
+	minimap.players = _map_rows
+	root.add_child(minimap)
 	hurt_flash = _rect(Color(0.8, 0, 0, 0), Control.PRESET_FULL_RECT)
 	vignette = _rect(Color.WHITE, Control.PRESET_FULL_RECT)
 	vignette.name = "HeartbeatVignette"
@@ -510,6 +514,10 @@ func _on_bolt_hit(h: SpellBolts.Hit) -> void:
 
 func _process(delta: float) -> void:
 	refresh(delta)
+
+
+func _map_rows() -> Array:
+	return Minimap.map_rows(get_tree())
 
 
 ## Crosshair gap in px for the current spread cone (0 at 100 % accuracy).

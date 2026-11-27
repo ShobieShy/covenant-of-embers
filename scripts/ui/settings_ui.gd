@@ -51,7 +51,8 @@ func _init() -> void:
 		"subtitles",
 		"show_speaker",
 		"high_contrast",
-		"minimap_north"
+		"minimap_north",
+		"auto_mark_basic_junk",
 	]:
 		var c := CheckBox.new()
 		c.text = "Aim toggle" if o == "focus_toggle" else o.capitalize()

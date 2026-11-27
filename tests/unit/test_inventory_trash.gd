@@ -129,6 +129,89 @@ func test_junk_sold_together_and_saved() -> void:
 	ui.queue_free()
 
 
+func test_favorite_excludes_junk_and_clears_on_remove() -> void:
+	var s := _setup()
+	var p: Player = s[0]
+	var a := _hat("basic", 11)
+	var b := _hat("basic", 12)
+	p.inventory.add(a)
+	check(not p.inventory.set_favorite(_hat("basic", 99), true), "not in the backpack")
+	check(p.inventory.set_favorite(a, true) and p.inventory.is_favorite(a), "favorite reads back")
+	check(
+		p.inventory.set_junk(a, true) and p.inventory.is_junk(a) and not p.inventory.is_favorite(a),
+		"junk clears favorite"
+	)
+	check(
+		p.inventory.set_favorite(a, true) and p.inventory.is_favorite(a) and not p.inventory.is_junk(a),
+		"favorite clears junk"
+	)
+	p.inventory.add(b)
+	p.inventory.set_junk(b, true)
+	check(p.inventory.remove(a) and p.inventory.remove(b), "removed")
+	check(p.inventory.junk.is_empty() and p.inventory.favorite.is_empty(), "remove drops both marks")
+	p.inventory.add(a)
+	p.inventory.add(b)
+	check(not p.inventory.is_favorite(a) and not p.inventory.is_junk(b), "putting them back is unmarked")
+	p.queue_free()
+	s[1].queue_free()
+
+
+func test_marks_round_trip_json_and_replace_stale() -> void:
+	var s := _setup()
+	var p: Player = s[0]
+	var a := _hat("basic", 21)
+	var b := _hat("basic", 22)
+	var c := _hat("basic", 23)
+	p.inventory.add(a)
+	p.inventory.add(b)
+	p.inventory.add(c)
+	p.inventory.set_junk(a, true)
+	p.inventory.set_favorite(c, true)
+	var path := "user://test_marks.json"
+	check(SaveGame.write(SaveGame.capture(p), path) == OK, "written")
+	var read := SaveGame.read(path)
+	check(not read.has("error"), "read (%s)" % read.get("error", ""))
+	check(SaveGame.VERSION == 1, "save version stays 1")
+	p.inventory.junk.clear()
+	p.inventory.favorite.clear()
+	p.inventory.set_junk(b, true)
+	p.inventory.set_favorite(a, true)
+	SaveGame.apply(p, read["data"])
+	check(
+		p.inventory.is_junk(p.inventory.items[0]) and not p.inventory.is_favorite(p.inventory.items[0]), "slot 0 junk"
+	)
+	check(
+		not p.inventory.is_junk(p.inventory.items[1]) and not p.inventory.is_favorite(p.inventory.items[1]),
+		"slot 1 plain"
+	)
+	check(
+		p.inventory.is_favorite(p.inventory.items[2]) and not p.inventory.is_junk(p.inventory.items[2]),
+		"slot 2 favorite"
+	)
+	check(p.inventory.junk.size() == p.inventory.junk_items().size(), "no stale junk refs")
+	check(p.inventory.favorite.size() == p.inventory.favorite_items().size(), "no stale favorite refs")
+	var both: Dictionary = (read["data"] as Dictionary).duplicate(true)
+	both["items"]["junk"] = [0.0, 1.0]
+	both["items"]["favorite"] = [1.0]
+	SaveGame.apply(p, both)
+	check(p.inventory.is_junk(p.inventory.items[0]), "float index 0 is junk")
+	check(
+		p.inventory.is_favorite(p.inventory.items[1]) and not p.inventory.is_junk(p.inventory.items[1]),
+		"both lists: favorite wins"
+	)
+	var old: Dictionary = both.duplicate(true)
+	old["items"].erase("junk")
+	old["items"].erase("favorite")
+	SaveGame.apply(p, old)
+	check(
+		p.inventory.junk.is_empty() and p.inventory.favorite.is_empty() and p.inventory.size() == 3,
+		"missing keys load unmarked"
+	)
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	p.queue_free()
+	s[1].queue_free()
+
+
 ## 0.3.1 P6 (M6): Keep is the default focus, pad Y trashes on a hold, Undo puts it back.
 func test_keep_focus_pad_hold_and_undo() -> void:
 	var s := _setup()

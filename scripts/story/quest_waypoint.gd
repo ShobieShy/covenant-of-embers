@@ -179,7 +179,44 @@ static func _points(root: Node) -> Array:
 			elif String(n.name) == "boss_dais" or String(n.name) == "BossSpawn":
 				id = "boss_dais" if String(n.name) == "boss_dais" else String(n.get_meta(&"boss", "BossSpawn"))
 			if id != "":
-				out.append({"id": id, "at": (n as Node3D).global_position})
+				out.append({"id": id, "at": _stand(n as Node3D)})
+	out.append_array(_wave_points(root))
+	return out
+
+
+## A platform's origin is the middle of its collision. Stand on the top face.
+static func _stand(n: Node3D) -> Vector3:
+	if n is StaticBody3D:
+		var shape := n.get_node_or_null(^"Shape") as CollisionShape3D
+		if shape and shape.shape is BoxShape3D:
+			var box := shape.shape as BoxShape3D
+			return n.to_global(shape.position + Vector3(0, box.size.y * 0.5 + 0.2, 0))
+	return n.global_position
+
+
+## Wave spawn markers, so a boss who has not spawned yet still has a spot.
+## Joe's Trash drops at the Filth, so that step uses the same ledge until the pickup exists.
+static func _wave_points(root: Node) -> Array:
+	var holder := root.get_node_or_null(^"WaveSpawns")
+	var waves := root.get_node_or_null(^"Waves")
+	if holder == null or waves == null:
+		return []
+	var spots := {}
+	for c in holder.get_children():
+		if c is Node3D:
+			spots[String(c.name)] = (c as Node3D).global_position
+	var out := []
+	for w in waves.get_children():
+		for e in w.get_meta(&"enemies", []):
+			if not e is Dictionary:
+				continue
+			var id := String((e as Dictionary).get("enemy", ""))
+			var spot: Variant = spots.get(String((e as Dictionary).get("at", "")), null)
+			if id == "" or spot == null:
+				continue
+			out.append({"id": id, "at": spot})
+			if id == "the_filth":
+				out.append({"id": "joes_discards", "at": spot})
 	return out
 
 

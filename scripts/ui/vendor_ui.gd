@@ -13,6 +13,13 @@ var wallet: Label
 var compare: Label
 var status: Label
 var reroll_button: Button
+var sell_junk_button: Button
+var sell_all_button: Button
+var confirm_row: VBoxContainer
+var confirm_label: Label
+var keep_button: Button
+var pending_kind := ""  ## "junk", "all", or ""
+var confirm_from: Button
 var seed_rng := RandomNumberGenerator.new()
 
 
@@ -45,15 +52,37 @@ func _init() -> void:
 		["Buy", buy_selected],
 		["Sell", sell_selected],
 		["Sell all junk", sell_junk],
+		["Sell all", sell_all],
 		["Re-roll", reroll_selected],
-		["Close", close]
+		["Close", close],
 	]:
 		var btn := Button.new()
 		btn.text = pair[0]
 		btn.pressed.connect(pair[1])
 		b.add_child(btn)
-		if pair[0] == "Re-roll":
-			reroll_button = btn
+		match pair[0]:
+			"Sell all junk":
+				sell_junk_button = btn
+			"Sell all":
+				sell_all_button = btn
+			"Re-roll":
+				reroll_button = btn
+	confirm_row = VBoxContainer.new()
+	confirm_row.visible = false
+	v.add_child(confirm_row)
+	confirm_label = Label.new()
+	confirm_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	confirm_row.add_child(confirm_label)
+	var yn := HBoxContainer.new()
+	confirm_row.add_child(yn)
+	var yes := Button.new()
+	yes.text = "Sell"
+	yes.pressed.connect(confirm_sale)
+	yn.add_child(yes)
+	keep_button = Button.new()
+	keep_button.text = "Keep"
+	keep_button.pressed.connect(func(): cancel_sale(true))
+	yn.add_child(keep_button)
 	status = Label.new()
 	v.add_child(status)
 
@@ -80,6 +109,8 @@ func open(v: Vendor) -> void:
 
 
 func close() -> void:
+	if pending_kind != "":
+		cancel_sale(false)
 	UiAnim.close(self)  # 0.3.1 P1
 	if player:
 		player.ui_open = false
@@ -111,8 +142,13 @@ func refresh() -> void:
 		if vendor.role == Vendor.Role.REROLL and it is WieldablePart:
 			var c := Vendor.reroll_cost(it)
 			extra = "   re-roll %d Gold + %d Dust" % [c["gold"], c["dust"]]
+		var mark := ""
+		if player.inventory.is_junk(it):
+			mark = " (junk)"
+		elif player.inventory.is_favorite(it):
+			mark = " (favorite)"
 		var pi := pack_list.add_item(
-			"%s   sells %d%s" % [name_of(it), Vendor.sell_price(it), extra], ItemIcons.for_item(it)
+			"%s%s   sells %d%s" % [name_of(it), mark, Vendor.sell_price(it), extra], ItemIcons.for_item(it)
 		)
 		pack_list.set_item_icon_modulate(pi, ItemIcons.tint_for(it))
 	reroll_button.visible = vendor.role == Vendor.Role.REROLL
@@ -145,31 +181,103 @@ func _done(err: String, ok: String) -> bool:
 
 
 func buy_selected() -> bool:
+	_drop_confirm_for_other()
 	return _done(vendor.buy(player, _selected(stock_list)), "Bought.")
 
 
 func sell_selected() -> bool:
+	_drop_confirm_for_other()
 	return _done(vendor.sell(player.inventory, player.inventory.at(_selected(pack_list))), "Sold.")
 
 
-## t74u: sells every item marked as junk in the inventory screen.
+## Asks before selling junk. An empty set sets the status line and does not pay.
 func sell_junk() -> bool:
-	var n := player.inventory.junk_items().size()
-	if n == 0:
-		status.text = "Nothing marked as junk."
+	return _ask_bulk(true, sell_junk_button)
+
+
+## Asks before selling every backpack item that is not favorite.
+func sell_all() -> bool:
+	return _ask_bulk(false, sell_all_button)
+
+
+func _empty_line(junk_only: bool) -> String:
+	if junk_only:
+		return "Nothing marked as junk."
+	if player.inventory.items.is_empty():
+		return "Nothing to sell."
+	return "Everything left is locked."
+
+
+func _ask_bulk(junk_only: bool, from: Button) -> bool:
+	if pending_kind != "":
+		cancel_sale(false)
+	var items := Vendor.bulk_targets(player.inventory, junk_only)
+	if items.is_empty():
+		status.text = _empty_line(junk_only)
 		return false
-	var g := vendor.sell_junk(player.inventory)
-	status.text = "Sold %d junk item(s) for %d gold." % [n, g]
+	pending_kind = "junk" if junk_only else "all"
+	confirm_from = from
+	confirm_label.text = Vendor.confirm_text(items)
+	confirm_row.visible = true
+	if keep_button.is_inside_tree():
+		keep_button.grab_focus()
+	return false
+
+
+## Recomputes the eligible set. An empty set pays nothing.
+func confirm_sale() -> bool:
+	var kind := pending_kind
+	var from := confirm_from
+	pending_kind = ""
+	confirm_from = null
+	confirm_row.visible = false
+	if kind == "" or player == null:
+		return false
+	var junk_only := kind == "junk"
+	var items := Vendor.bulk_targets(player.inventory, junk_only)
+	if items.is_empty():
+		status.text = _empty_line(junk_only)
+		_focus(from)
+		refresh()
+		return false
+	var g := vendor.sell_items(player.inventory, items)
+	status.text = "Sold %d items for %d gold." % [items.size(), g]
 	refresh()
-	return true
+	_focus(from)
+	return g > 0
+
+
+## `restore` puts focus back on the bulk button that opened the confirm.
+func cancel_sale(restore := true) -> void:
+	var from := confirm_from
+	pending_kind = ""
+	confirm_from = null
+	if confirm_row:
+		confirm_row.visible = false
+	if restore:
+		_focus(from)
+
+
+func _drop_confirm_for_other() -> void:
+	if pending_kind != "":
+		cancel_sale(false)
+
+
+func _focus(b: Button) -> void:
+	if b and b.is_inside_tree():
+		b.grab_focus()
 
 
 func reroll_selected() -> bool:
+	_drop_confirm_for_other()
 	var it := player.inventory.at(_selected(pack_list))
 	return _done(vendor.reroll(player.inventory, it as WieldablePart, seed_rng), "Re-rolled.")
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if UiAnim.is_shown(self) and event.is_action_pressed(&"ui_cancel"):
-		close()
+		if pending_kind != "":
+			cancel_sale(true)
+		else:
+			close()
 		get_viewport().set_input_as_handled()

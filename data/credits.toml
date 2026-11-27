@@ -43,6 +43,13 @@ source = "original (this repository)"
 line = "Covenant of Embers icon by Covenant of Embers project, Apache-2.0"
 
 [[credit]]
+name = "ambientCG Ground 080"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Ground080"
+line = "ambientCG Ground 080 by Lennart Demes, CC0 1.0"
+
+[[credit]]
 name = "ambientCG Ground 037"
 author = "Lennart Demes"
 license = "CC0 1.0"
@@ -197,6 +204,13 @@ source = "https://ambientcg.com/view?id=Ground054"
 line = "ambientCG Ground 054 by Lennart Demes, CC0 1.0"
 
 [[credit]]
+name = "Landfill pit meshes"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "assets/original/landfill/build_meshes.py (original meshes; textures are the repo's ambientCG sets)"
+line = "Landfill pit meshes by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
 name = "Ember Art (0.1.4)"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
@@ -209,6 +223,27 @@ author = "Covenant of Embers project"
 license = "CC0 1.0"
 source = "incoming_art/batch_07 (modified: blurred, posterized, tinted, overlays added; crystal desaturated in-repo) from ambientCG Ground080, Grass004, Rock030, Gravel022, Ground037, Ground054, Ground033, Snow006, Rocks011, PavingStones131"
 line = "Ember Art terrain sets (batch 07, based on ambientCG) by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Bark 014"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Bark014"
+line = "ambientCG Bark 014 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Moss 004"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Moss004"
+line = "ambientCG Moss 004 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "Blightcoil cavern look (shell, Rotheart, shelves)"
+author = "Covenant of Embers project; bark and moss by Lennart Demes"
+license = "CC0 1.0"
+source = "tools/build_blightcoil_look.py. Embedded CC0 textures: ambientCG Bark014, Moss004, Rock030, Ground037."
+line = "Blightcoil cavern look (shell, Rotheart, shelves) by Covenant of Embers project; bark and moss by Lennart Demes, CC0 1.0"
 
 [[credit]]
 name = "Blightcoil kit (moss wall, root-bridge ramp, mire, spore pod, trunk column, torn cocoon, forge door, ritual-mark decal, Verdant Mother, grabbing vine)"
@@ -225,8 +260,50 @@ source = "batch_12_act2_blightcoil (original work, Blender 4.5)"
 line = "Blightcoil enemies (spore-cap husk, mossbound treant, spore beast, Blightmaw Matriarch) by Ember Art, CC0 1.0"
 
 [[credit]]
+name = "Inverted Spire kit"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "original (this repository, tools/gen_spire_meshes.py); false-sky texture painted for Act V"
+line = "Inverted Spire kit by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
 name = "Old Oak v4 (Town east lobe)"
 author = "Ember Art; bark and door wood by Lennart Demes"
 license = "CC0 1.0"
 source = "Ember Art Old Oak v4, hand-built in Blender. Bark014 and Wood051 are CC0 materials from ambientCG."
 line = "Old Oak v4 (Town east lobe) by Ember Art; bark and door wood by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "Bob's lab interior"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "Original hollow for the Bob's lab cutaway. Wood, rock and metal maps are ambientCG Wood049, Rock030 and Metal032 (CC0)."
+line = "Bob's lab interior by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Rock 035"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Rock035"
+line = "ambientCG Rock 035 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Lava 004"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Lava004"
+line = "ambientCG Lava 004 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "ambientCG Metal 034"
+author = "Lennart Demes"
+license = "CC0 1.0"
+source = "https://ambientcg.com/view?id=Metal034"
+line = "ambientCG Metal 034 by Lennart Demes, CC0 1.0"
+
+[[credit]]
+name = "Slagworks mine kit"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "tools/make_slag_meshes.py (original geometry for Act III; materials are ambientCG Rock035, Lava004, Metal034, Wood049)"
+line = "Slagworks mine kit by Covenant of Embers project, CC0 1.0"

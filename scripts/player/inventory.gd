@@ -15,6 +15,7 @@ var items: Array[Resource] = []  ## dense, slot order = list order
 var dust := 0  ## Arcane Dust
 var gold := STARTING_GOLD  ## step 59: Magewar gold (the government grants 50)
 var junk: Array[Resource] = []  ## t74u: items marked as junk (sold together at vendors)
+var favorite: Array[Resource] = []  ## kept out of Sell all and Sell all junk
 
 
 static func accepts(item: Resource) -> bool:
@@ -59,17 +60,21 @@ func remove(item: Resource) -> bool:
 		return false
 	items.remove_at(i)
 	junk.erase(item)
+	favorite.erase(item)
 	changed.emit()
 	return true
 
 
 ## t74u: marks/unmarks a backpack item as junk; false when it isn't in the backpack.
+## Marking junk clears favorite. The two marks do not both stick.
 func set_junk(item: Resource, on: bool) -> bool:
 	if not items.has(item):
 		return false
-	if on and not junk.has(item):
-		junk.append(item)
-	elif not on:
+	if on:
+		favorite.erase(item)
+		if not junk.has(item):
+			junk.append(item)
+	else:
 		junk.erase(item)
 	changed.emit()
 	return true
@@ -84,6 +89,34 @@ func junk_items() -> Array[Resource]:
 	var out: Array[Resource] = []
 	for it in items:
 		if junk.has(it):
+			out.append(it)
+	return out
+
+
+## Marks/unmarks a backpack item as favorite; false when it isn't in the backpack.
+## Marking favorite clears junk. Sell all and Sell all junk skip a favorite.
+func set_favorite(item: Resource, on: bool) -> bool:
+	if not items.has(item):
+		return false
+	if on:
+		junk.erase(item)
+		if not favorite.has(item):
+			favorite.append(item)
+	else:
+		favorite.erase(item)
+	changed.emit()
+	return true
+
+
+func is_favorite(item: Resource) -> bool:
+	return favorite.has(item)
+
+
+## Favorite items still in the backpack, in slot order.
+func favorite_items() -> Array[Resource]:
+	var out: Array[Resource] = []
+	for it in items:
+		if favorite.has(it):
 			out.append(it)
 	return out
 

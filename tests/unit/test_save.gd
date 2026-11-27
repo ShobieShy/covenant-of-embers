@@ -93,3 +93,39 @@ func test_old_version_and_bad_codes() -> void:
 	check(is_equal_approx(float(dd["player"]["health"]), p.health.max_value()), "dead save = full")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(FILE))
 	w.free()
+
+
+func test_favorite_optional_and_version_stays_1() -> void:
+	var w := _world(4800)
+	var p := _player(w)
+	var hat := EquipmentRoller.from_seed(4, S.HAT, "basic", E.FIRE)
+	var belt := EquipmentRoller.from_seed(5, S.BELT, "basic", E.WATER)
+	p.inventory.add(hat)
+	p.inventory.add(belt)
+	p.inventory.set_favorite(belt, true)
+	p.inventory.set_junk(hat, true)
+	check(SaveGame.VERSION == 1, "version 1")
+	var data := SaveGame.capture(p)
+	check(data["version"] == 1 and data["items"]["favorite"] == [1] and data["items"]["junk"] == [0], "indices")
+	check(SaveGame.write(data, FILE) == OK, "written")
+	var read := SaveGame.read(FILE)
+	check(not read.has("error"), "json read")
+	var w2 := _world(5100)
+	var q := _player(w2)
+	q.inventory.add(EquipmentRoller.from_seed(8, S.HAT, "rare", E.AIR))
+	q.inventory.set_junk(q.inventory.items[0], true)
+	SaveGame.apply(q, read["data"])
+	check(
+		q.inventory.size() == 2 and q.inventory.junk.size() == 1 and q.inventory.favorite.size() == 1, "replaced marks"
+	)
+	check(q.inventory.is_junk(q.inventory.items[0]) and q.inventory.is_favorite(q.inventory.items[1]), "slots")
+	var bare: Dictionary = (read["data"] as Dictionary).duplicate(true)
+	bare["items"].erase("favorite")
+	bare["items"].erase("junk")
+	SaveGame.apply(q, bare)
+	check(
+		q.inventory.size() == 2 and q.inventory.junk.is_empty() and q.inventory.favorite.is_empty(), "old save unmarked"
+	)
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(FILE))
+	w2.free()
+	w.free()
