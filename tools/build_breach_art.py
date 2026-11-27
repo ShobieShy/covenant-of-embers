@@ -24,7 +24,8 @@ CZ = 125.0
 RX, RZ = 74.0, 78.0
 # Gameplay feet. North is -Z. The gate is the crater's centre.
 START = (0.0, 178.0)
-EXIT = (-3.0, 186.0)
+# World portal: local (-4.5, 75) + offset (1104, -64) = (1099.5, 0, 11).
+EXIT = (-4.5, 75.0)
 WAYSTONE = (3.0, 172.0)
 STATION = (2.5, 164.0)
 DEN = (-38.0, 154.0)
@@ -33,10 +34,10 @@ GAL_E = (-36.0, 134.0)
 CIST = (32.0, 164.0)
 LEV_W = (40.0, 144.0)
 LEV_E = (50.0, 144.0)
-DAIS = (0.0, 72.0)
-WING_W = (-8.0, 74.0)
-WING_E = (8.0, 74.0)
-CHEST = (24.5, 71.0)
+DAIS = (0.0, 62.0)
+WING_W = (-10.0, 62.5)
+WING_E = (10.0, 62.5)
+CHEST = (24.5, 62.0)
 DEN_POINT = (-0.25, 59.7)
 
 ROCK = ROOT / "assets/ambientcg/Rock030/color.jpg"
@@ -299,7 +300,7 @@ def build_document() -> dict:
         ([(16, 118), (50, 118)], 3.2),
         ([(14, 108), (42, 98)], 3.2),
         ([(-16, 110), (-34, 102)], 3.2),
-        ([(0, 108), (0, 90)], 4.0),
+        ([(0, 108), (0, 74)], 4.0),
     ]
     pv, pu, pi = [], [], []
     for pts, w in paths:
@@ -364,7 +365,7 @@ def build_document() -> dict:
         bi += [b, b + 1, b + 2, b, b + 2, b + 3]
     add("breach_beam", bv, bu, bi, 7)
     # Arches
-    for name, origin in (("breach_entrance_arch", (0, 0, 168)), ("breach_arena_arch", (0, 0, 61.5))):
+    for name, origin in (("breach_entrance_arch", (0, 0, 168)), ("breach_arena_arch", (0, 0, 57.2))):
         for j, (v, u, i) in enumerate(arch_parts()):
             vv = [(p[0] + origin[0], p[1] + origin[1], p[2] + origin[2]) for p in v]
             add(f"{name}_{j}", vv, u, i, 0)
@@ -441,7 +442,7 @@ def build_document() -> dict:
             ti += [b, b + 1, b + 2, b, b + 2, b + 3]
     add("breach_terraces", tv, tu, ti, 0)
     # Arena pillars (visual; collision is a separate box).
-    for name, (x, z) in (("nw", (-7, 66)), ("ne", (7, 66)), ("sw", (-7, 78)), ("se", (7, 78))):
+    for name, (x, z) in (("nw", (-7, 59)), ("ne", (7, 59)), ("sw", (-7, 65)), ("se", (7, 65))):
         v, u, i = add_box_mesh((0, 1.7, 0), (1.15, 3.4, 1.15))
         cap_v, cap_u, cap_i = add_box_mesh((0, 3.55, 0), (1.55, 0.35, 1.55))
         vv = [(p[0] + x, p[1], p[2] + z) for p in v + cap_v]
@@ -572,21 +573,21 @@ def boxes() -> list[dict]:
         ("corridor_west", (-6.6, 2.0, 178.0), (1.3, 4.0, 24.0), "wall"),
         ("corridor_east", (6.6, 2.0, 178.0), (1.3, 4.0, 24.0), "wall"),
         ("arena_n", (0.0, 2.0, 56.4), (40.0, 4.0, 1.6), "wall"),
-        ("arena_w", (-18.4, 2.0, 72.0), (1.8, 4.0, 33.0), "wall"),
-        ("arena_s_w", (-11.6, 2.0, 86.8), (15.2, 4.0, 1.8), "wall"),
-        ("arena_s_e", (11.6, 2.0, 86.8), (15.2, 4.0, 1.8), "wall"),
-        ("switch_gate", (0.0, 2.0, 86.8), (11.2, 4.0, 2.2), "wall"),
-        ("arena_e_n", (18.4, 2.0, 62.4), (1.8, 4.0, 13.0), "wall"),
-        ("arena_e_s", (18.4, 2.0, 80.2), (1.8, 4.0, 14.0), "wall"),
-        ("vault_door", (18.4, 2.0, 71.0), (2.6, 4.0, 7.4), "wall"),
-        ("vault_west", (25.2, 2.0, 66.2), (15.0, 4.0, 2.2), "wall"),
-        ("vault_east", (25.2, 2.0, 76.4), (15.0, 4.0, 2.2), "wall"),
-        ("vault_back", (31.4, 2.0, 71.2), (1.6, 4.0, 13.0), "wall"),
-        ("pillar_nw", (-7.0, 1.7, 66.0), (1.3, 3.4, 1.3), "crate"),
-        ("pillar_ne", (7.0, 1.7, 66.0), (1.3, 3.4, 1.3), "crate"),
-        ("pillar_sw", (-7.0, 1.7, 78.0), (1.3, 3.4, 1.3), "crate"),
-        ("pillar_se", (7.0, 1.7, 78.0), (1.3, 3.4, 1.3), "crate"),
-        ("boss_dais", (0.0, 0.1, 72.0), (6.4, 0.2, 3.6), "platform"),
+        ("arena_w", (-18.4, 2.0, 62.5), (1.8, 4.0, 16.0), "wall"),
+        ("arena_s_w", (-11.6, 2.0, 69.0), (15.2, 4.0, 1.8), "wall"),
+        ("arena_s_e", (11.6, 2.0, 69.0), (15.2, 4.0, 1.8), "wall"),
+        ("switch_gate", (0.0, 2.0, 69.0), (11.2, 4.0, 2.2), "wall"),
+        ("arena_e_n", (18.4, 2.0, 57.6), (1.8, 4.0, 4.4), "wall"),
+        ("arena_e_s", (18.4, 2.0, 66.6), (1.8, 4.0, 5.2), "wall"),
+        ("vault_door", (18.4, 2.0, 62.0), (2.8, 4.0, 6.4), "wall"),
+        ("vault_west", (25.2, 2.0, 58.4), (15.0, 4.0, 2.4), "wall"),
+        ("vault_east", (25.2, 2.0, 65.6), (15.0, 4.0, 2.4), "wall"),
+        ("vault_back", (31.4, 2.0, 62.0), (1.6, 4.0, 9.0), "wall"),
+        ("pillar_nw", (-7.0, 1.7, 59.0), (1.3, 3.4, 1.3), "crate"),
+        ("pillar_ne", (7.0, 1.7, 59.0), (1.3, 3.4, 1.3), "crate"),
+        ("pillar_sw", (-7.0, 1.7, 65.0), (1.3, 3.4, 1.3), "crate"),
+        ("pillar_se", (7.0, 1.7, 65.0), (1.3, 3.4, 1.3), "crate"),
+        ("boss_dais", (DAIS[0], 0.1, DAIS[1]), (6.4, 0.2, 3.6), "platform"),
         ("gate_plinth", (0.0, 0.08, CZ), (14.0, 0.16, 14.0), "platform"),
     ]
     for name, center, size, kind in walls:
@@ -720,6 +721,8 @@ def check(all_boxes) -> None:
     for g in goals_open:
         if nearest(*feet[g][:2], 1.2) is None:
             raise SystemExit(f"sealed: cannot stand at {g}")
+    if route(START, EXIT) is None:
+        raise SystemExit("exit is not on the open path")
     if nearest(*DAIS, 1.2) is not None and route(START, DAIS) is not None:
         # route() snaps; a blocked arena should not connect
         if route(START, DAIS) is not None and nearest(*feet["dais"][:2], 0.8) is not None:
@@ -789,7 +792,7 @@ def toml_text(all_boxes) -> str:
         ]
     lines += [
         "[waves]",
-        "trigger_center = [0.0, 0.0, 80.0]",
+        "trigger_center = [0.0, 0.0, 64.0]",
         "trigger_radius = 5.0",
         "",
         "[[spawn_point]]",
