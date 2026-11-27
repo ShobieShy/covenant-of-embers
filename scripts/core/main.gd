@@ -319,7 +319,7 @@ func _setup_exits(player: Player, here: String) -> void:
 			portal.player = player
 			add_child(portal)
 			# On the south slab (it ends at z 78). z 125 was past the floor.
-			portal.global_position = $Level.global_position + Vector3(0, 0.2, 70)
+			portal.global_position = $Level.global_position + Vector3(0, 0.2, 76)
 			portal.used.connect(travel)
 			portal.blocked.connect(_on_gate_blocked)
 			gates.append(portal)
