@@ -274,6 +274,13 @@ source = "Ember Art Old Oak v4, hand-built in Blender. Bark014 and Wood051 are C
 line = "Old Oak v4 (Town east lobe) by Ember Art; bark and door wood by Lennart Demes, CC0 1.0"
 
 [[credit]]
+name = "Bob's lab interior"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "Original hollow for the Bob's lab cutaway. Wood, rock and metal maps are ambientCG Wood049, Rock030 and Metal032 (CC0)."
+line = "Bob's lab interior by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
 name = "ambientCG Rock 035"
 author = "Lennart Demes"
 license = "CC0 1.0"

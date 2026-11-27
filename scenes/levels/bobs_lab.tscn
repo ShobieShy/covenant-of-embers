@@ -3,16 +3,15 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/world/level_navigation.gd" id="1_nav"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/banner-green.glb" id="1_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall-bench.glb" id="2_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall.glb" id="3_glb"]
-[ext_resource type="PackedScene" path="res://assets/kenney/fantasy-town-kit/stall-stool.glb" id="4_glb"]
+[ext_resource type="PackedScene" path="res://assets/levels/bobs_lab/hollow.glb" id="1_glb"]
+[ext_resource type="PackedScene" path="res://assets/kaykit/props/spellbook_open.gltf" id="2_glb"]
+[ext_resource type="PackedScene" path="res://assets/kaykit/props/spellbook_closed.gltf" id="3_glb"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
-background_color = Color(0.436627, 0.395881, 0.34919, 1)
+background_color = Color(0.293372, 0.247801, 0.220916, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.665185, 0.618031, 0.565728, 1)
+ambient_light_color = Color(0.565728, 0.484529, 0.410021, 1)
 ambient_light_energy = 0.45
 tonemap_mode = 4
 tonemap_exposure = 1.0
@@ -25,194 +24,329 @@ glow_intensity = 0.6
 glow_bloom = 0.05
 glow_hdr_threshold = 1.0
 adjustment_enabled = true
-adjustment_brightness = 1.02
-adjustment_contrast = 1.04
-adjustment_saturation = 1
-fog_enabled = false
+adjustment_brightness = 1
+adjustment_contrast = 1.06
+adjustment_saturation = 1.04
+fog_enabled = true
 fog_mode = 0
-fog_light_color = Color(0.436627, 0.395881, 0.34919, 1)
-fog_density = 0
+fog_light_color = Color(0.293372, 0.247801, 0.220916, 1)
+fog_density = 0.012
 fog_sky_affect = 0.0
 
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
-size = Vector3(6, 0.3, 4.3)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_1"]
-size = Vector3(6, 0.3, 4.3)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
-albedo_color = Color(0.665185, 0.583831, 0.461356, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_2"]
-size = Vector3(6, 1, 0.25)
+size = Vector3(7.8, 0.4, 6.4)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2"]
-size = Vector3(6, 1, 0.25)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
-albedo_color = Color(0.62621, 0.546854, 0.436627, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_3"]
-size = Vector3(0.25, 1, 4.3)
+size = Vector3(8.16, 5.72, 0.36)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3"]
-size = Vector3(0.25, 1, 4.3)
-
-[sub_resource type="BoxMesh" id="BoxMesh_4"]
-size = Vector3(1.6, 0.5, 0.8)
+size = Vector3(2.94, 5.72, 0.36)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4"]
-size = Vector3(1.6, 0.5, 0.8)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
-albedo_color = Color(0.767376, 0.767376, 0.748379, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_5"]
-size = Vector3(1.4, 1.6, 0.3)
+size = Vector3(0.36, 5.72, 6.4)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5"]
-size = Vector3(1.4, 1.6, 0.3)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
-albedo_color = Color(0.679976, 0.583831, 0.461356, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_6"]
-size = Vector3(2.2, 0.35, 0.4)
+size = Vector3(3.7, 0.2, 5.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6"]
-size = Vector3(2.2, 0.35, 0.4)
+size = Vector3(4.6, 0.2, 1.55)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
-albedo_color = Color(0.537099, 0.701411, 0.506386, 1)
+[sub_resource type="BoxShape3D" id="BoxShape3D_7"]
+size = Vector3(5.1, 0.2, 1.55)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8"]
+size = Vector3(1.9, 0.2, 1.9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_9"]
+size = Vector3(1.52, 0.16, 1.58)
 
 [node name="BobsLab" type="Node3D" groups=["kill_line"]]
 metadata/level_id = "bobs_lab"
 metadata/level_name = "Bob's lab"
 metadata/world_offset = Vector2(0, 0)
 metadata/source = "res://data/levels/bobs_lab.toml"
-metadata/kill_line_y = -7.7
+metadata/kill_line_y = -7.6
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.5547, -0.765987, 0.324918, 0, 0.390503, 0.920602, -0.83205, -0.510658, 0.216612, 0, 10, 0)
-light_color = Color(1, 0.954687, 0.880825, 1)
-light_energy = 1.3
+transform = Transform3D(0.964764, -0.204018, 0.166155, 0, 0.631485, 0.775388, -0.263117, -0.748067, 0.609234, 0, 10, 0)
+light_color = Color(1, 0.896244, 0.767376, 1)
+light_energy = 0.22
 shadow_enabled = true
 
 [node name="Boxes" type="Node3D" parent="."]
 
 [node name="lab_floor" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 metadata/kind = "platform"
 metadata/toml_index = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_floor"]
-mesh = SubResource("BoxMesh_1")
-surface_material_override/0 = SubResource("StandardMaterial3D_1")
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/lab_floor"]
 shape = SubResource("BoxShape3D_1")
 
-[node name="lab_rail_n" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -2)
+[node name="lab_wall_n" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.26, -3.38)
 metadata/kind = "wall"
 metadata/toml_index = 1
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_rail_n"]
-mesh = SubResource("BoxMesh_2")
-surface_material_override/0 = SubResource("StandardMaterial3D_2")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_rail_n"]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_wall_n"]
 shape = SubResource("BoxShape3D_2")
 
-[node name="lab_rail_e" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 0.8, 0)
+[node name="lab_wall_s_w" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.43, 3.26, 3.38)
 metadata/kind = "wall"
 metadata/toml_index = 2
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_rail_e"]
-mesh = SubResource("BoxMesh_3")
-surface_material_override/0 = SubResource("StandardMaterial3D_2")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_rail_e"]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_wall_s_w"]
 shape = SubResource("BoxShape3D_3")
 
-[node name="lab_rail_w" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.85, 0.8, 0)
+[node name="lab_wall_s_e" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.43, 3.26, 3.38)
 metadata/kind = "wall"
 metadata/toml_index = 3
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_rail_w"]
-mesh = SubResource("BoxMesh_3")
-surface_material_override/0 = SubResource("StandardMaterial3D_2")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_rail_w"]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_wall_s_e"]
 shape = SubResource("BoxShape3D_3")
 
-[node name="lab_slab" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0.55, -1)
-metadata/kind = "platform"
+[node name="lab_wall_e" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.08, 3.26, 0)
+metadata/kind = "wall"
 metadata/toml_index = 4
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_slab"]
-mesh = SubResource("BoxMesh_4")
-surface_material_override/0 = SubResource("StandardMaterial3D_3")
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_slab"]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_wall_e"]
 shape = SubResource("BoxShape3D_4")
 
-[node name="lab_shelf" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.3, -1.6)
+[node name="lab_wall_w" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.08, 3.26, 0)
 metadata/kind = "wall"
 metadata/toml_index = 5
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_shelf"]
-mesh = SubResource("BoxMesh_5")
-surface_material_override/0 = SubResource("StandardMaterial3D_4")
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_wall_w"]
+shape = SubResource("BoxShape3D_4")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_shelf"]
-shape = SubResource("BoxShape3D_5")
-
-[node name="lab_pots" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.5, -0.6)
-metadata/kind = "crate"
+[node name="lab_loft_e" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.85, 3.26, 0.05)
+metadata/kind = "platform"
 metadata/toml_index = 6
 
-[node name="Mesh" type="MeshInstance3D" parent="Boxes/lab_pots"]
-mesh = SubResource("BoxMesh_6")
-surface_material_override/0 = SubResource("StandardMaterial3D_5")
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_loft_e"]
+shape = SubResource("BoxShape3D_5")
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_pots"]
+[node name="lab_loft_n" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.15, 3.26, 2.15)
+metadata/kind = "platform"
+metadata/toml_index = 7
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_loft_n"]
 shape = SubResource("BoxShape3D_6")
+
+[node name="lab_loft_s" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 3.26, -2.15)
+metadata/kind = "platform"
+metadata/toml_index = 8
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_loft_s"]
+shape = SubResource("BoxShape3D_7")
+
+[node name="lab_landing" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0587, 3.26, -0.3648)
+metadata/kind = "platform"
+metadata/toml_index = 9
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_landing"]
+shape = SubResource("BoxShape3D_8")
+
+[node name="lab_step_1" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.980067, 0, -0.198667, 0, 1, 0, 0.198667, 0, 0.980067, -0.4431, 0.505, 0.3105)
+metadata/kind = "platform"
+metadata/toml_index = 10
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_1"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_2" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.836841, 0, -0.547446, 0, 1, 0, 0.547446, 0, 0.836841, -0.6093, 0.69, 0.715)
+metadata/kind = "platform"
+metadata/toml_index = 11
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_2"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_3" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.574648, 0, -0.818401, 0, 1, 0, 0.818401, 0, 0.574648, -0.9134, 0.875, 1.0293)
+metadata/kind = "platform"
+metadata/toml_index = 12
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_3"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_4" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.230763, 0, -0.97301, 0, 1, 0, 0.97301, 0, 0.230763, -1.3123, 1.06, 1.2087)
+metadata/kind = "platform"
+metadata/toml_index = 13
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_4"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_5" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.145928, 0, -0.989295, 0, 1, 0, 0.989295, 0, -0.145928, -1.7493, 1.245, 1.2276)
+metadata/kind = "platform"
+metadata/toml_index = 14
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_5"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_6" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.501873, 0, -0.864941, 0, 1, 0, 0.864941, 0, -0.501873, -2.1622, 1.43, 1.0833)
+metadata/kind = "platform"
+metadata/toml_index = 15
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_6"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_7" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.786461, 0, -0.61764, 0, 1, 0, 0.61764, 0, -0.786461, -2.4923, 1.615, 0.7965)
+metadata/kind = "platform"
+metadata/toml_index = 16
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_7"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_8" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.95926, 0, -0.282526, 0, 1, 0, 0.282526, 0, -0.95926, -2.6927, 1.8, 0.4077)
+metadata/kind = "platform"
+metadata/toml_index = 17
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_8"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_9" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.995689, 0, 0.092753, 0, 1, 0, -0.092753, 0, -0.995689, -2.735, 1.985, -0.0276)
+metadata/kind = "platform"
+metadata/toml_index = 18
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_9"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_10" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.89057, 0, 0.454846, 0, 1, 0, -0.454846, 0, -0.89057, -2.6131, 2.17, -0.4476)
+metadata/kind = "platform"
+metadata/toml_index = 19
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_10"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_11" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.658847, 0, 0.752277, 0, 1, 0, -0.752277, 0, -0.658847, -2.3443, 2.355, -0.7926)
+metadata/kind = "platform"
+metadata/toml_index = 20
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_11"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_12" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(-0.333461, 0, 0.942764, 0, 1, 0, -0.942764, 0, -0.333461, -1.9668, 2.54, -1.0136)
+metadata/kind = "platform"
+metadata/toml_index = 21
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_12"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_13" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.03933, 0, 0.999226, 0, 1, 0, -0.999226, 0, 0.03933, -1.5344, 2.725, -1.0791)
+metadata/kind = "platform"
+metadata/toml_index = 22
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_13"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_14" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.406529, 0, 0.913638, 0, 1, 0, -0.913638, 0, 0.406529, -1.1084, 2.91, -0.9798)
+metadata/kind = "platform"
+metadata/toml_index = 23
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_14"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_15" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.715936, 0, 0.698165, 0, 1, 0, -0.698165, 0, 0.715936, -0.7495, 3.095, -0.7299)
+metadata/kind = "platform"
+metadata/toml_index = 24
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_15"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="lab_step_16" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.923559, 0, 0.383457, 0, 1, 0, -0.383457, 0, 0.923559, -0.5087, 3.28, -0.3648)
+metadata/kind = "platform"
+metadata/toml_index = 25
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/lab_step_16"]
+shape = SubResource("BoxShape3D_9")
 
 [node name="Props" type="Node3D" parent="."]
 
-[node name="lab_chart" parent="Props" instance=ExtResource("1_glb")]
-transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, 1.6, 1.7, -1.7)
+[node name="hollow" parent="Props" instance=ExtResource("1_glb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="lab_slab_top" parent="Props" instance=ExtResource("2_glb")]
-transform = Transform3D(0, 0, 1.4, 0, 1.4, 0, -1.4, 0, 0, -1.2, 0.7, -1)
+[node name="loft_book" parent="Props" instance=ExtResource("2_glb")]
+transform = Transform3D(0.808398, 0, 0.262664, 0, 0.85, 0, -0.262664, 0, 0.808398, 1.42, 4.16, -0.22)
 
-[node name="lab_shelf_front" parent="Props" instance=ExtResource("3_glb")]
-transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 1.6, 0.55, -1.5)
+[node name="shelf_book" parent="Props" instance=ExtResource("3_glb")]
+transform = Transform3D(0.546987, 0, -0.057491, 0, 0.55, 0, 0.057491, 0, 0.546987, 0.4, 4.22, -2.72)
 
-[node name="lab_pot_1" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, -0.6, 0.55, -0.4)
+[node name="Lights" type="Node3D" parent="."]
 
-[node name="lab_pot_2" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0.2, 0.55, -0.4)
+[node name="lantern_loft" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.15, 5.15, -0.35)
+light_color = Color(1, 0.865042, 0.679976, 1)
+light_energy = 2.6
+omni_range = 7.5
+shadow_enabled = true
 
-[node name="lab_pot_3" parent="Props" instance=ExtResource("4_glb")]
-transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 1, 0.55, -0.4)
+[node name="lantern_ground" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 2.25, 1.55)
+light_color = Color(1, 0.843389, 0.649956, 1)
+light_energy = 1.5
+omni_range = 5
+shadow_enabled = true
+
+[node name="lantern_bench" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 5.05, 1.15)
+light_color = Color(1, 0.854306, 0.665185, 1)
+light_energy = 1.8
+omni_range = 6
+shadow_enabled = true
+
+[node name="cauldron_west" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 4.3, 0.97)
+light_color = Color(0.809468, 0.506386, 1, 1)
+light_energy = 1.7
+omni_range = 3.4
+shadow_enabled = true
+
+[node name="cauldron_east" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.04, 4.3, 0.97)
+light_color = Color(0.735357, 0.436627, 0.977692, 1)
+light_energy = 1.4
+omni_range = 3.2
+shadow_enabled = true
+
+[node name="hearth" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.35, 1.15, -1.55)
+light_color = Color(1, 0.679976, 0.381092, 1)
+light_energy = 2.4
+omni_range = 5.5
+shadow_enabled = true
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
 script = ExtResource("1_nav")
 source = NodePath("../Boxes")
 
 [node name="PlayerStart" type="Marker3D" parent="."]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 1.2)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0.9, 0.4, 2.15)
 metadata/yaw_deg = 180
 
 [node name="Eye" type="Marker3D" parent="PlayerStart"]
@@ -223,5 +357,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 [node name="Exits" type="Node3D" parent="."]
 
 [node name="to_town" type="Marker3D" parent="Exits"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.4, 2.65)
 metadata/to = "town_square"

@@ -150,12 +150,10 @@ def oak() -> tuple[set[str], str]:
 
 
 def lab() -> tuple[set[str], str]:
-    # The room that used to sit in the oak's crown. Kenney stand-ins until the remake.
-    p = [prop("lab_chart", TOWN + "banner-green.glb", (1.6, 1.7, -1.7), 0.0, 2.2)]
-    p.append(prop("lab_slab_top", TOWN + "stall-bench.glb", (-1.2, 0.7, -1.0), 90.0, 1.4))
-    p.append(prop("lab_shelf_front", TOWN + "stall.glb", (1.6, 0.55, -1.5), 0.0, 1.3))
-    for i, x in enumerate((-0.6, 0.2, 1.0)):
-        p.append(prop(f"lab_pot_{i + 1}", TOWN + "stall-stool.glb", (x, 0.55, -0.4), 0.0, 0.7))
+    # The hollow is one mesh. Books and lanterns sit on the table, the shelf and the floor.
+    p = [prop("hollow", "assets/levels/bobs_lab/hollow.glb", (0, 0, 0), 0.0, 1.0)]
+    p.append(prop("loft_book", "assets/kaykit/props/spellbook_open.gltf", (1.42, 4.16, -0.22), 18.0, 0.85))
+    p.append(prop("shelf_book", "assets/kaykit/props/spellbook_closed.gltf", (0.4, 4.22, -2.72), -6.0, 0.55))
     return set(), "".join(p)
 
 

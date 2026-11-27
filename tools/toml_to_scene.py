@@ -19,6 +19,8 @@ Mapping (same rules as the archived C++ loader, archive/cpp-engine/game/world/le
   * [environment] -> WorldEnvironment: clear colour = sky_color, ambient = ambient_color,
     exponential depth fog of fog_density toward sky_color (sky itself unfogged).
   * [sun] -> DirectionalLight3D whose +Z basis axis is to_light (light shines along -Z).
+    Optional energy defaults to 1.3. [[light]] -> OmniLight3D under Lights (kept when an
+    interior strips Sun).
   * [player_start] -> Marker3D PlayerStart (feet) at position, yaw_deg about +Y
     (0 = facing north, -Z), with an Eye Marker3D 1.5 m up (Magewar body 0.8 + neck 0.7).
   * [[enemy]] -> Marker3D under EnemySpawns with metadata enemy (used from step 11) and,
@@ -33,7 +35,8 @@ Mapping (same rules as the archived C++ loader, archive/cpp-engine/game/world/le
     sibling of Boxes (Boxes keeps its node path): at load it bakes a NavigationMesh from
     the StaticBody3D colliders under ../Boxes, which the Gnawer paths on.
   * Town art: a box with `hidden = true` keeps its collider (and so navigation) but its
-    Mesh is invisible; [[prop]] {name, model = "assets/...glb", position, rotation_deg,
+    Mesh is invisible. `collision_only = true` omits the Mesh entirely (no primitive).
+    [[prop]] {name, model = "assets/...glb", position, rotation_deg,
     scale (number or [x, y, z]), count, step} -> `count` instances of the GLB under a
     visual-only Props node (no collision), the i-th at position + i * step. Art dresses
     the greybox colliders, so dressing a level never changes its gameplay.
@@ -175,6 +178,33 @@ def _bool(v, what: str) -> bool:
     if not isinstance(v, bool):
         raise LevelError(f"{what} must be true or false")
     return v
+
+
+def _lights(items: list, out: dict) -> None:
+    """Omni lights that stay when Interiors.prepare strips the sun."""
+    seen: set[str] = set()
+    for i, lt in enumerate(items):
+        w = f"light {i + 1}"
+        _only(lt, {"name", "position", "color", "energy", "range", "shadows", "snap"}, w)
+        name = str(_need(lt, "name", w))
+        if name in seen:
+            raise LevelError(f"duplicate light name '{name}'")
+        seen.add(name)
+        energy = lt.get("energy", 1.0)
+        rng = lt.get("range", 6.0)
+        if isinstance(energy, bool) or not isinstance(energy, (int, float)) or not 0.0 < float(energy) <= 16.0:
+            raise LevelError(f"{w}: energy must be in (0, 16]")
+        if isinstance(rng, bool) or not isinstance(rng, (int, float)) or not 0.2 <= float(rng) <= 40.0:
+            raise LevelError(f"{w}: range must be in [0.2, 40]")
+        out["lights"].append({
+            "name": name,
+            "position": _vec(_need(lt, "position", w), f"{w} position"),
+            "color": _color(_need(lt, "color", w), f"{w} color"),
+            "energy": float(energy),
+            "range": float(rng),
+            "shadows": _bool(lt.get("shadows", False), f"{w} shadows"),
+            "snap": _bool(lt.get("snap", False), f"{w} snap"),
+        })
 
 
 def _props(items: list, out: dict) -> None:
@@ -338,11 +368,14 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     if not 0.0 <= fog <= 1.0:
         raise LevelError("fog_density must be in [0, 1]")
     sun = d["sun"]
-    _only(sun, {"to_light", "color"}, "[sun]")
+    _only(sun, {"to_light", "color", "energy"}, "[sun]")
     tl = _vec(_need(sun, "to_light", "[sun]"), "sun to_light")
     ln = math.sqrt(sum(x * x for x in tl))
     if ln < 1e-4:
         raise LevelError("sun to_light must not be zero")
+    sun_energy = float(sun.get("energy", 1.3))
+    if not 0.0 < sun_energy <= 16.0:
+        raise LevelError("sun energy must be in (0, 16]")
     ps = d["player_start"]
     _only(ps, {"position", "yaw_deg"}, "[player_start]")
     out = {
@@ -364,6 +397,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "grade": grade,
         "to_light": [x / ln for x in tl],
         "sun_color": _color(_need(sun, "color", "[sun]"), "sun color"),
+        "sun_energy": sun_energy,
         "start_position": _vec(_need(ps, "position", "[player_start]"), "player_start position"),
         "start_yaw_deg": float(ps.get("yaw_deg", 0.0)),
         "boxes": [],
@@ -385,6 +419,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
         "gates": [],
         "chests": [],
         "camps": [],
+        "lights": [],
     }
     # Step 75: [materials] kind = "assets/<vendor>/<set>" (color/normal/roughness.jpg there),
     # uv_scale = world tiling per metre (triplanar, so boxes of any size tile evenly).
@@ -401,7 +436,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     names: set[str] = set()
     for i, b in enumerate(d.get("box", [])):
         w = f"box {i + 1}"
-        _only(b, {"name", "kind", "center", "size", "rotation_deg", "color", "hidden"}, w)
+        _only(b, {"name", "kind", "center", "size", "rotation_deg", "color", "hidden", "collision_only"}, w)
         name = str(_need(b, "name", w))
         w = f"box '{name}'"
         if name in names:
@@ -419,6 +454,8 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
             "rotation_deg": _vec(b.get("rotation_deg", [0, 0, 0]), f"{w} rotation_deg"),
             "color": _color(_need(b, "color", w), f"{w} color"),
             "hidden": _bool(b.get("hidden", False), f"{w} hidden"),
+            # Collision without a PrimitiveMesh, so a remade room can pass the art gate.
+            "collision_only": _bool(b.get("collision_only", False), f"{w} collision_only"),
         })
     if not out["boxes"]:
         raise LevelError("need at least one [[box]]")
@@ -519,6 +556,7 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
     _chests(d.get("chest", []), out)
     _camps(d.get("camp", []), out, known)
     _props(d.get("prop", []), out)
+    _lights(d.get("light", []), out)
     out["terrain"] = _terrain(d["terrain"], out["boxes"]) if "terrain" in d else None
     # Step 65: travel exits (LevelGate per exit, `to` = a GameFlow level id) and NPCs.
     for sec, key, extra in (("exit", "exits", "to"), ("npc", "npcs", "speaker")):
@@ -537,24 +575,6 @@ def parse_level(text: str, known_enemies: set[str] | None = None) -> dict:
             if not on_surface(out["boxes"], pos):
                 raise LevelError(f"{sec} '{name}' position (feet) must lie on a box surface (within 5 cm)")
             out[key].append({"name": name, extra: val, "position": pos, "yaw_deg": float(x.get("yaw_deg", 0.0))})
-    seen_l: set[str] = set()
-    for i, lit in enumerate(d.get("light", [])):
-        w = f"light {i + 1}"
-        _only(lit, {"name", "position", "color", "energy", "range", "snap"}, w)
-        name = str(_need(lit, "name", w))
-        if name in seen_l:
-            raise LevelError(f"duplicate light name '{name}'")
-        seen_l.add(name)
-        pos = _vec(_need(lit, "position", w), f"{w} position")
-        color = [float(c) for c in lit.get("color", [1.0, 0.72, 0.42])]
-        if len(color) != 3:
-            raise LevelError(f"{w} color must be [r, g, b]")
-        out["lights"].append({
-            "name": name, "position": pos, "color": color,
-            "energy": float(lit.get("energy", 1.0)),
-            "range": float(lit.get("range", 8.0)),
-            "snap": _bool(lit.get("snap", False), f"{w} snap"),
-        })
     return out
 
 
@@ -776,18 +796,19 @@ def to_tscn(lv: dict, source: str) -> str:
     nodes.append(f'[node name="WorldEnvironment" type="WorldEnvironment" parent="."]\nenvironment = SubResource("{env}")\n')
     nodes.append(f'[node name="Sun" type="DirectionalLight3D" parent="."]\n'
                  f'transform = {_xf(sun_basis(lv["to_light"]), [0, 10, 0])}\n'
-                 f'light_color = {_color_str(lv["sun_color"])}\nlight_energy = 1.3\nshadow_enabled = true\n')
+                 f'light_color = {_color_str(lv["sun_color"])}\nlight_energy = {_f(lv["sun_energy"])}\nshadow_enabled = true\n')
     nodes.append('[node name="Boxes" type="Node3D" parent="."]\n')
     for i, b in enumerate(lv["boxes"]):
         sk = tuple(b["size"])
-        # Hidden town pads and a props_only level keep collision and no primitive
-        # mesh. Every other box still emits mesh, then shape, then material, so
-        # those scenes do not change.
+        # Hidden town pads, props_only, and collision_only keep the collider and
+        # skip the primitive mesh. Every other box still emits mesh, then shape,
+        # then material, so those scenes do not change.
         town_pad = b["hidden"] and lv["id"] in ("town_square", "town_golden_slice")
-        skip_mesh = bool(lv.get("props_only")) or town_pad
+        skip_mesh = bool(lv.get("props_only")) or b["collision_only"] or town_pad
+        mesh = ""
+        mat = ""
         if skip_mesh:
             shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
-            mesh = ""
         else:
             mesh = sub("BoxMesh", sk, f"size = {_v3(b['size'])}")
             shape = sub("BoxShape3D", sk, f"size = {_v3(b['size'])}")
@@ -801,7 +822,7 @@ def to_tscn(lv: dict, source: str) -> str:
         nodes.append(f'[node name="{b["name"]}" type="StaticBody3D" parent="Boxes"]\n'
                      f'transform = {_xf(rot_yxz(b["rotation_deg"]), b["center"])}\n'
                      f'metadata/kind = "{b["kind"]}"\nmetadata/toml_index = {i}\n')
-        if mesh:
+        if not skip_mesh:
             nodes.append(f'[node name="Mesh" type="MeshInstance3D" parent="Boxes/{b["name"]}"]\n'
                          f'mesh = SubResource("{mesh}")\nsurface_material_override/0 = SubResource("{mat}")\n'
                          + ("visible = false\n" if b["hidden"] else ""))
@@ -854,7 +875,7 @@ def to_tscn(lv: dict, source: str) -> str:
                 f'transform = {_xf(rot_yxz([0, 0, 0]), lit["position"])}\n'
                 f'light_color = {_color_str(lit["color"])}\n'
                 f'light_energy = {_f(lit["energy"])}\nomni_range = {_f(lit["range"])}\n'
-                f'shadow_enabled = false\n'
+                f'shadow_enabled = {"true" if lit["shadows"] else "false"}\n'
                 + ('metadata/snap = true\n' if lit["snap"] else "")
             )
     nodes.append('[node name="Navigation" type="NavigationRegion3D" parent="."]\n'
@@ -1081,6 +1102,16 @@ def self_test() -> int:
     sp2 = to_tscn(lp, "t.toml")
     assert lp["props"][0]["scale"] == [2.0, 2.0, 2.0] and sp2.count('parent="Props" instance=') == 3, sp2
     assert f'type="PackedScene" path="res://{fk}"' in sp2 and "visible = false" in sp2 and 'name="f_3"' in sp2
+    assert "light_energy = 1.3" in to_tscn(parse_level(hdr + box), "t.toml")
+    dim = to_tscn(parse_level(hdr.replace("color = [1, 1, 1]", "color = [1, 1, 1]\nenergy = 0.4") + box), "t.toml")
+    assert "light_energy = 0.4" in dim
+    co = to_tscn(parse_level(hdr + box.replace("color = [1, 0, 0]", "color = [1, 0, 0]\ncollision_only = true")), "t.toml")
+    assert "BoxMesh" not in co and "BoxShape3D" in co
+    lamp = '[[light]]\nname = "lamp"\nposition = [0, 2, 0]\ncolor = [1, 0.6, 0.3]\nenergy = 1.5\nrange = 5\n'
+    sl = to_tscn(parse_level(hdr + box + lamp), "t.toml")
+    assert 'type="OmniLight3D"' in sl and "omni_range = 5" in sl and "light_energy = 1.5" in sl
+    bad[box.replace("color = [1, 0, 0]", "color = [1, 0, 0]\ncollision_only = 1")] = "collision_only must be true or false"
+    bad[box + lamp.replace("energy = 1.5", "energy = 0")] = "energy must be in (0, 16]"
     assert "Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 0, 2)" in sp2, sp2
     bad[box + prop.replace(fk, "assets/nope.glb")] = "no model assets/nope.glb"
     bad[box + prop.replace("scale = 2", "scale = 0")] = "scale must be > 0"
