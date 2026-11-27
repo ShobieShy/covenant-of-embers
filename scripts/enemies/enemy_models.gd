@@ -5,23 +5,36 @@ extends RefCounted
 ## the hit-flash / Dark-convert tint shows as a translucent overlay on the model.
 
 const DIR := "res://assets/quaternius/enemies/"
+const BOSS_DIR := "res://assets/original/ember_art/bosses/"
+## 0.14.0 hero meshes. Heights are the sheet scale next to a 1.8 m figure.
+## Collision boxes stay the sizes in data/enemies/.
+const BOSSES := {
+	"the_filth": "the_filth.glb",
+	"breach_warden": "breach_warden.glb",
+	"goblin_king": "goblin_king.glb",
+	"blightmaw_matriarch": "blightmaw_matriarch.glb",
+	"forgemaw": "forgemaw.glb",
+	"drowned_choir": "drowned_choir.glb",
+	"storm_warden": "storm_warden.glb",
+}
+const VISUAL_HEIGHT := {
+	"the_filth": 5.6,
+	"breach_warden": 6.4,
+	"goblin_king": 2.45,
+	"blightmaw_matriarch": 5.4,
+	"forgemaw": 5.8,
+	"drowned_choir": 5.0,
+	"storm_warden": 4.8,
+}
 ## "heap" is retired (The Filth replaces it) but keeps a golem body for old saves/tests.
 const MODELS := {
 	"gnawer": "rats/Rat_Mutated_Sickly.glb",
 	"ooze": "filth/Filth_Sludge.glb",
 	"heap": "garbage_golems/GarbageGolem_Bags.glb",
-	"breach_warden": "garbage_golems/GarbageGolem_Bin.glb",
-	"the_filth": "filth/Filth_Brute.glb",
 	# L3 (Ember Art batch 08b, Quaternius Goblin / Orc CC0, recoloured): Act I goblins.
 	"goblin_grunt": "res://assets/original/ember_art/goblin_grunt.glb",
 	"goblin_archer": "res://assets/original/ember_art/goblin_archer.glb",
 	"goblin_shaman": "res://assets/original/ember_art/goblin_shaman.glb",
-	"goblin_king": "res://assets/original/ember_art/goblin_king.glb",
-	# Act II (Ember Art batch_12). Ids match data/enemies/blightcoil.toml.
-	"spore_husk": "res://assets/original/ember_art/enemies/spore_cap_husk.glb",
-	"mossbound_treant": "res://assets/original/ember_art/enemies/mossbound_treant.glb",
-	"spore_beast": "res://assets/original/ember_art/enemies/spore_beast.glb",
-	"blightmaw_matriarch": "res://assets/original/ember_art/enemies/blightmaw_matriarch.glb",
 }
 ## Batch 08b: nodes freed when the body dies (the King's Crown becomes his drop).
 const DEATH_HIDE := {"goblin_king": ["Crown"]}
@@ -35,6 +48,8 @@ const WARDEN_EYES := Color(0.75, 0.3, 1.0)
 
 
 static func path_for(id: String) -> String:
+	if BOSSES.has(id):
+		return BOSS_DIR + String(BOSSES[id])
 	if not MODELS.has(id):
 		return ""
 	var p := String(MODELS[id])
@@ -48,15 +63,21 @@ static func make(id: String, height: float) -> CharacterModel:
 		holder.name = "Model"
 		holder.add_child(ScorchlingBody.build(height))
 		return holder
+	if VISUAL_HEIGHT.has(id):
+		height = float(VISUAL_HEIGHT[id])
 	var path := path_for(id)
 	if VARIANTS.has(id):
 		var vs: Array = VARIANTS[id]
 		path = DIR + String(vs[randi() % vs.size()])
 	var m := CharacterModel.make_sized(path, height)
-	if m != null and id == "breach_warden":
+	if m != null and id == "breach_warden" and not BOSSES.has(id):
 		_warden_eyes(m, height)
-	if m != null and String(MODELS[id]).begins_with("garbage_golems/"):
+	if m != null and MODELS.has(id) and String(MODELS[id]).begins_with("garbage_golems/"):
 		(m.get_child(0) as Node3D).rotation.y = 0.0  # Ember Art's kitbash rig already faces -Z
+	if m != null and BOSSES.has(id):
+		var look := BossLooks.new()
+		look.name = "BossLooks"
+		m.add_child(look)
 	return m
 
 

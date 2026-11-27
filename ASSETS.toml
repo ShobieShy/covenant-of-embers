@@ -469,3 +469,73 @@ license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-11-26"
 use = "Act III Slagworks meshes: cliffs, stone, gantries, rails, lava, furnace-anvil, arch, door, lift, slag cast, ore, cart, boulders, chains, pillars"
+
+[[asset]]
+name = "The Filth hero mesh"
+path = "assets/original/ember_art/bosses/the_filth.glb"
+author = "Covenant of Embers project"
+source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_the_filth.jpg"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-27"
+use = "The Filth, landfill boss: slime mound, rig, phase debris and exposed core"
+
+[[asset]]
+name = "Breach Warden hero mesh"
+path = "assets/original/ember_art/bosses/breach_warden.glb"
+author = "Covenant of Embers project"
+source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_breach_warden.jpg"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-27"
+use = "Breach Warden: rubble colossus, rig, violet back seam, enrage cracks"
+
+[[asset]]
+name = "Goblin King hero mesh"
+path = "assets/original/ember_art/bosses/goblin_king.glb"
+author = "Covenant of Embers project"
+source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_goblin_king.jpg"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-27"
+use = "The Goblin King: bulky rig, crown drop, mace, roar glow"
+
+[[asset]]
+name = "Blightmaw Matriarch hero mesh"
+path = "assets/original/ember_art/bosses/blightmaw_matriarch.glb"
+author = "Covenant of Embers project"
+source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_blightmaw_matriarch.jpg"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-27"
+use = "Blightmaw Matriarch: vine body, phase spines, phase heart"
+
+[[asset]]
+name = "Forgemaw hero mesh"
+path = "assets/original/ember_art/bosses/forgemaw.glb"
+author = "Covenant of Embers project"
+source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_forgemaw.jpg"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-27"
+use = "Forgemaw: molten brute, hammer, tongs, phase core"
+
+[[asset]]
+name = "Drowned Choir hero mesh"
+path = "assets/original/ember_art/bosses/drowned_choir.glb"
+author = "Covenant of Embers project"
+source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_drowned_choir.jpg"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-27"
+use = "Drowned Choir: one body of fused singers, surfaced and submerged phase"
+
+[[asset]]
+name = "Storm Warden hero mesh"
+path = "assets/original/ember_art/bosses/storm_warden.glb"
+author = "Covenant of Embers project"
+source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_storm_warden.jpg"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-27"
+use = "Storm Warden: stone cloak, crystal crown, wind, gale phase"
