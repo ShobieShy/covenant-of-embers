@@ -22,21 +22,38 @@ func test_parts_and_budget() -> void:
 	]
 	vm.show_wieldable(_w("apprentice_fire_staff", full))
 	check(vm.kit != null, "kit built")
-	for n in ["Pommel", "Band0", "Core", "Prong0", "Charm"]:
-		check(vm.kit.find_child(n, true, false) != null, "has " + n)
+	for n in ["Handle", "Exterior", "Interior", "Head", "Charm"]:
+		var part := vm.kit.find_child(n, true, false) as MeshInstance3D
+		check(part != null and part.mesh != null, "has " + n)
+		check(not (part.mesh is PrimitiveMesh), n + " is a real mesh")
 	check(StaffKit.tris(vm) <= 4000, "under 4k tris (%d)" % StaffKit.tris(vm))
 	for mi in vm.find_children("*", "MeshInstance3D", true, false):
+		if _under_brand(mi):
+			continue
+		var mesh := (mi as MeshInstance3D).mesh
+		if mesh != null:
+			check(not (mesh is PrimitiveMesh), "no primitive " + mi.name)
 		check((mi as MeshInstance3D).layers == Viewmodel.LAYER_MASK, "viewmodel layer " + mi.name)
 	vm.show_wieldable(_w("apprentice_fire_staff", []))
 	check(
-		vm.kit.find_child("Core", true, false) == null and vm.kit.find_child("Charm", true, false) == null,
+		vm.kit.find_child("Interior", true, false) == null and vm.kit.find_child("Charm", true, false) == null,
 		"rebuilt bare"
 	)
+	check(vm.shaft.mesh != null and not (vm.shaft.mesh is PrimitiveMesh), "bare shaft is a real mesh")
+	check(vm.gem.mesh != null and not (vm.gem.mesh is PrimitiveMesh), "focus gem is a real mesh")
 	vm.free()
 
 
+func _under_brand(n: Node) -> bool:
+	while n != null:
+		if n.name == "BrandFX":
+			return true
+		n = n.get_parent()
+	return false
+
+
 func _world_box(mi: MeshInstance3D) -> AABB:
-	return mi.transform * mi.get_aabb()
+	return mi.global_transform * mi.get_aabb()
 
 
 func _gap(a: AABB, b: AABB) -> float:
@@ -54,21 +71,18 @@ func _gap(a: AABB, b: AABB) -> float:
 
 
 func _meet(vm: Viewmodel, label: String) -> void:
-	var grip := vm.kit.find_child("Grip", true, false) as MeshInstance3D
-	var pommel := vm.kit.find_child("Pommel", true, false) as MeshInstance3D
-	var shell := vm.kit.find_child("Shell", true, false) as MeshInstance3D
-	var collar := vm.kit.find_child("Collar", true, false) as MeshInstance3D
-	var prong := vm.kit.find_child("Prong0", true, false) as MeshInstance3D
-	check(_gap(_world_box(grip), _world_box(pommel)) < 0.02, "%s grip meets pommel" % label)
-	check(_gap(_world_box(grip), _world_box(shell)) < 0.02, "%s grip meets shell" % label)
-	check(_gap(_world_box(shell), _world_box(collar)) < 0.02, "%s shell meets collar" % label)
-	check(_gap(_world_box(collar), _world_box(prong)) < 0.03, "%s collar meets prong" % label)
-	check(_gap(_world_box(collar), _world_box(vm.gem)) < 0.03, "%s collar meets gem" % label)
-	var cord := vm.kit.find_child("Cord", true, false) as MeshInstance3D
+	var handle := vm.kit.find_child("Handle", true, false) as MeshInstance3D
+	var shell := vm.kit.find_child("Exterior", true, false) as MeshInstance3D
+	var interior := vm.kit.find_child("Interior", true, false) as MeshInstance3D
+	var head := vm.kit.find_child("Head", true, false) as MeshInstance3D
 	var charm := vm.kit.find_child("Charm", true, false) as MeshInstance3D
-	if cord and charm:
-		check(_gap(_world_box(cord), _world_box(charm)) < 0.02, "%s cord meets charm" % label)
-		check(_gap(_world_box(cord), _world_box(collar)) < 0.02, "%s cord meets collar" % label)
+	check(_gap(_world_box(handle), _world_box(shell)) < 0.02, "%s handle meets exterior" % label)
+	check(_gap(_world_box(shell), _world_box(head)) < 0.02, "%s exterior meets head" % label)
+	check(_gap(_world_box(head), _world_box(vm.gem)) < 0.03, "%s head meets gem" % label)
+	if interior:
+		check(_gap(_world_box(shell), _world_box(interior)) < 0.02, "%s exterior meets interior" % label)
+	if charm:
+		check(_gap(_world_box(head), _world_box(charm)) < 0.02, "%s head meets charm" % label)
 
 
 func test_parts_meet() -> void:
@@ -90,6 +104,35 @@ func test_parts_meet() -> void:
 	vm.show_wieldable(_w("novice_arcane_wand", ["basic_handle", "basic_exterior", "basic_fire_head"]))
 	_meet(vm, "wand")
 	vm.free()
+
+
+func test_every_tier_on_both_forms() -> void:
+	var tiers := ["basic", "uncommon", "rare", "mythic", "primordial", "unique"]
+	var types: Array[WieldablePart.PartType] = [
+		WieldablePart.PartType.HEAD,
+		WieldablePart.PartType.EXTERIOR,
+		WieldablePart.PartType.INTERIOR,
+		WieldablePart.PartType.HANDLE,
+		WieldablePart.PartType.CHARM,
+	]
+	for form in ["apprentice_fire_staff", "novice_arcane_wand"]:
+		for tier in tiers:
+			var w := WieldableInstance.load_base(form)
+			for ty in types:
+				var p := WieldablePart.make(ty)
+				p.rarity = tier
+				w.parts.append(p)
+			var vm := Viewmodel.new()
+			runner_tree.root.add_child(vm)
+			vm.show_wieldable(w)
+			for n in ["Handle", "Exterior", "Interior", "Head", "Charm"]:
+				var mi := vm.kit.find_child(n, true, false) as MeshInstance3D
+				check(
+					mi != null and mi.mesh != null and not (mi.mesh is PrimitiveMesh), "%s %s %s mesh" % [form, tier, n]
+				)
+			_meet(vm, "%s %s" % [form, tier])
+			check(StaffKit.tris(vm) <= 4000, "%s %s under 4k (%d)" % [form, tier, StaffKit.tris(vm)])
+			vm.free()
 
 
 func test_variant_stable() -> void:

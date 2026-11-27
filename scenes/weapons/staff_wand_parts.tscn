@@ -1,0 +1,139 @@
+[gd_scene load_steps=35 format=3]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/head_basic.glb" id="1"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/head_uncommon.glb" id="2"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/head_rare.glb" id="3"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/head_mythic.glb" id="4"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/head_primordial.glb" id="5"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/head_unique.glb" id="6"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/exterior_basic.glb" id="7"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/exterior_uncommon.glb" id="8"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/exterior_rare.glb" id="9"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/exterior_mythic.glb" id="10"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/exterior_primordial.glb" id="11"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/exterior_unique.glb" id="12"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/interior_basic.glb" id="13"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/interior_uncommon.glb" id="14"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/interior_rare.glb" id="15"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/interior_mythic.glb" id="16"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/interior_primordial.glb" id="17"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/interior_unique.glb" id="18"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/handle_basic.glb" id="19"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/handle_uncommon.glb" id="20"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/handle_rare.glb" id="21"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/handle_mythic.glb" id="22"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/handle_primordial.glb" id="23"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/handle_unique.glb" id="24"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/charm_basic.glb" id="25"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/charm_uncommon.glb" id="26"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/charm_rare.glb" id="27"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/charm_mythic.glb" id="28"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/charm_primordial.glb" id="29"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/charm_unique.glb" id="30"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/shaft_plain.glb" id="31"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/focus_gem.glb" id="32"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/muzzle_flare.glb" id="33"]
+[ext_resource type="PackedScene" path="res://assets/original/weapons/staff_kit/scale_figure.glb" id="34"]
+
+[node name="StaffWandParts" type="Node3D"]
+
+[node name="head_basic" parent="." instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0, 0)
+
+[node name="head_uncommon" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0, 0)
+
+[node name="head_rare" parent="." instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0, 0)
+
+[node name="head_mythic" parent="." instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0499999999999998, 0, 0)
+
+[node name="head_primordial" parent="." instance=ExtResource("5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 0, 0)
+
+[node name="head_unique" parent="." instance=ExtResource("6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.75, 0, 0)
+
+[node name="exterior_basic" parent="." instance=ExtResource("7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0999999999999996, 0, 0)
+
+[node name="exterior_uncommon" parent="." instance=ExtResource("8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4499999999999997, 0, 0)
+
+[node name="exterior_rare" parent="." instance=ExtResource("9")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 0)
+
+[node name="exterior_mythic" parent="." instance=ExtResource("10")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.15, 0, 0)
+
+[node name="exterior_primordial" parent="." instance=ExtResource("11")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, 0)
+
+[node name="exterior_unique" parent="." instance=ExtResource("12")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8499999999999996, 0, 0)
+
+[node name="interior_basic" parent="." instance=ExtResource("13")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.199999999999999, 0, 0)
+
+[node name="interior_uncommon" parent="." instance=ExtResource("14")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.55, 0, 0)
+
+[node name="interior_rare" parent="." instance=ExtResource("15")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8999999999999995, 0, 0)
+
+[node name="interior_mythic" parent="." instance=ExtResource("16")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.25, 0, 0)
+
+[node name="interior_primordial" parent="." instance=ExtResource("17")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.6, 0, 0)
+
+[node name="interior_unique" parent="." instance=ExtResource("18")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.949999999999999, 0, 0)
+
+[node name="handle_basic" parent="." instance=ExtResource("19")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.3, 0, 0)
+
+[node name="handle_uncommon" parent="." instance=ExtResource("20")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6499999999999995, 0, 0)
+
+[node name="handle_rare" parent="." instance=ExtResource("21")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0, 0, 0)
+
+[node name="handle_mythic" parent="." instance=ExtResource("22")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.35, 0, 0)
+
+[node name="handle_primordial" parent="." instance=ExtResource("23")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.699999999999999, 0, 0)
+
+[node name="handle_unique" parent="." instance=ExtResource("24")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.049999999999999, 0, 0)
+
+[node name="charm_basic" parent="." instance=ExtResource("25")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.399999999999999, 0, 0)
+
+[node name="charm_uncommon" parent="." instance=ExtResource("26")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.75, 0, 0)
+
+[node name="charm_rare" parent="." instance=ExtResource("27")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.1, 0, 0)
+
+[node name="charm_mythic" parent="." instance=ExtResource("28")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.45, 0, 0)
+
+[node name="charm_primordial" parent="." instance=ExtResource("29")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.799999999999999, 0, 0)
+
+[node name="charm_unique" parent="." instance=ExtResource("30")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.149999999999999, 0, 0)
+
+[node name="shaft_plain" parent="." instance=ExtResource("31")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 0, 0)
+
+[node name="focus_gem" parent="." instance=ExtResource("32")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.85, 0, 0)
+
+[node name="muzzle_flare" parent="." instance=ExtResource("33")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.2, 0, 0)
+
+[node name="scale_figure" parent="." instance=ExtResource("34")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.549999999999999, 0, 0)

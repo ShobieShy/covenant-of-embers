@@ -6,6 +6,7 @@
 scenes/labyrinth/drowned_choir_nave.tscn
 scenes/labyrinth/spire_arena.tscn
 scenes/levels/bobs_lab.tscn
+scenes/weapons/staff_wand_parts.tscn
 scenes/levels/breach.tscn
 scenes/levels/mage_association.tscn
 scenes/levels/midden.tscn

@@ -356,3 +356,10 @@ author = "Covenant of Embers project"
 license = "CC0 1.0"
 source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_storm_warden.jpg"
 line = "Storm Warden hero mesh by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
+name = "Staff and wand part kit"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "tools/make_weapon_parts.py (original meshes from the staff and wand concept sheets)"
+line = "Staff and wand part kit by Covenant of Embers project, CC0 1.0"
