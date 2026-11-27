@@ -812,7 +812,7 @@ def to_tscn(lv: dict, source: str) -> str:
                      f'center = Vector2({_f(tr["center"][0])}, {_f(tr["center"][1])})\n'
                      f'height = {_f(tr["height"])}\nnoise_seed = {tr["seed"]}\nspacing = {_f(tr["spacing"])}\n'
                      f'rim = {_f(tr["rim"])}\nmap_version = {tr["map_version"]}\n'
-                     f'layers = PackedStringArray({layers})\npads = Array[Rect2]([{pads}])\n'
+                     f'layers = Array[String]([{layers}])\npads = Array[Rect2]([{pads}])\n'
                      + (f'pad_heights = PackedFloat32Array({", ".join(_f(h) for h in tr["pad_heights"])})\n'
                         if tr.get("pad_heights") else "")
                      + (f'pad_y = {_f(tr["pad_y"])}\n' if abs(tr["pad_y"] + 0.02) > 0.001 else "")
@@ -1084,6 +1084,8 @@ def self_test() -> int:
     assert tz["terrain"]["pads"] and tz["terrain"]["seed"] == 7, tz["terrain"]
     sc = to_tscn(tz, "x.toml")
     assert 'script = ExtResource("1_terrain")' in sc and "pads = Array[Rect2]([Rect2(" in sc
+    # PackedStringArray overrides are dropped by Godot 4.7's export pack.
+    assert 'layers = Array[String](["Grass004", "Rock030", "Gravel022"])' in sc, sc
     assert sc.index('name="Terrain"') < sc.index('name="Navigation"')
     for bad, msg in (('size = [10, 10]', "size must be"), ('size = [400, 400]\nlayers = ["Nope"]', "layer Nope"),
                      ('size = [400, 400]\nwhat = 1', "unknown"), ('size = [40, 40]', "4 m inside")):
