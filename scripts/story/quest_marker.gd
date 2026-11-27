@@ -8,6 +8,8 @@ var main: Node
 var mark: Label3D
 var _cached_id := ""
 var _cached_step := -1
+var _cached_here := ""
+var _cached_floor := -999
 var _cached_at: Variant = null
 
 
@@ -32,7 +34,10 @@ func _process(_dt: float) -> void:
 	var intro := main.get_node_or_null("IntroDirector")
 	if intro and intro.has_method("target_point") and intro.call("target_point") != null:
 		mark.visible = false
-		_minimap(Vector2(INF, INF))
+		var lead: Variant = intro.call("target_point")
+		if lead is Vector3:
+			var p := lead as Vector3
+			_minimap(Vector2(p.x, p.z))
 		return
 	var at: Variant = _cached()
 	mark.visible = at is Vector3 and Cinematic.playing == null
@@ -53,9 +58,19 @@ func _cached() -> Variant:
 		_cached_at = null
 		return null
 	var step := int(log.active[log.tracked]["step"])
-	if log.tracked != _cached_id or step != _cached_step:
+	var here := ""
+	if main.has_method(&"here_id"):
+		here = String(main.call(&"here_id"))
+	var floor := -999
+	var lin := main.get_node_or_null("LinearInteriors")
+	if lin:
+		floor = int(lin.get("floor_no"))
+	# The floor changes under one kill step (stairs, then the boss). The spot has to move with it.
+	if log.tracked != _cached_id or step != _cached_step or here != _cached_here or floor != _cached_floor:
 		_cached_id = log.tracked
 		_cached_step = step
+		_cached_here = here
+		_cached_floor = floor
 		_cached_at = _resolve()
 	return _cached_at
 
@@ -107,7 +122,24 @@ func _resolve() -> Variant:
 	var here := ""
 	if main.has_method(&"here_id"):
 		here = String(main.call(&"here_id"))
-	return QuestWaypoint.resolve(String(o["kind"]), String(o["target"]), here, int(survey.get("floor", 0)), survey)
+	var at: Variant = QuestWaypoint.resolve(
+		String(o["kind"]), String(o["target"]), here, int(survey.get("floor", 0)), survey
+	)
+	if at is Vector3:
+		return _feet(at)
+	return at
+
+
+## A spawn or a dais origin can sit inside its floor. The mark stands on the surface.
+func _feet(at: Vector3) -> Vector3:
+	var w: World3D = main.get_world_3d()
+	if w == null:
+		return at
+	var q := PhysicsRayQueryParameters3D.create(at + Vector3(0, 2.0, 0), at + Vector3(0, -3.0, 0), 1)
+	var hit: Dictionary = w.direct_space_state.intersect_ray(q)
+	if hit.is_empty():
+		return at
+	return (hit.position as Vector3) + Vector3(0, 0.2, 0)
 
 
 func _minimap(at: Vector2) -> void:

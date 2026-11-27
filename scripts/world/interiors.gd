@@ -47,7 +47,7 @@ const LINKS := {
 	{
 		"scene": "",
 		"inside": "breach",
-		"front": ["breach", "", [0.0, 125.0]],
+		"front": ["breach", "", [0.0, 70.0]],
 		"exits": {},
 		"logic": "labyrinth",
 	},
