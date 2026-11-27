@@ -23,7 +23,9 @@ const ELEMS: Array[ElementTable.Element] = [
 
 
 func _initialize() -> void:
-	var out: String = OS.get_cmdline_user_args()[0] if OS.get_cmdline_user_args().size() > 0 else "user://weapon_contact"
+	var out: String = (
+		OS.get_cmdline_user_args()[0] if OS.get_cmdline_user_args().size() > 0 else "user://weapon_contact"
+	)
 	DirAccess.make_dir_recursive_absolute(out)
 	root.size = Vector2i(1280, 720)
 	var stage := Node3D.new()
@@ -81,7 +83,9 @@ func _initialize() -> void:
 					var found2 := inst.find_children("*", "MeshInstance3D", true, false)
 					mi2 = found2[0] as MeshInstance3D if not found2.is_empty() else null
 				var abb2 := mi2.get_aabb()
-				inst.position = Vector3(x - abb2.position.x + abb2.size.x * 0.0, -abb2.position.y - abb2.size.y * 0.5, 0.0)
+				inst.position = Vector3(
+					x - abb2.position.x + abb2.size.x * 0.0, -abb2.position.y - abb2.size.y * 0.5, 0.0
+				)
 				x += abb2.size.x + gap
 				width = x
 			width -= gap
@@ -96,7 +100,11 @@ func _initialize() -> void:
 		for form in ["staff", "wand"]:
 			_clear(holder)
 			var w := _weapon(form, tier, ElementTable.Element.ARCANE)
-			var sc := 1.0 if form == "staff" else float(StaffKit.layout()["wand_length"]) / float(StaffKit.layout()["staff_length"])
+			var sc := (
+				1.0
+				if form == "staff"
+				else float(StaffKit.layout()["wand_length"]) / float(StaffKit.layout()["staff_length"])
+			)
 			var kit := StaffKit.build(w, 1.0, 0.04, 0.06, StaffKit.sheet_color(0), 1, sc, false)
 			holder.add_child(kit)
 			var fig := StaffKit.instantiate("scale_figure")

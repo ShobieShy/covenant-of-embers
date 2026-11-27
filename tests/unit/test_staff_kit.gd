@@ -128,8 +128,7 @@ func test_every_tier_on_both_forms() -> void:
 			for n in ["Handle", "Exterior", "Interior", "Head", "Charm"]:
 				var mi := vm.kit.find_child(n, true, false) as MeshInstance3D
 				check(
-					mi != null and mi.mesh != null and not (mi.mesh is PrimitiveMesh),
-					"%s %s %s mesh" % [form, tier, n]
+					mi != null and mi.mesh != null and not (mi.mesh is PrimitiveMesh), "%s %s %s mesh" % [form, tier, n]
 				)
 			_meet(vm, "%s %s" % [form, tier])
 			check(StaffKit.tris(vm) <= 4000, "%s %s under 4k (%d)" % [form, tier, StaffKit.tris(vm)])

@@ -153,11 +153,14 @@ static func _paint(inst: Node, part: WieldablePart) -> void:
 		var m := StandardMaterial3D.new()
 		m.resource_name = n
 		if n.contains("gem") or n.contains("core"):
-			var src := load("%selement_%s.tres" % [MAT_DIR, ELEM_IDS[clampi(int(part.element), 0, 6)]]) as StandardMaterial3D
+			var src := (
+				load("%selement_%s.tres" % [MAT_DIR, ELEM_IDS[clampi(int(part.element), 0, 6)]]) as StandardMaterial3D
+			)
 			if not part.gems.is_empty() and part.gems[0] != null and n.contains("gem"):
-				src = load(
-					"%selement_%s.tres" % [MAT_DIR, ELEM_IDS[clampi(int(part.gems[0].element), 0, 6)]]
-				) as StandardMaterial3D
+				src = (
+					load("%selement_%s.tres" % [MAT_DIR, ELEM_IDS[clampi(int(part.gems[0].element), 0, 6)]])
+					as StandardMaterial3D
+				)
 			if src != null:
 				m = src.duplicate() as StandardMaterial3D
 			else:
