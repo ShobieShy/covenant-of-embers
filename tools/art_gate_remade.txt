@@ -4,4 +4,5 @@
 # Unlisted scenes are reported and do not fail the build.
 # 0.11.4 and later add a path here when that scene ships.
 scenes/labyrinth/drowned_choir_nave.tscn
+scenes/labyrinth/spire_arena.tscn
 scenes/levels/mage_association.tscn

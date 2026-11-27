@@ -1,0 +1,183 @@
+# Act V, the Inverted Spire. One void, five checkpoints (19-23).
+# Pads are the walkable shelves. Ledges are the painted side islands (no collision).
+# Bridges are the light ribbons. The tower does not collide. There is no Core.
+
+[void]
+radius = 50.0
+wall_bottom = -6.0
+wall_height = 56.0
+sky_y = 48.0
+sky_radius = 34.0
+
+[tower]
+tip = [0.0, 14.6, -8.0]
+height = 32.0
+
+[[pad]]
+name = "High"
+at = [0.0, 22.0, -34.0]
+size = [14.0, 0.8, 12.0]
+mesh = "island_round"
+scale = [8.2, 7.5, 7.0]
+gems = ["violet"]
+
+[[pad]]
+name = "HighWest"
+at = [-30.0, 30.0, -22.0]
+size = [16.0, 0.7, 12.0]
+mesh = "island_shard"
+scale = [9.0, 8.0, 6.4]
+gems = ["violet", "violet"]
+
+[[pad]]
+name = "HighEast"
+at = [32.0, 28.0, -18.0]
+size = [15.0, 0.7, 11.0]
+mesh = "island_wide"
+scale = [8.4, 7.2, 6.2]
+gems = ["blue", "violet"]
+
+[[pad]]
+name = "Mid"
+at = [0.0, 10.0, -4.0]
+size = [18.0, 0.8, 14.0]
+mesh = "island_round"
+scale = [10.0, 8.5, 8.2]
+gems = ["violet"]
+
+[[pad]]
+name = "MidWest"
+at = [-34.0, 16.0, 0.0]
+size = [13.0, 0.7, 11.0]
+mesh = "island_shard"
+scale = [7.4, 6.5, 6.0]
+gems = ["violet", "violet"]
+
+[[pad]]
+name = "Nest"
+at = [34.0, 13.0, 4.0]
+size = [14.0, 0.7, 12.0]
+mesh = "island_wide"
+scale = [8.0, 6.8, 6.6]
+gems = ["blue"]
+nest = true
+
+[[pad]]
+name = "Low"
+at = [0.0, 0.0, 28.0]
+size = [26.0, 0.8, 20.0]
+mesh = "island_round"
+scale = [14.5, 9.0, 11.0]
+gems = ["violet", "blue"]
+
+[[pad]]
+name = "LowWest"
+at = [-28.0, 5.0, 16.0]
+size = [13.0, 0.7, 11.0]
+mesh = "island_shard"
+scale = [7.2, 6.2, 6.0]
+gems = ["violet"]
+
+[[pad]]
+name = "LowEast"
+at = [30.0, 4.0, 20.0]
+size = [13.0, 0.7, 11.0]
+mesh = "island_wide"
+scale = [7.4, 6.0, 6.2]
+gems = ["blue", "blue"]
+
+[[ledge]]
+at = [-18.0, 38.0, -12.0]
+mesh = "island_shard"
+scale = [6.5, 5.5, 4.4]
+gems = ["violet"]
+
+[[ledge]]
+at = [22.0, 36.0, -14.0]
+mesh = "island_wide"
+scale = [6.0, 5.2, 4.6]
+gems = ["blue"]
+
+[[ledge]]
+at = [-40.0, 22.0, -8.0]
+mesh = "island_shard"
+scale = [5.2, 4.6, 3.8]
+gems = ["violet"]
+
+[[ledge]]
+at = [40.0, 20.0, 8.0]
+mesh = "island_wide"
+scale = [5.4, 4.4, 4.0]
+gems = ["blue"]
+
+[[ledge]]
+at = [-16.0, 8.0, 8.0]
+mesh = "island_round"
+scale = [5.0, 4.2, 4.4]
+gems = ["violet"]
+
+[[ledge]]
+at = [18.0, 7.0, 32.0]
+mesh = "island_shard"
+scale = [4.8, 4.0, 3.6]
+gems = ["blue"]
+
+[[bridge]]
+a = "High"
+b = "Mid"
+width = 2.3
+hue = "violet"
+
+[[bridge]]
+a = "High"
+b = "HighWest"
+width = 2.2
+hue = "violet"
+
+[[bridge]]
+a = "High"
+b = "HighEast"
+width = 2.2
+hue = "blue"
+
+[[bridge]]
+a = "Mid"
+b = "Low"
+width = 2.4
+hue = "violet"
+
+[[bridge]]
+a = "Mid"
+b = "MidWest"
+width = 2.1
+hue = "violet"
+
+[[bridge]]
+a = "Mid"
+b = "Nest"
+width = 2.1
+hue = "blue"
+
+[[bridge]]
+a = "Low"
+b = "LowWest"
+width = 2.1
+hue = "violet"
+
+[[bridge]]
+a = "Low"
+b = "LowEast"
+width = 2.1
+hue = "blue"
+
+[[bridge]]
+a = "HighWest"
+b = "MidWest"
+width = 2.0
+hue = "violet"
+
+[[bridge]]
+a = "HighEast"
+b = "Nest"
+width = 2.0
+hue = "blue"
