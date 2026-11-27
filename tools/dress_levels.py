@@ -209,7 +209,8 @@ def midden() -> tuple[set[str], str]:
              (-22, -2.0, -18, "Trash_Bags", 30, 1.8), (26, -2.0, -18, "Trash_Bag", 70, 1.6),
              (22, -2.0, -46, "Can_Broken", 10, 1.5), (-26, -2.0, -44, "Trashcan", 45, 1.2),
              (8, -2.0, -64, "Trash_Bags", 0, 1.7), (-6, -2.0, -60, "Trash_Bag", 90, 1.4),
-             (48, -2.0, -40, "Can_Broken", 15, 1.3), (-52, -2.0, -28, "Trash_Bags", 110, 1.6))
+             (48, -2.0, -40, "Can_Broken", 15, 1.3), (-52, -2.0, -28, "Trash_Bags", 110, 1.6),
+             (44, -2.0, -70, "Trash_Bag", 25, 1.4), (-44, -2.0, -8, "Trashcan", 60, 1.1))
     mul = {"Trashcan": 0.8, "Trashcan_Small": 1.2, "Trash_Bag": 2.4, "Trash_Bags": 2.4, "Can_Broken": 1.8}
     p += [prop(f"trash_{i + 1}", TRASH + f"{m}.glb", (x, y, z), float(r), round(s * mul[m], 3))
           for i, (x, y, z, m, r, s) in enumerate(spots)]

@@ -822,3 +822,15 @@ model = "assets/quaternius/enemies/props/Trash_Bags.glb"
 position = [-52, -2.0, -28]
 rotation_deg = [0.0, 110.0, 0.0]
 scale = 3.84
+[[prop]]
+name = "trash_15"
+model = "assets/quaternius/enemies/props/Trash_Bag.glb"
+position = [44, -2.0, -70]
+rotation_deg = [0.0, 25.0, 0.0]
+scale = 3.36
+[[prop]]
+name = "trash_16"
+model = "assets/quaternius/enemies/props/Trashcan.glb"
+position = [-44, -2.0, -8]
+rotation_deg = [0.0, 60.0, 0.0]
+scale = 0.88
