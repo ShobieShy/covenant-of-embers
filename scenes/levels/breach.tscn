@@ -66,42 +66,45 @@ size = Vector3(7.6, 0.2, 7.6)
 size = Vector3(1.3, 4, 24)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3"]
-size = Vector3(40, 4, 1.6)
+size = Vector3(36, 4, 1.6)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4"]
-size = Vector3(1.8, 4, 16)
+size = Vector3(1.6, 4, 15.2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5"]
-size = Vector3(15.2, 4, 1.8)
+size = Vector3(13.6, 4, 1.6)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6"]
-size = Vector3(11.2, 4, 2.2)
+size = Vector3(10, 4, 1.6)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_7"]
-size = Vector3(1.8, 4, 4.4)
+size = Vector3(1.6, 4, 3.2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8"]
-size = Vector3(1.8, 4, 5.2)
+size = Vector3(1.6, 4, 3.6)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_9"]
-size = Vector3(2.8, 4, 6.4)
+size = Vector3(2.6, 4, 6)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_10"]
-size = Vector3(15, 4, 2.4)
+size = Vector3(14, 4, 2.2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_11"]
-size = Vector3(1.6, 4, 9)
+size = Vector3(1.6, 4, 8.4)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_12"]
 size = Vector3(1.3, 3.4, 1.3)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_13"]
-size = Vector3(6.4, 0.2, 3.6)
+size = Vector3(1.4, 4, 24)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_14"]
-size = Vector3(14, 0.16, 14)
+size = Vector3(6.4, 0.2, 3.6)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_15"]
+size = Vector3(14, 0.16, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_16"]
 size = Vector3(1.7, 4, 2.4)
 
 [node name="BreachSlice" type="Node3D" groups=["kill_line"]]
@@ -3444,7 +3447,7 @@ metadata/toml_index = 414
 shape = SubResource("BoxShape3D_2")
 
 [node name="arena_n" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 56.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 44.4)
 metadata/kind = "wall"
 metadata/toml_index = 415
 
@@ -3452,7 +3455,7 @@ metadata/toml_index = 415
 shape = SubResource("BoxShape3D_3")
 
 [node name="arena_w" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.4, 2, 62.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.8, 2, 51.2)
 metadata/kind = "wall"
 metadata/toml_index = 416
 
@@ -3460,7 +3463,7 @@ metadata/toml_index = 416
 shape = SubResource("BoxShape3D_4")
 
 [node name="arena_s_w" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6, 2, 69)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.2, 2, 56.8)
 metadata/kind = "wall"
 metadata/toml_index = 417
 
@@ -3468,7 +3471,7 @@ metadata/toml_index = 417
 shape = SubResource("BoxShape3D_5")
 
 [node name="arena_s_e" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 2, 69)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 2, 56.8)
 metadata/kind = "wall"
 metadata/toml_index = 418
 
@@ -3476,7 +3479,7 @@ metadata/toml_index = 418
 shape = SubResource("BoxShape3D_5")
 
 [node name="switch_gate" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 69)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 56.8)
 metadata/kind = "wall"
 metadata/toml_index = 419
 
@@ -3484,7 +3487,7 @@ metadata/toml_index = 419
 shape = SubResource("BoxShape3D_6")
 
 [node name="arena_e_n" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4, 2, 57.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8, 2, 46.8)
 metadata/kind = "wall"
 metadata/toml_index = 420
 
@@ -3492,7 +3495,7 @@ metadata/toml_index = 420
 shape = SubResource("BoxShape3D_7")
 
 [node name="arena_e_s" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4, 2, 66.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8, 2, 54.6)
 metadata/kind = "wall"
 metadata/toml_index = 421
 
@@ -3500,7 +3503,7 @@ metadata/toml_index = 421
 shape = SubResource("BoxShape3D_8")
 
 [node name="vault_door" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4, 2, 62)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8, 2, 50.6)
 metadata/kind = "wall"
 metadata/toml_index = 422
 
@@ -3508,7 +3511,7 @@ metadata/toml_index = 422
 shape = SubResource("BoxShape3D_9")
 
 [node name="vault_west" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.2, 2, 58.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.6, 2, 48.4)
 metadata/kind = "wall"
 metadata/toml_index = 423
 
@@ -3516,7 +3519,7 @@ metadata/toml_index = 423
 shape = SubResource("BoxShape3D_10")
 
 [node name="vault_east" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.2, 2, 65.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.6, 2, 55.6)
 metadata/kind = "wall"
 metadata/toml_index = 424
 
@@ -3524,7 +3527,7 @@ metadata/toml_index = 424
 shape = SubResource("BoxShape3D_10")
 
 [node name="vault_back" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.4, 2, 62)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.8, 2, 52)
 metadata/kind = "wall"
 metadata/toml_index = 425
 
@@ -3532,7 +3535,7 @@ metadata/toml_index = 425
 shape = SubResource("BoxShape3D_11")
 
 [node name="pillar_nw" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.7, 59)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.7, 48)
 metadata/kind = "crate"
 metadata/toml_index = 426
 
@@ -3540,7 +3543,7 @@ metadata/toml_index = 426
 shape = SubResource("BoxShape3D_12")
 
 [node name="pillar_ne" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.7, 59)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.7, 48)
 metadata/kind = "crate"
 metadata/toml_index = 427
 
@@ -3548,7 +3551,7 @@ metadata/toml_index = 427
 shape = SubResource("BoxShape3D_12")
 
 [node name="pillar_sw" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.7, 65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.7, 55)
 metadata/kind = "crate"
 metadata/toml_index = 428
 
@@ -3556,44 +3559,60 @@ metadata/toml_index = 428
 shape = SubResource("BoxShape3D_12")
 
 [node name="pillar_se" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.7, 65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.7, 55)
 metadata/kind = "crate"
 metadata/toml_index = 429
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/pillar_se"]
 shape = SubResource("BoxShape3D_12")
 
-[node name="boss_dais" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 62)
-metadata/kind = "platform"
+[node name="approach_w" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 2, 71)
+metadata/kind = "wall"
 metadata/toml_index = 430
 
-[node name="Shape" type="CollisionShape3D" parent="Boxes/boss_dais"]
+[node name="Shape" type="CollisionShape3D" parent="Boxes/approach_w"]
 shape = SubResource("BoxShape3D_13")
+
+[node name="approach_e" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 2, 71)
+metadata/kind = "wall"
+metadata/toml_index = 431
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/approach_e"]
+shape = SubResource("BoxShape3D_13")
+
+[node name="boss_dais" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 52)
+metadata/kind = "platform"
+metadata/toml_index = 432
+
+[node name="Shape" type="CollisionShape3D" parent="Boxes/boss_dais"]
+shape = SubResource("BoxShape3D_14")
 
 [node name="gate_plinth" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 125)
 metadata/kind = "platform"
-metadata/toml_index = 431
+metadata/toml_index = 433
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/gate_plinth"]
-shape = SubResource("BoxShape3D_14")
+shape = SubResource("BoxShape3D_15")
 
 [node name="gate_post_w" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.65, 2, 125)
 metadata/kind = "wall"
-metadata/toml_index = 432
+metadata/toml_index = 434
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/gate_post_w"]
-shape = SubResource("BoxShape3D_15")
+shape = SubResource("BoxShape3D_16")
 
 [node name="gate_post_e" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.65, 2, 125)
 metadata/kind = "wall"
-metadata/toml_index = 433
+metadata/toml_index = 435
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/gate_post_e"]
-shape = SubResource("BoxShape3D_15")
+shape = SubResource("BoxShape3D_16")
 
 [node name="Props" type="Node3D" parent="."]
 
@@ -3706,19 +3725,19 @@ metadata/yaw_deg = 180
 [node name="WaveSpawns" type="Node3D" parent="."]
 
 [node name="boss_dais" type="Marker3D" parent="WaveSpawns"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.2, 62)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.2, 52)
 
 [node name="west_wing" type="Marker3D" parent="WaveSpawns"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -10, 0, 62.5)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -9, 0, 52)
 
 [node name="east_wing" type="Marker3D" parent="WaveSpawns"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 62.5)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 9, 0, 52)
 
 [node name="station" type="Marker3D" parent="WaveSpawns"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.5, 0, 164)
 
 [node name="vault_chest" type="Marker3D" parent="WaveSpawns"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 24.5, 0, 62)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 24.5, 0, 52)
 
 [node name="den_north" type="Marker3D" parent="WaveSpawns"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -38, 0, 154)
@@ -3733,7 +3752,7 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -36, 0, 134)
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 32, 0, 164)
 
 [node name="Waves" type="Node" parent="."]
-metadata/trigger_center = Vector3(0, 0, 64)
+metadata/trigger_center = Vector3(0, 0, 52)
 metadata/trigger_radius = 5
 
 [node name="wing_gnawers" type="Node" parent="Waves"]
