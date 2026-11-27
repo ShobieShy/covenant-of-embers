@@ -307,3 +307,10 @@ author = "Covenant of Embers project"
 license = "CC0 1.0"
 source = "tools/make_slag_meshes.py (original geometry for Act III; materials are ambientCG Rock035, Lava004, Metal034, Wood049)"
 line = "Slagworks mine kit by Covenant of Embers project, CC0 1.0"
+
+[[credit]]
+name = "Regular enemy sculpts"
+author = "Covenant of Embers project"
+license = "CC0 1.0"
+source = "tools/build_regular_enemies.py (original meshes for the regular roster, matched to docs/concepts/creatures)"
+line = "Regular enemy sculpts by Covenant of Embers project, CC0 1.0"

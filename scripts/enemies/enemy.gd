@@ -183,7 +183,7 @@ func _play_clip(clip: String) -> void:
 
 
 func _attach_model() -> void:
-	model = EnemyModels.make(def.id, def.size.y)
+	model = EnemyModels.make(def.id, EnemyModels.height_for(def.id, def.size.y))
 	if model == null:
 		return
 	add_child(model)

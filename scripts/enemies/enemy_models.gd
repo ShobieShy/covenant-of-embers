@@ -5,30 +5,58 @@ extends RefCounted
 ## the hit-flash / Dark-convert tint shows as a translucent overlay on the model.
 
 const DIR := "res://assets/quaternius/enemies/"
-## "heap" is retired (The Filth replaces it) but keeps a golem body for old saves/tests.
+const REGULAR := "res://assets/original/ember_art/regular_enemies/"
+## "heap" is retired (The Filth replaces it) but keeps a body for old saves/tests.
+## Boss ids stay on their own meshes. This pass is the regular roster only.
 const MODELS := {
-	"gnawer": "rats/Rat_Mutated_Sickly.glb",
-	"ooze": "filth/Filth_Sludge.glb",
-	"heap": "garbage_golems/GarbageGolem_Bags.glb",
+	"gnawer": REGULAR + "gnawer_mangy.glb",
+	"ooze": REGULAR + "ooze.glb",
+	"heap": REGULAR + "heap.glb",
 	"breach_warden": "garbage_golems/GarbageGolem_Bin.glb",
 	"the_filth": "filth/Filth_Brute.glb",
-	# L3 (Ember Art batch 08b, Quaternius Goblin / Orc CC0, recoloured): Act I goblins.
-	"goblin_grunt": "res://assets/original/ember_art/goblin_grunt.glb",
-	"goblin_archer": "res://assets/original/ember_art/goblin_archer.glb",
-	"goblin_shaman": "res://assets/original/ember_art/goblin_shaman.glb",
+	"goblin_grunt": REGULAR + "goblin_grunt.glb",
+	"goblin_archer": REGULAR + "goblin_archer.glb",
+	"goblin_shaman": REGULAR + "goblin_shaman.glb",
 	"goblin_king": "res://assets/original/ember_art/goblin_king.glb",
-	# Act II (Ember Art batch_12). Ids match data/enemies/blightcoil.toml.
-	"spore_husk": "res://assets/original/ember_art/enemies/spore_cap_husk.glb",
-	"mossbound_treant": "res://assets/original/ember_art/enemies/mossbound_treant.glb",
-	"spore_beast": "res://assets/original/ember_art/enemies/spore_beast.glb",
+	"spore_husk": REGULAR + "spore_husk.glb",
+	"mossbound_treant": REGULAR + "mossbound_treant.glb",
+	"spore_beast": REGULAR + "spore_beast.glb",
 	"blightmaw_matriarch": "res://assets/original/ember_art/enemies/blightmaw_matriarch.glb",
+	"earth_training_dummy": REGULAR + "dummy_earth.glb",
+	"water_training_dummy": REGULAR + "dummy_tidal.glb",
+	"branded_troll": REGULAR + "branded_troll.glb",
+	"forge_construct": REGULAR + "forge_construct.glb",
+	"drowned_cultist": REGULAR + "drowned_cultist.glb",
+	"harpy": REGULAR + "harpy.glb",
+	"storm_elemental": REGULAR + "storm_elemental.glb",
+}
+## Mesh height in metres (feet on y = 0). Collision stays def.size. The face, seam
+## or core was sculpted onto the weak point, so this is not the hitbox height.
+const VISUAL_HEIGHT := {
+	"goblin_grunt": 1.22,
+	"goblin_archer": 1.46,
+	"goblin_shaman": 1.68,
+	"gnawer": 0.45,
+	"heap": 2.25,
+	"ooze": 0.94,
+	"scorchling": 1.05,
+	"earth_training_dummy": 1.80,
+	"water_training_dummy": 1.80,
+	"spore_husk": 1.70,
+	"mossbound_treant": 3.21,
+	"spore_beast": 2.28,
+	"branded_troll": 2.47,
+	"forge_construct": 2.76,
+	"drowned_cultist": 2.05,
+	"harpy": 2.15,
+	"storm_elemental": 2.75,
 }
 ## Batch 08b: nodes freed when the body dies (the King's Crown becomes his drop).
 const DEATH_HIDE := {"goblin_king": ["Crown"]}
 ## Batch 08b: Throw reuses Punch and has no release marker; the rock leaves at 40%.
 const THROW_RELEASE := 0.4
 ## Step 125 (Art A7): extra bodies picked at random per spawn (visual only).
-const VARIANTS := {"gnawer": ["rats/Rat_Mutated_Sickly.glb", "rats/Rat_Mutated_Plague.glb"]}
+const VARIANTS := {"gnawer": [REGULAR + "gnawer_mangy.glb", REGULAR + "gnawer_plague.glb"]}
 ## Step 125: procedural bodies for types with no CC0 model.
 const PROCEDURAL := ["scorchling"]
 const WARDEN_EYES := Color(0.75, 0.3, 1.0)
@@ -41,6 +69,10 @@ static func path_for(id: String) -> String:
 	return p if p.begins_with("res://") else DIR + p
 
 
+static func height_for(id: String, box_h: float) -> float:
+	return float(VISUAL_HEIGHT.get(id, box_h))
+
+
 ## Fit the model to the enemy's box height; null when there is none (caller keeps the box).
 static func make(id: String, height: float) -> CharacterModel:
 	if id in PROCEDURAL:
@@ -51,7 +83,8 @@ static func make(id: String, height: float) -> CharacterModel:
 	var path := path_for(id)
 	if VARIANTS.has(id):
 		var vs: Array = VARIANTS[id]
-		path = DIR + String(vs[randi() % vs.size()])
+		var pick := String(vs[randi() % vs.size()])
+		path = pick if pick.begins_with("res://") else DIR + pick
 	var m := CharacterModel.make_sized(path, height)
 	if m != null and id == "breach_warden":
 		_warden_eyes(m, height)
