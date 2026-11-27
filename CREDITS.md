@@ -43,7 +43,7 @@
 | ambientCG Rock 035 | ambientCG (Lennart Demes) | CC0 1.0 | https://ambientcg.com/view?id=Rock035 | 2026-11-26 |
 | Inverted Spire kit | Covenant of Embers project | CC0 1.0 | original work (tools/gen_spire_meshes.py) | 2026-11-26 |
 | Landfill pit meshes | Covenant of Embers project | CC0 1.0 | assets/original/landfill/build_meshes.py; textures from the ambientCG sets above | 2026-11-26 |
-| Regular enemy sculpts | Covenant of Embers project | CC0 1.0 | tools/build_regular_enemies.py | 2026-11-27 |
+| Regular enemy sculpts | Covenant of Embers project | CC0 1.0 | Hunyuan3D-2.1 (goblins, Heap) and TripoSR (the rest of the roster), baked in tools/finish_regular_enemy.py | 2026-11-27 |
 
 3D models: Kenney (www.kenney.nl) — Fantasy Town Kit, Nature Kit (CC0). Delivered by Ember Art as batch 01; the full per-file list is in docs/credits/kenney_batch_01.md.
 

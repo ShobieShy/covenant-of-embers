@@ -9,7 +9,7 @@ func test_scorchling_body() -> void:
 	var b := m.find_child("Scorchling", true, false) as ScorchlingBody
 	check(b != null and b.flame != null and b.light != null, "flame + light")
 	var t := ScorchlingBody.tris(b)
-	check(t > 50 and t < 1500, "scorchling tris %d under budget" % t)
+	check(t > 50 and t < 8000, "scorchling tris %d under budget" % t)
 	m.free()
 
 

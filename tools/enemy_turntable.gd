@@ -84,6 +84,7 @@ func _shoot(out: String, d: EnemyDef) -> void:
 		["right", 90.0],
 		["back", 180.0],
 		["left", 270.0],
+		["three_quarter", 40.0],
 	]
 	for view in views:
 		enemy.rotation.y = deg_to_rad(float(view[1]))

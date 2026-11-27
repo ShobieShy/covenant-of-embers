@@ -4,6 +4,8 @@ Specs taken from the creature sheets. Collision stays the box in `data/enemies/`
 
 Heights below are the mesh, feet on y = 0, face toward +Z. A 1.8 m figure is the sheet's scale.
 
+Every mesh is an image-to-3D shape from its cropped sheet, decimated to about 5k–7k triangles, with the sheet baked as a PBR albedo and a thin Idle/Walk rig (foot bones included). The goblin family and Heap are Hunyuan3D-2.1 shapes. The rest are TripoSR shapes from the CPU space `codemaker2015/TripoSR`, because the ZeroGPU quota for Hunyuan and TRELLIS was exhausted. Gnawer plague and the tidal dummy are tints of those shapes.
+
 ## Act I (`enemies_act1_warrens.jpg`)
 
 Goblin Grunt. Stocky olive goblin, about 1.42 m to the ear tips. Big pointed ears, heavy brow, underbite tusks, pot belly, short bowed legs, large bare feet. Ragged brown leather: one shoulder strap, a belly plate, bracers, a torn loincloth. Right hand holds a notched rust cleaver. Skin `#5C7A34`, leather `#6B4630`, blade `#8C5A3C`. Weak point is the face.
