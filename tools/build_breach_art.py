@@ -587,9 +587,8 @@ def boxes() -> list[dict]:
         ("pillar_ne", (7.0, 1.7, 48.0), (1.3, 3.4, 1.3), "crate"),
         ("pillar_sw", (-7.0, 1.7, 55.0), (1.3, 3.4, 1.3), "crate"),
         ("pillar_se", (7.0, 1.7, 55.0), (1.3, 3.4, 1.3), "crate"),
-        # The landfill door trigger sits at (-4.5, 75). The chute keeps the walk east of it.
-        ("approach_w", (-2.6, 2.0, 71.0), (1.4, 4.0, 24.0), "wall"),
-        ("approach_e", (2.6, 2.0, 71.0), (1.4, 4.0, 24.0), "wall"),
+        # The landfill door trigger sits at (-4.5, 75). One wall keeps the open walk off it.
+        ("approach_w", (-2.5, 2.0, 71.0), (1.4, 4.0, 24.0), "wall"),
         ("boss_dais", (DAIS[0], 0.1, DAIS[1]), (6.4, 0.2, 3.6), "platform"),
         ("gate_plinth", (0.0, 0.08, CZ), (14.0, 0.16, 14.0), "platform"),
         # Same posts EmberArt puts on the labyrinth gate, so the nav opening matches the mesh.

@@ -3469,15 +3469,7 @@ collide_only = true
 [[box]]
 name = "approach_w"
 kind = "wall"
-center = [-2.6, 2, 71]
-size = [1.4, 4, 24]
-color = [0.30, 0.28, 0.26]
-collide_only = true
-
-[[box]]
-name = "approach_e"
-kind = "wall"
-center = [2.6, 2, 71]
+center = [-2.5, 2, 71]
 size = [1.4, 4, 24]
 color = [0.30, 0.28, 0.26]
 collide_only = true
