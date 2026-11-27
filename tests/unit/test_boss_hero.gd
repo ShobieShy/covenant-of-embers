@@ -33,7 +33,27 @@ func test_hitboxes_and_rigs() -> void:
 				if "foot" in String(sk.get_bone_name(i)).to_lower():
 					feet += 1
 		check(feet >= 2, "feet %s" % id)
+		var depth := _depth_over_height(m)
+		check(depth > 0.28, "%s has volume, depth/height %.2f" % [id, depth])
 		m.free()
+
+
+func _depth_over_height(root: Node) -> float:
+	var best_h := 0.0
+	var depth := 0.0
+	for n in root.find_children("*", "MeshInstance3D", true, false):
+		var mi := n as MeshInstance3D
+		if mi.mesh == null or not mi.visible:
+			continue
+		var a := mi.get_aabb().size
+		var s := mi.global_transform.basis.get_scale().abs()
+		var h := a.y * s.y
+		if h > best_h:
+			best_h = h
+			depth = a.z * s.z
+	if best_h <= 0.001:
+		return 0.0
+	return depth / best_h
 
 
 func test_named_phase_parts() -> void:

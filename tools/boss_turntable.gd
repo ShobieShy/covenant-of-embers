@@ -70,17 +70,30 @@ func _shoot(out: String, d: EnemyDef, phase: int) -> void:
 	if height < 0.2 or height > 18.0:
 		height = d.size.y
 		span = d.size.x
-	await _grab(out, "%s_p%d_front" % [d.id, phase], stage, _ortho(height), true)
-	var fig_x := -(span * 0.5 + 1.15)
+	# Flat front, no figure: the sheet overlay uses this frame.
+	await _grab(out, "%s_p%d_plate" % [d.id, phase], stage, _ortho(height), true)
 	var figure := CharacterModel.make_sized(FIGURE, 1.8)
 	if figure:
 		stage.add_child(figure)
-		figure.position = Vector3(fig_x, 0, 0)
-	var aim_y := height * 0.46
-	var dist := maxf(10.0, height * 3.1)
-	var eye := Vector3(dist * 0.7, height * 0.5, -dist)
-	await _grab(out, "%s_p%d_turntable" % [d.id, phase], stage, _persp(eye, Vector3(fig_x * 0.35, aim_y, 0)), false)
-	await _grab(out, "%s_p%d_scale" % [d.id, phase], stage, _ortho_pair(height, span, fig_x), false)
+		figure.set_process(false)
+	var dist := maxf(span, height) * 3.4 + 2.0
+	var aim_y := height * 0.48
+	# Camera sits on each side. The figure stands beside the boss in that view.
+	var shots := {
+		"front": [Vector3(0, aim_y, -dist), Vector3(-(span * 0.55 + 1.1), 0, 0)],
+		"back": [Vector3(0, aim_y, dist), Vector3(span * 0.55 + 1.1, 0, 0)],
+		"left": [Vector3(-dist, aim_y, 0), Vector3(0, 0, span * 0.55 + 1.1)],
+		"right": [Vector3(dist, aim_y, 0), Vector3(0, 0, -(span * 0.55 + 1.1))],
+		"three_quarter":
+		[Vector3(dist * 0.72, aim_y + height * 0.05, -dist * 0.72), Vector3(-(span * 0.5 + 1.1), 0, 0)],
+	}
+	for view in ["front", "left", "back", "right", "three_quarter"]:
+		var eye: Vector3 = shots[view][0]
+		var fig: Vector3 = shots[view][1]
+		if figure:
+			figure.position = fig
+		var look := Vector3(fig.x * 0.12, aim_y, fig.z * 0.12)
+		await _grab(out, "%s_p%d_%s" % [d.id, phase, view], stage, _persp(eye, look), false)
 	stage.free()
 
 
@@ -156,7 +169,7 @@ func _ortho_pair(height: float, span: float, figure_x: float) -> Camera3D:
 
 func _persp(eye: Vector3, at: Vector3) -> Camera3D:
 	var cam := Camera3D.new()
-	cam.fov = 22.0
+	cam.fov = 28.0
 	cam.environment = _env(false)
 	cam.look_at_from_position(eye, at)
 	return cam

@@ -312,49 +312,49 @@ line = "Slagworks mine kit by Covenant of Embers project, CC0 1.0"
 name = "The Filth hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_the_filth.jpg"
+source = "docs/concepts/creatures (the project's own sheet, modelled as a textured volume; surface grain from assets/ambientcg)"
 line = "The Filth hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Breach Warden hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_breach_warden.jpg"
+source = "docs/concepts/creatures (the project's own sheet, modelled as a textured volume; surface grain from assets/ambientcg)"
 line = "Breach Warden hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Goblin King hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_goblin_king.jpg"
+source = "docs/concepts/creatures (the project's own sheet, modelled as a textured volume; surface grain from assets/ambientcg)"
 line = "Goblin King hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Blightmaw Matriarch hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_blightmaw_matriarch.jpg"
+source = "docs/concepts/creatures (the project's own sheet, modelled as a textured volume; surface grain from assets/ambientcg)"
 line = "Blightmaw Matriarch hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Forgemaw hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_forgemaw.jpg"
+source = "docs/concepts/creatures (the project's own sheet, modelled as a textured volume; surface grain from assets/ambientcg)"
 line = "Forgemaw hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Drowned Choir hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_drowned_choir.jpg"
+source = "docs/concepts/creatures (the project's own sheet, modelled as a textured volume; surface grain from assets/ambientcg)"
 line = "Drowned Choir hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
 name = "Storm Warden hero mesh"
 author = "Covenant of Embers project"
 license = "CC0 1.0"
-source = "tools/build_boss_meshes.py, original geometry from docs/concepts/creatures/boss_storm_warden.jpg"
+source = "docs/concepts/creatures (the project's own sheet, modelled as a textured volume; surface grain from assets/ambientcg)"
 line = "Storm Warden hero mesh by Covenant of Embers project, CC0 1.0"
 
 [[credit]]
