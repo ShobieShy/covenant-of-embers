@@ -3,10 +3,23 @@ extends SceneTree
 ## godot --path . -s tools/enemy_turntable.gd -- <out_dir>
 
 const IDS := [
-	"goblin_grunt", "goblin_archer", "goblin_shaman", "gnawer",
-	"heap", "scorchling", "ooze", "earth_training_dummy", "water_training_dummy",
-	"spore_husk", "mossbound_treant", "spore_beast",
-	"branded_troll", "forge_construct", "drowned_cultist", "harpy", "storm_elemental",
+	"goblin_grunt",
+	"goblin_archer",
+	"goblin_shaman",
+	"gnawer",
+	"heap",
+	"scorchling",
+	"ooze",
+	"earth_training_dummy",
+	"water_training_dummy",
+	"spore_husk",
+	"mossbound_treant",
+	"spore_beast",
+	"branded_troll",
+	"forge_construct",
+	"drowned_cultist",
+	"harpy",
+	"storm_elemental",
 ]
 const FIGURE := "res://assets/quaternius/bob/Adventurer_male.glb"
 
@@ -77,7 +90,14 @@ func _shoot(out: String, d: EnemyDef) -> void:
 		await _save(out, "%s_%s" % [d.id, view[0]], stage, centre, cam_size, 0.0)
 	enemy.rotation.y = 0.0
 	figure.visible = false
-	await _save(out, "%s_solo" % d.id, stage, Vector3(-pair_mid, tall * 0.45, 0) + enemy.position * 0.0, maxf(box.size.y, box.size.x) * 1.2, -pair_mid)
+	await _save(
+		out,
+		"%s_solo" % d.id,
+		stage,
+		Vector3(-pair_mid, tall * 0.45, 0) + enemy.position * 0.0,
+		maxf(box.size.y, box.size.x) * 1.2,
+		-pair_mid
+	)
 	stage.free()
 
 
