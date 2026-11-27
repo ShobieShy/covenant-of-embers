@@ -3527,7 +3527,7 @@ yaw_deg = 90.0
 
 [[spawn_point]]
 name = "station"
-position = [2.5, 0.0, 164.0]
+position = [4.0, 0.0, 70.0]
 yaw_deg = 180.0
 
 [[spawn_point]]

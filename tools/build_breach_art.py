@@ -27,7 +27,8 @@ START = (0.0, 178.0)
 # World portal: local (-4.5, 75) + offset (1104, -64) = (1099.5, 0, 11).
 EXIT = (-4.5, 75.0)
 WAYSTONE = (3.0, 172.0)
-STATION = (2.5, 164.0)
+# South of the arena, north of the labyrinth gate, clear of the landfill door.
+STATION = (4.0, 70.0)
 DEN = (-38.0, 154.0)
 GAL_W = (-48.0, 128.0)
 GAL_E = (-36.0, 134.0)
@@ -728,6 +729,8 @@ def check(all_boxes) -> None:
             raise SystemExit(f"sealed: cannot stand at {g}")
     if route(START, EXIT) is None:
         raise SystemExit("exit is not on the open path")
+    if route(START, STATION) is None:
+        raise SystemExit("station is not on the open path")
     if nearest(*DAIS, 1.2) is not None and route(START, DAIS) is not None:
         # route() snaps; a blocked arena should not connect
         if route(START, DAIS) is not None and nearest(*feet["dais"][:2], 0.8) is not None:
