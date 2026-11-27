@@ -1,0 +1,95 @@
+{
+  "staff_length": 1.82,
+  "wand_length": 0.4,
+  "handle": [
+    0.0,
+    0.42
+  ],
+  "exterior": [
+    0.38,
+    1.38
+  ],
+  "interior": [
+    0.76,
+    1.22
+  ],
+  "head": [
+    1.32,
+    1.82
+  ],
+  "charm_hook": [
+    0.11,
+    1.5,
+    0.02
+  ],
+  "view_staff": 0.72,
+  "view_wand": 0.34,
+  "focus_local": {
+    "basic": [
+      0.0,
+      0.33,
+      0.02
+    ],
+    "uncommon": [
+      -0.01,
+      0.35,
+      0.02
+    ],
+    "rare": [
+      -0.01,
+      0.36,
+      0.022
+    ],
+    "mythic": [
+      0.0,
+      0.34,
+      0.02
+    ],
+    "primordial": [
+      0.0,
+      0.4,
+      0.02
+    ],
+    "unique": [
+      0.0,
+      0.36,
+      0.025
+    ]
+  },
+  "files": [
+    "head_basic",
+    "head_uncommon",
+    "head_rare",
+    "head_mythic",
+    "head_primordial",
+    "head_unique",
+    "exterior_basic",
+    "exterior_uncommon",
+    "exterior_rare",
+    "exterior_mythic",
+    "exterior_primordial",
+    "exterior_unique",
+    "interior_basic",
+    "interior_uncommon",
+    "interior_rare",
+    "interior_mythic",
+    "interior_primordial",
+    "interior_unique",
+    "handle_basic",
+    "handle_uncommon",
+    "handle_rare",
+    "handle_mythic",
+    "handle_primordial",
+    "handle_unique",
+    "charm_basic",
+    "charm_uncommon",
+    "charm_rare",
+    "charm_mythic",
+    "charm_primordial",
+    "charm_unique",
+    "shaft_plain",
+    "focus_gem",
+    "muzzle_flare",
+    "scale_figure"
+  ]
+}

@@ -7,10 +7,11 @@ extends Node3D
 ##  * Focus slide = Magewar action_secondary: position -> Vector3(0, default.y, default.z),
 ##    here lerped by Player.focus.amount() (the same 0.2 s linear tween as the FOV, no
 ##    separate Tween).
-##  * Greybox model built in code (no asset): Magewar's CSG placeholders reinterpreted as a
-##    shaft along -Z with an element-coloured gem at the tip and a CastPoint just past it
-##    (staff shaft 0.55 x r 0.04, gem r 0.07; wand shaft 0.3 x r 0.025, gem r 0.04, as
-##    Magewar). The gem is unshaded in the ElementTable colour (the wieldable's element()).
+##  * The held weapon is the staff/wand part kit (StaffKit): project meshes for the five
+##    parts, laid along -Z. A bare hand still shows the plain shaft. The focus gem stays
+##    unshaded in the ElementTable colour (the wieldable's element()). CastPoint sits
+##    just past the tip. Legacy shaft length is staff 0.55 / wand 0.30, scaled onto the
+##    1.82 m kit.
 ##  * Layer: every viewmodel mesh is on visual layer VISUAL_LAYER (20) only; the main
 ##    camera culls it, and a SubViewport camera at a fixed viewmodel_fov (75 deg, Cogito
 ##    ViewmodelSpace viewmodel_fov) that copies the main camera's transform renders only
@@ -73,12 +74,15 @@ func _init() -> void:
 	flare.name = "MuzzleFlare"
 	flare.layers = LAYER_MASK
 	flare.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var sm := SphereMesh.new()
-	sm.radius = FLARE_RADIUS
-	sm.height = FLARE_RADIUS * 2.0
-	sm.radial_segments = 8
-	sm.rings = 4
-	flare.mesh = sm
+	var flare_scene := load("res://assets/original/weapons/staff_kit/muzzle_flare.glb") as PackedScene
+	var flare_node := flare_scene.instantiate()
+	var flare_mi := flare_node as MeshInstance3D
+	if flare_mi == null:
+		var found := flare_node.find_children("*", "MeshInstance3D", true, false)
+		flare_mi = found[0] as MeshInstance3D if not found.is_empty() else null
+	flare.mesh = flare_mi.mesh
+	flare.scale = Vector3.ONE * FLARE_RADIUS
+	flare_node.free()
 	_flare_mat = StandardMaterial3D.new()
 	_flare_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_flare_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -136,26 +140,33 @@ func show_wieldable(w: WieldableInstance) -> void:
 	var length: float = d[0]
 	var r: float = d[1]
 	var gr: float = d[2]
-	var cyl := CylinderMesh.new()
-	cyl.height = length
-	cyl.top_radius = r * 0.8
-	cyl.bottom_radius = r
-	cyl.radial_segments = 10
-	cyl.rings = 1
-	var sm := StandardMaterial3D.new()
-	sm.albedo_color = SHAFT_COLOR
-	sm.roughness = 0.8
-	cyl.material = sm
-	shaft.mesh = cyl
-	# Cylinder axis (Y) turned onto -Z (top end forward), centred on the pose.
+	var plain := load("res://assets/original/weapons/staff_kit/shaft_plain.glb") as PackedScene
+	var plain_node := plain.instantiate()
+	var plain_mi := plain_node as MeshInstance3D
+	if plain_mi == null:
+		var found := plain_node.find_children("*", "MeshInstance3D", true, false)
+		plain_mi = found[0] as MeshInstance3D if not found.is_empty() else null
+	var has_shell := w.part(WieldablePart.PartType.EXTERIOR) != null
+	shaft.mesh = null if has_shell else plain_mi.mesh
+	plain_node.free()
+	shaft.visible = not has_shell
+	var wood := StandardMaterial3D.new()
+	wood.albedo_color = SHAFT_COLOR
+	wood.roughness = 0.84
+	shaft.material_override = wood
+	# Plain shaft is authored 1 m along Y. Lay it on -Z and match the legacy length.
 	shaft.rotation = Vector3(-PI * 0.5, 0.0, 0.0)
+	shaft.scale = Vector3(r / 0.036, length, r / 0.036)
 	shaft.position = Vector3.ZERO
-	var sph := SphereMesh.new()
-	sph.radius = gr
-	sph.height = gr * 2.0
-	sph.radial_segments = 12
-	sph.rings = 6
-	gem.mesh = sph
+	var gem_scene := load("res://assets/original/weapons/staff_kit/focus_gem.glb") as PackedScene
+	var gem_node := gem_scene.instantiate()
+	var gem_mi := gem_node as MeshInstance3D
+	if gem_mi == null:
+		var found := gem_node.find_children("*", "MeshInstance3D", true, false)
+		gem_mi = found[0] as MeshInstance3D if not found.is_empty() else null
+	gem.mesh = gem_mi.mesh
+	gem_node.free()
+	gem.scale = Vector3.ONE * gr
 	var gm := StandardMaterial3D.new()
 	gm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	gm.albedo_color = element_color(e)
@@ -166,6 +177,10 @@ func show_wieldable(w: WieldableInstance) -> void:
 		kit.free()
 	kit = StaffKit.build(w, length, r, gr, element_color(e), LAYER_MASK)
 	model.add_child(kit)
+	if kit.has_meta("focus"):
+		gem.position = kit.get_meta("focus") + Vector3(0.0, 0.0, 0.012)
+	if kit.has_meta("tip"):
+		cast_point.position = kit.get_meta("tip") + Vector3(0.0, 0.0, -0.02)
 
 
 func _key(w: WieldableInstance) -> String:

@@ -1,162 +1,203 @@
 class_name StaffKit
 extends RefCounted
-## Step 122 (Art A4): procedural low-poly modular staff/wand kit (PROC, no external asset).
-## Builds the dressing around the Viewmodel's shaft + gem from the attached parts, on shared
-## sockets along the shaft (local -Z = forward, shaft centred on 0):
-##   HANDLE   -> grip wrap + pommel at the back end (3 variants by part id)
-##   EXTERIOR -> shell bands along the shaft, trimmed in the rarity colour (3 variants)
-##   INTERIOR -> an emissive element core visible through a slatted cage (2 variants)
-##   HEAD     -> prongs/crescent around the gem + one socket gem per filled gem slot (3 variants)
-##   CHARM    -> a small bauble hanging under the head
-## Variants come from a stable hash of the part id, so a part always looks the same.
-## Budget: a full staff stays far under the 4k-tri cap (low segment counts).
+## Modular staff and wand (0.15.0). One project-made mesh per part type and tier,
+## shared by both forms. Sockets, cores and veins use the sheet palette. The viewmodel
+## focus gem stays the element-table colour (see Viewmodel).
 
-const WOOD := Color(0.36, 0.25, 0.15)
-const LEATHER := Color(0.22, 0.14, 0.09)
-const METAL := Color(0.55, 0.55, 0.58)
+const DIR := "res://assets/original/weapons/staff_kit/"
+const MAT_DIR := "res://resources/weapons/"
+const ELEM_IDS: PackedStringArray = ["arcane", "fire", "water", "earth", "air", "light", "dark"]
+
+const WOOD := {
+	"basic": Color(0.36, 0.24, 0.14),
+	"uncommon": Color(0.66, 0.54, 0.36),
+	"rare": Color(0.30, 0.18, 0.11),
+	"mythic": Color(0.14, 0.09, 0.08),
+	"primordial": Color(0.40, 0.30, 0.20),
+	"unique": Color(0.26, 0.16, 0.11),
+}
+const METAL_MIX := {
+	"basic": 0.12,
+	"uncommon": 0.22,
+	"rare": 0.38,
+	"mythic": 0.58,
+	"primordial": 0.30,
+	"unique": 0.42,
+}
+
+static var _layout: Dictionary = {}
 
 
 static func variant(p: WieldablePart, n: int) -> int:
 	return absi(hash(p.id)) % n if p != null else 0
 
 
-static func mat(c: Color, emissive := false, metal := false) -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	m.albedo_color = c
-	m.roughness = 0.35 if metal else 0.85
-	m.metallic = 0.7 if metal else 0.0
-	if emissive:
-		m.emission_enabled = true
-		m.emission = c
-		m.emission_energy_multiplier = 2.0
-	return m
+static func layout() -> Dictionary:
+	if _layout.is_empty():
+		var f := FileAccess.open(DIR + "layout.json", FileAccess.READ)
+		_layout = JSON.parse_string(f.get_as_text())
+	return _layout
 
 
-static func cyl(r_top: float, r_bot: float, h: float, segs := 8) -> CylinderMesh:
-	var c := CylinderMesh.new()
-	c.top_radius = r_top
-	c.bottom_radius = r_bot
-	c.height = h
-	c.radial_segments = segs
-	c.rings = 1
-	return c
+static func sheet_color(element: int) -> Color:
+	var i := clampi(element, 0, ELEM_IDS.size() - 1)
+	var mat := load("%selement_%s.tres" % [MAT_DIR, ELEM_IDS[i]]) as StandardMaterial3D
+	return mat.albedo_color if mat != null else Color.WHITE
 
 
-## Adds a mesh along the shaft axis (cylinder Y -> -Z) at z.
-static func _add(root: Node3D, mesh: Mesh, m: Material, z: float, layers: int, n: String) -> MeshInstance3D:
-	var mi := MeshInstance3D.new()
-	mi.name = n
-	mi.mesh = mesh
-	mi.material_override = m
-	mi.layers = layers
-	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	mi.rotation = Vector3(-PI * 0.5, 0.0, 0.0)
-	mi.position = Vector3(0, 0, z)
-	root.add_child(mi)
-	return mi
+static func _scale_for(length: float, explicit: float) -> float:
+	if explicit > 0.0:
+		return explicit
+	var lay := layout()
+	var view := float(lay["view_staff"]) if length >= 0.45 else float(lay["view_wand"])
+	return view / float(lay["staff_length"])
 
 
-## A fresh "Kit" node for `w` (length / radius / gem radius of the shaft, element colour).
-static func build(w: WieldableInstance, length: float, r: float, gr: float, elem: Color, layers: int) -> Node3D:
+static func mesh_id(part_name: String, tier: String) -> String:
+	var t := tier if WOOD.has(tier) else "basic"
+	return "%s_%s" % [part_name, t]
+
+
+static func instantiate(id: String) -> Node3D:
+	var ps := load(DIR + id + ".glb") as PackedScene
+	var inst := ps.instantiate() as Node3D
+	var mi := _mesh_of(inst)
+	if mi != null and mi != inst:
+		inst.remove_child(mi)
+		inst.free()
+		return mi
+	return inst
+
+
+## `length` is the legacy shaft length (viewmodel). Pass `scale` > 0 for a world
+## scale (1.0 is the 1.82 m staff, 0.40/1.82 is the wand). `lay_flat` aims the
+## tip down -Z for the viewmodel; the contact sheets leave it upright.
+static func build(
+	w: WieldableInstance,
+	length: float,
+	_r: float,
+	_gr: float,
+	_elem: Color,
+	layers: int,
+	scale := -1.0,
+	lay_flat := true
+) -> Node3D:
+	var lay := layout()
+	var sc := _scale_for(length, scale)
 	var kit := Node3D.new()
 	kit.name = "Kit"
-	var trim := mat(w.rarity_color(), false, true)
-	var back := 0.5 * length
-	var front := -0.5 * length
-	# The viewmodel gem sits just past the shaft tip. Every part meets the next one:
-	# the pommel overlaps the grip, the grip overlaps the shell, the shell meets the
-	# collar, and the collar wraps the back of the gem. A few millimetres of overlap,
-	# so a side view shows no gap.
-	var gem_z := front - gr * 0.6
-	var collar_h := maxf(gr * 0.9, r * 0.8)
-	var collar_z := gem_z + gr * 0.45
-	# Handle: grip + pommel, seated on the back of the shaft.
-	var h := w.part(WieldablePart.PartType.HANDLE)
-	var hv := variant(h, 3)
-	var grip_h := length * 0.22
-	var grip_z := back - grip_h * 0.5
-	_add(kit, cyl(r * 1.25, r * 1.25, grip_h), mat(LEATHER), grip_z, layers, "Grip")
-	var pommel_r := r * 1.6
-	var pommel: Mesh = (
-		[SphereMesh.new(), cyl(r * 0.6, r * 1.6, r * 2.5, 6), cyl(r * 1.7, r * 1.7, r * 1.0, 6)][hv] if h else null
-	)
-	if pommel is SphereMesh:
-		(pommel as SphereMesh).radius = pommel_r
-		(pommel as SphereMesh).height = pommel_r * 2.0
-		(pommel as SphereMesh).radial_segments = 8
-		(pommel as SphereMesh).rings = 4
-	if pommel:
-		var pommel_z := back + pommel_r * 0.55
-		_add(kit, pommel, trim if hv != 1 else mat(METAL, false, true), pommel_z, layers, "Pommel")
-	# Exterior: one shell from the grip to the collar, with the bands raised on it.
-	var ex := w.part(WieldablePart.PartType.EXTERIOR)
-	var shell_back := grip_z - grip_h * 0.5 + 0.008
-	var shell_front := collar_z + collar_h * 0.5 - 0.008
-	if ex and shell_back > shell_front:
-		var shell_h := shell_back - shell_front
-		var shell_z := (shell_back + shell_front) * 0.5
-		_add(kit, cyl(r * 1.15, r * 1.15, shell_h, 8), mat(WOOD), shell_z, layers, "Shell")
-		var ev := variant(ex, 3)
-		var n: int = [2, 3, 4][ev]
-		for i in n:
-			var z := lerpf(shell_back - 0.01, shell_front + 0.01, float(i) / maxf(1.0, n - 1))
-			var band := cyl(r * 1.45, r * (1.2 if ev == 2 else 1.45), r * (1.2 if ev == 0 else 0.8), 8)
-			_add(kit, band, trim, z, layers, "Band%d" % i)
-	# Interior: glowing core in a cage, inside the shell just behind the collar.
-	var inn := w.part(WieldablePart.PartType.INTERIOR)
-	if inn:
-		var zc := collar_z + length * 0.12
-		_add(kit, cyl(r * 0.9, r * 0.9, length * 0.18, 6), mat(elem, true), zc, layers, "Core")
-		var slats := 4 if variant(inn, 2) == 0 else 6
-		for i in slats:
-			var a := TAU * i / slats
-			var s := _add(
-				kit, cyl(r * 0.25, r * 0.25, length * 0.2, 4), mat(METAL, false, true), zc, layers, "Slat%d" % i
-			)
-			s.position += Vector3(cos(a), sin(a), 0) * r * 1.5
-	# Head: prongs around the gem + socket gems, based in the collar.
-	var hd := w.part(WieldablePart.PartType.HEAD)
-	var hv2 := variant(hd, 3) if hd else 0
-	var prongs: int = [3, 4, 2][hv2]
-	for i in prongs:
-		var a := TAU * i / prongs + 0.3
-		var p := _add(kit, cyl(r * 0.15, r * 0.4, gr * 2.4, 4), trim if hd else mat(WOOD), gem_z, layers, "Prong%d" % i)
-		var out := Vector3(cos(a), sin(a), 0)
-		p.position += out * gr * (1.15 if hv2 != 2 else 1.4)
-		p.rotation = Vector3(-PI * 0.5 + 0.35 * out.y, 0.0, 0.0)
-	_add(kit, cyl(gr * 0.9, r * 1.3, collar_h, 8), trim if hd else mat(WOOD), collar_z, layers, "Collar")
-	if hd:
-		for i in hd.gems.size():
-			var g := hd.gems[i]
-			var sg := SphereMesh.new()
-			sg.radius = r * 0.6
-			sg.height = r * 1.2
-			sg.radial_segments = 6
-			sg.rings = 3
-			var gc: Color = ElementTable.load_default().color(int(g.element)) if g != null else elem
-			var gi := _add(kit, sg, mat(gc, true), collar_z, layers, "Socket%d" % i)
-			var a: float = TAU * i / maxf(1, hd.gems.size())
-			gi.position += Vector3(cos(a), sin(a), 0) * r * 1.4
-	# Charm: the cord starts in the collar and the bauble sits on the cord.
-	var ch := w.part(WieldablePart.PartType.CHARM)
-	if ch:
-		var cord_h := gr * 1.6
-		var cord := _add(kit, cyl(r * 0.08, r * 0.08, cord_h, 3), mat(LEATHER), collar_z, layers, "Cord")
-		cord.rotation = Vector3.ZERO
-		cord.position.y = -cord_h * 0.5 + 0.004
-		var b := SphereMesh.new()
-		b.radius = r * 0.8
-		b.height = r * 1.6
-		b.radial_segments = 6
-		b.rings = 3
-		var bm := _add(
-			kit, b, mat(ch.rarity_def().color if ch.rarity_def() else METAL, false, true), collar_z, layers, "Charm"
-		)
-		bm.position.y = cord.position.y - cord_h * 0.5 - b.radius + 0.006
+	var weapon := Node3D.new()
+	weapon.name = "Weapon"
+	kit.add_child(weapon)
+	var staff_len := float(lay["staff_length"])
+	var names := ["handle", "exterior", "interior", "head", "charm"]
+	var types := [
+		WieldablePart.PartType.HANDLE,
+		WieldablePart.PartType.EXTERIOR,
+		WieldablePart.PartType.INTERIOR,
+		WieldablePart.PartType.HEAD,
+		WieldablePart.PartType.CHARM,
+	]
+	for i in names.size():
+		var part := w.part(types[i])
+		if part == null:
+			continue
+		var inst := instantiate(mesh_id(names[i], part.rarity))
+		inst.name = names[i].capitalize()
+		_paint(inst, part)
+		_dress(inst, layers)
+		if names[i] == "charm":
+			var hook: Array = lay["charm_hook"]
+			inst.position = Vector3(float(hook[0]), float(hook[1]), float(hook[2]))
+			if lay_flat:
+				inst.rotation = Vector3(PI * 0.5, 0.0, 0.0)
+		else:
+			var span: Array = lay[names[i]]
+			inst.position = Vector3(0.0, float(span[0]), 0.0)
+		weapon.add_child(inst)
+	weapon.scale = Vector3.ONE * sc
+	if lay_flat:
+		weapon.rotation = Vector3(-PI * 0.5, 0.0, 0.0)
+		weapon.position = Vector3(0.0, 0.0, staff_len * 0.5 * sc)
+	_store_markers(kit, weapon)
 	return kit
 
 
-## Triangle count of a kit (tests: the 4k budget).
+static func _store_markers(kit: Node3D, weapon: Node3D) -> void:
+	var focus := weapon.find_child("Focus", true, false) as Node3D
+	var tip := weapon.find_child("Tip", true, false) as Node3D
+	if focus != null:
+		kit.set_meta("focus", weapon.transform * (focus.get_parent().position + focus.position))
+	if tip != null:
+		kit.set_meta("tip", weapon.transform * (tip.get_parent().position + tip.position))
+
+
+static func _paint(inst: Node, part: WieldablePart) -> void:
+	var mi := _mesh_of(inst)
+	if mi == null or mi.mesh == null:
+		return
+	var elem := sheet_color(int(part.element))
+	if not part.gems.is_empty() and part.gems[0] != null:
+		elem = sheet_color(int(part.gems[0].element))
+	var tier := part.rarity if WOOD.has(part.rarity) else "basic"
+	var wood: Color = WOOD[tier]
+	if tier == "mythic":
+		wood = wood.lerp(elem, 0.62)
+	var mix := float(METAL_MIX[tier])
+	var metal := Color(0.55, 0.52, 0.46).lerp(elem, mix).lerp(part.rarity_color(), 0.14)
+	var wrap := Color(0.28, 0.16, 0.10).lerp(elem, 0.45 if tier != "basic" else 0.28)
+	var mesh := mi.mesh
+	for s in mesh.get_surface_count():
+		var base := mesh.surface_get_material(s)
+		var n := (base.resource_name if base != null else "").to_lower()
+		var m := StandardMaterial3D.new()
+		m.resource_name = n
+		if n.contains("gem") or n.contains("core"):
+			var src := load("%selement_%s.tres" % [MAT_DIR, ELEM_IDS[clampi(int(part.element), 0, 6)]]) as StandardMaterial3D
+			if not part.gems.is_empty() and part.gems[0] != null and n.contains("gem"):
+				src = load(
+					"%selement_%s.tres" % [MAT_DIR, ELEM_IDS[clampi(int(part.gems[0].element), 0, 6)]]
+				) as StandardMaterial3D
+			if src != null:
+				m = src.duplicate() as StandardMaterial3D
+			else:
+				m.albedo_color = elem
+				m.emission_enabled = true
+				m.emission = elem
+				m.emission_energy_multiplier = 1.7
+		elif n.contains("metal"):
+			m.albedo_color = metal
+			m.metallic = 0.85
+			m.roughness = 0.32
+		elif n.contains("wrap"):
+			m.albedo_color = wrap
+			m.metallic = 0.08
+			m.roughness = 0.68
+		else:
+			m.albedo_color = wood
+			m.roughness = 0.84
+		mi.set_surface_override_material(s, m)
+
+
+static func _mesh_of(inst: Node) -> MeshInstance3D:
+	if inst is MeshInstance3D:
+		return inst
+	var found := inst.find_children("*", "MeshInstance3D", true, false)
+	return found[0] as MeshInstance3D if not found.is_empty() else null
+
+
+static func _dress(inst: Node, layers: int) -> void:
+	var nodes: Array[Node] = []
+	if inst is MeshInstance3D:
+		nodes.append(inst)
+	for n in inst.find_children("*", "MeshInstance3D", true, false):
+		nodes.append(n)
+	for n in nodes:
+		var mi := n as MeshInstance3D
+		mi.layers = layers
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
 static func tris(root: Node) -> int:
 	var t := 0
 	for mi in root.find_children("*", "MeshInstance3D", true, false):
@@ -166,4 +207,10 @@ static func tris(root: Node) -> int:
 				var a := m.surface_get_arrays(s)
 				var idx: PackedInt32Array = a[Mesh.ARRAY_INDEX]
 				t += (idx.size() if idx.size() > 0 else (a[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()) / 3
+	if root is MeshInstance3D and (root as MeshInstance3D).mesh:
+		var m2 := (root as MeshInstance3D).mesh
+		for s in m2.get_surface_count():
+			var a2 := m2.surface_get_arrays(s)
+			var idx2: PackedInt32Array = a2[Mesh.ARRAY_INDEX]
+			t += (idx2.size() if idx2.size() > 0 else (a2[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()) / 3
 	return t

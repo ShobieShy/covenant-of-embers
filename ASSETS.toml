@@ -539,3 +539,13 @@ license = "CC0-1.0"
 license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
 date_added = "2026-11-27"
 use = "Storm Warden: stone cloak, crystal crown, wind, gale phase"
+
+[[asset]]
+name = "Staff and wand part kit"
+path = "assets/original/weapons/staff_kit"
+author = "Covenant of Embers project"
+source = "tools/make_weapon_parts.py (original meshes from the staff and wand concept sheets)"
+license = "CC0-1.0"
+license_url = "https://creativecommons.org/publicdomain/zero/1.0/"
+date_added = "2026-11-27"
+use = "Modular staff and wand parts: head, exterior, interior, handle and charm, six tiers, plus the plain shaft, focus gem, muzzle flare and scale figure"
