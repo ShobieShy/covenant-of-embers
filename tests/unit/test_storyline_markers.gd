@@ -31,6 +31,9 @@ func _restore() -> void:
 	GameFlow.dry_run = false
 	GameFlow.path_override = ""
 	GameFlow.select_slot(1)
+	# A loaded game scales kill XP. Later tests expect that scale to be off.
+	LevelScale.bind(0, true)
+	IntroDirector.live = null
 
 
 func _beat(id: String, extra: PackedStringArray = PackedStringArray()) -> void:
