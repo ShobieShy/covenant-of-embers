@@ -57,3 +57,29 @@ func test_forgemaw_door_opens_the_ruins() -> void:
 	check(floor.use_sunken() and went == [14], "the open door asks for checkpoint 14")
 	check(not GameFlow.LEVELS.has("sunken_ruins"), "the ruins are labyrinth floors, not a new level id")
 	floor.free()
+
+
+func test_painted_ring_reaches_the_stairs() -> void:
+	var hall := SunkenFloor.make(14, LabyrinthState.fresh(3))
+	hall.position = Vector3(0, -2000, 0)
+	runner_tree.root.add_child(hall)
+	check(hall.get_node_or_null("Dress/CoralGalleries") != null, "the coral galleries stand")
+	check(hall.get_node_or_null("Dress/DrownedSpire") != null, "the drowned spire stands")
+	check(hall.get_node_or_null("Dress/ChoirNave") != null, "the nave is a scene")
+	check(hall.get_node_or_null("Dress/CultMurals") != null, "the cult murals are on the east wall")
+	check(hall.get_node_or_null("Dress/HymnVaults") != null, "the hymn vaults are props")
+	check(hall.get_node_or_null("Dress/Shaft") != null, "the shaft to the spire is open")
+	var span: Vector2 = hall.get_meta(&"painted_span")
+	check(span.x == 240.0 and span.y == 180.0, "the plan uses the painting's span")
+	var polys := 0
+	if hall._region and hall._region.navigation_mesh:
+		polys = hall._region.navigation_mesh.get_polygon_count()
+	check(polys > 8, "nav ribbons (%d)" % polys)
+	var reached := false
+	for _i in 25:
+		await runner_tree.physics_frame
+		if hall.path_reaches(hall.exit_local):
+			reached = true
+			break
+	check(reached, "the gallery pad reaches the stairs")
+	hall.free()

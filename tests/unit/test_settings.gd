@@ -38,7 +38,7 @@ func test_each_option_saved() -> void:
 	var l := Settings.load_from(FILE)
 	for k in s._options():
 		check(l.get(k) == s.get(k), "option %s round-trips" % k)
-	check(Settings.new()._options().size() == 30, "30 options (accessibility pass)")
+	check(Settings.new()._options().size() == 31, "31 options (accessibility pass)")
 	_cleanup()
 
 
@@ -103,6 +103,10 @@ func test_old_keybinds_keep_defaults() -> void:
 	var l := Settings.load_from(FILE)
 	check(l.invert_y, "old key kept")
 	check(not l.sprint_toggle and not l.flash_reduction and not l.high_contrast, "new toggles default off")
+	check(not l.auto_mark_basic_junk, "auto junk stays off when the key is missing")
+	l.auto_mark_basic_junk = true
+	check(l.save(FILE) == OK, "saved auto junk")
+	check(Settings.load_from(FILE).auto_mark_basic_junk, "auto junk loads on")
 	check(l.voice_volume == 1.0 and l.shake == 1.0 and l.text_scale == 1.0, "new sliders default on")
 	check(l.subtitle_preset == 1 and l.show_speaker, "subtitle defaults")
 	_cleanup()
@@ -121,6 +125,9 @@ func test_reduced_motion_overrides_shake() -> void:
 	s.apply_to(p)
 	check(p.feel.shake_scale == 1.0, "shake slider returns")
 	check(p.focus_toggle == s.focus_toggle, "aim toggle is the existing latch")
+	s.auto_mark_basic_junk = true
+	s.apply_to(p)
+	check(p.auto_mark_basic_junk, "auto junk reaches the player")
 	p.queue_free()
 	_cleanup()
 

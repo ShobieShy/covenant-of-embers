@@ -212,3 +212,54 @@ func test_compare_card_deltas() -> void:
 	var sc := CompareCard.for_item(wand, p)
 	check(sc.kind == "wand" and sc.row("damage")["compared"], "wand card compares with the worn wand")
 	w.queue_free()
+
+
+func _drop_item(item: Resource, rarity: String) -> LootPickup:
+	var d := LootDrop.new()
+	d.kind = LootDrop.Kind.PART
+	d.item = item
+	d.rarity_id = rarity
+	var lp := LootPickup.new()
+	lp.drop = d
+	return lp
+
+
+func test_auto_junk_only_on_basic_pickup() -> void:
+	var w := _flat()
+	var p := _player(w)
+	var basic := PartRoller.from_seed(3, WieldablePart.PartType.HEAD, "basic")
+	check(p.pickups.pick(p, _drop_item(basic, "basic")) and p.inventory.has(basic), "picked")
+	check(not p.inventory.is_junk(basic), "setting off leaves it unmarked")
+	p.auto_mark_basic_junk = true
+	var again := PartRoller.from_seed(4, WieldablePart.PartType.HEAD, "basic")
+	var green := PartRoller.from_seed(5, WieldablePart.PartType.HEAD, "uncommon")
+	var hat := EquipmentRoller.from_seed(6, EquipmentItem.Slot.HAT, "basic", ElementTable.Element.FIRE)
+	var staff := WieldableInstance.load_base("apprentice_fire_staff")
+	check(p.pickups.pick(p, _drop_item(again, "basic")) and p.inventory.is_junk(again), "basic part")
+	check(p.pickups.pick(p, _drop_item(green, "uncommon")) and not p.inventory.is_junk(green), "uncommon stays")
+	check(p.pickups.pick(p, _drop_item(hat, "basic")) and p.inventory.is_junk(hat), "basic gear")
+	check(staff.rarity_id() == "basic", "staff base is basic")
+	check(p.pickups.pick(p, _drop_item(staff, "basic")) and p.inventory.is_junk(staff), "basic wieldable")
+	var shield := ShieldDrop.make(40.0, 2.0, "ward")
+	var relic := RelicDrop.make("ember_chip")
+	check(p.pickups.pick(p, _drop_item(shield, "")), "shield equipped")
+	check(p.gear.shield == shield and not p.inventory.is_junk(shield), "shield is not junk")
+	check(p.pickups.pick(p, _drop_item(relic, "")), "relic equipped")
+	check(p.gear.relic == relic and not p.inventory.has(relic), "relic is not in the backpack")
+	var bought := PartRoller.from_seed(7, WieldablePart.PartType.HEAD, "basic")
+	var v := Vendor.for_speaker("Potion Merchant")
+	v.restock(1)
+	v.stock.append({"item": bought, "price": 1, "count": 1})
+	p.inventory.gold = 10
+	check(v.buy(p, v.stock.size() - 1) == "" and p.inventory.has(bought), "bought")
+	check(not p.inventory.is_junk(bought), "buy does not auto-mark")
+	var saved := PartRoller.from_seed(8, WieldablePart.PartType.HEAD, "basic")
+	p.inventory.add(saved)
+	var data := SaveGame.capture(p)
+	SaveGame.apply(p, data)
+	var loaded: Resource = null
+	for it in p.inventory.items:
+		if it is WieldablePart and (it as WieldablePart).roll_seed == saved.roll_seed:
+			loaded = it
+	check(loaded != null and not p.inventory.is_junk(loaded), "load does not auto-mark")
+	w.queue_free()

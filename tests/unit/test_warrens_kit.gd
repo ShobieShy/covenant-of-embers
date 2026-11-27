@@ -75,6 +75,37 @@ func test_goblin_bodies_and_crown() -> void:
 	k.free()
 
 
+func test_burrows_follow_the_painting() -> void:
+	var kit := FloorGen.load_kit()
+	var f1 := LabyrinthFloor.build(kit, 1, LabyrinthState.fresh(42))
+	check(f1.find_child("Burrow", true, false) != null, "floor 1 is a burrow")
+	check(f1.find_child("TimberBeam", true, false) != null, "the descent keeps its timber frame")
+	check(f1.find_child("barrel", true, false) != null, "barrels in the gallery")
+	check(f1.get_node_or_null("PlayerStart") != null and f1.get_node_or_null("StairsDown") != null, "markers stay")
+	f1.free()
+	var f3 := LabyrinthFloor.build(kit, 3, LabyrinthState.fresh(42))
+	check(f3.find_child("ward_pot", true, false) != null, "green ward pots")
+	f3.free()
+	var f4 := LabyrinthFloor.build(kit, 4, LabyrinthState.fresh(42))
+	var marks := 0
+	for room in f4.rooms:
+		if room.get_node_or_null(^"Burrow/joe_plaque"):
+			marks += 1
+	check(marks == 1, "one graffiti mark")
+	f4.free()
+	var boss := LabyrinthFloor.build(kit, 5, LabyrinthState.new())
+	check(boss.find_child("throne_pyramid", true, false) != null, "bone throne")
+	check(boss.find_child("sigil_crates", true, false) != null, "stolen crates")
+	check(boss.find_child("crystal_cluster", true, false) != null, "corner crystals")
+	var hall := boss.find_child("throne_hall", true, false) as Node3D
+	check(hall != null and hall.find_children("*", "StaticBody3D", true, false).size() == 1, "hall collision untouched")
+	check(
+		boss.has_node("BossSpawn") and boss.has_node("WaystoneSpot") and boss.get_node_or_null("StairsDown") == null,
+		"boss markers"
+	)
+	boss.free()
+
+
 func test_hand_props_at_hand_height() -> void:
 	var t := EnemyTable.load_default()
 	for p in [["goblin_grunt", "Club"], ["goblin_archer", "Bow"], ["goblin_shaman", "Staff"]]:

@@ -118,10 +118,25 @@ func pick(p: Player, lp: LootPickup) -> bool:
 		lp.unclaim()
 		_hint_full(p)
 		return false
+	_auto_junk(p, lp.drop.item)
 	items_picked += 1
 	collected.emit(lp, "item")
 	_consume(lp)
 	return true
+
+
+## Basic parts, gear, and wieldables only. Not gems, shields, relics, or potions.
+## Not called from Inventory.add, so load, buy, and craft stay unmarked.
+static func _auto_junk(p: Player, item: Resource) -> void:
+	if not p.auto_mark_basic_junk or item == null:
+		return
+	var id := ""
+	if item is WieldablePart or item is EquipmentItem:
+		id = String(item.get("rarity"))
+	elif item is WieldableInstance:
+		id = (item as WieldableInstance).rarity_id()
+	if id == "basic":
+		p.inventory.set_junk(item, true)
 
 
 ## M2: whether an auto pickup should fly to the player. Not potions (what does not fit

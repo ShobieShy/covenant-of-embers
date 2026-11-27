@@ -2,5 +2,7 @@
 # them fails CI. Collision shapes and nodes with "collision" or "debug" in the
 # name stay allowed. One path per line (scenes/... or res://scenes/...).
 # Unlisted scenes are reported and do not fail the build.
-# Nothing is remade yet. 0.11.4 and later add a path here when that scene ships.
+# 0.11.4 and later add a path here when that scene ships.
+scenes/labyrinth/drowned_choir_nave.tscn
 scenes/labyrinth/spire_arena.tscn
+scenes/levels/mage_association.tscn

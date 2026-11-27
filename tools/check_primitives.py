@@ -54,19 +54,36 @@ def _allowed(path: str) -> bool:
 
 
 def scan_text(text: str) -> list[str]:
-    """Primitive hits as 'path type'. Collision and debug nodes are omitted."""
+    """Primitive hits as 'path type'. Collision, debug, and hidden meshes are omitted.
+
+    A hidden MeshInstance3D (visible = false) is a collider's invisible stand-in.
+    The art the player sees has to be a real mesh. The box stays for navigation.
+    """
     subs: dict[str, str] = {}
     hits: list[str] = []
     current = ""
     current_type = ""
+    pending: str | None = None
+    hidden = False
+
+    def flush() -> None:
+        nonlocal pending, hidden
+        if pending and not hidden:
+            hits.append(pending)
+        pending = None
+        hidden = False
+
     for line in text.splitlines():
         sub = SUB_RE.match(line)
         if sub:
+            flush()
             subs[sub.group(2)] = sub.group(1)
             current = ""
+            current_type = ""
             continue
         node = NODE_RE.match(line)
         if node:
+            flush()
             name, typ, parent = node.group(1), node.group(2), node.group(3)
             if parent in (None, ".", ""):
                 current = name
@@ -74,13 +91,18 @@ def scan_text(text: str) -> list[str]:
                 current = f"{parent}/{name}"
             current_type = typ
             if typ.startswith("CSG") and not _allowed(current):
-                hits.append(f"{current} {typ}")
+                pending = f"{current} {typ}"
             continue
-        mesh = MESH_RE.match(line.strip())
+        stripped = line.strip()
+        mesh = MESH_RE.match(stripped)
         if mesh and current_type == "MeshInstance3D" and not _allowed(current):
             kind = subs.get(mesh.group(1), "")
             if kind in PRIMS:
-                hits.append(f"{current} {kind}")
+                pending = f"{current} {kind}"
+            continue
+        if stripped == "visible = false":
+            hidden = True
+    flush()
     return hits
 
 
@@ -115,6 +137,9 @@ mesh = SubResource("BoxMesh_a")
 shape = SubResource("BoxShape_a")
 [node name="Marker" type="MeshInstance3D" parent="Debug"]
 mesh = SubResource("BoxMesh_a")
+[node name="Mesh" type="MeshInstance3D" parent="Boxes/secret"]
+mesh = SubResource("BoxMesh_a")
+visible = false
 [node name="Wall" type="CSGBox3D" parent="."]
 [node name="DebugBlock" type="CSGBox3D" parent="Debug"]
 """

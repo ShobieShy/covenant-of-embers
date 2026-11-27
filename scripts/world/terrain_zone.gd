@@ -27,7 +27,11 @@ const EDGE := 24.0  ## metres over which the zone edge rises to `rim`
 @export var spacing := 1.0
 @export var rim := 16.0
 @export var map_version := 1
-@export var layers: PackedStringArray = ["Grass004", "Rock030", "Gravel022"]
+## Array[String], not PackedStringArray. Godot 4.7's export packs a scene by
+## instancing it and saving again, and that pass drops PackedStringArray
+## overrides. The zone then kept this default, asked for ambientCG terrain
+## PNGs the export filter removes, and drew the checker placeholder.
+@export var layers: Array[String] = ["Grass004", "Rock030", "Gravel022"]
 @export var pads: Array[Rect2] = []
 @export var pad_y := -0.02
 ## One height per pad, just under that ground box. Empty means every pad uses pad_y,
@@ -353,7 +357,7 @@ func _assets() -> Object:
 
 
 ## Terrain3DAssets for a layer id list (OW2: the open world shares this with zones).
-static func make_assets(layers: PackedStringArray) -> Object:
+static func make_assets(layers: Array[String]) -> Object:
 	var a: Object = ClassDB.instantiate(&"Terrain3DAssets")
 	for i in layers.size():
 		var ta: Object = ClassDB.instantiate(&"Terrain3DTextureAsset")
