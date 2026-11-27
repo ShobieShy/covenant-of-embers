@@ -96,15 +96,12 @@ size = Vector3(1.4, 4, 12)
 size = Vector3(1.3, 3.4, 1.3)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_13"]
-size = Vector3(8, 4, 1.2)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_14"]
 size = Vector3(6.4, 0.2, 3.6)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_15"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_14"]
 size = Vector3(14, 0.16, 14)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_16"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_15"]
 size = Vector3(1.7, 4, 2.4)
 
 [node name="BreachSlice" type="Node3D" groups=["kill_line"]]
@@ -3574,45 +3571,37 @@ metadata/toml_index = 430
 [node name="Shape" type="CollisionShape3D" parent="Boxes/pillar_se"]
 shape = SubResource("BoxShape3D_12")
 
-[node name="door_shield" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 2, 73.6)
-metadata/kind = "wall"
-metadata/toml_index = 431
-
-[node name="Shape" type="CollisionShape3D" parent="Boxes/door_shield"]
-shape = SubResource("BoxShape3D_13")
-
 [node name="boss_dais" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 52)
 metadata/kind = "platform"
-metadata/toml_index = 432
+metadata/toml_index = 431
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/boss_dais"]
-shape = SubResource("BoxShape3D_14")
+shape = SubResource("BoxShape3D_13")
 
 [node name="gate_plinth" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 125)
 metadata/kind = "platform"
-metadata/toml_index = 433
+metadata/toml_index = 432
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/gate_plinth"]
-shape = SubResource("BoxShape3D_15")
+shape = SubResource("BoxShape3D_14")
 
 [node name="gate_post_w" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.65, 2, 125)
 metadata/kind = "wall"
-metadata/toml_index = 434
+metadata/toml_index = 433
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/gate_post_w"]
-shape = SubResource("BoxShape3D_16")
+shape = SubResource("BoxShape3D_15")
 
 [node name="gate_post_e" type="StaticBody3D" parent="Boxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.65, 2, 125)
 metadata/kind = "wall"
-metadata/toml_index = 435
+metadata/toml_index = 434
 
 [node name="Shape" type="CollisionShape3D" parent="Boxes/gate_post_e"]
-shape = SubResource("BoxShape3D_16")
+shape = SubResource("BoxShape3D_15")
 
 [node name="Props" type="Node3D" parent="."]
 

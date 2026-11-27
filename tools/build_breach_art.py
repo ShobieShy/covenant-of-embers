@@ -591,8 +591,6 @@ def boxes() -> list[dict]:
         ("pillar_ne", (7.0, 1.7, 48.0), (1.3, 3.4, 1.3), "crate"),
         ("pillar_sw", (-7.0, 1.7, 55.0), (1.3, 3.4, 1.3), "crate"),
         ("pillar_se", (7.0, 1.7, 55.0), (1.3, 3.4, 1.3), "crate"),
-        # North of the landfill door so routes from the arena do not step on its trigger.
-        ("door_shield", (-4.5, 2.0, 73.6), (8.0, 4.0, 1.2), "wall"),
         ("boss_dais", (DAIS[0], 0.1, DAIS[1]), (6.4, 0.2, 3.6), "platform"),
         ("gate_plinth", (0.0, 0.08, CZ), (14.0, 0.16, 14.0), "platform"),
         # Same posts EmberArt puts on the labyrinth gate, so the nav opening matches the mesh.

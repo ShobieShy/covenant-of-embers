@@ -3475,14 +3475,6 @@ color = [0.30, 0.28, 0.26]
 collide_only = true
 
 [[box]]
-name = "door_shield"
-kind = "wall"
-center = [-4.5, 2, 73.6]
-size = [8, 4, 1.2]
-color = [0.30, 0.28, 0.26]
-collide_only = true
-
-[[box]]
 name = "boss_dais"
 kind = "platform"
 center = [0, 0.1, 52]
